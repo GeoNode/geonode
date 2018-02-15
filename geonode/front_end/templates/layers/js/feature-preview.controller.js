@@ -68,7 +68,7 @@
 
                     var layer = layerService.map({
                         name: layer_name,
-                        geoserverUrl: $window.GeoServerTileRoot + '?access_token=' + $window.access_token
+                        geoserverUrl: $window.GeoServerTileRoot + '?access_token=' + $window.mapConfig.access_token
                     });
                     mapService.addDataLayer(layer);
 

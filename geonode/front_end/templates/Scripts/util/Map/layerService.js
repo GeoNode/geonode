@@ -18,7 +18,7 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
             layer.bbox = [-9818543.41779904, 5183814.6260749, -9770487.95134629, 5235883.07751104];
         }
         if (!layer.hasOwnProperty('visibility'))
-            layer.visibility = false;
+            layer.visibility = true;
         // var userStyle = layer.name + '_' + _uuid();
         return {
             "LayerId": layer.Name || layer.name,
@@ -280,7 +280,7 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
 
                     var layer = factory.map({
                         name: layer_name,
-                        geoserverUrl: $window.GeoServerTileRoot + '?access_token=' + $window.access_token
+                        geoserverUrl: $window.GeoServerTileRoot + '?access_token=' + $window.mapConfig.access_token
                     });
                     deferred.resolve(layer);
 
