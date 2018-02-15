@@ -157,10 +157,28 @@ define(['./FileType'], function (FileType) {
             format: 'metadata',
             main: 'xml'
         });
+    // Style Layer Descriptors
     file_types['SLD'] = new FileType({
             name: gettext('Style Layer Descriptor'),
             format: 'metadata',
             main: 'sld'
         });
+    // Plain Images
+    file_types['JPEG'] = new FileType({
+            name: gettext('JPEG'),
+            format: 'image',
+            main: 'jpg'
+        });
+    file_types['PNG'] = new FileType({
+            name: gettext('PNG'),
+            format: 'image',
+            main: 'png'
+        });
+    file_types['GIF'] = new FileType({
+            name: gettext('GIF'),
+            format: 'image',
+            main: 'gif'
+        });
+
     return file_types;
 });
