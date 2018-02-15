@@ -51,6 +51,13 @@ def proxy(request):
     if url.fragment != "":
         locator += '#' + url.fragment
 
+    access_token = None
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']    #
+    if access_token and 'access_token' not in locator:
+        query_separator = '&' if '?' in locator else '?'
+        locator = ('%s%saccess_token=%s' % (locator, query_separator, access_token))
+
     if not settings.DEBUG:
         if not validate_host(url.hostname, PROXY_ALLOWED_HOSTS):
             return HttpResponse("DEBUG is set to False but the host of the path provided to the proxy service"
@@ -65,6 +72,8 @@ def proxy(request):
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
+        if access_token:
+            headers["Authorization"] = "Bearer " + access_token
 
     if url.scheme == 'https':
         conn = HTTPSConnection(url.hostname, url.port)
