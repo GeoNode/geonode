@@ -1925,6 +1925,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False):
     check_bbox = False
     if None not in instance.bbox:
         params['bbox'] = instance.bbox_string
+        params['crs'] = instance.srid
         check_bbox = True
 
     # Avoid using urllib.urlencode here because it breaks the url.
