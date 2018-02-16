@@ -20,10 +20,12 @@
 
 import json
 import logging
-import base64
 import httplib2
 import os
 from lxml import etree
+
+from httplib import HTTPConnection, HTTPSConnection
+from urlparse import urlsplit
 
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseRedirect
@@ -54,6 +56,8 @@ from geoserver.catalog import FailedRequestError, ConflictingDataError
 from .helpers import (get_stores, ogc_server_settings,
                       extract_name_from_sld, set_styles, style_update,
                       create_gs_thumbnail, _invalidate_geowebcache_layer)
+
+from django_basic_auth import logged_in_or_basicauth
 
 logger = logging.getLogger(__name__)
 
@@ -370,6 +374,7 @@ def style_change_check(request, path):
     return authorized
 
 
+@logged_in_or_basicauth(realm="GeoNode")
 def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
 
     if not request.user.is_authenticated():
@@ -386,37 +391,10 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
 
     access_token = None
     if 'access_token' in request.session:
-        access_token = request.session['access_token']    #
-    if access_token and 'access_token' not in path:
-        query_separator = '&' if '?' in path else '?'
-        path = ('%s%saccess_token=%s' % (path, query_separator, access_token))
+        access_token = request.session['access_token']
 
-    url = str("".join([ogc_server_settings.LOCATION, downstream_path, path]))
-
-    if settings.DEFAULT_WORKSPACE or workspace:
-        ws = (workspace or settings.DEFAULT_WORKSPACE)
-        if ws and ws in path:
-            # Strip out WS from PATH
-            try:
-                path = "/%s" % strip_prefix(path, "/%s:" % (ws))
-            except:
-                pass
-
-        if downstream_path in ('rest/styles') and len(request.body) > 0:
-            # Lets try http://localhost:8080/geoserver/rest/workspaces/<ws>/styles/<style>.xml
-            _url = str("".join([ogc_server_settings.LOCATION,
-                                'rest/workspaces/', ws, '/styles',
-                                path]))
-            url = _url
-
-    http = httplib2.Http()
-    username, password = ogc_server_settings.credentials
-    auth = base64.encodestring(username + ':' + password)
-    # http.add_credentials(*(ogc_server_settings.credentials))
-    headers = dict()
-
+    headers = {}
     affected_layers = None
-
     cookies = None
     for cook in request.COOKIES:
         name = str(cook)
@@ -436,12 +414,45 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
     #             request.session['JSESSIONID']
     #     headers['Cookie'] = cookies
 
+    if 'HTTP_AUTHORIZATION' in request.META:
+        auth = request.META.get('HTTP_AUTHORIZATION', request.META.get('HTTP_AUTHORIZATION2'))
+        if auth:
+            headers['Authorization'] = auth
+    elif access_token:
+        # TODO: Bearer is currently cutted of by Djano / GeoServer
+        if request.method in ("POST", "PUT"):
+            if access_token:
+                headers['Authorization'] = 'Bearer {}'.format(access_token)
+        if access_token and 'access_token' not in path:
+            query_separator = '&' if '?' in path else '?'
+            path = ('%s%saccess_token=%s' % (path, query_separator, access_token))
+
+    raw_url = str("".join([ogc_server_settings.LOCATION, downstream_path, path]))
+
+    if settings.DEFAULT_WORKSPACE or workspace:
+        ws = (workspace or settings.DEFAULT_WORKSPACE)
+        if ws and ws in path:
+            # Strip out WS from PATH
+            try:
+                path = "/%s" % strip_prefix(path, "/%s:" % (ws))
+            except:
+                pass
+
+        if downstream_path in ('rest/styles') and len(request.body) > 0:
+            # Lets try http://localhost:8080/geoserver/rest/workspaces/<ws>/styles/<style>.xml
+            _url = str("".join([ogc_server_settings.LOCATION,
+                                'rest/workspaces/', ws, '/styles',
+                                path]))
+            raw_url = _url
+
+    url = urlsplit(raw_url)
+    if url.scheme == 'https':
+        conn = HTTPSConnection(url.hostname, url.port)
+    else:
+        conn = HTTPConnection(url.hostname, url.port)
+
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
-        # if access_token:
-        #     headers["Authorization"] = "Bearer " + access_token
-        # else:
-        headers["Authorization"] = "Basic " + auth
         # if user is not authorized, we must stop him
         # we need to sync django here and check if some object (styles) can
         # be edited by the user
@@ -454,13 +465,14 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
                     content_type="text/plain",
                     status=401)
             elif downstream_path == 'rest/styles':
-                logger.info("[geoserver_rest_proxy] Updating Style to ---> url %s" % url)
-                affected_layers = style_update(request, url)
+                logger.info("[geoserver_rest_proxy] Updating Style to ---> url %s" % url.path)
+                affected_layers = style_update(request, raw_url)
 
-    response, content = http.request(
-        url, request.method,
-        body=request.body or None,
-        headers=headers)
+    conn.request(request.method, raw_url, request.body, headers=headers)
+    response = conn.getresponse()
+    content = response.read()
+    status = response.status
+    content_type = response.getheader("Content-Type", "text/plain")
 
     # update thumbnails
     if affected_layers:
@@ -470,8 +482,8 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
 
     return HttpResponse(
         content=content,
-        status=response.status,
-        content_type=response.get("content-type", "text/plain"))
+        status=status,
+        content_type=content_type)
 
 
 def layer_batch_download(request):

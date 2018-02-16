@@ -37,7 +37,7 @@ from geonode.base.models import ResourceBase, resourcebase_post_save, Link
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
-from geonode.security.models import remove_object_permissions
+from geonode.security.utils import remove_object_permissions
 
 IMGTYPES = ['jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif']
 

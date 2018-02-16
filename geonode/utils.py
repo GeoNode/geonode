@@ -30,6 +30,7 @@ import subprocess
 import select
 import tempfile
 import tarfile
+# import traceback
 
 from zipfile import ZipFile, is_zipfile
 
@@ -704,8 +705,6 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                 is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
             except:
                 is_manager = False
-        else:
-            raise Http404
         if (not obj_to_check.is_published):
             if not is_admin:
                 if is_owner or (is_manager and request.user in obj_group_managers):
@@ -1216,8 +1215,14 @@ def run_subprocess(*cmd, **kwargs):
 def parse_datetime(value):
     for patt in settings.DATETIME_INPUT_FORMATS:
         try:
-            return datetime.datetime.strptime(value, patt)
-        except ValueError:
+            if isinstance(value, dict):
+                value_obj = value['$'] if '$' in value else value['content']
+                return datetime.datetime.strptime(value_obj, patt)
+            else:
+                return datetime.datetime.strptime(value, patt)
+        except:
+            # tb = traceback.format_exc()
+            # logger.error(tb)
             pass
     raise ValueError("Invalid datetime input: {}".format(value))
 

@@ -7,8 +7,8 @@
 {% block body_class %}documents upload{% endblock body_class %}
 
 {% block head %}
-    {% include "geonode/ext_header.html" %}
-    {% include "geonode/app_header.html" %}
+    {% include "geoext/ext_header.html" %}
+    {% include "geoext/app_header.html" %}
     {{ block.super }}
 {% endblock %}
 
@@ -50,6 +50,10 @@
     });
     $('#upload_form').submit(function(){
       $('#permissions').val(JSON.stringify(permissionsString($('#permission_form'),'base')));
+    });
+
+    $('#upload-button').click(function(){
+      $('#_resource_uploading').modal('toggle');
     });
 </script>
 {% endblock extra_script %}

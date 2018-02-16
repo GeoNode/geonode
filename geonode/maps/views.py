@@ -165,8 +165,8 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
 
     context_dict["preview"] = getattr(
         settings,
-        'LAYER_PREVIEW_LIBRARY',
-        '')
+        'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
+        'geoext')
     context_dict["crs"] = getattr(
         settings,
         'DEFAULT_MAP_CRS',
@@ -335,7 +335,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
         "author_form": author_form,
         "category_form": category_form,
         "layers": layers,
-        "preview": getattr(settings, 'LAYER_PREVIEW_LIBRARY', 'leaflet'),
+        "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'geoext'),
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
         "metadata_author_groups": metadata_author_groups,
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
@@ -421,7 +421,7 @@ def map_embed(
 
 
 def map_embed_widget(request, mapid,
-                     template='leaflet_maps/map_embed_widget.html'):
+                     template='leaflet/maps/map_embed_widget.html'):
     """Display code snippet for embedding widget.
 
     :param request: The request from the frontend.
@@ -544,8 +544,8 @@ def map_view(request, mapid, snapshot=None, layer_name=None, template='maps/map_
         'map': map_obj,
         'preview': getattr(
             settings,
-            'LAYER_PREVIEW_LIBRARY',
-            '')
+            'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
+            'geoext')
     }))
 
 
@@ -653,8 +653,8 @@ def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
         'map': map_obj,
         'preview': getattr(
             settings,
-            'LAYER_PREVIEW_LIBRARY',
-            '')
+            'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
+            'geoext')
     }))
 
 
@@ -690,8 +690,8 @@ def new_map(request, template='maps/map_new.html'):
     }
     context_dict["preview"] = getattr(
         settings,
-        'LAYER_PREVIEW_LIBRARY',
-        '')
+        'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
+        'geoext')
     if isinstance(config, HttpResponse):
         return config
     else:

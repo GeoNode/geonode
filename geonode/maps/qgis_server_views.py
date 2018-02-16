@@ -60,7 +60,7 @@ logger = logging.getLogger("geonode.maps.qgis_server_views")
 class MapCreateView(CreateView):
     model = Map
     fields = '__all__'
-    template_name = 'leaflet_maps/map_view.html'
+    template_name = 'leaflet/maps/map_view.html'
     context_object_name = 'map'
 
     def get_context_data(self, **kwargs):
@@ -100,7 +100,7 @@ class MapCreateView(CreateView):
                 'map_layers': map_layers,
                 'preview': getattr(
                     settings,
-                    'LAYER_PREVIEW_LIBRARY',
+                    'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
                     '')
             }
             return context
@@ -250,7 +250,7 @@ class MapCreateView(CreateView):
                     'map_layers': map_layers,
                     'preview': getattr(
                         settings,
-                        'LAYER_PREVIEW_LIBRARY',
+                        'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
                         '')
                 }
 
@@ -273,7 +273,7 @@ class MapCreateView(CreateView):
 
 class MapDetailView(DetailView):
     model = Map
-    template_name = 'leaflet_maps/map_view.html'
+    template_name = 'leaflet/maps/map_view.html'
     context_object_name = 'map'
 
     def get_context_data(self, **kwargs):
@@ -308,7 +308,7 @@ class MapDetailView(DetailView):
             'map_layers': map_layers,
             'preview': getattr(
                 settings,
-                'LAYER_PREVIEW_LIBRARY',
+                'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
                 '')
         }
         return context
@@ -319,7 +319,7 @@ class MapDetailView(DetailView):
 
 class MapEmbedView(DetailView):
     model = Map
-    template_name = 'leaflet_maps/map_detail.html'
+    template_name = 'leaflet/maps/map_detail.html'
     context_object_name = 'map'
 
     def get_context_data(self, **kwargs):
@@ -352,7 +352,7 @@ class MapEmbedView(DetailView):
             'layers': map_layers,
             'preview': getattr(
                 settings,
-                'LAYER_PREVIEW_LIBRARY',
+                'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
                 '')
         }
         return context
@@ -368,7 +368,7 @@ class MapEmbedView(DetailView):
 class MapEditView(UpdateView):
     model = Map
     fields = '__all__'
-    template_name = 'leaflet_maps/map_edit.html'
+    template_name = 'leaflet/maps/map_edit.html'
     context_object_name = 'map'
 
     def get_context_data(self, **kwargs):
@@ -407,7 +407,7 @@ class MapEditView(UpdateView):
             'map': map_obj,
             'preview': getattr(
                 settings,
-                'LAYER_PREVIEW_LIBRARY',
+                'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
                 '')
         }
         return context
@@ -432,7 +432,7 @@ class MapEditView(UpdateView):
 class MapUpdateView(UpdateView):
     model = Map
     fields = '__all__'
-    template_name = 'leaflet_maps/map_edit.html'
+    template_name = 'leaflet/maps/map_edit.html'
     context_object_name = 'map'
 
     def get_context_data(self, **kwargs):
@@ -559,7 +559,7 @@ def map_download_qlr(request, mapid):
 
 
 def map_download_leaflet(request, mapid,
-                         template='leaflet_maps/map_embed.html'):
+                         template='leaflet/maps/map_embed.html'):
     """Download leaflet map as static HTML.
 
     :param request: The request from the frontend.

@@ -4,11 +4,6 @@
 {% load base_tags %}
 {% load guardian_tags %}
 
-{% block head %}
-  {% include "geonode/ext_header.html" %}
-  {{ block.super }}
-{% endblock %}
-
 {% block title %}{{ document.alternate }} — {{ block.super }}{% endblock %}
 
 {% block body_class %}data{% endblock %}
