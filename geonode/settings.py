@@ -394,7 +394,6 @@ MONITORING_DATA_TTL = timedelta(days=7)
 # use with caution - for dev purpose only
 MONITORING_DISABLE_CSRF = False
 
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

@@ -128,6 +128,7 @@ setup(name='GeoNode',
             "django-modeltranslation>=0.11,<=0.12.1",  # python-django-modeltranslation (0.12 Debian)
             "django-import-export<=0.5.1",  # missing from ppa FIXME
             "django-utils<=0.0.2",  # missing from ppa FIXME
+            "django-basic-authentication-decorator==0.9",  # missing from ppa FIXME
 
             # GeoNode org maintained apps.
             "django-geoexplorer>=4.0.0,<5.0",  # python-django-geoexplorer (4.0.37 in our ppa) FIXME
