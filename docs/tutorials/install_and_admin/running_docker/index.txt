@@ -1,0 +1,15 @@
+.. _running_docker:
+
+================================
+GeoNode (v\ |release|) on Docker
+================================
+
+This part of the documentation describes the complete setup process for GeoNode
+on Docker.
+
+.. toctree::
+   :maxdepth: 2
+
+   setup_docker
+   setup_docker_compose
+   setup_rancher
