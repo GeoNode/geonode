@@ -51,6 +51,10 @@ def proxy(request):
     if url.fragment != "":
         locator += '#' + url.fragment
 
+    access_token = None
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']    #
+
     if not settings.DEBUG:
         if not validate_host(url.hostname, PROXY_ALLOWED_HOSTS):
             return HttpResponse("DEBUG is set to False but the host of the path provided to the proxy service"
@@ -59,18 +63,29 @@ def proxy(request):
                                 content_type="text/plain"
                                 )
     headers = {}
-
     if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(url=raw_url, host=host):
         headers["Cookie"] = request.META["HTTP_COOKIE"]
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
+    if 'HTTP_AUTHORIZATION' in request.META:
+        auth = request.META.get('HTTP_AUTHORIZATION', request.META.get('HTTP_AUTHORIZATION2'))
+        if auth:
+            headers['Authorization'] = auth
+    elif access_token:
+        # TODO: Bearer is currently cutted of by Djano / GeoServer
+        if request.method in ("POST", "PUT"):
+            headers['Authorization'] = 'Bearer %s' % access_token
+        if access_token and 'access_token' not in locator:
+            query_separator = '&' if '?' in locator else '?'
+            locator = ('%s%saccess_token=%s' % (locator, query_separator, access_token))
+
     if url.scheme == 'https':
         conn = HTTPSConnection(url.hostname, url.port)
     else:
         conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator, request.body, headers)
+    conn.request(request.method, locator, request.body, headers=headers)
 
     result = conn.getresponse()
 
