@@ -178,7 +178,6 @@ class GeoServerMonitorClient(object):
 
     def to_json(self, data, from_format):
         h = getattr(self, '_from_{}'.format(from_format), None)
-        print(h)
         if not h or not data:
             raise ValueError("Cannot convert from {} - no handler".format(from_format))
         return h(data)
