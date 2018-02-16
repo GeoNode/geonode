@@ -92,10 +92,10 @@ def validate_django_settings():
         raise ImproperlyConfigured(
             'QGIS_SERVER_CONFIG setting should be configured.')
 
-    if not settings.LAYER_PREVIEW_LIBRARY == 'leaflet':
+    if not settings.GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'leaflet':
         raise ImproperlyConfigured(
             'QGIS Server at the moment only works with '
-            'LAYER_PREVIEW_LIBRARY = leaflet.')
+            'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = leaflet.')
 
     # Check OGC Server settings
     default_ogc_backend = settings.OGC_SERVER['default']

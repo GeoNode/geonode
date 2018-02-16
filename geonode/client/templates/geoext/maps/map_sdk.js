@@ -1,5 +1,5 @@
-{% include 'geonode/ext_header.html' %}
-{% include 'geonode/sdk_header.html' %}
+{% include 'geoext/ext_header.html' %}
+{% include 'geoext/sdk_header.html' %}
 <style type="text/css">
 .map-title-header {
     margin-right: 10px;
