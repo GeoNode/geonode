@@ -108,13 +108,28 @@ class Command(BaseCommand):
         utc = pytz.utc
         now = datetime.utcnow().replace(tzinfo=utc)
         Handler = get_for_service(service.service_type.name)
-        last_check = service.last_check.astimezone(utc) if service.last_check else now
-        since = since or last_check or (now - service.check_interval)
-        until = until or now
-        print('checking', service.name, 'since', since, 'until', until)
+        try:
+            service.last_check = service.last_check.astimezone(utc)
+        except:
+            service.last_check = service.last_check.replace(tzinfo=utc) if service.last_check else now
+        last_check = since.replace(tzinfo=utc) if since else service.last_check
+        if not last_check or last_check > now:
+            last_check = (now - service.check_interval)
+
+        until = until.replace(tzinfo=utc) if until else now
+
+        if until > last_check:
+            since = last_check
+        else:
+            since = until
+            until = last_check
+
+        service.last_check = since
+        service.save()
+        print('[',now ,'] checking', service.name, 'since', since, 'until', until)
         data_in = None
         h = Handler(service, force_check=force_check)
-        data_in = h.collect(since=since, until=until, format=format)
+        data_in = h.collect(since=last_check, until=until, format=format)
         if data_in:
             try:
                 return collector.process(service, data_in, since, until)

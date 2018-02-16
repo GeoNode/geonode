@@ -33,8 +33,10 @@ from math import floor, ceil
 
 from xml.etree import ElementTree as etree
 from bs4 import BeautifulSoup as bs
+from requests.auth import HTTPBasicAuth
 import requests
 
+from django.conf import settings
 from django.db.models.fields.related import RelatedField
 
 from geonode.contrib.monitoring.models import RequestEvent, ExceptionEvent
@@ -130,7 +132,9 @@ class GeoServerMonitorClient(object):
             rest_url = '{}?{}'.format(rest_url, urlencode(qargs))
 
         print('checking', rest_url)
-        resp = requests.get(rest_url)
+        username = settings.OGC_SERVER['default']['USER']
+        password = settings.OGC_SERVER['default']['PASSWORD']
+        resp = requests.get(rest_url, auth=HTTPBasicAuth(username, password))
         doc = bs(resp.content)
         links = doc.find_all('a')
         for l in links:
@@ -143,30 +147,38 @@ class GeoServerMonitorClient(object):
                     print("Skipping payload for {}".format(href))
 
     def get_request(self, href, format=format):
-        r = requests.get(href)
+        username = settings.OGC_SERVER['default']['USER']
+        password = settings.OGC_SERVER['default']['PASSWORD']
+        r = requests.get(href, auth=HTTPBasicAuth(username, password))
         if r.status_code != 200:
             return
         data = None
         try:
             data = r.json()
         except (ValueError, TypeError,):
+            # traceback.print_exc()
             try:
                 data = etree.fromstring(r.content)
             except Exception:
+                traceback.print_exc()
                 data = bs(r.content)
         if data and format != 'json':
             return self.to_json(data, format)
         return data
 
     def _from_xml(self, val):
-        return xmljson.yahoo.data(val)
+        try:
+            return xmljson.yahoo.data(val)
+        except:
+            # raise ValueError("Cannot convert from val %s" % val)
+            pass
 
     def _from_html(self, val):
         raise ValueError("Cannot convert from html")
 
     def to_json(self, data, from_format):
         h = getattr(self, '_from_{}'.format(from_format), None)
-        if not h:
+        if not h or not data:
             raise ValueError("Cannot convert from {} - no handler".format(from_format))
         return h(data)
 
