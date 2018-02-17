@@ -43,8 +43,8 @@ if old versions of Docker binary were installed then uninstall them::
 Install docker
 --------------
 
-The package of **Docker CE** is now called `docker-ce`. Before doing the installation steps please
-make sure that the `apt` package index has been updated::
+The package of **Docker CE** is now called ``docker-ce``. Before doing the installation steps please
+make sure that the ``apt`` package index has been updated::
 
     sudo apt-get update
 
@@ -78,12 +78,12 @@ Install the latest version of the binary or a specific version with the command:
 
 The docker daemon will start automatically.
 
-Add your user to the `docker` group if you want to run docker command without `sudo` privileges::
+Add your user to the ``docker`` group if you want to run docker command without ``sudo`` privileges::
 
     sudo usermod -aG docker $USER
     source $HOME/.bashrc
 
-Verify the health of your installation by running the sample `hello-world` image::
+Verify the health of your installation by running the sample ``hello-world`` image::
 
     docker run hello-world
 
