@@ -1,0 +1,6 @@
+.. _setup_rancher:
+
+===============================
+Scaling and deploy with Rancher
+===============================
+

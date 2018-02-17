@@ -1,0 +1,6 @@
+.. _setup_docker_compose:
+
+=============================================
+Orchestrate GeoNode stack with Docker Compose
+=============================================
+

@@ -1,0 +1,6 @@
+.. _setup_docker:
+
+=============================
+Docker installation and setup
+=============================
+
