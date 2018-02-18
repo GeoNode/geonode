@@ -62,3 +62,33 @@ After some minutes the new host should be registered and available in the active
 Since Rancher itself has containerized services, some of them which are managing the new host have to be available under the menu **Stacks** => **All**.
 
     .. figure:: img/rancher_stacks_all.png
+
+Deploy GeoNode as stack on Rancher
+==================================
+
+Create a stack from a docker-compose file
+-----------------------------------------
+
+This is the first option to deploy GeoNode stack from a template like :download:`this docker compose file <resources/docker-compose.yml>`.
+
+Before going to create a new stack by loading it from the Rancher console the values of the placeholders `<host label value>` and `<host-server-public-ip>` have to be edited accordingly to your previous setup.
+
+Once the `docker-compose.yml` is ready follow the menu **Stacks** => **User**:
+
+    .. figure:: img/rancher_add_stack.png
+
+Then click the **Add Stack** button:
+
+    .. figure:: img/rancher_new_stack.png
+
+From the property **docker-compose.yml** load the file previously edited, then click the **Create** button:
+
+.. warning:: The first time the host has to provision all the images and can take a while
+
+At the end of the provisioning job all the GeoNode services will be active and the stack available as deployed application:
+
+    .. figure:: img/rancher_geonode_stack.png
+
+GeoNode is now available at the public ip address defined into the `GEONODE_LB_HOST_IP` variable of your docker-compose file.
+
+As usual the default credentials for the master administrator is `admin/admin`.
