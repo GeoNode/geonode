@@ -2,12 +2,12 @@
     appModule
         .controller('OverpassApiQueryBuilderController', OverpassApiQueryBuilderController);
 
-    OverpassApiQueryBuilderController.$inject = ['$scope', 'mapService', '$http', '$compile', 'BoxDrawTool', 'layerService', '$window'];
+    OverpassApiQueryBuilderController.$inject = ['$scope', 'mapService', '$http', '$compile', 'BoxDrawTool', 'layerService', '$window', '$modal'];
 
-    function OverpassApiQueryBuilderController($scope, mapService, $http, $compile, BoxDrawTool, layerService, $window) {
+    function OverpassApiQueryBuilderController($scope, mapService, $http, $compile, BoxDrawTool, layerService, $window, $modal) {
         mapService.removeUserInteractions();
         mapService.removeEvents();
-        var boxTool = new BoxDrawTool();        
+        var boxTool = new BoxDrawTool();
         var url = 'http://overpass-api.de/api/interpreter';
         $scope.queryStr = "node({{bbox}});out;";
         var vectorLayer;
@@ -160,11 +160,11 @@
                 ol.proj.transformExtent(extent, projection, 'EPSG:4326');
             var reBbox = /{{bbox}}/g;
 
-            var bbox =  epsg4326Extent[1] + ',' 
-                        + epsg4326Extent[0] + ',' 
-                        + epsg4326Extent[3] + ',' 
-                        + epsg4326Extent[2];
-      
+            var bbox = epsg4326Extent[1] + ',' +
+                epsg4326Extent[0] + ',' +
+                epsg4326Extent[3] + ',' +
+                epsg4326Extent[2];
+
             var param = query.replace(reBbox, bbox);
 
             $http.post(url, param)
@@ -177,18 +177,29 @@
         };
 
         $scope.SaveAsLayer = function() {
-            var features = vectorLayer.getSource().getFeatures();
-            
-            layerService.createLayerFromFeature(features)
-                .then(function(layer) {
-                    if (vectorLayer) {
-                        mapService.removeVectorLayer(vectorLayer);
-                    }
-                    mapService.addDataLayer(layer);
-                }, function() {
+            showLayerSaveDialog().result.then(function(res) {
+                var features = vectorLayer.getSource().getFeatures();
+                layerService.createLayerFromFeature(features, res)
+                    .then(function(layer) {
+                        if (vectorLayer) {
+                            mapService.removeVectorLayer(vectorLayer);
+                        }
+                        mapService.addDataLayer(layer);
+                    }, function() {
 
-                });
+                    });
+            });
         };
+
+        function showLayerSaveDialog() {
+            return $modal.open({
+                templateUrl: '/static/layers/_layers-save.html',
+                controller: 'LayerSaveController as ctrl',
+                backdrop: 'static',
+                keyboard: false,
+                windowClass: 'fullScreenModal First'
+            });
+        }
 
         function onBoxChange(feature, bbox) {
             boundingBox = bbox;

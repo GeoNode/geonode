@@ -296,9 +296,9 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
             var csv = geoJsonToCsv(geoJsonFeatures);
             var file = new Blob([csv], { type: 'application/octet-stream' });
             var url = '/layers/upload';
-            var data = layerDataType[featureType](data);
+            var param = layerDataType[featureType](data);
 
-            return layerRepository.uploadCsvLayer(data, file, 'over-pass_the_geom.csv');
+            return layerRepository.uploadCsvLayer(param, file, 'over-pass_the_geom.csv');
         }
     };
 

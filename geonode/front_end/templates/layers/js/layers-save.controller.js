@@ -18,9 +18,9 @@
 
         self.save = function() {
             $modalInstance.close({
-               title: self.title,
-               categoryId: self.categoryId,
-               organizationId: self.organizationId
+               layer_title: self.title,
+               category: self.categoryId,
+               organization: self.organizationId
             });
         };
 

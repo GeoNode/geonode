@@ -116,15 +116,15 @@ class GeoserverCreateLayerByFeature(GeoServerMixin, CreateAPIView):
         layer_title = None
         categoryId = None
         organizationId = None
-        if 'title' in data:
-            layer_title = data['title']
-            del data['title']
-        if 'categoryId' in data:
-            categoryId = data['categoryId']
-            del data['categoryId']
-        if 'organizationId' in data:
-            organizationId = data['organizationId']
-            del data['organizationId']  
+        if 'layer_title' in data:
+            layer_title = data['layer_title']
+            del data['layer_title']
+        if 'category' in data:
+            categoryId = data['category']
+            del data['category']
+        if 'organization' in data:
+            organizationId = data['organization']
+            del data['organization']  
             
         query = self.get_configuration(data)
 
