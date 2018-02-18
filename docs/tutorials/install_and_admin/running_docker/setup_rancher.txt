@@ -25,7 +25,7 @@ After opening the browser at that port:
 
     .. figure:: img/rancher_home.png
 
-then the instance can be secured navigating the url `Local authentication <http://<rancher-server-ip>:8080/admin/access/local>`_ :
+then the instance can be secured navigating the url `Local authentication <http://rancher-server-ip:8080/admin/access/local>`_ :
 
     .. figure:: img/rancher_auth.png
 
@@ -34,7 +34,7 @@ Choose a ``username`` and a ``passord`` and then enable the access control by cl
 Add new host to the infrastructure
 ----------------------------------
 
-From the **Default** menu follow the link `add host <http://<rancher-server-ip>:8080/env/1a5/infra/hosts/add>`_ :
+From the **Default** menu follow the link `add host <http://rancher-server-ip:8080/env/1a5/infra/hosts/add>`_ :
 
     .. figure:: img/rancher_url.png
 
