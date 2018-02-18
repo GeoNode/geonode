@@ -4,3 +4,61 @@
 Scaling and deploy with Rancher
 ===============================
 
+Getting started with Rancher
+============================
+
+Install Rancher
+---------------
+
+To install the latest stable version run the following docker command::
+
+    docker run -d --restart=unless-stopped -p 8080:8080 rancher/server:stable
+
+Setup Rancher
+-------------
+
+Verify that Rancher server is running on the port defined above (default is ``8080``)::
+
+    docker ps -a
+
+After opening the browser at that port:
+
+    .. figure:: img/rancher_home.png
+
+then the instance can be secured navigating the url `Local authentication <http://<rancher-server-ip>:8080/admin/access/local>`_ :
+
+    .. figure:: img/rancher_auth.png
+
+Choose a ``username`` and a ``passord`` and then enable the access control by clicking the button at the bottom.
+
+Add new host to the infrastructure
+----------------------------------
+
+From the **Default** menu follow the link `add host <http://<rancher-server-ip>:8080/env/1a5/infra/hosts/add>`_ :
+
+    .. figure:: img/rancher_url.png
+
+and click the button **Save** to confirm. The administrator will be landed to the following page:
+
+    .. figure:: img/rancher_host.png
+
+Several options will be shown to decide what kind of machine driver is going to be used. For a local bare metal or virtual machine choose the **Custom** option. After that follow the indicated steps to prepare the new host
+
+    1. Start up a Linux machine somewhere and install a `supported version <http://docs.rancher.com/rancher/v1.6/en/hosts/#supported-docker-versions>`_ of Docker on it. Refer to the section on :ref:`_setup_docker`.
+    2. Allow IPsec networking between hosts on `UDP` ports `500` and `4500`.
+    3. Add labels to be applied to the host. This is optional but it is required for GeoNode if you want all the containers of a stack deployed on a same host. In that case add for example `Key:geonodehost` and `Value:<host label value>` which will be translated to the label `geonodehost=<host label value>`.
+    4. Specify the public IP `<host-server-public-ip>` that should be registered for the host. This is particularly import if the machine is behind a firewall/NAT.
+    5. Copy, paste, and run the command below to register the host with Rancher. The value of `registrationToken` is provided by the system. 
+
+        sudo docker run -e CATTLE_AGENT_IP="<host-server-public-ip>"  -e CATTLE_HOST_LABELS='geonodehost=<host label value>'  --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.9 http://<rancher-server-ip>:8080/v1/scripts/<registrationToken>
+        # sudo can be avoided if the user has been privileged
+    
+    6. Click on the **Close** button.
+
+After some minutes the new host should be registered and available in the active status under the menu **Infrastructure** => **Hosts**.
+
+    .. figure:: img/rancher_host_active.png
+
+Since Rancher itself has containerized services, some of them which are managing the new host have to be available under the menu **Stacks** => **All**.
+
+    .. figure:: img/rancher_stacks_all.png
