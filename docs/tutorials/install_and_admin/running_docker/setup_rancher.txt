@@ -4,6 +4,22 @@
 Scaling and deploy with Rancher
 ===============================
 
+`Rancher <http://rancher.com/>`_ is an open source software platform that enables organizations to run and manage Docker and Kubernetes in production.
+
+.. figure:: img/rancher_overview.png
+
+With Rancher, organizations no longer have to build a container services platform from scratch using a distinct set of open source technologies.
+Rancher supplies the entire software stack needed to manage containers in production.
+
+Introducing main concepts
+=========================
+
+Rancher takes in raw computing resources from any public or private cloud in the form of Linux hosts. Each Linux host can be a virtual machine or physical machine.
+
+Rancher includes a distribution of all popular container orchestration and scheduling frameworks today, including **Docker Swarm**, **Kubernetes**, and **Mesos**.
+
+Rancher users can deploy an entire multi-container clustered application from the application catalog or docker compose files with few clicks.
+
 Getting started with Rancher
 ============================
 
