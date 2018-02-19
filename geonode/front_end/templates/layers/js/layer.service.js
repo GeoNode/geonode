@@ -132,6 +132,18 @@
                 return get(uri);
 
             },
+            getWFSWithGeom : function(url, params, useProxy) {
+                url = url + "wfs/with-geometry/?service=WFS";
+                for (var k in params) {
+                    url += '&' + k + '=' + params[k];
+                }
+                var uri = url;
+                if (useProxy == undefined || useProxy) {
+                    uri = '/proxy/?url=' + encodeURIComponent(url);
+                }
+                return get(uri);
+
+            },
             getLayerFeatureByName: function(url, layerName) {
                 return this.getWFS(url, {
                     typeName: layerName,
