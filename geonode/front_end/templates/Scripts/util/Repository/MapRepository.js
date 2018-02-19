@@ -1,6 +1,6 @@
 ﻿repositoryModule.factory('mapRepository', [
-    '$http', 'urlResolver', 'dirtyManager', 'surfToastr', '$cookies',
-    function ($http, urlResolver, dirtyManager, surfToastr, $cookies) {
+    '$http', 'urlResolver', 'dirtyManager', 'surfToastr', '$cookies', '$window',
+    function ($http, urlResolver, dirtyManager, surfToastr, $cookies, $window) {
 
         return {
             openMap: function (mapId) {
@@ -98,6 +98,9 @@
             },
             getCategoryList: function(){
                 return $http.get('/api/categories/');
+            },
+            getPrintingConfiguration: function(){
+                return $http.get( '/proxy/?url=' + $window.GeoServerHttp2Root + 'pdf/info.json');
             }
         };
     }

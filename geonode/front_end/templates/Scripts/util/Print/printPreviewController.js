@@ -7,6 +7,25 @@
     printPreviewController.$inject = ['$scope', 'mapService', '$modalInstance', '$rootScope', 'mapTools', '$window', '$http'];
 
     function printPreviewController($scope, map, $modalInstance, $rootScope, mapTools, $window, $http) {
+        var self = this;
+
+        function initialize(){
+            map.getPrintingConfiguration()
+                .then(function(res){
+                    self.layouts = res.data.layouts;
+                    self.dpis = res.data.dpis;
+                    self.printURL = res.data.printURL;
+                    self.createURL = res.data.createURL;
+
+                    self.selectedLayout = self.layouts[0];
+                    self.selectedDpi  = self.dpis[0];
+                    self.includeLegend = true;
+            });
+        }
+
+        self.init = function(){
+            initialize();
+        };
 
         var mapInstance = map.olMap;
 
@@ -125,18 +144,18 @@
             return mappedLayers;
         }
         $scope.pageSize = 'LEGAL';
-        $scope.downloadMap = function() {
+        self.downloadMap = function() {
             var baseMap = mapTools.baseMap;
             console.log(map);
             // window.print();
             var data = {
                 "units": "m",
                 "srs": "EPSG:3857",
-                "layout": $scope.pageSize,
-                "dpi": 75,
+                "layout": self.selectedLayout,
+                "dpi": self.selectedDpi,
                 "outputFilename": "GeoExplorer-print",
-                "mapTitle": "office point",
-                "comment": "This map is about the range and beat under Dhaka division",
+                "mapTitle": self.mapTitle,
+                "comment": self.comments,
                 "layers": mapLayers(map.getLayers()),
                 "pages": [{
                     "center": [

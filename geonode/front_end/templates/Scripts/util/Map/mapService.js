@@ -474,6 +474,9 @@
             },
             getMeta: function() {
                 return map.Meta || {};
+            },
+            getPrintingConfiguration: function (){
+                return mapRepository.getPrintingConfiguration();
             }
 
         };
