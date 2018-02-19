@@ -19,9 +19,10 @@ class GeoserverWFSListAPIView(ListAPIView, GeoServerMixin):
 
         result = self.get_response_from_geoserver('wfs', query)
 
-        for feature in result.get('features'):
-            if 'geometry' in feature:
-                del feature['geometry']
+        if not kwargs.get('include_geometry', False):
+            for feature in result.get('features'):
+                if 'geometry' in feature:
+                    del feature['geometry']
 
         return Response(result, status=status.HTTP_200_OK)
 
