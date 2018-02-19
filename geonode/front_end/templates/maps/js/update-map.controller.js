@@ -2,9 +2,9 @@
     appModule
         .controller('MapUpdateController', MapUpdateController);
 
-    MapUpdateController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope', 'layerService'];
+    MapUpdateController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope', 'layerService','queryOutputFactory','$rootScope'];
 
-    function MapUpdateController(mapService, $window, analyticsService, LayerService, $scope, oldLayerService) {
+    function MapUpdateController(mapService, $window, analyticsService, LayerService, $scope, oldLayerService,queryOutputFactory,$rootScope) {
         var self = this;
         var re = /\d*\/embed/;
         var map = mapService.getMap();
@@ -27,6 +27,12 @@
         function errorFn() {
 
         }
+
+        $scope.group={"a": "AND","rules": []};
+        $scope.getQueryResult=function(){
+                var query=queryOutputFactory.getOutput($scope.group);
+                $rootScope.$broadcast('filterDataWithCqlFilter',query);
+        };
 
         function getGeoServerSettings() {
             self.propertyNames = [];

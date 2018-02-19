@@ -1,0 +1,77 @@
+<style>
+    .group{
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    border: solid 1px #666;
+}
+
+    .group-conditions{
+        margin-left: 20px;
+    }
+
+    .alert-group{
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-color: rgb(192, 152, 83);
+        border-color: rgb(251, 238, 213);
+        border-color: rgb(220, 200, 150);
+    }
+
+    .condition, .group{
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+</style>
+<div class="alert alert-warning alert-group">
+    [{groups}]
+        <div class="form-inline">
+            <select ng-options="o.name as o.name for o in operators" ng-model="group.operator" class="form-control input-sm">
+                    <option style="display: none" value="">select condition</option>
+            </select>
+            <button style="margin-left: 5px;margin-bottom: 5px" ng-click="addCondition()" class="btn btn-sm btn-success">
+                    <i class="fa fa-plus"></i>
+                    Add Condition</button>
+            <button ng-show="options.addGroup" style="margin-left: 5px" ng-click="addGroup()" class="btn btn-sm btn-success">
+                    <i class="fa fa-plus"></i> Add Group</button>
+            <button ng-show="options.removeGroup" style="margin-left: 5px" ng-click="removeGroup()" class="btn btn-sm btn-danger">
+                    <i class="fa fa-minus"></i> Remove Group</button>
+        </div>
+    
+        <div class="group-conditions">
+            <div ng-repeat="rule in group.rules | orderBy:'index'" class="condition">
+                <div ng-switch="rule.hasOwnProperty('group')">
+    
+    
+                    <div ng-switch-when="true">
+                        <query-builder group="rule.group"></query-builder>
+                    </div>
+    
+    
+                    <div ng-switch-default="ng-switch-default">
+                        <div class="form-inline">
+                            <select ng-change="attributeChange(rule)" ng-options="t as t.name for t in fields" ng-model="rule.field" class="form-control input-sm">
+                                <option style="display: none" value="">select attribute</option>
+                            </select>
+                            <select style="margin-left: 5px" ng-options="c.value as c.name for c in conditions" ng-model="rule.condition" class="form-control input-sm">
+                                    <option style="display: none" value="">select operator</option>
+                            </select>
+    
+                            <input ng-show="textControlVisible(rule)" style="margin-left: 5px" type="text" ng-model="rule.data" class="form-control input-sm"/>
+    
+    
+                            <select ng-show="dropdownControlVisible(rule)" style="margin-left: 5px" ng-options="c.name as c.name for c in rule.field.fieldUniqueValues" ng-model="rule.firstDropdownValue" class="form-control input-sm"></select>
+                            <input ng-show="IsSecondInputBoxVisible(rule)" style="margin-left: 5px" type="text" ng-model="rule.dataAnother" class="form-control input-sm"/>
+                            <select ng-show="IsSecondDropdownBoxVisible(rule)" style="margin-left: 5px" ng-options="c.name as c.name for c in rule.field.fieldUniqueValues" ng-model="rule.secondDropdownValue" class="form-control input-sm"></select>
+    
+                            <button style="margin-left: 5px" ng-click="removeCondition($index)" class="btn btn-sm btn-danger">
+                                    <i class="fa fa-minus"></i></button>
+    
+                        </div>
+                    </div>
+    
+    
+                </div>
+            </div>
+        </div>
+    </div>

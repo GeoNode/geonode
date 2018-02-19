@@ -1,4 +1,4 @@
-﻿var appHelperModule = angular.module("app.helpers", ['app.filters', 'surfToastr']);
+﻿var appHelperModule = angular.module("app.helpers", ['app.filters', 'surfToastr','LayerApp']);
 
 appHelperModule.factory('attributeTypes', [
     'defaultDateFormat',
