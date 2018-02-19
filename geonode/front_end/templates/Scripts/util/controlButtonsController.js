@@ -143,6 +143,36 @@
                     $(item).show();
                 });
             }
+
+            function showFeatures(params) {
+                var layers = mapService.getLayers();
+                var promises = [];
+                var layer_names = [];
+
+                for (var k in layers) {
+                    var layer = layers[k];
+                    if (!layer.IsVisible)
+                        continue;
+                    layer_names.push(k);
+
+                    let p = LayerService.getWFS('api/geoserver/', Object.assign({}, params, {
+                        typeNames: layer.getName()
+                    }), false);
+                    promises.push(p);
+                }
+
+                $q.all(promises)
+                    .then(function(response) {
+                        var data = {};
+                        for (var i in layer_names) {
+                            data[layer_names[i]] = response[i].features.map(function(e) {
+                                return e.properties;
+                            });
+                        }
+                        showFeaturePreviewDialog(data, params);
+                    });
+            }
+
             var circle = new CircleDrawTool();
             $scope.action.drawCircle = function() {
                 circle.Remove();
@@ -150,10 +180,7 @@
                 circle.OnModificationEnd(function(feature, values) {
                     var center = feature.values_.geometry.getCenter();
                     var centerLongLat = ol.proj.transform([center[0], center[1]], 'EPSG:3857', 'EPSG:4326');
-                    var layers = mapService.getLayers();
-                    var promises = [];
-                    var layer_names = [];
-
+                    
                     var params = {
                         version: '1.0.0',
                         request: 'GetFeature',
@@ -161,30 +188,22 @@
                         srsName: 'EPSG:3857',
                         typeNames: '',
                         cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + values.radius + ',meters)',
-                    }
-
-                    for (var k in layers) {
-                        var layer = layers[k];
-                        if (!layer.IsVisible)
-                            continue;
-                        layer_names.push(k);
-
-                        let p = LayerService.getWFS('api/geoserver/', Object.assign({}, params, {
-                            typeNames: layer.getName()
-                        }), false);
-                        promises.push(p);
-                    }
-                    $q.all(promises)
-                        .then(function(response) {
-                            var data = {};
-                            for (var i in layer_names) {
-                                data[layer_names[i]] = response[i].features.map(function(e) {
-                                    return e.properties;
-                                });
-                            }
-                            showFeaturePreviewDialog(data, params);
-                        });
+                    };
+                    showFeatures(params);                    
                 });
+            };
+
+            $scope.action.boundingBoxSearch = function() {
+                var bbox = mapService.getBbox('EPSG:4326');
+                var params = {
+                    version: '1.0.0',
+                    request: 'GetFeature',
+                    outputFormat: 'JSON',
+                    srsName: 'EPSG:3857',
+                    typeNames: '',
+                    bbox: bbox,
+                };
+                showFeatures(params);
             };
 
             $scope.action.shareMap = function() {
@@ -264,8 +283,8 @@
                     data: function() {
                         return data;
                     },
-                    wfsConfig: function(){
-                       return wfsConfig;
+                    wfsConfig: function() {
+                        return wfsConfig;
                     }
                 }
             });
