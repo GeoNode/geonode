@@ -32,7 +32,20 @@
                 <set-marker></set-marker>
             </li>
             <li>
-                <button class="control-button icon" ng-click="action.drawCircle()" title="Draw Circle"><i class="fa fa-circle-o" aria-hidden="true"></i>                                            </button>
+                <div class="btn-group">
+                    <button type="button" title="Measure" class="control-button icon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <span class="caret"></span>
+                        </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <button class="control-button icon" ng-click="action.drawCircle()" title="Draw Circle"><i class="fa fa-circle-o" aria-hidden="true"></i> Radius Search</button>
+                        </li>
+                        <li>
+                            <button class="control-button icon" ng-click="action.boundingBoxSearch()" title="BBOX search"><i class="fa fa-square-o" aria-hidden="true"></i>  Bounding Box Search</button>
+                        </li>
+                    </ul>
+                </div>
             </li>
             <li class="divider-vertical" draft-only></li>
             <li draft-only>

@@ -4,9 +4,9 @@
         .module('LayerApp')
         .factory('LayerService', LayerService);
 
-    LayerService.$inject = ['$http', '$q', '$window'];
+    LayerService.$inject = ['$http', '$q', '$window', '$cookies'];
 
-    function LayerService($http, $q, $window) {
+    function LayerService($http, $q, $window, $cookies) {
         function get(url) {
             var deferred = $q.defer();
             $http.get(url)
@@ -21,6 +21,20 @@
         function put(url, obj) {
             var deferred = $q.defer();
             $http.put(url, obj, {
+                headers: {
+                    "X-CSRFToken": $cookies.get('csrftoken')
+                }
+            }).success(function(res) {
+                deferred.resolve(res);
+            }).error(function(error, status) {
+                deferred.reject({ error: error, status: status });
+            });
+            return deferred.promise;
+        }
+
+        function post(url, obj) {
+            var deferred = $q.defer();
+            $http.post(url, obj, {
                 headers: {
                     "X-CSRFToken": $cookies.get('csrftoken')
                 }
@@ -217,6 +231,9 @@
                     }, this);
                 });
                 return deferred.promise;
+            },
+            createLayerByWfs: function(data){
+                return post('api/geoserver/wfs/create-layer/', data);
             }
         };
     }

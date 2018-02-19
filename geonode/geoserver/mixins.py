@@ -12,8 +12,7 @@ class GeoServerMixin(object):
     def get_configuration(self, data):
         query = {}
         for k,v in data.items():
-            query.update({k: v[0]})
-
+            query.update({k: v[0] if type(v) == list else v})
         return query
 
     def get_response_from_geoserver(self, api_type, query):

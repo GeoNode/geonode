@@ -201,11 +201,12 @@ class LayerUploadForm(forms.Form):
             temp_vrt_path = os.path.join(tempdir_csv, "tempvrt.vrt")
             temp_vrt_file = open(temp_vrt_path, 'wt')
             vrt_string = """  <OGRVRTDataSource>
-                    <OGRVRTLayer name="222ogr_vrt_layer_name222">
-                    <SrcDataSource>000path_to_the_imported_csv_file000</SrcDataSource>
-                    <GeometryType>wkbUnknown</GeometryType>
-                    <GeometryField encoding="WKT" field="111the_field_name_geom_for_csv111"/>
-                    </OGRVRTLayer>
+                            <OGRVRTLayer name="222ogr_vrt_layer_name222">
+                                <SrcDataSource>000path_to_the_imported_csv_file000</SrcDataSource>
+                                <GeometryType>wkbUnknown</GeometryType>
+                                <LayerSRS>WGS84</LayerSRS>
+                                <GeometryField encoding="WKT" field="111the_field_name_geom_for_csv111"/>
+                            </OGRVRTLayer>
                     </OGRVRTDataSource> """
 
             vrt_string_point = """

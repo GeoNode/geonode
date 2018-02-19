@@ -1,16 +1,20 @@
-<div class="MainBodyContainer catalog-browser" style="height: 100%; width: 100%;" ng-init="ctrl.init()">
-    <div class="file-browser-button-container draggable-div">
-        <i class="fa fa-times-circle modal-close-icon" style="float: right; cursor: pointer" ng-click="ctrl.closeDialog()"></i>         
-        <h4>Features</h4>
+<div class="catalog-browser" style="height: 100%; width: 100%;" ng-init="ctrl.init()">
+    <div class="modal-header">
+            <i class="fa fa-times-circle modal-close-icon" style="float: right; cursor: pointer" ng-click="ctrl.closeDialog()"></i>
+        <h4 class="modal-title">Features</h4>
+        <button class="btn btn-default" ng-click="ctrl.SaveAsLayer()">Save as layer [{ctrl.selectedTab.name}]</button>
     </div>
-    <tabset>
-        <tab active='tab.active' ng-repeat="tab in ctrl.tabs">
-            <tab-heading>
-                [{tab.name}]
-                <span ng-if="tab.active" class="selected-down-arrow"></span>
-            </tab-heading>
-            <div  ui-grid="ctrl.data[tab.name].gridOptions" ui-grid-pagination class="grid"></div>
-        </tab>
-    </tabset>
-    <div style="clear:both"></div>
+    <div class="modal-body" style="padding-top: 0;padding-bottom:0;">
+
+        <tabset>
+            <tab active='tab.active' ng-click="ctrl.selectedTab = tab" ng-repeat="tab in ctrl.tabs">
+                <tab-heading>
+                    [{tab.name}]
+                    <span ng-if="tab.active" class="selected-down-arrow"></span>
+                </tab-heading>
+                <div ui-grid="ctrl.data[tab.name].gridOptions" ui-grid-pagination class="grid"></div>
+            </tab>
+        </tabset>
+        <div style="clear:both"></div>
+    </div>
 </div>

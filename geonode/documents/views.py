@@ -32,7 +32,7 @@ from django.core.exceptions import PermissionDenied
 from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import F
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 
 
 #@jahangir091

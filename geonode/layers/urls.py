@@ -54,6 +54,7 @@ urlpatterns = patterns(
 #layer publish activity urls
     url(r'^(?P<layer_pk>[0-9]+)/publish$', 'layer_publish', name='layer-publish'),
     url(r'^(?P<layer_pk>[0-9]+)/approve$', 'layer_approve', name='layer-approve'),
+    url(r'^(?P<layer_pk>[0-9]+)/draft$', 'layer_draft', name='layer-draft'),
     url(r'^(?P<layer_pk>[0-9]+)/deny$', 'layer_deny', name='layer-deny'),
     url(r'^(?P<layer_pk>[0-9]+)/delete$', 'layer_delete', name='layer-delete'),
 
