@@ -441,7 +441,13 @@ class RequestEvent(models.Model):
                 region = client_loc['region']
                 city = client_loc['city']
 
+        from dateutil.tz import tzlocal
+        utc = pytz.utc
+        local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
+
         start_time = parse_datetime(rd['startTime'])
+        # Assuming GeoServer stores dates @ UTC
+        start_time = start_time.replace(tzinfo=utc).astimezone(local_tz)
 
         rl = rd['responseLength']
         data = {'created': start_time,
@@ -470,10 +476,15 @@ class RequestEvent(models.Model):
             resource_names = [resource_names]
         resources = cls._get_resources('layer', resource_names)
         if rd.get('error'):
-            etype = rd['error']['class']
-            edata = '\n'.join(rd['error']['stackTrace']['trace'])
-            emessage = rd['error']['detailMessage']
-            ExceptionEvent.add_error(service, etype, edata, message=emessage, request=inst)
+            try:
+                etype = rd['error']['@class'] if '@class' in rd['error'] else rd['error']['class']
+                edata = '\n'.join(rd['error']['stackTrace']['trace'])
+                emessage = rd['error']['detailMessage']
+                ExceptionEvent.add_error(service, etype, edata, message=emessage, request=inst)
+            except:
+                ExceptionEvent.add_error(service, 'undefined',
+                                         '\n'.join(rd['error']['stackTrace']['trace']),
+                                         message=rd['error']['detailMessage'], request=inst)
         if resources:
             inst.resources.add(*resources)
             inst.save()
@@ -615,9 +626,9 @@ class MetricValue(models.Model):
                                    resource=resource,
                                    ows_service=ows_service,
                                    service_metric=service_metric)
-            inst.value = value
-            inst.value_raw = value_raw
-            inst.value_num = value_num
+            inst.value = abs(value) if value else 0
+            inst.value_raw = abs(value_raw) if value_raw else 0
+            inst.value_num = abs(value_num) if value_num else 0
             inst.samples_count = samples_count or 0
             inst.save()
             return inst
@@ -736,6 +747,7 @@ class NotificationCheck(models.Model):
         if self.last_send is None:
             return True
         now = datetime.utcnow().replace(tzinfo=pytz.utc)
+        self.last_send = self.last_send.replace(tzinfo=pytz.utc)
         if (self.last_send + self.grace_period) > now:
             return False
         return True
@@ -1187,6 +1199,7 @@ class MetricNotificationCheck(models.Model):
             # we have to check for now, because valid_on may be in the past,
             # metric may be at the valid_on point in time
             valid_on = datetime.utcnow().replace(tzinfo=pytz.utc)
+            metric.valid_to = metric.valid_to.replace(tzinfo=pytz.utc)
             if (valid_on - metric.valid_to) > self.max_timeout:
                 total_seconds = self.max_timeout.total_seconds()
                 actual_seconds = (valid_on - metric.valid_to).total_seconds()

@@ -213,7 +213,6 @@ class HostGeoNodeService(BaseServiceHandler):
         return data
 
     def handle_collected(self, data, *args, **kwargs):
-
         return data
 
 
