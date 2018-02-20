@@ -221,8 +221,23 @@ DEFAULT_MAP_CENTER = (0, 0)
 DEFAULT_MAP_ZOOM = 0
 
 # Default preview library
-GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'
-#GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'  # DEPRECATED use HOOKSET instead
+GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
+
+# To enable the REACT based Client enable those
+# INSTALLED_APPS += ('geonode-client', )
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'react'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.ReactHookSet"
+
+# To enable the Leaflet based Client enable those
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
+
+# To enable the MapStore2 based Client enable those
+# INSTALLED_APPS += ('geonode_mapstore_client', )
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'mapstore'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode_mapstore_client.hooksets.MapStoreHookSet"
+
 # LEAFLET_CONFIG = {
 #    'TILES': [
 #        # Find tiles at:
@@ -268,7 +283,7 @@ CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
 STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
 THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', '<MAPBOX_ACCESS_TOKEN>')
-BING_API_KEY = os.environ.get('BING_API_KEY', '<BING_API_KEY>')
+BING_API_KEY = os.environ.get('BING_API_KEY', None)
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', '<GOOGLE_API_KEY>')
 
 MAP_BASELAYERS = [{
@@ -420,6 +435,13 @@ if EMAIL_ENABLE:
     EMAIL_HOST_PASSWORD = ''
     EMAIL_USE_TLS = False
     DEFAULT_FROM_EMAIL = 'Example.com <no-reply@localhost>'
+
+# Documents Thumbnails
+UNOCONV_ENABLE = True
+
+if UNOCONV_ENABLE:
+    UNOCONV_EXECUTABLE = os.getenv('UNOCONV_EXECUTABLE', '/usr/bin/unoconv')
+    UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
 
 # Advanced Security Workflow Settings
 CLIENT_RESULTS_LIMIT = 20
