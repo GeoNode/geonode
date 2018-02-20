@@ -1,93 +1,11 @@
 ﻿appModule.controller('attributeGridController', ['$scope', '$rootScope', 'featureRepository',
     'attributeGridService', 'attributeValidator', 'mapService', 'featureService', 'attributeTypes',
-    'cqlFilterCharacterFormater', 'mapTools', '$timeout', 'mapAccessLevel', 'LayerService',
+    'cqlFilterCharacterFormater', 'mapTools', '$timeout', 'mapAccessLevel', 'LayerService','surfToastr',
     function($scope, $rootScope, featureRepository, attributeGridService, attributeValidator,
-        mapService, featureService, attributeTypes, cqlFilterCharacterFormater, mapTools, $timeout, mapAccessLevel, LayerService) {
+        mapService, featureService, attributeTypes, cqlFilterCharacterFormater, mapTools, $timeout, mapAccessLevel, LayerService,surfToastr) {
 
         var surfLayer, activeLayerId;
         $scope.config = {};
-        var vectorSource = new ol.source.Vector();
-        var vectorLayer = new ol.layer.Vector({
-            source: vectorSource,
-            style: styleFunction
-        });
-        var styleFunction = function(feature) {
-            return styles[feature.getGeometry().getType()];
-        };
-        var map = mapService.getMap();
-        map.addLayer(vectorLayer);
-        var image = new ol.style.Circle({
-            radius: 5,
-            fill: new ol.style.Fill({
-                color: 'rgba(255,0,0,1.0)'
-            }),
-            stroke: new ol.style.Stroke({ color: 'rgba(255,0,0,1.0)', width: 2 })
-        });
-
-        var styles = {
-            'Point': new ol.style.Style({
-                image: image
-            }),
-            'LineString': new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'green',
-                    width: 1
-                })
-            }),
-            'MultiLineString': new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'green',
-                    width: 1
-                })
-            }),
-            'MultiPoint': new ol.style.Style({
-                image: image
-            }),
-            'MultiPolygon': new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'yellow',
-                    width: 1
-                }),
-                fill: new ol.style.Fill({
-                    color: 'rgba(255, 255, 0, 0.1)'
-                })
-            }),
-            'Polygon': new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'blue',
-                    lineDash: [4],
-                    width: 3
-                }),
-                fill: new ol.style.Fill({
-                    color: 'rgba(0, 0, 255, 0.1)'
-                })
-            }),
-            'GeometryCollection': new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'magenta',
-                    width: 2
-                }),
-                fill: new ol.style.Fill({
-                    color: 'magenta'
-                }),
-                image: new ol.style.Circle({
-                    radius: 10,
-                    fill: null,
-                    stroke: new ol.style.Stroke({
-                        color: 'magenta'
-                    })
-                })
-            }),
-            'Circle': new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'red',
-                    width: 2
-                }),
-                fill: new ol.style.Fill({
-                    color: 'rgba(255,0,0,0.2)'
-                })
-            })
-        };
 
         function getRequestObjectToGetFeature(featureID, typeName) {
             var requestObj = {
@@ -101,20 +19,7 @@
             };
             return requestObj;
         }
-
-        function addFeatureToVectorLayer(featureID) {
-            $scope.loading = true;
-            var requestObj = getRequestObjectToGetFeature(featureID);
-            attributeGridService.getGridData(requestObj, surfLayer).then(function(features) {
-                console.log(features);
-
-            }).catch(function() {
-                if (onError) {
-                    onError();
-                }
-                $scope.loading = false;
-            });
-        }
+       
         $scope.selectedFeatures = [];
         var selectedFeatures = [];
 
@@ -133,10 +38,8 @@
                     if (surfLayer) {
                         var requestObj = getRequestObjectToGetFeature(featureId, surfLayer.DataId);
                         LayerService.getWFSWithGeom('api/geoserver/', requestObj, false).then(function(response) {
-                            console.log(response);
-                            var mapFeatures = (new ol.format.GeoJSON()).readFeatures(response, { featureProjection: 'EPSG:3857' });
-                            console.log(mapFeatures);
-                            vectorSource.addFeatures(mapFeatures);
+                            attributeGridService.highlightFeature(response);
+                            selectedFeatures=$scope.selectedFeatures;
                         });
                     }
                 });
@@ -187,10 +90,8 @@
                         if (surfLayer) {
                             var requestObj = getRequestObjectToGetFeature(featureId, surfLayer.DataId);
                             LayerService.getWFSWithGeom('api/geoserver/', requestObj, false).then(function(response) {
-                                console.log(response);
-                                var mapFeatures = (new ol.format.GeoJSON()).readFeatures(response, { featureProjection: 'EPSG:3857' });
-                                console.log(mapFeatures);
-                                vectorSource.addFeatures(mapFeatures);
+                                attributeGridService.highlightFeature(response);
+                                selectedFeatures=$scope.selectedFeatures;
                             });
                         }
                     });
@@ -279,8 +180,8 @@
         }
 
         $rootScope.$on('filterDataWithCqlFilter', function(event, query) {
-            loadGridDataFromServerUsingCqlFilter($scope.pagination.currentPage, query);
             $scope.pagination.currentPage = 1;
+            loadGridDataFromServerUsingCqlFilter($scope.pagination.currentPage, query);
         });
 
         function getRequestObject(currentPage) {
@@ -322,27 +223,33 @@
         }
 
         function loadGridDataFromServerUsingCqlFilter(currentPage, query, onSuccess, onError) {
-            $scope.loading = true;
-            var requestObj = getRequestObject(currentPage);
-            requestObj.CQL_FILTER = query;
+            if($rootScope.layerId){
+                $scope.loading = true;
+                var requestObj = getRequestObject(currentPage);
+                requestObj.CQL_FILTER = query;
 
-            attributeGridService.getGridData(requestObj, surfLayer).then(function(features) {
-                populateGrid(features);
-                // if(!$scope.config.table){
-                //     $scope.config.table = new Handsontable($('#attribute-grid')[0], settings);
-                // }
-                // else{
-                //     $scope.config.table.updateSettings(settings);
-                // }
-                //$scope.config.table.render();
-                //table.render();
+                attributeGridService.getGridData(requestObj, surfLayer).then(function(features) {
+                    populateGrid(features);
+                    // if(!$scope.config.table){
+                    //     $scope.config.table = new Handsontable($('#attribute-grid')[0], settings);
+                    // }
+                    // else{
+                    //     $scope.config.table.updateSettings(settings);
+                    // }
+                    //$scope.config.table.render();
+                    //table.render();
 
-            }).catch(function() {
-                if (onError) {
-                    onError();
-                }
-                $scope.loading = false;
-            });
+                }).catch(function() {
+                    if (onError) {
+                        onError();
+                    }
+                    $scope.loading = false;
+                });
+
+            }else{
+                surfToastr.error("please select a layer","Error");
+            }
+            
         }
 
         function loadGridDataFromServer(currentPage, onSuccess, onError) {

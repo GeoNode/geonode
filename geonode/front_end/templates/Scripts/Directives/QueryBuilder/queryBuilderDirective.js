@@ -130,7 +130,7 @@ appHelperModule.directive('queryBuilder', ['$compile','controlVisibleFactory','L
             return function (scope, element, attrs) {
 
                  scope.conditionDictionary ={
-                    int:[
+                    undefined:[
                         { name: '<>',value:'<>' },
                         { name: '<',value: '<'  },
                         { name: '=',value: '=' },
@@ -218,7 +218,6 @@ appHelperModule.directive('queryBuilder', ['$compile','controlVisibleFactory','L
                         data: '',
                         dataAnother:''
                     });
-                    console.log(scope.group);
                 };
 
                 scope.removeCondition = function (index) {
@@ -255,7 +254,7 @@ appHelperModule.directive('queryBuilder', ['$compile','controlVisibleFactory','L
                 scope.attributeChange = function(rule){
                     var controlType = rule.field.controlType;
                     if(controlType == undefined){
-                        scope.conditions = scope.conditionDictionary['int'];
+                        scope.conditions = scope.conditionDictionary['undefined'];
                     }else{
                         scope.conditions = scope.conditionDictionary[controlType];
                     }

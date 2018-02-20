@@ -53,7 +53,7 @@
                             <select ng-change="attributeChange(rule)" ng-options="t as t.name for t in fields" ng-model="rule.field" class="form-control input-sm">
                                 <option style="display: none" value="">select attribute</option>
                             </select>
-                            <select style="margin-left: 5px" ng-options="c.value as c.name for c in conditions" ng-model="rule.condition" class="form-control input-sm">
+                            <select style="margin-left: 5px" ng-options="c.value as c.name for c in conditionDictionary[rule.field.controlType]" ng-model="rule.condition" class="form-control input-sm">
                                     <option style="display: none" value="">select operator</option>
                             </select>
     
