@@ -1,4 +1,3 @@
-
 (function() {
     angular
         .module('LayerApp')
@@ -132,7 +131,7 @@
                 return get(uri);
 
             },
-            getWFSWithGeom : function(url, params, useProxy) {
+            getWFSWithGeom: function(url, params, useProxy) {
                 url = url + "wfs/with-geometry/?service=WFS";
                 for (var k in params) {
                     url += '&' + k + '=' + params[k];
@@ -198,7 +197,7 @@
             },
             getAttributesName: function(layerName) {
                 var deferred = $q.defer();
-                this.getLayerFeatureByName($window.GeoServerHttp2Root , layerName).then(function(res) {
+                this.getLayerFeatureByName($window.GeoServerHttp2Root, layerName).then(function(res) {
                     res.featureTypes.forEach(function(featureType) {
                         var attributes = [];
                         featureType.properties.forEach(function(e) {
@@ -222,7 +221,7 @@
             },
             getShapeType: function(layerName) {
                 var deferred = $q.defer();
-                this.getLayerFeatureByName($window.GeoServerHttp2Root , layerName).then(function(res) {
+                this.getLayerFeatureByName($window.GeoServerHttp2Root, layerName).then(function(res) {
                     res.featureTypes.forEach(function(featureType) {
                         var shapeType = "";
                         featureType.properties.forEach(function(e) {
@@ -244,7 +243,7 @@
                 });
                 return deferred.promise;
             },
-            createLayerByWfs: function(data){
+            createLayerByWfs: function(data) {
                 return post('api/geoserver/wfs/create-layer/', data);
             }
         };

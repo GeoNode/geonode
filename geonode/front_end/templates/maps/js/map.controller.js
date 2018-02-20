@@ -1,10 +1,10 @@
 (function() {
     appModule
-        .controller('MapUpdateController', MapUpdateController);
+        .controller('MapController', MapController);
 
-    MapUpdateController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope', 'layerService','queryOutputFactory','$rootScope'];
+    MapController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope', 'layerService','queryOutputFactory','$rootScope'];
 
-    function MapUpdateController(mapService, $window, analyticsService, LayerService, $scope, oldLayerService,queryOutputFactory,$rootScope) {
+    function MapController(mapService, $window, analyticsService, LayerService, $scope, oldLayerService,queryOutputFactory,$rootScope) {
         var self = this;
         var re = /\d*\/embed/;
         var map = mapService.getMap();

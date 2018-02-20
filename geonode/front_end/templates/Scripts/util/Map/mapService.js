@@ -319,6 +319,9 @@
             //     }
             // },
             addDataLayer: function(layer) {
+                if (typeof layer.Name === 'undefined') {
+                    return;
+                }
                 var p1_deferred = $q.defer();
                 var p1 = p1_deferred.promise;
                 mapId = this.getId();

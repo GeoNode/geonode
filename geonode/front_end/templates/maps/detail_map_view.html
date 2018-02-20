@@ -3,7 +3,7 @@
 {% endblock %}
 {% block middle %}
 <div class="surfgis" ng-controller="appController" ng-app="appModule" ng-click="bodyClicked()">
-   <div class="application-font all-children-application-font"  ng-controller="MapUpdateController" ng-class='{"draft": mapAccessLevel.IsPublic, "not-draft": !mapAccessLevel.IsPublic}'>
+   <div class="application-font all-children-application-font"  ng-controller="MapController" ng-class='{"draft": mapAccessLevel.IsPublic, "not-draft": !mapAccessLevel.IsPublic}'>
       
 
        <div class="layout-content">
