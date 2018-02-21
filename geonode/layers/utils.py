@@ -514,6 +514,9 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
             else:
                 defaults[key] = value
 
+        title = defaults.get('title',title)
+        abstract = defaults.get('abstract',abstract)
+
     regions_resolved, regions_unresolved = resolve_regions(regions)
     keywords.extend(regions_unresolved)
 
