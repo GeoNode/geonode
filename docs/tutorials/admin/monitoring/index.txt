@@ -42,22 +42,107 @@ Base concepts and objects
 Installation
 ~~~~~~~~~~~~
 
- * enable ``MONITORING_ENABLED`` flag
- * ensure that following code is in your settings:
+.. warning:: This plugin requires a Potgresql DB backend enabled
+
+* ensure ``UTC`` Timezone to your DB
+    
+    .. code:: python
+    
+        psql -c 'set timezone=UTC;'
+
+* enable ``MONITORING_ENABLED`` flag and ensure that following code is in your settings:
 
 .. code:: python
 
-  MONITORING_ENABLED = True
-  # add following lines to your local settings to enable monitoring
-  if MONITORING_ENABLED:
-      INSTALLED_APPS += ('geonode.contrib.monitoring',)
-      MIDDLEWARE_CLASSES += ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
-      MONITORING_SERVICE_NAME = 'local-system-geonode' # or other name for your main geonode instance Service
-      NOTIFICATION_ENABLED = True
+    CORS_ORIGIN_ALLOW_ALL = True
 
-* run ``manage.py migrate monitoring`` to apply db schema changes and insert initial data
-* run ``manage.py updategeoip`` to fetch MaxMind's GeoIP database file. It will be written to path specified by `GEOIP_PATH` setting.
-* add ``manage.py collect_metrics`` call to crontab.
+    MONITORING_ENABLED = True
+    # add following lines to your local settings to enable monitoring
+    if MONITORING_ENABLED:
+        INSTALLED_APPS += ('geonode.contrib.monitoring',)
+        MIDDLEWARE_CLASSES += ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+        MONITORING_CONFIG = None
+        MONITORING_HOST_NAME = 'localhost'
+        MONITORING_SERVICE_NAME = 'local-geonode'
+        MONITORING_HOST_NAME = SITE_HOST_NAME
+
+    INSTALLED_APPS += ('geonode.contrib.ows_api',)
+
+    GEOIP_PATH = os.path.join(os.path.dirname(__file__), '..', 'GeoLiteCity.dat')
+
+* run ``DJANGO_SETTINGS_MODULE=<project_name>.settings python manage.py migrate monitoring`` to apply db schema changes and insert initial data
+* run ``DJANGO_SETTINGS_MODULE=<project_name>.settings python manage.py updategeoip`` to fetch MaxMind's GeoIP database file. It will be written to path specified by `GEOIP_PATH` setting.
+* run ``DJANGO_SETTINGS_MODULE=<project_name>.settings python manage.py collect_metrics -n -t xml -f --since='<yyyy-mm-dd HH:mm:ss>'`` to create first metrics.
+
+    .. warning::
+
+        Replace ``<yyyy-mm-dd HH:mm:ss>`` with a real date time to start with.
+
+* update ``Sites`` from admin; make sure it contains a correct host name
+* do not forget to enable notifications and configure them from user profile
+
+Enable the collect_metrics ``cron``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. warning:: Here below you will find instructions for a Ubuntu 16.04 based machine, but the procedure is similar for other OSs. The basic concept is that you must allow the system to run the command ``DJANGO_SETTINGS_MODULE=<project_name>.settings python manage.py collect_metrics -n -t xml`` (**without -f and since**) every minute.
+
+cront job
+^^^^^^^^^
+
+.. code:: python
+
+    sudo crontab -e
+
+.. code:: python
+
+    # Add the following line at the bottom; this will run the supervisor command every minute
+    * * * * * supervisorctl start geonode-monitoring
+
+supervisor
+^^^^^^^^^^
+
+.. code:: python
+
+    sudo apt install supervisor
+    sudo service supervisor restart
+    sudo update-rc.d supervisor enable
+
+.. code:: python
+
+    sudo vim /etc/supervisor/conf.d/geonode-monitoring.conf
+
+.. code:: python
+
+    [program:geonode-monitoring]
+    command=<path_to_virtualenv>/geonode/bin/python -W ignore <path_to_your_project>/geonode/manage.py collect_metrics -n -t xml
+    directory = <path_to_your_project>
+    environment=DJANGO_SETTINGS_MODULE="<your_project>.settings"
+    user=<your_user>
+    numproc=1
+    stdout_logfile=/var/log/geonode-celery.log
+    stderr_logfile=/var/log/geonode-celery.log
+    autostart = true
+    autorestart = true
+    startsecs = 10
+    stopwaitsecs = 600
+    priority = 998
+
+.. code:: python
+
+    sudo service supervisor restart
+    sudo supervisorctl start geonode-monitoring
+    sudo supervisorctl status geonode-monitoring
+
+.. code:: python
+
+    sudo vim /etc/hosts
+
+.. code:: python
+
+    127.0.0.1       localhost
+    <public_ip>     <your_host.your_domain> <your_host>
+
+    # The following lines are desirable for IPv6 capable hosts
 
 Configuration
 ~~~~~~~~~~~~~

@@ -21,6 +21,7 @@ from __future__ import print_function
 import logging
 import pytz
 from datetime import datetime
+from dateutil.tz import tzlocal
 
 from django.core.management.base import BaseCommand
 from django.utils.translation import ugettext_noop as _
@@ -106,32 +107,29 @@ class Command(BaseCommand):
 
     def run_check(self, service, collector, since=None, until=None, force_check=None, format=None):
         utc = pytz.utc
+        local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
         now = datetime.utcnow().replace(tzinfo=utc)
         Handler = get_for_service(service.service_type.name)
         try:
             service.last_check = service.last_check.astimezone(utc)
         except:
             service.last_check = service.last_check.replace(tzinfo=utc) if service.last_check else now
-        last_check = since.replace(tzinfo=utc) if since else service.last_check
+        last_check = local_tz.localize(since).astimezone(utc).replace(tzinfo=utc) if since else service.last_check
         if not last_check or last_check > now:
             last_check = (now - service.check_interval)
+            service.last_check = last_check
 
-        until = until.replace(tzinfo=utc) if until else now
-
-        if until > last_check:
-            since = last_check
+        if not until:
+            until = now
         else:
-            since = until
-            until = last_check
+            until = local_tz.localize(until).astimezone(utc).replace(tzinfo=utc)
 
-        service.last_check = since
-        service.save()
-        print('[',now ,'] checking', service.name, 'since', since, 'until', until)
+        print('[',now ,'] checking', service.name, 'since', last_check, 'until', until)
         data_in = None
         h = Handler(service, force_check=force_check)
         data_in = h.collect(since=last_check, until=until, format=format)
         if data_in:
             try:
-                return collector.process(service, data_in, since, until)
+                return collector.process(service, data_in, last_check, until)
             finally:
                 h.mark_as_checked()
