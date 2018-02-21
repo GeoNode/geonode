@@ -10,7 +10,7 @@ from tastypie.api import Api
 from .api.resources import LayerResource, TagResource, TopicCategoryResource
 
 # api
-wm_api = Api(api_name='2.6')
+wm_api = Api(api_name='2.8')
 wm_api.register(LayerResource())
 wm_api.register(TagResource())
 wm_api.register(TopicCategoryResource())
