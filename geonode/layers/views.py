@@ -160,6 +160,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
         }
         return render_to_response(template, RequestContext(request, ctx))
     elif request.method == 'POST':
+        name = None
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
         saved_layer = None
@@ -303,7 +304,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
         else:
             status_code = 400
         if settings.MONITORING_ENABLED:
-            request.add_resource('layer', saved_layer.alternate if saved_layer else name)
+            if saved_layer or name:
+                layer_name = saved_layer.alternate if hasattr(saved_layer, 'alternate') else name
+                request.add_resource('layer', layer_name)
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',
@@ -1006,7 +1009,8 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
 
     if settings.MONITORING_ENABLED:
         for l in layers:
-            request.add_resource('layer', l.altername)
+            if hasattr(l, 'alternate'):
+                request.add_resource('layer', l.alternate)
     if request.method == 'POST':
         form = PocForm(request.POST)
         if form.is_valid():

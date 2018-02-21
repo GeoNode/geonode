@@ -684,9 +684,10 @@ def clean_config(conf):
 
 
 def new_map(request, template='maps/map_new.html'):
-    config = new_map_config(request)
+    map_obj, config = new_map_config(request)
     context_dict = {
         'config': config,
+        'map': map_obj
     }
     context_dict["preview"] = getattr(
         settings,
@@ -703,7 +704,7 @@ def new_map(request, template='maps/map_new.html'):
 def new_map_json(request):
 
     if request.method == 'GET':
-        config = new_map_config(request)
+        map_obj, config = new_map_config(request)
         if isinstance(config, HttpResponse):
             return config
         else:
@@ -764,6 +765,7 @@ def new_map_config(request):
     else:
         access_token = None
 
+    map_obj = None
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
@@ -790,7 +792,7 @@ def new_map_config(request):
             config = add_layers_to_map_config(request, map_obj, params.getlist('layer'))
         else:
             config = DEFAULT_MAP_CONFIG
-    return json.dumps(config)
+    return map_obj, json.dumps(config)
 
 
 def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True):
