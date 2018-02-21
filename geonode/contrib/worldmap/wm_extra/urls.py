@@ -17,7 +17,7 @@ wm_api.register(TopicCategoryResource())
 
 urlpatterns = patterns('',
                         # api
-                        (r'^api/', include(wm_api.urls)),
+                        (r'^worldmap/api/', include(wm_api.urls)),
                         # maps
                         url(r'^maps/new$', new_map_wm, name="new_map_wm"),
                         url(r'^maps/new/data$', new_map_json_wm, name='new_map_json_wm'),
