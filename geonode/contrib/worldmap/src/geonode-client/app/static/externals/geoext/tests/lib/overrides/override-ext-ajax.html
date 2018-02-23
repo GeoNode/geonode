@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../lib/overrides/override-ext-ajax.js"></script>
+    <script type="text/javascript" src="../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+        var log;
+        
+        function setup() {
+            window._xhr = OpenLayers.Request.XMLHttpRequest;
+            var anon = new Function();
+            OpenLayers.Request.XMLHttpRequest = function() {};
+            OpenLayers.Request.XMLHttpRequest.prototype = {
+                open: anon,
+                setRequestHeader: function(k, v) {
+                    log[k] = v;
+                },
+                send: anon
+            };
+            OpenLayers.Request.XMLHttpRequest.DONE = 4;
+        }
+
+        function teardown() {
+            OpenLayers.Request.XMLHttpRequest = window._xhr;
+        }
+
+        function test_request(t) {
+            t.plan(9);
+
+            /*
+             * Setup
+             */
+
+            setup();
+
+            var request, data;
+
+            var argument= {"some": "argument"};
+            var scope = {"some": "scope"};
+            var headers = {"some": "headers"}; 
+
+            var successObj, failureObj;
+            var success = function(o) {
+                successObj = {scope: this, arg: o.argument, status: o.status};
+            };
+            var failure = function(o) {
+                failureObj = {scope: this, arg: o.argument, status: o.status};
+            };
+
+            /*
+             * Test
+             */
+
+            // test "success" callback
+            data = "some data";
+            successObj = failureObj = null;
+            log = {}; 
+            request = Ext.lib.Ajax.request("GET", "http://foo",
+                {
+                    success: success,
+                    failure: failure,
+                    argument: argument,
+                    scope: scope
+                },
+                data,
+                {
+                    headers: headers
+                }
+            );
+            t.eq(log["some"], "headers", "headers properly set");
+            request.readyState = OpenLayers.Request.XMLHttpRequest.DONE;
+            request.status = 200;
+            request.onreadystatechange();
+            t.eq(successObj.scope, scope,
+                 "success cb called with proper scope");
+            t.eq(successObj.arg, argument,
+                 "success cb called with proper argument");
+            t.eq(successObj.status, 200,
+                "success cb called with proper status");
+
+            // test "failure" callback
+            // 2 tests
+            data = "some data";
+            successObj = failureObj = null;
+            request = Ext.lib.Ajax.request("GET", "http://foo",
+                {
+                    success: success,
+                    failure: failure,
+                    argument: argument,
+                    scope: scope
+                },
+                data
+            );
+            request.readyState = OpenLayers.Request.XMLHttpRequest.DONE;
+            request.status = 400;
+            request.onreadystatechange();
+            t.eq(failureObj.scope, scope,
+                 "failure cb called with proper scope");
+            t.eq(failureObj.arg, argument,
+                 "failure cb called with proper argument");
+            t.eq(failureObj.status, 400,
+                 "failure cb called with proper status");
+
+            // test xmlData
+            // 1 test
+            data = "some data";
+            log = {};
+            request = Ext.lib.Ajax.request("GET", "http://foo",
+                {
+                },
+                null,
+                {
+                    xmlData: data
+                }
+            );
+            t.eq(log["Content-Type"], "text/xml", "Content-Type header properly set");
+
+            // test jsonData
+            // 1 test
+            data = "some data";
+            log = {}; 
+            request = Ext.lib.Ajax.request("GET", "http://foo",
+                {
+                },
+                null,
+                {
+                    jsonData: data
+                }
+            );
+            t.eq(log["Content-Type"], "application/json", "Content-Type header properly set");
+
+            /*
+             * Teardown
+             */
+            teardown();
+        }
+
+        function test_serializeForm(t) {
+            t.plan(1);
+
+            var expect = "key1=val1&key2=val2";
+            var result = Ext.lib.Ajax.serializeForm(Ext.get("form").dom);
+            t.eq(result, expect,
+                 "serializeForm returns expected result (" + expect + ")");
+        }
+
+        function test_formPost(t) {
+            t.plan(2);
+            
+            setup();
+            log = {};
+            Ext.Ajax.request({
+                failure: function(response) { },
+                method: 'POST',
+                success: function(response) { },
+                params: { username: 'bart', password: 'xx'},
+                url: 'foo.php'
+            });
+            t.eq(log["Content-Type"], "application/x-www-form-urlencoded",
+                 "Content-Type header properly set for direct form POST");
+
+            log = {};
+            var form = new Ext.form.FormPanel();
+            form.add(new Ext.form.Hidden({name: 'foo', value: 'bar'}));
+            form.render('basicform');
+            form.getForm().submit({method: 'POST', url: 'foo.php'});
+
+            t.delay_call(1, function() {
+                t.eq(log["Content-Type"], "application/x-www-form-urlencoded",
+                    "Content-Type header properly set for form POST from Ext.form.FormPanel");
+                teardown();
+            });
+
+        }
+
+        function test_paramsGet(t) {
+            t.plan(1);
+            /*
+             * Setup
+             */
+            setup();
+
+            log = {};
+            Ext.Ajax.request({
+                failure: function(response) { },
+                method: 'GET',
+                success: function(response) { },
+                params: { xx: 'xx', yy: 'yy'},
+                url: 'foo.php'
+            });
+            t.ok(!("Content-Type" in log),
+                 "Content-Type header should not be set for GET request");
+
+            /*
+             * Teardown
+             */
+            teardown();
+        }
+    </script>
+  <body>
+  <div id="basicform"></div>
+  <form id="form">
+      <input type="text" name="key1" value="val1"></input>
+      <input type="checkbox" name="key2" value="val2" checked="checked"></input>
+  </form>
+  </body>
+</html>

@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+
+<project name="RingoJS" default="usage" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <target name="usage">
+        <echo message=""/>
+        <echo message="RingoJS build targets"/>
+        <echo message=""/>
+        <echo message=" update     --> retrieve dependencies via Apache Ivy"/>
+        <echo message=" compile    --> compiles the source code to ./build/classes"/>
+        <echo message=" jar        --> generates the ./lib/ringo.jar file"/>
+        <echo message=" test       --> run JUnit and RingoJS tests"/>
+        <echo message=" docs       --> generates the API docs"/>
+        <echo message=" package    --> creates RingoJS distribution"/>
+        <echo message=" dpkg       --> creates RingoJS debian package"/>
+        <echo message=" clean      --> clean up compiled resources"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Initializes some variables                                          -->
+    <!-- =================================================================== -->
+    <target name="init">
+        <property name="project" value="ringojs"/>
+        <property name="version" value="0.9"/>
+
+        <property name="home" value="."/>
+
+        <property name="src" value="${home}/src"/>
+        <property name="lib" value="${home}/lib"/>
+        <property name="build" value="${home}/build"/>
+        <property name="classes" value="${build}/classes"/>
+        <property name="docs" value="${home}/docs"/>
+        <property name="jsdocs" value="${home}/docs/modules"/>
+        <property name="javadocs" value="${home}/docs/java"/>
+
+        <property name="ringo.jar" value="${lib}/ringo.jar"/>
+
+        <property name="debug" value="on"/>
+        <property name="optimize" value="on"/>
+        <property name="deprecation" value="on"/>
+
+        <property name="testclasses" value=""/>
+
+        <path id="classpath">
+            <fileset dir="lib">
+                <include name="**/*.jar"/>
+                <exclude name="${ringo.jar}"/>
+            </fileset>
+            <pathelement location="${classes}"/>
+        </path>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Fetches dependencies via Apache Ivy                                 -->
+    <!-- =================================================================== -->
+    <target name="update">
+        <ivy:retrieve type="jar" sync="true"
+            pattern="${ivy.lib.dir}/ivy/[originalname].[ext]"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Compiles the source directory                                       -->
+    <!-- =================================================================== -->
+    <target name="compile" depends="init">
+        <mkdir dir="${classes}"/>
+        <javac srcdir="${src}"
+            source="1.5"
+            target="1.5"
+            destdir="${classes}"
+            debug="${debug}"
+            deprecation="${deprecation}"
+            optimize="${optimize}"
+            includeAntRuntime="false">
+                <compilerarg value="-Xlint:unchecked"/>
+                <classpath refid="classpath"/>
+                <!-- fix for openjdk rhino bootclasspath bug -->
+                <compilerarg value="-Xbootclasspath/p:${lib}/js.jar"/>
+        </javac>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Runs the JUnit and RingoJS test cases                               -->
+    <!-- =================================================================== -->
+    <target name="test" depends="jar">
+        <java jar="run.jar" fork="true" failonerror="yes">
+            <arg value="test/all.js"/>
+        </java>
+        <junit haltonfailure="true">
+            <classpath refid="classpath"/>
+            <formatter type="brief" usefile="false"/>
+            <batchtest>
+              <fileset dir="${src}">
+                <include name="**/*Test*.java"/>
+                <exclude name="**/AllTests.java"/>
+              </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Creates a jar file in the lib-directory                             -->
+    <!-- =================================================================== -->
+    <target name="jar" depends="compile">
+        <jar jarfile="${ringo.jar}">
+            <fileset dir="${classes}"/>
+            <fileset dir="${home}" includes="modules/**"/>
+            <fileset dir="${src}" excludes="**/*.java,**/package.html"/>
+        </jar>
+        <jar jarfile="run.jar"
+            basedir="${classes}"
+            includes="**/tools/launcher/**"
+            manifest="${src}/org/ringojs/tools/launcher/manifest.txt"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Creates the API documentation                                       -->
+    <!-- =================================================================== -->
+    <target name="docs" depends="jar">
+        <mkdir dir="${javadocs}"/>
+        <javadoc packagenames="org.ringojs.*"
+            destdir="${javadocs}"
+            windowtitle="RingoJS Java API"
+            doctitle="RingoJS Java API">
+            <fileset dir="${src}" includes="**/*.java" />
+            <classpath refid="classpath"/>
+       </javadoc>
+       <delete dir="${jsdocs}"/>
+       <java jar="run.jar" fork="true">
+           <arg value="${home}/tools/jsdoc/main.js"/>
+           <arg  value="--file-urls"/>
+           <arg  value="--source=${home}/modules"/>
+           <arg  value="--directory=${jsdocs}"/>
+           <arg  value="--name=Ringo Modules"/>
+       </java>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Create zipped files for distribution                                -->
+    <!-- =================================================================== -->
+    <target name="package" depends="jar,docs,test">
+        <zip zipfile="../${project}-${version}.zip">
+            <zipfileset dir="${home}" prefix="${project}-${version}"
+             excludes="build/**,*.zip,*.o,*.tar,*.tar.gz,.*/**" />
+        </zip>
+        <tar tarfile="../${project}-${version}.tar">
+            <tarfileset dir="${home}" prefix="${project}-${version}"
+             filemode="755" includes="bin/ringo,bin/ringo-admin,bin/ringo-web,bin/narwhal" />
+            <tarfileset dir="${home}" prefix="${project}-${version}"
+             excludes="bin/ringo,bin/ringo-admin,bin/ringo-web,bin/narwhal,build/**,*.zip,*.o,*.tar,*.tar.gz,.*/**" />
+        </tar>
+        <gzip src="../${project}-${version}.tar" destfile="../${project}-${version}.tar.gz"/>
+        <delete file="../${project}-${version}.tar"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Create a debian package                                             -->
+    <!-- =================================================================== -->
+    <target name="dpkg">
+        <exec executable="dpkg-buildpackage">
+            <arg value="-rfakeroot"/>
+            <arg value="-b"/>
+        </exec>
+        <exec executable="dh_clean">
+            <arg value="debian/stamp-ant-build"/>
+        </exec>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Clean up compiled resources                                         -->
+    <!-- =================================================================== -->
+    <target name="clean" depends="init">
+        <delete dir="${build}"/>
+        <delete file="${ringo.jar}"/>
+        <delete file="run.jar"/>
+    </target>
+
+
+</project>

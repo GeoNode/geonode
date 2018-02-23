@@ -1,0 +1,1 @@
+ringo.cmd -l %*

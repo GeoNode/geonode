@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+
+        function test_constructor(t) {
+            t.plan(8);
+
+            var record, store, slider;
+            var layer = new OpenLayers.Layer("a");
+
+            record = new (GeoExt.data.LayerRecord.create())(
+                {layer: layer, title: layer.name}, layer.id
+            );
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: record
+            });
+            t.eq(slider.layer.id, record.id, "layer parameter is a GeoExt.data.LayerRecord");
+            slider.destroy();
+
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer
+            });
+            t.eq(layer.id, slider.layer.id, "layer parameter is a OpenLayers.Layer.WMS");
+            slider.destroy();
+
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer
+            });
+            t.eq(slider.value, 100,
+                 "ctor sets value to max value if layer opacity is " +
+                 "null and value isn't defined in config");
+
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer,
+                changeVisibility: true
+            });
+            t.eq(slider.changeVisibility, true,
+                 "ctor sets changeVisibility to true in instance");
+            slider.destroy();
+
+            layer.setOpacity(0.0);
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer,
+                changeVisibility: true
+            });
+            t.eq(layer.getVisibility(), false,
+                 "ctor makes layer invisible if layer opacity is 0");
+            layer.setVisibility(true);
+            slider.destroy();
+
+            layer.setOpacity(0.5);
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer,
+                changeVisibility: true
+            });
+            t.eq(layer.getVisibility(), true,
+                 "ctor does not change layer visibility if layer opacity is non 0");
+            slider.destroy();
+
+            layer.opacity = null;
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer,
+                value: 0,
+                changeVisibility: true
+            });
+            t.eq(layer.getVisibility(), false,
+                 "ctor makes layer invisible if layer opacity is " +
+                 "null and value is min value");
+            layer.setVisibility(true);
+            slider.destroy();
+
+            layer.opacity = null;
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer,
+                value: 0.5,
+                changeVisibility: true
+            });
+            t.eq(layer.getVisibility(), true,
+                 "ctor does not change layer visibility if layer " +
+                 "opacity is null and value is not min value");
+            layer.setVisibility(true);
+            slider.destroy();
+        }
+
+        function test_constructor_complementary(t) {
+            t.plan(5);
+
+            var layer1, layer2, record1, record2, slider;
+
+            var layer1 = new OpenLayers.Layer("1");
+            var layer2 = new OpenLayers.Layer("2");
+
+            record1 = new (GeoExt.data.LayerRecord.create())(
+                {layer: layer1, title: layer1.name}, layer1.id
+            );
+            record2 = new (GeoExt.data.LayerRecord.create())(
+                {layer: layer2, title: layer2.name}, layer2.id
+            );
+
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer1,
+                complementaryLayer: layer2
+            });
+            t.ok(slider.complementaryLayer == layer2,
+                 "ctor correctly sets complementary layer in " +
+                 "the instance [layer]");
+            slider.destroy();
+
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: record1,
+                complementaryLayer: record2
+            });
+            t.ok(slider.complementaryLayer == layer2,
+                 "ctor correctly sets complementary layer in " +
+                 "the instance [record]");
+            slider.destroy();
+
+            layer1.setOpacity(1);
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer1,
+                complementaryLayer: layer2
+            });
+            t.eq(layer2.getVisibility(), false,
+                 "ctor makes complementary layer invisible if the " +
+                 "main layer opacity is 1");
+            layer2.setVisibility(true);
+            slider.destroy();
+
+            layer1.setOpacity(0.5);
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer1,
+                complementaryLayer: layer2
+            });
+            t.eq(layer2.getVisibility(), true,
+                 "ctor does not change complementary layer visibility "+
+                 "if the main layer opacity is not 1");
+            slider.destroy();
+
+            layer1.opacity = null;
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer1,
+                complementaryLayer: layer2,
+                value: 100
+            });
+            t.eq(layer2.getVisibility(), false,
+                 "ctor makes complementary layer invisible if the " +
+                 "main layer opacity is null but the slider " +
+                 "value is set to max value in the config");
+            slider.destroy();
+        }
+
+        function test_initalOpacity(t) {
+            t.plan(3);
+
+            var slider = new GeoExt.LayerOpacitySlider({
+                layer: new OpenLayers.Layer('foo')
+            });
+            t.ok(slider.getValue() == 100,
+                 "set the value to 100 if the layer has no opacity");
+            slider.destroy();
+
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: new OpenLayers.Layer('foo', { opacity: 0 })
+            });
+            t.ok(slider.getValue() == 0,
+                 "initial layer's opacity sets the slider value");
+            slider.destroy();
+
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: new OpenLayers.Layer('foo', { opacity: 0.42 })
+            });
+            t.ok(slider.getValue() == 42,
+                 "initial layer's opacity sets the slider value");
+            slider.destroy();
+        }
+
+        function test_aggressive(t) {
+            t.plan(2);
+
+            var slider1 = new GeoExt.LayerOpacitySlider({
+                renderTo: document.body,
+                layer: new OpenLayers.Layer('foo'),
+                aggressive: false
+            });
+            slider1.on({
+                changecomplete: function() {
+                    t.ok(true, "changecomplete triggered in non-aggressive mode");
+                }
+            });
+
+            var slider2 = new GeoExt.LayerOpacitySlider({
+                renderTo: document.body,
+                layer: new OpenLayers.Layer('foo'),
+                aggressive: true
+            });
+            slider2.on({
+                change: function() {
+                    t.ok(true, "change triggered in aggressive mode");
+                }
+            });
+            slider1.setValue(42, undefined, true);
+            slider2.setValue(42, undefined, true);
+
+            slider1.destroy();
+            slider2.destroy();
+        }
+
+        function test_visibility(t) {
+            t.plan(3);
+            
+            var slider, layer;
+
+            layer = new OpenLayers.Layer("a");
+
+            slider = new GeoExt.LayerOpacitySlider({
+                renderTo: document.body,
+                layer: layer,
+                changeVisibility: true,
+                changeVisibilityDelay: 0
+            });
+
+            slider.setValue(slider.minValue);
+            t.eq(layer.getVisibility(), false,
+                 "setting slider value to min value makes the " +
+                 "layer invisible");
+
+            slider.setValue(slider.minValue + 1);
+            t.eq(layer.getVisibility(), true,
+                 "setting slider value to some value different " +
+                 "than min value makes the layer visible again");
+
+            slider.setValue(slider.minValue + 2);
+            t.eq(layer.getVisibility(), true,
+                 "setting slider value to some other value different " +
+                 "than min value does not make the layer invisible");
+
+            slider.destroy();
+        }
+
+        function test_visibility_complementary_layer(t) {
+            t.plan(4);
+
+            var layer1, layer2, slider;
+
+            var layer1 = new OpenLayers.Layer("1");
+            var layer2 = new OpenLayers.Layer("2");
+
+            slider = new GeoExt.LayerOpacitySlider({
+                renderTo: document.body,
+                layer: layer1,
+                complementaryLayer: layer2,
+                changeVisibilityDelay: 0
+            });
+
+            slider.value = 99;
+            slider.setValue(slider.maxValue);
+            t.eq(layer2.getVisibility(), false,
+                 "setting slider value to max value makes " +
+                 "complementary layer invisible");
+
+            slider.setValue(slider.maxValue - 1);
+            t.eq(layer2.getVisibility(), true,
+                 "setting slider value to some value different " +
+                 "than max value makes the complementary layer " +
+                 "visible again");
+
+            slider.setValue(slider.maxValue - 2);
+            t.eq(layer2.getVisibility(), true,
+                 "setting slider value to some other value different " +
+                 "than max value does not make the complementary layer " +
+                 "invisible");
+
+            slider.setValue(slider.minValue);
+            t.eq(layer2.getVisibility(), true,
+                 "setting slider value to min value does not make " +
+                 "the complementary layer invisible");
+
+            slider.destroy();
+        }
+
+        function test_setlayer(t) {
+            t.plan(2);
+            var layer1, layer2, slider;
+            layer1 = new OpenLayers.Layer("1");
+            layer1.setOpacity(0.3);
+            layer2 = new OpenLayers.Layer("2");
+            layer2.setOpacity(0.6);
+            slider = new GeoExt.LayerOpacitySlider({
+                renderTo: document.body,
+                value: 100
+            });
+            slider.setLayer(layer1);
+            t.eq(slider.getValue(), 30, "Opacity of first layer is used");
+            slider.setLayer(layer2);
+            t.eq(slider.getValue(), 60, "Opacity of second layer is used");
+            slider.destroy();
+        }
+
+        function test_changelayerEvent(t) {
+            t.plan(2);
+            var map = new OpenLayers.Map();
+            var layer1 = new OpenLayers.Layer("1");
+            var layer2 = new OpenLayers.Layer("2");
+            
+            map.addLayers([layer1, layer2]);
+            
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer1,
+                renderTo: document.body,
+                value: 100
+            });
+            slider.setLayer(layer1);
+            layer1.setOpacity(0.9);
+            t.eq(slider.getValue(), 90, "value set from changelayer event");
+            layer2.setOpacity(0.1);
+            t.eq(slider.getValue(), 90, "listen to the right layer");
+
+            map.destroy();
+            slider.destroy();
+        }
+
+        function test_inverse(t) {
+            t.plan(2);
+            var map = new OpenLayers.Map();
+            var layer1 = new OpenLayers.Layer("1");
+            var layer2 = new OpenLayers.Layer("2");
+
+            map.addLayers([layer1, layer2]);
+
+            slider = new GeoExt.LayerOpacitySlider({
+                layer: layer1,
+                inverse: true,
+                renderTo: document.body
+            });
+            slider.setLayer(layer1);
+            layer1.setOpacity(0.9);
+            t.eq(slider.getValue(), 10, "value set correctly from changelayer event when inverse is true");
+            slider.setValue(40, undefined, true);
+            t.eq(layer1.opacity, 0.6, "opacity set correctly through slider move when inverse is true");
+
+            map.destroy();
+            slider.destroy();
+        }
+
+        function test_inverse_visibility(t) {
+
+            t.plan(4);
+
+            var layer1, layer2, slider;
+
+            var layer1 = new OpenLayers.Layer("1");
+            var layer2 = new OpenLayers.Layer("2");
+
+            slider = new GeoExt.LayerOpacitySlider({
+                renderTo: document.body,
+                layer: layer1,
+                complementaryLayer: layer2,
+                inverse: true,
+                changeVisibilityDelay: 0
+            });
+
+            slider.value = 99;
+            slider.setValue(slider.minValue);
+            t.eq(layer2.getVisibility(), false,
+                 "setting slider value to min value makes " +
+                 "complementary layer invisible");
+
+            slider.setValue(slider.maxValue - 1);
+            t.eq(layer2.getVisibility(), true,
+                 "setting slider value to some value different " +
+                 "than min value makes the complementary layer " +
+                 "visible again");
+
+            slider.setValue(slider.maxValue - 2);
+            t.eq(layer2.getVisibility(), true,
+                 "setting slider value to some other value different " +
+                 "than min value does not make the complementary layer " +
+                 "invisible");
+
+            slider.setValue(slider.maxValue);
+            t.eq(layer2.getVisibility(), true,
+                 "setting slider value to max value does not make " +
+                 "the complementary layer invisible");
+
+            slider.destroy();
+
+        }
+
+        function test_setValue_called_once(t) {
+
+            t.plan(1);
+
+            var map, layer, slider, log;
+
+            map = new OpenLayers.Map("div");
+
+            layer = new OpenLayers.Layer("");
+            map.addLayer(layer);
+
+            slider = new GeoExt.LayerOpacitySlider({
+                renderTo: document.body,
+                layer: layer,
+                aggressive: true,
+                delay: undefined
+            });
+
+            slider.setValue = function(v) {
+                log.cnt++;
+                log.v = v;
+                GeoExt.LayerOpacitySlider.prototype.setValue.apply(
+                    this, arguments);
+            };
+
+            log = {cnt: 0};
+            slider.setValue(50);
+            t.eq(log.cnt, 1,
+                 "setValue called exactly once");
+
+            slider.destroy();
+            map.destroy();
+        }
+    </script>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

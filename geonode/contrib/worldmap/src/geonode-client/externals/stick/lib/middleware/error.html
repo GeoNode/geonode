@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{ title }}</title>
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        background: #eeeeee;
+    }
+
+    li {
+        margin: 0.8em;
+    }
+
+    #header {
+        background-color: #cccc99;
+    }
+
+    #header h1 {
+        font-weight: normal;
+        font-size: 28px;
+        margin: 0;
+    }
+
+    h3 {
+        font-weight: normal;
+    }
+
+    #body {
+        background-color: #ffffff;
+    }
+
+    #header, #body {
+        padding: 30px;
+        border-bottom: 1px solid #aaaaaa;
+    }
+</style>
+</head>
+<body>
+<div id="header"><h1>{{ title }}</h1></div>
+<div id="body">
+{{ body }}
+</div>
+</body>
+</html>

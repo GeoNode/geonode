@@ -1,0 +1,71 @@
+#!/bin/bash
+# Launches RingoJS
+
+RINGO_HOME=/usr/share/ringojs
+
+if [ -z "$JAVA_HOME" ] ; then
+    java_cmd='java'
+else
+    if [ "$OSTYPE" == 'cygwin' ]; then
+        java_cmd="`cygpath -u "$JAVA_HOME"`/bin/java"
+    else
+        java_cmd="$JAVA_HOME/bin/java"
+    fi
+fi
+
+# prepend RINGO_OPTS to parameters
+set -- $RINGO_OPTS "$@"
+
+declare -a java_args
+declare -a ringo_args
+declare -a app_args
+
+# Split out options for the JVM or Ringo runtime
+while [ $# -gt 0 ]
+do
+    case "$1" in
+    # Options starting with '-J' go to the JVM
+    -J*)
+        java_args=("${java_args[@]}" "${1:2}") ;;
+    # Options starting with '-R' go to Ringo, useful for
+    # symlinked commands below that define their own options
+    -R*)
+        ringo_args=("${ringo_args[@]}" "${1:2}") ;;
+     # Other opts go to Ringo or whatever the command is
+     -*)
+        app_args=("${app_args[@]}" "$1") ;;
+     # Abort processing on first non-opt arg
+     *) break ;;
+    esac
+    shift
+done
+
+# Append the rest of the arguments to app_args
+app_args=("${app_args[@]}" "$@")
+
+# arg0-based toggling of special behaviour
+case "$(basename $0)" in
+    ringo-admin)
+        app_args=("$RINGO_HOME/tools/admin/main.js" "${app_args[@]}") ;;
+    ringo-web)
+        app_args=("ringo/httpserver" "${app_args[@]}") ;;
+    ringo-doc)
+        app_args=("$RINGO_HOME/tools/jsdoc/main.js" "${app_args[@]}") ;;
+    narwhal)
+        app_args=("--legacy-mode" "${app_args[@]}") ;;
+esac
+
+# To put $app_args back into the position arguments $1, $2 etc
+# set -- "${app_args[@]}"
+
+# prepend rhino to bootclasspath to work around openjdk bug
+java_args=("${java_args[@]}" "-Xbootclasspath/p:$RINGO_HOME/lib/js.jar")
+
+# echo "java_args ${java_args[@]}"
+# echo "ringo_args ${ringo_args[@]}"
+# echo "app_args ${app_args[@]}"
+
+exec "$java_cmd" "${java_args[@]}" \
+    -jar "$RINGO_HOME/run.jar" \
+    "${ringo_args[@]}" \
+    "${app_args[@]}"

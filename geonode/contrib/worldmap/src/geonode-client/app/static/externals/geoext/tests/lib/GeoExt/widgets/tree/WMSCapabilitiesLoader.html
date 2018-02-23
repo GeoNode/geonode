@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <script src="../../../../../../openlayers/lib/OpenLayers.js"></script>
+        <script src="../../../../../../ext/adapter/ext/ext-base.js"></script>
+        <script src="../../../../../../ext/ext-all-debug.js"></script>
+        <script src="../../../../../lib/GeoExt.js"></script>
+        <script src="../../data/WMSCapabilitiesReader.js"></script>
+    
+        <script>
+        
+        function test_constructor(t) {
+            
+            t.plan(3);
+            
+            var loader = new GeoExt.tree.WMSCapabilitiesLoader({
+                url: "http://foo/wms?",
+                layerOptions: {singleTile: true},
+                layerParams: {transparent: 'TRUE'}
+            });
+            
+            t.eq(loader.url, "http://foo/wms?", "url set correctly");
+            t.eq(loader.layerOptions.singleTile, true, "layerOptions set correctly");
+            t.eq(loader.layerParams.transparent, 'TRUE', "layerParams set correctly");
+        }
+        
+        function test_load(t) {
+            
+            t.plan(5);
+
+            var loader = new GeoExt.tree.WMSCapabilitiesLoader({
+                layerOptions: {singleTile: true},
+                layerParams: {transparent: 'TRUE'}
+            });
+
+            var root = new Ext.tree.AsyncTreeNode({
+                text: 'GeoServer Demo WMS'
+            });
+
+            loader.processResponse({responseXML: doc}, root, function() {
+                t.eq(root.childNodes[0].text, "GeoServer Web Map Service", "Title of root layer set as text");
+                t.eq(root.childNodes[0].attributes.layer, undefined, "A layer without a <Name> does not get a layer attribute");
+                t.ok(root.childNodes[0].childNodes[0].attributes.layer instanceof OpenLayers.Layer.WMS, "WMS layer created");
+                t.eq(root.childNodes[0].childNodes[0].attributes.layer.options.singleTile, true, "singleTile correctly set");
+                t.eq(root.childNodes[0].childNodes[0].attributes.layer.params.TRANSPARENT, "TRUE", "transparent parameter correctly set");
+            });
+
+        }
+        
+        </script>
+    </head>
+    <body>
+        <div id="tree" style="width: 100px; height: 100px;"></div>
+    </body>
+</html>

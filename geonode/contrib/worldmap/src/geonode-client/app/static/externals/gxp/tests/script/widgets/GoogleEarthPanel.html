@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../externals/openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../externals/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../src/script/loader.js"></script>
+
+    <script type="text/javascript">
+    
+        var mapPanel;
+        var createInstanceCount = 0;
+        var google = {
+            earth: {
+                createInstance: function() {
+                    ++createInstanceCount;
+                }
+            }
+        };
+        var googleEarthPanel;
+        
+        function createGoogleEarthPanel() {
+            mapPanel = new GeoExt.MapPanel();
+            return new gxp.GoogleEarthPanel({mapPanel: mapPanel});
+        }
+        
+        function destroy() {
+            mapPanel.destroy();
+        }
+       
+        function test_GoogleEarthPanel(t) {
+            t.plan(1);
+            
+            var instance = createGoogleEarthPanel();
+            
+            t.ok(instance instanceof gxp.GoogleEarthPanel, "Instance created successfully");
+            
+            instance.destroy();
+            destroy();
+        }
+
+        function test_GoogleEarthPanelCreateInstanceCount(t) {
+
+            t.plan(3);
+
+            createInstanceCount = 0;
+            mapPanel = new GeoExt.MapPanel();
+            googleEarthPanel = new gxp.GoogleEarthPanel({
+                hidden: true,
+                mapPanel: mapPanel,
+                renderTo: document.body
+            });
+            t.ok(createInstanceCount == 0, "google.earth.createInstance not called");
+            googleEarthPanel.show();
+            t.ok(createInstanceCount == 1, "google.earth.createInstance called exactly once");
+            googleEarthPanel.destroy();
+            mapPanel.destroy();
+
+            createInstanceCount = 0;
+            mapPanel = new GeoExt.MapPanel();
+            googleEarthPanel = new gxp.GoogleEarthPanel({
+                hidden: false,
+                mapPanel: mapPanel,
+                renderTo: document.body
+            });
+            t.ok(createInstanceCount == 1, "google.earth.createInstance called exactly once");
+            googleEarthPanel.destroy();
+            mapPanel.destroy();
+
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+        var printCapabilities = {"scales":[{"name":"1:25,000","value":"25000"},{"name":"1:50,000","value":"50000"},{"name":"1:100,000","value":"100000"},{"name":"1:200,000","value":"200000"},{"name":"1:500,000","value":"500000"},{"name":"1:1,000,000","value":"1000000"},{"name":"1:2,000,000","value":"2000000"},{"name":"1:4,000,000","value":"4000000"}],"dpis":[{"name":"75","value":"75"},{"name":"150","value":"150"},{"name":"300","value":"300"}],"layouts":[{"name":"A4 portrait","map":{"width":440,"height":483},"rotation":true},{"name":"Legal","map":{"width":440,"height":483},"rotation":false}],"printURL":"http://demo.opengeo.org/geoserver/pdf/print.pdf","createURL":"http://demo.opengeo.org/geoserver/pdf/create.json"};
+        
+        function test_constructor(t) {
+            t.plan(3);
+            var log = {};
+            
+            var printProvider = new GeoExt.data.PrintProvider({
+                capabilities: printCapabilities
+            });
+            var printPage = new GeoExt.data.PrintPage({
+                printProvider: printProvider,
+                onLayoutChange: function() {log.layoutchange = true;}
+            });
+            
+            t.ok(printPage.feature, "feature initialized properly.");
+            t.eq(printPage.customParams, {}, "customParam initialized properly.");
+            
+            printProvider.setLayout(printProvider.layouts.getAt(1));
+            t.eq(log.layoutchange, true, "onLayoutChange called when printProvider's layout changes.");
+            
+            printPage.destroy();
+        }
+
+        function test_init_setScale(t) {
+
+            // tests to check printPage.scale is set when the printProvider
+            // has received the print capabilities
+            // http://trac.geoext.org/ticket/344
+
+            t.plan(3);
+
+            var printProvider, printPage;
+
+            // test #1
+            printProvider = new GeoExt.data.PrintProvider({
+                capabilities: printCapabilities
+            });
+            printPage = new GeoExt.data.PrintPage({
+                printProvider: printProvider
+            });
+            t.eq(printPage.scale.get("name"), "1:4,000,000", "first scale set in page");
+            printPage.destroy();
+
+            // test #2
+            printProvider = new GeoExt.data.PrintProvider({
+                url: "foo", autoLoad: false
+            });
+            printPage = new GeoExt.data.PrintPage({
+                printProvider: printProvider
+            });
+            t.eq(printPage.scale, null,
+                 "scale is null in page if provider hasn't received the caps");
+            printProvider.capabilities = printCapabilities;
+            printProvider.loadStores();
+            t.eq(printPage.scale.get("name"), "1:4,000,000", "first scale set in page");
+            printPage.destroy();
+        }
+
+        function test_setCenter(t) {
+            t.plan(1);
+            
+            var printPage = new GeoExt.data.PrintPage({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })
+            });
+            
+            var center = new OpenLayers.LonLat(10, 11);
+            printPage.setCenter(center);
+            t.eq(printPage.center.toString(), center.toString(), "center set correctly.");
+            
+            printPage.destroy();
+        }
+        
+        function test_setScale(t) {
+            t.plan(1);
+            
+            var printProvider = new GeoExt.data.PrintProvider({
+                capabilities: printCapabilities
+            });
+            var printPage = new GeoExt.data.PrintPage({
+                printProvider: printProvider
+            });
+            
+            var scale = printProvider.scales.getAt(1);
+            printPage.setScale(scale, "m");
+            t.eq(printPage.scale.get("value"), scale.get("value"), "scale property of the print page set correctly.");
+            
+            printPage.destroy();
+        }
+        
+        function test_setRotation(t) {
+            t.plan(1);
+
+            var printPage = new GeoExt.data.PrintPage({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })
+            });
+            
+            printPage.setRotation(90);
+            t.eq(printPage.rotation, 90, "rotation set correctly.");
+            
+            printPage.destroy();
+        }
+        
+        function test_fit(t) {
+            t.plan(4);
+            
+            var center = new OpenLayers.LonLat(146.56, -41.56);
+            var mapPanel = new GeoExt.MapPanel({
+                renderTo: "map",
+                width: 272,
+                height: 272,
+                layers: [new OpenLayers.Layer("empty", {isBaseLayer: true})],
+                center: center,
+                zoom: 7
+            });
+
+            var printPage = new GeoExt.data.PrintPage({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })
+            });
+
+            printPage.fit(mapPanel, {mode: "printer"});
+            t.eq(printPage.center.toString(), center.toString(), "Print page centered correctly.");
+            t.eq(printPage.scale.get("value"), 4000000, "Print scale set correctly.");
+
+            printPage.fit(mapPanel, {mode: "closest"});
+            t.eq(printPage.scale.get("value"), 2000000, "Print scale for 'closest' mode set correctly.");
+
+            printPage.fit(mapPanel, {mode: "screen"});
+            t.eq(printPage.scale.get("value"), 1000000, "Print scale for 'screen' mode set correctly.");
+            
+            printPage.destroy();
+            mapPanel.destroy();
+        }
+    </script>
+  </head>  
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+ringojs (0.9-1) unstable; urgency=low
+
+  * Bump version to 0.9
+
+ -- Hannes Wallnoefer <hannesw@gmail.com>  Fri, 24 Feb 2012 17:09:52 +0100
+
+ringojs (0.8-1) unstable; urgency=low
+
+  * Bump version to 0.8
+
+ -- Hannes Wallnoefer <hannesw@gmail.com>  Wed, 18 May 2011 12:11:59 +0200
+
+ringojs (0.7-1) unstable; urgency=low
+
+  * Bump version to 0.7
+
+ -- Hannes Wallnoefer <hannes@helma.at>  Thu, 20 Jan 2011 15:25:18 +0100
+
+ringojs (0.6-1) unstable; urgency=low
+
+  * Bump version to 0.6
+
+ -- Hannes Wallnoefer <hannes@helma.at>  Thu, 26 Aug 2010 17:42:38 +0200
+
+ringojs (0.5-1) unstable; urgency=low
+
+  * Update to RingoJS 0.5 release.
+
+ -- Hannes Wallnoefer <hannes@helma.at>  Fri, 14 May 2010 15:49:55 +0200
+
+ringojs (0.4-2) unstable; urgency=low
+
+  * Replace previously uploaded faulty build
+
+ -- Hannes Wallnoefer <hannes@helma.at>  Wed, 10 Mar 2010 10:32:34 +0100
+
+ringojs (0.4-1) unstable; urgency=low
+
+  * Update to RingoJS 0.4 release.
+
+ -- Hannes Wallnoefer <hannes@helma.at>  Tue, 09 Mar 2010 15:25:25 +0100
+
+ringojs (0.3-3) unstable; urgency=low
+
+  * Initial release as RingoJS
+
+ -- Andreas Bolka <a@bolka.at>  Sat, 20 Feb 2010 21:10:04 +0200
+
+helma-ng (0.3-2) unstable; urgency=low
+
+  * Move daemon script into second optional helma-ng-daemon package
+  * Various improvements and fixes in build scripts
+
+ -- Hannes Wallnoefer <hannes@helma.at>  Fri, 23 Oct 2009 12:06:43 +0200
+
+helma-ng (0.3-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Hannes Wallnoefer <hannes@helma.at>  Thu, 18 Jun 2009 15:43:43 +0200
+

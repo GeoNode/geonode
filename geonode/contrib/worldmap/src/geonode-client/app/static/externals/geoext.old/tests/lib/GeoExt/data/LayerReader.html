@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+    function test_constructor(t) {
+        t.plan(4);
+
+        var reader, recordType;
+
+        reader = new GeoExt.data.LayerReader();
+        var record = new reader.recordType();
+        t.ok(record instanceof GeoExt.data.LayerRecord,
+             "ctor creates a LayerRecord type if none is provided");
+
+        recordType = [{name: "extra"}];
+        reader = new GeoExt.data.LayerReader(null, recordType);
+        t.eq(reader.recordType.prototype.fields.items[2].name, "extra",
+             "ctor creates a LayerRecord type with the correct field");
+
+        recordType = GeoExt.data.LayerRecord.create([{name: "extra"}]);
+        reader = new GeoExt.data.LayerReader(null, recordType);
+        t.ok(reader.recordType == recordType,
+             "ctor configures reader with passed LayerRecord type");
+
+        reader = new GeoExt.data.LayerReader({fields: [{name: "extra"}]});
+        t.eq(reader.recordType.prototype.fields.items[2].name, "extra",
+             "ctor creates a LayerRecord type with the correct field");
+    }
+
+    function test_readRecords(t) {
+        t.plan(6);
+
+        var reader, layers, data;
+
+        reader = new GeoExt.data.LayerReader(null, [{name: "extra"}]);
+        layers = [
+            new OpenLayers.Layer("layer1"),
+            new OpenLayers.Layer("layer2")
+        ];
+        layers[0].extra = "layer1extra";
+        layers[1].extra = "layer2extra";
+
+        data = reader.readRecords(layers);
+        t.eq(data.totalRecords, 2,
+             "readRecords returns expected number of records");
+        t.ok(data.records[0] instanceof GeoExt.data.LayerRecord,
+             "readRecords returns records of expected type");
+        t.ok(data.records[0].id == layers[0].id,
+             "readRecords returns records with expected \"id\"");
+        t.ok(data.records[0].getLayer() == layers[0],
+             "readRecords returns records with expected \"layer\" field");
+        t.eq(data.records[0].get("title"), layers[0].name,
+             "readRecords returns records with expected \"title\" field");
+        t.eq(data.records[0].get("extra"), layers[0].extra,
+             "readRecords returns records with expected \"extra\" field");
+    }
+    </script>
+  <body>
+  </body>
+</html>

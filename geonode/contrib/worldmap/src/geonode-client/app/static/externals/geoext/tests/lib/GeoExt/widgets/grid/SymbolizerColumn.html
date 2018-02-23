@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+    
+        function test_renderer(t) {
+            t.plan(3);
+            
+            var meta = {},
+                value = {fillColor: "red", stroke: false},
+                column = new GeoExt.grid.SymbolizerColumn(),
+                markup = column.renderer(value, meta),
+                el = document.createElement("div");
+            document.body.appendChild(el);
+            el.innerHTML = markup;
+            
+            t.eq(meta.css, "gx-grid-symbolizercol", "css class set correctly");
+
+            t.delay_call(1, function() {
+                var renderer = Ext.ComponentMgr.all.get(0);
+                t.ok(renderer instanceof GeoExt.FeatureRenderer, "FeatureRenderer created");
+                t.eq(el.firstChild.firstChild.id, renderer.id, "component added to markup");
+                renderer.destroy();
+                document.body.removeChild(el);
+            });
+        }
+    </script>
+
+  <body>
+  </body>
+</html>

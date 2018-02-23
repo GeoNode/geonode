@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+
+    <script type="text/javascript">
+
+        function setupContext(options) {        
+
+            var map = new OpenLayers.Map({panMethod: null}); // avoid tween panning for tests
+            var layer = new OpenLayers.Layer("test", {isBaseLayer: true});
+            map.addLayer(layer);
+
+            var mapPanel = new GeoExt.MapPanel(Ext.apply({
+                // panel options
+                id: "map-panel",
+                title: "GeoExt MapPanel",
+                renderTo: "mappanel",
+                height: 400,
+                width: 600,
+                // map panel-specific options
+                map: map,
+                center: new OpenLayers.LonLat(5, 45),
+                zoom: 4
+            }, options));
+
+            var feature = new OpenLayers.Feature.Vector(
+                new OpenLayers.Geometry.Point(5,45),
+                {name: "My Feature"}
+            );
+            feature.layer = {
+                map: map,
+                removeFeatures: function() {}
+            };
+
+            return {
+                feature: feature,
+                map: map,
+                mapPanel: mapPanel
+            };      
+        }
+
+        function setupMultiFeatureContext() {
+            var map = new OpenLayers.Map({panMethod: null}); // avoid tween panning for tests
+            var layer = new OpenLayers.Layer("test", {isBaseLayer: true});
+            map.addLayer(layer);
+
+            var features = [
+                new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(-250, 130), {
+                    expectedAutoPosition: "top-left",
+                    map: map,
+                    removeFeatures: function() {}
+                }), new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(+250, 130), {
+                    expectedAutoPosition: "top-right",
+                    map: map,
+                    removeFeatures: function() {}
+                }), new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(+250, -130), {
+                    expectedAutoPosition: "bottom-right",
+                    map: map,
+                    removeFeatures: function() {}
+                }), new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(-250, -130), {
+                    expectedAutoPosition: "bottom-left",
+                    map: map,
+                    removeFeatures: function() {}
+                })
+            ];
+
+            var mapPanel = new GeoExt.MapPanel({
+                // panel options
+                id: "map-panel2",
+                title: "GeoExt MapPanel",
+                renderTo: "mappanel",
+                height: 400,
+                width: 600,
+                // map panel-specific options
+                map: map,
+                center: new OpenLayers.LonLat(5, 45),
+                zoom: 4
+            });
+
+            return {
+                features: features,
+                mapPanel: mapPanel,
+                map: mapPanel.map
+            };
+        }
+
+        function tearDownMultiFeature(context) {
+            Ext.each(context.features, function(feat) {
+                feat.destroy();
+            });
+            context.map.destroy();
+            context.mapPanel.destroy();
+        }
+        
+        function tearDown(context) {
+            context.feature.destroy();
+            context.map.destroy();
+            context.mapPanel.destroy();
+        }
+
+        function popup(feature, map, options) {
+            return new GeoExt.Popup(Ext.apply({
+                title: 'My Popup',
+                location: feature,
+                map: map,
+                width: 200,
+                html: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.",
+                collapsible: true,
+                closeAction: "close"     // Default action is "close"
+            }, options));
+        }
+
+        function test_beforemaprendered(t) {
+            t.plan(1);
+
+            var pop;
+            var context = setupContext({
+                listeners: {
+                    beforerender: function() {
+                        pop = popup(new OpenLayers.LonLat(5, 45), this.map, {
+                            manager: Ext.WindowMgr
+                        });
+                        return true;
+                    }
+                }
+            });
+
+            pop.show();
+
+            t.ok(Ext.getBody().child("div." + pop.popupCls),"viewport contains popup");
+
+            tearDown(context);
+        }
+
+        function test_addtomappanel(t) {
+            t.plan(1);
+
+            var context = setupContext();
+
+            var pop = popup(context.feature);
+
+            pop.show();
+
+            t.ok(Ext.getBody().child("div." + pop.popupCls),"viewport contains popup");
+
+            tearDown(context);
+        }
+
+        function test_anchorPopup(t) {
+            t.plan(5);
+
+            var context = setupContext();
+
+            var pop = popup(context.feature);
+
+            // show the popup and move the map to ensure popup is actually visible
+            pop.show();
+            context.map.setCenter(new OpenLayers.LonLat(5, 45));
+            
+            var moves = 0;
+            pop.on({
+                move: function() {
+                    ++moves;
+                },
+                scope : this
+            });
+
+            t.ok(pop.anc, "Popup has anchor element");
+
+            // move the map and confirm that popup moves
+            context.map.setCenter(new OpenLayers.LonLat(6, 45));
+            t.eq(moves, 1, "anchored popup moves once on map.setCenter");
+            moves = 0;
+
+            // anchored popup needs to reposition on collapse, resize and
+            // expand to keep the anchor point on the feature
+
+            // collapse popup and and confirm that it moves
+            pop.collapse();
+            t.eq(moves, 1, "anchored popup moves once on collapse");
+            moves = 0;
+
+            // expand popup and confirm that it moves
+            pop.expand();
+            t.eq(moves, 1, "anchored popup moves once on expand");
+            moves = 0;
+            
+            // resize popup and confirm that it moves
+            pop.setSize(100, 100);
+            t.eq(moves, 1, "anchored popup moves once on resize");
+            moves = 0;
+
+            tearDown(context);
+        }
+
+        function test_unanchorPopup(t) {
+            t.plan(4);
+
+            var context = setupContext();
+
+            var pop = popup(context.feature, context.mapPanel);
+
+            pop.show();
+
+            pop.collapse();
+
+            var origPos = pop.getPosition();
+
+            pop.unanchorPopup();
+
+            var newPos = pop.getPosition();
+
+            t.ok(!pop.anc,"Anchor element removed");
+            t.ok(!this.collapsed, "Preserved collapsed state");
+            t.eq(origPos[0],newPos[0],"Popup remains in same position (X)");
+            t.eq(origPos[1],newPos[1],"Popup remains in same position (Y)");
+
+            pop.on({
+                'move' : function(c,x,y){
+                    t.ok(false,"Move event fired improperly on " + action); //should happen twice, on call to position()
+                },
+                scope : this
+            });
+
+            var action = "map move";
+            context.map.events.triggerEvent("move");
+
+            action = "popup expand"
+            pop.expand();
+            
+            action = "popup collapse";
+            pop.collapse();
+            
+            tearDown(context);
+
+        }
+
+        function test_maximize(t) {
+            t.plan(2);
+
+            var context = setupContext();
+
+            var pop = popup(context.feature, context.mapPanel);
+
+            pop.show();
+
+            pop.maximize();
+            t.ok(!pop.anc, "Anchor element removed");
+            t.ok(pop.maximized, "Popup is maximized");
+
+            tearDown(context);
+
+        }
+        
+        function test_Popup_position(t) {
+            t.plan(5);
+            
+            var context = setupContext();
+            
+            var pos = context.feature.geometry.getBounds().getCenterLonLat()
+            var pop = popup(pos, context.map);
+            t.eq(pop.location.toString(), pos.toString(), "Popup with LonLat positioned correctly");
+            
+            var px = context.map.getViewPortPxFromLonLat(pos);
+            pop = popup(px, context.map);
+            t.eq(pop.location.toString(), context.map.getLonLatFromViewPortPx(px).toString(), "Popup with Pixel positioned correctly");
+            
+            // mock up a geometry without getCentroid method
+            context.feature.geometry.getCentroid = null;
+            pop = popup(context.feature);
+            t.eq(pop.location.toString(), pos.toString(), "Popup with Feature positioned correctly");
+            
+            var geom = new OpenLayers.Geometry.Point(1, 42);
+            pop = popup(geom, context.map);
+            t.eq(pop.location.toString(), geom.getCentroid().getBounds().getCenterLonLat().toString(), "Popup with Point positioned correctly");
+
+            var geom = OpenLayers.Geometry.fromWKT("POLYGON ((10 10, 10 20, 20 20, 20 15, 10 10))");
+            pop = popup(geom, context.map);
+            t.eq(pop.location.toString(), geom.getCentroid().getBounds().getCenterLonLat().toString(), "Popup with Polygon positioned correctly");
+
+
+            tearDown(context);
+        }
+
+        function test_Popup_noGeometry(t) {
+            t.plan(1);
+            var context = setupContext();
+            context.feature.geometry = null;
+            var pop = popup(context.feature);
+            var log = [];
+            try {
+                pop.show();
+            } catch(e) {
+                log.push(e);
+            }
+            t.eq(log.length, 0, "No errors when showing a popup for a feature with no geometry");
+            pop.destroy();
+            tearDown(context);
+        }
+
+        function test_Popup_destroy(t){
+
+            t.plan(1);
+
+            var context = setupContext();
+            var pop = popup(context.feature);
+            pop.show();
+            
+            var called = false;
+            pop.on({
+                move: function() {
+                    called = true;
+                }
+            });
+            pop.destroy();
+
+            context.map.events.triggerEvent("move");
+            
+            t.ok(!called, "pop is not moved after it is destroyed");
+            
+            tearDown(context);
+        }
+
+        function test_hidePopup(t){
+            t.plan(5);
+
+            var context = setupContext();
+            
+            // Reusable popup (closeAction = hide)
+            var pop = popup(context.feature, null, {
+                closeAction: 'hide'
+            });
+            
+            pop.show();
+
+            // Center map to popup's location
+            context.map.setCenter(new OpenLayers.LonLat(5, 45));           
+            t.ok(pop.insideViewport && !pop.hidden, "Reusable popup is visible when open and inside the viewport");
+
+            // Pan map outside popup's location
+            context.map.panTo(new OpenLayers.LonLat(170, 80));
+            t.ok(!pop.insideViewport && pop.hidden, "Reusable popup is hidden when open and outside the viewport");
+
+            // Recenter map to popup's location, hide popup and pan map
+            context.map.panTo(new OpenLayers.LonLat(5, 45));
+            pop.hide();
+            context.map.panTo(new OpenLayers.LonLat(6, 45));
+            t.ok(pop.insideViewport && pop.hidden, "Reusable popup is hidden when closed and inside the viewport");          
+
+
+            // Regular popup (destroyed when closed)
+            var pop2 = popup(context.feature);
+            pop2.show();
+
+            // Center map to popup's location
+            context.map.setCenter(new OpenLayers.LonLat(5, 45));           
+            t.ok(pop2.insideViewport && !pop2.hidden, "Regular popup is visible when open and inside the viewport");
+
+            // Pan map outside popup's location
+            context.map.panTo(new OpenLayers.LonLat(170, 80));
+            t.ok(!pop2.insideViewport && pop2.hidden, "Regular popup is hidden when open and outside the viewport");
+
+            tearDown(context);
+        }
+
+        function test_Popup_autoPosition(t) {
+            t.plan(8);
+
+            var context = setupMultiFeatureContext();
+            var pop;
+
+            Ext.each(context.features, function(feat) {
+                pop = popup(feat, context.mapPanel, {anchorPosition: "auto"});
+                pop.show();
+                
+                var ancPos = feat.attributes.expectedAutoPosition.split("-");
+                
+                // the following 4 assertions are called twice each
+                if (ancPos[0] === "top") {
+                    t.ok(pop.el.child("div.top"), "popups with anchor at the top have the corresponding CSS class");
+                } else {
+                    t.ok(!pop.el.child("div.top"), "popups with anchor at the bottom do not have an extra CSS class");
+                }
+                if (ancPos[1] == "right") {
+                    t.ok(pop.el.child("div.right"), "popups with anchor on the right have the corresponding CSS class");
+                } else {
+                    t.ok(!pop.el.child("div.right"), "popups with anchor on the left do not have an extra CSS class");
+                }
+                
+                pop.destroy();
+            });
+            tearDownMultiFeature(context);
+        }
+
+        function test_Popup_fixedPosition(t) {
+	    t.plan(8);
+	    var context = setupMultiFeatureContext();
+
+	    Ext.each(context.features, function(feat) {
+    		var pop = popup(feat, context.mapPanel, {anchorPosition: "bottom-left"});
+    		pop.show();
+    		t.eq(pop.anchorPosition, "bottom-left", "fixed position set correctly");
+    		t.ok(!pop.el.child("div.top"), "popups with fixed position 'bottom-left' do not have an extra CSS class");
+    		pop.destroy();
+	    });
+	    tearDownMultiFeature(context);
+	}
+
+    </script>
+  <body>
+    <div id="mappanel"></div>
+  </body>
+</html>

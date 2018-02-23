@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+        function test_constructor(t) {
+            t.plan(3);
+            var reader = new GeoExt.data.FeatureReader({}, [
+                {'name': 'foo'},
+                {'name': 'bar', 'mapping': 'bar_mapped'}
+            ]);
+            var fields = reader.recordType.prototype.fields;
+            // 3 tests
+            t.eq(fields.items.length, 5, 'number of items is correct');
+            t.ok(fields.items[3].name == 'foo' &&
+                 fields.items[4].name == 'bar',
+                 'field names are correct');
+            t.ok(fields.items[3].mapping === null &&
+                 fields.items[4].mapping == 'bar_mapped',
+                 'field mappings are correct');
+        }
+        function test_readRecords(t) {
+            t.plan(11);
+            // setup
+            var reader, features, info, records;
+            reader = new GeoExt.data.FeatureReader({}, [
+                {'name': 'a'},
+                {'name': 'b', 'mapping': 'b_mapped'},
+                {'name': 'c', 'mapping': 'c_mapped.obj'}
+            ]);
+            features = [
+                new OpenLayers.Feature.Vector(null, {
+                    'a': 'a_value',
+                    'b_mapped': 'b_value',
+                    'c_mapped': {'obj': 'c_value'}
+                }),
+                new OpenLayers.Feature.Vector()
+            ];
+            features[0].fid = 1;
+            features[0].state = OpenLayers.State.INSERT;
+            features[1].fid = 2;
+            features[1].state = OpenLayers.State.DELETE;
+            // 10 tests
+            info = reader.readRecords(features);
+            records = info.records;
+            t.eq(info.totalRecords, 2, 'readRecords returns correct number of records');
+            t.eq(records[0].get('a'), 'a_value', 'readRecords correctly set feature properties in record');
+            t.eq(records[0].get('b'), 'b_value', 'readRecords correctly set mapped feature properties in record');
+            t.eq(records[0].get('c'), 'c_value', 'readRecords correctly set complex mapped feature properties in record');
+            t.eq(records[0].get('fid'), 1, 'readRecords correctly set feature fid in record');
+            t.eq(records[0].get('state'), OpenLayers.State.INSERT, 'readRecords correctly set feature state in record');
+            t.ok(records[0].getFeature() == features[0], 'readRecords correctly set feature in record');
+            t.eq(records[1].get('fid'), 2, 'readRecords correctly set feature fid in record (no properties case)');
+            t.eq(records[1].get('state'), OpenLayers.State.DELETE, 'readRecords correctly set feature state in record (no properties case)');
+            t.ok(records[1].getFeature() == features[1], 'readRecords correctly set feature in record (no properties case)');
+            // 1 test
+            reader.totalRecords = 20;
+            info = reader.readRecords(features);
+            t.eq(info.totalRecords, 20,
+                 "readRecords returns correct number of records");
+        }
+    </script>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

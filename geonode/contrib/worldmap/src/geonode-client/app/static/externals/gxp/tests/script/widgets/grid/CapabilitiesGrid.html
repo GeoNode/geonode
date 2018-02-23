@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../externals/openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../externals/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../../src/script/loader.js"></script>
+
+    <script type="text/javascript">
+       
+        var store, metaStore;
+        
+        function createCapabilitiesGrid() {
+            store = new GeoExt.data.WMSCapabilitiesStore();
+            metaStore = new Ext.data.Store({
+                reader: new Ext.data.JsonReader({
+                    fields: ['store', 'name', 'identifier', 'url']
+                })
+            });
+            metaStore.add(new metaStore.recordType({
+                'store': store,
+                'name': "foo",
+                'identifier': "foo",
+                'url': "http://foo"
+            }));
+            return new gxp.grid.CapabilitiesGrid({
+                store: store,
+                metaStore: metaStore
+            });
+        }
+        
+        function destroy() {
+            metaStore.destroy();
+        }
+        
+        function test_CapabilitiesGrid(t) {
+            t.plan(1);
+            
+            var instance = createCapabilitiesGrid();
+            
+            t.ok(instance instanceof gxp.grid.CapabilitiesGrid, "Instance created successfully");
+            
+            instance.destroy();
+            destroy();
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

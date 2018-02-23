@@ -1,0 +1,30 @@
+# Run Ringo as this user ID. Not setting this or leaving it blank will use the
+# default of ringo.
+#RINGO_USER=ringojs
+
+# Set the main script to execute. This should implement functions called
+# init(), start(), stop(), and destroy() to support the daemon life cycle.
+#RINGO_APPLICATION=modules/ringo/httpserver.js
+
+# Arguments to pass to the application script.
+#APPLICATION_OPTS="-p 8080 /usr/share/ringojs/tools/admin/skeletons/app/"
+
+# Set the module path environment variable. This is a list of directories
+# where RingoJS will look for modules.
+#RINGO_MODULE_PATH=
+
+# The home directory of the Java development kit (JDK). You need at least
+# JDK version 1.5. If JAVA_HOME is not set, some common directories for
+# OpenJDK, the Sun JDK, and various J2SE 1.5 versions are tried.
+#JAVA_HOME=/usr/lib/jvm/java-6-openjdk
+
+# Working directory, usually containing the per-instance application and
+# configuration files.
+#RINGO_BASE=/usr/share/ringojs
+
+# Arguments to pass to the Java virtual machine (JVM).
+#JAVA_OPTS="-Djava.awt.headless=true -Xmx128M"
+
+# Arguments to pass to RingoJS runtime
+#RINGO_OPTS=""
+

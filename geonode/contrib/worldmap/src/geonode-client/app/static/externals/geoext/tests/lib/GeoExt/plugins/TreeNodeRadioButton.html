@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <script src="../../../../../openlayers/lib/OpenLayers.js"></script>
+        <script src="../../../../../ext/adapter/ext/ext-base.js"></script>
+        <script src="../../../../../ext/ext-all-debug.js"></script>
+        <script src="../../../../lib/GeoExt.js"></script>
+    
+        <script>
+       
+        function test_render(t) {
+            
+            t.plan(2);
+            
+            var layer = new OpenLayers.Layer("foo");
+            
+            var mapPanel = new GeoExt.MapPanel({
+                layers: [layer],
+                allOverlays: true
+            });
+
+            var ui = Ext.extend(
+                GeoExt.tree.LayerNodeUI,
+                new GeoExt.tree.TreeNodeUIEventMixin()
+            );
+            
+            var node = new GeoExt.tree.LayerNode({
+                layer: "foo",
+                radioGroup: "group",
+                uiProvider: ui
+            });
+            
+            var panel = new Ext.tree.TreePanel({
+                renderTo: "tree",
+                root: node,
+                plugins: new GeoExt.plugins.TreeNodeRadioButton({
+                    listeners: {
+                        "radiochange": function() {
+                            t.ok(arguments[0] === node, "radiochange event triggered with the selected node as first argument");
+                        }
+                    }
+                })
+            });
+            
+            mapPanel.on("render", function() {
+                t.ok(Ext.fly(node.ui.getEl()).child(".gx-tree-radio"), "node has a radio button");
+                // simulate a click event for testing the radiochange event
+                node.ui.onClick({getTarget: function() {return true}});
+            });
+
+            mapPanel.render("map");
+            
+            mapPanel.destroy();
+        }
+        </script>
+    </head>
+    <body>
+        <div id="map" style="width: 100px; height: 100px;"></div>
+        <div id="tree" style="width: 100px; height: 100px;"></div>
+    </body>
+</html>

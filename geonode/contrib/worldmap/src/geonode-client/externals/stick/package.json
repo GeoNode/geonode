@@ -1,0 +1,33 @@
+{
+    "name": "stick",
+    "version": "0.1.0",
+    "description": "A modular JSGI middleware composition toolkit",
+    "homepage": "http://hns.github.com/stick/",
+    "keywords": [
+        "commonjs",
+        "jsgi"
+    ],
+    "author": "Hannes Wallnöfer <hannesw@gmail.com>",
+    "contributors": [
+        "Andreas Bolka",
+        "James Cook",
+        "Philipp Naderer",
+        "Robert Gaggl",
+        "Robert Thurnher",
+        "Richard R. McKinley",
+        "Simon Oberhammer"
+    ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "git://github.com/hns/stick.git"
+        }
+    ],
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/hns/stick/blob/master/LICENSE"
+        }
+    ],
+    "main": "lib/stick.js"
+}

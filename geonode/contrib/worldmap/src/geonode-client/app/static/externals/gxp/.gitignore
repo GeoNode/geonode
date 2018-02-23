@@ -1,0 +1,7 @@
+src/doc/_build
+src/doc/lib/data
+src/doc/lib/menu
+src/doc/lib/plugins
+src/doc/lib/widgets
+src/doc/lib/util.rst
+build/

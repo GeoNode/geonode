@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <title>GeoExt PrintPage Example</title>
+
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/ext-all.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/examples/shared/examples.css" />
+        <script src="http://www.openlayers.org/api/2.11/OpenLayers.js"></script>
+        <script type="text/javascript" src="../lib/GeoExt.js"></script>
+
+        <script type="text/javascript" src="print-page.js"></script>
+        
+        <!-- The script below will load the capabilities of the print service
+             and save them into the global printCapabilities variable. Instead
+             of this, the PrintProvider can be configured with a url and take
+             care of fetching the capabilities. -->
+        <script type="text/javascript" src="http://demo.opengeo.org/geoserver/pdf/info.json?var=printCapabilities"></script>
+
+    </head>
+    <body>
+        <h1>Printing Contents from a MapPanel</h1>
+        <p>This example shows the how to create a printable PDF with
+        GeoExt.data.PrintProvider and GeoExt.data.PrintPage, using the
+        <a href="http://trac.mapfish.org/trac/mapfish/wiki/PrintModuleInstallation">MapFish</a>
+        or <a href="http://docs.geoserver.org/stable/en/user/community/printing/">GeoServer</a>
+        print module.</p>
+        <p>The js is not minified so it is readable. See <a href="print-page.js">print-page.js</a>.</p>
+        <div id="content"></div>
+    </body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../externals/openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../externals/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../src/script/loader.js"></script>
+
+    <script type="text/javascript">
+    
+        var mapPanel, feature, attributeStore;
+        
+        function createFeatureEditPopup(config) {
+            mapPanel = new GeoExt.MapPanel({
+                renderTo: document.body,
+                width: 300,
+                height: 200,
+                layers: [new OpenLayers.Layer.Vector()]
+            });
+            feature = new OpenLayers.Feature.Vector(
+                new OpenLayers.Geometry.Point(5,6), {a1: "1", a2: "2", a3: "3"}
+            );
+            attributeStore = new GeoExt.data.AttributeStore({
+                data: [{name: "a1", type: "xsd:int"}, {name: "a2", type: "xsd:int"}, {name: "a3", type: "xsd:int"}]
+            });
+            mapPanel.layers.getAt(0).getLayer().addFeatures([feature]);
+            return new gxp.FeatureEditPopup(Ext.apply({
+                feature: feature,
+                schema: attributeStore,
+                width: 200,
+                height: 200
+            }, config));
+        }
+        
+        function destroy() {
+            attributeStore.destroy();
+            feature.destroy();
+            mapPanel.destroy();
+        }
+       
+        function test_FeatureEditPopup(t) {
+            t.plan(6);
+            
+            var instance = createFeatureEditPopup({fields: ["a3", "a1"], propertyNames: {"a3": "Third field"}});
+            instance.show();
+            
+            t.ok(instance instanceof gxp.FeatureEditPopup, "Instance created successfully");
+            var plugin = instance.plugins[0];
+            t.ok(plugin instanceof gxp.plugins.FeatureEditorGrid, "Correct plugin type created");
+            t.eq(plugin.store.getAt(0).get("name"), "a3", "field order respected");
+            t.eq(plugin.propertyNames["a3"], "Third field", "propertyNames propagated to the property grid");
+            t.eq(plugin.excludeFields[0], "a2", "2nd field excluded");
+            t.eq(Ext.query(".x-hide-nosize", instance.plugins[0].body.dom).length, 1, "1 row excluded");
+            
+            instance.destroy();
+            destroy();
+        }
+
+        function test_FeatureEditPopupForm(t) {
+            t.plan(4);
+            
+            var instance = createFeatureEditPopup({editorPluginConfig: {ptype: "gxp_editorform"}, fields: ["a3", "a1"], propertyNames: {"a3": "Third field"}});
+            instance.show();
+            var plugin = instance.plugins[0];
+            t.ok(plugin instanceof gxp.plugins.FeatureEditorForm, "Correct plugin type created");
+            t.eq(plugin.getForm().items.get(0).name, "a3", "field order respected");
+            t.eq(plugin.getForm().items.get(0).fieldLabel, "Third field", "propertyName used for a3 field");
+            t.eq(plugin.excludeFields[0], "a2", "2nd field excluded");
+            
+            instance.destroy();
+            destroy();
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

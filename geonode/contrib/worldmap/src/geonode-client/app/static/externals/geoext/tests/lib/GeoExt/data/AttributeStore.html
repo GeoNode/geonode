@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+    <script type="text/javascript" src="AttributeReader.js"></script>
+
+    <script type="text/javascript">
+
+    function test_ctor(t) {
+        t.plan(4);
+
+        var store = new GeoExt.data.AttributeStore();
+        t.ok(store instanceof GeoExt.data.AttributeStore,
+             "ctor creates a GeoExt.data.AttributeStore");
+        t.ok(store instanceof Ext.data.Store,
+             "ctor creates an Ext.data.Store");
+        t.ok(store.reader instanceof GeoExt.data.AttributeReader,
+             "ctor sets an GeoExt.data.AttributeReader in the store");
+        t.ok(store.proxy instanceof Ext.data.HttpProxy,
+             "ctor sets an Ext.data.HttpProxy in the store");
+    }
+
+    function test_grouping(t) {
+        t.plan(2);
+
+        var AttributeGroupingStore = Ext.extend(
+            Ext.data.GroupingStore,
+            GeoExt.data.AttributeStoreMixin()
+        );
+        var store = new AttributeGroupingStore();
+        t.ok(store instanceof AttributeGroupingStore,
+             "ctor creates an AttributeGroupingStore");
+        t.ok(store instanceof Ext.data.GroupingStore,
+             "ctor creates an Ext.data.GroupingStore");
+    }
+
+    function test_feature(t) {
+        t.plan(35);
+
+        // set up
+
+        var layer, feature, data, store, record
+        var onLoadLog, onAddLog;
+        var onBeforefeaturemodifiedLog, onFeaturemodifiedLog;
+
+        layer = new OpenLayers.Layer.Vector("vector", {
+            eventListeners: {
+                "beforefeaturemodified": function(e) {
+                    onBeforefeaturemodifiedLog.push({feature: e.feature});
+                },
+                "featuremodified": function(e) {
+                    onFeaturemodifiedLog.push({feature: e.feature});
+                }
+            }
+        });
+
+        feature = new OpenLayers.Feature.Vector(null, {
+            "foo0": "bar0",
+            "foo1": "bar1",
+            "foo2": "bar2",
+            "foo3": "bar3",
+            "foo4": null,
+            "foo5": undefined
+        });
+        layer.addFeatures(feature);
+
+        data = [{
+            "name": "foo0"
+        }, {
+            "name": "foo1"
+        }];
+
+        store = new GeoExt.data.AttributeStore({
+            feature: feature,
+            onLoad: function(store, records, index) {
+                onLoadLog.push({records: records});
+                GeoExt.data.AttributeStore.prototype.onLoad.apply(this, arguments);
+            },
+            onAdd: function(store, records, index) {
+                onAddLog.push({records: records});
+                GeoExt.data.AttributeStore.prototype.onAdd.apply(this, arguments);
+            }
+        });
+
+        // test
+
+        t.ok(store.feature === feature,
+             "feature is set in the store");
+        t.ok(store.reader.meta.feature === feature,
+             "feature is set in the reader's meta property");
+
+        onLoadLog = [], onBeforefeaturemodifiedLog = [], onFeaturemodifiedLog = [];
+        store.loadData(data);
+        record = store.getAt(0);
+        t.eq(onLoadLog.length, 1,
+             "onLoad called once on loadData");
+        t.eq(onLoadLog[0].records.length, 2,
+             "onLoad receiced expected number of records");
+        t.eq(onBeforefeaturemodifiedLog.length, 0,
+             "beforefeaturemodified not triggered");
+        t.eq(onFeaturemodifiedLog.length, 0,
+             "featuremodified not triggered");
+        t.eq(record.get("name"), "foo0",
+             "[0] record name is correct");
+        t.eq(record.get("value"), "bar0",
+             "[0] record value is correct");
+        record = store.getAt(1);
+        t.eq(record.get("name"), "foo1",
+             "[1] record name is correct");
+        t.eq(record.get("value"), "bar1",
+             "[1] record value is correct");
+
+        onBeforefeaturemodifiedLog = [], onFeaturemodifiedLog = [];
+        record = store.getAt(0);
+        record.set("value", "bar00");
+        t.eq(onBeforefeaturemodifiedLog.length, 1,
+             "beforefeaturemodified triggered once");
+        t.eq(onFeaturemodifiedLog.length, 1,
+             "featuremodified triggered once");
+        t.eq(feature.attributes.foo0, "bar00",
+             "feature attribute foo0 updated");
+        t.eq(feature.attributes.foo1, "bar1",
+             "feature attribute foo1 not updated");
+
+        onAddLog = [];
+        store.loadData([{"name": "foo2"}], true);
+        t.eq(onAddLog.length, 1,
+             "onAdd called once on loadData");
+        t.eq(onAddLog[0].records.length, 1,
+             "onAdd received expected number of records");
+        record = store.getAt(2);
+        t.eq(record.get("name"), "foo2",
+             "[2] record name is correct");
+        t.eq(record.get("value"), "bar2",
+             "[2] record value is correct");
+
+        // attribute with value in feature (should be kept)
+        onBeforefeaturemodifiedLog = [], onFeaturemodifiedLog = [];
+        store.loadData([{"name": "foo3", "value": "bar30"}], true);
+        t.eq(onBeforefeaturemodifiedLog.length, 0,
+             "beforefeaturemodified not triggered");
+        t.eq(onFeaturemodifiedLog.length, 0,
+             "featuremodified not triggered");
+        record = store.getAt(3);
+        t.eq(record.get("value"), "bar3",
+             "record value is correct, read from feature");
+        t.eq(feature.attributes.foo3, "bar3",
+             "feature attribute foo3 not updated, initial value kept");
+
+        // attribute with null value in feature (should be kept)
+        store.loadData([{"name": "foo4", "value": "bar4"}], true);
+        t.eq(onBeforefeaturemodifiedLog.length, 0,
+             "beforefeaturemodified not triggered");
+        t.eq(onFeaturemodifiedLog.length, 0,
+             "featuremodified not triggered");
+        record = store.getAt(4);
+        t.ok(record.get("value") === null,
+             "record value is correct, read from feature");
+        t.ok(feature.attributes.foo4 === null,
+             "feature attribute foo4 not updated, initial value kept");
+
+        // attribute with undefined value in feature (should be overridden)
+        store.loadData([{"name": "foo5", "value": "bar5"}], true);
+        t.eq(onBeforefeaturemodifiedLog.length, 1,
+             "beforefeaturemodified triggered");
+        t.eq(onFeaturemodifiedLog.length, 1,
+             "featuremodified triggered");
+        record = store.getAt(5);
+        t.eq(record.get("value"), "bar5",
+             "record value is correct, read from data");
+        t.eq(feature.attributes.foo5, "bar5",
+             "feature attribute foo5 updated");
+
+        // attribute missing in feature
+        onBeforefeaturemodifiedLog = [], onFeaturemodifiedLog = [];
+        store.loadData([{"name": "foo6", "value": "bar6"}], true);
+        t.eq(onBeforefeaturemodifiedLog.length, 1,
+             "beforefeaturemodified triggered");
+        t.eq(onFeaturemodifiedLog.length, 1,
+             "featuremodified triggered");
+        record = store.getAt(6);
+        t.eq(record.get("value"), "bar6",
+             "record value is correct, read from data");
+        t.eq(feature.attributes.foo6, "bar6",
+             "feature attribute foo6 added, with correct value");
+
+        // create an AttributeStore with data and a feature
+        store = new GeoExt.data.AttributeStore({
+            feature: feature,
+            data: data
+        });
+
+        t.eq(feature.attributes.foo1, "bar1",
+             "feature attribute foo1 added, with correct value");
+
+        // tear down
+    }
+
+    </script>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+{
+    "name": "buildkit",
+    "author": "Tim Schaub",
+    "main": "./lib/buildkit.js"
+}

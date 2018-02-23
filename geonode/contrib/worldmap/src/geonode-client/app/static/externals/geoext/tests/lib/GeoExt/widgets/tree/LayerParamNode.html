@@ -1,0 +1,385 @@
+<html>
+    <head>
+        <script src="../../../../../../openlayers/lib/OpenLayers.js"></script>
+        <script src="../../../../../../ext/adapter/ext/ext-base.js"></script>
+        <script src="../../../../../../ext/ext-all-debug.js"></script>
+        <script src="../../../../../lib/GeoExt.js"></script>
+    
+        <script>
+
+        var layer, store, panel, nodes;
+            
+        function setup(layerParams, layerOptions, treeNodes, baseAttrs) {
+            layer = new OpenLayers.Layer.WMS(
+                "Group", "http://localhost/wms",
+                layerParams, layerOptions
+            );
+           
+            store = new GeoExt.data.LayerStore({
+                layers: [layer]
+            });
+
+            Ext.each(treeNodes, function(n) { n.layer = layer; });
+
+            baseAttrs = Ext.applyIf({
+                layerStore: store
+            }, baseAttrs);
+
+            panel = new Ext.tree.TreePanel({
+                renderTo: "tree",
+                loader: new Ext.tree.TreeLoader({
+                    baseAttrs: baseAttrs
+                }),
+                root: {
+                    text: "Layers",
+                    expanded: true,
+                    children: treeNodes
+                }
+            });
+
+            nodes = panel.getRootNode().childNodes;
+        }
+
+        function teardown() {
+            panel.destroy();
+            layer.destroy();
+            store.destroy();
+        }
+        
+        function test_constructor(t) {
+            t.plan(5);
+
+            var node;
+
+            var layer = {
+                params: {bar: ["before", "foobar", "after"]},
+                getVisibility: function() { return true; },
+                events: {on: function() {}}
+            };
+
+            // test that "param" and "item" are correctly set
+            // in the node
+            node = new GeoExt.tree.LayerParamNode({
+                layer: layer,
+                param: "bar",
+                item: "foobar"
+            });
+            t.eq(node.param, "bar", "param set.");
+            t.eq(node.item, "foobar", "item set.");
+            t.eq(node.delimiter, ",", "default delimiter set.");
+            node.destroy();
+
+            // test that a custom delimiter can be passed
+            // to the node
+            node = new GeoExt.tree.LayerParamNode({
+                layer: layer,
+                param: "bar",
+                item: "foobar",
+                delimiter: ";"
+            });
+            t.eq(node.delimiter, ";", "custom delimiter set.");
+            node.destroy();
+
+            // test that allItems isn't read from the layer
+            // if it's provided in the node attributes
+            node = new GeoExt.tree.LayerParamNode({
+                layer: layer,
+                param: "bar",
+                item: "_foobar",
+                allItems: ["_before", "_foobar", "_after"]
+            });
+            t.eq(node.allItems, ["_before", "_foobar", "_after"],
+                 "allItems isn't read from the layer if provided");
+        }
+
+        function test_initialstate(t) {
+            t.plan(30);
+
+            function _test(id, paramName, paramValue, stateNode0, stateNode1) {
+                t.eq(layer.params[paramName], paramValue,
+                     "[" + id + "] layer params ok");
+                t.eq(nodes[0].attributes.checked, stateNode0,
+                     "[" + id + "] node 0 state ok");
+                t.eq(nodes[1].attributes.checked, stateNode1,
+                     "[" + id + "] node 1 state ok");
+            }
+
+            setup(
+                {"LAYERS": ["layer1", "layer2"]},
+                {visibility: true},
+                [{
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer1"
+                }, {
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer2"
+                }]
+            );
+            _test("0", "LAYERS", ["layer1", "layer2"], true, true);
+            teardown();
+
+            setup(
+                {"LAYERS": ["layer1", "layer2"]},
+                {visibility: false},
+                [{
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer1"
+                }, {
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer2"
+                }]
+            );
+            _test("1", "LAYERS", ["layer1", "layer2"], false, false);
+            teardown();
+
+            setup(
+                {"LAYERS": ["layer1", "layer2"]},
+                {visibility: false},
+                [{
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer1",
+                    checked: false
+                }, {
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer2",
+                    checked: true
+                }]
+            );
+            _test("2", "LAYERS", ["layer2"], false, true);
+            teardown();
+
+            setup(
+                {"LAYERS": []},
+                {visibility: false},
+                [{
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer1",
+                    checked: true
+                }, {
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer2",
+                    checked: false
+                }],
+                {allItems: ["layer1", "layer2"]}
+            );
+            _test("3", "LAYERS", ["layer1"], true, false);
+            teardown();
+
+            setup(
+                {"LAYERS": ""},
+                {visibility: false},
+                [{
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer1",
+                    checked: true
+                }, {
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer2",
+                    checked: false
+                }],
+                {allItems: ["layer1", "layer2"]}
+            );
+            _test("4", "LAYERS", "layer1", true, false);
+            teardown();
+
+            setup(
+                {"LAYERS": ["layer1"]},
+                {visibility: true},
+                [{
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer1"
+                }, {
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer2"
+                }],
+                {allItems: ["layer1", "layer2"]}
+            );
+            _test("5", "LAYERS", ["layer1"], true, false);
+            teardown();
+
+            setup(
+                {"LAYERS": ["layer1"]},
+                {visibility: false},
+                [{
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer1"
+                }, {
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer2"
+                }],
+                {allItems: ["layer1", "layer2"]}
+            );
+            _test("6", "LAYERS", ["layer1"], false, false);
+            teardown();
+
+            setup(
+                {"LAYERS": ["layer2"]},
+                {visibility: true},
+                [{
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer1",
+                    checked: true
+                }, {
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer2"
+                }],
+                {allItems: ["layer1", "layer2"]}
+            );
+            _test("7", "LAYERS", ["layer1", "layer2"], true, true);
+            teardown();
+
+            setup(
+                {"CQL_FILTER": "city='Graz'", LAYERS: ["layer2"]},
+                {visibility: true},
+                [{
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer1",
+                    allItems: ["layer1", "layer2"],
+                    checked: true
+                }, {
+                    nodeType: "gx_layerparam",
+                    param: "CQL_FILTER",
+                    item: "city='Vienna'",
+                    delimiter: " OR ",
+                    allItems: ["city='Vienna'", "city='Graz'"],
+                    checked: true
+                }]
+            );
+            _test("8.0", "LAYERS", ["layer1", "layer2"], true, true);
+            _test("8.1", "CQL_FILTER", "city='Vienna' OR city='Graz'", true, true);
+            teardown();
+        }
+
+        function test_onLayerVisibilityChanged(t) {
+            t.plan(6);
+
+            setup(
+                {"LAYERS": []},
+                {visibility: false},
+                [{
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer1",
+                    allItems: ["layer1", "layer2"]
+                }, {
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer2",
+                    allItems: ["layer1", "layer2"]
+                }]
+            );
+
+            t.eq(nodes[0].attributes.checked, false,
+                 "node for layer1 is unchecked");
+            t.eq(nodes[1].attributes.checked, false,
+                 "node for layer2 is unchecked");
+            
+            layer.setVisibility(true);
+            t.eq(nodes[0].attributes.checked, true,
+                 "node for layer1 is checked");
+            t.eq(nodes[1].attributes.checked, true,
+                 "node for layer2 is checked");
+            
+            layer.setVisibility(false);
+            t.eq(nodes[0].attributes.checked, false,
+                 "node for layer1 is unchecked again");
+            t.eq(nodes[1].attributes.checked, false,
+                 "node for layer2 is unchecked again");
+            
+            teardown();
+        }
+        
+        function test_onCheckChange(t) {
+            t.plan(10);
+
+            setup(
+                {"LAYERS": [], "CQL_FILTER": "city='Vienna' OR city='Graz'"},
+                {visibility: true},
+                [{
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer1",
+                    checked: true,
+                    allItems: ["layer1", "layer2"]
+                }, {
+                    nodeType: "gx_layerparam",
+                    param: "LAYERS",
+                    item: "layer2",
+                    checked: false,
+                    allItems: ["layer1", "layer2"]
+                }, {
+                    nodeType: "gx_layerparam",
+                    param: "CQL_FILTER",
+                    item: "city='Vienna'",
+                    delimiter: " OR "
+                }]
+            );
+
+            // make the layer invisible first
+            layer.setVisibility(false);
+
+            // test that all the nodes are unchecked
+            t.eq(nodes[0].attributes.checked, false,
+                 "node 0 unchecked");
+            t.eq(nodes[1].attributes.checked, false,
+                 "node 1 unchecked");
+
+            // now do the actual tests
+            
+            // check node 1
+            nodes[1].getUI().toggleCheck(true);
+            
+            // now the layer has just the param item of nodes[0] set, and is visible
+            t.eq(layer.getVisibility(), true,
+                 "layer is visible after checking a subnode");
+            t.eq(layer.params.LAYERS, ["layer2"],
+                 "correct sublayer is set after checking it");
+
+            // uncheck node 1
+            nodes[1].getUI().toggleCheck(false);
+            t.eq(layer.params.LAYERS, [],
+                 "layer2 invisible again after unchecking");
+            t.eq(layer.getVisibility(), false,
+                 "layer hidden if no sublayers are visible");
+
+            // check node 0
+            nodes[0].getUI().toggleCheck(true);
+            t.eq(layer.params.LAYERS, ["layer1"],
+                 "only checked sublayer is visible");
+            t.eq(layer.getVisibility(), true,
+                 "layer set to visible with checked sublayer");
+
+            // now check if split and join with custom delimiter works
+            nodes[2].getUI().toggleCheck(false);
+            t.eq(layer.params.CQL_FILTER, "city='Graz'",
+                 "param with custom delimiter removed");
+            nodes[2].getUI().toggleCheck(true);
+            t.eq(layer.params.CQL_FILTER, "city='Vienna' OR city='Graz'",
+                 "param with custom delimiter re-added.");
+
+            teardown();
+        }
+                
+        </script>
+    </head>
+    <body>
+        <div id="tree" style="width: 100px; height: 100px;"></div>
+    </body>
+</html>

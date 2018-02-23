@@ -1,0 +1,8 @@
+{
+    "name": "skeleton",
+    "version": "0.0.0",
+    "description": "Change me.",
+    "keywords": ["change", "me"],
+    "author": "John Doe (http://example.com/) <john.doe@example.com>",
+    "main": "./lib/skeleton.js"
+}

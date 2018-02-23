@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+    <script type="text/javascript" src="form.js"></script>
+
+    <script type="text/javascript">
+
+    function test_toFilter(t) {
+        t.plan(27);
+
+        /*
+         * Set up
+         */
+
+        var form, filter, fields = [];
+
+        fields.push(new Ext.form.TextField({
+            name: "foo0",
+            value: "bar0"
+        }));
+
+        fields.push(new Ext.form.TextField({
+            name: "foo1__eq",
+            value: "bar1"
+        }));
+
+        fields.push(new Ext.form.TextField({
+            name: "foo2__ne",
+            value: "bar2"
+        }));
+
+        fields.push(new Ext.form.TextField({
+            name: "foo3__lt",
+            value: "bar3"
+        }));
+
+        fields.push(new Ext.form.TextField({
+            name: "foo4__le",
+            value: "bar4"
+        }));
+
+        fields.push(new Ext.form.TextField({
+            name: "foo5__gt",
+            value: "bar5"
+        }));
+
+        fields.push(new Ext.form.TextField({
+            name: "foo6__ge",
+            value: "bar6"
+        }));
+
+        fields.push(new Ext.form.TextField({
+            name: "foo7__like",
+            value: "bar7"
+        }));
+
+        form = new Ext.form.FormPanel({
+            renderTo: "form",
+            items: fields
+        });
+
+        /*
+         * Test
+         */
+
+        // 26 tests
+        filter = GeoExt.form.toFilter(form);
+
+        t.ok(filter instanceof OpenLayers.Filter.Logical,
+             "GeoExt.form.tofilter returns a logical filter");
+
+        t.eq(filter.type, OpenLayers.Filter.Logical.AND,
+             ["GeoExt.form.tofilter returns a logical AND filter if",
+              "logicalOp is undefined"].join(" "));
+
+        t.eq(filter.filters[0].type, OpenLayers.Filter.Comparison.EQUAL_TO,
+             "GeoExt.form.tofilter creates correct filter type");
+        t.eq(filter.filters[0].property, "foo0",
+             "GeoExt.form.tofilter creates correct filter prop");
+        t.eq(filter.filters[0].value, "bar0",
+             "GeoExt.form.tofilter creates correct filter value");
+
+        t.eq(filter.filters[1].type, OpenLayers.Filter.Comparison.EQUAL_TO,
+             "GeoExt.form.tofilter creates correct filter type (__eq)");
+        t.eq(filter.filters[1].property, "foo1",
+             "GeoExt.form.tofilter creates correct filter prop (__eq)");
+        t.eq(filter.filters[1].value, "bar1",
+             "GeoExt.form.tofilter creates correct filter value (__eq)");
+
+        t.eq(filter.filters[2].type, OpenLayers.Filter.Comparison.NOT_EQUAL_TO,
+             "GeoExt.form.tofilter creates correct filter type (__ne)");
+        t.eq(filter.filters[2].property, "foo2",
+             "GeoExt.form.tofilter creates correct filter prop (__ne)");
+        t.eq(filter.filters[2].value, "bar2",
+             "GeoExt.form.tofilter creates correct filter value (__ne)");
+
+        t.eq(filter.filters[3].type, OpenLayers.Filter.Comparison.LESS_THAN,
+             "GeoExt.form.tofilter creates correct filter type (__lt)");
+        t.eq(filter.filters[3].property, "foo3",
+             "GeoExt.form.tofilter creates correct filter prop (__lt)");
+        t.eq(filter.filters[3].value, "bar3",
+             "GeoExt.form.tofilter creates correct filter value (__lt)");
+
+        t.eq(filter.filters[4].type, OpenLayers.Filter.Comparison.LESS_THAN_OR_EQUAL_TO,
+             "GeoExt.form.tofilter creates correct filter type (__le)");
+        t.eq(filter.filters[4].property, "foo4",
+             "GeoExt.form.tofilter creates correct filter prop (__le)");
+        t.eq(filter.filters[4].value, "bar4",
+             "GeoExt.form.tofilter creates correct filter value (__le)");
+
+        t.eq(filter.filters[5].type, OpenLayers.Filter.Comparison.GREATER_THAN,
+             "GeoExt.form.tofilter creates correct filter type (__gt)");
+        t.eq(filter.filters[5].property, "foo5",
+             "GeoExt.form.tofilter creates correct filter prop (__gt)");
+        t.eq(filter.filters[5].value, "bar5",
+             "GeoExt.form.tofilter creates correct filter value (__gt)");
+
+        t.eq(filter.filters[6].type, OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO,
+             "GeoExt.form.tofilter creates correct filter type (__ge)");
+        t.eq(filter.filters[6].property, "foo6",
+             "GeoExt.form.tofilter creates correct filter prop (__ge)");
+        t.eq(filter.filters[6].value, "bar6",
+             "GeoExt.form.tofilter creates correct filter value (__ge)");
+
+        t.eq(filter.filters[7].type, OpenLayers.Filter.Comparison.LIKE,
+             "GeoExt.form.tofilter creates correct filter type (__like)");
+        t.eq(filter.filters[7].property, "foo7",
+             "GeoExt.form.tofilter creates correct filter prop (__like)");
+        t.eq(filter.filters[7].value, "bar7",
+             "GeoExt.form.tofilter creates correct filter value (__like)");
+
+        // 1 test
+        filter = GeoExt.form.toFilter(form,
+                                      OpenLayers.Filter.Logical.OR);
+
+        t.eq(filter.type, OpenLayers.Filter.Logical.OR,
+             ["GeoExt.form.tofilter returns a logical OR filter if",
+              "logicalOp is OpenLayers.Filter.Logical.OR"].join(" "));
+    }
+
+    // http://trac.geoext.org/ticket/366
+    function test_toFilter_one_filter(t) {
+        t.plan(2);
+
+        /*
+         * Set up
+         */
+
+        var form, filter, fields = [];
+
+        fields.push(new Ext.form.TextField({
+            name: "foo__like",
+            value: "bar"
+        }));
+
+        form = new Ext.form.FormPanel({
+            renderTo: "form",
+            items: fields
+        });
+
+        /*
+         * Test
+         */
+
+        filter = GeoExt.form.toFilter(form);
+        t.ok(filter instanceof OpenLayers.Filter.Comparison,
+             "comparison filter not wrapped in a logical filter");
+
+        filter = GeoExt.form.toFilter(form, OpenLayers.Filter.Logical.NOT);
+        t.ok(filter instanceof OpenLayers.Filter.Logical,
+             "comparison filter wrapped in logical not filter");
+    }
+
+    function test_toFilter_Wildcard(t) {
+        t.plan(4);
+
+        /*
+         * Set up
+         */
+
+        var form, filter, fields = [];
+
+        fields.push(new Ext.form.TextField({
+            name: "foo__like",
+            value: "bar"
+        }));
+
+        form = new Ext.form.FormPanel({
+            renderTo: "form",
+            items: fields
+        });
+
+        /*
+         * Test
+         */
+
+        filter = GeoExt.form.toFilter(form, null, GeoExt.form.STARTS_WITH);
+        filter = GeoExt.form.toFilter(form, null, GeoExt.form.STARTS_WITH);
+        t.eq(filter.value, "bar.*", "GeoExt.form.STARTS_WITH appends a wildcard");
+        filter = GeoExt.form.toFilter(form, null, GeoExt.form.ENDS_WITH);
+        t.eq(filter.value, ".*bar", "GeoExt.form.ENDS_WITH prepends a wildcard");
+        filter = GeoExt.form.toFilter(form, null, GeoExt.form.CONTAINS);
+        t.eq(filter.value, ".*bar.*", "GeoExt.form.CONTAINS appends *and* prepends a wildcard");
+        filter = GeoExt.form.toFilter(form);
+        t.eq(filter.value, "bar", "Default behaviour is to not add any wildcards");
+    }
+
+    function test_recordToField(t) {
+        t.plan(31);
+
+        // set up
+
+        var store, plugin, form, field;
+
+        store = new GeoExt.data.AttributeStore({
+           fields: [
+               {name: "name"},
+               {name: "type"},
+               {name: "nillable", type: "boolean"},
+               {name: "restriction"}
+           ],
+           ignore: {
+               type: /^gml:(Multi)?(Point|LineString|Polygon|Curve|Surface|Geometry)PropertyType$/
+           }
+        });
+        store.loadData(doc);
+
+        // tests
+        
+        // labelStyle
+        field = GeoExt.form.recordToField(store.getAt(1));
+        field = Ext.ComponentMgr.create(field);
+        t.eq(field.labelStyle, '', "[label] nillable field default labelStyle is correct");
+
+        field = GeoExt.form.recordToField(store.getAt(1), {
+            mandatoryFieldLabelStyle: 'font-style:italic;'
+        });
+        field = Ext.ComponentMgr.create(field);
+        t.eq(field.labelStyle, '', "[label] nillable field labelStyle is not overriden by the mandatoryFieldLabelStyle option");
+
+        field = GeoExt.form.recordToField(store.getAt(0));
+        field = Ext.ComponentMgr.create(field);
+        t.eq(field.labelStyle, 'font-weight:bold;', "[label] non nillable field default labelStyle is correct");
+
+        field = GeoExt.form.recordToField(store.getAt(0), {
+            mandatoryFieldLabelStyle: null
+        });
+        field = Ext.ComponentMgr.create(field);
+        t.eq(field.labelStyle, 'font-weight:bold;', "[label] non nillable field, mandatoryFieldLabelStyle set to null");
+
+        field = GeoExt.form.recordToField(store.getAt(0), {
+            mandatoryFieldLabelStyle: undefined
+        });
+        field = Ext.ComponentMgr.create(field);
+        t.eq(field.labelStyle, 'font-weight:bold;', "[label] non nillable field, mandatoryFieldLabelStyle set to undefined");
+
+        field = GeoExt.form.recordToField(store.getAt(0), {
+            mandatoryFieldLabelStyle: ''
+        });
+        field = Ext.ComponentMgr.create(field);
+        t.eq(field.labelStyle, '', "[label] non nillable field labelStyle is correctly overridden");
+
+        field = GeoExt.form.recordToField(store.getAt(0), {
+            mandatoryFieldLabelStyle: 'font-style:italic;'
+        });
+        field = Ext.ComponentMgr.create(field);
+        t.eq(field.labelStyle, 'font-style:italic;', "[label] non nillable field custom labelStyle is correct");
+        
+        // label tip
+        field = GeoExt.form.recordToField(store.getAt(0), {
+            labelTpl: new Ext.XTemplate('{name}{[this.getStar(values)]}', {
+                getStar: function(v) {
+                    return (v.nillable ? '':' *');
+                }
+            })
+        });
+        field = Ext.ComponentMgr.create(field);
+        t.eq(field.fieldLabel, 'STATE_NAME *', "[label template] template is applied successfully");
+        
+        field = GeoExt.form.recordToField(store.getAt(0), {
+            labelTpl: '{name} foo'
+        });
+        field = Ext.ComponentMgr.create(field);
+        t.eq(field.fieldLabel, 'STATE_NAME foo', "[label template] labelTpl accepts strings too");
+        
+        // txt
+        field = GeoExt.form.recordToField(store.getAt(0));
+        field = Ext.ComponentMgr.create(field);
+        t.ok(field instanceof Ext.form.TextField, "[txt] field is a text field");
+        t.eq(field.name, "STATE_NAME", "[txt] field name is correct");
+        t.eq(field.allowBlank, true, "[txt] field allowBlank is correct");
+        t.eq(field.maxLength, 10, "[txt] field maxLength is correct");
+        t.eq(field.minLength, 5, "[txt] field minLength is correct");
+        
+        // num
+        field = GeoExt.form.recordToField(store.getAt(1));
+        field = Ext.ComponentMgr.create(field);
+        t.ok(field instanceof Ext.form.NumberField, "[num] field is a number field");
+        t.eq(field.name, "SAMP_POP", "[num] field name is correct");
+        t.eq(field.maxValue, 10, "[num] field maxValue is correct");
+        t.eq(field.minValue, 5, "[num] field minValue is correct");
+        
+        // boolean
+        field = GeoExt.form.recordToField(store.getAt(2), {checkboxLabelProperty: 'fieldLabel'});
+        field = Ext.ComponentMgr.create(field);
+        t.ok(field instanceof Ext.form.Checkbox, "[bool] field is a checkbox");
+        t.eq(field.name, "BOOLEAN", "[bool] field name is correct");
+        t.eq(field.fieldLabel, "BOOLEAN", "[bool] field has correct fieldLabel");
+
+        field = GeoExt.form.recordToField(store.getAt(2));
+        field = Ext.ComponentMgr.create(field);
+        t.ok(field.boxLabel === "BOOLEAN" && field.fieldLabel === undefined,
+            "[bool] field with no option has correct boxLabel and no fieldLabel");
+
+        // datetime
+        field = GeoExt.form.recordToField(store.getAt(3));
+        field = Ext.ComponentMgr.create(field);
+        t.ok(field instanceof Ext.form.DateField, "[datetime] field is a checkbox");
+        t.eq(field.name, "DATETIME", "[datetime] field name is correct");
+        field.setValue("2001-10-26T21:32:52+02:00");
+        t.ok(field.getValue() instanceof Date, "[datetime] getValue returns a Date");
+
+        // date
+        field = GeoExt.form.recordToField(store.getAt(4));
+        field = Ext.ComponentMgr.create(field);
+        t.ok(field instanceof Ext.form.DateField, "[date] field is a checkbox");
+        t.eq(field.name, "DATE", "[date] field name is correct");
+        field.setValue("2001-10-26");
+        t.ok(field.getValue() instanceof Date, "[date] getValue returns a Date");
+        // the following test fails because Ext's Date.dateParse function does not
+        // handle timezone offsets for date only representations
+        // (see <http://trac.geoext.org/ticket/379#comment:2>)
+        //field.setValue("2001-10-26+02:00");
+        //t.ok(field.getValue() instanceof Date, "[date] getValue returns a Date");
+        
+        // enumeration
+        field = GeoExt.form.recordToField(store.getAt(store.find("name", "DRINK_NAME")));
+        field = Ext.ComponentMgr.create(field);
+        t.ok(field instanceof Ext.form.ComboBox, "[enumeration] field is a combo box");
+        t.eq(field.name, "DRINK_NAME", "[enumeration] field name is correct");
+        t.eq(field.store.getAt(1).json[0], "soda", "[enumeration] store has the correct data");
+
+        // tear down
+    }
+
+    function test_recordToField_objectliteral(t) {
+        t.plan(1)
+
+        // test cases where object litterals instead of strings
+        // are provided in "type" fields
+
+        // set up
+
+        var store, field;
+
+        store = new GeoExt.data.AttributeStore({
+            fields: [
+                {name: "name"},
+                {name: "type"}
+            ],
+            data: [
+                {name: "foo", type: {xtype: "combo"}}
+            ]
+        });
+
+        // test
+
+        field = GeoExt.form.recordToField(store.getAt(0));
+        field = Ext.ComponentMgr.create(field);
+        t.ok(field instanceof Ext.form.ComboBox,
+             "field is a combo");
+    }
+
+    </script>
+  <body>
+    <div id="form"></div>
+  </body>
+</html>

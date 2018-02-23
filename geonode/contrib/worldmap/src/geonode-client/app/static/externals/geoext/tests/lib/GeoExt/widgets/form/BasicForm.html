@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+    function test_constructor(t) {
+        t.plan(1);
+
+        /*
+         * Set up
+         */
+        
+        var protocol, form;
+
+        protocol = new OpenLayers.Protocol();
+
+        form = new GeoExt.form.BasicForm(Ext.get("form"), {
+            protocol: protocol
+        });
+
+        /*
+         * Test
+         */
+
+        t.ok(form.protocol == protocol,
+             "BasicForm constructor properly sets protocol in the instance");
+    }
+
+    function test_doAction(t) {
+        t.plan(3);
+
+        /*
+         * Set up
+         */
+        
+        var protocol, form;
+
+        protocol = new OpenLayers.Protocol({
+            read: function(options) {
+                t.ok(options.filter instanceof OpenLayers.Filter.Logical,
+                     ["doAction calls read on the form's protocol, read",
+                      "is passed a logical filter"].join(" "));
+            }
+        });
+
+        form = new GeoExt.form.BasicForm(Ext.get("form"), {
+            protocol: protocol,
+            getValues: function() {
+                return {"foo0__eq": "bar0", "foo1__like": "bar1"};
+            }
+        });
+
+        /*
+         * Test
+         */
+
+        // 1 test
+        var tmp = form.doAction("search");
+        t.ok(tmp == form,
+             "doAction returns the form instance");
+        t.wait_result(1);
+
+        // 1 test
+        protocol = new OpenLayers.Protocol({
+            read: function(options) {
+                t.ok(options.filter instanceof OpenLayers.Filter.Logical,
+                     ["doAction calls read on the protocol it is given,",
+                      "read is passed a logical filter"].join(" "));
+            }
+        });
+        form.doAction("search", {protocol: protocol});
+        t.wait_result(1);
+    }
+    </script>
+  <body>
+    <div id="form"></div>
+  </body>
+</html>

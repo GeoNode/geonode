@@ -1,0 +1,37 @@
+<html>
+<head>
+    <title>GeoExt StyleReader</title>
+    <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/ext-all.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/resources/css/ext-all.css" />
+    <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/examples/shared/examples.css" />
+    <script src="http://openlayers.org/api/2.11/OpenLayers.js"></script>
+    <script>
+        /** TODO remove this script block when upgrading to OpenLayers 2.12 */
+        OpenLayers.Filter.prototype.toString = function() {
+            return OpenLayers.Format.CQL.prototype.write(this);
+        }
+    </script>
+    <link rel="stylesheet" type="text/css" href="../resources/css/geoext-all.css" />
+    <script type="text/javascript" src="../lib/GeoExt.js"></script>
+    <script src="style-grid.js"></script>
+</head>
+<body>
+    <h1>GeoExt.data.StyleReader</h1>
+    <p>The StyleReader populates a store with records representing the rules
+    of a Style or the entries of a ColorMap, so they can easily be shown in a
+    grid.</p>
+
+    <p>The js is not minified so it is readable. See <a href="style-grid.js">style-grid.js</a>.</p>
+    <p>This grid shows the rules of a Style for a vector layer. Drag&amp;Drop is
+    enabled, labels are editable and filters can be edited inline using CQL
+    syntax:</p>
+    <div id="vectorgrid"></div>
+    <br>
+    <p>This grid shows the entries of the ColorMap of a RasterSymbolizer.
+    The column configuration is the same as for the vector grid above. Label and
+    filter (quantity) are editable, and the quantities will always be sorted in
+    ascending order:</p>
+    <div id="rastergrid"></div>
+</body>
+</html>

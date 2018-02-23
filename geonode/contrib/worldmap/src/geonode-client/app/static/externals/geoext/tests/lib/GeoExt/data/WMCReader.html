@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+    <script type="text/javascript" src="WMCReader.js"></script>
+
+    <script type="text/javascript">
+      
+        function test_constructor(t) {
+            t.plan(2);
+            var reader = new GeoExt.data.WMCReader();
+
+            var fields = reader.recordType.prototype.fields;
+
+            // 1 test
+            t.eq(fields.items.length, 7, 'number of default items is correct');
+
+            reader = new GeoExt.data.WMCReader({},[
+                {name: "foo"},
+                {name: "bar"}
+            ]);
+
+            fields = reader.recordType.prototype.fields;
+
+            //1 test
+            t.ok(fields.items[2].name == 'foo' &&
+                 fields.items[3].name == 'bar',
+                 'field values set from configuration are correct');
+        }
+        function test_read(t) {
+            t.plan(19);
+
+            // test a reader with the only two default LayerRecord fields
+
+            var reader = new GeoExt.data.WMCReader({},{});
+            var records = reader.read({responseXML : doc});
+
+            //1 test
+            t.eq(records.totalRecords, 3, 'readRecords returns correct number of records');
+
+            var record = records.records[1];
+            //2 tests -- testing the fields of a record
+            t.eq(record.get("title"), "geob:communes_geofla", "correct title record field");
+            t.eq(record.get("abstract"), undefined, "correct undefined abstract which is not part of fields");
+
+
+            // test a reader with all default fields
+
+            var reader = new GeoExt.data.WMCReader();
+            var records = reader.read({responseXML : doc});
+
+            //1 test
+            t.eq(records.totalRecords, 3, 'readRecords returns correct number of records');
+
+            var record = records.records[1];
+            //10 tests -- testing the fields of a record
+            t.eq(record.get("title"), "geob:communes_geofla", "correct title record field");
+            t.eq(record.get("abstract"), "Communes abstract", "correct abstract record field");
+            t.eq(record.get("metadataURL"), "", "correct metadataURL record field");
+            t.eq(record.get("queryable"), true, "correct queryable record field");
+            t.eq(record.get("formats").length, 28, "correct length for formats record field");
+            t.eq(record.get("formats")[0].value, "image/png", "correct value for formats record field");
+            t.eq(record.get("styles").length, 2, "correct length for styles record field");
+            t.eq(record.get("styles")[0].abstract, "Default line style, 1 pixel wide blue", "correct abstract for styles record field");
+            t.eq(record.get("styles")[0].name, "line", "correct name for styles record field");
+            t.eq(record.get("styles")[0].title, "1 px blue line", "correct title for styles record field");
+
+            //4 tests -- Testing the layer field
+            var layer = record.getLayer();
+            t.eq(layer.CLASS_NAME, "OpenLayers.Layer.WMS", "layer record field is of type OpenLayers.Layer.WMS");
+            t.eq(layer.url, "../geoserver/wms?SERVICE=WMS&", "layer record field has correct URL");
+            t.eq(layer.params.LAYERS, "geob:communes_geofla","layer record field has correct LAYERS parameter");
+            t.eq(layer.name, "Communes","layer record field has correct name");
+
+            //1 test
+            t.eq(record.id, layer.id, 'record id is the same as layer id');
+        }
+    </script>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

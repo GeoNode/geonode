@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+    function test_constructor(t) {
+        t.plan(5);
+
+        var reader, recordType;
+
+        reader = new GeoExt.data.CSWRecordsReader();
+        t.eq(reader.meta.format.CLASS_NAME, 'OpenLayers.Format.CSWGetRecords.v2_0_2',
+             "ctor creates a format of the correct type if none is given");
+        t.eq(reader.meta.root, 'records',
+             "ctor gives meta.root the good value if none is given");
+
+        recordType = [{name: "extra"}];
+        reader = new GeoExt.data.CSWRecordsReader(null, recordType);
+        t.eq(reader.recordType.prototype.fields.items[0].name, "extra",
+             "ctor creates a record type with the correct field");
+
+        recordType = Ext.data.Record.create([{name: "extra"}]);
+        reader = new GeoExt.data.CSWRecordsReader(null, recordType);
+        t.ok(reader.recordType == recordType,
+             "ctor configures reader with passed record type");
+
+        reader = new GeoExt.data.CSWRecordsReader({fields: [{name: "extra"}]});
+        t.eq(reader.recordType.prototype.fields.items[0].name, "extra",
+             "ctor creates a record type with the correct field");
+    }
+
+    function test_readRecords(t) {
+        t.plan(2);
+
+        var reader, cswRecords, data;
+
+        reader = new GeoExt.data.CSWRecordsReader(null, [{name: "extra"}]);
+        cswRecords = {
+            records: [{
+                extra: 'foo'
+            },{
+                extra: 'bar'
+            }]
+        }
+
+        data = reader.readRecords(cswRecords);
+        t.eq(data.totalRecords, 2,
+             "readRecords returns expected number of records");
+        t.eq(data.records[0].get("extra"), 'foo',
+             "readRecords returns records with expected \"extra\" field");
+    }
+    </script>
+  <body>
+  </body>
+</html>

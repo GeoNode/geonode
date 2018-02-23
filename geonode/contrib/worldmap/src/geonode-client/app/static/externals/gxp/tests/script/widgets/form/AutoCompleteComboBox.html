@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../externals/openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../externals/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../../src/script/loader.js"></script>
+
+    <script type="text/javascript">
+       
+        function test_AutoCompleteComboBox(t) {
+            t.plan(8);
+            
+            var fieldName = "FOO";
+            var instance = new gxp.form.AutoCompleteComboBox({fieldName: fieldName});
+            
+            t.ok(instance instanceof gxp.form.AutoCompleteComboBox, "Instance created successfully");
+
+            t.eq(instance.displayField, fieldName, "displayField set to fieldName");
+            t.eq(instance.valueField, fieldName, "valueField set to fieldName");
+            t.eq(instance.name, fieldName, "name set to fieldName if not specified");
+            t.ok(instance.store.reader instanceof gxp.data.AutoCompleteReader, "reader created correctly");
+            t.ok(instance.store.proxy instanceof gxp.data.AutoCompleteProxy, "proxy created correctly");
+            var length = instance.store.fields.length;
+            instance.destroy();
+
+            instance = new gxp.form.AutoCompleteComboBox({fieldName: fieldName, geometryName: "GEOM", name: "BAR"});
+            t.eq(instance.name, "BAR", "name not set to fieldName if specified");
+            t.eq(instance.store.fields.length-length, 1, "1 extra field expected since geometryName is specified");
+            instance.destroy();
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

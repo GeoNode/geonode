@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+    function test_set(t) {
+        t.plan(1);
+
+        var p, state;
+
+        p = new GeoExt.state.PermalinkProvider();
+        state = {x: 5, y: 45, zoom: 10};
+
+        p.set("map", state);
+        t.eq(p.state.map, state,
+             "set works as expected");
+    }
+
+    function test_get(t) {
+        t.plan(2);
+
+        var p, state;
+
+        p = new GeoExt.state.PermalinkProvider();
+
+        state = {x: 5, y: 45, zoom: 10};
+        p.state = {
+            map: state
+        };
+
+        t.eq(p.get("map"), state,
+             "get returns expected value");
+        t.eq(p.get("foo", {foo: "bar"}), {foo: "bar"},
+             "get returns default value when state is undefined");
+    }
+
+    function test_readURL(t) {
+        t.plan(4);
+
+        var p, url, state, expected;
+
+        p = new GeoExt.state.PermalinkProvider({encodeType: false});
+
+        url = "http://foo?map_x=5&map_y=45&map_zoom=10";
+        state = p.readURL(url);
+        expected = {
+            map: {
+                x: "5",
+                y: "45",
+                zoom: "10"
+            }
+        };
+        t.eq(state, expected,
+             "readURL returns expected state (" + url + ")");
+
+        url = "http://foo?map_x=5&map_y=45&map_zoom=10&foo_bar1=val1&foo_bar2=val2";
+        state = p.readURL(url);
+        expected = {
+            map: {
+                x: "5",
+                y: "45",
+                zoom: "10"
+            },
+            foo: {
+                bar1: "val1",
+                bar2: "val2"
+            }
+        };
+        t.eq(state, expected,
+             "readURL returns expected state (" + url + ")");
+
+        url = "http://foo?map_x=5&map_y_y=45&map_zoom=10";
+        state = p.readURL(url);
+        expected = {
+            map: {
+                x: "5",
+                y_y: "45",
+                zoom: "10"
+            }
+        };
+        t.eq(state, expected,
+             "readURL returns expected state (" + url + ")");
+
+        url = "http://foo?map_x=5&map__y=45&map_zoom=10";
+        state = p.readURL(url);
+        expected = {
+            map: {
+                x: "5",
+                _y: "45",
+                zoom: "10"
+            }
+        };
+        t.eq(state, expected,
+             "readURL returns expected state (" + url + ")");
+    }
+
+    function test_readURL_encodeType(t) {
+        t.plan(2);
+
+        var p, url, state, expected;
+
+        p = new GeoExt.state.PermalinkProvider({encodeType: true});
+
+        url = "http://localhost" +
+            "?map_x=" + encodeURIComponent("n:5") +
+            "&map_y=" + encodeURIComponent("n:45") +
+            "&map_zoom=" + encodeURIComponent("n:10");
+        state = p.readURL(url);
+        expected = {
+            map: {
+                x: 5,
+                y: 45,
+                zoom: 10
+            }
+        };
+        t.eq(state, expected,
+             "readURL returns expected state (" + url + ")");
+
+        url = "http://localhost" +
+            "?map_x=" + encodeURIComponent("s:5") +
+            "&map_y=" + encodeURIComponent("s:45") +
+            "&map_zoom=" + encodeURIComponent("s:10");
+        state = p.readURL(url);
+        expected = {
+            map: {
+                x: "5",
+                y: "45",
+                zoom: "10"
+            }
+        };
+        t.eq(state, expected,
+             "readURL returns expected state (" + url + ")");
+    }
+
+    function test_getLink(t) {
+        t.plan(4);
+
+        var p, link, expected;
+
+        p = new GeoExt.state.PermalinkProvider({encodeType: false});
+
+        p.state = {
+            map: {
+                x: 5,
+                y: 45,
+                zoom: 10
+            }
+        };
+        link = p.getLink("http://localhost");
+        expected = "http://localhost?map_x=5&map_y=45&map_zoom=10";
+        t.eq(link, expected,
+             "getLink returns expected string [0]");
+
+        p.state = {
+            map: {
+                x: "5",
+                y: "45",
+                zoom: "10"
+            }
+        };
+        link = p.getLink("http://localhost");
+        expected = "http://localhost?map_x=5&map_y=45&map_zoom=10";
+        t.eq(link, expected,
+             "getLink returns expected string [1]");
+
+        p.state = {
+            map: {
+                x: 5,
+                y: 45,
+                zoom: 10
+            },
+            foo: {
+                bar: "bar"
+            }
+        };
+        link = p.getLink("http://localhost");
+        expected = "http://localhost?map_x=5&map_y=45&map_zoom=10&foo_bar=bar";
+        t.eq(link, expected,
+             "getLink returns expected string [2]");
+
+        p.state = {
+            map: {
+                x: 5,
+                y: 45,
+                zoom: 10
+            }
+        };
+        link = p.getLink("http://localhost?map_x=10&foo=bar");
+        expected = "http://localhost?map_x=5&map_y=45&map_zoom=10&foo=bar";
+        t.eq(link, expected,
+             "getLink returns expected string [3]");
+    }
+
+    function test_getLink_encode(t) {
+        t.plan(2);
+
+        var p, link, expected;
+
+        p = new GeoExt.state.PermalinkProvider({encodeType: true});
+
+        p.state = {
+            map: {
+                x: 5,
+                y: 45,
+                zoom: 10
+            }
+        };
+        link = p.getLink("http://localhost");
+        expected = "http://localhost" +
+            "?map_x=" + encodeURIComponent("n:5") +
+            "&map_y=" + encodeURIComponent("n:45") +
+            "&map_zoom=" + encodeURIComponent("n:10");
+        t.eq(link, expected,
+             "getLink returns expected string [0]");
+
+        p.state = {
+            map: {
+                x: "5",
+                y: "45",
+                zoom: "10"
+            }
+        };
+        link = p.getLink("http://localhost");
+        expected = "http://localhost" +
+            "?map_x=" + encodeURIComponent("s:5") +
+            "&map_y=" + encodeURIComponent("s:45") +
+            "&map_zoom=" + encodeURIComponent("s:10");
+        t.eq(link, expected,
+             "getLink returns expected string [1]");
+    }
+    </script>
+  <body>
+  </body>
+</html>

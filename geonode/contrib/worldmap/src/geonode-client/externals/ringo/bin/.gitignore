@@ -1,0 +1,12 @@
+*
+!.gitignore
+!ringo
+!ringo.cmd
+!ringo-web
+!ringo-web.cmd
+!ringo-admin
+!ringo-admin.cmd
+!narwhal
+!narwhal.cmd
+!ringo-doc
+!ringo-doc.cmd

@@ -1,0 +1,458 @@
+<!DOCTYPE html >
+
+<html lang="de" dir="ltr">
+<head>
+    <title>Module overview - Stick API</title>
+    <link rel="shortcut icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./static/style.css" />
+    <link rel="stylesheet" href="./static/jsdoc.css" />
+<script type="text/javascript" src="./static/jquery.js"></script>
+<script type="text/javascript" src="./static/jsdoc.js"></script>
+<script>
+$(document).ready(jsdocSetup);
+</script>
+
+</head>
+
+<body>
+<div class="wrap">
+
+    <div class="main">
+        <div class="content">
+            <h1>Modules: Stick API</h1>
+
+            <ul class="modulelist">
+                                <li >
+
+                <h2><a href="./stick/index.html"> stick </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>The <code>stick</code> module provides the <code>Application</code> class
+which is the centerpiece of the Stick framework.</p>
+
+<p>A Stick Application
+is a JSGI application which provides means to compose complex
+applications out of modular middleware components.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./helpers/index.html"> stick/helpers </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>A collection of helper functions that makes
+working with Stick middleware easier.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/index.html"> stick/middleware </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>Convenience module that provides access to all
+Stick middleware using a single <code>require()</code> call.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/basicauth/index.html"> stick/middleware/basicauth </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>Basic Authentication middleware.</p>
+
+<p>To apply authentication to parts of your
+website configure this middleware and call the app's basicauth method with
+the URI path, user name, and SHA1 digest of the user's password as arguments for
+each path you want to protect:</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/continuation/index.html"> stick/middleware/continuation </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>Provide support for JavaScript 1.7 generator actions. </p>
+
+<p>This middleware supports two types of yield values from generators: 
+Promises and JSGI response objects.</p>
+
+<p>If a generator action yields a promise, this middleware adds a listener to that
+promise that will feed the value back to the generator once the promise is resolved.
+If the promise resolves to an error, the error is thrown in the generator.</p>
+
+<p>For example, if <code>promise</code> is a promise, the <code>yield</code> statement will interrupt execution
+of the action until the promise is resolved, at which point the generator is resumed
+with the value of the promise being assigned to the <code>resolved</code> variable.</p>
+
+<pre><code>var resolved = yield promise;</code></pre>
+
+<p>If a generator action yields a JSGI response, the response is sent to the client.
+To be able to yield more than one response from the same generator, the generator
+has to be associated with a continuation id and stored in the user's session.
+This is done by calling <code>continuation.activate()</code> before yielding the first
+response. The <code>activate()</code> method tells the middleware to store the generator
+in the user's session and returns a contination id.</p>
+
+<p>For subsequent invocations of the generator, the continuation id has to be set as
+query string parameter with name <code>_c</code>. When suspended generator is resumed,
+the new request object is passed in as value for the last yield statement.</p>
+
+<pre><code>function continuation(request) {
+    var c = app.continuation.activate();
+    while(true) {
+        request = yield response.html(linkTo(app, {_c: c}));
+    }
+}</code></pre>
+
+
+<p>See <a href="http://blog.ometer.com/2010/11/28/a-sequential-actor-like-api-for-server-side-javascript/">http://blog.ometer.com/2010/11/28/a-sequential-actor-like-api-for-server-side-javascript/</a>
+for background.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/cookies/index.html"> stick/middleware/cookies </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>This module provides middleware for reading
+cookies from the request.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/error/index.html"> stick/middleware/error </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>Middleware to catch errors and generate simple error pages.</p>
+
+<p>By default, resource <code>stick/middleware/error.html</code> is used as page template.
+This can be set through the <code>app.error.template</code> property. This is the complete
+list of properties that influence the behaviour of this middleware:</p>
+
+<ul><li><strong>template</strong> the error page template (<em>string</em>)</li>
+<li><strong>message</strong> static error message to use instead of actual message (<em>string</em>)</li>
+<li><strong>location</strong> whether to report any information about the code location of the error (<em>boolean</em>)</li>
+<li><strong>stack</strong> whether to include a JavaScript stack trace (<em>boolean</em>)</li>
+<li><strong>javaStack</strong> whether to include a Java stack trace (<em>boolean</em>)</li></ul>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/etag/index.html"> stick/middleware/etag </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>Middleware for conditional HTTP GET request based on
+response body message digests.</p>
+
+<p>The response body must implement a digest() method for this middleware to work.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/gzip/index.html"> stick/middleware/gzip </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>Middleware for on-the-fly GZip compression of response bodies.</p>
+
+<p>By default only text content types are compressed. This can be controlled
+using the <code>gzip.contentTypes</code> property:</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/method/index.html"> stick/middleware/method </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>JSGI middleware for HTTP method override.</p>
+
+<p>Since browsers
+are not able to send HTTP requests with methods other than <code>GET</code>
+and <code>POST</code>, this middleware allows the method of <code>POST</code> requests to be
+overridden based on the value of a HTTP form parameter. The default
+name for the override parameter is <code>_method</code>. This can be configured
+through the <code>method.key</code> property.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/mount/index.html"> stick/middleware/mount </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>This module provides middleware for mounting other applications
+on a specific URI path or virtual host.</p>
+
+<p>Applying this middleware adds a <code>mount</code> method to the application. The mount
+method takes a path or virtual host specification and an application as arguments.
+If the spec is a string, it is interpreted as the URI path on which the app will be
+mounted. If it is an object, it may contain <code>path</code> or <code>host</code> properties
+that will be matched against the URI path and <code>Host</code> header of incoming requests.
+<em>Note that virtual host based mounting has not been tested so far.</em></p>
+
+<p>Mounting one application within another causes the <code>scriptName</code> and <code>pathInfo</code>
+properties in the request object to be adjusted so that the mounted application
+receives the same pathInfo as if it was the main application. This means
+that forward and reverse request routing will usually work as expected.</p>
+
+<p>This middleware maintains an index mapping applications to mount points which
+can be accessed using the <a href="#lookup">lookup</a> function. The [stick/helpers][helpers]
+module provides higher level functions for this which include support for the
+route middleware.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/notfound/index.html"> stick/middleware/notfound </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>Middleware for simple Not-Found pages.</p>
+
+<p>By default, resource <code>stick/middleware/notfound.html</code> is used as page template.
+This can be set through the <code>app.notfound.template</code> property.</p>
+
+<ul><li><p><strong>template</strong> the notfound page template (<em>string</em>)</p></li></ul>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/params/index.html"> stick/middleware/params </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>This module provides middleware for parsing
+HTTP parameters from the query string and request body.</p>
+
+<p>It does not parse multipart MIME data such as file uploads which are handled
+by the [upload][middleware/upload] module.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/profiler/index.html"> stick/middleware/profiler </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>This module provides profiling middleware to measure
+the application's runtime behaviour.</p>
+
+<p>Profiler data is written to the module's logger. You have to run the
+application in interpreted mode (passing <code>-o -1</code> on the command line)
+to get meaningful results.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/render/index.html"> stick/middleware/render </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>This module provides middleware for rendering responses
+using ringo/mustache.</p>
+
+<p>This middleware installs a <code>render</code> function in the application object
+which is used to render HTTP responses. The behaviour of <code>app.render</code> can
+be tweaked by setting the following properties:</p>
+
+<ul><li><code>render.base</code> - the base path or repository to look for templates</li>
+<li><code>render.helpers</code> - helper functions that will be merged in the context</li>
+<li><code>render.master</code>  - master template to apply to every page</li>
+<li><code>render.contentType</code> - MIME type to use for HTTP response</li>
+<li><code>render.charset</code> - charset name to use for HTTP response</li></ul>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/requestlog/index.html"> stick/middleware/requestlog </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>Middleware for collecting log messages issued during execution
+of the current request.</p>
+
+<p>This adds a <code>requestlog</code> property to the application object with an <code>items</code>
+property. During execution of a request <code>items</code> contains an array containing
+all the log messages issued for the request. Log messages are represented
+as arrays in the format <code>[time, level, name, message]</code>.</p>
+
+<p>During request execution, the <code>requestlog</code> property also defines a
+property called <code>start</code> containing the time the execution started.</p>
+
+<p>By default, messages are appended to the response if its Content-Type is
+<code>text/html</code>. This can be controlled using the <code>app.requestlog.append</code>
+boolean flag.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/route/index.html"> stick/middleware/route </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>Middleware for HTTP method based local request routing.</p>
+
+<p>This installs <code>get</code>, <code>post</code>, <code>put</code>, and <code>del</code> methods in the application
+object for routing requests with the corresponding HTTP methods. These
+methods take a path spec as first argument and a function as second argument.</p>
+
+<h3>Paths and Placeholders</h3>
+
+<p>The path spec can consist of static parts and placeholders.
+Named placeholders are prefixed by <code>:</code> (colon) and match all
+characters except for <code>/</code> (slash) and <code>.</code> (dot). A named
+placeholder can be marked as optional by appending <code>?</code> (question mark).
+Unnamed placeholders are denoted by the asterisk character <code>*</code> and match
+all characters including slashes and dots.</p>
+
+<p>In the following example, ":id" is a named placeholder:</p>
+
+<pre><code>"/post/:id"</code></pre>
+
+<p>All placeholders are passed to the action function as positional arguments
+following the request object in the order in which they appear in the path spec.
+Unmatched optional placeholders will be <code>undefined</code>.</p>
+
+<pre><code>app.get("/post/:id", function(req, id) {...});</code></pre>
+
+<h3>Reverse Routing</h3>
+
+<p>The route middleware supports generating URLs from route names and parameters
+required by the route.</p>
+
+<p>Routes names are derived from the route's path spec by stripping
+out all placeholders and removing a leading slash. For example, a path
+spec <code>/post/:id.html</code> results in route name "post.html". If a path spec
+does not contain any static part, its route name is "index".</p>
+
+<p>Passing a valid route name and the parameters required by the route to the <code>route.reverse</code>
+method will return the URI path for the corresponding action. For example,
+with a route spec <code>/post/:id.html</code>, calling <code>app.route.reverse({action: "post.html", id: 5})</code>
+will return the string "/post/5.html".</p>
+
+<p>The [stick/helpers][helpers] module provides higher level helpers for reverse
+routing including support for mounted applications.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/session/index.html"> stick/middleware/session </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>This module provides middleware for HTTP sessions.</p>
+
+<p>It adds a <code>session</code> property to the request object that allows to store
+arbitrary data on on a per-visitor basis.</p>
+
+<p>The default session implementation is based on Java Servlet sessions.
+This can be overridden by setting the <code>app.session.impl</code> property to an
+alternative session constructor.</p>
+
+<pre><code>app.session.impl = MySession;</code></pre>
+
+<p>The session constructor will be called
+with the request object as only argument when the session is first accessed.</p>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/static/index.html"> stick/middleware/static </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>Middleware for serving static resources.</p>
+
+<p>This installs a <code>static()</code> method in the application that accepts the following arguments:</p>
+
+<ul><li><p><code>base</code>: the base resource directory (required)</p></li>
+
+<li><p><code>index</code>: the name of a file to serve if the path matches a directory (e.g.
+"index.html")</p></li></ul>
+
+
+                </div>
+
+                </li>
+                                <li >
+
+                <h2><a href="./middleware/upload/index.html"> stick/middleware/upload </a></h2>
+                <div class="jsdoc-fileoverview">
+                    <p>This module provides support for parsing multipart MIME messages
+used for file uploads.</p>
+
+<p>This module behaves analogous and can be used in combination with the
+[params][middleware/params] middleware.</p>
+
+
+                </div>
+
+                </li>
+                </ul>
+
+        </div>
+
+        <div style="display:none">
+            <!-- added to fileoverviews with hidden paragraphs --->
+            <span class="jsdoc-showmore showmore">.. show more</span>
+        </div>
+    </div>
+
+    <div class="menu" style="margin-top: 1em; font-size: 13px;">
+    Stick API<br/>
+        <a href="./index.html">Module list</a>
+    <a href="./index_all.html">Full index</a><br/>
+    <input id="jsdoc-leftnavsearch" type="search" placeholder="Filter module list" size="14">
+    <ul class="jsdoc-leftnav leftnav">
+                <li><a href="./stick/index.html"> stick </a></li>
+                <li><a href="./helpers/index.html"> stick/helpers </a></li>
+                <li><a href="./middleware/index.html"> stick/middleware </a></li>
+                <li><a href="./middleware/basicauth/index.html"> stick/middleware/basicauth </a></li>
+                <li><a href="./middleware/continuation/index.html"> stick/middleware/continuation </a></li>
+                <li><a href="./middleware/cookies/index.html"> stick/middleware/cookies </a></li>
+                <li><a href="./middleware/error/index.html"> stick/middleware/error </a></li>
+                <li><a href="./middleware/etag/index.html"> stick/middleware/etag </a></li>
+                <li><a href="./middleware/gzip/index.html"> stick/middleware/gzip </a></li>
+                <li><a href="./middleware/method/index.html"> stick/middleware/method </a></li>
+                <li><a href="./middleware/mount/index.html"> stick/middleware/mount </a></li>
+                <li><a href="./middleware/notfound/index.html"> stick/middleware/notfound </a></li>
+                <li><a href="./middleware/params/index.html"> stick/middleware/params </a></li>
+                <li><a href="./middleware/profiler/index.html"> stick/middleware/profiler </a></li>
+                <li><a href="./middleware/render/index.html"> stick/middleware/render </a></li>
+                <li><a href="./middleware/requestlog/index.html"> stick/middleware/requestlog </a></li>
+                <li><a href="./middleware/route/index.html"> stick/middleware/route </a></li>
+                <li><a href="./middleware/session/index.html"> stick/middleware/session </a></li>
+                <li><a href="./middleware/static/index.html"> stick/middleware/static </a></li>
+                <li><a href="./middleware/upload/index.html"> stick/middleware/upload </a></li>
+        </ul>
+
+</div>
+</div>
+</body>
+</html>

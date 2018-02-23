@@ -1,0 +1,22 @@
+.. module:: gxp.util.color
+    :synopsis: A collection of color utility functions.
+
+:mod:`gxp.util.color`
+=====================
+
+The :mod:`gxp.util.color` module contains color utility functions for use in
+GXP applications.
+
+{% if function is defined %}
+Functions
+---------
+
+Public functions.
+
+{% for (name, desc) in function|dictsort %}
+.. function:: gxp.util.color.{{ name }}
+
+    {{ desc|indent(4) }}
+{% endfor %}
+{% endif %}
+

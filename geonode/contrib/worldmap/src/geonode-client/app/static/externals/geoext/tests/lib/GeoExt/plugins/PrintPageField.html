@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+        var printCapabilities = {"scales":[{"name":"1:25,000","value":"25000"},{"name":"1:50,000","value":"50000"},{"name":"1:100,000","value":"100000"},{"name":"1:200,000","value":"200000"},{"name":"1:500,000","value":"500000"},{"name":"1:1,000,000","value":"1000000"},{"name":"1:2,000,000","value":"2000000"},{"name":"1:4,000,000","value":"4000000"}],"dpis":[{"name":"75","value":"75"},{"name":"150","value":"150"},{"name":"300","value":"300"}],"layouts":[{"name":"A4 portrait","map":{"width":440,"height":483},"rotation":true},{"name":"Legal","map":{"width":440,"height":483},"rotation":false}],"printURL":"http://demo.opengeo.org/geoserver/pdf/print.pdf","createURL":"http://demo.opengeo.org/geoserver/pdf/create.json"};
+
+         function test_init_destroy(t){
+            t.plan(3);
+            
+            var log = {};
+            var printPage = new GeoExt.data.PrintPage({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })                
+            });
+            var plugin = new GeoExt.plugins.PrintPageField({
+                printPage: printPage,
+                onPageChange: function(arg) {
+                    log.onPageChange = arg;
+                }
+            });
+            
+            var field = {
+                on: function(cfg) {
+                    log.on = cfg;
+                },
+                suspendEvents: Ext.emptyFn,
+                resumeEvents: Ext.emptyFn
+            };
+            plugin.init(field);
+            
+            t.ok(log.on["valid"] === plugin.onFieldChange, "onFieldChange handler set correctly.");
+            
+            field = new Ext.form.Field({
+                name: "scale",
+                plugins: plugin,
+                renderTo: document.body
+            });
+            printPage.fireEvent("change", "foo");
+            t.eq(log.onPageChange, "foo", "onPageChange called on page's change event.");
+            delete log.onPageChange;
+            field.destroy();
+            printPage.fireEvent("change", "bar");
+            t.eq(log.onPageChange, undefined, "onPageChanged not called after field is destroyed.");
+        }
+
+        function test_init__scales_field(t){
+            t.plan(1);
+
+            var log = {};
+            var printPage = new GeoExt.data.PrintPage({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })
+            });
+            var scaleRecord = printPage.printProvider.scales.getAt(0);
+            printPage.setScale(scaleRecord);
+            var plugin = new GeoExt.plugins.PrintPageField({
+                printPage: printPage
+            });
+
+            var field = {
+                on: function(cfg) {
+                    log.on = cfg;
+                },
+                setValue: function(v) {
+                    log.value = v;
+                },
+                store: printPage.printProvider.scales,
+                displayField: "name",
+                suspendEvents: Ext.emptyFn,
+                resumeEvents: Ext.emptyFn
+            };
+            plugin.init(field);
+
+            t.eq(log.value, scaleRecord.get("name"), "field value set correctly");
+        }
+
+        function test_init__rotation_field(t){
+            t.plan(1);
+
+            var log = {};
+            var printPage = new GeoExt.data.PrintPage({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })
+            });
+            printPage.setRotation(10, true);
+            var plugin = new GeoExt.plugins.PrintPageField({
+                printPage: printPage
+            });
+
+            var field = {
+                on: function(cfg) {
+                    log.on = cfg;
+                },
+                setValue: function(v) {
+                    log.value = v;
+                },
+                name: "rotation",
+                suspendEvents: Ext.emptyFn,
+                resumeEvents: Ext.emptyFn
+            };
+            plugin.init(field);
+
+            t.eq(log.value, 10, "field value set correctly");
+        }
+
+        function test_onFieldChange(t) {
+            t.plan(2);
+
+            var printProvider = new GeoExt.data.PrintProvider({
+                capabilities: printCapabilities,
+                customParams: {foo: "bar"}
+            });
+            var printPage = new GeoExt.data.PrintPage({
+                printProvider: printProvider
+            });
+            var plugin = new GeoExt.plugins.PrintPageField({
+                printPage: printPage
+            });
+            var field = {
+                name: "foo",
+                initialConfig: {},
+                getValue: function() {
+                    return "foobar";
+                }
+            };
+            plugin.onFieldChange(field);
+
+            t.eq(printPage.customParams.foo, "foobar", "Custom field value updated in printPage.");
+
+            delete field.name;
+            field.store = printProvider.scales;
+            field.displayField = "name";
+            plugin.onFieldChange(field, printProvider.scales.getAt(1));
+            
+            t.eq(printPage.scale.get("name"), printProvider.scales.getAt(1).get("name"), "Scale value updated in printPage.");
+        }
+        
+        function test_onPageChange(t) {
+            t.plan(3);
+            
+            var log = {};
+            var printProvider = new GeoExt.data.PrintProvider({
+                capabilities: printCapabilities,
+                customParams: {foo: "bar"}
+            });
+            var printPage = new GeoExt.data.PrintPage({
+                printProvider: printProvider
+            });
+            var plugin = new GeoExt.plugins.PrintPageField({
+                printPage: printPage
+            });
+            var field = {
+                displayField: "name",
+                store: printProvider.scales,
+                initialConfig: {},
+                on: function(cfg) {
+                    log.on = cfg;
+                },
+                getValue: function() {
+                    return "foobar";
+                },
+                setValue: function(value) {
+                    log.setValue = value;
+                },
+                suspendEvents: Ext.emptyFn,
+                resumeEvents: Ext.emptyFn
+            };
+            plugin.init(field);
+            
+            printPage.setScale(printProvider.scales.getAt(1));
+            t.eq(log.setValue, printProvider.scales.getAt(1).get("name"), "Plugin updated scale name on printPage change.");
+            
+            delete log.setValue;
+            plugin.onFieldChange(field, printProvider.scales.getAt(0));
+            
+            t.ok(printPage.scale === printProvider.scales.getAt(0), "Scale set on field change.");
+            t.eq(log.setValue, undefined, "setValue not called while updating.");
+        }
+
+        function test_Checkbox(t) {
+            t.plan(1);
+
+            var printPage = new GeoExt.data.PrintPage({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })
+            });
+
+            var plugin = new GeoExt.plugins.PrintPageField({
+                printPage: printPage
+            });
+
+            var field = new Ext.form.Checkbox({
+                name: "foo",
+                checked: true,
+                plugins: [plugin]
+            });
+
+            field.setValue(false);
+            t.eq(printPage.customParams.foo, false,
+                 "setValue(false) called, custom param is false");
+        }
+
+    </script>
+  </head>  
+  <body>
+    <div id="form" style="width:400px; height:300px"></div>
+  </body>
+</html>

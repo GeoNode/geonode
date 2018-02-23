@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+        function test_constructor(t) {
+            t.plan(1);
+            // setup
+            var protocol, proxy;
+            protocol = new OpenLayers.Protocol();
+            // test
+            proxy = new GeoExt.data.ProtocolProxy({
+                protocol: protocol        
+            });
+            t.ok(proxy.protocol == protocol,
+                 "ctor sets protocol in protocol property");
+        }
+
+        function test_load(t) {
+            t.plan(8);
+            // setup
+            var response, params, filter, protocol, reader, callback;
+            var scope, arg, proxy, result;
+            response = new OpenLayers.Protocol.Response({
+                code: OpenLayers.Protocol.Response.SUCCESS
+            });
+            params = {fake: "params"};
+            filter = {fake: "filter"};
+            protocol = new OpenLayers.Protocol({
+                read: function(o) {
+                    t.eq(o.params, params,
+                         "protocol read is passed expected params");
+                    t.eq(o.filter, filter,
+                         "protocol read is passed expected filter");
+                    t.ok(o.scope == proxy,
+                         "protocol read is passed expected scope");
+                    o.callback.call(o.scope, response);
+                }
+            });
+            proxy = new GeoExt.data.ProtocolProxy({
+                protocol: protocol
+            });
+            result = "fake result";
+            reader = {
+                read: function(r) {
+                    t.ok(r == response,
+                         "reader is passed expected response obj");
+                    return result;
+                }
+            };
+            scope = {fake: "scope"};
+            arg = {fake: "arg", filter: filter};
+            callback = function(r, a, s) {
+                t.ok(this == scope,
+                     "callback called with expected scope");
+                t.eq(r, result,
+                     "callback called with expected result");
+                t.eq(a, arg,
+                     "callback called with expected arg");
+                t.eq(s, true,
+                     "callback called with expected success boolean");
+            };
+            // 8 tests
+            proxy.load(params, reader, callback, scope, arg);
+        }
+        
+        function test_abort(t) {
+            t.plan(1);
+
+            var protocol = new OpenLayers.Protocol({
+                read: function(o) {
+                    return new OpenLayers.Protocol.Response();
+                },
+                abort: function(response) {
+                    t.ok("protocol.abort called");
+                }
+            });
+            var proxy = new GeoExt.data.ProtocolProxy({
+                protocol: protocol
+            });
+
+            proxy.load(); // abort not called because proxy.response is null
+            proxy.load(); // abort called
+            proxy.abortPrevious = false;
+            proxy.load(); // abort not called because proxy.abortPrevious is false
+        }
+
+        function test_setParamsAsOptions(t) {
+            t.plan(2);
+            var params = {fake: "params"};
+            protocol = new OpenLayers.Protocol({
+                read: function(o) {
+                    t.eq(o.fake, params.fake,
+                         "protocol read is passed expected params directly");
+                    t.eq(o.params, undefined, "Params is cleared");
+                }
+            });
+            var proxy = new GeoExt.data.ProtocolProxy({
+                setParamsAsOptions: true,
+                protocol: protocol
+            });
+            proxy.load(params);
+        }
+
+    </script>
+
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../externals/openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../externals/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../src/script/loader.js"></script>
+
+    <script type="text/javascript">
+       
+        function test_Viewer(t) {
+            t.plan(2);
+            
+            var instance = new gxp.Viewer({});
+            
+            t.ok(instance instanceof gxp.Viewer, "Instance created successfully");
+            
+            instance.destroy();
+            
+            t.eq(instance.mapPanel.isDestroyed, true, "MapPanel destroyed");
+        }
+        
+        function test_initMapPanel(t) {
+            t.plan(1);
+
+            var context = {
+                initialConfig: {
+                    map: {
+                        center: [1, 2]
+                    }
+                }
+            };
+            gxp.Viewer.prototype.initMapPanel.call(context);
+            t.eq(context.mapPanel.initialConfig.center.toString(), "lon=1,lat=2", "center configured correctly");
+        }
+        
+        function test_createLayerRecord(t) {
+            t.plan(4);
+            
+            var viewer = new gxp.Viewer({
+                sources: {
+                    local: {
+                        ptype: "gxp_wmssource",
+                        url: "../plugins/wms_caps.xml",
+                        requiredProperties: ["title"]
+                    }
+                },
+                map: {
+                    center: [0, 0],
+                    zoom: 1,
+                    projection: "EPSG:4326",
+                    maxExtent: [-180, -90, 180, 90]
+                }
+            });
+            
+            var log = [];
+            function created(rec) {
+                log.push({rec: rec, lazy: viewer.layerSources.local.lazy});
+            }            
+            viewer.createLayerRecord({
+                source: "local",
+                name: "medford:citylimits",
+                title: "Medford, US - City Limits"
+            }, created);
+            viewer.createLayerRecord({
+                source: "local",
+                name: "medford:parks"
+            }, created);
+            t.delay_call(1, function() {
+                t.eq(log[0].rec.get("name"), "medford:citylimits", "fully configured layer added first");
+                t.eq(log[0].lazy, true, "source is lazy after loading fully configured layers only");
+                t.eq(log[1].rec.get("name"), "medford:parks", "not fully configured layer added second");
+                t.eq(log[1].lazy, false, "source no longer lazy after store was loaded");
+                
+                viewer.destroy();
+            });
+            
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+This is the ever growing RingoJS JavaScript test suite.
+
+  ringo test/all.js
+
+Or, to avoid those slow running HTTP tests:
+
+  ringo test/most.js

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+       
+        function test_zoomslider(t) {
+            t.plan(7);
+            
+            var map = new OpenLayers.Map({
+                div: "map",
+                allOverlays: true
+            });
+            map.addLayer(new OpenLayers.Layer());
+            map.setCenter(new OpenLayers.LonLat(0, 0), 2);
+            
+            var slider = new GeoExt.ZoomSlider({
+                map: map,
+                renderTo: document.body
+            });
+            
+            // test range of values
+            t.eq(slider.minValue, 0, "slider min is 0");
+            t.eq(slider.maxValue, 15, "slider can go to 15");
+            
+            // test initial value
+            t.eq(slider.getValue(), 2, "slider has correct value after setCenter");
+            
+            // zoom in and test that value is updated
+            map.zoomIn();
+            t.eq(slider.getValue(), 3, "slider has correct value after zoomIn");
+            
+            // test that zoomTo updates slider value
+            map.zoomTo(0);
+            t.eq(slider.getValue(), 0, "slider has correct value after zoomTo");
+            
+            // test that slider can be destroyed
+            try {
+                slider.destroy();
+                t.ok(true, "slider.destroy does not cause problems");
+            } catch(err) {
+                t.fail("slider.destroy causes problems: " + err);
+            }
+            
+            // test that map can be zoomed without trouble after slider destroy
+            try {
+                map.zoomIn();
+                t.ok(true, "map.zoomIn does not cause problems after slider.destroy");
+            } catch(err) {
+                t.fail("map.zoomIn causes problems after slider.destroy: " + err);
+            }
+            
+            map.destroy();
+
+        }
+        
+        function test_zoomslider_aggressive(t) {
+            t.plan(2);
+            var slider1 = new GeoExt.ZoomSlider({
+                renderTo: document.body
+            });
+            slider1.on({
+                "changecomplete": function() {
+                    t.ok(true, "changecomplete triggered in non-aggressive mode");
+                }
+            });
+            var slider2 = new GeoExt.ZoomSlider({
+                renderTo: document.body,
+                aggressive: true
+            });
+            slider2.on({
+                "change": function() {
+                    t.ok(true, "change triggered in aggressive mode");
+                }
+            });
+            
+            slider1.setValue(slider1.maxValue, undefined, true);
+            slider2.setValue(slider2.maxValue, undefined, true);
+            
+            slider1.destroy();
+            slider2.destroy();
+        }
+
+    </script>
+  </head>
+  <body>
+    <div id="map" style="width: 512px; height: 256px;"></div>
+  </body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+       
+        function createMap() {
+            var map = new OpenLayers.Map();
+            map.addLayer(new OpenLayers.Layer('dummy layer', {
+                maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
+                isBaseLayer: true
+            }));
+            map.zoomToMaxExtent();
+            return map;
+        }
+
+        function loadMapPanel() {
+            var map = createMap();
+
+            var mapPanel = new GeoExt.MapPanel({
+                // panel options
+                id: "map-panel",
+                title: "GeoExt MapPanel",
+                renderTo: "mappanel",
+                height: 400,
+                width: 600,
+                // map panel-specific options
+                map: map,
+                center: new OpenLayers.LonLat(5, 45),
+                zoom: 4
+            });
+
+            return mapPanel;
+        }
+
+        function test_constructor(t) {
+            t.plan(1);
+
+            var store, map;
+
+            map = createMap();
+            store = new GeoExt.data.ScaleStore({map: map});
+            t.ok(store.map == map, "ctor sets the passed map in the instance");
+            
+            map.destroy();
+        }
+
+        function test_bind_unbind(t) {
+            t.plan(7);
+
+            var map, store;
+
+            map = new OpenLayers.Map({controls: []});
+            store = new GeoExt.data.ScaleStore({});
+
+            // map has no base layer
+            // 4 tests
+
+            store.bind(map);
+            t.ok(map.events.listeners["changebaselayer"][0]["func"] == store.populateFromMap,
+                 "bind registers a changebaselayer listener (map has no base layer)");
+            t.ok(map.events.listeners["addlayer"][0]["func"] == store.populateOnAdd,
+                 "bind registers a addlayer listener (map has no base layer)");
+
+            store.unbind();
+            t.eq(map.events.listeners["changebaselayer"][0], undefined,
+                 "unbind unregisters changebaselayer listener (map has no base layer)");
+            t.eq(map.events.listeners["addlayer"][0], undefined,
+                 "unbind unregisters addlayer listener (map has no base layer)");
+
+            // map has a base layer
+            // 3 tests
+
+            map.addLayer(new OpenLayers.Layer("name", {isBaseLayer: true}));
+
+            store.bind(map);
+            t.ok(map.events.listeners["changebaselayer"][0]["func"] == store.populateFromMap,
+                 "bind registers a changebaselayer listener (map has a base layer)");
+            t.eq(map.events.listeners["addlayer"][0], undefined,
+                 "bind does not register a addlayer listener (map has a base layer)");
+
+            store.unbind();
+            t.eq(map.events.listeners["changebaselayer"][0], undefined,
+                 "unbind unregisters changebaselayer listener (map has a base layer)");
+            
+            map.destroy();
+        }
+
+        function test_scalestore(t) {
+            t.plan(3);
+
+            var mapPanel = loadMapPanel();
+            var map = mapPanel.map;
+            var store = new GeoExt.data.ScaleStore({map: map});
+            var levels = map.baseLayer.resolutions.length;
+            t.eq(store.getCount(), levels,
+                 'Found expected number of zoomlevels: ' + levels);
+            
+            var low = store.getAt(0).get("resolution");
+            t.eq(low, map.baseLayer.resolutions[levels-1],
+                 'First record has lowest res value: ' + low);
+
+            var high = store.getAt(levels-1).get("resolution");
+            t.eq(high, map.baseLayer.resolutions[0],
+                 'Last record has highest res value: ' + high);
+            
+            map.destroy();
+            mapPanel.destroy();
+            
+        }
+        
+    </script>
+  </head>  
+  <body>
+    <div id="mappanel" style="width:400px; height:300px"></div>
+  </body>
+</html>
