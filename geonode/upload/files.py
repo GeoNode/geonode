@@ -266,6 +266,15 @@ def scan_file(file_name, scan_hint=None):
             if file_type.matches(path_extension) and hint_ok:
                 found.append(file_type.build_spatial_file(path, safe_paths))
 
+    # detect xmls and assign if a single upload is found
+    xml_files = _find_file_type(safe_paths, extension='.xml')
+    if xml_files:
+        if len(found) == 1:
+            found[0].xml_files = xml_files
+        else:
+            raise Exception("One or more XML files was provided, but no " +
+                            "matching files were found for them.")
+
     # detect slds and assign if a single upload is found
     sld_files = _find_file_type(safe_paths, extension='.sld')
     if sld_files:
