@@ -569,14 +569,18 @@
                                                         {% if resource.default_style == style %}
                                                             <input type="radio" checked name="style"
                                                                    id="{{ style.name }}"
-                                                                   value="{{ style.title }}"/>
+                                                                   value="{{ style.title }}" onchange="changeStyle('{{resource.typename}}', {{ style.styleextension.id }})"/>
                                                             (default style)
                                                         {% else %}
                                                             <input type="radio" name="style" id="{{ style.name }}"
-                                                                   value="{{ style.title }}"/>
+                                                                   value="{{ style.title }}" onchange="changeStyle('{{resource.typename}}',{{ style.styleextension.id }})"/>
                                                         {% endif %}
                                                         <label style="color:blue">
-                                                            {{ style.name|truncatechars:20 }}
+                                                            {% if style.styleextension %}
+                                                                {{ style.styleextension.title|truncatechars:20 }}
+                                                            {% else %}
+                                                                {{ style.name|truncatechars:20 }}
+                                                            {% endif %}                                                            
                                                         </label>
                                                  
 
@@ -1041,6 +1045,11 @@
         GD_WRAPPER__HEIGHT = bodyHeight;
         $("#gd-wrapper .layer-details-information, #gd-wrapper .map-details-info").css("height", bodyHeight + "px");
     }
+    function changeStyle(layerId, styleId){
+            var controller = angular.element("[ng-controller='MapController']");
+            var scope = controller.scope();
+            scope.changeStyle(layerId, styleId);
+        }
     $(document).ready(function () {
         // wrapper
         resetWrapperHight();
