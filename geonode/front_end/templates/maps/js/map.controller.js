@@ -2,9 +2,9 @@
     appModule
         .controller('MapController', MapController);
 
-    MapController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope', 'layerService','queryOutputFactory','$rootScope'];
+    MapController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope', 'layerService', 'queryOutputFactory', '$rootScope'];
 
-    function MapController(mapService, $window, analyticsService, LayerService, $scope, oldLayerService,queryOutputFactory,$rootScope) {
+    function MapController(mapService, $window, analyticsService, LayerService, $scope, oldLayerService, queryOutputFactory, $rootScope) {
         var self = this;
         var re = /\d*\/embed/;
         var map = mapService.getMap();
@@ -28,10 +28,24 @@
 
         }
 
-        $scope.group={"a": "AND","rules": []};
-        $scope.getQueryResult=function(){
-                var query=queryOutputFactory.getOutput($scope.group);
-                $rootScope.$broadcast('filterDataWithCqlFilter',query);
+        $scope.changeStyle = function(layerId, styleId) {
+            var layer = mapService.getLayer(layerId);
+            if (styleId) {
+                LayerService.getStyle(styleId)
+                    .then(function(res) {
+                        layer.setStyle(res);
+                        layer.refresh();
+                    });
+            } else {
+                layer.setStyle(LayerService.getNewStyle());
+                layer.refresh();
+            }
+        };
+
+        $scope.group = { "a": "AND", "rules": [] };
+        $scope.getQueryResult = function() {
+            var query = queryOutputFactory.getOutput($scope.group);
+            $rootScope.$broadcast('filterDataWithCqlFilter', query);
         };
 
         function getGeoServerSettings() {
