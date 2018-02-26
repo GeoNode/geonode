@@ -157,7 +157,7 @@ class LayerUploadForm(forms.Form):
                     sld_file = cleaned["sld_file"].name
 
         if not cleaned["metadata_upload_form"] and not cleaned["style_upload_form"] and base_ext.lower() not in (
-                ".shp", ".tif", ".tiff", ".geotif", ".geotiff", ".asc"):
+                ".shp", ".tif", ".tiff", ".geotif", ".geotiff", ".asc", ".sld"):
             raise forms.ValidationError(
                 "Only Shapefiles, GeoTiffs, and ASCIIs are supported. You "
                 "uploaded a %s file" % base_ext)
@@ -220,9 +220,8 @@ class LayerUploadForm(forms.Form):
                     with open(path, 'wb') as writable:
                         for c in f.chunks():
                             writable.write(c)
-
-        absolute_base_file = os.path.join(tempdir,
-                                          self.cleaned_data["base_file"].name)
+            absolute_base_file = os.path.join(tempdir,
+                                              self.cleaned_data["base_file"].name)
         return tempdir, absolute_base_file
 
 

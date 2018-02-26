@@ -49,6 +49,7 @@ from geoserver.resource import FeatureType
 from gsimporter import BadRequest
 
 from geonode import GeoNodeException
+from geonode.base.models import SpatialRepresentationType, TopicCategory
 from ..people.utils import get_default_user
 from ..layers.models import Layer
 from ..layers.metadata import set_metadata
@@ -56,6 +57,7 @@ from ..layers.utils import get_valid_layer_name, resolve_regions
 from ..geoserver.helpers import (mosaic_delete_first_granule,
                                  set_time_dimension,
                                  set_time_info,
+                                 set_layer_style,
                                  gs_catalog,
                                  gs_uploader,
                                  ogc_server_settings)
@@ -591,14 +593,14 @@ def final_step(upload_session, user):
         if os.path.isfile(sld_file):
             try:
                 f = open(sld_file, 'r')
-            except:
+            except BaseException:
                 pass
         elif upload_session.tempdir and os.path.exists(upload_session.tempdir):
             tempdir = upload_session.tempdir
             if os.path.isfile(os.path.join(tempdir, sld_file)):
                 try:
                     f = open(os.path.join(tempdir, sld_file), 'r')
-                except:
+                except BaseException:
                     pass
 
         if f:
@@ -612,12 +614,20 @@ def final_step(upload_session, user):
     style = None
     if sld is not None:
         try:
-            cat.create_style(name, sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
+            cat.create_style(
+                name,
+                sld,
+                raw=True,
+                workspace=settings.DEFAULT_WORKSPACE)
         except geoserver.catalog.ConflictingDataError as e:
             msg = 'There was already a style named %s in GeoServer, try using another name: "%s"' % (
                 name, str(e))
             try:
-                cat.create_style(name + '_layer', sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
+                cat.create_style(
+                    name + '_layer',
+                    sld,
+                    raw=True,
+                    workspace=settings.DEFAULT_WORKSPACE)
             except geoserver.catalog.ConflictingDataError as e:
                 msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (
                     name, str(e))
@@ -626,14 +636,15 @@ def final_step(upload_session, user):
 
         if style is None:
             try:
-                style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
+                style = cat.get_style(
+                    name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
             except BaseException:
                 logger.warn('Could not retreive the Layer default Style name')
                 # what are we doing with this var?
                 msg = 'No style could be created for the layer, falling back to POINT default one'
                 try:
                     style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
-                            cat.get_style(name + '_layer')
+                        cat.get_style(name + '_layer')
                 except BaseException:
                     style = cat.get_style('point')
                     logger.warn(msg)
@@ -750,6 +761,7 @@ def final_step(upload_session, user):
     saved_layer.metadata_author = user
 
     # look for xml
+    defaults = {}
     xml_file = upload_session.base_file[0].xml_files
     if xml_file:
         saved_layer.metadata_uploaded = True
@@ -764,28 +776,81 @@ def final_step(upload_session, user):
         identifier, vals, regions, keywords = set_metadata(
             open(xml_file[0]).read())
 
+        saved_layer.metadata_xml = xml_file[0]
         regions_resolved, regions_unresolved = resolve_regions(regions)
         keywords.extend(regions_unresolved)
 
-        # set regions
-        regions_resolved = list(set(regions_resolved))
-        if regions:
-            if len(regions) > 0:
-                saved_layer.regions.add(*regions_resolved)
+        if getattr(settings, 'NLP_ENABLED', False):
+            try:
+                from geonode.contrib.nlp.utils import nlp_extract_metadata_dict
+                nlp_metadata = nlp_extract_metadata_dict({
+                    'title': defaults.get('title', None),
+                    'abstract': defaults.get('abstract', None),
+                    'purpose': defaults.get('purpose', None)})
+                if nlp_metadata:
+                    regions_resolved.extend(nlp_metadata.get('regions', []))
+                    keywords.extend(nlp_metadata.get('keywords', []))
+            except BaseException:
+                print "NLP extraction failed."
 
-        # set taggit keywords
+        # Assign the regions (needs to be done after saving)
+        regions_resolved = list(set(regions_resolved))
+        if regions_resolved:
+            if len(regions_resolved) > 0:
+                if not saved_layer.regions:
+                    saved_layer.regions = regions_resolved
+                else:
+                    saved_layer.regions.clear()
+                    saved_layer.regions.add(*regions_resolved)
+
+        # Assign the keywords (needs to be done after saving)
         keywords = list(set(keywords))
-        saved_layer.keywords.add(*keywords)
+        if keywords:
+            if len(keywords) > 0:
+                if not saved_layer.keywords:
+                    saved_layer.keywords = keywords
+                else:
+                    saved_layer.keywords.add(*keywords)
 
         # set model properties
-        for (key, value) in vals.items():
-            if key == "spatial_representation_type":
-                # value = SpatialRepresentationType.objects.get(identifier=value)
-                pass
+        for key, value in vals.items():
+            if key == 'spatial_representation_type':
+                value = SpatialRepresentationType(identifier=value)
+            elif key == 'topic_category':
+                value, created = TopicCategory.objects.get_or_create(
+                    identifier=value.lower(),
+                    defaults={'description': '', 'gn_description': value})
+                key = 'category'
+                defaults[key] = value
             else:
-                setattr(saved_layer, key, value)
+                defaults[key] = value
 
+        # update with new information
+        db_layer = Layer.objects.filter(id=saved_layer.id)
+        db_layer.update(**defaults)
+        saved_layer.refresh_from_db()
+
+        # Pass the parameter overwrite to tell whether the
+        # geoserver_post_save_signal should upload the new file or not
+        saved_layer.overwrite = True
         saved_layer.save()
+
+    # look for SLD
+    sld_file = upload_session.base_file[0].sld_files
+    if sld_file:
+        # If it's contained within a zip, need to extract it
+        if upload_session.base_file.archive:
+            archive = upload_session.base_file.archive
+            zf = zipfile.ZipFile(archive, 'r')
+            zf.extract(sld_file[0], os.path.dirname(archive))
+            # Assign the absolute path to this file
+            sld_file[0] = os.path.dirname(archive) + '/' + sld_file[0]
+        sld = open(sld_file[0]).read()
+        set_layer_style(
+            saved_layer,
+            saved_layer.alternate,
+            sld,
+            base_file=sld_file[0])
 
     # Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook

@@ -36,8 +36,8 @@ from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
 from geonode.geoserver.helpers import set_styles, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.geoserver.helpers import geoserver_upload
 from geonode.geoserver.helpers import create_gs_thumbnail
+from geonode.geoserver.upload import geoserver_upload
 from geonode.base.models import ResourceBase
 from geonode.base.models import Link
 from geonode.people.models import Profile

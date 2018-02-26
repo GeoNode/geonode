@@ -80,9 +80,10 @@ from geonode.utils import build_social_links
 from geonode.base.views import batch_modify
 from geonode.base.models import Thesaurus
 from geonode.maps.models import Map
-from geonode.geoserver.helpers import (cascading_delete, gs_catalog,
-                                       ogc_server_settings, save_style,
-                                       extract_name_from_sld, _invalidate_geowebcache_layer)
+from geonode.geoserver.helpers import (cascading_delete,
+                                       gs_catalog,
+                                       ogc_server_settings,
+                                       set_layer_style)
 from .tasks import delete_layer
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -208,53 +209,13 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         msg = 'Failed to process.  Could not find matching layer.'
                         raise Exception(msg)
                     sld = open(base_file).read()
-                    # Check SLD is valid
-                    extract_name_from_sld(gs_catalog, sld, sld_file=base_file)
-
-                    match = None
-                    styles = list(saved_layer.styles.all()) + [
-                        saved_layer.default_style]
-                    for style in styles:
-                        if style and style.name == saved_layer.name:
-                            match = style
-                            break
-                    cat = gs_catalog
-                    layer = cat.get_layer(title)
-                    if match is None:
-                        try:
-                            cat.create_style(saved_layer.name, sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
-                            style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
-                                cat.get_style(saved_layer.name)
-                            if layer and style:
-                                layer.default_style = style
-                                cat.save(layer)
-                                saved_layer.default_style = save_style(style)
-                        except Exception as e:
-                            logger.exception(e)
-                    else:
-                        style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
-                            cat.get_style(saved_layer.name)
-                        # style.update_body(sld)
-                        try:
-                            cat.create_style(saved_layer.name, sld, overwrite=True, raw=True,
-                                             workspace=settings.DEFAULT_WORKSPACE)
-                            style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
-                                cat.get_style(saved_layer.name)
-                            if layer and style:
-                                layer.default_style = style
-                                cat.save(layer)
-                                saved_layer.default_style = save_style(style)
-                        except Exception as e:
-                            logger.exception(e)
-
-                    # Invalidate GeoWebCache for the updated resource
-                    _invalidate_geowebcache_layer(saved_layer.alternate)
+                    set_layer_style(saved_layer, title, base_file, sld)
 
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
                 out['success'] = False
-                out['errors'] = str(error)
+                out['errors'] = u''.join(error).encode('utf-8')
                 # Assign the error message to the latest UploadSession from
                 # that user.
                 latest_uploads = UploadSession.objects.filter(
@@ -1291,7 +1252,7 @@ def layer_metadata_upload(
     layer = _resolve_layer(
         request,
         layername,
-        'view_resourcebase',
+        'base.change_resourcebase',
         _PERMISSION_MSG_METADATA)
     return render_to_response(template, RequestContext(request, {
         "resource": layer,

@@ -103,6 +103,8 @@ def unzip_file(upload_file, extension='.shp', tempdir=None):
     absolute_base_file = None
     if tempdir is None:
         tempdir = tempfile.mkdtemp()
+    if not os.path.isdir(tempdir):
+        os.makedirs(tempdir)
 
     the_zip = ZipFile(upload_file)
     the_zip.extractall(tempdir)

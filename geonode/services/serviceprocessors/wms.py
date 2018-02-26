@@ -179,8 +179,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             instance=geonode_layer,
             thumbnail_remote_url=thumbnail_remote_url,
             thumbnail_create_url=None,
-            check_bbox=True,
-            overwrite=True,
+            check_bbox=False,
+            overwrite=True
         )
 
     def _create_layer_legend_link(self, geonode_layer):

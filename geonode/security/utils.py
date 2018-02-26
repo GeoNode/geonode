@@ -324,7 +324,7 @@ def set_geofence_owner(instance, username=None, view_perms=False, download_perms
         pass
     else:
         services = (
-            (["WMS", "GWC"] if view_perms else []) +
+            (["*", "WMS", "GWC"] if view_perms else []) +
             (["WFS", "WCS", "WPS"] if download_perms else [])
         )
         try:
@@ -514,7 +514,7 @@ def _get_geofence_payload(layer, workspace, access, user=None, group=None,
     layer_el.text = layer
     access_el = etree.SubElement(root_el, "access")
     access_el.text = access
-    if service is not None:
+    if service is not None and service is not "*":
         service_el = etree.SubElement(root_el, "service")
         service_el.text = service
     return etree.tostring(root_el)
