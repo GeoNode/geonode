@@ -1162,7 +1162,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         if(layer.local){
             // url is always the generic GeoServer endpoint for WM layers
-            layer.url = this.localGeoServerBaseUrl + 'wms';
+            // layer.url = this.localGeoServerBaseUrl + 'wms';
+            layer.url = this.localGeoServerBaseUrl.replace("/geoserver/", "/geoserver/wms");
         };
 
         if(thisRecord.get('ServiceType') === 'ESRI:ArcGIS:ImageServer' || thisRecord.get('ServiceType') === 'ESRI:ArcGIS:MapServer'){

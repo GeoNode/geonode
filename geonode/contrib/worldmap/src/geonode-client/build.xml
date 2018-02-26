@@ -29,7 +29,8 @@
         <java jar="externals/ringo/run.jar" fork="true" failonerror="true">
             <sysproperty key="ringo.home" path="externals/ringo"/>
             <arg path="externals/buildkit/lib/buildkit/build.js"/>
-            <arg line="-o ../../worldmap/static/worldmap_client/script buildjs.cfg"/>
+            <!--<arg line="-o ../../worldmap/static/worldmap_client/script buildjs.cfg"/>-->
+            <arg line="-o ../../wm_extra/static/worldmap/worldmap_client/script buildjs.cfg"/>
         </java>
 
     </target>
