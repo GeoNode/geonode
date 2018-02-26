@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     container_name: db4${COMPOSE_PROJECT_NAME}
     stdin_open: true
-    tty: true
+    # tty: true
     labels:
         org.geonode.component: db
         org.geonode.instance.name: geonode
@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
     container_name: elasticsearch4${COMPOSE_PROJECT_NAME}
     stdin_open: true
-    tty: true
+    # tty: true
     labels:
         org.geonode.component: elasticsearch
         org.geonode.instance.name: geonode
@@ -41,7 +41,7 @@ services:
     image: geonode/geonode:latest
     container_name: django4${COMPOSE_PROJECT_NAME}
     stdin_open: true
-    tty: true
+    # tty: true
     labels:
         org.geonode.component: django
         org.geonode.instance.name: geonode
@@ -60,7 +60,7 @@ services:
     image: geonode/geonode:latest
     container_name: celery4${COMPOSE_PROJECT_NAME}
     stdin_open: true
-    tty: true
+    # tty: true
     labels:
         org.geonode.component: celery
         org.geonode.instance.name: geonode
@@ -79,7 +79,7 @@ services:
     restart: unless-stopped
     container_name: consumers4${COMPOSE_PROJECT_NAME}
     stdin_open: true
-    tty: true
+    # tty: true
     labels:
         org.geonode.component: consumers
         org.geonode.instance.name: geonode
@@ -98,7 +98,7 @@ services:
     restart: unless-stopped
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     stdin_open: true
-    tty: true
+    # tty: true
     labels:
         org.geonode.component: geoserver
         org.geonode.instance.name: geonode
@@ -115,7 +115,7 @@ services:
     restart: unless-stopped
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     stdin_open: true
-    tty: true
+    # tty: true
     labels:
         org.geonode.component: nginx
         org.geonode.instance.name: geonode
