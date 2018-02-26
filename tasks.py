@@ -27,17 +27,18 @@ def update(ctx):
     db_url = _update_db_connstring()
     geodb_url = _update_geodb_connstring()
     envs = {
-        "sitedomain": "{0}:{1}".format(pub_ip, pub_port),
+        "public_fqdn": "{0}:{1}".format(pub_ip, pub_port),
+        "public_host": "{0}".format(pub_ip),
         "dburl": db_url,
         "geodburl": geodb_url,
         "override_fn": "$HOME/.override_env"
     }
     ctx.run("echo export GEOSERVER_PUBLIC_LOCATION=\
-http://{sitedomain}/geoserver/ >> {override_fn}".format(**envs), pty=True)
+http://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
     ctx.run("echo export SITEURL=\
-http://{sitedomain}/ >> {override_fn}".format(**envs), pty=True)
+http://{public_fqdn}/ >> {override_fn}".format(**envs), pty=True)
     ctx.run("echo export ALLOWED_HOSTS=\
-['{sitedomain}',] >> {override_fn}".format(**envs), pty=True)
+['{public_fqdn}', '{public_host}',] >> {override_fn}".format(**envs), pty=True)
     ctx.run("echo export DATABASE_URL=\
 {dburl} >> {override_fn}".format(**envs), pty=True)
     ctx.run("echo export GEODATABASE_URL=\
