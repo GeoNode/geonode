@@ -5,6 +5,7 @@ import urlparse
 from django.db import models
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import signals
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -12,6 +13,22 @@ from geonode.people.models import Profile
 
 from .encode import despam, XssCleaner
 from .signals import save_profile, add_ext_layer, add_ext_map
+
+try:
+    from django.utils import timezone
+    now = timezone.now
+except ImportError:
+    from datetime import datetime
+    now = datetime.now
+
+
+ACTION_TYPES = [
+    ['layer_delete', 'Layer Deleted'],
+    ['layer_create', 'Layer Created'],
+    ['layer_upload', 'Layer Uploaded'],
+    ['map_delete', 'Map Deleted'],
+    ['map_create', 'Map Created'],
+]
 
 
 ows_sub = re.compile(r"[&\?]+SERVICE=WMS|[&\?]+REQUEST=GetCapabilities", re.IGNORECASE)
@@ -165,3 +182,59 @@ class Endpoint(models.Model):
     description = models.TextField(_('Describe Map Service'))
     url = models.URLField(_('Map service URL'))
     owner = models.ForeignKey(Profile, blank=True, null=True)
+
+
+class Action(models.Model):
+    """
+    Model to store user actions, such a layer creation or deletion.
+    """
+    action_type = models.CharField(max_length=25, choices=ACTION_TYPES)
+    description = models.CharField(max_length=255, db_index=True)
+    args = models.CharField(max_length=255, db_index=True)
+    timestamp = models.DateTimeField(default=now, db_index=True)
+
+
+# signals for adding actions
+
+def action_add_layer(instance, sender, created, **kwargs):
+    if created:
+        username = instance.owner.username
+        action = Action(
+                        action_type='layer_create',
+                        description='User %s created layer with id %s' % (username, instance.id),
+                        args=instance.uuid,
+                        )
+        action.save()
+
+def action_delete_layer(instance, sender, **kwargs):
+    username = instance.owner.username
+    action = Action(
+                    action_type='layer_delete',
+                    description='User %s deleted layer with id %s' % (username, instance.id),
+                    args=instance.uuid,
+                    )
+    action.save()
+
+def action_add_map(instance, sender, created, **kwargs):
+    if created:
+        username = instance.owner.username
+        action = Action(
+                        action_type='map_create',
+                        description='User %s created map with id %s' % (username, instance.id),
+                        args=instance.uuid,
+                        )
+        action.save()
+
+def action_delete_map(instance, sender, **kwargs):
+    username = instance.owner.username
+    action = Action(
+                    action_type='map_delete',
+                    description='User %s deleted map with id %s' % (username, instance.id),
+                    args=instance.uuid,
+                    )
+    action.save()
+
+signals.post_save.connect(action_add_layer, sender=Layer)
+signals.post_delete.connect(action_delete_layer, sender=Layer)
+signals.post_save.connect(action_add_map, sender=Map)
+signals.post_delete.connect(action_delete_map, sender=Map)

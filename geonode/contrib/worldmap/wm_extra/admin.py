@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ExtLayer, ExtMap, LayerStats, MapStats, Endpoint
+from .models import ExtLayer, ExtMap, LayerStats, MapStats, Endpoint, Action
 
 
 class ExtLayerAdmin(admin.ModelAdmin):
@@ -41,8 +41,19 @@ class EndpointAdmin(admin.ModelAdmin):
     search_fields = ['description', 'url']
 
 
+class ActionAdmin(admin.ModelAdmin):
+    """
+    Admin for Action.
+    """
+    list_display = ('id', 'timestamp','action_type','description', )
+    list_filter  = ('action_type', )
+    date_hierarchy = 'timestamp'
+    ordering = ('-timestamp',)
+
+
 admin.site.register(ExtLayer, ExtLayerAdmin)
 admin.site.register(ExtMap, ExtMapAdmin)
 admin.site.register(LayerStats, LayerStatsAdmin)
 admin.site.register(MapStats, MapStatsAdmin)
 admin.site.register(Endpoint, EndpointAdmin)
+admin.site.register(Action, ActionAdmin)

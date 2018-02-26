@@ -5,6 +5,8 @@ from taggit.models import Tag
 from geonode.maps.models import Layer
 from geonode.base.models import TopicCategory
 
+from geonode.contrib.worldmap.wm_extra.models import Action
+
 
 class TopicCategoryResource(ModelResource):
     """
@@ -67,3 +69,48 @@ class LayerResource(ModelResource):
             'name', 'owner_username', 'srs', 'temporal_extent_end',
             'temporal_extent_start', 'title', 'topic_category', 'typename', 'uuid',
         ]
+
+
+class ActionAllResource(ModelResource):
+
+    class Meta:
+        queryset = Action.objects.all().order_by('-timestamp')
+        allowed_methods = ['get', ]
+        fields = ['args', 'timestamp', 'description',]
+        ordering = ['timestamp', ]
+
+
+class ActionLayerCreateResource(ModelResource):
+
+    class Meta:
+        queryset = Action.objects.filter(action_type='layer_create').order_by('-timestamp')
+        allowed_methods = ['get', ]
+        fields = ['args', 'timestamp', 'description',]
+        ordering = ['timestamp', ]
+
+
+class ActionLayerDeleteResource(ModelResource):
+
+    class Meta:
+        queryset = Action.objects.filter(action_type='layer_delete').order_by('-timestamp')
+        allowed_methods = ['get', ]
+        fields = ['args', 'timestamp', 'description',]
+        ordering = ['timestamp', ]
+
+
+class ActionMapCreateResource(ModelResource):
+
+    class Meta:
+        queryset = Action.objects.filter(action_type='map_create').order_by('-timestamp')
+        allowed_methods = ['get', ]
+        fields = ['args', 'timestamp', 'description',]
+        ordering = ['timestamp', ]
+
+
+class ActionMapDeleteResource(ModelResource):
+
+    class Meta:
+        queryset = Action.objects.filter(action_type='map_delete').order_by('-timestamp')
+        allowed_methods = ['get', ]
+        fields = ['args', 'timestamp', 'description',]
+        ordering = ['timestamp', ]

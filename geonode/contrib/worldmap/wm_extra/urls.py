@@ -7,13 +7,21 @@ from .views import (proxy, ajax_layer_update, ajax_layer_edit_check, upload_laye
     create_pg_layer, ajax_increment_layer_stats, new_map_wm, new_map_json_wm, map_view_wm, map_json_wm,
     add_endpoint)
 from tastypie.api import Api
-from .api.resources import LayerResource, TagResource, TopicCategoryResource
+from .api.resources import (LayerResource, TagResource, TopicCategoryResource,
+        ActionAllResource, ActionLayerCreateResource, ActionLayerDeleteResource,
+        ActionMapCreateResource, ActionMapDeleteResource)
 
 # api
 wm_api = Api(api_name='2.8')
 wm_api.register(LayerResource())
 wm_api.register(TagResource())
 wm_api.register(TopicCategoryResource())
+wm_api.register(ActionAllResource())
+wm_api.register(ActionLayerCreateResource())
+wm_api.register(ActionLayerDeleteResource())
+wm_api.register(ActionMapCreateResource())
+wm_api.register(ActionMapDeleteResource())
+
 
 urlpatterns = patterns('',
                         # api
