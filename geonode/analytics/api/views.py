@@ -1,5 +1,6 @@
 
-from geonode.analytics.models import MapLoad,Visitor,LayerLoad,PinpointUserActivity
+from geonode.analytics.enum import ContentTypeEnum
+from geonode.analytics.models import MapLoad,Visitor,LayerLoad,PinpointUserActivity, LoadActivity
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -12,7 +13,7 @@ from geonode.analytics.api.serializers import (
 )
 
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -190,4 +191,37 @@ class LayerListAPIView(AnalyticsMixin, ListAPIView):
 
         return Response(data=results, status=status.HTTP_200_OK)
             
-                
+class LoadActivityCreateAPIView(CreateAPIView):
+    """
+    """
+    def _save(self, content_object, ip, agent,latitude=None, longitude=None, user=None):
+        obj = LoadActivity(content_object=content_object, 
+                            ip=ip, agent=agent, 
+                            latitude=float(latitude) if latitude is not None else None, 
+                            longitude= float(longitude) if longitude is not None else None, 
+                            user=user if user is not None and user.id is not None else None)
+        obj.save()
+
+    def post(self, request, **kwargs):
+        data = request.data
+        content_type = kwargs.get('content_type', data.get('content_type', None))
+
+        if content_type is None:
+            raise Exception('Unable to determine the the activity type')
+        
+        model_instance = ContentTypeEnum.CONTENT_TYPES.get(content_type, None)
+        
+        if not model_instance:
+            raise Exception('Invalid activity action')
+        
+        content_object = model_instance.objects.get(pk=data.get('id'))
+        
+        self._save(content_object=content_object, 
+                ip = str(request.environ['REMOTE_ADDR']),
+                agent = str(request.environ['HTTP_USER_AGENT']),
+                user = None if request.user.id is None else request.user,
+                latitude = data.get('latitude', None),
+                longitude = data.get('longitude', None)
+                )
+
+        return Response(status=status.HTTP_201_CREATED)
