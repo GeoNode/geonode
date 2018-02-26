@@ -21,16 +21,28 @@
 from django.conf.urls import patterns, url
 
 urlpatterns = patterns('geonode.geoserver.views',
+                       # REST Endpoints
                        url(r'^rest/stores/(?P<store_type>\w+)/$', 'stores', name="stores"),
-                       (r'^rest/styles', 'geoserver_rest_proxy', dict(proxy_path='/gs/rest/styles',
-                                                                      downstream_path='rest/styles')),
-                       (r'^rest/workspaces/(?P<workspace>\w+)/styles', 'geoserver_rest_proxy',
+                       (r'^rest/styles', 'geoserver_proxy', dict(proxy_path='/gs/rest/styles',
+                                                                 downstream_path='rest/styles')),
+                       (r'^rest/workspaces/(?P<workspace>\w+)/styles', 'geoserver_proxy',
                         dict(proxy_path='/gs/rest/workspaces',
                              downstream_path='rest/workspaces')),
-                       (r'^rest/layers', 'geoserver_rest_proxy', dict(proxy_path='/gs/rest/layers',
-                                                                      downstream_path='rest/layers')),
-                       (r'^rest/sldservice', 'geoserver_rest_proxy', dict(proxy_path='/gs/rest/sldservice',
-                                                                          downstream_path='rest/sldservice')),
+                       (r'^rest/layers', 'geoserver_proxy', dict(proxy_path='/gs/rest/layers',
+                                                                 downstream_path='rest/layers')),
+                       (r'^rest/sldservice', 'geoserver_proxy', dict(proxy_path='/gs/rest/sldservice',
+                                                                     downstream_path='rest/sldservice')),
+
+                       # OWS Endpoints
+                       (r'^ows', 'geoserver_proxy', dict(proxy_path='/gs/ows',
+                                                         downstream_path='ows')),
+                       (r'^wms', 'geoserver_proxy', dict(proxy_path='/gs/wms',
+                                                         downstream_path='wms')),
+                       (r'^wfs', 'geoserver_proxy', dict(proxy_path='/gs/wfs',
+                                                         downstream_path='wfs')),
+                       (r'^wcs', 'geoserver_proxy', dict(proxy_path='/gs/wcs',
+                                                         downstream_path='wcs')),
+
                        url(r'^updatelayers/$', 'updatelayers', name="updatelayers"),
                        url(r'^(?P<layername>[^/]*)/style$', 'layer_style', name="layer_style"),
                        url(r'^(?P<layername>[^/]*)/style/upload$', 'layer_style_upload', name='layer_style_upload'),

@@ -18,14 +18,15 @@
 #
 #########################################################################
 
+import os
+import re
 import json
 import logging
 import httplib2
-import os
 from lxml import etree
 
 from httplib import HTTPConnection, HTTPSConnection
-from urlparse import urlsplit
+from urlparse import urlsplit, urljoin
 
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseRedirect
@@ -144,8 +145,9 @@ def layer_style_upload(request, layername):
     sld_name = None
     try:
         # Check SLD is valid
-        sld_name = extract_name_from_sld(gs_catalog, sld, sld_file=request.FILES['sld'])
-    except Exception, e:
+        sld_name = extract_name_from_sld(
+            gs_catalog, sld, sld_file=request.FILES['sld'])
+    except Exception as e:
         respond(errors="The uploaded SLD file is not valid XML: {}".format(e))
 
     name = data.get('name') or sld_name
@@ -162,7 +164,11 @@ def layer_style_upload(request, layername):
     else:
         try:
             cat = gs_catalog
-            cat.create_style(name, sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
+            cat.create_style(
+                name,
+                sld,
+                raw=True,
+                workspace=settings.DEFAULT_WORKSPACE)
             layer.styles = layer.styles + \
                 [type('style', (object,), {'name': name})]
             cat.save(layer.publishing)
@@ -200,7 +206,8 @@ def layer_style_manage(request, layername):
 
             # Ahmed Nour:
             # Get public styles also
-            all_available_gs_styles = cat.get_styles(settings.DEFAULT_WORKSPACE)
+            all_available_gs_styles = cat.get_styles(
+                settings.DEFAULT_WORKSPACE)
             all_available_gs_styles += cat.get_styles()
             gs_styles = []
             for style in all_available_gs_styles:
@@ -208,7 +215,7 @@ def layer_style_manage(request, layername):
                 try:
                     if style.sld_title:
                         sld_title = style.sld_title
-                except:
+                except BaseException:
                     pass
                 gs_styles.append((style.name, sld_title))
 
@@ -219,7 +226,7 @@ def layer_style_manage(request, layername):
                 try:
                     if style.sld_title:
                         sld_title = style.sld_title
-                except:
+                except BaseException:
                     pass
                 layer_styles.append((style.name, sld_title))
 
@@ -228,7 +235,7 @@ def layer_style_manage(request, layername):
             try:
                 if layer.default_style.sld_title:
                     sld_title = layer.default_style.sld_title
-            except:
+            except BaseException:
                 pass
             default_style = (layer.default_style.name, sld_title)
             return render_to_response(
@@ -267,7 +274,10 @@ def layer_style_manage(request, layername):
                 cat.get_style(default_style)
             styles = []
             for style in selected_styles:
-                styles.append(cat.get_style(style, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(style))
+                styles.append(
+                    cat.get_style(
+                        style,
+                        workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(style))
             gs_layer.styles = styles
             cat.save(gs_layer)
 
@@ -305,7 +315,7 @@ def feature_edit_check(request, layername):
     """
     try:
         layer = _resolve_layer(request, layername)
-    except:
+    except BaseException:
         # Intercept and handle correctly resource not found exception
         return HttpResponse(
             json.dumps({'authorized': False}), content_type="application/json")
@@ -321,7 +331,7 @@ def feature_edit_check(request, layername):
         is_owner = (str(request.user) == str(layer.owner))
         try:
             is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-        except:
+        except BaseException:
             is_manager = False
     if is_admin or is_staff or is_owner or is_manager or request.user.has_perm(
             'change_layer_data',
@@ -360,14 +370,16 @@ def style_change_check(request, path):
             # style update
             # we will iterate all layers (should be just one if not using GS)
             # to which the posted style is associated
-            # and check if the user has change_style_layer permissions on each of them
+            # and check if the user has change_style_layer permissions on each
+            # of them
             style_name = os.path.splitext(request.path)[0].split('/')[-1]
             try:
                 style = Style.objects.get(name=style_name)
                 for layer in style.layer_styles.all():
-                    if not request.user.has_perm('change_layer_style', obj=layer):
+                    if not request.user.has_perm(
+                            'change_layer_style', obj=layer):
                         authorized = False
-            except:
+            except BaseException:
                 authorized = False
                 logger.warn(
                     'There is not a style with such a name: %s.' % style_name)
@@ -375,7 +387,7 @@ def style_change_check(request, path):
 
 
 @logged_in_or_basicauth(realm="GeoNode")
-def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
+def geoserver_proxy(request, proxy_path, downstream_path, workspace=None):
 
     if not request.user.is_authenticated():
         return HttpResponse(
@@ -408,26 +420,30 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
         else:
             cookies = cookies + '; ' + cook
 
-    # if cookies:
-    #     if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
-    #         cookies = cookies + '; JSESSIONID=' + \
-    #             request.session['JSESSIONID']
-    #     headers['Cookie'] = cookies
+    if cookies:
+        if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
+            cookies = cookies + '; JSESSIONID=' + \
+                request.session['JSESSIONID']
+        headers['Cookie'] = cookies
 
-    if 'HTTP_AUTHORIZATION' in request.META:
-        auth = request.META.get('HTTP_AUTHORIZATION', request.META.get('HTTP_AUTHORIZATION2'))
-        if auth:
-            headers['Authorization'] = auth
-    elif access_token:
+    # TODO: This won't work unless GeoServer is connected to the GeoNode Users' Repo
+    #       We would need a specific GroupRoleService
+    # if 'HTTP_AUTHORIZATION' in request.META:
+    #     auth = request.META.get('HTTP_AUTHORIZATION', request.META.get('HTTP_AUTHORIZATION2'))
+    #     if auth:
+    #         headers['Authorization'] = auth
+    if access_token:
         # TODO: Bearer is currently cutted of by Djano / GeoServer
         if request.method in ("POST", "PUT"):
             if access_token:
                 headers['Authorization'] = 'Bearer {}'.format(access_token)
         if access_token and 'access_token' not in path:
             query_separator = '&' if '?' in path else '?'
-            path = ('%s%saccess_token=%s' % (path, query_separator, access_token))
+            path = ('%s%saccess_token=%s' %
+                    (path, query_separator, access_token))
 
-    raw_url = str("".join([ogc_server_settings.LOCATION, downstream_path, path]))
+    raw_url = str(
+        "".join([ogc_server_settings.LOCATION, downstream_path, path]))
 
     if settings.DEFAULT_WORKSPACE or workspace:
         ws = (workspace or settings.DEFAULT_WORKSPACE)
@@ -435,15 +451,23 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
             # Strip out WS from PATH
             try:
                 path = "/%s" % strip_prefix(path, "/%s:" % (ws))
-            except:
+            except BaseException:
                 pass
 
         if downstream_path in ('rest/styles') and len(request.body) > 0:
-            # Lets try http://localhost:8080/geoserver/rest/workspaces/<ws>/styles/<style>.xml
+            # Lets try
+            # http://localhost:8080/geoserver/rest/workspaces/<ws>/styles/<style>.xml
             _url = str("".join([ogc_server_settings.LOCATION,
                                 'rest/workspaces/', ws, '/styles',
                                 path]))
             raw_url = _url
+
+    if downstream_path in 'ows' and (
+        'rest' in path or
+            re.match(r'/(w.*s).*$', path, re.IGNORECASE) or
+            re.match(r'/(ows).*$', path, re.IGNORECASE)):
+        _url = str("".join([ogc_server_settings.LOCATION, '', path[1:]]))
+        raw_url = _url
 
     url = urlsplit(raw_url)
     if url.scheme == 'https':
@@ -458,16 +482,20 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
         # be edited by the user
         # we should remove this geonode dependency calling layers.views straight
         # from GXP, bypassing the proxy
-        if downstream_path in ('rest/styles', 'rest/layers', 'rest/workspaces') and len(request.body) > 0:
+        if downstream_path in ('rest/styles', 'rest/layers',
+                               'rest/workspaces') and len(request.body) > 0:
             if not style_change_check(request, downstream_path):
                 return HttpResponse(
                     _("You don't have permissions to change style for this layer"),
                     content_type="text/plain",
                     status=401)
             elif downstream_path == 'rest/styles':
-                logger.info("[geoserver_rest_proxy] Updating Style to ---> url %s" % url.path)
+                logger.info(
+                    "[geoserver_proxy] Updating Style to ---> url %s" %
+                    url.path)
                 affected_layers = style_update(request, raw_url)
 
+    headers["Accept-encoding"] = 'gzip'
     conn.request(request.method, raw_url, request.body, headers=headers)
     response = conn.getresponse()
     content = response.read()
@@ -475,10 +503,27 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
     content_type = response.getheader("Content-Type", "text/plain")
 
     # update thumbnails
-    if affected_layers:
+    if status == 200 and affected_layers:
         for layer in affected_layers:
-            logger.debug('Updating thumbnail for layer with uuid %s' % layer.uuid)
+            logger.debug(
+                'Updating thumbnail for layer with uuid %s' %
+                layer.uuid)
             create_gs_thumbnail(layer, True)
+
+    # decompress GZipped responses if not enabled
+    if content and response.getheader('Content-Encoding') == 'gzip':
+        from StringIO import StringIO
+        import gzip
+        buf = StringIO(content)
+        f = gzip.GzipFile(fileobj=buf)
+        content = f.read()
+
+    # Replace Proxy URL
+    if content_type in ('application/xml', 'text/xml', 'text/plain'):
+        _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
+        content = content\
+            .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
+            .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
 
     return HttpResponse(
         content=content,
@@ -577,6 +622,7 @@ def resolve_user(request):
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
 
+@logged_in_or_basicauth(realm="GeoNode")
 def layer_acls(request):
     """
     returns json-encoded lists of layer identifiers that
@@ -622,7 +668,11 @@ def layer_acls(request):
     layer_writable = get_objects_for_user(acl_user, 'change_layer_data',
                                           Layer.objects.all())
 
-    _read = set(Layer.objects.filter(id__in=resources_readable).values_list('alternate', flat=True))
+    _read = set(
+        Layer.objects.filter(
+            id__in=resources_readable).values_list(
+            'alternate',
+            flat=True))
     _write = set(layer_writable.values_list('alternate', flat=True))
 
     read_only = _read ^ _write
@@ -643,7 +693,8 @@ def layer_acls(request):
 
 
 # capabilities
-def get_layer_capabilities(workspace, layer, access_token=None, tolerant=False):
+def get_layer_capabilities(
+        workspace, layer, access_token=None, tolerant=False):
     """
     Retrieve a layer-specific GetCapabilities document
     """
@@ -658,8 +709,8 @@ def get_layer_capabilities(workspace, layer, access_token=None, tolerant=False):
     if tolerant and response.status == 404:
         # WARNING Please make sure to have enabled DJANGO CACHE as per
         # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-        wms_url = '%s%s/wms?service=wms&version=1.1.0&request=GetCapabilities&layers=%s:%s'\
-            % (ogc_server_settings.public_url, workspace, workspace, layer)
+        wms_url = '%s%s/wms?service=wms&version=1.1.0&request=GetCapabilities&layers=%s'\
+            % (ogc_server_settings.public_url, workspace, layer)
         if access_token:
             wms_url += ('&access_token=%s' % access_token)
         response, getcap = http.request(wms_url)
@@ -676,10 +727,12 @@ def format_online_resource(workspace, layer, element):
     layerresources = element.findall('.//OnlineResource')
     for resource in layerresources:
         wtf = resource.attrib['{http://www.w3.org/1999/xlink}href']
-        resource.attrib['{http://www.w3.org/1999/xlink}href'] = wtf.replace("/" + workspace + "/" + layer, "")
+        resource.attrib['{http://www.w3.org/1999/xlink}href'] = wtf.replace(
+            "/" + workspace + "/" + layer, "")
 
 
-def get_capabilities(request, layerid=None, user=None, mapid=None, category=None, tolerant=False):
+def get_capabilities(request, layerid=None, user=None,
+                     mapid=None, category=None, tolerant=False):
     """
     Compile a GetCapabilities document containing public layers
     filtered by layer, user, map, or category
@@ -710,7 +763,8 @@ def get_capabilities(request, layerid=None, user=None, mapid=None, category=None
         layers = Layer.objects.filter(alternate__in=alternates)
 
     for layer in layers:
-        if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
+        if request.user.has_perm('view_resourcebase',
+                                 layer.get_self_resource()):
             access_token = None
             if 'access_token' in request.session:
                 access_token = request.session['access_token']
@@ -730,24 +784,32 @@ def get_capabilities(request, layerid=None, user=None, mapid=None, category=None
                         rootlayerelem = rootdoc.find('.//Capability/Layer')
                         format_online_resource(workspace, layername, rootdoc)
                         rootdoc.find('.//Service/Name').text = cap_name
-                    except Exception, e:
-                        logger.error("Error occurred creating GetCapabilities for %s: %s" % (layer.typename, str(e)))
+                    except Exception as e:
+                        logger.error(
+                            "Error occurred creating GetCapabilities for %s: %s" %
+                            (layer.typename, str(e)))
                 else:
                         # Get the required info from layer model
-                        tpl = get_template("geoserver/layer.xml")
-                        ctx = Context({
-                                       'layer': layer,
-                                       'geoserver_public_url': ogc_server_settings.public_url,
-                                       'catalogue_url': settings.CATALOGUE['default']['URL'],
-                        })
-                        gc_str = tpl.render(ctx)
-                        gc_str = gc_str.encode("utf-8")
-                        layerelem = etree.XML(gc_str)
-                        rootlayerelem.append(layerelem)
-            except Exception, e:
-                    logger.error("Error occurred creating GetCapabilities for %s:%s" % (layer.typename, str(e)))
-                    pass
+                    tpl = get_template("geoserver/layer.xml")
+                    ctx = Context({
+                        'layer': layer,
+                        'geoserver_public_url': ogc_server_settings.public_url,
+                        'catalogue_url': settings.CATALOGUE['default']['URL'],
+                    })
+                    gc_str = tpl.render(ctx)
+                    gc_str = gc_str.encode("utf-8")
+                    layerelem = etree.XML(gc_str)
+                    rootlayerelem.append(layerelem)
+            except Exception as e:
+                logger.error(
+                    "Error occurred creating GetCapabilities for %s:%s" %
+                    (layer.typename, str(e)))
+                pass
     if rootdoc is not None:
-        capabilities = etree.tostring(rootdoc, xml_declaration=True, encoding='UTF-8', pretty_print=True)
+        capabilities = etree.tostring(
+            rootdoc,
+            xml_declaration=True,
+            encoding='UTF-8',
+            pretty_print=True)
         return HttpResponse(capabilities, content_type="text/xml")
     return HttpResponse(status=200)

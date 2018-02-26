@@ -58,6 +58,13 @@ if _SUPPORTED_CRS:
     _SUPPORTED_CRS = _SUPPORTED_CRS.get('SUPPORTED_CRS',
                                         ['EPSG:4326', 'EPSG:3857', 'EPSG:900913'])
 
+_SUPPORTED_EXT = getattr(settings, 'UPLOADER', None)
+if _SUPPORTED_EXT:
+    _SUPPORTED_EXT = _SUPPORTED_EXT.get('SUPPORTED_EXT',
+                                        ['.shp', '.csv', '.kml', '.kmz', '.json',
+                                         '.geojson', '.tif', '.tiff', '.geotiff',
+                                         '.gml', '.xml'])
+
 _ALLOW_TIME_STEP = getattr(settings, 'UPLOADER', False)
 if _ALLOW_TIME_STEP:
     _ALLOW_TIME_STEP = _ALLOW_TIME_STEP.get(
