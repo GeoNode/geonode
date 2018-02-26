@@ -258,7 +258,7 @@
  <!-- End edit layer modal -->
 
 
-            <div id="sidebar" class="panel-left layer-panel slideInRight">
+            <div id="sidebar" class="panel-left layer-panel" style="max-width: 600px;min-width: 300px;width: 300px">
 
                   
 
@@ -273,6 +273,8 @@
                       
 
           <div class="margin-zero right-pad-zero overlay_layerdetails" id="myNav">
+                <div class="splitter">
+                    </div>
             <div id="gd-accordion-style" class="layer-information">
                         <div class="panel-group" id="accordion___" role="tablist" aria-multiselectable="true">
                             <div class="panel panel-default">
@@ -998,19 +1000,26 @@
     {% endif %}
 
 <script>
+       $(document).ready(function(){
+        $("#sidebar").resizable({
+            handleSelector: ".splitter",
+            resizeHeight: false
+        });
+    });
         var count = 0;
         function animating(){
             if(count === 0){
-                document.getElementById('sidebar').className = 'panel-left layer-panel slideOutRight';
-          
+                $('#sidebar').animate({
+                        'left' : -$( "#sidebar" ).width()    
+                    });
                 count++;
             }else{
-                document.getElementById('sidebar').className = 'panel-left layer-panel slideInRight show';//hide
-           
+                $('#sidebar').animate({
+                        'left' : '0px'    
+                    });
                 count--;
+                }
             }
-            }
-    
     </script>
 <script type="text/javascript">
     var GD_WRAPPER__HEIGHT = 400;

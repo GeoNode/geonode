@@ -35,11 +35,13 @@
 
 .splitter {
     flex: 0 0 auto;
-    width: 15px;
+    width: 10px;
     background: url("vsizegrip.png") center center no-repeat #d8d8d8;
     border-left: 1px solid #c4c4c4;
     border-right: 1px solid #c4c4c4;
-    min-height: 200px;
+    min-height: 500px !important;
+    height: 500px;
+    float: right;
     cursor: col-resize;
 }
 .splitter:hover {

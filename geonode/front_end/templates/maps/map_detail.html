@@ -138,11 +138,12 @@
 
 
 
-                        <div id="sidebar" class="panel-left map-panel slideInRight">
-
+                        <div id="sidebar" class="panel-left map-panel" style="max-width: 600px;min-width: 300px;width: 300px">
                                 <button class="sidebar-toggle-btn" onclick="animating()"><i class="fa fa-navicon fa-2x py-1 p-1" style="color: #1B97D3"></i></button>
 
                 <div id="myNav" class="col-md-4 margin-zero right-pad-zero" style="width: 100%; padding-left: 0;">
+                        <div class="splitter">
+                            </div>
                     <div id="gd-accordion-style" class="map-details-information" style="overflow-x: hidden;">
                         <div class="panel-group" id="accordion__" role="tablist" aria-multiselectable="true">
                             <div class="panel panel-default">
@@ -502,8 +503,7 @@
                     </div>
                 </div>
                 </div>
-                <!-- <div class="splitter">
-                </div> -->
+                
                 <div class="panel-right">
                 <div class="col-md-8  margin-zero left-pad-zero r surfgis" ng-controller="appController" style="width: 100%;padding-right: 0;" ng-app="appModule" ng-click="bodyClicked()">
                     <div class="gd-content-body map-details-info" ng-controller="MapUpdateController">
@@ -731,27 +731,37 @@
     }
 
     $(document).ready(function(){
-        $(".panel-left").resizable({
+        $("#sidebar").resizable({
             handleSelector: ".splitter",
             resizeHeight: false
         });
+        // $('#sidebar').enhsplitter();
     });
+    
+
 
 </script>
 
 <script>
+    $(document).ready(function(){
+        $("#sidebar").resizable({
+            handleSelector: ".splitter",
+            resizeHeight: false
+        });
+    });
         var count = 0;
         function animating(){
-            console.log("asdasda");
             if(count === 0){
-                document.getElementById('sidebar').className = 'panel-left slideOutRight';
-          
+                $('#sidebar').animate({
+                        'left' : -$( "#sidebar" ).width()    
+                    });
                 count++;
             }else{
-                document.getElementById('sidebar').className = 'panel-left slideInRight show';//hide
-           
+                $('#sidebar').animate({
+                        'left' : '0px'    
+                    });
                 count--;
-            }
+                }
             }
     
     </script>
