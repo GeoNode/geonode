@@ -53,7 +53,7 @@ appHelperModule.factory('queryOutputFactory', function() {
 
 
                 var fieldName = group.rules[i].field.name;
-                var condition = this.htmlEntities(group.rules[i].condition);
+                var condition = group.rules[i].condition;//this.htmlEntities(group.rules[i].condition);
 
                 var data = group.rules[i].data;  // for int value
 
@@ -107,7 +107,7 @@ appHelperModule.factory('queryOutputFactory', function() {
 
             }
 
-            return str ;
+            return encodeURIComponent(str) ;
         }
     };
 });

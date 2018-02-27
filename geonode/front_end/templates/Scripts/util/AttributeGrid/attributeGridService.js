@@ -6,8 +6,11 @@
             fill: new ol.style.Fill({
                 color: 'rgba(255,0,0,1.0)'
             }),
-            stroke: new ol.style.Stroke({ color: 'rgba(255,0,0,1.0)', width: 2 })
+            stroke: new ol.style.Stroke({ color: 'rgba(255,0,0,1.0)', width: 3 })
         });
+        var red = [255, 0, 0, 0.5];
+        var green = [0, 255, 0, 0.5];
+        var blue = [0, 0, 255, 0.5];
         var styles = {
             'Point': new ol.style.Style({
                 image: new ol.style.Circle({
@@ -17,20 +20,20 @@
                     width: 2
                   }),
                   fill: new ol.style.Fill({
-                    color: 'green'
+                    color: green
                   })
                 })
               }),
             'LineString': new ol.style.Style({
                 stroke: new ol.style.Stroke({
-                    color: 'red',
-                    width: 1
+                    color: red,
+                    width: 3
                 })
             }),
             'MultiLineString': new ol.style.Style({
                 stroke: new ol.style.Stroke({
-                    color: 'red',
-                    width: 1
+                    color: red,
+                    width: 3
                 })
             }),
             'MultiPoint': new ol.style.Style({
@@ -38,46 +41,46 @@
             }),
             'MultiPolygon': new ol.style.Style({
                 stroke: new ol.style.Stroke({
-                    color: 'red',
-                    width: 1
+                    color: green,
+                    width: 3
                 }),
                 fill: new ol.style.Fill({
-                    color: 'rgba(255, 255, 0, 0.1)'
+                    color: blue
                 })
             }),
             'Polygon': new ol.style.Style({
                 stroke: new ol.style.Stroke({
-                    color: 'red',
+                    color: green,
                     lineDash: [4],
                     width: 3
                 }),
                 fill: new ol.style.Fill({
-                    color: 'rgba(0, 0, 255, 0.1)'
+                    color: blue
                 })
             }),
             'GeometryCollection': new ol.style.Style({
                 stroke: new ol.style.Stroke({
-                    color: 'red',
-                    width: 2
+                    color: red,
+                    width: 3
                 }),
                 fill: new ol.style.Fill({
-                    color: 'red'
+                    color: green
                 }),
                 image: new ol.style.Circle({
                     radius: 10,
                     fill: null,
                     stroke: new ol.style.Stroke({
-                        color: 'red'
+                        color: red
                     })
                 })
             }),
             'Circle': new ol.style.Style({
                 stroke: new ol.style.Stroke({
-                    color: 'red',
-                    width: 2
+                    color: red,
+                    width: 3
                 }),
                 fill: new ol.style.Fill({
-                    color: 'rgba(255,0,0,0.2)'
+                    color: green
                 })
             })
         };
