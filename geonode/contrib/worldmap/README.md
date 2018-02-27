@@ -63,8 +63,9 @@ Set the following variables as needed (change SITE_NAME and SERVER_IP s needed. 
     export ALLOWED_HOSTS="localhost, $SERVER_IP, "
     export GEOSERVER_LOCATION=http://localhost:8080/geoserver/
     export GEOSERVER_PUBLIC_LOCATION=http://$SERVER_IP/geoserver/
-    export HYPERMAP_REGISTRY_URL =http://localhost:8001/
     export SOLR_URL =http://localhost:8983/solr/hypermap/select/
+    export HYPERMAP_REGISTRY_URL =http://localhost:8001
+    export MAPPROXY_URL=http://localhost:8001
 
 Create your geonode project by using the WorldMap geonode-project as a template  (https://github.com/cga-harvard/geonode-project). Rename it to something meaningful (for example your web site name):
 
