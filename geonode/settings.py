@@ -19,6 +19,7 @@
 #########################################################################
 
 # Django settings for the GeoNode project.
+import ast
 import os
 import re
 import sys
@@ -53,8 +54,8 @@ DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
 EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'False'))
 
 if EMAIL_ENABLE:
-    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND', \
-        default='django.core.mail.backends.smtp.EmailBackend')
+    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
+                              default='django.core.mail.backends.smtp.EmailBackend')
     EMAIL_HOST = 'localhost'
     EMAIL_PORT = 25
     EMAIL_HOST_USER = ''
@@ -62,15 +63,18 @@ if EMAIL_ENABLE:
     EMAIL_USE_TLS = False
     DEFAULT_FROM_EMAIL = 'GeoNode <no-reply@geonode.org>'
 else:
-    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND', \
-        default='django.core.mail.backends.console.EmailBackend')
+    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
+                              default='django.core.mail.backends.console.EmailBackend')
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
 
-ALLOWED_HOSTS = ['localhost', 'django'] if os.getenv('ALLOWED_HOSTS') is None \
-    else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
+if os.getenv('DOCKER_ENV'):
+    ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
+else:
+    ALLOWED_HOSTS = ['localhost', ] if os.getenv('ALLOWED_HOSTS') is None \
+        else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
 # to only whitelisted IP addresses.
@@ -588,8 +592,6 @@ ACTSTREAM_SETTINGS = {
     'USE_JSONFIELD': True,
     'GFK_FETCH_DEPTH': 1,
 }
-
-
 
 
 # Email for users to contact admins.
