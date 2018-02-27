@@ -1,7 +1,7 @@
 
 mapModule.directive('routePopUpDirective', [
-    'mapService', 'layerService', '$timeout','mapToolsFactory','$http','SurfMap','$cookies',
-    function (mapService, layerService, $timeout,mapToolsFactory,$http,SurfMap,$cookies) {
+    'mapService', 'LayerService', '$timeout','mapToolsFactory','$http','SurfMap','$cookies','urlResolver','$modal','$q',
+    function (mapService, LayerService, $timeout,mapToolsFactory,$http,SurfMap,$cookies,urlResolver,$modal,$q) {
         return {
             restrict: 'EA',
             scope: {
@@ -96,6 +96,7 @@ mapModule.directive('routePopUpDirective', [
                         '                    </div>\n' +
                         '                </li>\n' +
                         '<li class="list-group-item" style="cursor: pointer"  ng-show="sourceCoordinates.length>0" ng-click="resetAll()">Reset All</li>'+
+                        '<li class="list-group-item" style="cursor: pointer"ng-click="searchForBuffer()">Buffer Search</li>'+
                         '            </ul>';
                     var linkFn = $compile(html);
                     var element = linkFn($scope);
@@ -110,8 +111,58 @@ mapModule.directive('routePopUpDirective', [
                     $scope.coordinate= coordinate;
                     evt.preventDefault();
                     container.style.visibility = 'visible';
+                    });  
+                    
+                    $scope.searchForBuffer=function(){
+                        var center = $scope.coordinate;
+                        var centerLongLat = ol.proj.transform([center[0], center[1]], 'EPSG:3857', 'EPSG:4326');
+                        var layers = mapService.getLayers();
+                        var radius=1000;
+                        var promises = [];
+                        var layer_names = [];
+                        for (var k in layers) {
+                            var layer = layers[k];
+                            if (!layer.IsVisible)
+                                continue;
+                            layer_names.push(k);
+                            let p = LayerService.getWFS('api/geoserver/', {
+                                version: '1.0.0',
+                                request: 'GetFeature',
+                                outputFormat: 'JSON',
+                                srsName: 'EPSG:4326',
+                                typeNames: layer.getName(),
+                                cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + radius + ',  meters)',
+                            }, false);
+                            promises.push(p);
+                        }
+                        $q.all(promises)
+                            .then(function(response) {
+                                var data = {};
+                                for (var i in layer_names) {
+                                    data[layer_names[i]] = response[i].features.map(function(e) {
+                                        return e.properties;
+                                    });
+                                }
+                                showFeaturePreviewDialog(data);
+                        });
+                        closer.onclick();
+                    };
 
-                    });    
+                    function showFeaturePreviewDialog(data) {
+                        $modal.open({
+                            templateUrl: '/static/layers/feature-preview.html',
+                            controller: 'FeaturePreviewController as ctrl',
+                            backdrop: 'static',
+                            keyboard: false,
+                            windowClass: 'fullScreenModal First',
+                            resolve: {
+                                data: function() {
+                                    return data;
+                                }
+                            }
+                        });
+                    }
+
                     
                     function addBlankOverlay(){
                         closer.onclick = function(e) {
@@ -176,7 +227,7 @@ mapModule.directive('routePopUpDirective', [
                     }
 
                     function removeFeature(feature){
-                        vectorLayer.getSource().removeFeature(feature)
+                        vectorLayer.getSource().removeFeature(feature);
                     }
 
                     $scope.call = function (bool) {

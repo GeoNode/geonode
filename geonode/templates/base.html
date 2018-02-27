@@ -875,6 +875,12 @@
             </li>
             {% endif %}
             <li class="c-menu__item">
+                <a href="{% url "geo_location" %}" class="c-menu__link">
+                    <i class="fa fa-cloud-upload"></i>
+                    <span style="text-align:left;">{% trans "Geo Location" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
                 <a href="{% url "help" %}" class="c-menu__link">
                     <i class="fa"><img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help"></i>
                     <span style="text-align:left;">{% trans "Help" %}</span>

@@ -1,5 +1,5 @@
-﻿appModule.controller("controlButtonsController", ["$scope", "$modal", "$timeout", "$rootScope", "$window", "projectService", 'mapModes', 'mapService', 'dirtyManager', 'featureService', 'interactionHandler', 'mapTools', 'CircleDrawTool', 'LayerService', 'urlResolver',
-    function($scope, $modal, $timeout, $rootScope, $window, projectService, mapModes, mapService, dirtyManager, featureService, interactionHandler, mapTools, CircleDrawTool, LayerService, urlResolver) {
+﻿appModule.controller("controlButtonsController", ["$scope", "$modal", "$timeout", "$rootScope", "$window", "projectService", 'mapModes', 'mapService', 'dirtyManager', 'featureService', 'interactionHandler', 'mapTools', 'CircleDrawTool', 'LayerService', 'urlResolver', '$q',
+    function($scope, $modal, $timeout, $rootScope, $window, projectService, mapModes, mapService, dirtyManager, featureService, interactionHandler, mapTools, CircleDrawTool, LayerService, urlResolver, $q) {
         $scope.mapService = mapService;
         $scope.mapTools = mapTools;
 
@@ -70,8 +70,8 @@
                     backdrop: 'static',
                     keyboard: false,
                     windowClass: 'fullScreenModal First',
-                    windowTopClass : 'Second',
-                    openedClass : 'Third'
+                    windowTopClass: 'Second',
+                    openedClass: 'Third'
                 });
             };
 
@@ -143,43 +143,93 @@
                     $(item).show();
                 });
             }
+
+            function showFeatures(params) {
+                var layers = mapService.getLayers();
+                var promises = [];
+                var layer_names = [];
+
+                for (var k in layers) {
+                    var layer = layers[k];
+                    if (!layer.IsVisible)
+                        continue;
+                    layer_names.push(k);
+
+                    let p = LayerService.getWFS('api/geoserver/', Object.assign({}, params, {
+                        typeNames: layer.getName()
+                    }), false);
+                    promises.push(p);
+                }
+
+                $q.all(promises)
+                    .then(function(response) {
+                        var data = {};
+                        for (var i in layer_names) {
+                            data[layer_names[i]] = response[i].features.map(function(e) {
+                                return e.properties;
+                            });
+                        }
+                        showFeaturePreviewDialog(data, params);
+                    });
+            }
+
             var circle = new CircleDrawTool();
             $scope.action.drawCircle = function() {
                 circle.Remove();
                 circle.Draw();
                 circle.OnModificationEnd(function(feature, values) {
                     var center = feature.values_.geometry.getCenter();
-                    var centerLongLat = ol.proj.transform([center[0], center[1]], 'EPSG:3857','EPSG:4326');
-                    var layers = mapService.getLayers();
-                    var meterPerDegree = 111325;
-                    var radiusInDegree = values.radius/meterPerDegree;
-                    for (var k in layers) {
-                        var layer = layers[k];
-                        LayerService.getWFS(urlResolver.getGeoServerRoot()+'geoserver/', {
-                            _dc: 1510220556364,
-                            version: '1.0.0',
-                            request: 'GetFeature',
-                            outputFormat: 'JSON',
-                            srsName: 'EPSG:4326',
-                            typeNames: layer.getName(),
-                            cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + values.radius + ',meters)',
-                        }, false);
-                    }
+                    var centerLongLat = ol.proj.transform([center[0], center[1]], 'EPSG:3857', 'EPSG:4326');
+                    
+                    var params = {
+                        version: '1.0.0',
+                        request: 'GetFeature',
+                        outputFormat: 'JSON',
+                        srsName: 'EPSG:3857',
+                        typeNames: '',
+                        cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + values.radius + ',meters)',
+                    };
+                    showFeatures(params);                    
                 });
             };
+
+            $scope.action.boundingBoxSearch = function() {
+                var bbox = mapService.getBbox('EPSG:4326');
+                var params = {
+                    version: '1.0.0',
+                    request: 'GetFeature',
+                    outputFormat: 'JSON',
+                    srsName: 'EPSG:3857',
+                    typeNames: '',
+                    bbox: bbox,
+                };
+                showFeatures(params);
+            };
+
+            $scope.action.shareMap = function() {
+                $modal.open({
+                    templateUrl: 'static/maps/_share-map-window.html',
+                    controller: 'ShareMapController as ctrl',
+                    backdrop: 'static',
+                    keyboard: false,
+                    windowClass: 'fullScreenModal First',
+                    windowTopClass: 'Second',
+                    openedClass: 'Third'
+                });
+            }
 
             $scope.action.printPreview = function() {
 
                 $rootScope.mapImage = { baseMapUrl: undefined, shapeUrl: undefined };
                 $modal.open({
-                    templateUrl: './Print/PrintPreview',
+                    templateUrl: 'static/Templates/Print/PrintPreview.html',
                     controller: 'printPreviewController',
                     backdrop: 'static',
                     keyboard: false,
                     windowClass: 'fullScreenModal First',
-                    windowTopClass : 'Second',
-                    openedClass : 'Third'
-                    // windowClass: 'fullScreenModal printPreviewModal'
+                    windowTopClass: 'Second',
+                    openedClass: 'Third'
+                        // windowClass: 'fullScreenModal printPreviewModal'
                 });
 
                 moveShape();
@@ -212,8 +262,8 @@
                 keyboard: false,
                 // windowClass: 'fullScreenModal',
                 windowClass: 'fullScreenModal First',
-                windowTopClass : 'Second',
-                openedClass : 'Third',
+                windowTopClass: 'Second',
+                openedClass: 'Third',
                 resolve: {
                     showProjectNameInput: function() {
                         return openForSave || false;
@@ -222,18 +272,36 @@
             });
         }
 
-        function showOverpassApiQueryDialog() {
+        function showFeaturePreviewDialog(data, wfsConfig) {
             $modal.open({
-                templateUrl: '/static/Templates/Project/OverpassApiQueryBuilder.html',
-                controller: 'OverpassApiQueryBuilderController',
+                templateUrl: '/static/layers/feature-preview.html',
+                controller: 'FeaturePreviewController as ctrl',
                 backdrop: 'static',
                 keyboard: false,
                 windowClass: 'fullScreenModal First',
-                windowTopClass : 'Second',
-                openedClass : 'Third'
-                // windowClass: 'fullScreenModal'
+                resolve: {
+                    data: function() {
+                        return data;
+                    },
+                    wfsConfig: function() {
+                        return wfsConfig;
+                    }
+                }
             });
         }
+
+        // function showOverpassApiQueryDialog() {
+        //     $modal.open({
+        //         templateUrl: '/static/Templates/Project/OverpassApiQueryBuilder.html',
+        //         controller: 'OverpassApiQueryBuilderController',
+        //         backdrop: 'static',
+        //         keyboard: false,
+        //         windowClass: 'fullScreenModal First',
+        //         windowTopClass : 'Second',
+        //         openedClass : 'Third'
+        //         // windowClass: 'fullScreenModal'
+        //     });
+        // }
 
         $scope.toggleMapEditable = function() {
             interactionHandler.toggleEditable();

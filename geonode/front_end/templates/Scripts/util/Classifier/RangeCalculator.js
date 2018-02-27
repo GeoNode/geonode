@@ -14,13 +14,13 @@
             else rangelist[i].rangeMax = (minimum + rangeLength);
             minimum = rangelist[i].rangeMax;
         }
-        return rangelist; //fixedPrecision(rangelist);
+        return fixedPrecision(rangelist);
     };
 
     function fixedPrecision(rangeList) {
         for (var i in rangeList) {
-            rangeList[i].rangeMin = parseFloat(rangeList[i].rangeMin.toFixed(8));
-            rangeList[i].rangeMax = parseFloat(rangeList[i].rangeMax.toFixed(8));
+            rangeList[i].rangeMin = parseFloat(rangeList[i].rangeMin.toFixed(2));
+            rangeList[i].rangeMax = parseFloat(rangeList[i].rangeMax.toFixed(2));
         }
         return rangeList;
     }

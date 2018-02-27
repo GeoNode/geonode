@@ -1,12 +1,11 @@
-
 (function() {
     angular
         .module('LayerApp')
         .factory('LayerService', LayerService);
 
-    LayerService.$inject = ['$http', '$q', '$window'];
+    LayerService.$inject = ['$http', '$q', '$window', '$cookies'];
 
-    function LayerService($http, $q, $window) {
+    function LayerService($http, $q, $window, $cookies) {
         function get(url) {
             var deferred = $q.defer();
             $http.get(url)
@@ -21,6 +20,20 @@
         function put(url, obj) {
             var deferred = $q.defer();
             $http.put(url, obj, {
+                headers: {
+                    "X-CSRFToken": $cookies.get('csrftoken')
+                }
+            }).success(function(res) {
+                deferred.resolve(res);
+            }).error(function(error, status) {
+                deferred.reject({ error: error, status: status });
+            });
+            return deferred.promise;
+        }
+
+        function post(url, obj) {
+            var deferred = $q.defer();
+            $http.post(url, obj, {
                 headers: {
                     "X-CSRFToken": $cookies.get('csrftoken')
                 }
@@ -118,6 +131,18 @@
                 return get(uri);
 
             },
+            getWFSWithGeom: function(url, params, useProxy) {
+                url = url + "wfs/with-geometry/?service=WFS";
+                for (var k in params) {
+                    url += '&' + k + '=' + params[k];
+                }
+                var uri = url;
+                if (useProxy == undefined || useProxy) {
+                    uri = '/proxy/?url=' + encodeURIComponent(url);
+                }
+                return get(uri);
+
+            },
             getLayerFeatureByName: function(url, layerName) {
                 return this.getWFS(url, {
                     typeName: layerName,
@@ -152,6 +177,7 @@
                         style = getNewStyle();
                     }
                     style.Name = res.uuid;
+                    style.Title = res.title;
                     style.default.userStyle = style.Name;
                     style.select.userStyle = style.Name;
                     deferred.resolve(style);
@@ -171,7 +197,7 @@
             },
             getAttributesName: function(layerName) {
                 var deferred = $q.defer();
-                this.getLayerFeatureByName($window.GeoServerHttp2Root , layerName).then(function(res) {
+                this.getLayerFeatureByName($window.GeoServerHttp2Root, layerName).then(function(res) {
                     res.featureTypes.forEach(function(featureType) {
                         var attributes = [];
                         featureType.properties.forEach(function(e) {
@@ -195,7 +221,7 @@
             },
             getShapeType: function(layerName) {
                 var deferred = $q.defer();
-                this.getLayerFeatureByName($window.GeoServerHttp2Root , layerName).then(function(res) {
+                this.getLayerFeatureByName($window.GeoServerHttp2Root, layerName).then(function(res) {
                     res.featureTypes.forEach(function(featureType) {
                         var shapeType = "";
                         featureType.properties.forEach(function(e) {
@@ -206,6 +232,9 @@
                                     shapeType = 'point';
                                 else if (e.localType.toLowerCase().search('linestring') != -1)
                                     shapeType = 'polyline';
+                                else if (e.localType.toLowerCase().search('geotiff') != -1)
+                                    shapeType = 'geoTiff';
+
                                 deferred.resolve(shapeType);
                                 return;
                             }
@@ -213,6 +242,9 @@
                     }, this);
                 });
                 return deferred.promise;
+            },
+            createLayerByWfs: function(data) {
+                return post('api/geoserver/wfs/create-layer/', data);
             }
         };
     }

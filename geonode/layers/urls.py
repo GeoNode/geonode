@@ -21,7 +21,14 @@
 from django.conf.urls import patterns, url
 from django.conf import settings
 from django.views.generic import TemplateView
-from .views import LayerStyleView, LayerAttributeView, LayerAttributeRangeView, LayerStyleListAPIView, StyleExtensionRetrieveUpdateAPIView
+from .views import (
+    LayerStyleView, 
+    LayerAttributeView, 
+    LayerAttributeRangeView, 
+    LayerStyleListAPIView, 
+    StyleExtensionRetrieveUpdateAPIView,
+    GeoLocationApiView
+)
 
 js_info_dict = {
     'packages': ('geonode.layers',),
@@ -47,6 +54,7 @@ urlpatterns = patterns(
 #layer publish activity urls
     url(r'^(?P<layer_pk>[0-9]+)/publish$', 'layer_publish', name='layer-publish'),
     url(r'^(?P<layer_pk>[0-9]+)/approve$', 'layer_approve', name='layer-approve'),
+    url(r'^(?P<layer_pk>[0-9]+)/draft$', 'layer_draft', name='layer-draft'),
     url(r'^(?P<layer_pk>[0-9]+)/deny$', 'layer_deny', name='layer-deny'),
     url(r'^(?P<layer_pk>[0-9]+)/delete$', 'layer_delete', name='layer-delete'),
 
@@ -68,6 +76,8 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
 
 #custom
 urlpatterns = patterns('',
+    url(r'^geo-location$', TemplateView.as_view(template_name='layers/geo-location.html'), name='geo_location'),
+    url(r'^api/geo-location/$', GeoLocationApiView.as_view(), name='api_geo_location'),
     url(r'^(?P<layername>[^/]*)/style/$', LayerStyleView.as_view(), name='layer_style'),
     url(r'^style/(?P<pk>[0-9]+)/$', StyleExtensionRetrieveUpdateAPIView.as_view(), name='style_extention'),
     url(r'^(?P<layername>[^/]*)/styles/$', LayerStyleListAPIView.as_view(), name='layer_styles'),

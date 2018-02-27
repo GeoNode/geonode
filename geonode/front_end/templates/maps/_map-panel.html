@@ -1,0 +1,292 @@
+<div class="navbar" style="min-height: 36px;margin-bottom:0;" ng-cloak ng-controller="controlButtonsController">
+    <div class="navbar-inner map-toolbar">
+
+
+        <location-search></location-search>
+        <ul class="nav">
+
+            <!-- <li draft-only>
+                        <edit-toggle-button></edit-toggle-button>
+                    </li>
+                    <li class="divider-vertical" draft-only></li>
+                    <li>
+                        <geo-location-toggle-button></geo-location-toggle-button>
+                    </li>
+                    <li class="divider-vertical" draft-only></li> -->
+            <li>
+                <navigation-history-buttons></navigation-history-buttons>
+            </li>
+            <li>
+                <zoom-in-out-buttons> </zoom-in-out-buttons>
+            </li>
+            <li>
+                <zoom-to-max-extent-button></zoom-to-max-extent-button>
+            </li>
+            <li>
+                <zoom-to-extent-button></zoom-to-extent-button>
+            </li>
+            <li>
+                <measurement-buttons></measurement-buttons>
+            </li>
+            <li>
+                <set-marker></set-marker>
+            </li>
+            <li>
+                <div class="btn-group">
+                    <button type="button" title="Measure" class="control-button icon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <span class="caret"></span>
+                        </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <button class="control-button icon" ng-click="action.drawCircle()" title="Draw Circle"><i class="fa fa-circle-o" aria-hidden="true"></i> Radius Search</button>
+                        </li>
+                        <li>
+                            <button class="control-button icon" ng-click="action.boundingBoxSearch()" title="BBOX search"><i class="fa fa-square-o" aria-hidden="true"></i>  Bounding Box Search</button>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="divider-vertical" draft-only></li>
+            <li draft-only>
+                <button class="control-button icon" id="close-project" ng-click="action.showCloseProjectOptions()" ng-disabled="(mapService.isEmpty() && !mapService.getMapName()) || isAttributeGridOn" title="Close Map">
+                            <i class="fa fa-times-circle-o" aria-hidden="true"></i>                                                    
+                            </button>
+            </li>
+            <li draft-only>
+                <button class="control-button icon" id="browse-projects" ng-disabled="isAttributeGridOn" ng-click="action.browseProject()" remove-focus title="Browse Maps">
+                            <i class="fa fa-map-o" aria-hidden="true"></i>                                    
+                            </button>
+            </li>
+
+
+            <li draft-only ng-init="action.showOverPassDialog=false">
+                <button class="control-button icon svg-ico-button" id="overpass-query" ng-disabled="isAttributeGridOn" ng-click="action.showOverPassDialog=true" remove-focus title="Overpass Query">
+                            
+                            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                            viewBox="0 0 476.554 476.554" style="enable-background:new 0 0 476.554 476.554;" xml:space="preserve" class="svg-icon">
+                         <g>
+                           <g>
+                             <path d="M263.877,100.431c-57.108,0-104.369,47.261-104.369,105.354s47.262,105.354,104.369,105.354
+                                   c58.092,0,104.369-47.261,104.369-105.354S320.985,100.431,263.877,100.431z M263.877,290.462
+                                   c-46.277,0-84.677-38.4-84.677-85.662s38.4-85.662,84.677-85.662c47.261,0,84.677,38.4,84.677,85.662
+                                   S310.154,290.462,263.877,290.462z"/>
+                           </g>
+                         </g>
+                         <g>
+                           <g>
+                             <rect x="337.755" y="274.671" transform="matrix(0.7119 -0.7023 0.7023 0.7119 -103.8152 327.7919)" width="19.693" height="31.508"/>
+                           </g>
+                         </g>
+                         <g>
+                           <g>
+                             <path d="M375.139,275.693L330.831,320l101.415,102.4l44.308-44.308L375.139,275.693z M358.4,320l16.738-16.739l73.846,74.831
+                                   l-16.738,16.739L358.4,320z"/>
+                           </g>
+                         </g>
+                         <g>
+                           <g>
+                             <polygon points="403.692,267.815 403.692,1.969 0,1.969 0,474.585 324.923,474.585 388.923,415.508 375.139,400.739 
+                                   317.046,454.892 19.692,454.892 19.692,21.662 384,21.662 384,267.815 		"/>
+                           </g>
+                         </g>
+                         <g>
+                           <g>
+                             <rect x="59.077" y="51.2" width="128" height="19.692"/>
+                           </g>
+                         </g>
+                         <g>
+                           <g>
+                             <rect x="64" y="129.969" width="73.846" height="19.692"/>
+                           </g>
+                         </g>
+                         <g>
+                           <g>
+                             <rect x="65.969" y="341.662" width="124.062" height="19.692"/>
+                           </g>
+                         </g>
+                         <g>
+                           <g>
+                             <rect x="59.077" y="395.815" width="236.308" height="19.692"/>
+                           </g>
+                         </g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                         <g></g>
+                       </svg>
+                            
+                            </button>
+                <div class="dropBox directions" ng-if="action.showOverPassDialog" style="right: -55px;" ng-controller="OverpassApiQueryBuilderController">
+                    <div class="arrow-up"></div>
+                    <form class="form-inline ng-pristine ng-valid" style="margin-bottom: 25px;" ng-submit="executeQuery(queryStr)">
+                        <textarea ng-model="queryStr" class="form-control" rows="3" style="width: 100%;margin-bottom:10px;"></textarea>
+                        <a href="" ng-click="executeQuery(queryStr)" class="btn btn-gd-primary pull-right icon-btn-color" target="_self">
+                                                    Submit <i class="fa fa-arrow-right" aria-hidden="true"></i>    
+                                                </a>
+                        <a href="" ng-click="action.showOverPassDialog=false; closeDialog()" class="btn btn-default pull-right" target="_self" style="margin-right: 5px;">
+                                                        Cancel <i class="fa fa-times" aria-hidden="true"></i></a>
+                        <a href="" class="btn btn-default pull-right" target="_self" style="margin-right: 5px;" data-ng-click="dragBox()" title="Drag Box">Drag Box</a>
+
+                        <a href="" class="btn btn-default pull-right" target="_self" style="margin-right: 5px;" data-ng-click="SaveAsLayer()" title="Drag Box">Save as layer</a>
+                    </form>
+                    <div></div>
+                </div>
+            </li>
+            <li draft-only>
+                <button class="control-button icon" id="save" data-ng-click="action.saveProject()" ng-disabled="!enable.saveProject()" title="Save Map">
+                            <i class="fa fa-floppy-o" aria-hidden="true"></i>                                    
+                            </button>
+            </li>
+            <li draft-only>
+                <!-- @* <button class="control-button icon icon32 icon-print" data-ng-click="action.printPreview()" title="Print">
+                                <span>Print
+                                    <br />
+                                    Map
+                                </span>
+                            </button>*@ -->
+                <button class="control-button icon" data-ng-click="action.printPreview()" title="Print Map">
+                            <i class="fa fa-print" aria-hidden="true"></i>                                    
+                               
+                            </button>
+
+            </li>
+            <li class="divider-vertical" draft-only></li>
+            <li draft-only>
+                <button class="control-button icon" id="browse-data" ng-click="action.browseData()" ng-disabled="isAttributeGridOn" remove-focus title="Browse Data">
+                            <i class="fa fa-database" aria-hidden="true"></i>                                    
+                            </button>
+            </li>
+            <li class="divider-vertical" draft-only></li>
+
+            <li draft-only>
+                <button class="control-button icon" onclick="animating()" title="Query">
+                            <i class="fa fa-binoculars"></i>                                  
+                                </button>
+            </li>
+
+            <li>
+                <!-- <button class="control-button icon icon32 icon-help" ng-click="action.openHelp('Url.Action(" Help ", "Document ")')" title="Open Help">
+                                <span>Help</span>
+                            </button> -->
+            </li>
+            <li>
+                <button class="control-button icon" ng-click="action.shareMap()" title="Share map">
+                        <i class="fa fa-share" aria-hidden="true"></i>       
+                            </button>
+            </li>
+        </ul>
+
+        <!-- /.nav-collapse -->
+
+    </div>
+    <!-- /navbar-inner -->
+</div>
+
+
+<div class="feature-edit-button-container donot-print" ng-init="showLegend=true" ng-show="isEditing()">
+    <feature-edit-buttons></feature-edit-buttons>
+    <location-capture-buttons></location-capture-buttons>
+    <feature-redo-undo-buttons></feature-redo-undo-buttons>
+</div>
+
+<visualization-legend></visualization-legend>
+
+<map-loading-icon></map-loading-icon>
+<zoom-level-display></zoom-level-display>
+<base-map-switcher></base-map-switcher>
+<route-pop-up-directive></route-pop-up-directive>
+<div id="map_canvas">
+    <div id="gmap" class="map">
+    </div>
+    <div id="olmap" class="map">
+    </div>
+</div>
+
+
+<div id="panel-bottom" class="panel-bottom slideOutDown">
+
+
+    <div class="container-fluid" style="padding: 0;">
+        <div class="row">
+            <div class="col-md-5" style="padding-right: 0">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Query</h3>
+                    </div>
+                    <div class="panel-body">
+                        <query-builder layer-id="layerId" group="group"></query-builder>
+                    </div>
+
+                    <div class="panel-footer">
+                        <a href="" 
+                        ng-click="getQueryResult()"
+                        class="btn btn-gd-primary pull-right icon-btn-color">
+                                                        Query <i class="fa fa-binoculars" aria-hidden="true"></i>    
+                                                    </a>
+                        <a href="" class="btn btn-default pull-right" target="_self" style="margin-right: 5px;">
+                                                            Cancel <i class="fa fa-times" aria-hidden="true"></i></a>
+
+                        <div style="clear:both"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-7" style="padding-left: 3px">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Attribute Grid</h3>
+                    </div>
+
+                    <div class="table-responsive panel-bottom-table">
+                        <attribute-grid layer-id="layerId"></attribute-grid>
+                        <!-- <a href="" class="btn btn-default pull-left" target="_self" style="margin-right: 5px;">
+                                                                <i class="fa fa-step-backward"></i></a>
+
+                                                                <a href="" class="btn btn-default pull-left" target="_self" style="margin-right: 5px;">
+                                                                        <i class="fa fa-caret-left"></i></a>
+
+                                                                        <a href="" class="btn btn-default pull-left" target="_self" style="margin-right: 5px;">
+                                                                                <i class="fa fa-caret-right"></i></a>
+
+                                                                                <a href="" class="btn btn-default pull-left" target="_self" style="margin-right: 5px;">
+                                                                                        <i class="fa fa-step-forward"></i></a> -->
+
+                        <div style="clear:both"></div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    var count = 0;
+
+    function animating() {
+        if (count === 0) {
+            document.getElementById('panel-bottom').className = 'panel-bottom slideInUp';
+
+            count++;
+        } else {
+            document.getElementById('panel-bottom').className = 'panel-bottom slideOutDown'; //hide
+
+            count--;
+        }
+    }
+</script>

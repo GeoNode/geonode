@@ -32,7 +32,7 @@
 
             angular.forEach(layers, function (sl) {
                 if (sl.IsVisible) {
-                    dataIds.push(sl.getDataId());
+                    dataIds.push(sl.LayerId);
                     styleIds.push(sl.getStyleName());
                 }
             });
@@ -59,37 +59,52 @@
                 y: Math.round(event.pixel[1])
             };
 
-            var url = urlResolver.resolveGeoServer('wms', urlParams);
+            //var url = urlResolver.resolveGeoServer('wms', urlParams);
+            var url = urlResolver.resolve('geoserver', 'get-feature-info', urlParams);
             var findLayer = function (id) {
                 return id.dataId;
-            }
-            $http.get(url).then(function (response) {
-                var geoJson = response.data;
-                var parser = new ol.format.GeoJSON();
-                var olFeatures = parser.readFeatures(geoJson);
-
-
-                _this.featuresData = olFeatures.map(function (of) {
-                    var id = parseId(of);
-                    var lookup = {};
-                    for (var key in layers) {
-                        if (layers.hasOwnProperty(key)) {
-                            lookup[layers[key].DataId] = layers[key];
+            };
+            var attributePermissionUrl = 'http://localhost:8000/api/layer-attributes-public/?layer_id=41';
+            $http.get(attributePermissionUrl).then(function(response){
+                var allowedAttributes = response.data;
+                $http.get(url).then(function (response) {
+                    var geoJson = response.data;
+                    geoJson.features.map(function(feature){
+                        if(!feature.geometry){
+                            feature.geometry = { 
+                                type: "MultiPolygon", 
+                                coordinates: [],
+                                geometry_name: 'the_geom'
+                            };
                         }
-                    };
-                    var surfLayer = lookup[id.dataId];
-                    var surfFeature = new SurfFeature(of, surfLayer);
-                    return {
-                        surfFeature: surfFeature,
-                        olFeature: of
-                    };
+                    });
+                    var parser = new ol.format.GeoJSON();
+                    var olFeatures = parser.readFeatures(geoJson);
+    
+    
+                    _this.featuresData = olFeatures.map(function (of) {
+                        var id = parseId(of);
+                        var lookup = {};
+                        for (var key in layers) {
+                            if (layers.hasOwnProperty(key)) {
+                                lookup[layers[key].DataId] = layers[key];
+                            }
+                        };
+                        var surfLayer = lookup[id.dataId];
+                        var surfFeature = new SurfFeature(of, surfLayer);
+                        return {
+                            surfFeature: surfFeature,
+                            olFeature: of
+                        };
+                    });
+                    _this.setSelected(0);
+    
+    
+                }).catch(function () {
+                    //featureReceived(null);
                 });
-                _this.setSelected(0);
-
-
-            }).catch(function () {
-                //featureReceived(null);
             });
+            
 
             /* surfRepository.getGeoserver('wms', urlParams).then(function (response) {
                  var surfFeatures = surfFeatureParser.fromGeoJson(response, _this.surfMap);

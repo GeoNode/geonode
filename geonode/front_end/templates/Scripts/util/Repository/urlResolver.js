@@ -5,7 +5,11 @@
     function resolve(controller, action, params) {
         window.urlRoot = 'api/';
         //window.urlRoot = '';
-        var url = window.urlRoot + controller + "/" + action;
+        var url = window.urlRoot;
+        if(controller !== '' && controller !== undefined){
+            url += controller + "/";
+        } 
+        url += action;
 
         url = addParams(url, params);
 

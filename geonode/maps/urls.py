@@ -87,6 +87,7 @@ urlpatterns = patterns(
     # urls for publishing maps through workspace
     url(r'^(?P<map_pk>[0-9]+)/delete$', 'map_delete', name='map-delete'),
     url(r'^(?P<map_pk>[0-9]+)/publish$', 'map_publish', name='map-publish'),
+    url(r'^(?P<map_pk>[0-9]+)/draft$', 'map_draft', name='map-draft'),
     url(r'^(?P<map_pk>[0-9]+)/approve$', 'map_approve', name='map-approve'),
     url(r'^(?P<map_pk>[0-9]+)/deny$', 'map_deny', name='map-deny'),
 

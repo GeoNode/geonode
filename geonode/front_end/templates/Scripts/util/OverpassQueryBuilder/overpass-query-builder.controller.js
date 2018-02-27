@@ -2,9 +2,9 @@
     appModule
         .controller('OverpassApiQueryBuilderController', OverpassApiQueryBuilderController);
 
-    OverpassApiQueryBuilderController.$inject = ['$scope', '$modalInstance', 'mapService', '$http', '$compile', 'BoxDrawTool'];
+    OverpassApiQueryBuilderController.$inject = ['$scope', 'mapService', '$http', '$compile', 'BoxDrawTool', 'layerService', '$window', '$modal'];
 
-    function OverpassApiQueryBuilderController($scope, $modalInstance, mapService, $http, $compile, BoxDrawTool) {
+    function OverpassApiQueryBuilderController($scope, mapService, $http, $compile, BoxDrawTool, layerService, $window, $modal) {
         mapService.removeUserInteractions();
         mapService.removeEvents();
         var boxTool = new BoxDrawTool();
@@ -93,7 +93,12 @@
         };
 
         $scope.closeDialog = function() {
-            $modalInstance.close();
+            // $modalInstance.close();
+            if (vectorLayer) {
+                mapService.removeVectorLayer(vectorLayer);
+            }
+            boxTool.Remove();
+            boxTool.Stop();
         };
 
         function _Style(feature, resolution) {
@@ -130,7 +135,7 @@
                                 color: 'rgba(' + _random(255) + ',' + _random(255) + ',' + _random(255) + ',' + 0.3 + ')',
                                 width: 2
                             }),
-                            
+
                             radius: 10,
                         })
                     })
@@ -153,12 +158,15 @@
             }
             var epsg4326Extent =
                 ol.proj.transformExtent(extent, projection, 'EPSG:4326');
+            var reBbox = /{{bbox}}/g;
 
-            var param = query.split("{{bbox}}");
-            param = '(' + param[0] +
-                epsg4326Extent[1] + ',' + epsg4326Extent[0] + ',' +
-                epsg4326Extent[3] + ',' + epsg4326Extent[2] +
-                ');' + param[1];
+            var bbox = epsg4326Extent[1] + ',' +
+                epsg4326Extent[0] + ',' +
+                epsg4326Extent[3] + ',' +
+                epsg4326Extent[2];
+
+            var param = query.replace(reBbox, bbox);
+
             $http.post(url, param)
                 .then(function(response) {
                     var features = new ol.format.OSMXML().readFeatures(response.data, {
@@ -168,16 +176,39 @@
                 });
         };
 
+        $scope.SaveAsLayer = function() {
+            showLayerSaveDialog().result.then(function(res) {
+                var features = vectorLayer.getSource().getFeatures();
+                layerService.createLayerFromFeature(features, res)
+                    .then(function(layer) {
+                        if (vectorLayer) {
+                            mapService.removeVectorLayer(vectorLayer);
+                        }
+                        mapService.addDataLayer(layer);
+                    }, function() {
+
+                    });
+            });
+        };
+
+        function showLayerSaveDialog() {
+            return $modal.open({
+                templateUrl: '/static/layers/_layers-save.html',
+                controller: 'LayerSaveController as ctrl',
+                backdrop: 'static',
+                keyboard: false,
+                windowClass: 'fullScreenModal First'
+            });
+        }
+
         function onBoxChange(feature, bbox) {
             boundingBox = bbox;
             $scope.executeQuery($scope.queryStr);
         }
         $scope.dragBox = function() {
-
             boxTool.Draw();
             boxTool.OnBoxDrawEnd(onBoxChange);
             boxTool.OnBoxModificationEnd(onBoxChange);
-            $scope.closeDialog();
         };
     }
 })();

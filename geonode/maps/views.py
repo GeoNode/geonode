@@ -392,6 +392,7 @@ def map_view(request, mapid, snapshot=None, template='maps/detail_map_view.html'
 
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config),
+        'access_token': access_token,
         'map': map_obj,
         'preview': getattr(
             settings,
@@ -613,7 +614,7 @@ def new_map_config(request):
         access_token = request.session['access_token']
     else:
         access_token = None
-
+    
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
@@ -749,6 +750,9 @@ def new_map_config(request):
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
+            
+    config.update(dict(access_token=access_token))
+        
     return json.dumps(config)
 
 
@@ -1106,11 +1110,31 @@ def map_publish(request, map_pk):
             # set all the permissions for all the managers of the group for this map
             map.set_managers_permissions()
 
-            messages.info(request, 'Pushed map succesfully')
+            messages.info(request, 'Pushed map successfully')
             return HttpResponseRedirect(reverse('member-workspace-map'))
     else:
         return HttpResponseRedirect(reverse('member-workspace-map'))
 
+@login_required
+def map_draft(request, map_pk):
+    if request.method == 'POST':
+        try:
+            map = Map.objects.get(id=map_pk)
+        except Map.DoesNotExist:
+            return Http404("Map does not exist")
+
+        group = map.group
+        managers = list( group.get_managers())
+        map.status = 'DRAFT'
+
+        if request.user in managers or request.user.is_superuser:
+            # only managers or superuser can change status
+            map.save()
+            messages.info(request, 'Unapproved map successfully')
+            
+        return HttpResponseRedirect(reverse('member-workspace-map'))            
+    else:
+        return HttpResponseRedirect(reverse('member-workspace-map'))
 
 @login_required
 def map_approve(request, map_pk):

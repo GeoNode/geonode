@@ -27,7 +27,10 @@
         <div class="gd-content-body layer-test">
             <div class="row">
                 <div class="panel-container">
-                <div class="panel-left">
+                        <div id="sidebar" class="panel-left slideInRight">
+
+                                <button class="sidebar-toggle-btn" onclick="animating()"><i class="fa fa-navicon fa-2x py-1 p-1" style="color: #1B97D3"></i></button>
+
                 <div class="col-md-4 margin-zero right-pad-zero" style="width: 100%; padding-left: 0;">
                     <div id="gd-accordion-style" class="map-details-information" style="overflow-x: hidden;">
                         <div class="panel-group" id="accordion__" role="tablist" aria-multiselectable="true">
@@ -435,8 +438,8 @@
                     </div>
                 </div>
                 </div>
-                <div class="splitter">
-                </div>
+                <!-- <div class="splitter">
+                </div> -->
                 <div class="panel-right">
                 <div class="col-md-8  margin-zero left-pad-zero r" style="width: 100%;padding-right: 0;">
                     <div class="gd-content-body map-details-info">
@@ -585,87 +588,21 @@
         {% endif %}
     });
 </script>
-<script type="text/javascript">
-    user_info = '{{ request.user.id }}';
-    map_info = '{{ resource.id }}';
 
-    // Map load
-    var user_location = JSON.parse(localStorage.getItem("user_location"));
-
-    var url = '/analytics/api/map/load/create/';
-
-    var latitude = '';
-    var longitude = '';
-    try{
-        latitude = user_location.latitude.toString();
-        longitude = user_location.longitude.toString()
-    }catch(err){
-        latitude = "";
-        longitude = "";
-    }
-
-    var data = {
-        'user': user_info,
-        'map': map_info,
-        'latitude': latitude,
-        'longitude': longitude,
-        'agent': '',
-        'ip': ''
-    };
-
-
-    map_load_activity_submit(data, url);
-
-    function map_load_activity_submit(data, url){
-
-        // using jQuery
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
+<script>
+        var count = 0;
+        function animating(){
+            if(count === 0){
+                document.getElementById('sidebar').className = 'panel-left slideOutRight';
+          
+                count++;
+            }else{
+                document.getElementById('sidebar').className = 'panel-left slideInRight show';//hide
+           
+                count--;
             }
-            return cookieValue;
-        }
-        var csrftoken = getCookie('csrftoken');
-        function csrfSafeMethod(method) {
-            // these HTTP methods do not require CSRF protection
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        }
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }
             }
-        });
+    
+    </script>
 
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: data,
-            dataType: 'json',
-            success: function(data){
-                console.log(data);
-
-            }
-        });
-
-    }
-
-    $(document).ready(function(){
-        $(".panel-left").resizable({
-            handleSelector: ".splitter",
-            resizeHeight: false
-        });
-    });
-
-</script>
 {% endblock %}

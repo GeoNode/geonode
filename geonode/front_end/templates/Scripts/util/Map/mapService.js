@@ -45,7 +45,7 @@
             for (var k in layers) {
                 var e = layers[k];
                 // var url = e.olLayer.getSource().getUrls()[0];
-                var url= e.geoserverUrl;
+                var url = e.geoserverUrl;
                 var index = sources.indexOf(url);
                 if (index == -1) {
                     sources.push(url);
@@ -318,8 +318,11 @@
             //         });
             //     }
             // },
-            addDataLayer: function(layer, override) {
-                var p1_deferred = $q.defer()
+            addDataLayer: function(layer) {
+                if (typeof layer.Name === 'undefined') {
+                    return;
+                }
+                var p1_deferred = $q.defer();
                 var p1 = p1_deferred.promise;
                 mapId = this.getId();
                 if (!mapId) {
@@ -442,6 +445,23 @@
             },
             getMap: function() {
                 return map.getMap();
+            },
+            getBbox: function(destinationProj) {
+                var epsg4326Extent, projection;
+                var extent = this.getMapExtent();
+                if (destinationProj) {
+                    projection = this.getProjection();
+                    epsg4326Extent = ol.proj.transformExtent(extent, projection, destinationProj);
+                }else {
+                    epsg4326Extent = extent;
+                }
+
+                // var bbox = epsg4326Extent[1] + ',' +
+                //     epsg4326Extent[0] + ',' +
+                //     epsg4326Extent[3] + ',' +
+                //     epsg4326Extent[2];
+                // return bbox;
+                return epsg4326Extent.join(',');
             },
             getId: function() {
                 return map.Id;

@@ -1,5 +1,5 @@
 from .db_connections import Database
-from django.db import models
+from django.contrib.gis.db import models
 
 
 class ClassFactory(object):
@@ -12,8 +12,11 @@ class ClassFactory(object):
         'smallint': models.SmallIntegerField,
         'double precision': models.DecimalField
     }
-    def __init__(self):
+    
+    def __init__(self, extra_fields=None):
         super(ClassFactory, self).__init__()
+        if extra_fields:
+            self.DJANGO_MODEL.update(extra_fields)
             
     def create_model(self, name, fields=None, app_label='', module='', options=None, admin_opts=None, db='default'):      
         """

@@ -1,67 +1,20 @@
 {% load i18n %}
 
 {% block head %}
-
-    {% include "geonode/ext_header.html" %}
-    {% include "geonode/app_header.html" %}
-    {% include "geonode/geo_header.html" %}
-    <script type="text/javascript">
-        google.load("earth", "1");
-        // function applyFilter(){
-        //     var value = document.getElementById('cql_filter').value;
-        //     console.log(value);
-        //     console.log(location);
-        //     var url = location.origin + location.pathname + '?CQL_FILTER=' + value;
-        //     console.log(url);
-        //     location.replace(url);
-        // }
-    </script>
-
-    <script type="text/javascript">
-    var app;
-    Ext.onReady(function() {
-    {% autoescape off %}
-        var config = {
-            useCapabilities: false,
-            useToolbar: false,
-            proxy: '{{ PROXY_URL }}',
-            {% if MAPFISH_PRINT_ENABLED %}
-            //printService: "{{GEOSERVER_BASE_URL}}pdf/",
-			printService: "{{GEOSERVER_BASE_URL}}pdf/info.json?url={{GEOSERVER_BASE_URL}}pdf/",
-            {% else %}
-            printService: "",
-            {% endif %}
-            /* The URL to a REST map configuration service.  This service 
-             * provides listing and, with an authenticated user, saving of 
-             * maps on the server for sharing and editing.
-             */
-            rest: "/maps/"
-        };
-
-        
-        var conf =  {{ config }};
-        var param = window.location.search.split('?')[1];
-        
-        for(var k in conf.sources){
-            var e = conf.sources[k];
-            if (e.url && param){
-                var url = e.url.split('?')
-                var filter = 'CQL_FILTER=' + param.replace(/=/gi, '%3D');
-                if(url.length == 1){
-                    e.url = url[0] + '?' + filter;
-                }else {
-                    e.url += '&' + filter;                
-                }
-            }
-        }
-        console.log(conf.sources);
-        Ext.apply(config, conf);
-        app = new GeoExplorer.Viewer(config);
-
-    {% endautoescape %}
-    });
-    </script>
+{% include 'Templates/_base-headers.html' %}
+   
 {% endblock %}
 
 {% block body %}
+
+<div class="col-md-8  margin-zero left-pad-zero r surfgis" ng-controller="appController" style="width: 100%;padding-right: 0;" ng-app="appModule" ng-click="bodyClicked()">
+    <div class="gd-content-body map-details-info" ng-controller="MapController">
+        <!-- <div id="embedded_map"> -->
+            <!-- <div id="the_map"></div> -->
+            {% include 'maps/_map-view-panel.html'%}
+
+        <!-- </div> -->
+    </div>
+</div>
+
 {% endblock %}

@@ -1,12 +1,58 @@
-﻿appModule.controller('attributeGridController', ['$scope', '$rootScope', '$modalInstance', 'featureRepository',
-    'attributeGridService', 'attributeValidator', 'layerId', 'mapService', 'featureService', 'attributeTypes',
-    'cqlFilterCharacterFormater', 'mapTools', '$timeout', 'mapAccessLevel',
-    function ($scope, $rootScope, $modalInstance, featureRepository, attributeGridService, attributeValidator,
-        layerId, mapService, featureService, attributeTypes, cqlFilterCharacterFormater, mapTools, $timeout, mapAccessLevel) {
+﻿appModule.controller('attributeGridController', ['$scope', '$rootScope', 'featureRepository',
+    'attributeGridService', 'attributeValidator', 'mapService', 'featureService', 'attributeTypes',
+    'cqlFilterCharacterFormater', 'mapTools', '$timeout', 'mapAccessLevel', 'LayerService','surfToastr',
+    function($scope, $rootScope, featureRepository, attributeGridService, attributeValidator,
+        mapService, featureService, attributeTypes, cqlFilterCharacterFormater, mapTools, $timeout, mapAccessLevel, LayerService,surfToastr) {
 
         var surfLayer, activeLayerId;
+        $scope.config = {};
 
-        initGrid(layerId);
+        function getRequestObjectToGetFeature(featureID, typeName) {
+            var requestObj = {
+                request: 'GetFeature',
+                typeName: typeName,
+                maxFeatures: 1,
+                featureID: featureID,
+                version: '2.0.0',
+                outputFormat: 'json',
+                exceptions: 'application/json'
+            };
+            return requestObj;
+        }
+       
+        $scope.selectedFeatures = [];
+        var selectedFeatures = [];
+
+        $scope.gridOptions = {
+            enableSorting: true,
+            enableColumnResizing: true,
+            onRegisterApi: function(gridApi) {
+                $scope.gridApi = gridApi;
+                gridApi.selection.on.rowSelectionChanged($scope, function(rows) {
+                    $scope.selectedFeatures = gridApi.selection.getSelectedRows();
+                    var difference = _.difference($scope.selectedFeatures, selectedFeatures);
+                    var features = _.map(difference, function(feature) {
+                        return feature.OpenlayerFeature.id_;
+                    });
+                    var featureId = features.join(",");
+                    if (surfLayer) {
+                        var requestObj = getRequestObjectToGetFeature(featureId, surfLayer.DataId);
+                        LayerService.getWFSWithGeom('api/geoserver/', requestObj, false).then(function(response) {
+                            attributeGridService.highlightFeature(response);
+                            selectedFeatures=$scope.selectedFeatures;
+                        });
+                    }
+                });
+            },
+            data: []
+        };
+
+        $scope.$watch(function() {
+            return $rootScope.layerId;
+        }, function() {
+            if ($rootScope.layerId)
+                initGrid($rootScope.layerId);
+        });
 
         function initGrid(newActiveLayerId) {
 
@@ -16,19 +62,48 @@
             activeLayerId = newActiveLayerId;
             surfLayer = mapService.getLayer(activeLayerId);
             mapService.setAllFeaturesUnselected();
-            $scope.data = { loading: true, isReadonly: !surfLayer.isWritable() || !mapAccessLevel.isWritable };
+            //$scope.data = { loading: true, isReadonly: !surfLayer.isWritable() || !mapAccessLevel.isWritable };
+            $scope.data = { loading: true, isReadonly: true };
             $scope.sorting = { predicate: null };
             $scope.pagination = { totalItems: 0, currentPage: 1, itemsPerPage: 10, pageSizes: [10, 50, 100] };
             $scope.gridData = { attributeDefinitions: [], attributeRows: [] };
             $scope.lastActiveHeader = { index: -1, isAccending: true };
 
             $scope.gridData.attributeDefinitions = surfLayer.getAttributeDefinition();
+            $scope.gridApi = {};
 
-            $scope.config = {
+            $scope.gridOptions = {
+                enableSorting: true,
+                enableColumnResizing: true,
+                enableRowSelection: true,
+                enableSelectAll: false,
+                columnDefs: attributeGridService.getColumns($scope.gridData.attributeDefinitions, attributeTypes),
+                onRegisterApi: function(gridApi) {
+                    $scope.gridApi = gridApi;
+                    gridApi.selection.on.rowSelectionChanged($scope, function(rows) {
+                        $scope.selectedFeatures = gridApi.selection.getSelectedRows();
+                        var difference = _.difference($scope.selectedFeatures, selectedFeatures);
+                        var features = _.map(difference, function(feature) {
+                            return feature.OpenlayerFeature.id_;
+                        });
+                        var featureId = features.join(",");
+                        if (surfLayer) {
+                            var requestObj = getRequestObjectToGetFeature(featureId, surfLayer.DataId);
+                            LayerService.getWFSWithGeom('api/geoserver/', requestObj, false).then(function(response) {
+                                attributeGridService.highlightFeature(response);
+                                selectedFeatures=$scope.selectedFeatures;
+                            });
+                        }
+                    });
+                },
+                data: []
+            };
+
+            $scope.config = angular.extend($scope.config, {
                 contextMenu: {
                     items: {
                         "remove_row": {
-                            disabled: function () {
+                            disabled: function() {
                                 return $scope.data.isReadonly;
                             }
                         },
@@ -38,38 +113,38 @@
                 },
                 manualColumnFreeze: true,
                 stretchH: "all",
-                afterChange: function (change, source) {
-                    if (source === "edit") {
-                        attributeGridService.storeChanges(change, $scope.gridData.attributeRows);
-                    } else if (source === "autofill" || source === "paste") {
-                        attributeGridService.storeChanges(change, $scope.gridData.attributeRows);
-                    }
-                },
-                afterOnCellMouseDown: function (event, pos, elem) {
-                    if (pos.row === -1) {
-                        setActiveHeader(pos.col);
-                    }
-                },
+                // afterChange: function (change, source) {
+                //     if (source === "edit") {
+                //         attributeGridService.storeChanges(change, $scope.gridData.attributeRows);
+                //     } else if (source === "autofill" || source === "paste") {
+                //         attributeGridService.storeChanges(change, $scope.gridData.attributeRows);
+                //     }
+                // },
+                // afterOnCellMouseDown: function (event, pos, elem) {
+                //     if (pos.row === -1) {
+                //         setActiveHeader(pos.col);
+                //     }
+                // },
                 colHeaders: attributeGridService.getColumnHeaders($scope.gridData.attributeDefinitions),
                 rowHeaders: true,
                 columns: attributeGridService.getColumns($scope.gridData.attributeDefinitions, attributeTypes),
                 manualColumnResize: true,
                 manualRowResize: true,
                 allowInsertRow: false,
-                afterCreateRow: function (index, amount) {
-                    $scope.gridData.attributeRows.splice(index, amount);
-                },
-                beforeRemoveRow: function (rowIndex) {
-                    attributeGridService.deleteRow($scope.gridData.attributeRows[rowIndex].Fid);
-                },
-                cells: function (row, col) {
-                    if (isNaN(col)) return { readOnly: $scope.data.isReadonly };
-                    return { readOnly: $scope.data.isReadonly || attributeTypes.isReadOnlyType($scope.gridData.attributeDefinitions[col].Type) }
-                },
-                beforeKeyDown: function (e) {
-                    validateAndUpdateValue(e);
-                }
-            }
+                // afterCreateRow: function (index, amount) {
+                //     $scope.gridData.attributeRows.splice(index, amount);
+                // },
+                // beforeRemoveRow: function (rowIndex) {
+                //     attributeGridService.deleteRow($scope.gridData.attributeRows[rowIndex].Fid);
+                // },
+                // cells: function (row, col) {
+                //     if (isNaN(col)) return { readOnly: $scope.data.isReadonly };
+                //     return { readOnly: $scope.data.isReadonly || attributeTypes.isReadOnlyType($scope.gridData.attributeDefinitions[col].Type) }
+                // },
+                // beforeKeyDown: function (e) {
+                //     validateAndUpdateValue(e);
+                // }
+            });
 
             loadAttributeGridInfo();
         }
@@ -78,7 +153,7 @@
             var selectedCell = $scope.config.table.getSelected();
             if (selectedCell) {
                 var valueBeforeChange = event.realTarget.value;
-                $timeout(function () {
+                $timeout(function() {
                     if (!isAttributeValid(event.realTarget.value, $scope.gridData.attributeDefinitions[selectedCell[1]])) {
                         event.realTarget.value = valueBeforeChange;
                     }
@@ -94,15 +169,20 @@
 
             loadGridDataFromServer($scope.pagination.currentPage, stopLoading, stopLoading);
 
-            attributeGridService.getNumberOfFeatures(surfLayer.DataId).success(function (numberOfFeatures) {
+            attributeGridService.getNumberOfFeatures(surfLayer.DataId).success(function(numberOfFeatures) {
                 //$scope.pagination.totalItems = numberOfFeatures;
                 $scope.pagination.totalItems = Number($(numberOfFeatures)[1].attributes.numberoffeatures.value);
-                
-            }).error(function () {
+
+            }).error(function() {
                 //$scope.pagination.totalItems = 100;
                 $scope.gridData.attributeDefinitions = [];
             });
         }
+
+        $rootScope.$on('filterDataWithCqlFilter', function(event, query) {
+            $scope.pagination.currentPage = 1;
+            loadGridDataFromServerUsingCqlFilter($scope.pagination.currentPage, query);
+        });
 
         function getRequestObject(currentPage) {
             var currentPageSize = $scope.pagination.itemsPerPage;
@@ -113,7 +193,7 @@
                 startIndex: startIndex,
                 count: currentPageSize,
                 maxFeatures: currentPageSize,
-                sortBy: $scope.sorting.predicate ? $scope.sorting.predicate + ($scope.lastActiveHeader.isAccending ? "" : "+D") : '',//surfLayer.IdColumn
+                sortBy: $scope.sorting.predicate ? $scope.sorting.predicate + ($scope.lastActiveHeader.isAccending ? "" : "+D") : '', //surfLayer.IdColumn
                 version: '2.0.0',
                 outputFormat: 'GML2',
                 exceptions: 'application/json'
@@ -130,19 +210,64 @@
             return requestObj;
         }
 
+        function populateGrid(features, onSuccess) {
+            attributeGridService.populateDataIntoGrid($scope.gridData, features);
+            if (onSuccess) onSuccess();
+            attributeGridService.changeEditedRows($scope.gridData);
+            attributeGridService.removeDeletedRows($scope.gridData);
+            $scope.loading = false;
+            var settings = angular.extend({
+                data: $scope.gridData.attributeRows
+            }, $scope.config);
+            $scope.gridOptions.data = $scope.gridData.attributeRows;
+        }
+
+        function loadGridDataFromServerUsingCqlFilter(currentPage, query, onSuccess, onError) {
+            if($rootScope.layerId){
+                $scope.loading = true;
+                var requestObj = getRequestObject(currentPage);
+                requestObj.CQL_FILTER = query;
+
+                attributeGridService.getGridData(requestObj, surfLayer).then(function(features) {
+                    populateGrid(features);
+                    // if(!$scope.config.table){
+                    //     $scope.config.table = new Handsontable($('#attribute-grid')[0], settings);
+                    // }
+                    // else{
+                    //     $scope.config.table.updateSettings(settings);
+                    // }
+                    //$scope.config.table.render();
+                    //table.render();
+
+                }).catch(function() {
+                    if (onError) {
+                        onError();
+                    }
+                    $scope.loading = false;
+                });
+
+            }else{
+                surfToastr.error("please select a layer","Error");
+            }
+            
+        }
+
         function loadGridDataFromServer(currentPage, onSuccess, onError) {
             $scope.loading = true;
             var requestObj = getRequestObject(currentPage);
 
-            attributeGridService.getGridData(requestObj, surfLayer).then(function (features) {
-                attributeGridService.populateDataIntoGrid($scope.gridData, features);
-                if (onSuccess) onSuccess();
-                attributeGridService.changeEditedRows($scope.gridData);
-                attributeGridService.removeDeletedRows($scope.gridData);
-                $scope.loading = false;
-                $scope.config.table.render();
+            attributeGridService.getGridData(requestObj, surfLayer).then(function(features) {
+                populateGrid(features);
+                // if(!$scope.config.table){
+                //     $scope.config.table = new Handsontable($('#attribute-grid')[0], settings);
+                // }
+                // else{
+                //     $scope.config.table.updateSettings(settings);
+                // }
+                //$scope.config.table.render();
+                //table.render();
 
-            }).catch(function () {
+            }).catch(function() {
                 if (onError) {
                     onError();
                 }
@@ -150,12 +275,12 @@
             });
         }
 
-        $scope.searchByAttribute = function () {
+        $scope.searchByAttribute = function() {
             loadGridDataFromServer($scope.pagination.currentPage);
             $scope.pagination.currentPage = 1;
         };
 
-        $scope.onPageSelect = function (currentPage) {
+        $scope.onPageSelect = function(currentPage) {
             loadGridDataFromServer(currentPage);
             mapService.setAllFeaturesUnselected();
         }
@@ -171,7 +296,7 @@
             loadGridDataFromServer($scope.pagination.currentPage);
         };
 
-        $scope.itemPerPageChanged = function () {
+        $scope.itemPerPageChanged = function() {
             $scope.pagination.currentPage = 1;
             loadGridDataFromServer($scope.pagination.currentPage);
 
@@ -198,8 +323,7 @@
         function closeModal() {
             try {
                 $modalInstance.close();
-            } catch (error) {
-            }
+            } catch (error) {}
             $scope.config.table.destroy();
         }
 
@@ -210,11 +334,11 @@
             closeModal();
         }
 
-        $scope.saveChanges = function () {
+        $scope.saveChanges = function() {
             if (attributeGridService.haveFeaturesToDelete()) {
                 dialogBox.confirm({
                     text: getMessageToShow(),
-                    action: function () {
+                    action: function() {
                         attributeGridService.removeDeletedFeatures(activeLayerId);
                         saveFeatures();
                     },
@@ -233,8 +357,9 @@
         //    attributeGridService.deletedRow(_.findWhere($scope.gridData.attributeRows, { Fid: fid }), $scope.gridData);
         //});
 
-        $scope.closeAttributeGrid = function () {
+        $scope.closeAttributeGrid = function() {
             closeModal();
             mapService.setAllFeaturesUnselected();
         };
-    }]);
+    }
+]);

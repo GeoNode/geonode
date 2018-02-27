@@ -46,7 +46,7 @@
         <div class="row" ng-show="isRange()">
             <div class="col-md-3">
                 <label style="font-weight: bold; display: inline;">Divisions :</label>
-                <input type="number" class="form-control" style="width: 40px;" min="1" max="100" ng-model="flags.division" ng-change="divisionChanged()" />
+                <input type="number" class="form-control" style="width: 100px;" min="1" max="100" ng-model="flags.division" ng-change="divisionChanged()" />
             </div>
             <div class="col-md-3">
                 <i class="fa fa-spinner fa-spin" style="text-align: center; width: 100%; margin-top: 35px;" ng-show="isLoading()"></i>
@@ -103,12 +103,12 @@
                                             <th style="width: 150px;" ng-if="isRange()">
                                                 <div class="th-inner" style="padding-left: 79px;">Max</div>
                                             </th>
-                                            <th style="width: 60px;">
+                                            /* <th style="width: 60px;">
                                                 <div class="th-inner" style="padding-left: 19px;">Count</div>
                                             </th>
                                             <th style="width: 60px;">
                                                 <div class="th-inner" style="padding-left: 19px;">Group</div>
-                                            </th>
+                                            </th> */
                                             <th style="width: 30px;" ng-if="isUnique()">
                                                 <div class="th-inner"></div>
                                             </th>
@@ -130,10 +130,10 @@
                                                        ng-focus="saveEditingValue(class.rangeMax)" ng-attr-min="{{class.rangeMin}}"
                                                        ng-attr-max="{{flags.maximum}}" ng-blur="rangeLimitChanged(class)" />
                                             </td>
-                                            <td style="width: 60px; text-align: center;">{{class.count}}</td>
+                                            <!--<td style="width: 60px; text-align: center;">{{class.count}}</td>
                                             <td style="width: 120px; text-align: center; padding: 0;">
                                                 <input type="text" ng-model="class.groupName" class="form-control input-small" />
-                                            </td>
+                                            </td> -->
                                             <td ng-if="isUnique()" style="width: 30px; text-align: center;"><i class="fa fa-times-circle" ng-click="removeToList($index)" style="color: #df524e; cursor: pointer; margin-top: 8px;" title="Remove"></i></td>
                                         </tr>
                                     </tbody>
@@ -148,10 +148,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-1 text-center" style="font-size: 20px; margin-top: 10%;">
+                    <!--<div class="col-md-1 text-center" style="font-size: 20px; margin-top: 10%;">
                         <i class="fa fa-arrow-circle-up" style="cursor: pointer;" ng-click="moveUp()"></i>
                         <i class="fa fa-arrow-circle-down" style="cursor: pointer;" ng-click="moveDown()"></i>
-                    </div>
+                    </div>-->
                     <div class="col-md-4" ng-if="isUnique()">
                         <div class="panel panel-default" style="margin-bottom: 0">
                             <div class="panel-heading" style="padding: 3px 6px;">

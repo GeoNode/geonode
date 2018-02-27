@@ -157,7 +157,11 @@ class MapListAPIView(AnalyticsMixin, ListAPIView):
         results = self.get_analytics(map_load_data, keys) + self.get_analytics(pin_point_data, keys)
 
         for r in results:
-            r.update(dict(name=Map.objects.get(id=r['map_id']).title))
+            map = Map.objects.get(id=r['map_id'])
+            r.update(dict(name=map.title,
+                        user_organization = map.owner.organization,                        
+                        map_category=map.category.identifier, 
+                        map_organization=map.group.title))
 
         return Response(data=results, status=status.HTTP_200_OK)
 
@@ -178,7 +182,11 @@ class LayerListAPIView(AnalyticsMixin, ListAPIView):
         results = self.get_analytics(layer_load_data, keys) + self.get_analytics(pin_point_data, keys)
         
         for r in results:
-            r.update(dict(name=Layer.objects.get(id=r['layer_id']).title))
+            layer = Layer.objects.get(id=r['layer_id'])
+            r.update(dict(name=layer.title, 
+                        user_organization = layer.owner.organization,
+                        layer_category=layer.category.identifier, 
+                        layer_organization=layer.group.title))
 
         return Response(data=results, status=status.HTTP_200_OK)
             

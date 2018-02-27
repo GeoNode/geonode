@@ -10,9 +10,10 @@
                 defaultStyle: '='
             },
             templateUrl: 'static/Templates/classifierDefinitions.html',
-            controller: ['$scope', '$http', '$filter', 'attributeDefinitionHelper', 'attributeTypes',
-                function($scope, $http, $filter, attributeDefinitionHelper, attributeTypes) {
+            controller: ['$scope', '$http', '$filter', 'attributeDefinitionHelper', 'attributeTypes', 'layerRepository',
+                function($scope, $http, $filter, attributeDefinitionHelper, attributeTypes, layerRepository) {
                     var isChosenPaletteSet = false;
+                    var rangeFunctionalty;
                     function init() {
                         $scope.isPoint = $scope.featureType == featureTypes.point;
                         $scope.isPolyline = $scope.featureType == featureTypes.polyline;
@@ -39,7 +40,7 @@
                             PropertyData: []
                         };
 
-                        var rangeFunctionalty = new RangeCalculator();
+                        rangeFunctionalty = new RangeCalculator();
                         $scope.classifierBinder.colorPaletteGenerator = new ColorPaletteGenerator();
 
                         $scope.paletteItems = $scope.classifierBinder.colorPaletteGenerator.getPaletteData();
@@ -105,7 +106,7 @@
                     };
 
                     function createClassType() {
-                        return $scope.isRange() ? new RangeType($http, $scope, rangeFunctionalty, attributeDefinitionHelper, $filter) : new UniqueType($http, $scope, attributeTypes, $filter);
+                        return $scope.isRange() ? new RangeType($http, $scope, rangeFunctionalty, attributeDefinitionHelper, $filter, layerRepository) : new UniqueType($http, $scope, attributeTypes, $filter);
                     }
 
                     $scope.radioSelectionChanged = function() {

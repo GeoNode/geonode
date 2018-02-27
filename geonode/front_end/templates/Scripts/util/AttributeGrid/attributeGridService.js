@@ -1,11 +1,108 @@
 ﻿appModule.factory('attributeGridService', ['layerRepository', 'featureService', 'surfFeatureFactory', 'mapService', 'mapAccessLevel',
     function (layerRepository, featureService, surfFeatureFactory, mapService, mapAccessLevel) {
         var deletedFids, editedRows;
+        var image = new ol.style.Circle({
+            radius: 5,
+            fill: new ol.style.Fill({
+                color: 'rgba(255,0,0,1.0)'
+            }),
+            stroke: new ol.style.Stroke({ color: 'rgba(255,0,0,1.0)', width: 2 })
+        });
+        var styles = {
+            'Point': new ol.style.Style({
+                image: new ol.style.Circle({
+                  radius: 6,
+                  stroke: new ol.style.Stroke({
+                    color: 'white',
+                    width: 2
+                  }),
+                  fill: new ol.style.Fill({
+                    color: 'green'
+                  })
+                })
+              }),
+            'LineString': new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    width: 1
+                })
+            }),
+            'MultiLineString': new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    width: 1
+                })
+            }),
+            'MultiPoint': new ol.style.Style({
+                image: image
+            }),
+            'MultiPolygon': new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    width: 1
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(255, 255, 0, 0.1)'
+                })
+            }),
+            'Polygon': new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    lineDash: [4],
+                    width: 3
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(0, 0, 255, 0.1)'
+                })
+            }),
+            'GeometryCollection': new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    width: 2
+                }),
+                fill: new ol.style.Fill({
+                    color: 'red'
+                }),
+                image: new ol.style.Circle({
+                    radius: 10,
+                    fill: null,
+                    stroke: new ol.style.Stroke({
+                        color: 'red'
+                    })
+                })
+            }),
+            'Circle': new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    width: 2
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(255,0,0,0.2)'
+                })
+            })
+        };
+        var styleFunction = function(feature) {
+            return [styles[feature.getGeometry().getType()]];
+        };
+        var vectorSource = new ol.source.Vector();
+        var vectorLayer = new ol.layer.Vector({
+            source: vectorSource,
+            style: styleFunction
+        });
+        
+        var map = mapService.getMap();
+        map.addLayer(vectorLayer);
 
         var factory = {
             resetAll: function () {
                 deletedFids = [];
                 editedRows = [];
+            },
+            highlightFeature : function(featureJson){
+                var mapFeatures = (new ol.format.GeoJSON()).readFeatures(featureJson, { featureProjection: 'EPSG:3857' });
+                vectorSource.addFeatures(mapFeatures);
+                var extent = mapFeatures[0].getGeometry().getExtent();
+                map.getView().fit(extent,map.getSize());
             },
             getNumberOfFeatures: function (layerId) {
                 return layerRepository.getNumberOfFeatures(layerId);
@@ -109,7 +206,7 @@
                 for (var i = 0; i < attributeDefinitions.length; i++) {
                     if (mapAccessLevel.isPublic && !attributeDefinitions[i].IsPublished) continue;
 
-                    var column = { data: "Attributes." + attributeDefinitions[i].Id };
+                    var column = { field: "Attributes." + attributeDefinitions[i].Id, name: attributeDefinitions[i].Id };
                     if (attributeTypes.isDateType(attributeDefinitions[i].Type)) {
                         angular.extend(column, { type: "date", dateFormat: "D MMM, YYYY", validator: factory.dateValidator, allowInvalid: false });
                     }

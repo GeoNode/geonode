@@ -21,11 +21,8 @@
     {% include "base/_resourcebase_opengraph.html" %}
   {% endif %}
 
-  {% if preview == 'geoext' %}
-    {% include "layers/layer_geoext_map.html" %}
-  {% else %}
-    {% include "layers/layer_leaflet_map.html" %}
-  {% endif %}
+  {% include 'Templates/_base-headers.html' %}
+
 {{ block.super }}
 {% endblock %}
 
@@ -33,11 +30,248 @@
 {% block body_class %}layers{% endblock %}
 
 {% block body_outer %}
+
+<style>
+    #gd-footer
+    {
+        display: none;
+    }
+    #gd-wrapper
+    {
+        padding-bottom: 0;
+    }
+</style>
+
     <div class="gd-content">
       <div class="gd-content-body layer-test" >
         <div class="row">
-        <div class="panel-container">
-          <div class="panel-left">
+        <div class="panel-container content-p-top">
+
+            <div class="modal fade" id="download-layer" tabindex="-1" role="dialog"
+            aria-labelledby="myModalLabel" aria-hidden="true">
+           <div class="modal-dialog modal-dialog-edit">
+               <div class="modal-content">
+                   <div class="modal-header">
+                       <button type="button" class="close" data-dismiss="modal"
+                               aria-hidden="true">&times;</button>
+                       <h4 class="modal-title"
+                           id="myModalLabel">{% trans "Download Layer..." %}</h4>
+                   </div>
+                   <div class="modal-body">
+                       <h2>Data format</h2>
+                       <div class="native">
+
+                           {% if links %}
+{#                                                                <ul>#}
+                                   {% for link in links %}
+                                       <div class="radio">
+                                           <label>
+                                               <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
+                                               {% trans link.name %}
+                                           </label>
+                                       </div>
+                                       {% comment %}<li>
+                                           <a href="{{ link.url }}">{% trans link.name %}</a>
+                                       </li>{% endcomment %}
+                                   {% endfor %}
+{#                                                                </ul>#}
+                           {% endif %}
+                           {% if links_download %}
+                               {% comment %}<ul>{% endcomment %}
+                                   {% for link in links_download %}
+                                       {% comment %}<li>{% endcomment %}
+                                       <div class="radio">
+                                           <label>
+                                               <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
+                                               {% trans link.name %}
+                                           </label>
+                                       </div>
+                                           {% comment %}<a href="{{ link.url }}">{% trans link.name %}</a>{% endcomment %}
+                                       {% comment %}</li>{% endcomment %}
+                                   {% endfor %}
+                               {% comment %}</ul>{% endcomment %}
+                           {% endif %}
+                       </div>
+                       <div class="wgs84">
+
+                           {% if links %}
+
+                               {% comment %}<ul>{% endcomment %}
+
+                                   {% for link in links %}
+                                       <div class="radio">
+                                           <label>
+                                               <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}">
+                                               {% trans link.name %}
+                                           </label>
+                                       </div>
+                                       {% comment %}<li>
+                                           <a href="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">{% trans link.name %}</a>
+                                       </li>{% endcomment %}
+                                   {% endfor %}
+                               {% comment %}</ul>{% endcomment %}
+                           {% endif %}
+
+                           {% if links_download %}
+                               {% comment %}<ul>{% endcomment %}
+                                   {% for link in links_download %}
+                                       {% comment %}<li>{% endcomment %}
+                                       <div class="radio">
+                                           <label>
+                                               <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}">
+                                               {% trans link.name %}
+                                           </label>
+                                       </div>
+
+                                           {% comment %}<a href="{{ link.url }}">{% trans link.name %}</a>{% endcomment %}
+                                       {% comment %}</li>{% endcomment %}
+                                   {% endfor %}
+                               {% comment %}</ul>{% endcomment %}
+                           {% endif %}
+                       </div>
+
+                       {% if user_data_epsg != 'None' and user_data_epsg != "4326" %}
+
+                           <h3>Projections</h3>
+                           <div class="radio">
+                               <label>
+                                   <input type="radio" name="nativeOrwgs84" id="native-data" value="native" checked>
+                                   {% comment %}Native{% endcomment %}
+                                   {% if user_data_proj %}
+                                   {{ user_data_proj }}
+                                   {% endif %}
+                               </label>
+                           </div>
+                           <div class="radio">
+                               <label>
+                                   <input type="radio" name="nativeOrwgs84" id="wgs84-data" value="wgs84">
+                                   WGS 84
+                               </label>
+                           </div>
+                       {% endif %}
+
+                   </div>
+                   <div class="modal-footer">
+                       <button type="button" class="btn btn-primary pull-left data-export-button">Export...</button>
+                       <button type="button" class="btn btn-default btn-gd"
+                               data-dismiss="modal">
+                           {% trans "Close" %}
+                       </button>
+                   </div>
+               </div>
+           </div>
+       </div>
+
+
+
+            {% if GEONODE_SECURITY_ENABLED %}
+            {% include "_permissions_form.html" %}
+          {% endif %}
+
+            <!-- Start edit layer modal -->
+
+                {% if GEOSERVER_BASE_URL %}
+                {% get_obj_perms request.user for resource.layer as "layer_perms" %}
+            {% endif %}
+            {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_style" in layer_perms %}
+                <div class="modal fade" id="edit-layer" tabindex="-1" role="dialog"
+                aria-labelledby="myModalLabel" aria-hidden="true">
+               <div class="modal-dialog modal-dialog-edit">
+                   <div class="modal-content">
+                       <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal"
+                                   aria-hidden="true">&times;</button>
+                           <h4 class="modal-title"
+                               id="myModalLabel">{% trans "Edit Layer" %}</h4>
+                       </div>
+                       <div class="modal-body">
+                           <div class="row edit-modal">
+                               {% if "change_resourcebase_metadata" in perms_list %}
+                                   <div class="col-sm-3">
+                                       <i class="fa fa-list-alt fa-3x"></i>
+                                       <h4>{% trans "Metadata" %}</h4>
+                                       <a class="btn btn-default btn-gd btn-block btn-xs"
+                                          href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit" %}</a>
+                                   </div>
+                               {% endif %}
+                               {% if GEOSERVER_BASE_URL and not resource.service %}
+                                   {% if "change_layer_style" in layer_perms %}
+                                       <div class="col-sm-3">
+                                           <i class="fa fa-tint fa-3x"></i>
+                                           <h4>{% trans "Styles" %}</h4>
+                                           {% if preview == 'geoext' %}
+                                               <a class="btn btn-default btn-gd btn-block btn-xs style-edit"
+                                                  data-dismiss="modal"
+                                                  href="#">{% trans "Edit" %}</a>
+                                           {% endif %}
+                                           <a class="btn btn-default btn-gd btn-block btn-xs"
+                                              href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
+                                       </div>
+                                   {% endif %}
+                               {% endif %}
+                               {% if "change_resourcebase" in perms_list %}
+                                   <div class="col-sm-3">
+                                       <i class="fa fa-photo fa-3x"></i>
+                                       <h4>{% trans "Thumbnail" %}</h4>
+                                       <a class="btn btn-default btn-gd btn-block btn-xs"
+                                          href="#"
+                                          id="set_thumbnail">{% trans "Set" %}</a>
+                                   </div>
+                               {% endif %}
+
+                               {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_data" in layer_perms %}
+                                   <div class="col-sm-3">
+                                       <i class="fa fa-square-o fa-3x rotate-45"></i>
+                                       <h4>{% trans "Layer" %}</h4>
+                                       {% if "change_resourcebase" in perms_list and not resource.service %}
+                                           <a class="btn btn-default btn-gd btn-block btn-xs"
+                                              href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
+                                       {% endif %}
+                                       {% if resource.storeType == 'dataStore' and "change_layer_data" in layer_perms %}
+                                           <a class="btn btn-default btn-gd btn-block btn-xs"
+                                              href="{% url "new_map" %}?layer={{ resource.service_typename }}">{% trans "Edit data" %}</a>
+                                       {% endif %}
+                                       {% if layer_status != 'ACTIVE' or request.user.is_superuser %}
+                                           {% if "delete_resourcebase" in perms_list %}
+                                           <a class="btn btn-danger btn-gd btn-block btn-xs"
+                                              href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove" %}</a>
+                                           {% endif %}
+                                       {% endif %}
+
+                                   </div>
+                               {% endif %}
+
+                               <div class="tab-content">
+
+                               </div>
+                           </div>
+                           <div class="modal-footer">
+                               <button type="button" class="btn btn-gd btn-default"
+                                       data-dismiss="modal">{% trans "Close" %}</button>
+                           </div>
+                       </div>
+                   </div>
+                   </div>
+               </div>   
+               {% endif %}
+          
+ <!-- End edit layer modal -->
+
+
+            <div id="sidebar" class="panel-left layer-panel slideInRight">
+
+                  
+
+                <!-- <div class="layer-mini-slider" id="mini-slider" onclick="closeNav();">
+                        <span>
+                            <img src="{{ STATIC_URL }}geonode/images/layer_details_mini_icon.png" class="img-responsive1 expand_view close_carlet" title="Collapse side panel" alt="Mini-left">
+                        </span>
+                      </div> -->
+
+                      <button class="sidebar-toggle-btn" onclick="animating()"><i class="fa fa-navicon fa-2x py-1 p-1" style="color: #1B97D3"></i></button>
+
+                      
+
           <div class="margin-zero right-pad-zero overlay_layerdetails" id="myNav">
             <div id="gd-accordion-style" class="layer-information">
                         <div class="panel-group" id="accordion___" role="tablist" aria-multiselectable="true">
@@ -84,6 +318,14 @@
                                                         {% include "layer_templates/_deny_layer.html" %}
                                                     {% endif %}
                                                 </li>
+                                                {% if user_role == "manager" and status == 'ACTIVE' %}
+                                                <li class="list-group-item">
+                                                        <form method="post" action="{% url "layer-draft" resource.id %}">
+                                                                {% csrf_token %}
+                                                    <button type="submit" class="btn btn-gd-primary btn-md btn-block" >{% trans "Unapproved Layer" %}</button>
+                                                    </form>
+                                                </li>
+                                                {% endif %}
 
                                             {% endif %}
 
@@ -113,120 +355,7 @@
                                                 </a>
                                               </li>
                                               {% endcomment %}
-                                        <div class="modal fade" id="download-layer" tabindex="-1" role="dialog"
-                                             aria-labelledby="myModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-edit">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                                aria-hidden="true">&times;</button>
-                                                        <h4 class="modal-title"
-                                                            id="myModalLabel">{% trans "Download Layer..." %}</h4>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <h2>Data format</h2>
-                                                        <div class="native">
-
-                                                            {% if links %}
-{#                                                                <ul>#}
-                                                                    {% for link in links %}
-                                                                        <div class="radio">
-                                                                            <label>
-                                                                                <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
-                                                                                {% trans link.name %}
-                                                                            </label>
-                                                                        </div>
-                                                                        {% comment %}<li>
-                                                                            <a href="{{ link.url }}">{% trans link.name %}</a>
-                                                                        </li>{% endcomment %}
-                                                                    {% endfor %}
-{#                                                                </ul>#}
-                                                            {% endif %}
-                                                            {% if links_download %}
-                                                                {% comment %}<ul>{% endcomment %}
-                                                                    {% for link in links_download %}
-                                                                        {% comment %}<li>{% endcomment %}
-                                                                        <div class="radio">
-                                                                            <label>
-                                                                                <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
-                                                                                {% trans link.name %}
-                                                                            </label>
-                                                                        </div>
-                                                                            {% comment %}<a href="{{ link.url }}">{% trans link.name %}</a>{% endcomment %}
-                                                                        {% comment %}</li>{% endcomment %}
-                                                                    {% endfor %}
-                                                                {% comment %}</ul>{% endcomment %}
-                                                            {% endif %}
-                                                        </div>
-                                                        <div class="wgs84">
-
-                                                            {% if links %}
-
-                                                                {% comment %}<ul>{% endcomment %}
-
-                                                                    {% for link in links %}
-                                                                        <div class="radio">
-                                                                            <label>
-                                                                                <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}">
-                                                                                {% trans link.name %}
-                                                                            </label>
-                                                                        </div>
-                                                                        {% comment %}<li>
-                                                                            <a href="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">{% trans link.name %}</a>
-                                                                        </li>{% endcomment %}
-                                                                    {% endfor %}
-                                                                {% comment %}</ul>{% endcomment %}
-                                                            {% endif %}
-
-                                                            {% if links_download %}
-                                                                {% comment %}<ul>{% endcomment %}
-                                                                    {% for link in links_download %}
-                                                                        {% comment %}<li>{% endcomment %}
-                                                                        <div class="radio">
-                                                                            <label>
-                                                                                <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}">
-                                                                                {% trans link.name %}
-                                                                            </label>
-                                                                        </div>
-
-                                                                            {% comment %}<a href="{{ link.url }}">{% trans link.name %}</a>{% endcomment %}
-                                                                        {% comment %}</li>{% endcomment %}
-                                                                    {% endfor %}
-                                                                {% comment %}</ul>{% endcomment %}
-                                                            {% endif %}
-                                                        </div>
-
-                                                        {% if user_data_epsg != 'None' and user_data_epsg != "4326" %}
-
-                                                            <h3>Projections</h3>
-                                                            <div class="radio">
-                                                                <label>
-                                                                    <input type="radio" name="nativeOrwgs84" id="native-data" value="native" checked>
-                                                                    {% comment %}Native{% endcomment %}
-                                                                    {% if user_data_proj %}
-                                                                    {{ user_data_proj }}
-                                                                    {% endif %}
-                                                                </label>
-                                                            </div>
-                                                            <div class="radio">
-                                                                <label>
-                                                                    <input type="radio" name="nativeOrwgs84" id="wgs84-data" value="wgs84">
-                                                                    WGS 84
-                                                                </label>
-                                                            </div>
-                                                        {% endif %}
-
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-primary pull-left data-export-button">Export...</button>
-                                                        <button type="button" class="btn btn-default btn-gd"
-                                                                data-dismiss="modal">
-                                                            {% trans "Close" %}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                       
                                         {% if GEOSERVER_BASE_URL %}
                                             {% get_obj_perms request.user for resource.layer as "layer_perms" %}
                                         {% endif %}
@@ -237,84 +366,7 @@
                                                     {% trans "Edit Layer" %}
                                                 </button>
                                             </li>
-                                            <div class="modal fade" id="edit-layer" tabindex="-1" role="dialog"
-                                                 aria-labelledby="myModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-edit">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <button type="button" class="close" data-dismiss="modal"
-                                                                    aria-hidden="true">&times;</button>
-                                                            <h4 class="modal-title"
-                                                                id="myModalLabel">{% trans "Edit Layer" %}</h4>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <div class="row edit-modal">
-                                                                {% if "change_resourcebase_metadata" in perms_list %}
-                                                                    <div class="col-sm-3">
-                                                                        <i class="fa fa-list-alt fa-3x"></i>
-                                                                        <h4>{% trans "Metadata" %}</h4>
-                                                                        <a class="btn btn-default btn-gd btn-block btn-xs"
-                                                                           href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit" %}</a>
-                                                                    </div>
-                                                                {% endif %}
-                                                                {% if GEOSERVER_BASE_URL and not resource.service %}
-                                                                    {% if "change_layer_style" in layer_perms %}
-                                                                        <div class="col-sm-3">
-                                                                            <i class="fa fa-tint fa-3x"></i>
-                                                                            <h4>{% trans "Styles" %}</h4>
-                                                                            {% if preview == 'geoext' %}
-                                                                                <a class="btn btn-default btn-gd btn-block btn-xs style-edit"
-                                                                                   data-dismiss="modal"
-                                                                                   href="#">{% trans "Edit" %}</a>
-                                                                            {% endif %}
-                                                                            <a class="btn btn-default btn-gd btn-block btn-xs"
-                                                                               href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
-                                                                        </div>
-                                                                    {% endif %}
-                                                                {% endif %}
-                                                                {% if "change_resourcebase" in perms_list %}
-                                                                    <div class="col-sm-3">
-                                                                        <i class="fa fa-photo fa-3x"></i>
-                                                                        <h4>{% trans "Thumbnail" %}</h4>
-                                                                        <a class="btn btn-default btn-gd btn-block btn-xs"
-                                                                           href="#"
-                                                                           id="set_thumbnail">{% trans "Set" %}</a>
-                                                                    </div>
-                                                                {% endif %}
-
-                                                                {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_data" in layer_perms %}
-                                                                    <div class="col-sm-3">
-                                                                        <i class="fa fa-square-o fa-3x rotate-45"></i>
-                                                                        <h4>{% trans "Layer" %}</h4>
-                                                                        {% if "change_resourcebase" in perms_list and not resource.service %}
-                                                                            <a class="btn btn-default btn-gd btn-block btn-xs"
-                                                                               href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
-                                                                        {% endif %}
-                                                                        {% if resource.storeType == 'dataStore' and "change_layer_data" in layer_perms %}
-                                                                            <a class="btn btn-default btn-gd btn-block btn-xs"
-                                                                               href="{% url "new_map" %}?layer={{ resource.service_typename }}">{% trans "Edit data" %}</a>
-                                                                        {% endif %}
-                                                                        {% if layer_status != 'ACTIVE' or request.user.is_superuser %}
-                                                                            {% if "delete_resourcebase" in perms_list %}
-                                                                            <a class="btn btn-danger btn-gd btn-block btn-xs"
-                                                                               href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove" %}</a>
-                                                                            {% endif %}
-                                                                        {% endif %}
-
-                                                                    </div>
-                                                                {% endif %}
-
-                                                                <div class="tab-content">
-
-                                                                </div>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-gd btn-default"
-                                                                        data-dismiss="modal">{% trans "Close" %}</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            
                                             {% endif %}
                                             <!--
                                             <li class="list-group-item lastchild">
@@ -715,33 +767,34 @@
                             </div>
                         </div>
                     </div>
-          {% if GEONODE_SECURITY_ENABLED %}
-            {% include "_permissions_form.html" %}
-          {% endif %}
+          
 
           </div> <!-- col-md-4 -->
           </div>
-          <div class="splitter">
-          </div>
-          <div class="panel-right">
-         
-
-              <ul class="nav nav-tabs layerNav">
+          <!-- <div class="splitter">
+          </div> -->
+          <div class="panel-right" ng-app="appModule">
+              <ul class="nav nav-tabs layerNav map-tab-bar">
                     <li role="presentation" id="attribute" onclick="activeTab('attribute')" style="float: right">
                             <a aria-controls="profile" role="tab" data-toggle="tab" href="javascript:void(0)"><i class="fa fa-table" aria-hidden="true"></i> {% trans "Attribute" %}</a></li>
 
                   <li role="presentation" class="active" id="map" onclick="activeTab('map')" style="float: right">
                       <a  aria-controls="profile" role="tab" data-toggle="tab" href="javascript:void(0)"><i class="fa fa-map-o" aria-hidden="true"></i> {% trans "Map" %}</a></li>
-                  
-
-                      
                 </ul>     
            
             
                 <div class="col-md-12" id="myNav_map_left" style="padding: 0">
 
             <div id="embedded_map" class="mrg-btm">
-              <div id="preview_map"></div>
+                    <div class="col-md-8  margin-zero left-pad-zero r surfgis" ng-controller="appController" style="width: 100%;padding-right: 0;"  ng-click="bodyClicked()">
+                            <div class="gd-content-body map-details-info" ng-controller="MapController">
+                                <!-- <div id="embedded_map"> -->
+                                    <!-- <div id="the_map"></div> -->
+                                    {% include 'maps/_map-view-panel.html'%}
+        
+                                <!-- </div> -->
+                            </div>
+                        </div>
             </div>
               <div class="layerdetails_arro" id="layerdetails_arro_addcls" onclick="openNav()">
                   <span id="layerdetails_show">
@@ -753,11 +806,7 @@
                     <!--<img  src="{{ STATIC_URL }}geonode/images/caret-left.png" onclick="closeNav();" class="img-responsive expand_view close_carlet" title="Expand to view layer options" alt="Mini-left">-->
                   <!--</span>-->
               </div>
-              <div class="layer-mini-slider" id="mini-slider" onclick="closeNav();">
-                <span>
-                    <img src="{{ STATIC_URL }}geonode/images/layer_details_mini_icon.png" class="img-responsive1 expand_view close_carlet" title="Collapse side panel" alt="Mini-left">
-                </span>
-              </div>
+             
           </div>
 
           
@@ -772,12 +821,7 @@
 {% endblock %}
 
 {% block extra_script %}
-<script src="{{ STATIC_URL }}.components/angular-ui-grid/ui-grid.min.js"></script>
-<script src="{{ STATIC_URL }}.components/angular-file-upload/dist/angular-file-upload.js"></script>
 
-<script src="{{ STATIC_URL }}layers/js/layer.module.js"></script>
-<script src="{{ STATIC_URL }}layers/js/layer.service.js"></script>
-<script src="{{ STATIC_URL }}layers/js/attribute-view.controller.js"></script>
 <script>
     $.fn.resizable = undefined;
 </script>
@@ -952,133 +996,49 @@
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
     {% endif %}
-    <script type="text/javascript">
-        user_info = '{{ request.user.id }}';
-        layer_info = '{{ resource.id }}';
-        map_info = '{{ maps|length }}' == 'NULL' ? 0 : '{{ maps.0.id }}';
 
-        // Layer load
-        var user_location = JSON.parse(localStorage.getItem("user_location"));
-
-        var url = '/analytics/api/layer/load/create/';
-        var latitude = '';
-        var longitude = '';
-        try{
-            latitude = user_location.latitude.toString();
-            longitude = user_location.longitude.toString()
-        }catch(err){
-            latitude = "";
-            longitude = "";
-        }
-
-        var data = {
-            'user': user_info,
-            'layer': layer_info,
-            'latitude': latitude,
-            'longitude': longitude,
-            'agent': '',
-            'ip': ''
-        };
-
-
-        layer_load_activity_submit(data, url);
-
-        function layer_load_activity_submit(data, url){
-
-            // using jQuery
-            function getCookie(name) {
-                var cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    var cookies = document.cookie.split(';');
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = jQuery.trim(cookies[i]);
-                        // Does this cookie string begin with the name we want?
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
+<script>
+        var count = 0;
+        function animating(){
+            if(count === 0){
+                document.getElementById('sidebar').className = 'panel-left layer-panel slideOutRight';
+          
+                count++;
+            }else{
+                document.getElementById('sidebar').className = 'panel-left layer-panel slideInRight show';//hide
+           
+                count--;
             }
-            var csrftoken = getCookie('csrftoken');
-            function csrfSafeMethod(method) {
-                // these HTTP methods do not require CSRF protection
-                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
             }
-            $.ajaxSetup({
-                beforeSend: function(xhr, settings) {
-                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                }
-            });
-
-            $.ajax({
-                url: url,
-                method: 'POST',
-                data: data,
-                dataType: 'json',
-                success: function(data){
-                    console.log(data);
-
-                }
-            });
-
-        }
-
-        {% if user_data_epsg and user_data_epsg != "4326" %}
-
-            $(".native").show();
-            $(".wgs84").hide();
-
-            $("#native-data").change(function(){
-                if(this.checked){
-                    $(".native").show();
-                    $(".wgs84").hide();
-                    $("input[name='wgs84-download']").attr("checked", false);
-
-                }
-            });
-            $("#wgs84-data").change(function(){
-                if(this.checked){
-                    $(".native").hide();
-                    $(".wgs84").show();
-                    $("input[name='native-download']").attr("checked", false);
-                }
-            });
-        {% else %}
-            $(".native").show();
-            $(".wgs84").hide();
-        {% endif %}
-
-        $(".data-export-button").click(function(e){
-            var nativeDataValue = $("input[name='native-download']:checked").val();
-            var wgs84DataValue = $("input[name='wgs84-download']:checked").val();
-
-            if(nativeDataValue == undefined && wgs84DataValue == undefined){
-                alert("Should have select at least one data format");
-            }else {
-                if(nativeDataValue != undefined){
-                    e.preventDefault();
-                    window.open(nativeDataValue, '_blank');
-                    window.focus();
-
-                }else {
-                    e.preventDefault();
-                    window.open(wgs84DataValue, '_blank');
-                    window.focus();
-                }
-            }
-        });
-
-     $(document).ready(function(){
-         $(".panel-left").resizable({
-       handleSelector: ".splitter",
-       resizeHeight: false
-     });
-     });
+    
     </script>
-
+<script type="text/javascript">
+    var GD_WRAPPER__HEIGHT = 400;
+    /*function resetWrapperHight() {
+        var bodyHeight = $("body").height();
+        console.log("bodyHeight", bodyHeight);
+        var documentHeight = $("document").height();
+        console.log("documentHeight", documentHeight);
+        var wrapperHeight = $("#gd-wrapper").height();
+        wrapperHeight = parseInt(parseInt(wrapperHeight) - 53);
+        GD_WRAPPER__HEIGHT = wrapperHeight;
+        $("#gd-wrapper .map-details-information, #gd-wrapper .map-details-info").css("height", wrapperHeight + "px");
+        console.log("wrapperHeight", wrapperHeight);
+    }*/
+    function resetWrapperHight() {
+        var bodyHeight = $("body").height();
+        bodyHeight = parseInt(parseInt(bodyHeight) - 53);
+        console.log("bodyHeight", bodyHeight);
+        GD_WRAPPER__HEIGHT = bodyHeight;
+        $("#gd-wrapper .layer-details-information, #gd-wrapper .map-details-info").css("height", bodyHeight + "px");
+    }
+    $(document).ready(function () {
+        // wrapper
+        resetWrapperHight();
+        $(window).resize(function () {
+            resetWrapperHight();
+        });
+    });
+</script>
 {% endblock extra_script %}
 

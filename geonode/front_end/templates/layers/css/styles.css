@@ -23,7 +23,14 @@
     min-width: 150px;
     white-space: nowrap;
     background: #fff;
-    color: white;
+    color: rgb(44, 44, 44);
+    position: fixed;
+    z-index: 1;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.57);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.57);
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.57);  
+    border-right: 3px solid #ffffff;
+    top: 98px;
 }
 
 .splitter {
@@ -47,7 +54,7 @@
     min-height: 200px;
     min-width: 200px;
     background: #fff;
-    padding-top: 5px;
+    padding-top: 0;
 }
 .grid-container-dash .title a
 {

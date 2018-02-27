@@ -1,4 +1,4 @@
-﻿function RangeType(http, scope, rangeCalculator, attributeDefinitionHelper, filter) {
+﻿function RangeType(http, scope, rangeCalculator, attributeDefinitionHelper, filter, layerRepository) {
     var $this = this;
     var $http = http;
     var $scope = scope;
@@ -11,11 +11,11 @@
         var extractedItems = this.getCheckedItems(filter);
         if (extractedItems.length == 0)
             return;
-        this.getCount(extractedItems, function (resultData) {
-            $this.setColor(resultData, colorPaletteGenerator);
-            $this.addToGridData(resultData);
-            $this.removeItemsFromPropertyData(resultData);
-        });
+        // this.getCount(extractedItems, function (resultData) {
+        //     $this.setColor(resultData, colorPaletteGenerator);
+        //     $this.addToGridData(resultData);
+        //     $this.removeItemsFromPropertyData(resultData);
+        // });
     };
 
     this.removeItem = function (rowIndex) {
@@ -95,6 +95,8 @@
             $this.isDataLoading = false;
         })
         .error(function () {
+            $this.setCheckedProperty(data);
+            callBack(data);
             $this.isDataLoading = false;
         });
     };
@@ -111,19 +113,28 @@
 
     this.getPropertyDataFromServer = function (callBack) {
         $this.isDataLoading = true;
-        $http({
-            method: "POST",
-            url: "/Classification/GetRangeForField",
-            data: { layerId: $scope.layerId, attributeId: $scope.flags.field }
-        }).success(function (data, status, headers, config) {
-            $scope.flags.minimum = data.minimum;
-            $scope.flags.maximum = data.maximum;
+        layerRepository.getColumnMinMaxValues($scope.layerId, [$scope.flags.field]).then(function(data){
+            $scope.flags.minimum = data.data[$scope.flags.field][0];
+            $scope.flags.maximum = data.data[$scope.flags.field][1];
             callBack();
             $this.isDataLoading = false;
-        })
-        .error(function () {
-            $this.isDataLoading = false;
         });
+        // $http({
+        //     method: "POST",
+        //     url: "/Classification/GetRangeForField",
+        //     data: { layerId: $scope.layerId, attributeId: $scope.flags.field }
+        // }).success(function (data, status, headers, config) {
+        //     $scope.flags.minimum = data.minimum;
+        //     $scope.flags.maximum = data.maximum;
+        //     callBack();
+        //     $this.isDataLoading = false;
+        // })
+        // .error(function () {
+        //     $scope.flags.minimum = 0;
+        //     $scope.flags.maximum = 10000;
+        //     callBack();
+        //     $this.isDataLoading = false;
+        // });
     };
 
 
@@ -149,10 +160,13 @@
         callback = callback || function () { };
         if ($scope.flags.division > 0) {
             var ranges = rangeFunctionalty.calculate($scope.flags.minimum, $scope.flags.maximum, $scope.flags.division);
-            $this.getCount(ranges, function (data) {
-                $scope.chosenValuesForGrid = data;
-                callback();
-            });
+            $scope.chosenValuesForGrid = ranges;
+            callback();
+            
+            // $this.getCount(ranges, function (data) {
+            //     $scope.chosenValuesForGrid = data;
+            //     callback();
+            // });
         }
     }
 }

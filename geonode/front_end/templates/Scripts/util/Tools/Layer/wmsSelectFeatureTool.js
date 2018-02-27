@@ -7,6 +7,7 @@
             var _lastSuccessfulUrl;
             options = options || {};
             var _thisTool = this;
+            var currentEvent = undefined;
 
             this.events = new Event();
 
@@ -58,6 +59,10 @@
                 _thisTool.deactivate();
             };
 
+            this.getCurrentEvent = function () {
+                return currentEvent;
+            };
+
             this.featureReceived = function (feature) {
                 if (feature) {
                     setSelected(feature.surfFeature, feature.olFeature);
@@ -77,6 +82,7 @@
                 }
             }
             function getFeature(event) {
+                currentEvent = event;
                 if (surfLayer.IsVisible) {
                     var wmsSource = olLayer.getSource();
                     var view = olMap.getView();
