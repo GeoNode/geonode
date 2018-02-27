@@ -22,6 +22,11 @@
 
 import logging
 
+from ..layers.models import Layer
+
+from .models import Service
+# from . import signals as services_signals
+
 from .models import HarvestJob
 
 logger = logging.getLogger(__name__)
@@ -42,3 +47,10 @@ def remove_harvest_job(sender, **kwargs):
 def post_save_service(instance, sender, created, **kwargs):
     if created:
         instance.set_default_permissions()
+
+
+"""Connect relevant signals to their corresponding handlers"""
+signals.post_delete.connect(
+    services_signals.remove_harvest_job, sender=Layer)
+signals.post_save.connect(
+    services_signals.post_save_service, sender=Service)

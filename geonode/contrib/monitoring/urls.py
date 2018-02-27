@@ -24,7 +24,7 @@ from django.conf.urls import url
 from geonode.contrib.monitoring import views
 
 urlpatterns = [
-                url(r'^/?$', views.index, name='index'),
+                url(r'^$', views.index, name='index'),
                 # serve calculated metrics
                 url(r'^api/status/$', views.api_status, name='api_status'),
                 url(r'^api/metrics/$', views.api_metrics, name='api_metrics'),

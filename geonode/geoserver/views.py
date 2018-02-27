@@ -71,7 +71,7 @@ def stores(request, store_type=None):
 
 @user_passes_test(lambda u: u.is_superuser)
 def updatelayers(request):
-    params = request.REQUEST
+    params = request.GET
     # Get the owner specified in the request if any, otherwise used the logged
     # user
     owner = params.get('owner', None)
