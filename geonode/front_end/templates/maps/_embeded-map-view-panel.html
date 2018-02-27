@@ -32,32 +32,19 @@
                 <set-marker></set-marker>
             </li>
             <li>
-                <div class="btn-group">
-                    <button type="button" title="Measure" class="control-button icon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-search" aria-hidden="true"></i>
-                            <span class="caret"></span>
-                        </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <button class="control-button icon" ng-click="action.drawCircle()" title="Draw Circle"><i class="fa fa-circle-o" aria-hidden="true"></i> Radius Search</button>
-                        </li>
-                        <li>
-                            <button class="control-button icon" ng-click="action.boundingBoxSearch()" title="BBOX search"><i class="fa fa-square-o" aria-hidden="true"></i>  Bounding Box Search</button>
-                        </li>
-                    </ul>
-                </div>
+                <button class="control-button icon" ng-click="action.drawCircle()" title="Draw Circle"><i class="fa fa-circle-o" aria-hidden="true"></i>                                            </button>
             </li>
             <li class="divider-vertical" draft-only></li>
             <!-- <li draft-only>
                 <button class="control-button icon" id="close-project" ng-click="action.showCloseProjectOptions()" ng-disabled="(mapService.isEmpty() && !mapService.getMapName()) || isAttributeGridOn" title="Close Map">
                             <i class="fa fa-times-circle-o" aria-hidden="true"></i>                                                    
                             </button>
-            </li> -->
-            <!-- <li draft-only>
+            </li>
+            <li draft-only>
                 <button class="control-button icon" id="browse-projects" ng-disabled="isAttributeGridOn" ng-click="action.browseProject()" remove-focus title="Browse Maps">
                             <i class="fa fa-map-o" aria-hidden="true"></i>                                    
                             </button>
-            </li> -->
+            </li>
 
 
             <li draft-only ng-init="action.showOverPassDialog=false">
@@ -156,7 +143,7 @@
                                     Map
                                 </span>
                             </button>*@ -->
-                <button class="control-button icon" data-ng-click="action.printPreview()" title="Print Map">
+                <!-- <button class="control-button icon" data-ng-click="action.printPreview()" title="Print Map">
                             <i class="fa fa-print" aria-hidden="true"></i>                                    
                                
                             </button>
@@ -167,24 +154,12 @@
                 <button class="control-button icon" id="browse-data" ng-click="action.browseData()" ng-disabled="isAttributeGridOn" remove-focus title="Browse Data">
                             <i class="fa fa-database" aria-hidden="true"></i>                                    
                             </button>
-            </li>
+            </li> -->
             <li class="divider-vertical" draft-only></li>
-
-            <li draft-only>
-                <button class="control-button icon" onclick="animating()" title="Query">
-                            <i class="fa fa-binoculars"></i>                                  
-                                </button>
-            </li>
-
             <li>
                 <!-- <button class="control-button icon icon32 icon-help" ng-click="action.openHelp('Url.Action(" Help ", "Document ")')" title="Open Help">
                                 <span>Help</span>
                             </button> -->
-            </li>
-            <li>
-                <button class="control-button icon" ng-click="action.shareMap()" title="Share map">
-                        <i class="fa fa-share" aria-hidden="true"></i>       
-                            </button>
             </li>
         </ul>
 
@@ -213,80 +188,3 @@
     <div id="olmap" class="map">
     </div>
 </div>
-
-
-<div id="panel-bottom" class="panel-bottom slideOutDown">
-
-
-    <div class="container-fluid" style="padding: 0;">
-        <div class="row">
-            <div class="col-md-5" style="padding-right: 0">
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Query</h3>
-                    </div>
-                    <div class="panel-body">
-                        <query-builder layer-id="layerId" group="group"></query-builder>
-                    </div>
-
-                    <div class="panel-footer">
-                        <a href="" 
-                        ng-click="getQueryResult()"
-                        class="btn btn-gd-primary pull-right icon-btn-color">
-                                                        Query <i class="fa fa-binoculars" aria-hidden="true"></i>    
-                                                    </a>
-                        <a href="" class="btn btn-default pull-right" target="_self" style="margin-right: 5px;">
-                                                            Cancel <i class="fa fa-times" aria-hidden="true"></i></a>
-
-                        <div style="clear:both"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-7" style="padding-left: 3px">
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Attribute Grid</h3>
-                    </div>
-
-                    <div class="table-responsive panel-bottom-table">
-                        <attribute-grid layer-id="layerId"></attribute-grid>
-                        <!-- <a href="" class="btn btn-default pull-left" target="_self" style="margin-right: 5px;">
-                                                                <i class="fa fa-step-backward"></i></a>
-
-                                                                <a href="" class="btn btn-default pull-left" target="_self" style="margin-right: 5px;">
-                                                                        <i class="fa fa-caret-left"></i></a>
-
-                                                                        <a href="" class="btn btn-default pull-left" target="_self" style="margin-right: 5px;">
-                                                                                <i class="fa fa-caret-right"></i></a>
-
-                                                                                <a href="" class="btn btn-default pull-left" target="_self" style="margin-right: 5px;">
-                                                                                        <i class="fa fa-step-forward"></i></a> -->
-
-                        <div style="clear:both"></div>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-</div>
-
-
-<script>
-    var count = 0;
-
-    function animating() {
-        if (count === 0) {
-            document.getElementById('panel-bottom').className = 'panel-bottom slideInUp';
-
-            count++;
-        } else {
-            document.getElementById('panel-bottom').className = 'panel-bottom slideOutDown'; //hide
-
-            count--;
-        }
-    }
-</script>

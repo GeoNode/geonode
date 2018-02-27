@@ -86,15 +86,6 @@ mapModule.directive('routePopUpDirective', [
                         var html = '<ul class="list-group">\n' +
                         '                <li class="list-group-item" ng-click="call(true)" style="cursor: pointer" ng-hide="sourceCoordinates.length>0">Direction from here </li>\n' +
                         '                <li class="list-group-item" ng-click="call(false)" style="cursor: pointer" \n'+  'ng-show="sourceCoordinates.length>0">Direction to there </li>\n' +
-                        '                <li class="list-group-item" ng-show="sourceCoordinates.length>0"> \n' +
-                        '                    <div class="dropdown">\n' +
-                        '                        <span class="dropbtn" style="cursor: pointer"\n' + '>Direction from layers</span>\n' +
-                        '                        <div class="dropdown-content">\n' +
-                        '                            <a style="cursor: pointer"ng-repeat="(key, value) in layers track by $index" \n'+
-                        ' ng-click="routeFromLayer(value.Name)">[{value.Name}]</a>\n' +
-                        '                        </div>\n' +
-                        '                    </div>\n' +
-                        '                </li>\n' +
                         '<li class="list-group-item" style="cursor: pointer"  ng-show="sourceCoordinates.length>0" ng-click="resetAll()">Reset All</li>'+
                         '<li class="list-group-item" style="cursor: pointer"ng-click="searchForBuffer()">Buffer Search</li>'+
                         '            </ul>';
