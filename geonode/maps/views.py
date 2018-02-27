@@ -848,7 +848,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
             else llbbox_to_mercator([float(coord) for coord in bbox])
 
         if layer.storeType == "remoteStore":
-            service = layer.service
+            service = layer.remote_service
             # Probably not a good idea to send the access token to every remote service.
             # This should never match, so no access token should be
             # sent to remote services.
@@ -975,10 +975,12 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
 
-        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        if 'geonode.geoserver' in settings.INSTALLED_APPS \
+                and ogc_server_settings.BACKEND == 'geonode.geoserver':
             # TODO the url needs to be verified on geoserver
             url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        elif 'geonode.qgis_server' in settings.INSTALLED_APPS:
+        elif 'geonode.qgis_server' in settings.INSTALLED_APPS \
+                and ogc_server_settings.BACKEND == 'geonode.qgis_server':
             url = urljoin(settings.SITEURL,
                           reverse("qgis_server:download-map", kwargs={'mapid': mapid}))
             # qgis-server backend stop here, continue on qgis_server/views.py
@@ -1153,6 +1155,7 @@ def snapshot_config(snapshot, map_obj, user, access_token):
         for ordering, layer in enumerate(layers):
             maplayers.append(
                 layer_from_viewer_config(
+                    map_obj.id,
                     MapLayer,
                     layer,
                     config["sources"][

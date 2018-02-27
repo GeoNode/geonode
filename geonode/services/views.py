@@ -241,7 +241,7 @@ def service_detail(request, service_id):
     )
     resources_being_harvested = HarvestJob.objects.filter(
         service=service, status__in=job_statuses)
-    already_imported_layers = Layer.objects.filter(service=service)
+    already_imported_layers = Layer.objects.filter(remote_service=service)
     service_list = service.service_set.all()
     all_resources = (list(resources_being_harvested) +
                      list(already_imported_layers) + list(service_list))

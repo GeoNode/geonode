@@ -24,8 +24,13 @@ from urlparse import urlsplit
 from django.conf import settings
 from django.utils.http import is_safe_url
 from django.http.request import validate_host
+from django.views.decorators.csrf import requires_csrf_token
+from django.middleware.csrf import get_token
+# from django.views.decorators.csrf import csrf_exempt
 
 
+# @csrf_exempt
+@requires_csrf_token
 def proxy(request):
     PROXY_ALLOWED_HOSTS = getattr(settings, 'PROXY_ALLOWED_HOSTS', ())
 
@@ -63,8 +68,33 @@ def proxy(request):
                                 content_type="text/plain"
                                 )
     headers = {}
+    cookies = None
+    csrftoken = None
+
     if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(url=raw_url, host=host):
-        headers["Cookie"] = request.META["HTTP_COOKIE"]
+        cookies = request.META["HTTP_COOKIE"]
+
+    for cook in request.COOKIES:
+        name = str(cook)
+        value = request.COOKIES.get(name)
+        if name == 'csrftoken':
+            csrftoken = value
+        cook = "%s=%s" % (name, value)
+        cookies = cook if not cookies else (cookies + '; ' + cook)
+
+    csrftoken = get_token(request) if not csrftoken else csrftoken
+
+    if csrftoken:
+        headers['X-Requested-With'] = "XMLHttpRequest"
+        headers['X-CSRFToken'] = csrftoken
+        cook = "%s=%s" % ('csrftoken', csrftoken)
+        cookies = cook if not cookies else (cookies + '; ' + cook)
+
+    if cookies:
+        if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
+            cookies = cookies + '; JSESSIONID=' + \
+                request.session['JSESSIONID']
+        headers['Cookie'] = cookies
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
@@ -81,27 +111,47 @@ def proxy(request):
             query_separator = '&' if '?' in locator else '?'
             locator = ('%s%saccess_token=%s' % (locator, query_separator, access_token))
 
+    site_url = urlsplit(settings.SITEURL)
+
+    pragma = "no-cache"
+    referer = request.META[
+        "HTTP_REFERER"] if "HTTP_REFERER" in request.META else \
+        "{scheme}://{netloc}/".format(scheme=site_url.scheme, netloc=site_url.netloc)
+    encoding = request.META["HTTP_ACCEPT_ENCODING"] if "HTTP_ACCEPT_ENCODING" in request.META else "gzip"
+
+    headers.update({"Pragma": pragma,
+                    "Referer": referer,
+                    "Accept-encoding": encoding, })
+
     if url.scheme == 'https':
         conn = HTTPSConnection(url.hostname, url.port)
     else:
         conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator, request.body, headers=headers)
+    conn.request(request.method, locator, request.body, headers)
+    response = conn.getresponse()
+    content = response.read()
+    status = response.status
+    content_type = response.getheader("Content-Type", "text/plain")
 
-    result = conn.getresponse()
+    # decompress GZipped responses if not enabled
+    if content and response.getheader('Content-Encoding') == 'gzip':
+        from StringIO import StringIO
+        import gzip
+        buf = StringIO(content)
+        f = gzip.GzipFile(fileobj=buf)
+        content = f.read()
 
     # If we get a redirect, let's add a useful message.
-    if result.status in (301, 302, 303, 307):
-        response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
-                                 'asked for a redirect to "%s"' % (url, result.getheader('Location'))),
-                                status=result.status,
-                                content_type=result.getheader("Content-Type", "text/plain")
+    if status in (301, 302, 303, 307):
+        _response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
+                                 'asked for a redirect to "%s"' % (url, response.getheader('Location'))),
+                                 status=status,
+                                 content_type=content_type
                                 )
-
-        response['Location'] = result.getheader('Location')
+        _response['Location'] = response.getheader('Location')
+        return _response
     else:
-        response = HttpResponse(
-            result.read(),
-            status=result.status,
-            content_type=result.getheader("Content-Type", "text/plain"))
-
-    return response
+        return HttpResponse(
+            content=content,
+            status=status,
+            content_type=content_type)

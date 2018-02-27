@@ -29,9 +29,9 @@ try:
 except ImportError:
     pass
 
-GEONODE_APPS += ("geonode.qgis_server", )
+# GEONODE_APPS += ("geonode.qgis_server", )
 GEONODE_APPS = list(GEONODE_APPS)
-INSTALLED_APPS += ("geonode.qgis_server", )
+# INSTALLED_APPS += ("geonode.qgis_server", )
 INSTALLED_APPS = list(INSTALLED_APPS)
 
 # QGIS Server Backend settings

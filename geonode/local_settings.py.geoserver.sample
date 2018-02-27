@@ -45,6 +45,7 @@ DATABASES = {
         'PASSWORD': 'geonode',
         'HOST': 'localhost',
         'PORT': '5432',
+        'CONN_TOUT': 900,
     },
     # vector datastore for uploads
     'datastore': {
@@ -55,6 +56,7 @@ DATABASES = {
         'PASSWORD': 'geonode',
         'HOST': 'localhost',
         'PORT': '5432',
+        'CONN_TOUT': 900,
     }
 }
 
@@ -164,6 +166,7 @@ CATALOGUE = {
         # login credentials (for GeoNetwork)
         'USER': 'admin',
         'PASSWORD': 'admin',
+        'ALTERNATES_ONLY': True,
     }
 }
 
@@ -397,10 +400,6 @@ LOGGING = {
         }
     },
     'handlers': {
-        'null': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.NullHandler',
-        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -430,10 +429,15 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 GEOIP_PATH = "/usr/local/share/GeoIP"
 
-MONITORING_ENABLED = True
 # add following lines to your local settings to enable monitoring
+MONITORING_ENABLED = True
+
 if MONITORING_ENABLED:
-    MIDDLEWARE_CLASSES += ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+    if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode.contrib.monitoring',)
+    if 'geonode.contrib.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
+        MIDDLEWARE_CLASSES += \
+            ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
     MONITORING_CONFIG = None
     MONITORING_SERVICE_NAME = 'local-geonode'
 

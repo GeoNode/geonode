@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#########################################################################
+#
 #
 # Copyright (C) 2016 OSGeo
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-#########################################################################
+#
 
 import os
 import re
@@ -40,6 +40,7 @@ from django.core.urlresolvers import reverse
 from django.template.loader import get_template
 from django.template import Context
 from django.template import RequestContext
+from django.utils.http import is_safe_url
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 
@@ -59,6 +60,8 @@ from .helpers import (get_stores, ogc_server_settings,
                       create_gs_thumbnail, _invalidate_geowebcache_layer)
 
 from django_basic_auth import logged_in_or_basicauth
+from django.views.decorators.csrf import requires_csrf_token
+from django.middleware.csrf import get_token
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +74,7 @@ def stores(request, store_type=None):
 
 @user_passes_test(lambda u: u.is_superuser)
 def updatelayers(request):
-    params = request.REQUEST
+    params = request.GET
     # Get the owner specified in the request if any, otherwise used the logged
     # user
     owner = params.get('owner', None)
@@ -80,8 +83,9 @@ def updatelayers(request):
     workspace = params.get('workspace', None)
     store = params.get('store', None)
     filter = params.get('filter', None)
-    geoserver_update_layers.delay(ignore_errors=False, owner=owner, workspace=workspace,
-                                  store=store, filter=filter)
+    geoserver_update_layers.delay(
+        ignore_errors=False, owner=owner, workspace=workspace,
+        store=store, filter=filter)
 
     return HttpResponseRedirect(reverse('layer_browse'))
 
@@ -330,7 +334,8 @@ def feature_edit_check(request, layername):
         is_staff = request.user.is_staff if request.user else False
         is_owner = (str(request.user) == str(layer.owner))
         try:
-            is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+            is_manager = request.user.groupmember_set.all().filter(
+                role='manager').exists()
         except BaseException:
             is_manager = False
     if is_admin or is_staff or is_owner or is_manager or request.user.has_perm(
@@ -387,6 +392,7 @@ def style_change_check(request, path):
 
 
 @logged_in_or_basicauth(realm="GeoNode")
+@requires_csrf_token
 def geoserver_proxy(request, proxy_path, downstream_path, workspace=None):
 
     if not request.user.is_authenticated():
@@ -405,26 +411,10 @@ def geoserver_proxy(request, proxy_path, downstream_path, workspace=None):
     if 'access_token' in request.session:
         access_token = request.session['access_token']
 
-    headers = {}
     affected_layers = None
+    headers = {}
     cookies = None
-    for cook in request.COOKIES:
-        name = str(cook)
-        value = request.COOKIES.get(name)
-        if name == 'csrftoken':
-            headers['X-CSRFToken'] = value
-
-        cook = "%s=%s" % (name, value)
-        if not cookies:
-            cookies = cook
-        else:
-            cookies = cookies + '; ' + cook
-
-    if cookies:
-        if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
-            cookies = cookies + '; JSESSIONID=' + \
-                request.session['JSESSIONID']
-        headers['Cookie'] = cookies
+    csrftoken = None
 
     # TODO: This won't work unless GeoServer is connected to the GeoNode Users' Repo
     #       We would need a specific GroupRoleService
@@ -470,10 +460,30 @@ def geoserver_proxy(request, proxy_path, downstream_path, workspace=None):
         raw_url = _url
 
     url = urlsplit(raw_url)
-    if url.scheme == 'https':
-        conn = HTTPSConnection(url.hostname, url.port)
-    else:
-        conn = HTTPConnection(url.hostname, url.port)
+    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(url=raw_url, host=url.netloc):
+        cookies = request.META["HTTP_COOKIE"]
+
+    for cook in request.COOKIES:
+        name = str(cook)
+        value = request.COOKIES.get(name)
+        if name == 'csrftoken':
+            csrftoken = value
+        cook = "%s=%s" % (name, value)
+        cookies = cook if not cookies else (cookies + '; ' + cook)
+
+    csrftoken = get_token(request) if not csrftoken else csrftoken
+
+    if csrftoken:
+        headers['X-Requested-With'] = "XMLHttpRequest"
+        headers['X-CSRFToken'] = csrftoken
+        cook = "%s=%s" % ('csrftoken', csrftoken)
+        cookies = cook if not cookies else (cookies + '; ' + cook)
+
+    if cookies:
+        if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
+            cookies = cookies + '; JSESSIONID=' + \
+                request.session['JSESSIONID']
+        headers['Cookie'] = cookies
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
@@ -486,7 +496,8 @@ def geoserver_proxy(request, proxy_path, downstream_path, workspace=None):
                                'rest/workspaces') and len(request.body) > 0:
             if not style_change_check(request, downstream_path):
                 return HttpResponse(
-                    _("You don't have permissions to change style for this layer"),
+                    _(
+                        "You don't have permissions to change style for this layer"),
                     content_type="text/plain",
                     status=401)
             elif downstream_path == 'rest/styles':
@@ -495,7 +506,22 @@ def geoserver_proxy(request, proxy_path, downstream_path, workspace=None):
                     url.path)
                 affected_layers = style_update(request, raw_url)
 
-    headers["Accept-encoding"] = 'gzip'
+    site_url = urlsplit(settings.SITEURL)
+
+    pragma = "no-cache"
+    referer = request.META[
+        "HTTP_REFERER"] if "HTTP_REFERER" in request.META else \
+        "{scheme}://{netloc}/".format(scheme=site_url.scheme, netloc=site_url.netloc)
+    encoding = request.META["HTTP_ACCEPT_ENCODING"] if "HTTP_ACCEPT_ENCODING" in request.META else "gzip"
+
+    headers.update({"Pragma": pragma,
+                    "Referer": referer,
+                    "Accept-encoding": encoding, })
+
+    if url.scheme == 'https':
+        conn = HTTPSConnection(url.hostname, url.port)
+    else:
+        conn = HTTPConnection(url.hostname, url.port)
     conn.request(request.method, raw_url, request.body, headers=headers)
     response = conn.getresponse()
     content = response.read()

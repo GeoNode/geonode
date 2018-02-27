@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#########################################################################
+#
 #
 # Copyright (C) 2016 OSGeo
 #
@@ -16,39 +16,48 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-#########################################################################
+#
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('geonode.geoserver.views',
-                       # REST Endpoints
-                       url(r'^rest/stores/(?P<store_type>\w+)/$', 'stores', name="stores"),
-                       (r'^rest/styles', 'geoserver_proxy', dict(proxy_path='/gs/rest/styles',
-                                                                 downstream_path='rest/styles')),
-                       (r'^rest/workspaces/(?P<workspace>\w+)/styles', 'geoserver_proxy',
-                        dict(proxy_path='/gs/rest/workspaces',
-                             downstream_path='rest/workspaces')),
-                       (r'^rest/layers', 'geoserver_proxy', dict(proxy_path='/gs/rest/layers',
-                                                                 downstream_path='rest/layers')),
-                       (r'^rest/sldservice', 'geoserver_proxy', dict(proxy_path='/gs/rest/sldservice',
-                                                                     downstream_path='rest/sldservice')),
+urlpatterns = [  # 'geonode.geoserver.views',
+    # REST Endpoints
+    url(r'^rest/stores/(?P<store_type>\w+)/$',
+        views.stores, name="stores"),
+    url(r'^rest/styles', views.geoserver_proxy, dict(proxy_path='/gs/rest/styles',
+                                                     downstream_path='rest/styles')),
+    url(r'^rest/workspaces/(?P<workspace>\w+)/styles', views.geoserver_proxy,
+        dict(proxy_path='/gs/rest/workspaces',
+             downstream_path='rest/workspaces')),
+    url(r'^rest/layers', views.geoserver_proxy, dict(proxy_path='/gs/rest/layers',
+                                                     downstream_path='rest/layers')),
+    url(r'^rest/sldservice', views.geoserver_proxy, dict(proxy_path='/gs/rest/sldservice',
+                                                         downstream_path='rest/sldservice')),
 
-                       # OWS Endpoints
-                       (r'^ows', 'geoserver_proxy', dict(proxy_path='/gs/ows',
-                                                         downstream_path='ows')),
-                       (r'^wms', 'geoserver_proxy', dict(proxy_path='/gs/wms',
-                                                         downstream_path='wms')),
-                       (r'^wfs', 'geoserver_proxy', dict(proxy_path='/gs/wfs',
-                                                         downstream_path='wfs')),
-                       (r'^wcs', 'geoserver_proxy', dict(proxy_path='/gs/wcs',
-                                                         downstream_path='wcs')),
+    # OWS Endpoints
+    url(r'^ows', views.geoserver_proxy, dict(proxy_path='/gs/ows',
+                                             downstream_path='ows')),
+    url(r'^wms', views.geoserver_proxy, dict(proxy_path='/gs/wms',
+                                             downstream_path='wms')),
+    url(r'^wfs', views.geoserver_proxy, dict(proxy_path='/gs/wfs',
+                                             downstream_path='wfs')),
+    url(r'^wcs', views.geoserver_proxy, dict(proxy_path='/gs/wcs',
+                                             downstream_path='wcs')),
 
-                       url(r'^updatelayers/$', 'updatelayers', name="updatelayers"),
-                       url(r'^(?P<layername>[^/]*)/style$', 'layer_style', name="layer_style"),
-                       url(r'^(?P<layername>[^/]*)/style/upload$', 'layer_style_upload', name='layer_style_upload'),
-                       url(r'^(?P<layername>[^/]*)/style/manage$', 'layer_style_manage', name='layer_style_manage'),
-                       url(r'^(?P<layername>[^/]*)/edit-check?$', 'feature_edit_check', name="feature_edit_check"),
-                       url(r'^acls/?$', 'layer_acls', name='layer_acls'),
-                       url(r'^resolve_user/?$', 'resolve_user', name='layer_resolve_user'),
-                       url(r'^download$', 'layer_batch_download', name='layer_batch_download'),
-                       )
+    url(r'^updatelayers/$',
+        views.updatelayers, name="updatelayers"),
+    url(r'^(?P<layername>[^/]*)/style$',
+        views.layer_style, name="layer_style"),
+    url(r'^(?P<layername>[^/]*)/style/upload$',
+        views.layer_style_upload, name='layer_style_upload'),
+    url(r'^(?P<layername>[^/]*)/style/manage$',
+        views.layer_style_manage, name='layer_style_manage'),
+    url(r'^(?P<layername>[^/]*)/edit-check?$',
+        views.feature_edit_check, name="feature_edit_check"),
+    url(r'^acls/?$', views.layer_acls, name='layer_acls'),
+    url(r'^resolve_user/?$', views.resolve_user,
+        name='layer_resolve_user'),
+    url(r'^download$', views.layer_batch_download,
+        name='layer_batch_download'),
+]

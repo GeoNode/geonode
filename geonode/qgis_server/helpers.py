@@ -35,7 +35,8 @@ from django.core.urlresolvers import reverse
 from lxml import etree
 from requests import Request
 
-from geonode import qgis_server
+from geonode import qgis_server, geoserver
+from geonode.utils import check_ogc_backend
 from geonode.geoserver.helpers import OGC_Servers_Handler
 from geonode.layers.models import Layer
 from geonode.qgis_server.gis_tools import num2deg
@@ -44,8 +45,14 @@ from geonode.qgis_server.models import (
     QGISServerMap,
     QGISServerStyle)
 
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    # FIXME: The post service providing the map_status object
+    # should be moved to geonode.geoserver.
+    from geonode.geoserver.helpers import ogc_server_settings
+elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
+
 logger = logging.getLogger("geonode.qgis_server.helpers")
-ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
 
 
 def validate_django_settings():
@@ -55,10 +62,10 @@ def validate_django_settings():
     if 'geonode.qgis_server' not in settings.INSTALLED_APPS:
         raise ImproperlyConfigured(
             'geonode.qgis_server module not included in INSTALLED_APPS.')
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    if ogc_server_settings.BACKEND == 'geonode.geoserver':
         raise ImproperlyConfigured(
             'You want to use QGIS Server backend, but geonode.geoserver module'
-            ' is still included in INSTALLED_APPS.')
+            ' is set as default BACKEND.')
 
     # LOCAL_GEOSERVER settings should not exists
     if hasattr(settings, 'LOCAL_GEOSERVER'):
