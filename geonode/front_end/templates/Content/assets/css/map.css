@@ -52,14 +52,14 @@
     border: none;
     color: #fff;
     display: block;
-    height: 38px;
+    height: 33px;
     margin: 0;
     padding: 0;
     position: absolute;
     right: 8px;
     text-align: center;
     top: 45px;
-    width: 160px;
+    width: 138px;
     z-index: 1;
     background-color: rgba(0,60,136,.6);
 }
@@ -87,8 +87,8 @@
     padding: 15px 20px;
     position: absolute;
     right: 8px;
-    top: 95px;
-    width: 460px;
+    top: 87px;
+    width: 508px;
     z-index: 2;
 }
 
@@ -391,7 +391,7 @@
          list-style-type: none;
          margin: 0;
          padding: 0;
-         width: 418px;
+         width: 465px;
          display: inline-block;
          padding: 5px 0 11px;
          border-bottom: 1px solid #e0e0e0;
@@ -411,19 +411,20 @@
         color:#73757d;
         margin-right: 15px;
         width: 100px;
-        line-height: 30px;
+        line-height: 40px;
      } 
      .base-map-list li img
      {
       border: 1px solid #ccc;
-      border-radius: 2px;
       position: absolute;
       z-index: 1;
+      width: 40px;
+      height: 40px;
      } 
      .base-map-list li a
      {
-     width: 30px;
-     height: 30px;
+     width: 40px;
+     height: 40px;
      display: block;
      } 
      .base-map-list li a:hover
@@ -433,8 +434,12 @@
      } 
      .base-map-list li a:hover img
      {
-        outline: 2px solid #3896e2;
-border-radius: 2px;
+        outline: 3px solid #3896e2;
+     } 
+
+     .base-map-list li a.active img
+     {
+        outline: 3px solid #edb591;
      } 
 
  

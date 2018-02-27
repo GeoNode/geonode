@@ -15,58 +15,66 @@
 {% block body_outer %}
     <div class="gd-content container">
         <div class="gd-content-heading top-bottom-margin-20px">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="title">
-                        {% trans "Upload Layers" %}
+            
+                
+                    <div class="d-title">
+                        {% trans "Allowed layer types" %}
+
+                        <div class="pull-right">
+                                <a href="{% url "layer_browse" %}" class="btn btn-gd-primary pull-right">
+                                    {% trans "Explore Layers" %}
+                                </a>
+                            </div>
+
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="text-right">
-                        <a href="{% url "layer_browse" %}" class="btn btn-gd-primary pull-right">
-                            {% trans "Explore Layers" %}
-                        </a>
-                    </div>
-                </div>
-            </div>
+                
+               
+                   
+               
+            
             <div class="row">
                 <div class="col-md-12">
-                    <div>Allowed layer types:</div>
-                    <div class="block-separator"></div>
-                    <div><i class="fa fa-check" style="color: #2ecc71;" aria-hidden="true"></i>
-                        &nbsp;Shape Layer :
-                        <span class="label label-default">.shp</span>
-                        <span class="label label-default">.shx</span>
-                        <span class="label label-default">.dbf</span>
-                        <span class="label label-default">.prj</span>
+                   
+                    
+                    <div class="alert alert-info col-md-3" role="alert" style="width:auto;margin-right:10px;">
+                       
+                       Layer :
+                        <span class="label label-primary">.shp</span>
+                        <span class="label label-primary">.shx</span>
+                        <span class="label label-primary">.dbf</span>
+                        <span class="label label-primary">.prj</span>
                     </div>
-                    <div class="block-separator"></div>
-                    <div><i class="fa fa-check gd-offer-txt" style="color: #2ecc71;" aria-hidden="true"></i>
-                        &nbsp;Zipped Shape Layer :
-                        <span class="label label-default">.shp</span>
-                        <span class="label label-default">.shx</span>
-                        <span class="label label-default">.dbf</span>
-                        <span class="label label-default">.prj</span>
+
+                   
+                    <div class="alert alert-info col-md-3" role="alert" style="width:auto;margin-right:10px;">
+                       Zipped Shape Layer :
+                        <span class="label label-primary">.shp</span>
+                        <span class="label label-primary">.shx</span>
+                        <span class="label label-primary">.dbf</span>
+                        <span class="label label-primary">.prj</span>
                     </div>
-                    <div class="block-separator"></div>
-                    <div><i class="fa fa-check gd-offer-txt" style="color: #2ecc71;" aria-hidden="true"></i>
-                        &nbsp;Open Street Map Layer :
-                        <span class="label label-default">.osm</span>
+                   
+                    <div class="alert alert-info col-md-3" role="alert" style="width:auto;margin-right:10px;">
+                       Open Street Map Layer :
+                        <span class="label label-primary">.osm</span>
                     </div>
-                    <div class="block-separator"></div>
-                    <div><i class="fa fa-check gd-offer-txt" style="color: #2ecc71;" aria-hidden="true"></i>
+                   
+                    <div class="alert alert-info col-md-3" role="alert" style="width:auto;margin-right:10px;">
+                       
                         &nbsp;Excel Format Data Layer :
-                        <span class="label label-default">.csv</span>
+                        <span class="label label-primary">.csv</span>
                     </div>
-                    <div class="block-separator"></div>
-                    <div><i class="fa fa-check gd-offer-txt" style="color: #2ecc71;" aria-hidden="true"></i>
-                        &nbsp;Image Layer :
-                        <span class="label label-default">.tif</span>
+                    
+
+                    <div class="alert alert-info col-md-3" role="alert" style="width:auto;margin-right:0">
+                       
+                      Image Layer :
+                        <span class="label label-primary">.tif</span>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="hr"></div>
+        
         <div class="gd-content-body transparent top-bottom-margin-20px">
             <div class="row">
                 <div class="col-md-12">
