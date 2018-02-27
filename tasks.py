@@ -164,7 +164,7 @@ def _prepare_oauth_fixture():
             "pk": 1001,
             "fields": {
                 "skip_authorization": True,
-                "redirect_uris": "http://{0}:{1}/geoserver".format(
+                "redirect_uris": "http://{0}:{1}/geoserver/index.html".format(
                     pub_ip, pub_port
                 ),
                 "name": "GeoServer",
