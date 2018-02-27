@@ -299,7 +299,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     config["queryable"] = True
 
     if layer.storeType == "remoteStore":
-        service = layer.service
+        service = layer.remote_service
         source_params = {
             "ptype": service.ptype,
             "remote": True,
@@ -649,7 +649,7 @@ def layer_metadata(
     config["queryable"] = True
 
     if layer.storeType == "remoteStore":
-        service = layer.service
+        service = layer.remote_service
         source_params = {
             "ptype": service.ptype,
             "remote": True,
@@ -694,6 +694,15 @@ def layer_metadata(
                 status=400)
 
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
+        if not layer_form.is_valid():
+            out = {
+                'success': False,
+                'errors': layer_form.errors
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
         attribute_form = layer_attribute_set(
             request.POST,
             instance=layer,
@@ -704,7 +713,6 @@ def layer_metadata(
         tkeywords_form = TKeywordForm(
             request.POST,
             prefix="tkeywords")
-
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(

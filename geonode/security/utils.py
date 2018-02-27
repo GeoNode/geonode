@@ -486,7 +486,7 @@ def _get_layer_workspace(layer):
     """Get the workspace where the input layer belongs"""
     default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
     try:
-        if layer.service.method == CASCADED:
+        if layer.remote_service.method == CASCADED:
             workspace = getattr(
                 settings, "CASCADE_WORKSPACE", default_workspace)
         else:

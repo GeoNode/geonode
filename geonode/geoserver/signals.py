@@ -65,7 +65,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        if instance.service is None or instance.service.method == CASCADED:
+        if instance.remote_service is None or instance.remote_service.method == CASCADED:
             if instance.alternate:
                 cascading_delete(gs_catalog, instance.alternate)
 
@@ -99,7 +99,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         * Point of Contact name and url
     """
     # Don't run this signal if is a Layer from a remote service
-    if getattr(instance, "service", None) is not None:
+    if getattr(instance, "remote_service", None) is not None:
         return
 
     # Don't run this signal handler if it is a tile layer or a remote store (Service)

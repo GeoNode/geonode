@@ -295,7 +295,6 @@ GEONODE_APPS = (
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
-
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -335,14 +334,14 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.humanize',
     'django.contrib.gis',
-
+    
     # Utility
-    'pagination',
+    'dj_pagination',
     'taggit',
     'treebeard',
-    'friendlytagloader',
     'geoexplorer',
     'leaflet',
+    'bootstrap3_datetime',
     'django_extensions',
     'django_basic_auth',
     # 'haystack',
@@ -369,7 +368,7 @@ INSTALLED_APPS = (
     'announcements',
     'actstream',
     'user_messages',
-    'tastypie',
+    # 'tastypie',
     'polymorphic',
     'guardian',
     'oauth2_provider',
@@ -474,11 +473,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-
+    'dj_pagination.middleware.PaginationMiddleware',
     # The setting below makes it possible to serve different languages per
     # user depending on things like headers in HTTP requests.
     'django.middleware.locale.LocaleMiddleware',
-    'pagination.middleware.PaginationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -809,7 +807,7 @@ GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 # handle timestamps like 2017-05-30 16:04:00.719 UTC
 DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS +\
-    ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
+    ['%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z']
 
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},

@@ -153,7 +153,7 @@ class MapCreateView(CreateView):
                         [float(coord) for coord in bbox])
 
                     if layer.storeType == "remoteStore":
-                        service = layer.service
+                        service = layer.remote_service
                         # Probably not a good idea to send the access token to every remote service.
                         # This should never match, so no access token should be sent to remote services.
                         ogc_server_url = urlparse.urlsplit(

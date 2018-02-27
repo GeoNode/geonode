@@ -1,5 +1,6 @@
-{% load friendly_loader %}
-{% friendly_load i18n avatar_tags relationship_tags %}
+{% load i18n %}
+{% load avatar_tags %}
+{% load relationship_tags %}
 <h3>{% trans "Following" %}</h3>
 {% if profile.user.relationships.following %}
     {% for u in profile.user.relationships.following %}
