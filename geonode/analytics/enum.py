@@ -15,3 +15,13 @@ class ContentTypeEnum(object):
         DOCUMENT: Document
     }
     
+class NonGISActivityTypeEnum(object):
+    SHARE = 'share'
+    LOAD = 'load'
+    DOWNLOAD = 'download'
+
+    CHOICES = (
+        (SHARE, _(SHARE)),
+        (LOAD, _(LOAD)),
+        (DOWNLOAD, _(DOWNLOAD)),
+    )
