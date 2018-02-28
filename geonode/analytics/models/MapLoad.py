@@ -9,8 +9,7 @@ from CommonField import CommonField
 
 
 class MapLoad(CommonField):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
     map = models.ForeignKey(Map, related_name="map_load")
 
     def __str__(self):
-        return self.user.username
+        return self.map.title

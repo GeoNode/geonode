@@ -16,7 +16,7 @@ class PinpointUserActivity(CommonField):
         ('zoom', _('Zoom')),
         ('click', _('Click')),
     )
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+
     layer = models.ForeignKey(Layer, null=True, blank=True)
     map = models.ForeignKey(Map, null=True, blank=True)
     activity_type = models.CharField(_('Activity Type'),
@@ -25,7 +25,7 @@ class PinpointUserActivity(CommonField):
                                      help_text='Activity Type')
     # convert latitude and longitude into WGS84 (SRID 4326) before save
     # store geom
-    point = models.GeometryField(_('Geometry'), blank=True, null=True, help_text='Geometry')
+    the_geom = models.GeometryField(_('Geometry'), blank=True, null=True, help_text='Geometry')
 
     def __str__(self):
         return self.user.username

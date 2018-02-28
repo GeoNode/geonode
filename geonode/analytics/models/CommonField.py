@@ -3,9 +3,11 @@ from __future__ import unicode_literals
 from django.contrib.gis.db import models
 from django.utils.translation import ugettext as _
 from django.utils import timezone
+from django.conf import settings
 
 
 class CommonField(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)    
     latitude = models.FloatField(_('Latitude'), null=True, blank=True, help_text='Latitude')
     longitude = models.FloatField(_('Longitude'), null=True, blank=True, help_text='Longitude')
     agent = models.CharField(_('User Agent'), max_length=250, null=True, blank=True, help_text='User Agent')
