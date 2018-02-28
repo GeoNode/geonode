@@ -82,7 +82,8 @@ setup(name='GeoNode',
           "django-treebeard>=3.0",  # django-treebeard (4.0)
           "django-guardian>=1.4.1",  # django-guardian (1.4.1)
           "django-downloadview>=1.2",  # python-django-downloadview (1.8)
-          "django-polymorphic>=0.9.2",
+          "django-polymorphic<=1.3",
+          #"django-polymorphic>=0.9.2",
           # python-django-polymorphic (0.8.1) FIXME
           "django-tastypie>=0.12.2, <=0.13.1",
           # python-django-tastypie (0.12.0, 0.12.2 in our ppa)
