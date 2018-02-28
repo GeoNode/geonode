@@ -1,4 +1,5 @@
 
+from django.contrib.contenttypes.models import ContentType
 from geonode.analytics.enum import ContentTypeEnum
 from geonode.analytics.models import MapLoad,Visitor,LayerLoad,PinpointUserActivity, LoadActivity
 
@@ -148,16 +149,20 @@ class MapListAPIView(AnalyticsMixin, ListAPIView):
     Will send summary of Map activity
     """
     def get_queryset(self):
-        return MapLoad.objects.all().order_by('map', 'last_modified')
+        content_model = ContentType.objects.get_for_model(Map)
+        return LoadActivity.objects.filter(content_type=content_model).order_by('last_modified')
 
     def get(self, request, **kwargs):
         keys = ['map_id', 'last_modified_date', 'activity_type']
-        map_load_data = self.format_data(query=self.get_queryset(),extra_field=dict(activity_type='load'))
+
+        map_load_data = self.format_data(query=self.get_queryset())
         pin_point_data = self.format_data(model_instance=PinpointUserActivity, filters=dict(map_id__isnull=False))
 
-        results = self.get_analytics(map_load_data, keys) + self.get_analytics(pin_point_data, keys)
+        results = self.get_analytics(map_load_data, ['object_id','last_modified_date', 'activity_type']) + self.get_analytics(pin_point_data, keys)
 
         for r in results:
+            if 'object_id' in r:
+                r['map_id'] = r.pop('object_id')
             map = Map.objects.get(id=r['map_id'])
             r.update(dict(name=map.title,
                         user_organization = map.owner.organization,                        
@@ -172,7 +177,9 @@ class LayerListAPIView(AnalyticsMixin, ListAPIView):
     Will send summary of Layer activity
     """
     def get_queryset(self):
-        return LayerLoad.objects.all().order_by('layer', 'last_modified')
+        content_model = ContentType.objects.get_for_model(Layer)
+        return LoadActivity.objects.filter(content_type=content_model).order_by('last_modified')
+
 
     def get(self, request, **kwargs):
         keys = ['layer_id', 'last_modified_date', 'activity_type']
@@ -180,9 +187,11 @@ class LayerListAPIView(AnalyticsMixin, ListAPIView):
         layer_load_data = self.format_data(query=self.get_queryset(),extra_field=dict(activity_type='load'))
         pin_point_data = self.format_data(model_instance=PinpointUserActivity, filters=dict(layer_id__isnull=False))
 
-        results = self.get_analytics(layer_load_data, keys) + self.get_analytics(pin_point_data, keys)
+        results = self.get_analytics(layer_load_data, ['object_id','last_modified_date', 'activity_type']) + self.get_analytics(pin_point_data, keys)
         
         for r in results:
+            if 'object_id' in r:
+                r['layer_id'] = r.pop('object_id')
             layer = Layer.objects.get(id=r['layer_id'])
             r.update(dict(name=layer.title, 
                         user_organization = layer.owner.organization,
