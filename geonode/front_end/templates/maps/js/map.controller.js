@@ -4,7 +4,7 @@
 
     MapController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope', 'layerService', 'queryOutputFactory', '$rootScope'];
 
-    function MapController(mapService, $window, analyticsService, LayerService, $scope, oldLayerService, queryOutputFactory, $rootScope) {
+    function MapController( mapService, $window, analyticsService, LayerService, $scope, oldLayerService, queryOutputFactory, $rootScope) {
         var self = this;
         var re = /\d*\/embed/;
         var map = mapService.getMap();
@@ -70,17 +70,21 @@
             }
             return url;
         }
+        analyticsService.saveGISAnalyticsToLocalStorage({name : 'Rudra'});
 
+        // var postAnalyticsData=setInterval( function(){ 
+        //     analyticsService.postGISAnalyticsToServer('/');
+        //  }, 2000);
 
         (getGeoServerSettings)();
         var keyPointerDrag, keyPostRender, keyChangeResolution;
         (function() {
 
 
-            if (re.test($window.location.pathname)) {
-                //Do not need analytics in share map
-                return;
-            }
+            // if (re.test($window.location.pathname)) {
+            //     //Do not need analytics in share map
+            //     return;
+            // }
 
             keyPostRender = map.on('postrender', function(evt) {
                 var user_href = window.location.href.split('/');
@@ -195,6 +199,7 @@
             ol.Observable.unByKey(keyPointerDrag);
             ol.Observable.unByKey(keyPostRender);
             ol.Observable.unByKey(keyChangeResolution);
+            clearInterval(postAnalyticsData);
         });
     }
 
