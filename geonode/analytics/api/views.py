@@ -67,7 +67,7 @@ class PinpointUserActivityCreateAPIView(APIView):
         pinpoint_user_activity.activity_type = str(data['activity_type'])
         pinpoint_user_activity.latitude = None if str(data['latitude']) == '' else float(data['latitude'])
         pinpoint_user_activity.longitude = None if str(data['longitude']) == '' else float(data['longitude'])
-        pinpoint_user_activity.point = None
+        pinpoint_user_activity.the_geom = "Point()"
 
         try:
             pinpoint_user_activity.save()
@@ -191,12 +191,13 @@ class LayerListAPIView(AnalyticsMixin, ListAPIView):
 
         return Response(data=results, status=status.HTTP_200_OK)
             
-class LoadActivityCreateAPIView(CreateAPIView):
+class NonGISActivityCreateAPIView(CreateAPIView):
     """
     """
-    def _save(self, content_object, ip, agent,latitude=None, longitude=None, user=None):
+    def _save(self, content_object, ip, activity_type, agent,latitude=None, longitude=None, user=None):
         obj = LoadActivity(content_object=content_object, 
                             ip=ip, agent=agent, 
+                            activity_type=activity_type,
                             latitude=float(latitude) if latitude is not None else None, 
                             longitude= float(longitude) if longitude is not None else None, 
                             user=user if user is not None and user.id is not None else None)
@@ -219,9 +220,39 @@ class LoadActivityCreateAPIView(CreateAPIView):
         self._save(content_object=content_object, 
                 ip = str(request.environ['REMOTE_ADDR']),
                 agent = str(request.environ['HTTP_USER_AGENT']),
+                activity_type = data.get('activity_type', None),
                 user = None if request.user.id is None else request.user,
                 latitude = data.get('latitude', None),
                 longitude = data.get('longitude', None)
                 )
+
+        return Response(status=status.HTTP_201_CREATED)
+
+class GISActivityCreateAPIView(CreateAPIView):
+    """
+    """
+    def _save(self, ip, agent, activity_type, map_id=None, layer_id=None,latitude=None, longitude=None, user=None):
+        obj = PinpointUserActivity(ip=ip, 
+                            agent=agent,  
+                            activity_type = activity_type,
+                            map_id = None if map_id is None else int(map_id),
+                            layer_id = None if layer_id is None else int(layer_id),
+                            latitude=float(latitude) if latitude is not None else None, 
+                            longitude= float(longitude) if longitude is not None else None, 
+                            user=user if user is not None and user.id is not None else None)
+        obj.save()
+
+    def post(self, request, **kwargs):
+        for data in request.data:      
+            self._save(
+                    ip = str(request.environ['REMOTE_ADDR']),
+                    agent = str(request.environ['HTTP_USER_AGENT']),
+                    activity_type= data.get('activity_type'),
+                    map_id= data.get('map_id', None),
+                    layer_id= data.get('layer_id', None),
+                    latitude = data.get('latitude', None),
+                    longitude = data.get('longitude', None),
+                    user = None if request.user.id is None else request.user,
+                    )
 
         return Response(status=status.HTTP_201_CREATED)
