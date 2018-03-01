@@ -1,12 +1,17 @@
 {% extends "geonode_base.html" %}
 {% load i18n %}
-{% load url from future %}
 {% load bootstrap_tags %}
 {% load base_tags %}
 {% load guardian_tags %}
 {% load floppyforms %}
 
 {% block head %}
+{% load static %}
+  <script src="{{ STATIC_URL }}lib/js/jquery.js?v={{ VERSION }}"></script>
+  <script src="{{ STATIC_URL }}lib/js/moment-with-locales.min.js?v={{ VERSION }}"></script>
+  <script src="{{ STATIC_URL }}lib/js/bootstrap-datetimepicker.min.js?v={{ VERSION }}"></script>
+  <link rel="stylesheet" href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.min.css?v={{ VERSION }}" />
+
     <style>
         .xxs-font-size{
             font-size: 10px;
@@ -115,6 +120,23 @@
 {% block body_class %}data{% endblock body_class %}
 
 {% block body_outer %}
+<div class="modal fade" style="width: 100%; height: 100%;" id="preview_errorDialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header alert alert-danger">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h1 class="modal-title">Error</h1>
+            </div>
+            <div class="modal-body">
+                <p>Error...</p>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" style="width: 100%; height: 100%;" id="preview_pleaseWaitDialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

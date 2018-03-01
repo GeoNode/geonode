@@ -848,7 +848,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
             else llbbox_to_mercator([float(coord) for coord in bbox])
 
         if layer.storeType == "remoteStore":
-            service = layer.service
+            service = layer.remote_service
             # Probably not a good idea to send the access token to every remote service.
             # This should never match, so no access token should be
             # sent to remote services.
@@ -1153,6 +1153,7 @@ def snapshot_config(snapshot, map_obj, user, access_token):
         for ordering, layer in enumerate(layers):
             maplayers.append(
                 layer_from_viewer_config(
+                    map_obj.id,
                     MapLayer,
                     layer,
                     config["sources"][
