@@ -299,7 +299,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     config["queryable"] = True
 
     if layer.storeType == "remoteStore":
-        service = layer.service
+        service = layer.remote_service
         source_params = {
             "ptype": service.ptype,
             "remote": True,

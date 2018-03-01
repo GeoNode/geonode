@@ -735,7 +735,7 @@ class LayersTest(TestCase):
         # test the post method that actually removes the layer and redirects
         response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
-        self.assertEquals(response['Location'], 'http://testserver/layers/')
+        self.assertEquals(response['Location'], '/layers/')
 
         # test that the layer is actually removed
         self.assertEquals(Layer.objects.filter(pk=layer.pk).count(), 0)
@@ -765,7 +765,7 @@ class LayersTest(TestCase):
         # test the post method that actually removes the layer and redirects
         response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
-        self.assertEquals(response['Location'], 'http://testserver/layers/')
+        self.assertEquals(response['Location'], '/layers/')
 
         # test that the layer is actually removed
 
@@ -992,7 +992,6 @@ class LayerModerationTestCase(LiveServerTestCase):
         """
         Test if moderation flag works
         """
-
         with self.settings(ADMIN_MODERATE_UPLOADS=False):
             layer_upload_url = reverse('layer_upload')
             self.client.login(username=self.user, password=self.passwd)

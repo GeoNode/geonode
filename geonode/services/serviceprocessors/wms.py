@@ -225,12 +225,12 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             defaults={
                 "extension": "html",
                 "name": "OGC {}: {} Service".format(
-                    geonode_layer.service.type,
+                    geonode_layer.remote_service.type,
                     geonode_layer.store
                 ),
                 "url": geonode_layer.ows_url,
                 "mime": "text/html",
-                "link_type": "OGC:{}".format(geonode_layer.service.type),
+                "link_type": "OGC:{}".format(geonode_layer.remote_service.type),
             }
         )
 

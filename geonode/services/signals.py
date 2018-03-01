@@ -35,9 +35,9 @@ logger = logging.getLogger(__name__)
 def remove_harvest_job(sender, **kwargs):
     """Remove a Layer's harvest job so that it may be re-imported later."""
     layer = kwargs["instance"]
-    if layer.service is not None:
+    if layer.remote_service is not None:
         job = HarvestJob.objects.filter(resource_id=layer.name).get(
-            service=layer.service)
+            service=layer.remote_service)
         logger.debug("job: {}".format(job.id))
         job.delete()
     else:

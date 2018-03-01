@@ -184,7 +184,7 @@ class Layer(ResourceBase):
 
     @property
     def ows_url(self):
-        if self.remote_service is not None and self.service.method == INDEXED:
+        if self.remote_service is not None and self.remote_service.method == INDEXED:
             result = self.remote_service.base_url
         else:
             result = "{base}ows".format(
@@ -484,9 +484,9 @@ class Attribute(models.Model):
 
 
 def _get_alternate_name(instance):
-    if instance.service is not None and instance.service.method == INDEXED:
+    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
         result = instance.name
-    elif instance.service is not None and instance.service.method == CASCADED:
+    elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
         result = "{}:{}".format(
             getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE),
             instance.name
@@ -564,8 +564,8 @@ def pre_delete_layer(instance, sender, **kwargs):
     Remove any associated style to the layer, if it is not used by other layers.
     Default style will be deleted in post_delete_layer
     """
-    if instance.service is not None and instance.service.method == INDEXED:
-        # we need to delete the maplayers here because in the post save layer.service is not available anymore
+    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
+        # we need to delete the maplayers here because in the post save layer.remote_service is not available anymore
         # REFACTOR
         from geonode.maps.models import MapLayer
         logger.debug(
@@ -598,7 +598,7 @@ def post_delete_layer(instance, sender, **kwargs):
     Removed the layer from any associated map, if any.
     Remove the layer default style.
     """
-    if instance.service is not None and instance.service.method == INDEXED:
+    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
         return
 
     from geonode.maps.models import MapLayer
