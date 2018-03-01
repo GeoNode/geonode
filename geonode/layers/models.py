@@ -150,7 +150,7 @@ class Layer(ResourceBase):
         null=True,
         blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')
-    service = models.ForeignKey("services.Service", null=True, blank=True)
+    remote_service = models.ForeignKey("services.Service", null=True, blank=True)
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
@@ -184,8 +184,8 @@ class Layer(ResourceBase):
 
     @property
     def ows_url(self):
-        if self.service is not None and self.service.method == INDEXED:
-            result = self.service.base_url
+        if self.remote_service is not None and self.service.method == INDEXED:
+            result = self.remote_service.base_url
         else:
             result = "{base}ows".format(
                 base=settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
@@ -194,12 +194,12 @@ class Layer(ResourceBase):
 
     @property
     def ptype(self):
-        return self.service.ptype if self.service else "gxp_wmscsource"
+        return self.remote_service.ptype if self.remote_service else "gxp_wmscsource"
 
     @property
     def service_typename(self):
-        if self.service is not None and self.service.method == INDEXED:
-            return "%s:%s" % (self.service.name, self.alternate)
+        if self.remote_service is not None and self.remote_service.method == INDEXED:
+            return "%s:%s" % (self.remote_service.name, self.alternate)
         else:
             return self.alternate
 

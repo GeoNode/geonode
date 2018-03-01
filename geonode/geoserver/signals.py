@@ -99,7 +99,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         * Point of Contact name and url
     """
     # Don't run this signal if is a Layer from a remote service
-    if getattr(instance, "service", None) is not None:
+    if getattr(instance, "remote_service", None) is not None:
         return
 
     # Don't run this signal handler if it is a tile layer or a remote store (Service)

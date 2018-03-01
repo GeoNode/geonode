@@ -5,7 +5,7 @@
 {% block body %}
 	<a href="{% url "profile_edit" user.username %}">{% trans "Back to edit your profile information" %}</a>
 	<p>{% trans "Your current avatar: " %}</p>
-    {% avatar user %}
+    {% autoescape off %}{% avatar user %}{% endautoescape %}
     {% if not avatars %}
         <p>{% trans "You haven't uploaded an avatar yet. Please upload one now." %}</p>
     {% endif %}

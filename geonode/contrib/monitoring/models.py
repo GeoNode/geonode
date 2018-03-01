@@ -312,7 +312,7 @@ class RequestEvent(models.Model):
     #
     # list is separated with newline
     # resources = models.TextField(blank=True, default='', help_text=_("Resources name (style, layer, document, map)"))
-    resources = models.ManyToManyField(MonitoredResource, null=True, blank=True,
+    resources = models.ManyToManyField(MonitoredResource, blank=True,
                                        help_text=_("List of resources affected"),
                                        related_name='requests')
 

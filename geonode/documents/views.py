@@ -183,7 +183,7 @@ class DocumentUploadView(CreateView):
         return context
 
     def form_invalid(self, form):
-        if self.request.REQUEST.get('no__redirect', False):
+        if self.request.GET.get('no__redirect', False):
             out = {'success': False}
             out['message'] = ""
             status_code = 400
@@ -282,7 +282,7 @@ class DocumentUploadView(CreateView):
             if hasattr(self.object, 'alternate'):
                 self.request.add_resource('document', self.object.alternate)
 
-        if self.request.REQUEST.get('no__redirect', False):
+        if self.request.GET.get('no__redirect', False):
             out['success'] = True
             out['url'] = reverse(
                 'document_detail',
