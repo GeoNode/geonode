@@ -67,12 +67,12 @@ def notify_admins_new_signup(sender, **kwargs):
 
 """ Connect relevant signals to their corresponding handlers. """
 social_account_added.connect(
-    signals.update_user_email_addresses,
+    update_user_email_addresses,
     dispatch_uid=str(uuid4()),
     weak=False
 )
 user_signed_up.connect(
-    signals.notify_admins_new_signup,
+    notify_admins_new_signup,
     dispatch_uid=str(uuid4()),
     weak=False
 )
