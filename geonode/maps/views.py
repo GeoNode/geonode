@@ -1082,6 +1082,7 @@ def map_metadata_detail(request, mapid, template='maps/map_metadata_detail.html'
 
 
 #@jahangir091
+@csrf_exempt
 @login_required
 def map_publish(request, map_pk):
     if request.method == 'POST':
@@ -1142,7 +1143,6 @@ def map_draft(request, map_pk):
 @csrf_exempt
 @login_required
 def map_approve(request, map_pk):
-    import pdb;pdb.set_trace()
     if request.method == 'POST':
         form = ResourceApproveForm(request.POST)
         print form
