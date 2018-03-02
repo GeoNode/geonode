@@ -4,6 +4,8 @@ import urlparse
 from httplib import HTTPConnection, HTTPSConnection
 from urlparse import urlsplit
 
+from guardian.shortcuts import get_perms
+
 from django.conf import settings
 from django.utils.http import is_safe_url
 from django.http.request import validate_host
@@ -16,6 +18,7 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 
 from geonode.base.models import TopicCategory
+from geonode.documents.models import get_related_documents
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
@@ -26,6 +29,8 @@ from geonode.maps.views import _resolve_map, _PERMISSION_MSG_VIEW, clean_config
 from geonode.maps.views import snapshot_config
 from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
+from geonode.utils import build_social_links
+from geonode.security.views import _perms_info_json
 
 from .models import LayerStats
 from .models import DEFAULT_CONTENT
@@ -139,7 +144,6 @@ def ajax_increment_layer_stats(request):
     if request.method != 'POST':
         return HttpResponseNotAllowed('Only POST is supported')
 
-    print request.POST
     if request.POST['layername'] != '':
         layer_match = Layer.objects.filter(typename=request.POST['layername'])[:1]
         for l in layer_match:
@@ -554,6 +558,71 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
     return config
 
 
+def map_detail_wm(request, mapid, snapshot=None, template='wm_extra/maps/map_detail.html'):
+    '''
+    The view that show details of each map
+    '''
+    map_obj = _resolve_map(
+        request,
+        mapid,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
+    # Update count for popularity ranking,
+    # but do not includes admins or resource owners
+    if request.user != map_obj.owner and not request.user.is_superuser:
+        Map.objects.filter(
+            id=map_obj.id).update(
+            popular_count=F('popular_count') + 1)
+
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']
+    else:
+        access_token = None
+
+    if snapshot is None:
+        config = map_obj.viewer_json(request.user, access_token)
+    else:
+        config = snapshot_config(snapshot, map_obj, request.user, access_token)
+
+    config = json.dumps(config)
+    layers = MapLayer.objects.filter(map=map_obj.id)
+    links = map_obj.link_set.download()
+
+    group = None
+    if map_obj.group:
+        try:
+            group = GroupProfile.objects.get(slug=map_obj.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
+
+    config = gxp2wm(config)
+
+    context_dict = {
+        'config': config,
+        'resource': map_obj,
+        'group': group,
+        'layers': layers,
+        'perms_list': get_perms(request.user, map_obj.get_self_resource()),
+        'permissions_json': _perms_info_json(map_obj),
+        "documents": get_related_documents(map_obj),
+        'links': links,
+    }
+
+    context_dict["preview"] = getattr(
+        settings,
+        'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
+        'geoext')
+    context_dict["crs"] = getattr(
+        settings,
+        'DEFAULT_MAP_CRS',
+        'EPSG:900913')
+
+    if settings.SOCIAL_ORIGINS:
+        context_dict["social_links"] = build_social_links(request, map_obj)
+
+    return render_to_response(template, RequestContext(request, context_dict))
+
+
 def gxp2wm(config, map_obj=None):
     """
     Convert a GeoNode map json or string config to the WorldMap client format.
@@ -648,7 +717,6 @@ def gxp2wm(config, map_obj=None):
                                     ]
             # ml = layers.filter(name=layer_config['name'])
             #     layer_config['url'] = ml[0].ows_url
-            print 'here'
 
     config['map']['groups'] = []
     for group in groups:
@@ -665,7 +733,6 @@ def gxp2wm(config, map_obj=None):
 
     if config_is_string:
         config = json.dumps(config)
-    print config
     return config
 
 
