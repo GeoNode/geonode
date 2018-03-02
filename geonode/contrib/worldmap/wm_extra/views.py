@@ -640,11 +640,15 @@ def gxp2wm(config, map_obj=None):
                 layer_config['group'] = group
             if group not in groups:
                 groups.add(group)
-            # TODO fix this accordingly to layer extent
-            layer_config['llbbox'] = [-180,-90,180,90]
-
-	        # ml = layers.filter(name=layer_config['name'])
+            layer_config['llbbox'] = [
+                                        float(layer.bbox_x0),
+                                        float(layer.bbox_y0),
+                                        float(layer.bbox_x1),
+                                        float(layer.bbox_y1)
+                                    ]
+            # ml = layers.filter(name=layer_config['name'])
             #     layer_config['url'] = ml[0].ows_url
+            print 'here'
 
     config['map']['groups'] = []
     for group in groups:
