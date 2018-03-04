@@ -55,7 +55,15 @@
                 return;
             }else{
                 data=angular.fromJson(data);
-                return post(url,data);
+                if(data.length>0){
+                    $window.localStorage.setItem('analytics-gis-data',
+                        angular.toJson([]));
+                    return post(url,data).then(function(response){
+                        return response;
+                    },function(error){
+                        saveGISAnalyticsToLocalStorage(data);
+                    });
+                }
             }
         };
         this.saveGISAnalyticsToLocalStorage=function(data){
@@ -70,6 +78,15 @@
                 $window.localStorage.setItem('analytics-gis-data',
                 angular.toJson(previousData));
             }
+        };
+        this.postNonGISData=function(url,data){
+            var userLocation=$window.localStorage.getItem('user_location');
+            if(!angular.isUndefinedOrNull(userLocation)){
+                userLocation=angular.fromJson(userLocation);
+                data.latitude=userLocation.latitude;
+                data.longitude=userLocation.longitude;
+            }
+            return post(url,data);
         };
     }
 })();

@@ -152,7 +152,8 @@
 
                    </div>
                    <div class="modal-footer">
-                       <button type="button" class="btn btn-primary pull-left data-export-button">Export...</button>
+                       <button type="button" class="btn btn-primary pull-left data-export-button"
+                        onclick="postLayerDownloadAnalyticsData()">Export...</button>
                        <button type="button" class="btn btn-default btn-gd"
                                data-dismiss="modal">
                            {% trans "Close" %}
@@ -961,6 +962,33 @@
     {% endif %}
     {% include 'rating.html' %}
     {% include 'request_download.html' %}
+    <script>
+        var layerId    
+        $( document ).ready(function() {
+            layerId=layer_info;
+         });
+
+        function postLayerDownloadAnalyticsData(){
+            var userLocation={};
+            var localStorageLocation=localStorage.getItem("user_location");
+            if(localStorageLocation){
+                    userLocation=JSON.parse(localStorageLocation);
+            }
+                $.ajax({
+                    type : 'post',
+                    url: '/api/analytics/non-gis/',
+                    data : {
+                        id : layerId,
+                        content_type : "layer",
+                        activity_type: "download",
+                        latitude : userLocation.latitude,
+                        longitude : userLocation.longitude
+                    }
+                })
+            }
+        
+        
+    </script>
     <script type="text/javascript">
        $("#comment_submit_btn").click(function(event) {
             $.ajax({
