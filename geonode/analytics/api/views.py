@@ -5,6 +5,7 @@ from geonode.analytics.models import MapLoad,Visitor,LayerLoad,PinpointUserActiv
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.documents.models import Document
 
 from geonode.analytics.api.serializers import (
     MapLoadSerializer,
@@ -199,7 +200,37 @@ class LayerListAPIView(AnalyticsMixin, ListAPIView):
                         layer_organization=layer.group.title))
 
         return Response(data=results, status=status.HTTP_200_OK)
-            
+    
+
+class DocumentListAPIView(AnalyticsMixin, ListAPIView):
+    """
+    Will send summary of Layer activity
+    """
+    def get_queryset(self):
+        content_model = ContentType.objects.get_for_model(Document)
+        return LoadActivity.objects.filter(content_type=content_model).order_by('last_modified')
+
+
+    def get(self, request, **kwargs):
+        keys = ['object_id', 'last_modified_date', 'activity_type']
+
+        document_load_data = self.format_data(query=self.get_queryset(),extra_field=dict(activity_type='load'))
+        
+
+        results = self.get_analytics(document_load_data, keys)
+        
+        for r in results:
+            if 'object_id' in r:
+                r['document_id'] = r.pop('object_id')
+            document = Document.objects.get(id=r['document_id'])
+            r.update(dict(name=document.title, 
+                        user_organization = document.owner.organization,
+                        document_category=document.category.identifier, 
+                        document_organization=document.group.title))
+
+        return Response(data=results, status=status.HTTP_200_OK)
+
+
 class NonGISActivityCreateAPIView(CreateAPIView):
     """
     """

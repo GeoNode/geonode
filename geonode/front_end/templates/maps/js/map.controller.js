@@ -41,13 +41,13 @@
                 layer.refresh();
             }
         };
-
+        $scope.isBoundaryBoxEnabled=true;
         $scope.group = { "a": "AND", "rules": [] };
         $scope.getQueryResult = function() {
             var query = queryOutputFactory.getOutput($scope.group);
-            $rootScope.$broadcast('filterDataWithCqlFilter', query);
+            $rootScope.$broadcast('filterDataWithCqlFilter', {query: query,bbox:$scope.isBoundaryBoxEnabled});
         };
-
+        
         function getGeoServerSettings() {
             self.propertyNames = [];
             LayerService.getGeoServerSettings()
@@ -96,11 +96,14 @@
         var analyticsNonGISUrl="api/analytics/non-gis/";
 
         function postMapOrLayerLoadData(){
-            analyticsService.postNonGISData(analyticsNonGISUrl,getMapOrLayerLoadNonGISData()).then(function(response){
+            var loadData=getMapOrLayerLoadNonGISData();
+            if(loadData.id!='new'){
+                analyticsService.postNonGISData(analyticsNonGISUrl,loadData).then(function(response){
             
-            },function(error){
-                console.log(error);
-            });
+                },function(error){
+                    console.log(error);
+                });
+            }
         }        
 
         var analyticsGISUrl='api/analytics/gis/';

@@ -179,9 +179,11 @@
             });
         }
 
-        $rootScope.$on('filterDataWithCqlFilter', function(event, query) {
+        $rootScope.$on('filterDataWithCqlFilter', function(event, data) {
             $scope.pagination.currentPage = 1;
-            loadGridDataFromServerUsingCqlFilter($scope.pagination.currentPage, query);
+            var query=data.query;
+            var isBoundaryBoxEnabled=data.bbox;
+            loadGridDataFromServerUsingCqlFilter($scope.pagination.currentPage, query,isBoundaryBoxEnabled);
         });
 
         function getRequestObject(currentPage) {
@@ -194,7 +196,7 @@
                 count: currentPageSize,
                 maxFeatures: currentPageSize,
                 sortBy: $scope.sorting.predicate ? $scope.sorting.predicate + ($scope.lastActiveHeader.isAccending ? "" : "+D") : '', //surfLayer.IdColumn
-                version: '2.0.0',
+                version: '1.0.0',
                 outputFormat: 'GML2',
                 exceptions: 'application/json'
             };
@@ -222,11 +224,14 @@
             $scope.gridOptions.data = $scope.gridData.attributeRows;
         }
 
-        function loadGridDataFromServerUsingCqlFilter(currentPage, query, onSuccess, onError) {
+        function loadGridDataFromServerUsingCqlFilter(currentPage, query,isBoundaryBoxEnabled, onSuccess, onError) {
             if($rootScope.layerId){
                 $scope.loading = true;
                 var requestObj = getRequestObject(currentPage);
                 requestObj.CQL_FILTER = query;
+                if(isBoundaryBoxEnabled){
+                    requestObj.CQL_FILTER= requestObj.CQL_FILTER + ' AND BBOX(the_geom,' +mapService.getBbox('EPSG:4326')+')';
+                }
 
                 attributeGridService.getGridData(requestObj, surfLayer).then(function(features) {
                     populateGrid(features);

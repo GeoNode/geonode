@@ -4,6 +4,32 @@
 {% block title %}{% trans "Analytics" %}{% endblock %}
 
 {% block body_outer %}
+<style>
+    .loader {
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid #3498db;
+      width: 120px;
+      height: 120px;
+      -webkit-animation: spin 2s linear infinite; /* Safari */
+      animation: spin 2s linear infinite;
+    }
+
+    .hidden {
+        display: none;
+    }
+    
+    /* Safari */
+    @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    </style>
 
     <div class="row">
         <div class="col-md-12 analytics-header"><p class="text-center">WEB MAP METRICS</p></div>
@@ -53,17 +79,19 @@
             <div id="container-highchart" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
         </div>
     </div>
-    
-    <div class="row text-center" style="margin-top: 10px">
-        <div class="btn-group">
-            <button onclick='showMapData()' type="button" class="btn btn-primary">Map Data</button>
-            <button onclick='showLayerData()' type="button" class="btn btn-primary">Layer Data</button>
+    <div class="col-md-10 col-md-offset-1" style="margin-top: 20px;margin-bottom: 20px">
+        <div class="btn-group btn-group-justified">
+            <a onclick='showMapData()' id="mapData" class="btn btn-default">Map Data</a>
+            <a onclick='showLayerData()' id="layerData" class="btn btn-primary active">Layer Data</a>
+            <a onclick='showDocumentData()' id="documentData" class="btn btn-default">Document Data</a>
           </div>
-          
+    </div> 
+    <div class="row">
+        <div class="col-md-4 col-md-offset-5">
+            <div class="loader hidden" id="analyticsLoader"></div>
+        </div>
     </div>
-    
-
-    <div class="row" id="output" style="width:100%; margin-top:5px;margin-left: 10px">
+    <div class="row" id="output" style="width:100%; margin: 10px">
 
     </div>
 {% endblock %}
@@ -89,9 +117,11 @@
     <script>
 
 function showTable(url,rows){
+    $( "#analyticsLoader" ).removeClass( "hidden");
   $.ajax({
                 url: url
               }).done(function(data) {
+                $( "#analyticsLoader" ).addClass( "hidden" );
                 $("#output").pivotUI(data,{
                   rows:rows,
                   renderers: $.extend(
@@ -114,15 +144,40 @@ function showTable(url,rows){
 }
 
     function showMapData(){
-var url="/analytics/maps/";
-var rows = ['name','map_id','last_modified_date','activity_type','count'];
-showTable(url,rows);
+        $("#mapData").attr('class', '');
+        $("#layerData").attr('class', '');
+        $("#documentData").attr('class', '');
+        $( "#mapData" ).addClass( "btn btn-primary active" );
+        $( "#layerData" ).addClass( "btn btn-default" );
+        $( "#documentData").addClass( "btn btn-default" );
+        var url="/analytics/maps/";
+        var rows = ['name','map_id','last_modified_date','activity_type','count'];
+        showTable(url,rows);
     }
     function showLayerData(){
+        $("#mapData").attr('class', '');
+        $("#layerData").attr('class', '');
+        $("#documentData").attr('class', '');
+        $( "#mapData" ).addClass( "btn btn-default" );
+        $( "#layerData" ).addClass( "btn btn-primary active" );
+        $( "#documentData").addClass( "btn btn-default" );
       var url="/analytics/layers/";
       var rows = ['name','layer_id','last_modified_date','activity_type','count'];
       showTable(url,rows);
     }
+
+    function showDocumentData(){
+        $("#mapData").attr('class', '');
+        $("#layerData").attr('class', '');
+        $("#documentData").attr('class', '');
+        $( "#mapData" ).addClass( "btn btn-default" );
+        $( "#layerData" ).addClass( "btn btn-default" );
+        $( "#documentData").addClass( "btn btn-primary active" );
+        var url="/analytics/documents/";
+        var rows = ['name','document_id','last_modified_date','activity_type','count'];
+        showTable(url,rows);
+    }
+
     </script>
     <script>
         $(function () {
