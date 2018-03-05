@@ -1128,6 +1128,13 @@ if S3_MEDIA_ENABLED:
 # Database router
 DATABASE_ROUTERS = ['geonode.db_router.DbRouter']
 
+# REST_FRAMEWORK settings
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 50
+}
+
 
 # There are 3 ways to override GeoNode settings:
 # 1. Using environment variables, if your changes to GeoNode are minimal.

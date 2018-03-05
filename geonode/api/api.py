@@ -927,9 +927,7 @@ class UserNotifications(TypeFilteredResource):
             return super(UserNotifications, self).get_object_list(request).filter(recipient=request.user,
                                                                                   created__gt=date.date())
         else:
-            return super(UserNotifications, self).get_object_list(request).filter(recipient=request.user,
-                                                                                  created__gte=datetime.datetime.now() - datetime.timedelta(
-                                                                                      days=7))
+            return super(UserNotifications, self).get_object_list(request).filter(recipient=request.user)
 
 
 class ViewNotificationTimeSaving(TypeFilteredResource):
