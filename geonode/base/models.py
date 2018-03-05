@@ -1365,7 +1365,7 @@ def do_login(sender, user, request, **kwargs):
                 application=app,
                 expires=datetime.datetime.now() +
                 datetime.timedelta(
-                    days=1),
+                    days=30),
                 token=token)
         except BaseException:
             u = uuid.uuid1()
