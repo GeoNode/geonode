@@ -178,6 +178,6 @@ def resource_urls(request):
         defaults['MAPPROXY_URL'] = settings.HYPERMAP_REGISTRY_URL
         defaults['SOLR_URL'] = settings.SOLR_URL
         defaults['USE_GAZETTEER'] = settings.USE_GAZETTEER
-        # 'GOOGLE_API_KEY': settings.GOOGLE_API_KEY,
-        # 'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY
+        defaults['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY,
+        defaults['GOOGLE_MAPS_API_KEY'] = settings.GOOGLE_MAPS_API_KEY
     return defaults
