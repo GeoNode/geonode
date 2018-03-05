@@ -21,4 +21,14 @@ class Migration(migrations.Migration):
             name='favorite',
             field=models.BooleanField(default=False, help_text='Should this resource be in favorite list ?', verbose_name='Favorite'),
         ),
+        migrations.AddField(
+            model_name='resourcebase',
+            name='metadata_uploaded_preserve',
+            field=models.BooleanField(default=False),
+        ),
+        migrations.AddField(
+            model_name='resourcebase',
+            name='resource_type',
+            field=models.CharField(default=b'', help_text='type of resource layer, map or document', max_length=50),
+        ),
     ]
