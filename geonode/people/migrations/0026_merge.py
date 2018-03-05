@@ -2,15 +2,13 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import datetime
-from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('groups', '24_initial'),
+        ('people', '0025_profile_last_notification_view'),
+        ('people', '0003_auto_20161115_1924'),
     ]
 
     operations = [

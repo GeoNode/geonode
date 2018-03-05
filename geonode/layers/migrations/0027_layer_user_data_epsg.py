@@ -11,9 +11,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='layer',
-            name='user_data_epsg',
-            field=models.CharField(max_length=128, null=True, blank=True),
-        ),
     ]
