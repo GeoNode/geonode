@@ -7,6 +7,7 @@ from urlparse import urlsplit
 from guardian.shortcuts import get_perms
 
 from django.conf import settings
+from django.db.models import F
 from django.utils.http import is_safe_url
 from django.http.request import validate_host
 from django.contrib.auth.decorators import login_required
