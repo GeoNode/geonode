@@ -901,6 +901,11 @@ def snapshot_config(snapshot, map_obj, user, access_token):
     return config
 
 
+def printmap(request, mapid=None, snapshot=None):
+
+    return render_to_response('wm_extra/maps/map_print.html', RequestContext(request, {}))
+
+
 @login_required
 def add_endpoint(request):
     """
