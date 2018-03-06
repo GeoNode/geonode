@@ -133,7 +133,7 @@
                         toggleGroup: 'featureGroup'
                     }
                     {% endif %}
-                    {% if editmap %},
+                    {% if user.is_authenticated %},
                     {
                     	ptype: "gxp_maprevisiontool",
                     	actionTarget:   {target: "paneltbar", index: 20}

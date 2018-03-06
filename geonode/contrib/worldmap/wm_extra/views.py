@@ -1,5 +1,6 @@
 import json
 import math
+import re
 import urlparse
 from httplib import HTTPConnection, HTTPSConnection
 from urlparse import urlsplit
@@ -27,7 +28,7 @@ from geonode.utils import forward_mercator, default_map_config
 from geonode.utils import llbbox_to_mercator
 from geonode.layers.views import _resolve_layer
 from geonode.maps.views import _resolve_map, _PERMISSION_MSG_VIEW, clean_config
-from geonode.maps.views import snapshot_config
+# from geonode.maps.views import snapshot_config
 from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import build_social_links
@@ -38,6 +39,8 @@ from .models import DEFAULT_CONTENT
 from .forms import EndpointForm
 from .encode import despam, XssCleaner
 
+
+ows_sub = re.compile(r"[&\?]+SERVICE=WMS|[&\?]+REQUEST=GetCapabilities", re.IGNORECASE)
 
 @csrf_exempt
 def proxy(request):
@@ -104,6 +107,12 @@ def proxy(request):
             content_type=result.getheader("Content-Type", "text/plain"))
 
     return response
+
+
+def ajax_snapshot_history(request, mapid):
+    map_obj = Map.objects.get(pk=mapid)
+    history = [snapshot.json() for snapshot in map_obj.snapshots]
+    return HttpResponse(json.dumps(history), content_type="text/plain")
 
 
 def ajax_layer_edit_check(request, layername):
@@ -734,6 +743,161 @@ def gxp2wm(config, map_obj=None):
 
     if config_is_string:
         config = json.dumps(config)
+
+    return config
+
+
+def snapshot_config(snapshot, map_obj, user, access_token):
+    """
+    Get the snapshot map configuration - look up WMS parameters (bunding box)
+    for local GeoNode layers
+    """
+
+    def source_config(maplayer):
+        """
+        Generate a dict that can be serialized to a GXP layer source
+        configuration suitable for loading this layer.
+        """
+        try:
+            cfg = json.loads(maplayer.source_params)
+        except Exception:
+            cfg = dict(ptype = "gxp_gnsource", restUrl="/gs/rest")
+
+        if maplayer.ows_url:
+            cfg["url"] = ows_sub.sub('', maplayer.ows_url)
+            if "ptype" not in cfg:
+                cfg["ptype"] = "gxp_wmscsource"
+
+        if "ptype" in cfg and cfg["ptype"] == "gxp_gnsource":
+            cfg["restUrl"] = "/gs/rest"
+        return cfg
+
+    def layer_config(maplayer, user):
+        """
+        Generate a dict that can be serialized to a GXP layer configuration
+        suitable for loading this layer.
+
+        The "source" property will be left unset; the layer is not aware of the
+        name assigned to its source plugin.  See
+        :method:`geonode.maps.models.Map.viewer_json` for an example of
+        generating a full map configuration.
+        """
+        #       Caching of  maplayer config, per user (due to permissions)
+        if maplayer.id is not None:
+            cfg = cache.get("maplayer_config_" + str(maplayer.id) + "_" + str(0 if user is None else user.id))
+            if cfg is not None:
+                print "Cached cfg: %s" % str(cfg)
+                return cfg
+
+        try:
+            cfg = json.loads(maplayer.layer_params)
+        except Exception:
+            cfg = dict()
+
+        if maplayer.format: cfg['format'] = maplayer.format
+        if maplayer.name: cfg["name"] = maplayer.name
+        if maplayer.opacity: cfg['opacity'] = maplayer.opacity
+        if maplayer.styles: cfg['styles'] = maplayer.styles
+        if maplayer.transparent: cfg['transparent'] = True
+
+        cfg["fixed"] = maplayer.fixed
+        if 'url' not in cfg:
+            cfg['url'] = maplayer.ows_url
+        if cfg['url']:
+            cfg['url'] = ows_sub.sub('', cfg['url'])
+        if maplayer.group: cfg["group"] = maplayer.group
+        cfg["visibility"] = maplayer.visibility
+
+        if maplayer.name is not None and maplayer.source_params.find( "gxp_gnsource") > -1:
+            #Get parameters from GeoNode instead of WMS GetCapabilities
+            try:
+                gnLayer = Layer.objects.get(typename=maplayer.name)
+                if gnLayer.srs: cfg['srs'] = gnLayer.srs
+                if gnLayer.bbox: cfg['bbox'] = json.loads(gnLayer.bbox)
+                if gnLayer.llbbox: cfg['llbbox'] = json.loads(gnLayer.llbbox)
+                cfg['attributes'] = (gnLayer.layer_attributes())
+                attribute_cfg = gnLayer.attribute_config()
+                if "getFeatureInfo" in attribute_cfg:
+                    cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
+                cfg['queryable'] = (gnLayer.storeType == 'dataStore'),
+                cfg['disabled'] =  user is not None and not user.has_perm('maps.view_layer', obj=gnLayer)
+                #cfg["displayOutsideMaxExtent"] = user is not None and  user.has_perm('maps.change_layer', obj=gnLayer)
+                cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
+                cfg['abstract'] = gnLayer.abstract
+                cfg['styles'] = maplayer.styles
+                cfg['local'] = True
+            except Exception, e:
+                # Give it some default values so it will still show up on the map, but disable it in the layer tree
+                cfg['srs'] = 'EPSG:900913'
+                cfg['llbbox'] = [-180,-90,180,90]
+                cfg['attributes'] = []
+                cfg['queryable'] =False,
+                cfg['disabled'] = False
+                cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
+                cfg['abstract'] = ''
+                cfg['styles'] =''
+                print "Could not retrieve Layer with typename of %s : %s" % (maplayer.name, str(e))
+        elif maplayer.source_params.find( "gxp_hglsource") > -1:
+            # call HGL ServiceStarter asynchronously to load the layer into HGL geoserver
+            from geonode.queue.tasks import loadHGL
+            loadHGL.delay(maplayer.name)
+
+
+        #Create cache of maplayer config that will last for 60 seconds (in case permissions or maplayer properties are changed)
+        if maplayer.id is not None:
+            cache.set("maplayer_config_" + str(maplayer.id) + "_" + str(0 if user is None else user.id), cfg, 60)
+        return cfg
+
+    # Match up the layer with it's source
+    def snapsource_lookup(source, sources):
+        for k, v in sources.iteritems():
+            if v.get("id") == source.get("id"):
+                return k
+        return None
+
+    # Set up the proper layer configuration
+    # def snaplayer_config(layer, sources, user):
+    def snaplayer_config(layer, sources, user, access_token):
+        cfg = layer_config(layer, user)
+        src_cfg = source_config(layer)
+        source = snapsource_lookup(src_cfg, sources)
+        if source:
+            cfg["source"] = source
+        if src_cfg.get(
+                "ptype",
+                "gxp_wmscsource") == "gxp_wmscsource" or src_cfg.get(
+                "ptype",
+                "gxp_gnsource") == "gxp_gnsource":
+            cfg["buffer"] = 0
+        return cfg
+
+    from geonode.utils import num_encode, num_decode
+    from geonode.utils import layer_from_viewer_config
+    decodedid = num_decode(snapshot)
+    snapshot = get_object_or_404(MapSnapshot, pk=decodedid)
+    if snapshot.map == map_obj.map:
+        config = json.loads(clean_config(snapshot.config))
+        layers = [l for l in config["map"]["layers"]]
+        sources = config["sources"]
+        maplayers = []
+        for ordering, layer in enumerate(layers):
+            maplayers.append(
+                layer_from_viewer_config(
+                    MapLayer,
+                    layer,
+                    config["sources"][
+                        layer["source"]],
+                    ordering))
+#             map_obj.map.layer_set.from_viewer_config(
+# map_obj, layer, config["sources"][layer["source"]], ordering))
+        config['map']['layers'] = [
+            snaplayer_config(
+                l,
+                sources,
+                user,
+                access_token) for l in maplayers]
+    else:
+        config = map_obj.viewer_json(user, access_token)
     return config
 
 

@@ -3,7 +3,7 @@ from django.views.generic.base import RedirectView
 
 from geonode.maps.views import snapshot_create
 
-from .views import (proxy, ajax_layer_update, ajax_layer_edit_check, upload_layer,
+from .views import (proxy, ajax_snapshot_history, ajax_layer_update, ajax_layer_edit_check, upload_layer,
     create_pg_layer, ajax_increment_layer_stats, new_map_wm, new_map_json_wm,
     map_view_wm, map_json_wm, map_detail_wm, add_endpoint)
 from tastypie.api import Api
@@ -36,7 +36,8 @@ urlpatterns = patterns('',
                         url(r'^maps/add_endpoint?$', add_endpoint, name='add_endpoint'),
                         url(r'^snapshot/create/?$', snapshot_create, name='snapshot_create'),
                         url(r'^maps/(?P<mapid>[^/]+)/(?P<snapshot>[A-Za-z0-9_\-]+)/$', map_view_wm, name='map_view_wm'),
-                        # TODO develop the create layer app
+                        # wm history
+                        url(r'^maps/history/(?P<mapid>\d+)/?$', ajax_snapshot_history, name='ajax_snapshot_history'),
                         # layers
                         url(r'^data/(?P<layername>[^/]*)$', RedirectView.as_view(pattern_name='layer_detail', permanent=False)),
                         url(r'^data/(?P<layername>[^/]*)/ajax-edit-check/?$', ajax_layer_edit_check, name = 'ajax_layer_edit_check'),
