@@ -19,6 +19,7 @@
 #########################################################################
 
 # Django settings for the GeoNode project.
+import ast
 import os
 import re
 import sys
@@ -53,8 +54,8 @@ DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
 EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'False'))
 
 if EMAIL_ENABLE:
-    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND', \
-        default='django.core.mail.backends.smtp.EmailBackend')
+    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
+                              default='django.core.mail.backends.smtp.EmailBackend')
     EMAIL_HOST = 'localhost'
     EMAIL_PORT = 25
     EMAIL_HOST_USER = ''
@@ -62,15 +63,18 @@ if EMAIL_ENABLE:
     EMAIL_USE_TLS = False
     DEFAULT_FROM_EMAIL = 'GeoNode <no-reply@geonode.org>'
 else:
-    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND', \
-        default='django.core.mail.backends.console.EmailBackend')
+    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
+                              default='django.core.mail.backends.console.EmailBackend')
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
 
-ALLOWED_HOSTS = ['localhost', 'django'] if os.getenv('ALLOWED_HOSTS') is None \
-    else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
+if os.getenv('DOCKER_ENV'):
+    ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
+else:
+    ALLOWED_HOSTS = ['localhost', ] if os.getenv('ALLOWED_HOSTS') is None \
+        else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
 # to only whitelisted IP addresses.
@@ -105,6 +109,14 @@ DATABASE_URL = os.getenv(
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 }
+
+if os.getenv('DEFAULT_BACKEND_DATASTORE'):
+    GEODATABASE_URL = os.getenv('GEODATABASE_URL',
+                                'postgis://\
+geonode_data:geonode_data@localhost:5432/geonode_data')
+    DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = dj_database_url.parse(
+        GEODATABASE_URL, conn_max_age=600
+    )
 
 MANAGERS = ADMINS = os.getenv('ADMINS', [])
 
@@ -578,8 +590,6 @@ ACTSTREAM_SETTINGS = {
 }
 
 
-
-
 # Email for users to contact admins.
 THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
     'THEME_ACCOUNT_CONTACT_EMAIL', 'admin@example.com'
@@ -665,7 +675,8 @@ OGC_SERVER = {
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log'
         % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
-        'DATASTORE': '',  # 'datastore',
+        # 'datastore',
+        'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE', ''),
         'PG_GEOGIG': False,
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
