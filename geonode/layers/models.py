@@ -41,9 +41,6 @@ from geonode.security.utils import remove_object_permissions
 from ..services.enumerations import CASCADED
 from ..services.enumerations import INDEXED
 
-from ..services.enumerations import CASCADED
-from ..services.enumerations import INDEXED
-
 logger = logging.getLogger("geonode.layers.models")
 
 shp_exts = ['.shp', ]
