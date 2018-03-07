@@ -279,7 +279,8 @@ class GISActivityCreateAPIView(CreateAPIView):
                             layer_id = None if layer_id is None else int(layer_id),
                             latitude=float(latitude) if latitude is not None else None, 
                             longitude= float(longitude) if longitude is not None else None, 
-                            user=user if user is not None and user.id is not None else None)
+                            user=user if user is not None and user.id is not None else None,
+                            the_geom= "POINT({0} {1})".format(longitude,latitude))
         obj.save()
 
     def post(self, request, **kwargs):

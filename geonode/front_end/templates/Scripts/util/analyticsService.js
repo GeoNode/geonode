@@ -6,6 +6,7 @@
     analyticsService.$inject = ['$http', '$q', '$window', '$cookies'];
 
     function analyticsService($http, $q, $window, $cookies) {
+        var self = this;
         function get(url) {
             var deferred = $q.defer();
             $http.get(url)
@@ -47,6 +48,27 @@
         angular.isUndefinedOrNull = function(val) {
             return angular.isUndefined(val) || val === null 
         };
+
+        function saveGISToLocalStorage(data){
+            var previousData=$window.localStorage.getItem('analytics-gis-data');
+            if(angular.isUndefinedOrNull(previousData)){
+                var initialData=[data];
+                $window.localStorage.setItem('analytics-gis-data',
+                angular.toJson(initialData));
+            }else{
+                previousData=angular.fromJson(previousData);
+                if(Array.isArray(data)){
+                    angular.forEach(data,function(datum){
+                        previousData.push(datum);
+                    });
+                }else{
+                    previousData.push(data);
+                }
+                $window.localStorage.setItem('analytics-gis-data',
+                angular.toJson(previousData));
+            }
+        }
+
         this.postGISAnalyticsToServer=function(url){
             var data=$window.localStorage.getItem('analytics-gis-data');
             if(data==null || angular.isUndefined(data)){
@@ -61,23 +83,24 @@
                     return post(url,data).then(function(response){
                         return response;
                     },function(error){
-                        saveGISAnalyticsToLocalStorage(data);
+                        saveGISToLocalStorage(data);
                     });
                 }
             }
         };
         this.saveGISAnalyticsToLocalStorage=function(data){
-            var previousData=$window.localStorage.getItem('analytics-gis-data');
-            if(angular.isUndefinedOrNull(previousData)){
-                var initialData=[data];
-                $window.localStorage.setItem('analytics-gis-data',
-                angular.toJson(initialData));
-            }else{
-                previousData=angular.fromJson(previousData);
-                previousData.push(data);
-                $window.localStorage.setItem('analytics-gis-data',
-                angular.toJson(previousData));
-            }
+            // var previousData=$window.localStorage.getItem('analytics-gis-data');
+            // if(angular.isUndefinedOrNull(previousData)){
+            //     var initialData=[data];
+            //     $window.localStorage.setItem('analytics-gis-data',
+            //     angular.toJson(initialData));
+            // }else{
+            //     previousData=angular.fromJson(previousData);
+            //     previousData.push(data);
+            //     $window.localStorage.setItem('analytics-gis-data',
+            //     angular.toJson(previousData));
+            // }
+            saveGISToLocalStorage(data);
         };
         this.postNonGISData=function(url,data){
             var userLocation=$window.localStorage.getItem('user_location');

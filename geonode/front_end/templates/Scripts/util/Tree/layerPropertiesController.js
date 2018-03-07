@@ -54,8 +54,8 @@
             LayerService.getStylesByLayer(layer.getName())
                 .then(function(res) {
                     console.log(res);
-                    $scope.Styles = res;
-                    res.forEach(function(e){
+                    $scope.Styles = res.results;
+                    $scope.Styles.forEach(function(e){
                         if(e.id == $scope.nodeData.layer.style.id){
                             $scope.nodeData.selectedStyle = e;
                         }

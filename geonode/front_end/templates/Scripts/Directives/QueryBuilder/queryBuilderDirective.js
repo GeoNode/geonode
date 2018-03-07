@@ -171,7 +171,7 @@ appHelperModule.directive('queryBuilder', ['$compile','controlVisibleFactory','L
                     if(newValue){
                         newValue=newValue.split(":")[1];
                         if(newValue){
-                            LayerService.getLayerFeatureByName('http://172.16.0.247:8080/geoserver/',newValue).then(function(response){
+                            LayerService.getLayerFeatureByName('http://172.16.0.150:8080/geoserver/',newValue).then(function(response){
                                 if(response.featureTypes){
                                     if(response.featureTypes[0]){
                                         generateOptions(response.featureTypes[0]);
@@ -265,7 +265,7 @@ appHelperModule.directive('queryBuilder', ['$compile','controlVisibleFactory','L
                 element.append(directive(scope, function ($compile) {
                     return $compile;
                 }));
-            }
+            };
         }
-    }
+    };
 }]);

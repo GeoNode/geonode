@@ -2,9 +2,9 @@
     appModule
         .controller('MapController', MapController);
 
-    MapController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope', 'layerService', 'queryOutputFactory', '$rootScope','$interval'];
+    MapController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope', 'layerService', 'queryOutputFactory', '$rootScope','$interval','urlResolver'];
 
-    function MapController( mapService, $window, analyticsService, LayerService, $scope, oldLayerService, queryOutputFactory, $rootScope,$interval) {
+    function MapController( mapService, $window, analyticsService, LayerService, $scope, oldLayerService, queryOutputFactory, $rootScope,$interval,urlResolver) {
         var self = this;
         var re = /\d*\/embed/;
         var map = mapService.getMap();
@@ -27,7 +27,44 @@
         function errorFn() {
 
         }
+        var heatMapLayer=undefined;
+        $scope.isHeatMapVisible=false;
 
+        function getheatMapCQLFilter(){
+            var data=getMapOrLayerLoadNonGISData();
+            if(isLayerPage()){
+                return 'layer_id = '+ data.id;
+            }else
+                return 'map_id = '+ data.id;
+        }
+
+        function addHeatMapLayer(visibility){
+            var cqlFilter=getheatMapCQLFilter();
+            console.log(cqlFilter);
+            heatMapLayer=new ol.layer.Image({
+                source: new ol.source.ImageWMS({
+                    url: urlResolver.resolveGeoserverTile(),
+                    params: {
+                        LAYERS: 'cite:analytics_pinpointuseractivity',
+                        FORMAT: 'image/png',
+                        TRANSPARENT: true,
+                        CQL_FILTER: cqlFilter
+                    }
+                }),
+                visible: true
+            });
+            map.addLayer(heatMapLayer);
+            $scope.isHeatMapVisible=true;
+        }
+
+        $scope.addHeatMap=function(){
+            if(angular.isUndefined(heatMapLayer)){
+                addHeatMapLayer(true);
+            }else{
+                heatMapLayer.setVisible(!$scope.isHeatMapVisible);
+                $scope.isHeatMapVisible=!$scope.isHeatMapVisible;
+            }
+        };
         $scope.changeStyle = function(layerId, styleId) {
             var layer = mapService.getLayer(layerId);
             if (styleId) {
@@ -146,24 +183,33 @@
                     var analyticsData=getAnalyticsGISData(mapCenter,"zoom");
                     analyticsData=setMapAndLayerId(analyticsData);
                     resolutionChanged=false;
-                    analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+                    if(analyticsData.map_id!='new')
+                        analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+                }else{
+                    var dragCoordinate=ol.proj.transform(map.getView().getCenter(), 'EPSG:3857','EPSG:4326');
+                    var analyticsData=getAnalyticsGISData(dragCoordinate,"pan");
+                    analyticsData=setMapAndLayerId(analyticsData);
+                    if(analyticsData.map_id!='new')
+                         analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
                 }
               }
 
-            function onPointerDrag(evt){
-                var dragCoordinate=ol.proj.transform(evt.coordinate, 'EPSG:3857','EPSG:4326');
-                var analyticsData=getAnalyticsGISData(dragCoordinate,"pan");
-                analyticsData=setMapAndLayerId(analyticsData);
-                analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
-            }
+            // function onPointerDrag(evt){
+            //     var dragCoordinate=ol.proj.transform(evt.coordinate, 'EPSG:3857','EPSG:4326');
+            //     var analyticsData=getAnalyticsGISData(dragCoordinate,"pan");
+            //     analyticsData=setMapAndLayerId(analyticsData);
+            //     if(analyticsData.map_id!='new')
+            //         analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+            // }
             function singleClick(evt){
                 var clickCoordinate=ol.proj.transform(evt.coordinate, 'EPSG:3857','EPSG:4326');
                 var analyticsData=getAnalyticsGISData(clickCoordinate,"click");
                 analyticsData=setMapAndLayerId(analyticsData);
-                analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+                if(analyticsData.map_id!='new')
+                    analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
             }
             keyMoveEnd=map.on('moveend', onMoveEnd);
-            keyPointerDrag=map.on('pointerdrag', onPointerDrag);
+            // keyPointerDrag=map.on('pointerdrag', onPointerDrag);
             keyChangeResolution = map.getView().on('change:resolution', function(evt) {
                     resolutionChanged=true;
             });
@@ -171,7 +217,7 @@
         })();
 
         $scope.$on("$destroy", function() {
-            ol.Observable.unByKey(keyPointerDrag);
+            // ol.Observable.unByKey(keyPointerDrag);
             ol.Observable.unByKey(keySingleClick);
             ol.Observable.unByKey(keyChangeResolution);
             ol.Observable.unByKey(keyMoveEnd);
