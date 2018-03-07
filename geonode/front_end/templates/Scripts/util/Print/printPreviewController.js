@@ -16,8 +16,10 @@
                     self.dpis = res.data.dpis;
                     self.printURL = res.data.printURL;
                     self.createURL = res.data.createURL;
+                    self.scales = res.data.scales;
 
                     self.selectedLayout = self.layouts[0];
+                    self.selectedScale = self.scales[0];
                     self.selectedDpi  = self.dpis[0];
                     self.includeLegend = true;
             });
@@ -158,11 +160,8 @@
                 "comment": self.comments,
                 "layers": mapLayers(map.getLayers()),
                 "pages": [{
-                    "center": [
-                        10120869.638616,
-                        2744410.2262926
-                    ],
-                    "scale": 500000,
+                    "center": map.getCenter(),
+                    "scale": self.selectedScale.value,
                     "rotation": 0
                 }]
             };

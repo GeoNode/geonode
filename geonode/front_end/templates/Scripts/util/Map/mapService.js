@@ -477,6 +477,9 @@
             },
             getPrintingConfiguration: function (){
                 return mapRepository.getPrintingConfiguration();
+            },
+            getCenter: function(){
+                return map.getView().getCenter();
             }
 
         };
