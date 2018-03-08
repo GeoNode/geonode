@@ -6,6 +6,9 @@
 
         var surfLayer, activeLayerId;
         $scope.config = {};
+        $scope.isQueryEnabled=false;
+        $scope.query="";
+        $scope.isBoundaryBoxEnabled=false;
 
         function getRequestObjectToGetFeature(featureID, typeName) {
             var requestObj = {
@@ -55,6 +58,9 @@
         });
 
         function initGrid(newActiveLayerId) {
+            $scope.isQueryEnabled=false;
+            $scope.query="";
+            $scope.isBoundaryBoxEnabled=false;
 
             $scope.gridData = { attributeRows: [] };
             attributeGridService.resetAll();
@@ -170,15 +176,17 @@
             loadGridDataFromServer($scope.pagination.currentPage, stopLoading, stopLoading);
         }
 
-        $scope.isQueryEnabled=false;
-        $scope.query="";
-        $scope.isBoundaryBoxEnabled=false;
+        
         $rootScope.$on('filterDataWithCqlFilter', function(event, data) {
             $scope.pagination.currentPage = 1;
             $scope.query=data.query;
             $scope.isBoundaryBoxEnabled=data.bbox;
-            loadGridDataFromServerUsingCqlFilter($scope.pagination.currentPage, $scope.query,$scope.isBoundaryBoxEnabled);
-            $scope.isQueryEnabled=true;
+            if($scope.query){
+                loadGridDataFromServerUsingCqlFilter($scope.pagination.currentPage, $scope.query,$scope.isBoundaryBoxEnabled);
+                $scope.isQueryEnabled=true;
+            }else{
+                surfToastr.error("please enter a valid query","Error");
+            }
         });
 
         function getRequestObject(currentPage) {
@@ -264,6 +272,8 @@
         }
 
         $scope.searchByAttribute = function() {
+            $scope.isBoundaryBoxEnabled=false;
+            $scope.isQueryEnabled=false;
             loadGridDataFromServer($scope.pagination.currentPage);
             $scope.pagination.currentPage = 1;
         };
@@ -271,7 +281,7 @@
         $scope.onPageSelect = function(currentPage) {
             loadGridDataFromServer(currentPage);
             mapService.setAllFeaturesUnselected();
-        }
+        };
 
         function setActiveHeader(colIndex) {
             if ($scope.lastActiveHeader.index === colIndex) {
@@ -282,7 +292,7 @@
             }
 
             loadGridDataFromServer($scope.pagination.currentPage);
-        };
+        }
 
         $scope.itemPerPageChanged = function() {
             $scope.pagination.currentPage = 1;
@@ -299,7 +309,7 @@
                 isValid = attributeValidator.isTextLengthValid(item, attributeDefinition.Length);
             }
             return isValid;
-        };
+        }
 
 
         function getMessageToShow() {

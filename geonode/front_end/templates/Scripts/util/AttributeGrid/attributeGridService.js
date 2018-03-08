@@ -223,7 +223,6 @@
                     }
                     columns.push(column);
                 }
-                console.log(columns);
                 return columns;
             }
         };

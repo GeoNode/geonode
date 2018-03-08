@@ -40,7 +40,6 @@
 
         function addHeatMapLayer(visibility){
             var cqlFilter=getheatMapCQLFilter();
-            console.log(cqlFilter);
             heatMapLayer=new ol.layer.Image({
                 source: new ol.source.ImageWMS({
                     url: urlResolver.resolveGeoserverTile(),
@@ -84,6 +83,12 @@
             var query = queryOutputFactory.getOutput($scope.group);
             $rootScope.$broadcast('filterDataWithCqlFilter', {query: query,bbox:$scope.isBoundaryBoxEnabled});
         };
+        $scope.$watch(function() {
+            return $rootScope.layerId;
+        }, function() {
+            if ($rootScope.layerId)
+            $scope.group = { "a": "AND", "rules": [] };
+        });
         
         function getGeoServerSettings() {
             self.propertyNames = [];

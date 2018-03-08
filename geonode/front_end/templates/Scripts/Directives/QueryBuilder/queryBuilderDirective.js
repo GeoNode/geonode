@@ -173,6 +173,7 @@ appHelperModule.directive('queryBuilder', ['$compile','controlVisibleFactory','L
                             LayerService.getLayerFeatureByName($window.GeoServerHttp2Root,newValue).then(function(response){
                                 if(response.featureTypes){
                                     if(response.featureTypes[0]){
+                                        scope.options.customFields.splice(0,scope.options.customFields.length);
                                         generateOptions(response.featureTypes[0]);
                                     }
                                 }
