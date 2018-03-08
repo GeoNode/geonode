@@ -112,8 +112,8 @@ appHelperModule.factory('queryOutputFactory', function() {
     };
 });
 
-appHelperModule.directive('queryBuilder', ['$compile','controlVisibleFactory','LayerService',
- function ($compile,controlVisibleFactory,LayerService) {
+appHelperModule.directive('queryBuilder', ['$compile','controlVisibleFactory','LayerService','$window',
+ function ($compile,controlVisibleFactory,LayerService,$window) {
     return {
         restrict: 'E',
         scope:{
@@ -150,7 +150,6 @@ appHelperModule.directive('queryBuilder', ['$compile','controlVisibleFactory','L
                          {name:'Does not contain', value:'8'}
                      ]
                 };
-                // scope.group={"a": "AND","rules": []};
                 scope.options  = {
                     addGroup:false,
                     removeGroup:false,
@@ -171,7 +170,7 @@ appHelperModule.directive('queryBuilder', ['$compile','controlVisibleFactory','L
                     if(newValue){
                         newValue=newValue.split(":")[1];
                         if(newValue){
-                            LayerService.getLayerFeatureByName('http://172.16.0.150:8080/geoserver/',newValue).then(function(response){
+                            LayerService.getLayerFeatureByName($window.GeoServerHttp2Root,newValue).then(function(response){
                                 if(response.featureTypes){
                                     if(response.featureTypes[0]){
                                         generateOptions(response.featureTypes[0]);

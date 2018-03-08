@@ -89,17 +89,6 @@
             }
         };
         this.saveGISAnalyticsToLocalStorage=function(data){
-            // var previousData=$window.localStorage.getItem('analytics-gis-data');
-            // if(angular.isUndefinedOrNull(previousData)){
-            //     var initialData=[data];
-            //     $window.localStorage.setItem('analytics-gis-data',
-            //     angular.toJson(initialData));
-            // }else{
-            //     previousData=angular.fromJson(previousData);
-            //     previousData.push(data);
-            //     $window.localStorage.setItem('analytics-gis-data',
-            //     angular.toJson(previousData));
-            // }
             saveGISToLocalStorage(data);
         };
         this.postNonGISData=function(url,data){

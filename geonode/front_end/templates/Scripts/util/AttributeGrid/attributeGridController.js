@@ -1,8 +1,8 @@
 ﻿appModule.controller('attributeGridController', ['$scope', '$rootScope', 'featureRepository',
     'attributeGridService', 'attributeValidator', 'mapService', 'featureService', 'attributeTypes',
-    'cqlFilterCharacterFormater', 'mapTools', '$timeout', 'mapAccessLevel', 'LayerService','surfToastr',
+    'cqlFilterCharacterFormater', 'mapTools', '$timeout', 'mapAccessLevel', 'LayerService','surfToastr','urlResolver',
     function($scope, $rootScope, featureRepository, attributeGridService, attributeValidator,
-        mapService, featureService, attributeTypes, cqlFilterCharacterFormater, mapTools, $timeout, mapAccessLevel, LayerService,surfToastr) {
+        mapService, featureService, attributeTypes, cqlFilterCharacterFormater, mapTools, $timeout, mapAccessLevel, LayerService,surfToastr,urlResolver) {
 
         var surfLayer, activeLayerId;
         $scope.config = {};
@@ -19,7 +19,7 @@
             };
             return requestObj;
         }
-       
+        
         $scope.selectedFeatures = [];
         var selectedFeatures = [];
 
