@@ -162,12 +162,12 @@
                             </button>
 
             </li>
-            <li class="divider-vertical" draft-only></li>
-            <li draft-only>
+            <!-- <li class="divider-vertical" draft-only></li> -->
+            <!-- <li draft-only>
                 <button class="control-button icon" id="browse-data" ng-click="action.browseData()" ng-disabled="isAttributeGridOn" remove-focus title="Browse Data">
                             <i class="fa fa-database" aria-hidden="true"></i>                                    
                             </button>
-            </li>
+            </li> -->
             <li class="divider-vertical" draft-only></li>
 
             <li draft-only>
@@ -248,7 +248,9 @@
                         class="btn btn-gd-primary pull-right icon-btn-color">
                                                         Query <i class="fa fa-binoculars" aria-hidden="true"></i>    
                                                     </a>
-                        <a href="" class="btn btn-default pull-right" target="_self" style="margin-right: 5px;">
+                        <a href="" 
+                        onclick="animating()"
+                        class="btn btn-default pull-right" target="_self" style="margin-right: 5px;">
                                                             Cancel <i class="fa fa-times" aria-hidden="true"></i></a>
 
                         <div style="clear:both"></div>

@@ -32,7 +32,7 @@
                     $scope.selectedFeatures = gridApi.selection.getSelectedRows();
                     var difference = _.difference($scope.selectedFeatures, selectedFeatures);
                     var features = _.map(difference, function(feature) {
-                        return feature.OpenlayerFeature.id_;
+                        return feature.Fid;
                     });
                     var featureId = features.join(",");
                     if (surfLayer) {
@@ -84,7 +84,7 @@
                         $scope.selectedFeatures = gridApi.selection.getSelectedRows();
                         var difference = _.difference($scope.selectedFeatures, selectedFeatures);
                         var features = _.map(difference, function(feature) {
-                            return feature.OpenlayerFeature.id_;
+                            return feature.Fid;
                         });
                         var featureId = features.join(",");
                         if (surfLayer) {
@@ -168,22 +168,17 @@
         function loadAttributeGridInfo() {
 
             loadGridDataFromServer($scope.pagination.currentPage, stopLoading, stopLoading);
-
-            attributeGridService.getNumberOfFeatures(surfLayer.DataId).success(function(numberOfFeatures) {
-                //$scope.pagination.totalItems = numberOfFeatures;
-                $scope.pagination.totalItems = Number($(numberOfFeatures)[1].attributes.numberoffeatures.value);
-
-            }).error(function() {
-                //$scope.pagination.totalItems = 100;
-                $scope.gridData.attributeDefinitions = [];
-            });
         }
 
+        $scope.isQueryEnabled=false;
+        $scope.query="";
+        $scope.isBoundaryBoxEnabled=false;
         $rootScope.$on('filterDataWithCqlFilter', function(event, data) {
             $scope.pagination.currentPage = 1;
-            var query=data.query;
-            var isBoundaryBoxEnabled=data.bbox;
-            loadGridDataFromServerUsingCqlFilter($scope.pagination.currentPage, query,isBoundaryBoxEnabled);
+            $scope.query=data.query;
+            $scope.isBoundaryBoxEnabled=data.bbox;
+            loadGridDataFromServerUsingCqlFilter($scope.pagination.currentPage, $scope.query,$scope.isBoundaryBoxEnabled);
+            $scope.isQueryEnabled=true;
         });
 
         function getRequestObject(currentPage) {
@@ -232,24 +227,16 @@
                 if(isBoundaryBoxEnabled){
                     requestObj.CQL_FILTER= requestObj.CQL_FILTER + ' AND BBOX(the_geom,' +mapService.getBbox('EPSG:4326')+')';
                 }
-
-                attributeGridService.getGridData(requestObj, surfLayer).then(function(features) {
-                    populateGrid(features);
-                    // if(!$scope.config.table){
-                    //     $scope.config.table = new Handsontable($('#attribute-grid')[0], settings);
-                    // }
-                    // else{
-                    //     $scope.config.table.updateSettings(settings);
-                    // }
-                    //$scope.config.table.render();
-                    //table.render();
-
+                requestObj.outputFormat='json';
+                LayerService.getWFS('api/geoserver/', requestObj,false).then(function(data){
+                    populateGrid(data.features);
+                    $scope.pagination.totalItems=data.totalFeatures;
                 }).catch(function() {
-                    if (onError) {
-                        onError();
-                    }
-                    $scope.loading = false;
-                });
+                        if (onError) {
+                            onError();
+                        }
+                        $scope.loading = false;
+                    });
 
             }else{
                 surfToastr.error("please select a layer","Error");
@@ -259,25 +246,21 @@
 
         function loadGridDataFromServer(currentPage, onSuccess, onError) {
             $scope.loading = true;
-            var requestObj = getRequestObject(currentPage);
-
-            attributeGridService.getGridData(requestObj, surfLayer).then(function(features) {
-                populateGrid(features);
-                // if(!$scope.config.table){
-                //     $scope.config.table = new Handsontable($('#attribute-grid')[0], settings);
-                // }
-                // else{
-                //     $scope.config.table.updateSettings(settings);
-                // }
-                //$scope.config.table.render();
-                //table.render();
-
-            }).catch(function() {
-                if (onError) {
-                    onError();
-                }
-                $scope.loading = false;
-            });
+            if($scope.isQueryEnabled){
+                loadGridDataFromServerUsingCqlFilter(currentPage,$scope.query,$scope.isBoundaryBoxEnabled);
+            }else{
+                var requestObj = getRequestObject(currentPage);
+                requestObj.outputFormat='json';
+                LayerService.getWFS('api/geoserver/', requestObj,false).then(function(data){
+                    populateGrid(data.features);
+                    $scope.pagination.totalItems=data.totalFeatures;
+                }).catch(function() {
+                    if (onError) {
+                        onError();
+                    }
+                    $scope.loading = false;
+                });
+            }
         }
 
         $scope.searchByAttribute = function() {
