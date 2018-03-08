@@ -223,7 +223,7 @@
                 $rootScope.mapImage = { baseMapUrl: undefined, shapeUrl: undefined };
                 $modal.open({
                     templateUrl: 'static/Templates/Print/PrintPreview.html',
-                    controller: 'printPreviewController',
+                    controller: 'printPreviewController as ctrl',
                     backdrop: 'static',
                     keyboard: false,
                     windowClass: 'fullScreenModal First',
@@ -237,18 +237,18 @@
                 removeZoomControl();
                 styleContents();
 
-                html2canvas($('#mainContent'), {
-                    useCORS: true,
-                    onrendered: function(canvas) {
-                        restoreShape();
-                        addLayerSwitcher();
-                        addZoomControl();
-                        restoreStyles();
-                        $timeout(function() {
-                            $rootScope.mapImage.baseMapUrl = canvas.toDataURL('image/png');
-                        });
-                    }
-                });
+                // html2canvas($('#mainContent'), {
+                //     useCORS: true,
+                //     onrendered: function(canvas) {
+                //         restoreShape();
+                //         addLayerSwitcher();
+                //         addZoomControl();
+                //         restoreStyles();
+                //         $timeout(function() {
+                //             $rootScope.mapImage.baseMapUrl = canvas.toDataURL('image/png');
+                //         });
+                //     }
+                // });
             };
         })();
 
