@@ -173,21 +173,21 @@ def ajax_increment_layer_stats(request):
     )
 
 
-# def add_layer_wm(request):
-#     """
-#     The view that returns the map composer opened to
-#     a given map and adds a layer on top of it.
-#     """
-#     map_id = request.GET.get('map_id')
-#     layer_name = request.GET.get('layer_name')
-#
-#     map_obj = _resolve_map(
-#         request,
-#         map_id,
-#         'base.view_resourcebase',
-#         _PERMISSION_MSG_VIEW)
-#
-#     return map_view_wm(request, str(map_obj.id), layer_name=layer_name)
+def add_layer_wm(request):
+    """
+    The view that returns the map composer opened to
+    a given map and adds a layer on top of it.
+    """
+    map_id = request.GET.get('map_id')
+    layer_name = request.GET.get('layer_name')
+
+    map_obj = _resolve_map(
+        request,
+        map_id,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
+
+    return map_view_wm(request, str(map_obj.id), layer_name=layer_name)
 
 
 def map_view_wm(request, mapid, snapshot=None, layer_name=None, template='wm_extra/maps/map_view.html'):

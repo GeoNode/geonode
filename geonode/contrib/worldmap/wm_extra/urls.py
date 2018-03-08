@@ -4,7 +4,7 @@ from django.views.generic.base import RedirectView
 from geonode.maps.views import snapshot_create
 
 from .views import (proxy, ajax_snapshot_history, ajax_layer_update, ajax_layer_edit_check, upload_layer,
-    create_pg_layer, ajax_increment_layer_stats, new_map_wm, new_map_json_wm,
+    create_pg_layer, ajax_increment_layer_stats, add_layer_wm, new_map_wm, new_map_json_wm,
     map_view_wm, map_json_wm, map_detail_wm, add_endpoint, printmap)
 from tastypie.api import Api
 from .api.resources import (LayerResource, TagResource, TopicCategoryResource,
@@ -29,10 +29,10 @@ urlpatterns = patterns('',
                         # maps
                         url(r'^maps/print/?$', printmap, name='printmap'),
                         url(r'^maps/new$', new_map_wm, name="new_map_wm"),
+                        url(r'^maps/add_layer$', add_layer_wm, name='add_layer_wm'),
                         url(r'^maps/new/data$', new_map_json_wm, name='new_map_json_wm'),
                         url(r'^maps/(?P<mapid>[^/]+)/data$', map_json_wm, name='map_json'),
                         url(r'^maps/(?P<mapid>[^/]+)$', map_detail_wm, name='map_detail_wm'),
-                        #url(r'^maps/add_layer$', add_layer_wm, name='add_layer_wm'),
                         url(r'^maps/(?P<mapid>[^/]+)/view$', map_view_wm, name='map_view_wm'),
                         url(r'^maps/add_endpoint?$', add_endpoint, name='add_endpoint'),
                         url(r'^snapshot/create/?$', snapshot_create, name='snapshot_create'),
