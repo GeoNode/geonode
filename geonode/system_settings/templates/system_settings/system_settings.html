@@ -6,7 +6,7 @@
 {% block body_outer %}
 <div ng-app="SystemSettingsApp">
     <div ng-controller="SystemSettingsController" >
-        <h1>Settings:</h1>
+        <h1>Settings</h1>
         <div class="row">
 
             <div class="alert alert-warning" ng-cloak ng-if="layerStatusMsg">
@@ -20,16 +20,20 @@
                 Address Geocode Layer: <br>
                 <small style="color: #B2ACAB;">Must be a CSV layer with house_no, road_no and post_code</small>
             </div>
-            <div class="col-md-3" ng-cloak>
-                Saved layer: <span id="saved-layer">[{ layerName }]</span>
-            </div>
+            
             <div class="col-md-4">
-                <select name="layer" id="layer" ng-model="layers" ng-change="changedValue()">
+                <select name="layer" 
+                    id="layer"
+                    class="form-control" 
+                    ng-model="addressGeocodeLayer"
+                    ng-options="item.uuid as item.title for item in rasterLayers"
+                    >
+                        <option value="" style="display: none">Select a raster layer</option>
                 </select>
             </div>
 
             <div class="col-md-2">
-                <button type="button" class="btn btn-primary layer-settings" ng-click="layerSettingSave()">Save</button>
+                <button type="button" class="btn btn-primary layer-settings" ng-click="layerSettingSave('location',addressGeocodeLayer)">Save</button>
             </div>
         </div>
         <br>
@@ -38,20 +42,20 @@
                 Elevation Raster: <br>
                 <small style="color: #B2ACAB;">Will be used for calculating elevation for selected location. Must be a raster layer.</small>
             </div>
-            <div class="col-md-3" ng-cloak>
-                &nbsp;
-            </div>
+
             <div class="col-md-4">
-                <select name="elevation-raster" id="elevation-raster">
-                    <option>Raster 1</option>
-                    <option>Raster 2</option>
-                    <option>Raster 3</option>
-                    <option>Raster 4</option>
+                <select 
+                    name="elevation-raster"
+                    class="form-control"
+                    ng-model="elevationRasterLayer"
+                    ng-options="item.uuid as item.title for item in vectorLayers"
+                    id="elevation-raster">
+                    <option value="" style="display: none">Select a vector layer</option>
                 </select>
             </div>
 
             <div class="col-md-2">
-                <button type="button" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-primary layer-settings" ng-click="layerSettingSave('elevation',elevationRasterLayer)">Save</button>
             </div>
         </div>
         <br>
