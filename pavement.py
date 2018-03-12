@@ -757,6 +757,7 @@ def deb(options):
 
     # Workaround for git-dch bug
     # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
+    sh('rm -rf %s/.git' % (os.path.realpath('package')))
     sh('ln -s %s %s' % (os.path.realpath('.git'), os.path.realpath('package')))
 
     with pushd('package'):
@@ -764,16 +765,22 @@ def deb(options):
         # Install requirements
         # sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
-        sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
-            ' --id-length=6 --ignore-branch --release' % (simple_version)))
+        # sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
+        #     ' --id-length=6 --ignore-branch --release' % (simple_version)))
         # In case you publish from Ubuntu Xenial (git-dch is removed from upstream)
         #  use the following line instead:
         # sh(('gbp dch --spawn-editor=snapshot --git-author --new-version=%s'
         #    ' --id-length=6 --ignore-branch --release' % (simple_version)))
+        distribution = "xenial"
+        sh(('gbp dch --distribution=%s --force-distribution --spawn-editor=snapshot --git-author --new-version=%s'
+           ' --id-length=6 --ignore-branch --release' % (distribution, simple_version)))
 
         deb_changelog = path('debian') / 'changelog'
-        for line in fileinput.input([deb_changelog], inplace=True):
-            print line.replace("urgency=medium", "urgency=high"),
+        for idx, line in enumerate(fileinput.input([deb_changelog], inplace=True)):
+            if idx == 0:
+                print "geonode (%s) %s; urgency=high"  % (simple_version, distribution),
+            else:
+                print line.replace("urgency=medium", "urgency=high"),
 
         # Revert workaround for git-dhc bug
         sh('rm -rf .git')
@@ -805,17 +812,18 @@ def publish():
 
     call_task('deb', options={
         'key': key,
-        'ppa': 'geonode/testing',
+        # 'ppa': 'geonode/testing',
+        'ppa': 'geonode/unstable',
     })
 
     version, simple_version = versions()
     sh('git add package/debian/changelog')
     sh('git commit -m "Updated changelog for version %s"' % version)
-    sh('git tag %s' % version)
+    sh('git tag -f %s' % version)
     sh('git push origin %s' % version)
-    sh('git tag debian/%s' % simple_version)
+    sh('git tag -f debian/%s' % simple_version)
     sh('git push origin debian/%s' % simple_version)
-    sh('git push origin master')
+    # sh('git push origin master')
     sh('python setup.py sdist upload -r pypi')
 
 
@@ -908,12 +916,14 @@ def waitfor(url, timeout=300):
 
 
 def _copytree(src, dst, symlinks=False, ignore=None):
+    if not os.path.exists(dst):
+        os.makedirs(dst)
     for item in os.listdir(src):
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
         if os.path.isdir(s):
             shutil.copytree(s, d, symlinks, ignore)
-        else:
+        elif os.path.isfile(s):
             shutil.copy2(s, d)
 
 

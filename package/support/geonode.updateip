@@ -68,49 +68,49 @@ else
 fi
 
 # if ALLOWED_HOSTS already exists ...
-if grep -q "^[ 	]*ALLOWED_HOSTS[ 	]*=" "$GEONODE_ETC/local_settings.py"
-then
-    if [ $IS_REPLACE -eq 1 ]
-    then
-        echo "Replacing ALLOWED_HOSTS in $GEONODE_ETC/local_settings.py ... " | tr -d '\n'
-        sed -i "s/^\([ 	]*ALLOWED_HOSTS[ 	]*=\).*/\1 [ 'localhost', '$NEWIP', ]/g" "$GEONODE_ETC/local_settings.py"
-        echo "done."
-    else
-        echo "Adding $NEWIP to ALLOWED_HOSTS in $GEONODE_ETC/local_settings.py ... " | tr -d '\n'
-        items="$(grep "^[ 	]*ALLOWED_HOSTS[ 	]*=" "$GEONODE_ETC/local_settings.py" | \
-                 sed 's/^[ 	]*ALLOWED_HOSTS[ 	]*=[ 	]*\[//g;s/\][ 	]*$//g')"
-        already_found=0
-        oldifs="$IFS"
-        IFS=','
-        for item in $items
-        do
-            item_cls="$(echo "$item" | sed "s/^[ 	]*['\"]//g;s/['\"][ 	]*$//g")"
-            if [ "$item_cls" = "$NEWIP" ]
-            then
-                already_found=1
-                break
-            fi
-        done
-        IFS="$oldifs"
-        if [ $already_found -eq 0 ]
-        then
-            if echo "$items" | grep -q ',[ 	]*$'
-            then
-                items="${items}'$NEWIP', "
-            else
-                items="${items}, '$NEWIP', "
-            fi
-            sed -i "s/^\([ 	]*ALLOWED_HOSTS[ 	]*=\).*/\1 [ $items ]/g" "$GEONODE_ETC/local_settings.py"
-            echo "done."
-        else
-            echo "'$NEWIP' already found in ALLOWED_HOSTS list."
-        fi
-    fi
-else
-    echo "Adding ALLOWED_HOSTS with in $GEONODE_ETC/local_settings.py ... " | tr -d '\n'
-    echo "ALLOWED_HOSTS=['localhost', '$NEWIP', ]" >> $GEONODE_ETC/local_settings.py
-    echo "done."
-fi
+# if grep -q "^[ 	]*ALLOWED_HOSTS[ 	]*=" "$GEONODE_ETC/local_settings.py"
+# then
+#     if [ $IS_REPLACE -eq 1 ]
+#     then
+#         echo "Replacing ALLOWED_HOSTS in $GEONODE_ETC/local_settings.py ... " | tr -d '\n'
+#         sed -i "s/^\([ 	]*ALLOWED_HOSTS[ 	]*=\).*/\1 [ 'localhost', '$NEWIP', ]/g" "$GEONODE_ETC/local_settings.py"
+#         echo "done."
+#     else
+#         echo "Adding $NEWIP to ALLOWED_HOSTS in $GEONODE_ETC/local_settings.py ... " | tr -d '\n'
+#         items="$(grep "^[ 	]*ALLOWED_HOSTS[ 	]*=" "$GEONODE_ETC/local_settings.py" | \
+#                  sed 's/^[ 	]*ALLOWED_HOSTS[ 	]*=[ 	]*\[//g;s/\][ 	]*$//g')"
+#         already_found=0
+#         oldifs="$IFS"
+#         IFS=','
+#         for item in $items
+#         do
+#             item_cls="$(echo "$item" | sed "s/^[ 	]*['\"]//g;s/['\"][ 	]*$//g")"
+#             if [ "$item_cls" = "$NEWIP" ]
+#             then
+#                 already_found=1
+#                 break
+#             fi
+#         done
+#         IFS="$oldifs"
+#         if [ $already_found -eq 0 ]
+#         then
+#             if echo "$items" | grep -q ',[ 	]*$'
+#             then
+#                 items="${items}'$NEWIP', "
+#             else
+#                 items="${items}, '$NEWIP', "
+#             fi
+#             sed -i "s/^\([ 	]*ALLOWED_HOSTS[ 	]*=\).*/\1 [ $items ]/g" "$GEONODE_ETC/local_settings.py"
+#             echo "done."
+#         else
+#             echo "'$NEWIP' already found in ALLOWED_HOSTS list."
+#         fi
+#     fi
+# else
+#     echo "Adding ALLOWED_HOSTS with in $GEONODE_ETC/local_settings.py ... " | tr -d '\n'
+#     echo "ALLOWED_HOSTS=['localhost', '$NEWIP', ]" >> $GEONODE_ETC/local_settings.py
+#     echo "done."
+# fi
 
 
 # silence the warnings from executing geonode command or they will pollute the commands output
@@ -131,15 +131,35 @@ client_secret=`echo $oauth_keys | cut -d \, -f 2`
 oauth_config="$GEOSERVER_DATA_DIR/security/filter/geonode-oauth2/config.xml"
 sed -i "s|<cliendId>.*</cliendId>|<cliendId>$client_id</cliendId>|g" $oauth_config
 sed -i "s|<clientSecret>.*</clientSecret>|<clientSecret>$client_secret</clientSecret>|g" $oauth_config
-sed -i "s/localhost:8000/localhost/g" $oauth_config
+sed -i "s|<accessTokenUri>.*</accessTokenUri>|<accessTokenUri>http://$NEWIP/o/token/</accessTokenUri>|g" $oauth_config
 sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>http://$NEWIP/o/authorize/</userAuthorizationUri>|g" $oauth_config
+sed -i "s|<redirectUri>.*</redirectUri>|<redirectUri>http://$NEWIP/geoserver/</redirectUri>|g" $oauth_config
+sed -i "s|<checkTokenEndpointUrl>.*</checkTokenEndpointUrl>|<checkTokenEndpointUrl>http://$NEWIP/api/o/v4/tokeninfo/</checkTokenEndpointUrl>|g" $oauth_config
 sed -i "s|<logoutUri>.*</logoutUri>|<logoutUri>http://$NEWIP/account/logout/</logoutUri>|g" $oauth_config
-sed -i "s|localhost:8080/geoserver|$NEWIP/geoserver/|g" $oauth_config
-sed -i "s|localhost:8000|localhost|g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
+
+sed -i "s/localhost:8000/$NEWIP/g" $oauth_config
+sed -i "s/localhost:8080/$NEWIP/g" $oauth_config
+sed -i "s/localhost/$NEWIP/g" $oauth_config
+sed -i "s/localhost/$NEWIP/g" $oauth_config
+
+sed -i "s|<baseUrl>.*</baseUrl>|<baseUrl>http://$NEWIP</baseUrl>|g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
+sed -i "s/localhost:8000/$NEWIP/g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
+sed -i "s/localhost/$NEWIP/g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
+
+sed -i "s|<proxyBaseUrl>.*</proxyBaseUrl>|<proxyBaseUrl>http://$NEWIP/geoserver</proxyBaseUrl>|g" "$GEOSERVER_DATA_DIR/global.xml"
+sed -i "s/localhost:8080/$NEWIP/g" "$GEOSERVER_DATA_DIR/global.xml"
+sed -i "s/localhost/$NEWIP/g" "$GEOSERVER_DATA_DIR/global.xml"
+
+# Restart tomcat server
+$TOMCAT_SERVICE restart
+
+echo "Waiting Tomcat Service to Restart..."
+sleep 30s
 
 # Restart apache server
 $APACHE_SERVICE restart
-service tomcat8 restart
+echo "Waiting Apache HTTPD Service to Restart..."
+sleep 5s
 
 # Run updatelayers
 geonode updatelayers

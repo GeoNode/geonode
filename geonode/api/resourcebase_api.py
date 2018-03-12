@@ -60,7 +60,7 @@ from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
 from .api import TagResource, RegionResource, OwnersResource
 from .api import ThesaurusKeywordResource
-from .api import TopicCategoryResource
+from .api import TopicCategoryResource, GroupResource
 from .api import FILTER_TYPES
 
 if settings.HAYSTACK_SEARCH:
@@ -82,6 +82,7 @@ class CommonMetaApi:
                  'tkeywords': ALL_WITH_RELATIONS,
                  'regions': ALL_WITH_RELATIONS,
                  'category': ALL_WITH_RELATIONS,
+                 'group': ALL_WITH_RELATIONS,
                  'owner': ALL_WITH_RELATIONS,
                  'date': ALL,
                  }
@@ -95,6 +96,11 @@ class CommonModelApi(ModelResource):
     category = fields.ToOneField(
         TopicCategoryResource,
         'category',
+        null=True,
+        full=True)
+    group = fields.ToOneField(
+        GroupResource,
+        'group',
         null=True,
         full=True)
     owner = fields.ToOneField(OwnersResource, 'owner', full=True)
@@ -118,6 +124,7 @@ class CommonModelApi(ModelResource):
         'thumbnail_url',
         'detail_url',
         'rating',
+        'group__name',
     ]
 
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
@@ -820,6 +827,14 @@ class LayerResource(CommonModelApi):
             full_name = (obj.owner.get_full_name() or username)
             formatted_obj['owner__username'] = username
             formatted_obj['owner_name'] = full_name
+            if obj.category:
+                formatted_obj['category__gn_description'] = obj.category.gn_description
+            if obj.group:
+                formatted_obj['group'] = obj.group
+                try:
+                    formatted_obj['group_name'] = GroupProfile.objects.get(slug=obj.group.name)
+                except GroupProfile.DoesNotExist:
+                    formatted_obj['group_name'] = obj.group
 
             # add the geogig link
             formatted_obj['geogig_link'] = obj.geogig_link
@@ -978,6 +993,14 @@ class MapResource(CommonModelApi):
             full_name = (obj.owner.get_full_name() or username)
             formatted_obj['owner__username'] = username
             formatted_obj['owner_name'] = full_name
+            if obj.category:
+                formatted_obj['category__gn_description'] = obj.category.gn_description
+            if obj.group:
+                formatted_obj['group'] = obj.group
+                try:
+                    formatted_obj['group_name'] = GroupProfile.objects.get(slug=obj.group.name)
+                except GroupProfile.DoesNotExist:
+                    formatted_obj['group_name'] = obj.group
 
             # get map layers
             map_layers = obj.layers

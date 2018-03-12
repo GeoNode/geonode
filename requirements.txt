@@ -26,7 +26,7 @@ django-autoslug==1.9.3
 django-bootstrap-form==3.3
 django-bootstrap3-datetimepicker==2.2.3
 # django-bootstrap3-datetimepicker-2==2.5.0
-django-braces==1.11.0
+django-braces==1.12.0
 # django-celery==3.1.17
 django-downloadview==1.8
 django-extensions==1.6.1
@@ -34,7 +34,7 @@ django-floppyforms==1.7.0
 django-forms-bootstrap==3.1.0
 django-friendly-tag-loader==1.2.1
 django-geoexplorer==4.0.33
-django-geonode-client==0.0.15
+django-geonode-client==1.0.0
 django-guardian==1.4.9
 django-haystack==2.6.0
 django-import-export==0.5.1
