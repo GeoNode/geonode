@@ -162,17 +162,24 @@
                             </button>
 
             </li>
-            <li class="divider-vertical" draft-only></li>
-            <li draft-only>
+            <!-- <li class="divider-vertical" draft-only></li> -->
+            <!-- <li draft-only>
                 <button class="control-button icon" id="browse-data" ng-click="action.browseData()" ng-disabled="isAttributeGridOn" remove-focus title="Browse Data">
                             <i class="fa fa-database" aria-hidden="true"></i>                                    
                             </button>
-            </li>
+            </li> -->
             <li class="divider-vertical" draft-only></li>
 
             <li draft-only>
                 <button class="control-button icon" onclick="animating()" title="Query">
                             <i class="fa fa-binoculars"></i>                                  
+                                </button>
+            </li>
+            <li draft-only>
+                <button class="control-button icon" 
+                ng-style="{'background-color':isHeatMapVisible ? 'red' : 'white'}"
+                ng-click="addHeatMap()" title="Toggle Heat Map">
+                    <i class="fa fa-map"></i>                                 
                                 </button>
             </li>
 
@@ -226,6 +233,13 @@
                         <h3 class="panel-title">Query</h3>
                     </div>
                     <div class="panel-body">
+                        <div class="col-md-12">
+                                <input type="checkbox" checked 
+                                ng-model="isBoundaryBoxEnabled"
+                                
+                                >Query by current map extent</label>
+                        </div>
+                        <div class="clearfix"></div>
                         <query-builder layer-id="layerId" group="group"></query-builder>
                     </div>
 
@@ -235,7 +249,9 @@
                         class="btn btn-gd-primary pull-right icon-btn-color">
                                                         Query <i class="fa fa-binoculars" aria-hidden="true"></i>    
                                                     </a>
-                        <a href="" class="btn btn-default pull-right" target="_self" style="margin-right: 5px;">
+                        <a href="" 
+                        onclick="animating()"
+                        class="btn btn-default pull-right" target="_self" style="margin-right: 5px;">
                                                             Cancel <i class="fa fa-times" aria-hidden="true"></i></a>
 
                         <div style="clear:both"></div>

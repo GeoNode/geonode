@@ -7,7 +7,7 @@
         <div class="row">
           <div class="col-md-12">
               <div class="title small-content">
-                  {% trans "Download" %} {{map.title}}
+                  {% trans "Download rudra" %} {{map.title}}
               </div>
           </div>
           <a class="btn" href="#" id="cancel">{%  trans 'Cancel' %}</a>
@@ -95,6 +95,29 @@
 {% block extra_script %}
 <script type="text/javascript">
 
+  var user_href = window.location.href.split('/');
+  var mapId=user_href[4];
+  var userLocation={};
+  var localStorageLocation=localStorage.getItem("user_location");
+  if(localStorageLocation){
+        userLocation=JSON.parse(localStorageLocation);
+  }
+  function postMapDownloadAnalyticsData(){
+        $.ajax({
+            type : 'post',
+            url: '/api/analytics/non-gis/',
+            data : {
+                id : mapId,
+                content_type : "map",
+                activity_type: "download",
+                latitude : userLocation.latitude,
+                longitude : userLocation.longitude
+            }
+        })
+    }
+
+    postMapDownloadAnalyticsData();
+
   {% autoescape off %}
 
   {% if map_status %} 
@@ -102,7 +125,6 @@
   $(function(){
 
     "use strict";
-
     var processID;
     var checkStatus = setInterval(function (){
 
@@ -111,6 +133,7 @@
         url : "{% url 'map_download_check' %}"
       })
       .done(function(result){
+        postMapDownloadAnalyticsData();
         var response = $.parseJSON(result);
         processID = response.process.id;
 

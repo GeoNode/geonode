@@ -13,7 +13,7 @@ from geonode.analytics.api.views import (
     MapLoadCreateAPIView,
     MapListAPIView,
     LayerListAPIView,
-
+    DocumentListAPIView,
 )
 
 from .views import AnalyticsView
@@ -29,6 +29,7 @@ urlpatterns = [
 
     url(r'maps/$', MapListAPIView.as_view()),
     url(r'layers/$', LayerListAPIView.as_view()),
+    url(r'documents/$', DocumentListAPIView.as_view()),
     # url(r'^api/layer/load/', LayerLoadListAPIView.as_view()),
     # url(r'^api/map/load/', MapLoadListAPIView.as_view()),
     # url(r'^api/visitor/', VisitorListAPIView.as_view()),
