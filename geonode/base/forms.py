@@ -389,6 +389,15 @@ class ResourceBaseForm(TranslationModelForm):
                         'data-container': 'body',
                         'data-html': 'true'})
 
+    def clean_keywords(self):
+        import urllib
+
+        keywords = self.cleaned_data['keywords']
+        _unsescaped_kwds = []
+        for k in keywords:
+            _unsescaped_kwds.append(urllib.unquote(k.decode('utf-8')).decode('utf-8'))
+        return _unsescaped_kwds
+
     class Meta:
         exclude = (
             'contacts',
