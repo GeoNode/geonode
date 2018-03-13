@@ -333,6 +333,7 @@ class GXPMapBase(object):
             'aboutUrl': '../about',
             'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
+            'access_token': access_token,
             'map': {
                 'layers': [layer_config(l, user=user) for l in layers],
                 'center': [self.center_x, self.center_y],

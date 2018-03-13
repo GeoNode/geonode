@@ -545,7 +545,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     else:
         u = uuid.uuid1()
         access_token = u.hex
-
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, access_token, * (NON_WMS_BASE_LAYERS + [maplayer])))
     context_dict["preview"] = getattr(
