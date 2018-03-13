@@ -396,12 +396,7 @@ class ResourceBaseForm(TranslationModelForm):
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
-            _k = urllib.unquote(k.decode('utf-8')).decode('utf-8').split(",")
-            if not isinstance(_k, basestring):
-                for _kk in [x.strip() for x in _k]:
-                    _unsescaped_kwds.append(_kk)
-            else:
-                _unsescaped_kwds.append(_k)
+            _unsescaped_kwds.append(urllib.unquote(k.decode('utf-8')).decode('utf-8'))
         return _unsescaped_kwds
 
     class Meta:
