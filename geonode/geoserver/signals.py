@@ -252,13 +252,11 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if not settings.FREETEXT_KEYWORDS_READONLY:
         if gs_resource.keywords:
             for keyword in gs_resource.keywords:
-                instance.keywords.add(keyword)
+                if keyword not in instance.keyword_list():
+                    instance.keywords.add(keyword)
 
     if any(instance.keyword_list()):
         keywords = instance.keyword_list()
-        if settings.FREETEXT_KEYWORDS_READONLY:
-            if gs_resource.keywords:
-                keywords += gs_resource.keywords
         gs_resource.keywords = list(set(keywords))
 
         # gs_resource should only be called if
