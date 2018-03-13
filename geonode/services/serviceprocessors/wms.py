@@ -217,7 +217,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     def _create_layer_thumbnail(self, geonode_layer):
         """Create a thumbnail with a WMS request."""
         params = {
-            "service": self.service_type,
+            "service": "WMS",
             "version": self.parsed_service.version,
             "request": "GetMap",
             "layers": geonode_layer.alternate.encode('utf-8'),
@@ -229,7 +229,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         }
         kvp = "&".join("{}={}".format(*item) for item in params.items())
         thumbnail_remote_url = "{}?{}".format(
-            geonode_layer.ows_url, kvp)
+            geonode_layer.service.service_url, kvp)
         logger.debug("thumbnail_remote_url: {}".format(thumbnail_remote_url))
         create_thumbnail(
             instance=geonode_layer,
@@ -249,7 +249,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         """
 
         params = {
-            "service": self.service_type,
+            "service": "WMS",
             "version": self.parsed_service.version,
             "request": "GetLegendGraphic",
             "format": "image/png",
@@ -260,7 +260,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 "fontAntiAliasing:true;fontSize:12;forceLabels:on")
         }
         kvp = "&".join("{}={}".format(*item) for item in params.items())
-        legend_url = "{}?{}".format(self.url, kvp)
+        legend_url = "{}?{}".format(
+            geonode_layer.service.service_url, kvp)
         logger.debug("legend_url: {}".format(legend_url))
         Link.objects.get_or_create(
             resource=geonode_layer.resourcebase_ptr,
@@ -377,6 +378,104 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         geonode_projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")
         first_layer = list(self.get_resources())[0]
         return geonode_projection in first_layer.crsOptions
+
+
+class GeoNodeServiceHandler(WmsServiceHandler):
+    """Remote service handler for OGC WMS services"""
+
+    # TODO: Parse Layers Details from
+    #
+    #     http://<geonode_base>/api/layers/?name=actualevap
+    #
+    #     {
+    #     	"geonode_version": "2.9.dev20180220135741",
+    #     	"meta": {
+    #     		"limit": 1000,
+    #     		"next": null,
+    #     		"offset": 0,
+    #     		"previous": null,
+    #     		"total_count": 1
+    #     	},
+    #     	"objects": [{
+    #     		"abstract": "This layer represents the actual evapotranspiration in 2006, ...",
+    #     		"alternate": "geonode:actualevap",
+    #     		"category__gn_description": "Ecohydrology",
+    #     		"csw_type": "dataset",
+    #     		"csw_wkt_geometry": "POLYGON((-180.0000000000 -59.4842793000,-...",
+    #     		"date": "2017-08-17T09:34:00",
+    #     		"default_style": "/api/styles/232/",
+    #     		"detail_url": "/layers/geonode:actualevap",
+    #     		"geogig_link": null,
+    #     		"group": "IHP-Theme6-Water-education",
+    #     		"group_name": "Theme 6: Water education",
+    #     		"has_time": false,
+    #     		"id": 901,
+    #     		"is_approved": true,
+    #     		"is_published": true,
+    #     		"name": "actualevap",
+    #     		"owner__username": "najet.guefradj",
+    #     		"owner_name": "Najet Guefradj",
+    #     		"popular_count": 17,
+    #     		"rating": 0,
+    #     		"resource_uri": "/api/layers/901/",
+    #     		"share_count": 0,
+    #     		"srid": "EPSG:4326",
+    #     		"supplemental_information": "UNSD Environmental Indicators disseminate ...",
+    #     		"thumbnail_url": "http://ihp-wins.unesco.org/uploaded/thumbs/layer-...",
+    #     		"title": "Actual evapotranspiration in 2006",
+    #     		"typename": "geonode:actualevap",
+    #     		"uuid": "ceca70ee-b88d-11e7-bdb3-005056062634"
+    #     	}]
+    #     }
+
+    service_type = enumerations.GN_WMS
+
+    def __init__(self, url):
+        self.proxy_base = urljoin(
+            settings.SITEURL, reverse('proxy'))
+
+        url = self._probe_geonode_wms(url)
+
+        (self.url, self.parsed_service) = WebMapService(
+            url, proxy_base=self.proxy_base)
+        self.indexing_method = (
+            INDEXED if self._offers_geonode_projection() else CASCADED)
+        # self.url = self.parsed_service.url
+        _title = self.parsed_service.identification.title
+        self.name = slugify(
+            _title if _title else urlsplit(self.url).netloc)[:40]
+
+    def _probe_geonode_wms(self, raw_url):
+        import json
+        from httplib import HTTPConnection, HTTPSConnection
+
+        url = urlsplit(raw_url)
+
+        if url.scheme == 'https':
+            conn = HTTPSConnection(url.hostname, url.port)
+        else:
+            conn = HTTPConnection(url.hostname, url.port)
+        conn.request('GET', '/api/ows_endpoints/', '', {})
+        response = conn.getresponse()
+        content = response.read()
+        status = response.status
+        content_type = response.getheader("Content-Type", "text/plain")
+
+        # NEW-style OWS Enabled GeoNode
+        if status == 200 and 'application/json' == content_type:
+            try:
+                _json_obj = json.loads(content)
+                if 'data' in _json_obj:
+                    data = _json_obj['data']
+                    for ows_endpoint in data:
+                        if 'OGC:WMS' == ows_endpoint['type']:
+                            return ows_endpoint['url'] + '?' + url.query
+            except BaseException:
+                pass
+
+        # OLD-style not OWS Enabled GeoNode
+        _url = "%s://%s/geoserver/wms" % (url.scheme, url.netloc)
+        return _url
 
 
 def _get_valid_name(proposed_name):
