@@ -47,18 +47,19 @@
       </div>
 
       <div class="tab-content">
-        {% include "base/resourcebase_info_panel.html" %}
+        <article id="info" class="tab-pane{% if tab == 'info' or not tab %} active{% endif %}">
+          {% include "base/resourcebase_info_panel.html" %}
 
-        {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
-        <p>
-          {% if request.user.is_authenticated and 'access_token' in request.session %}
-            <a href="{% url 'capabilities_map' resource.id %}?access_token={{ request.session.access_token }}">
-          {% else %}
-            <a href="{% url 'capabilities_map' resource.id %}">
+          {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
+          <p>
+            {% if request.user.is_authenticated and 'access_token' in request.session %}
+              <a href="{% url 'capabilities_map' resource.id %}?access_token={{ request.session.access_token }}">
+            {% else %}
+              <a href="{% url 'capabilities_map' resource.id %}">
+            {% endif %}
+            <i class="fa fa-map"></i> {% trans 'Map layers WMS GetCapabilities document' %}</a></p>
           {% endif %}
-          <i class="fa fa-map"></i> {% trans 'Map layers WMS GetCapabilities document' %}</a></p>
-        {% endif %}
-
+        </article>
         {% block social_links %}
             {% if DISPLAY_SOCIAL %}
               {% include "social_links.html" %}
