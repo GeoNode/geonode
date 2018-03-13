@@ -560,6 +560,11 @@ a
         background-color: #d9e1e7;
         outline: 1px solid #c2c7d3;
     }
+    .navbar .nav > li button.active
+    {
+        background-color: #d9e1e7;
+        outline: 1px solid #c2c7d3;
+    }
 
     .navbar .nav > li button:disabled
     {
