@@ -402,8 +402,16 @@ def style_change_check(request, path):
 
 @csrf_exempt
 @logged_in_or_basicauth(realm="GeoNode")
-def geoserver_protected_proxy(request):
-    return geoserver_proxy(request, '/gs/ows', 'ows')
+def geoserver_protected_proxy(request,
+                              proxy_path,
+                              downstream_path,
+                              workspace=None,
+                              layername=None):
+    return geoserver_proxy(request,
+                           proxy_path,
+                           downstream_path,
+                           workspace=workspace,
+                           layername=layername)
 
 
 @csrf_exempt
@@ -691,7 +699,7 @@ def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=F
     """
     Retrieve a layer-specific GetCapabilities document
     """
-    workspace, layername = layer.alternate.split(":")
+    workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
     if not layer.remote_service:
         # TODO implement this for 1.3.0 too
         wms_url = '%s%s/%s/wms?service=wms&version=%s&request=GetCapabilities'\
@@ -722,12 +730,13 @@ def format_online_resource(workspace, layer, element):
     generic links returned by a site-wide GetCapabilities document
     """
     layerName = element.find('.//Name')
-    layerName.text = workspace + ":" + layer
+    layerName.text = workspace + ":" + layer if workspace else layer
     layerresources = element.findall('.//OnlineResource')
     for resource in layerresources:
         wtf = resource.attrib['{http://www.w3.org/1999/xlink}href']
+        replace_string = "/" + workspace + "/" + layer if workspace else "/" + layer
         resource.attrib['{http://www.w3.org/1999/xlink}href'] = wtf.replace(
-            "/" + workspace + "/" + layer, "")
+            replace_string, "")
 
 
 def get_capabilities(request, layerid=None, user=None,
@@ -771,7 +780,7 @@ def get_capabilities(request, layerid=None, user=None,
                 access_token = None
 
             try:
-                workspace, layername = layer.alternate.split(":")
+                workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
                 if rootdoc is None:  # 1st one, seed with real GetCapabilities doc
                     try:
                         layercap = get_layer_capabilities(layer,
@@ -783,6 +792,8 @@ def get_capabilities(request, layerid=None, user=None,
                         format_online_resource(workspace, layername, rootdoc)
                         rootdoc.find('.//Service/Name').text = cap_name
                     except Exception as e:
+                        import traceback
+                        traceback.print_exc()
                         logger.error(
                             "Error occurred creating GetCapabilities for %s: %s" %
                             (layer.typename, str(e)))
@@ -799,6 +810,8 @@ def get_capabilities(request, layerid=None, user=None,
                     layerelem = etree.XML(gc_str)
                     rootlayerelem.append(layerelem)
             except Exception as e:
+                import traceback
+                traceback.print_exc()
                 logger.error(
                     "Error occurred creating GetCapabilities for %s:%s" %
                     (layer.typename, str(e)))
