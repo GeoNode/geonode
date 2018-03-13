@@ -36,8 +36,7 @@ urlpatterns = patterns('geonode.geoserver.views',
                                                                      downstream_path='rest/sldservice')),
 
                        # OWS Endpoints
-                       url(r'^ows', 'geoserver_protected_proxy', dict(proxy_path='/gs/ows',
-                                                                      downstream_path='ows'), name='ows_endpoint'),
+                       url(r'^ows', 'geoserver_protected_proxy', name='ows_endpoint'),
                        url(r'^wms', 'geoserver_proxy', dict(proxy_path='/gs/wms',
                                                             downstream_path='wms'), name='wms_endpoint'),
                        url(r'^wfs', 'geoserver_proxy', dict(proxy_path='/gs/wfs',
