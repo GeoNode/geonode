@@ -64,7 +64,7 @@
             <ul class="base-map-list" ng-repeat="(key, value) in baseMapGroups">
                 <li class="name"> {{key}} </li>     
                 <li ng-repeat="basemap in value"> <a class="tooltip" href="" ng-click="changed(basemap)">
-                    <img  src="/static/geonode/images/map-thumb.jpg"/>
+                    <img  ng-src="/static/geonode/images/base-map-thumbs/{{basemap.thumb}}"  />
                     <span class="tooltiptext">{{basemap.title}}</span></li></a>
                     
                                  
