@@ -808,7 +808,7 @@ def layer_metadata(
             if new_author is not None:
                 layer.metadata_author = new_author
 
-        new_keywords = [x.strip() for x in layer_form.cleaned_data['keywords']]
+        new_keywords = layer_form.cleaned_data['keywords']
         if new_keywords is not None:
             layer.keywords.clear()
             layer.keywords.add(*new_keywords)
