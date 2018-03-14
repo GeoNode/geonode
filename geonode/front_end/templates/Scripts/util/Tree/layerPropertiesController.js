@@ -53,8 +53,7 @@
         function getLayerStyles() {
             LayerService.getStylesByLayer(layer.getName())
                 .then(function(res) {
-                    console.log(res);
-                    $scope.Styles = res.results;
+                    $scope.Styles = res;
                     $scope.Styles.forEach(function(e){
                         if(e.id == $scope.nodeData.layer.style.id){
                             $scope.nodeData.selectedStyle = e;
@@ -80,7 +79,6 @@
         };
 
         $scope.newStyle = function() {
-            console.log(inputData, settingsData);
             angular.copy(LayerService.getNewStyle(), $scope.nodeData.layer.style);
             $scope.nodeData.selectedStyle = $scope.nodeData.layer.style;
             $scope.settingsData = {};
