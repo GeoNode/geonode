@@ -894,7 +894,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     else:
         layers = instance.alternate.encode('utf-8')
 
-    wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'wms'
+    wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'ows'
     wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.1'
     wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png8'
 

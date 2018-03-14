@@ -702,7 +702,7 @@ def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=F
     workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
     if not layer.remote_service:
         # TODO implement this for 1.3.0 too
-        wms_url = '%s%s/%s/wms?service=wms&version=%s&request=GetCapabilities'\
+        wms_url = '%s%s/%s/ows?service=wms&version=%s&request=GetCapabilities'\
             % (ogc_server_settings.LOCATION, workspace, layername, version)
         if access_token:
             wms_url += ('&access_token=%s' % access_token)
@@ -716,7 +716,7 @@ def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=F
     if tolerant and response.status == 404:
         # WARNING Please make sure to have enabled DJANGO CACHE as per
         # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-        wms_url = '%s%s/wms?service=wms&version=1.1.0&request=GetCapabilities&layers=%s'\
+        wms_url = '%s%s/ows?service=wms&version=1.1.0&request=GetCapabilities&layers=%s'\
             % (ogc_server_settings.public_url, workspace, layer)
         if access_token:
             wms_url += ('&access_token=%s' % access_token)

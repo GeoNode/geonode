@@ -126,7 +126,7 @@ class GeoNodeCSWTest(TestCase):
                 if link['scheme'] == 'OGC:WMS':
                     self.assertEqual(
                         link['url'],
-                        'http://localhost:8000/gs/geonode/wms',
+                        'http://localhost:8000/gs/geonode/ows',
                         'Expected a specific OGC:WMS URL')
                 elif link['scheme'] == 'OGC:WFS':
                     self.assertEqual(
@@ -198,7 +198,7 @@ class GeoNodeCSWTest(TestCase):
                 if link.protocol == 'OGC:WMS':
                     self.assertEqual(
                         link.url,
-                        'http://localhost:8000/gs/geonode/wms',
+                        'http://localhost:8000/gs/geonode/ows',
                         'Expected a specific OGC:WMS URL')
                 elif link.protocol == 'OGC:WFS':
                     self.assertEqual(

@@ -879,7 +879,8 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
                                     "ptype": service.ptype,
                                     "remote": True,
                                     "url": url,
-                                    "name": service.name}))
+                                    "name": service.name,
+                                    "title": "[R] %s" % service.title}))
         else:
             ogc_server_url = urlparse.urlsplit(
                 ogc_server_settings.PUBLIC_LOCATION).netloc
@@ -946,7 +947,6 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         request.user, access_token, *layers_to_add)
 
     config['fromLayer'] = True
-
     return config
 
 

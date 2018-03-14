@@ -1050,7 +1050,7 @@ class GeoNodePermissionsTest(TestCase):
         # Set the layer private for not authenticated users
         layer.set_permissions({'users': {'AnonymousUser': []}})
 
-        url = 'http://localhost:8000/gs/geonode/wms?' \
+        url = 'http://localhost:8000/gs/geonode/ows?' \
             'LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES=' \
             '&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' \
             '&SRS=EPSG%3A4326' \
