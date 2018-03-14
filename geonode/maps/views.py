@@ -60,6 +60,7 @@ from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
 from geonode.base.forms import CategoryForm
 from geonode.base.models import TopicCategory
+from .tasks import delete_map
 from geonode.groups.models import GroupProfile
 
 from geonode.documents.models import get_related_documents
@@ -70,7 +71,6 @@ from geonode import geoserver, qgis_server
 from geonode.base.views import batch_modify
 
 from requests.compat import urljoin
-from .tasks import delete_map
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
@@ -315,6 +315,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
             map_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+
             can_change_metadata = request.user.has_perm(
                 'change_resourcebase_metadata',
                 map_obj.get_self_resource())
@@ -683,9 +684,10 @@ def clean_config(conf):
 
 
 def new_map(request, template='maps/map_new.html'):
-    config = new_map_config(request)
+    map_obj, config = new_map_config(request)
     context_dict = {
         'config': config,
+        'map': map_obj
     }
     context_dict["preview"] = getattr(
         settings,
@@ -702,7 +704,7 @@ def new_map(request, template='maps/map_new.html'):
 def new_map_json(request):
 
     if request.method == 'GET':
-        config = new_map_config(request)
+        map_obj, config = new_map_config(request)
         if isinstance(config, HttpResponse):
             return config
         else:
@@ -763,6 +765,7 @@ def new_map_config(request):
     else:
         access_token = None
 
+    map_obj = None
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
@@ -789,7 +792,7 @@ def new_map_config(request):
             config = add_layers_to_map_config(request, map_obj, params.getlist('layer'))
         else:
             config = DEFAULT_MAP_CONFIG
-    return json.dumps(config)
+    return map_obj, json.dumps(config)
 
 
 def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True):
@@ -824,9 +827,12 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
 
         def decimal_encode(bbox):
             import decimal
+            _bbox = []
             for o in [float(coord) for coord in bbox]:
                 if isinstance(o, decimal.Decimal):
                     o = (str(o) for o in [o])
+                _bbox.append(o)
+            return _bbox
 
         if bbox is None:
             bbox = list(layer_bbox[0:4])
@@ -873,7 +879,8 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
                                     "ptype": service.ptype,
                                     "remote": True,
                                     "url": url,
-                                    "name": service.name}))
+                                    "name": service.name,
+                                    "title": "[R] %s" % service.title}))
         else:
             ogc_server_url = urlparse.urlsplit(
                 ogc_server_settings.PUBLIC_LOCATION).netloc
@@ -940,7 +947,6 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         request.user, access_token, *layers_to_add)
 
     config['fromLayer'] = True
-
     return config
 
 
@@ -979,10 +985,12 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
 
-        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        if 'geonode.geoserver' in settings.INSTALLED_APPS \
+                and ogc_server_settings.BACKEND == 'geonode.geoserver':
             # TODO the url needs to be verified on geoserver
             url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        elif 'geonode.qgis_server' in settings.INSTALLED_APPS:
+        elif 'geonode.qgis_server' in settings.INSTALLED_APPS \
+                and ogc_server_settings.BACKEND == 'geonode.qgis_server':
             url = urljoin(settings.SITEURL,
                           reverse("qgis_server:download-map", kwargs={'mapid': mapid}))
             # qgis-server backend stop here, continue on qgis_server/views.py
@@ -1157,6 +1165,7 @@ def snapshot_config(snapshot, map_obj, user, access_token):
         for ordering, layer in enumerate(layers):
             maplayers.append(
                 layer_from_viewer_config(
+                    map_obj.id,
                     MapLayer,
                     layer,
                     config["sources"][

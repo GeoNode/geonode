@@ -468,7 +468,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                )
                                )
 
-    ogc_wms_path = '%s/wms' % instance.workspace
+    ogc_wms_path = '%s/ows' % instance.workspace
     ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
     ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,

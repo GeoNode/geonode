@@ -1121,8 +1121,8 @@ NOTIFICATIONS_MODULE = 'pinax.notifications'
 USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = False
 
 if NOTIFICATION_ENABLED:
-    INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
-
+    if NOTIFICATIONS_MODULE not in INSTALLED_APPS:
+        INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 # async signals can be the same as broker url
 # but they should have separate setting anyway
@@ -1142,14 +1142,12 @@ CELERY_TASK_RESULT_EXPIRES = 1
 CELERY_WORKER_DISABLE_RATE_LIMITS = True
 CELERY_WORKER_SEND_TASK_EVENTS = False
 
-
 CELERY_QUEUES = [
     Queue('default', routing_key='default'),
     Queue('cleanup', routing_key='cleanup'),
     Queue('update', routing_key='update'),
     Queue('email', routing_key='email'),
 ]
-
 
 # AWS S3 Settings
 
@@ -1224,7 +1222,7 @@ if USE_GEOSERVER:
             "title": "GeoServer - Public Layers",
             "attribution": "&copy; %s" % SITEURL,
             "ptype": "gxp_wmscsource",
-            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows",
             "restUrl": "/gs/rest"
         }
     }
@@ -1260,9 +1258,11 @@ ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
 if MONITORING_ENABLED:
-    INSTALLED_APPS += ('geonode.contrib.monitoring',)
-    MIDDLEWARE_CLASSES += \
-        ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+    if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode.contrib.monitoring',)
+    if 'geonode.contrib.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
+        MIDDLEWARE_CLASSES += \
+            ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
 
 GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIPCities.dat')
 # If this option is enabled, Resources belonging to a Group won't be

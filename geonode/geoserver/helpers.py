@@ -804,11 +804,10 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                              for n in body["fields"] if n.get("name") and n.get("type")]
         except Exception:
             attribute_map = []
-
     elif layer.storeType in ["dataStore", "remoteStore", "wmsStore"]:
         dft_url = re.sub("\/wms\/?$",
                          "/",
-                         server_url) + "wfs?" + urllib.urlencode({"service": "wfs",
+                         server_url) + "ows?" + urllib.urlencode({"service": "wfs",
                                                                   "version": "1.0.0",
                                                                   "request": "DescribeFeatureType",
                                                                   "typename": layer.alternate.encode('utf-8'),
@@ -820,7 +819,6 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             doc = etree.fromstring(body)
             path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(
                 xsd="{http://www.w3.org/2001/XMLSchema}")
-
             attribute_map = [[n.attrib["name"], n.attrib["type"]] for n in doc.findall(
                 path) if n.attrib.get("name") and n.attrib.get("type")]
         except Exception:

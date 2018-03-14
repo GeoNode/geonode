@@ -19,17 +19,23 @@
 
 """Utilities for enabling OGC WMS remote services in geonode."""
 
+import json
 import logging
-from urlparse import urlsplit, urljoin
+
 from uuid import uuid4
+from urlparse import urlsplit, urljoin
+from httplib import HTTPConnection, HTTPSConnection
+from decimal import Decimal
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
+
 from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.layers.utils import create_thumbnail
+
 from owslib.map import wms111, wms130
 from owslib.util import clean_ows_url
 
@@ -37,7 +43,6 @@ from .. import enumerations
 from ..enumerations import CASCADED
 from ..enumerations import INDEXED
 from .. import models
-
 from . import base
 
 logger = logging.getLogger(__name__)
@@ -172,7 +177,6 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         :type geonode_service: geonode.services.models.Service
 
         """
-
         layer_meta = self.get_resource(resource_id)
         logger.debug("layer_meta: {}".format(layer_meta))
         if self.indexing_method == CASCADED:
@@ -192,11 +196,27 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         if existance_test_qs.exists():
             raise RuntimeError(
                 "Resource {!r} has already been harvested".format(resource_id))
+        resource_fields["keywords"] = keywords
+        resource_fields["is_approved"] = True
+        resource_fields["is_published"] = True
+        if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
+            resource_fields["is_approved"] = False
+            resource_fields["is_published"] = False
+        geonode_layer = self._create_layer(geonode_service, **resource_fields)
+        self._create_layer_service_link(geonode_layer)
+        self._create_layer_legend_link(geonode_layer)
+        self._create_layer_thumbnail(geonode_layer)
+
+    def has_resources(self):
+        return True if len(self.parsed_service.contents) > 1 else False
+
+    def _create_layer(self, geonode_service, **resource_fields):
         # bear in mind that in ``geonode.layers.models`` there is a
         # ``pre_save_layer`` function handler that is connected to the
         # ``pre_save`` signal for the Layer model. This handler does a check
         # for common fields (such as abstract and title) and adds
         # sensible default values
+        keywords = resource_fields.pop("keywords") or []
         geonode_layer = Layer(
             owner=geonode_service.owner,
             service=geonode_service,
@@ -207,12 +227,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         geonode_layer.save()
         geonode_layer.keywords.add(*keywords)
         geonode_layer.set_default_permissions()
-        self._create_layer_service_link(geonode_layer)
-        self._create_layer_legend_link(geonode_layer)
-        self._create_layer_thumbnail(geonode_layer)
-
-    def has_resources(self):
-        return True if len(self.parsed_service.contents) > 1 else False
+        return geonode_layer
 
     def _create_layer_thumbnail(self, geonode_layer):
         """Create a thumbnail with a WMS request."""
@@ -383,51 +398,6 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 class GeoNodeServiceHandler(WmsServiceHandler):
     """Remote service handler for OGC WMS services"""
 
-    # TODO: Parse Layers Details from
-    #
-    #     http://<geonode_base>/api/layers/?name=actualevap
-    #
-    #     {
-    #     	"geonode_version": "2.9.dev20180220135741",
-    #     	"meta": {
-    #     		"limit": 1000,
-    #     		"next": null,
-    #     		"offset": 0,
-    #     		"previous": null,
-    #     		"total_count": 1
-    #     	},
-    #     	"objects": [{
-    #     		"abstract": "This layer represents the actual evapotranspiration in 2006, ...",
-    #     		"alternate": "geonode:actualevap",
-    #     		"category__gn_description": "Ecohydrology",
-    #     		"csw_type": "dataset",
-    #     		"csw_wkt_geometry": "POLYGON((-180.0000000000 -59.4842793000,-...",
-    #     		"date": "2017-08-17T09:34:00",
-    #     		"default_style": "/api/styles/232/",
-    #     		"detail_url": "/layers/geonode:actualevap",
-    #     		"geogig_link": null,
-    #     		"group": "IHP-Theme6-Water-education",
-    #     		"group_name": "Theme 6: Water education",
-    #     		"has_time": false,
-    #     		"id": 901,
-    #     		"is_approved": true,
-    #     		"is_published": true,
-    #     		"name": "actualevap",
-    #     		"owner__username": "najet.guefradj",
-    #     		"owner_name": "Najet Guefradj",
-    #     		"popular_count": 17,
-    #     		"rating": 0,
-    #     		"resource_uri": "/api/layers/901/",
-    #     		"share_count": 0,
-    #     		"srid": "EPSG:4326",
-    #     		"supplemental_information": "UNSD Environmental Indicators disseminate ...",
-    #     		"thumbnail_url": "http://ihp-wins.unesco.org/uploaded/thumbs/layer-...",
-    #     		"title": "Actual evapotranspiration in 2006",
-    #     		"typename": "geonode:actualevap",
-    #     		"uuid": "ceca70ee-b88d-11e7-bdb3-005056062634"
-    #     	}]
-    #     }
-
     service_type = enumerations.GN_WMS
 
     def __init__(self, url):
@@ -445,10 +415,50 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         self.name = slugify(
             _title if _title else urlsplit(self.url).netloc)[:40]
 
-    def _probe_geonode_wms(self, raw_url):
-        import json
-        from httplib import HTTPConnection, HTTPSConnection
+    def harvest_resource(self, resource_id, geonode_service):
+        """Harvest a single resource from the service
 
+        This method will try to create new ``geonode.layers.models.Layer``
+        instance (and its related objects too).
+
+        :arg resource_id: The resource's identifier
+        :type resource_id: str
+        :arg geonode_service: The already saved service instance
+        :type geonode_service: geonode.services.models.Service
+
+        """
+        layer_meta = self.get_resource(resource_id)
+        logger.debug("layer_meta: {}".format(layer_meta))
+        if self.indexing_method == CASCADED:
+            logger.debug("About to import cascaded layer...")
+            geoserver_resource = self._import_cascaded_resource(layer_meta)
+            resource_fields = self._get_cascaded_layer_fields(
+                geoserver_resource)
+            keywords = []
+        else:
+            resource_fields = self._get_indexed_layer_fields(layer_meta)
+            keywords = resource_fields.pop("keywords")
+        existance_test_qs = Layer.objects.filter(
+            name=resource_fields["name"],
+            store=resource_fields["store"],
+            workspace=resource_fields["workspace"]
+        )
+        if existance_test_qs.exists():
+            raise RuntimeError(
+                "Resource {!r} has already been harvested".format(resource_id))
+        resource_fields["keywords"] = keywords
+        resource_fields["is_approved"] = True
+        resource_fields["is_published"] = True
+        if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
+            resource_fields["is_approved"] = False
+            resource_fields["is_published"] = False
+        geonode_layer = self._create_layer(geonode_service, **resource_fields)
+        self._enrich_layer_metadata(geonode_layer)
+        self._create_layer_service_link(geonode_layer)
+        self._create_layer_legend_link(geonode_layer)
+        self._create_layer_thumbnail(geonode_layer)
+
+    def _probe_geonode_wms(self, raw_url):
         url = urlsplit(raw_url)
 
         if url.scheme == 'https':
@@ -476,6 +486,31 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         # OLD-style not OWS Enabled GeoNode
         _url = "%s://%s/geoserver/wms" % (url.scheme, url.netloc)
         return _url
+
+    def _enrich_layer_metadata(self, geonode_layer):
+        url = urlsplit(self.url)
+
+        if url.scheme == 'https':
+            conn = HTTPSConnection(url.hostname, url.port)
+        else:
+            conn = HTTPConnection(url.hostname, url.port)
+        workspace, layername = geonode_layer.name.split(
+            ":") if ":" in geonode_layer.name else (None, geonode_layer.name)
+        conn.request('GET', '/api/layers/?name=%s' % layername, '', {})
+        response = conn.getresponse()
+        content = response.read()
+        status = response.status
+        content_type = response.getheader("Content-Type", "text/plain")
+
+        if status == 200 and 'application/json' == content_type:
+            try:
+                _json_obj = json.loads(content)
+                if _json_obj['meta']['total_count'] == 1:
+                    _layer = _json_obj['objects'][0]
+                    if _layer:
+                        pass  # TODO
+            except BaseException:
+                pass
 
 
 def _get_valid_name(proposed_name):

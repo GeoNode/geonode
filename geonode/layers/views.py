@@ -304,7 +304,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             "ptype": service.ptype,
             "remote": True,
             "url": service.service_url,
-            "name": service.name}
+            "name": service.name,
+            "title": "[R] %s" % service.title}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
@@ -367,7 +368,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if 'geonode.geoserver' in settings.INSTALLED_APPS:
         from geonode.geoserver.views import get_capabilities
         if layer.has_time:
-            workspace, layername = layer.alternate.split(":")
+            workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
             # WARNING Please make sure to have enabled DJANGO CACHE as per
             # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
             wms_capabilities_resp = get_capabilities(request, layer.id, tolerant=True)
@@ -654,7 +655,8 @@ def layer_metadata(
             "ptype": service.ptype,
             "remote": True,
             "url": service.service_url,
-            "name": service.name}
+            "name": service.name,
+            "title": "[R] %s" % service.title}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
