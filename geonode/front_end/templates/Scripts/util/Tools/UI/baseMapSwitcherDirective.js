@@ -10,12 +10,17 @@
                 function ($scope) {
                     var baseMapTool = mapTools.baseMap;
                     $scope.baseMaps = baseMapTool.getAllBaseMaps();
+                    $scope.expanded=false;
                     $scope.baseMapGroups = _.groupBy($scope.baseMaps, function(item){ return item.groupName; });
                     $scope.model = {};
 
                     $scope.changed = function (basemap) {
                         $scope.model.selectedBaseMap = basemap;
                         baseMapTool.changeBaseLayer($scope.model.selectedBaseMap);
+                        $scope.expanded=false;
+                    };
+                    $scope.baseMapThumbsUrl={
+
                     };
 
                     loadBaseMap();

@@ -159,7 +159,8 @@
                         isGoogle: true,
     
                         mapTypeId: google.maps.MapTypeId.ROADMAP,
-                        groupName: 'Google'
+                        groupName: 'Google',
+                        thumb : 'Google-Street.jpg'
     
                     }, {
     
@@ -168,7 +169,8 @@
                         isGoogle: true,
     
                         mapTypeId: google.maps.MapTypeId.TERRAIN,
-                        groupName: 'Google'
+                        groupName: 'Google',
+                        thumb : 'Google-Terrain.jpg'
     
                     }, {
     
@@ -177,7 +179,8 @@
                         isGoogle: true,
     
                         mapTypeId: google.maps.MapTypeId.HYBRID,
-                        groupName: 'Google'
+                        groupName: 'Google',
+                        thumb : 'Google-Hybrid.jpg'
     
                     }, {
     
@@ -186,7 +189,8 @@
                         isGoogle: true,
     
                         mapTypeId: google.maps.MapTypeId.SATELLITE,
-                        groupName: 'Google'
+                        groupName: 'Google',
+                        thumb : 'Google-Satellite.jpg'
     
                     }
     
@@ -205,13 +209,13 @@
                 var thunderForestAPIKey = '50d64afdbe424011bdaabb6b9315b7ed';
                 var baseMaps = [];
                 var urlRoot = 'http://tile.thunderforest.com/';
-                baseMaps.push({title: 'Thuderforest(OpenCycleMap)', url: urlRoot+'cycle/'});
-                baseMaps.push({title: 'Thuderforest(Transport)', url: urlRoot+'transport/'});
-                baseMaps.push({title: 'Thuderforest(TransportDark)', url: urlRoot+'transport-dark/'});
-                baseMaps.push({title: 'Thuderforest(SpinalMap)', url: urlRoot+'spinal-map/'});
-                baseMaps.push({title: 'Thuderforest(Landscape)', url: urlRoot+'landscape/'});
-                baseMaps.push({title: 'Thuderforest(Outdoors)', url: urlRoot+'outdoors/'});
-                baseMaps.push({title: 'Thuderforest(Pioneer)', url: urlRoot+'pioneer/'});
+                baseMaps.push({title: 'Thuderforest(OpenCycleMap)', url: urlRoot+'cycle/',thumb : 'Thuderforest(OpenCycleMap).jpg'});
+                baseMaps.push({title: 'Thuderforest(Transport)', url: urlRoot+'transport/',thumb : 'Thuderforest(Transport).jpg'});
+                baseMaps.push({title: 'Thuderforest(TransportDark)', url: urlRoot+'transport-dark/',thumb : 'Thuderforest(TransportDark).jpg'});
+                baseMaps.push({title: 'Thuderforest(SpinalMap)', url: urlRoot+'spinal-map/',thumb : 'Thuderforest(SpinalMap).jpg'});
+                baseMaps.push({title: 'Thuderforest(Landscape)', url: urlRoot+'landscape/',thumb : 'Thuderforest(Landscape).jpg'});
+                baseMaps.push({title: 'Thuderforest(Outdoors)', url: urlRoot+'outdoors/',thumb : 'Thuderforest(Outdoors).jpg'});
+                baseMaps.push({title: 'Thuderforest(Pioneer)', url: urlRoot+'pioneer/',thumb : 'Thuderforest(Pioneer).jpg'});
                 addxyzPart(baseMaps, 'Thunderforest', '{z}/{x}/{y}.png?apikey=' + thunderForestAPIKey);
                 return baseMaps;
             }
@@ -219,11 +223,11 @@
             function getStamenBaseMaps(){
                 var baseMaps = [];
                 var urlRoot = 'https://stamen-tiles.a.ssl.fastly.net/';
-                baseMaps.push({title: 'Stamen.Toner', url: urlRoot+'toner/'});
-                baseMaps.push({title: 'Stamen.TonerLite', url: urlRoot+'toner-lite/'});
-                baseMaps.push({title: 'Stamen.Watercolor', url: urlRoot+'watercolor/'});
-                baseMaps.push({title: 'Stamen.Terrain', url: urlRoot+'terrain/'});
-                baseMaps.push({title: 'Stamen.TerrainBackground', url: urlRoot+'terrain-background/'});
+                baseMaps.push({title: 'Stamen.Toner', url: urlRoot+'toner/',thumb : 'Stamen.Toner.jpg'});
+                baseMaps.push({title: 'Stamen.TonerLite', url: urlRoot+'toner-lite/',thumb : 'Stamen.TonerLite.jpg'});
+                baseMaps.push({title: 'Stamen.Watercolor', url: urlRoot+'watercolor/',thumb : 'Stamen.Watercolor.jpg'});
+                baseMaps.push({title: 'Stamen.Terrain', url: urlRoot+'terrain/',thumb : 'Stamen.Terrain.jpg'});
+                baseMaps.push({title: 'Stamen.TerrainBackground', url: urlRoot+'terrain-background/',thumb : 'Stamen.TerrainBackground.jpg'});
                 addxyzPart(baseMaps, 'Stamen', '{z}/{x}/{y}.png');
                 return baseMaps;
             }
@@ -231,13 +235,13 @@
             function getEsriBaseMaps(){
                 var baseMaps = [];
                 var urlRoot = 'https://server.arcgisonline.com/ArcGIS/rest/services/';
-                baseMaps.push({title: 'Esri.WorldStreetMap', url: urlRoot+'World_Street_Map/MapServer/tile/'});
-                baseMaps.push({title: 'Esri.DeLorme', url: urlRoot+'Specialty/DeLorme_World_Base_Map/MapServer/tile/'});
-                baseMaps.push({title: 'Esri.WorldTopoMap', url: urlRoot+'World_Topo_Map/MapServer/tile/'});
-                baseMaps.push({title: 'Esri.WorldImagery', url: urlRoot+'World_Imagery/MapServer/tile/'});
-                baseMaps.push({title: 'Esri.WorldShadedRelief', url: urlRoot+'World_Shaded_Relief/MapServer/tile/'});
-                baseMaps.push({title: 'Esri.OceanBasemap', url: urlRoot+'Ocean_Basemap/MapServer/tile/'});
-                baseMaps.push({title: 'Esri.NatGeoWorldMap', url: urlRoot+'NatGeo_World_Map/MapServer/tile/'});
+                baseMaps.push({title: 'Esri.WorldStreetMap', url: urlRoot+'World_Street_Map/MapServer/tile/',thumb : 'Esri.WorldStreetMap.jpg'});
+                baseMaps.push({title: 'Esri.DeLorme', url: urlRoot+'Specialty/DeLorme_World_Base_Map/MapServer/tile/',thumb : 'Esri.DeLorme.jpg'});
+                baseMaps.push({title: 'Esri.WorldTopoMap', url: urlRoot+'World_Topo_Map/MapServer/tile/',thumb : 'Esri.WorldTopoMap.jpg'});
+                baseMaps.push({title: 'Esri.WorldImagery', url: urlRoot+'World_Imagery/MapServer/tile/',thumb : 'Esri.WorldImagery.jpg'});
+                baseMaps.push({title: 'Esri.WorldShadedRelief', url: urlRoot+'World_Shaded_Relief/MapServer/tile/',thumb : 'Esri.WorldShadedRelief.jpg'});
+                baseMaps.push({title: 'Esri.OceanBasemap', url: urlRoot+'Ocean_Basemap/MapServer/tile/',thumb : 'Esri.OceanBasemap.jpg'});
+                baseMaps.push({title: 'Esri.NatGeoWorldMap', url: urlRoot+'NatGeo_World_Map/MapServer/tile/',thumb : 'Esri.NatGeoWorldMap.jpg'});
                 addxyzPart(baseMaps, 'ESRI', '{z}/{y}/{x}');
                 return baseMaps;
             }
@@ -245,10 +249,10 @@
             function getOSMBaseMaps(){
                 var baseMaps = [];
                 var urlRoot = 'https://tile.openstreetmap.org/';
-                baseMaps.push({title: 'Open Street Map', url: 'https://tile.openstreetmap.org/'});
-                baseMaps.push({title: 'Open Street Map (Black and White)', url: 'http://tiles.wmflabs.org/bw-mapnik/'});
-                baseMaps.push({title: 'Open Street Map (HOT)', url: 'http://tile.openstreetmap.fr/hot/'});
-                baseMaps.push({title: 'Open Topo Map', url: urlRoot+'http://tile.opentopomap.org/'});
+                baseMaps.push({title: 'Open Street Map', url: 'https://tile.openstreetmap.org/',thumb : 'Open-Street-Map.jpg'});
+                baseMaps.push({title: 'Open Street Map (Black and White)', url: 'http://tiles.wmflabs.org/bw-mapnik/',thumb : 'Open-Street-Map-(Black-and-White).jpg'});
+                baseMaps.push({title: 'Open Street Map (HOT)', url: 'http://tile.openstreetmap.fr/hot/',thumb : 'Open-Street-Map-(HOT).jpg'});
+                baseMaps.push({title: 'Open Topo Map', url: urlRoot+'http://tile.opentopomap.org/',thumb : 'Esri.WorldTopoMap.jpg'});
                 // https://aerial.maps.cit.api.here.com/maptile/2.1/maptile/newest/hybrid.day/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg=eng
     
                 addxyzPart(baseMaps, 'OpenStreetMap', '{z}/{x}/{y}.png');
@@ -272,7 +276,8 @@
                             source: new ol.source.MapQuest({ layer: 'sat' })
     
                         }),
-                        groupName: 'Others'
+                        groupName: 'Others',
+                        thumb : 'map-thumb.jpg'
     
                     }, {
     
@@ -309,7 +314,8 @@
                             })
     
                         }),
-                        groupName: 'Others'
+                        groupName: 'Others',
+                        thumb : 'map-thumb.jpg'
     
                     }
     
@@ -347,7 +353,8 @@
                               })
     
                         }),
-                        groupName: item.groupName
+                        groupName: item.groupName,
+                        thumb : item.thumb
     
                     };
     

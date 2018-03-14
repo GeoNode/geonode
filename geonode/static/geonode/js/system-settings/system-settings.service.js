@@ -20,6 +20,17 @@
             return deferred.promise;
         }
 
+        function getWithParams(url,data){
+            var deferred = $q.defer();
+            $http.get(url,data)
+                .success(function (res) {
+                    deferred.resolve(res);
+                }).error(function (error, status) {
+                deferred.reject({error: error, status: status});
+            });
+            return deferred.promise;
+        }
+
         function put(url, data) {
             $http.put(url, data, {
                 headers: {
@@ -38,8 +49,8 @@
         }
 
         return {
-            getLayers: function (url) {
-                return get('/api/layers/');
+            getLayers: function (data) {
+                return get('/api/layers/?'+data);
             },
             getSystemSettings: function (url) {
                 return get('/settings/api/system/settings/');

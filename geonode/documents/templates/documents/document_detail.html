@@ -113,11 +113,11 @@
             {% endif %}
           {% if "download_resourcebase" in perms_list %}
             {% if resource.extension|lower in imgtypes and resource.doc_file %}
-              <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
+              <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}" onclick="postDocumentAnalyticsData('download')"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
             {% elif resource.doc_file %}
-              <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
+              <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-primary btn-md btn-block" onclick="postDocumentAnalyticsData('download')">{% trans "Download Document" %}</button></a>
             {% elif  resource.doc_url %}
-              <a style="text-decoration:none;" target="_blank" href="{{ resource.doc_url }}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
+              <a style="text-decoration:none;" target="_blank" href="{{ resource.doc_url }}"><button class="btn btn-primary btn-md btn-block" onclick="postDocumentAnalyticsData('download')">{% trans "Download Document" %}</button></a>
             {%  endif %}
         {% else %}
           {% if request.user.is_authenticated %}
@@ -238,6 +238,29 @@
             anyonePermissionDisable();
         {% endif %}
     });
+</script>
+<script>
+var user_href = window.location.href.split('/');
+  var documentId=user_href[4];
+  var userLocation={};
+  var localStorageLocation=localStorage.getItem("user_location");
+  if(localStorageLocation){
+        userLocation=JSON.parse(localStorageLocation);
+  }
+  function postDocumentAnalyticsData(activityType){
+        $.ajax({
+            type : 'post',
+            url: '/api/analytics/non-gis/',
+            data : {
+                id : documentId,
+                content_type : "document",
+                activity_type: activityType,
+                latitude : userLocation.latitude,
+                longitude : userLocation.longitude
+            }
+        })
+    }
+    postDocumentAnalyticsData('load');
 </script>
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];

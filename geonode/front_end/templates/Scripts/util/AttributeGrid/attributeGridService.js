@@ -123,14 +123,22 @@
             },
             populateDataIntoGrid: function (grid, features) {
                 grid.attributeRows.length = 0;
-                features.map(function (feature) {
-                    var surfFeature = feature.surfFeature;
+                angular.forEach(features,function(feature){
                     grid.attributeRows.push({
-                        Fid: surfFeature.getFid(),
-                        Attributes: surfFeature.getAttributes(),
-                        OpenlayerFeature: feature.olFeature
+                        Fid: feature.id,
+                        Attributes: feature.properties,
+                        OpenlayerFeature: ''
                     });
+
                 });
+                // features.map(function (feature) {
+                //     var surfFeature = feature.surfFeature;
+                //     grid.attributeRows.push({
+                //         Fid: surfFeature.getFid(),
+                //         Attributes: surfFeature.getAttributes(),
+                //         OpenlayerFeature: feature.olFeature
+                //     });
+                // });
             },
             changeEditedRows: function (gridData) {
                 for (var j in editedRows) {
@@ -217,7 +225,7 @@
                 }
                 return columns;
             }
-        }
+        };
 
         return factory;
     }

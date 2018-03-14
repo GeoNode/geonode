@@ -6,17 +6,23 @@
     SystemSettingsController.$inject = ['$scope', 'SettingsService'];
 
     function SystemSettingsController($scope, SettingsService) {
+        $scope.layer=[];
+        $scope.addressGeocodeLayer=undefined;
+        $scope.elevationRasterLayer=undefined; 
+        $scope.vectorLayers=[];
+        $scope.rasterLayers=[];
 
         var systemSettings = SettingsService.getSystemSettings();
 
-        systemSettings.then(function (value) {
+        systemSettings.then(function (res) {
 
-                //console.log(value);
-                $.each(value, function (index, element) {
-                    //console.log(element.content_object.uuid);
-                    checkSelectedLayerAttrhave($scope, SettingsService, element.content_object.uuid);
+                var value=res.results;
+                $.each(value, function (index, element) {                    
                     if (element.settings_code == "location") {
-                        $scope.layerName = element.content_object.title;
+                        $scope.addressGeocodeLayer = element.content_object.uuid;
+                        checkSelectedLayerAttrhave(element.content_object.uuid);
+                    }else if(element.settings_code == "elevation"){
+                        $scope.elevationRasterLayer=element.content_object.uuid;
                     }
                 });
 
@@ -25,66 +31,73 @@
             }
         );
 
-        var layerSettings = SettingsService.getLayers();
+        var rasterLayerSettings = SettingsService.getLayers("type__in=raster");
+        var vectorLayerSettings = SettingsService.getLayers("type__in=vector");
 
+        // var layersObject;
 
-        var layersObject;
-
-        layerSettings.then(function (value) {
-
-                layersObject = value.objects;
-                $.each(layersObject, function (index, element) {
+        rasterLayerSettings.then(function (value) {
+               var layersObjects = value.objects;
+                $.each(layersObjects, function (index, element) {
                     var title = element.title;
                     if (element.title.length > 22) {
                         title = element.title.substring(0, 25) + "...";
                     }
-                    $("#layer").append("<option value='" + element.uuid + "'>" + title + "</option>");
-                    //console.log(element.id +" "+element.title);
                 });
+                $scope.rasterLayers=layersObjects;
 
             }, function (error) {
                 // This is called when error occurs.
             }
         );
 
+        vectorLayerSettings.then(function (value) {
+                var layersObjects = value.objects;
+                $.each(layersObjects, function (index, element) {
+                    var title = element.title;
+                    if (element.title.length > 22) {
+                        title = element.title.substring(0, 25) + "...";
+                    }
+                });
+                $scope.vectorLayers=layersObjects;
+            }, function (error) {
+                // This is called when error occurs.
+            }
+         );
 
-        $scope.layerSettingSave = function () {
+        function checkSelectedLayerAttrhave(uuid) {
+            var addressColumnsStatus = SettingsService.getAddressAttributes(uuid);
+    
+            addressColumnsStatus.then(function (value) {
+    
+                    if (value.status == 'invalid') {
+    
+                        var columns = value.columns.toString().replaceAll(',', ', ');
+    
+                        $scope.layerStatusMsg = columns + " are missing!";
+    
+                    }
+    
+                }, function (error) {
+                    // This is called when error occurs.
+                }
+            );
+        }
 
-            $scope.layerName = $("#layer option:selected").text();
-            var uuid = $('#layer :selected').val();
+
+        $scope.layerSettingSave = function (settingType,layerUUID) {
             var data = {
-                'uuid': uuid,
-                'settings_code': 'location',
+                'uuid': layerUUID,
+                'settings_code': settingType,
             };
             SettingsService.saveSystemSettings(data);
         };
 
         $scope.changedValue = function () {
-
-            var layerUUID = $("#layer option:selected").val();
-            checkSelectedLayerAttrhave($scope, SettingsService, layerUUID);
-
-
-        }
+            checkSelectedLayerAttrhave($scope.addressGeocodeLayer);
+        };
 
     }
 
-    function checkSelectedLayerAttrhave($scope, SettingsService, uuid) {
-        var addressColumnsStatus = SettingsService.getAddressAttributes(uuid);
-
-        addressColumnsStatus.then(function (value) {
-
-                if (value.status == 'invalid') {
-
-                    var columns = value.columns.toString().replaceAll(',', ', ');
-
-                    $scope.layerStatusMsg = columns + " are missing!";
-
-                }
-
-            }, function (error) {
-                // This is called when error occurs.
-            }
-        );
-    }
+    
 })();

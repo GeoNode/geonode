@@ -2,9 +2,9 @@
     appModule
         .controller('MapController', MapController);
 
-    MapController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope', 'layerService', 'queryOutputFactory', '$rootScope'];
+    MapController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope', 'layerService', 'queryOutputFactory', '$rootScope','$interval','urlResolver'];
 
-    function MapController(mapService, $window, analyticsService, LayerService, $scope, oldLayerService, queryOutputFactory, $rootScope) {
+    function MapController( mapService, $window, analyticsService, LayerService, $scope, oldLayerService, queryOutputFactory, $rootScope,$interval,urlResolver) {
         var self = this;
         var re = /\d*\/embed/;
         var map = mapService.getMap();
@@ -27,7 +27,43 @@
         function errorFn() {
 
         }
+        var heatMapLayer=undefined;
+        $scope.isHeatMapVisible=false;
 
+        function getheatMapCQLFilter(){
+            var data=getMapOrLayerLoadNonGISData();
+            if(isLayerPage()){
+                return 'layer_id = '+ data.id;
+            }else
+                return 'map_id = '+ data.id;
+        }
+
+        function addHeatMapLayer(visibility){
+            var cqlFilter=getheatMapCQLFilter();
+            heatMapLayer=new ol.layer.Image({
+                source: new ol.source.ImageWMS({
+                    url: urlResolver.resolveGeoserverTile(),
+                    params: {
+                        LAYERS: 'cite:analytics_pinpointuseractivity',
+                        FORMAT: 'image/png',
+                        TRANSPARENT: true,
+                        CQL_FILTER: cqlFilter
+                    }
+                }),
+                visible: true
+            });
+            map.addLayer(heatMapLayer);
+            $scope.isHeatMapVisible=true;
+        }
+
+        $scope.addHeatMap=function(){
+            if(angular.isUndefined(heatMapLayer)){
+                addHeatMapLayer(true);
+            }else{
+                heatMapLayer.setVisible(!$scope.isHeatMapVisible);
+                $scope.isHeatMapVisible=!$scope.isHeatMapVisible;
+            }
+        };
         $scope.changeStyle = function(layerId, styleId) {
             var layer = mapService.getLayer(layerId);
             if (styleId) {
@@ -41,13 +77,19 @@
                 layer.refresh();
             }
         };
-
+        $scope.isBoundaryBoxEnabled=true;
         $scope.group = { "a": "AND", "rules": [] };
         $scope.getQueryResult = function() {
             var query = queryOutputFactory.getOutput($scope.group);
-            $rootScope.$broadcast('filterDataWithCqlFilter', query);
+            $rootScope.$broadcast('filterDataWithCqlFilter', {query: query,bbox:$scope.isBoundaryBoxEnabled});
         };
-
+        $scope.$watch(function() {
+            return $rootScope.layerId;
+        }, function() {
+            if ($rootScope.layerId)
+            $scope.group = { "a": "AND", "rules": [] };
+        });
+        
         function getGeoServerSettings() {
             self.propertyNames = [];
             LayerService.getGeoServerSettings()
@@ -71,130 +113,120 @@
             return url;
         }
 
+        var user_href = window.location.href.split('/');
+        function isLayerPage(){
+            return _.contains(user_href,"layers");
+         }
+
+         function getMapId(){
+            if(!isLayerPage()){
+                return user_href[4];
+            }else 
+                return "";
+         }
+
+        function getMapOrLayerLoadNonGISData(){
+            var data={
+                id : isLayerPage() ? layer_info : getMapId(),
+                content_type : isLayerPage() ? "layer" : "map",
+                activity_type: "load",
+                latitude : "",
+                longitude : ""
+            };
+            return data;
+        }
+        var analyticsNonGISUrl="api/analytics/non-gis/";
+
+        function postMapOrLayerLoadData(){
+            var loadData=getMapOrLayerLoadNonGISData();
+            if(loadData.id!='new'){
+                analyticsService.postNonGISData(analyticsNonGISUrl,loadData).then(function(response){
+            
+                },function(error){
+                    console.log(error);
+                });
+            }
+        }        
+
+        var analyticsGISUrl='api/analytics/gis/';
+        var postAnalyticsData=$interval( function(){ 
+            analyticsService.postGISAnalyticsToServer(analyticsGISUrl);
+         }, 60000);
+         postMapOrLayerLoadData();
 
         (getGeoServerSettings)();
-        var keyPointerDrag, keyPostRender, keyChangeResolution;
+        var keyPointerDrag, keySingleClick, keyChangeResolution,keyMoveEnd;
         (function() {
 
-
-            if (re.test($window.location.pathname)) {
-                //Do not need analytics in share map
-                return;
+            
+            function getAnalyticsGISData(coordinateArray,activityType){
+                var data={
+                    layer_id:undefined,
+                    map_id:undefined,
+                    activity_type : activityType,
+                    latitude: coordinateArray[1],
+                    longitude : coordinateArray[0]
+                };
+                return data;
             }
 
-            keyPostRender = map.on('postrender', function(evt) {
-                var user_href = window.location.href.split('/');
-                var map_info = user_href[user_href.length - 2];
-                var user_location = JSON.parse(localStorage.getItem("user_location"));
-                var url = '/analytics/api/map/load/create/';
-                var latitude;
-                var longitude;
-                try {
-                    latitude = user_location.latitude.toString();
-                    longitude = user_location.longitude.toString()
-                } catch (err) {
-                    latitude = "";
-                    longitude = "";
+            function setMapAndLayerId(analyticsData){
+                if(isLayerPage()){
+                    analyticsData.layer_id=layer_info;
+                }else{
+                    analyticsData.map_id=user_href[4];
                 }
-                var data = {
-                    'user': user_info,
-                    'map': map_info,
-                    'latitude': latitude,
-                    'longitude': longitude,
-                    'agent': '',
-                    'ip': ''
-                };
-                analyticsService.saveAnalytics(data, url);
-            });
-            // Map drag / pan event
-            keyPointerDrag = map.on('pointerdrag', function(evt) {
-                var user_location = JSON.parse(localStorage.getItem("user_location"));
+                return analyticsData;
+            }
 
-                var url = '/analytics/api/user/activity/create/';
+            var resolutionChanged=false;
 
-                var latitude;
-                var longitude;
-                try {
-                    latitude = user_location.latitude.toString();
-                    longitude = user_location.longitude.toString()
-                } catch (err) {
-                    latitude = "";
-                    longitude = "";
+            function onMoveEnd(evt) {
+                if(resolutionChanged){
+                    //to something
+                    var mapCenter= ol.proj.transform(map.getView().getCenter(), 'EPSG:3857','EPSG:4326');
+                    var analyticsData=getAnalyticsGISData(mapCenter,"zoom");
+                    analyticsData=setMapAndLayerId(analyticsData);
+                    resolutionChanged=false;
+                    if(analyticsData.map_id!='new')
+                        analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+                }else{
+                    var dragCoordinate=ol.proj.transform(map.getView().getCenter(), 'EPSG:3857','EPSG:4326');
+                    var analyticsData=getAnalyticsGISData(dragCoordinate,"pan");
+                    analyticsData=setMapAndLayerId(analyticsData);
+                    if(analyticsData.map_id!='new')
+                         analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
                 }
+              }
 
-                var user_href = window.location.href.split('/');
-                var map_info = user_href[user_href.length - 2];
-
-                var data = {
-                    'user': user_info,
-                    'layer': layer_info,
-                    'map': map_info,
-                    'activity_type': 'pan',
-                    'latitude': latitude,
-                    'longitude': longitude,
-                    'agent': '',
-                    'ip': '',
-                    'point': ''
-                };
-
-                analyticsService.saveAnalytics(data, url);
-
-            });
-
-            //zoom in out event
+            // function onPointerDrag(evt){
+            //     var dragCoordinate=ol.proj.transform(evt.coordinate, 'EPSG:3857','EPSG:4326');
+            //     var analyticsData=getAnalyticsGISData(dragCoordinate,"pan");
+            //     analyticsData=setMapAndLayerId(analyticsData);
+            //     if(analyticsData.map_id!='new')
+            //         analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+            // }
+            function singleClick(evt){
+                var clickCoordinate=ol.proj.transform(evt.coordinate, 'EPSG:3857','EPSG:4326');
+                var analyticsData=getAnalyticsGISData(clickCoordinate,"click");
+                analyticsData=setMapAndLayerId(analyticsData);
+                if(analyticsData.map_id!='new')
+                    analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+            }
+            keyMoveEnd=map.on('moveend', onMoveEnd);
+            // keyPointerDrag=map.on('pointerdrag', onPointerDrag);
             keyChangeResolution = map.getView().on('change:resolution', function(evt) {
-
-                var zoomType;
-                var user_location = JSON.parse(localStorage.getItem("user_location"));
-
-                var url = '/analytics/api/user/activity/create/';
-
-                var latitude = '';
-                var longitude = '';
-
-                // Zoom in
-                if (evt.oldValue > evt.currentTarget.getResolution()) {
-                    //console.log("Zoom in called");
-                    zoomType = 'zoom-in';
-                }
-
-                // Zoom out
-                if (evt.oldValue < evt.currentTarget.getResolution()) {
-                    //console.log("Zoom out called");
-                    zoomType = 'zoom-out';
-                }
-
-                try {
-                    latitude = user_location.latitude.toString();
-                    longitude = user_location.longitude.toString();
-                } catch (err) {
-                    latitude = "";
-                    longitude = "";
-                }
-
-                var user_href = window.location.href.split('/');
-                var map_info = user_href[user_href.length - 2];
-
-                var data = {
-                    'user': user_info,
-                    'layer': layer_info,
-                    'map': map_info,
-                    'activity_type': zoomType,
-                    'latitude': latitude,
-                    'longitude': longitude,
-                    'agent': '',
-                    'ip': '',
-                    'point': ''
-                };
-
-                analyticsService.saveAnalytics(data, url);
+                    resolutionChanged=true;
             });
-        });
+            keySingleClick=map.on('singleclick', singleClick);
+        })();
 
         $scope.$on("$destroy", function() {
-            ol.Observable.unByKey(keyPointerDrag);
-            ol.Observable.unByKey(keyPostRender);
+            // ol.Observable.unByKey(keyPointerDrag);
+            ol.Observable.unByKey(keySingleClick);
             ol.Observable.unByKey(keyChangeResolution);
+            ol.Observable.unByKey(keyMoveEnd);
+            $interval.cancel(postAnalyticsData);
         });
     }
 

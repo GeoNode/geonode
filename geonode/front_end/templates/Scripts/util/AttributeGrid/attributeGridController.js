@@ -1,11 +1,14 @@
 ﻿appModule.controller('attributeGridController', ['$scope', '$rootScope', 'featureRepository',
     'attributeGridService', 'attributeValidator', 'mapService', 'featureService', 'attributeTypes',
-    'cqlFilterCharacterFormater', 'mapTools', '$timeout', 'mapAccessLevel', 'LayerService','surfToastr',
+    'cqlFilterCharacterFormater', 'mapTools', '$timeout', 'mapAccessLevel', 'LayerService','surfToastr','urlResolver',
     function($scope, $rootScope, featureRepository, attributeGridService, attributeValidator,
-        mapService, featureService, attributeTypes, cqlFilterCharacterFormater, mapTools, $timeout, mapAccessLevel, LayerService,surfToastr) {
+        mapService, featureService, attributeTypes, cqlFilterCharacterFormater, mapTools, $timeout, mapAccessLevel, LayerService,surfToastr,urlResolver) {
 
         var surfLayer, activeLayerId;
         $scope.config = {};
+        $scope.isQueryEnabled=false;
+        $scope.query="";
+        $scope.isBoundaryBoxEnabled=false;
 
         function getRequestObjectToGetFeature(featureID, typeName) {
             var requestObj = {
@@ -19,7 +22,7 @@
             };
             return requestObj;
         }
-       
+        
         $scope.selectedFeatures = [];
         var selectedFeatures = [];
 
@@ -32,7 +35,7 @@
                     $scope.selectedFeatures = gridApi.selection.getSelectedRows();
                     var difference = _.difference($scope.selectedFeatures, selectedFeatures);
                     var features = _.map(difference, function(feature) {
-                        return feature.OpenlayerFeature.id_;
+                        return feature.Fid;
                     });
                     var featureId = features.join(",");
                     if (surfLayer) {
@@ -55,6 +58,9 @@
         });
 
         function initGrid(newActiveLayerId) {
+            $scope.isQueryEnabled=false;
+            $scope.query="";
+            $scope.isBoundaryBoxEnabled=false;
 
             $scope.gridData = { attributeRows: [] };
             attributeGridService.resetAll();
@@ -84,7 +90,7 @@
                         $scope.selectedFeatures = gridApi.selection.getSelectedRows();
                         var difference = _.difference($scope.selectedFeatures, selectedFeatures);
                         var features = _.map(difference, function(feature) {
-                            return feature.OpenlayerFeature.id_;
+                            return feature.Fid;
                         });
                         var featureId = features.join(",");
                         if (surfLayer) {
@@ -168,20 +174,19 @@
         function loadAttributeGridInfo() {
 
             loadGridDataFromServer($scope.pagination.currentPage, stopLoading, stopLoading);
-
-            attributeGridService.getNumberOfFeatures(surfLayer.DataId).success(function(numberOfFeatures) {
-                //$scope.pagination.totalItems = numberOfFeatures;
-                $scope.pagination.totalItems = Number($(numberOfFeatures)[1].attributes.numberoffeatures.value);
-
-            }).error(function() {
-                //$scope.pagination.totalItems = 100;
-                $scope.gridData.attributeDefinitions = [];
-            });
         }
 
-        $rootScope.$on('filterDataWithCqlFilter', function(event, query) {
+        
+        $rootScope.$on('filterDataWithCqlFilter', function(event, data) {
             $scope.pagination.currentPage = 1;
-            loadGridDataFromServerUsingCqlFilter($scope.pagination.currentPage, query);
+            $scope.query=data.query;
+            $scope.isBoundaryBoxEnabled=data.bbox;
+            if($scope.query){
+                loadGridDataFromServerUsingCqlFilter($scope.pagination.currentPage, $scope.query,$scope.isBoundaryBoxEnabled);
+                $scope.isQueryEnabled=true;
+            }else{
+                surfToastr.error("please enter a valid query","Error");
+            }
         });
 
         function getRequestObject(currentPage) {
@@ -194,7 +199,7 @@
                 count: currentPageSize,
                 maxFeatures: currentPageSize,
                 sortBy: $scope.sorting.predicate ? $scope.sorting.predicate + ($scope.lastActiveHeader.isAccending ? "" : "+D") : '', //surfLayer.IdColumn
-                version: '2.0.0',
+                version: '1.0.0',
                 outputFormat: 'GML2',
                 exceptions: 'application/json'
             };
@@ -222,29 +227,24 @@
             $scope.gridOptions.data = $scope.gridData.attributeRows;
         }
 
-        function loadGridDataFromServerUsingCqlFilter(currentPage, query, onSuccess, onError) {
+        function loadGridDataFromServerUsingCqlFilter(currentPage, query,isBoundaryBoxEnabled, onSuccess, onError) {
             if($rootScope.layerId){
                 $scope.loading = true;
                 var requestObj = getRequestObject(currentPage);
                 requestObj.CQL_FILTER = query;
-
-                attributeGridService.getGridData(requestObj, surfLayer).then(function(features) {
-                    populateGrid(features);
-                    // if(!$scope.config.table){
-                    //     $scope.config.table = new Handsontable($('#attribute-grid')[0], settings);
-                    // }
-                    // else{
-                    //     $scope.config.table.updateSettings(settings);
-                    // }
-                    //$scope.config.table.render();
-                    //table.render();
-
+                if(isBoundaryBoxEnabled){
+                    requestObj.CQL_FILTER= requestObj.CQL_FILTER + ' AND BBOX(the_geom,' +mapService.getBbox('EPSG:4326')+')';
+                }
+                requestObj.outputFormat='json';
+                LayerService.getWFS('api/geoserver/', requestObj,false).then(function(data){
+                    populateGrid(data.features);
+                    $scope.pagination.totalItems=data.totalFeatures;
                 }).catch(function() {
-                    if (onError) {
-                        onError();
-                    }
-                    $scope.loading = false;
-                });
+                        if (onError) {
+                            onError();
+                        }
+                        $scope.loading = false;
+                    });
 
             }else{
                 surfToastr.error("please select a layer","Error");
@@ -254,28 +254,26 @@
 
         function loadGridDataFromServer(currentPage, onSuccess, onError) {
             $scope.loading = true;
-            var requestObj = getRequestObject(currentPage);
-
-            attributeGridService.getGridData(requestObj, surfLayer).then(function(features) {
-                populateGrid(features);
-                // if(!$scope.config.table){
-                //     $scope.config.table = new Handsontable($('#attribute-grid')[0], settings);
-                // }
-                // else{
-                //     $scope.config.table.updateSettings(settings);
-                // }
-                //$scope.config.table.render();
-                //table.render();
-
-            }).catch(function() {
-                if (onError) {
-                    onError();
-                }
-                $scope.loading = false;
-            });
+            if($scope.isQueryEnabled){
+                loadGridDataFromServerUsingCqlFilter(currentPage,$scope.query,$scope.isBoundaryBoxEnabled);
+            }else{
+                var requestObj = getRequestObject(currentPage);
+                requestObj.outputFormat='json';
+                LayerService.getWFS('api/geoserver/', requestObj,false).then(function(data){
+                    populateGrid(data.features);
+                    $scope.pagination.totalItems=data.totalFeatures;
+                }).catch(function() {
+                    if (onError) {
+                        onError();
+                    }
+                    $scope.loading = false;
+                });
+            }
         }
 
         $scope.searchByAttribute = function() {
+            $scope.isBoundaryBoxEnabled=false;
+            $scope.isQueryEnabled=false;
             loadGridDataFromServer($scope.pagination.currentPage);
             $scope.pagination.currentPage = 1;
         };
@@ -283,7 +281,7 @@
         $scope.onPageSelect = function(currentPage) {
             loadGridDataFromServer(currentPage);
             mapService.setAllFeaturesUnselected();
-        }
+        };
 
         function setActiveHeader(colIndex) {
             if ($scope.lastActiveHeader.index === colIndex) {
@@ -294,7 +292,7 @@
             }
 
             loadGridDataFromServer($scope.pagination.currentPage);
-        };
+        }
 
         $scope.itemPerPageChanged = function() {
             $scope.pagination.currentPage = 1;
@@ -311,7 +309,7 @@
                 isValid = attributeValidator.isTextLengthValid(item, attributeDefinition.Length);
             }
             return isValid;
-        };
+        }
 
 
         function getMessageToShow() {

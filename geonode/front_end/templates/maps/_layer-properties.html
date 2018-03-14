@@ -3,13 +3,15 @@
         <div class="arrow-left-container" ng-click="layout.setLeftVisible(false)">
             <button class="icon icon18 icon-arrow-left"></button>
         </div>
-        Data layers
+        Data layers 
     </div>
 
     <div>
         <div data-ng-controller="treeController">
             <div class="layer-buttons">
-                <button class="icon add-layer " draft-only ng-disabled="isAttributeGridOn" ng-click="addBlankLayer()" title="Add Blank Layer"></button>
+                <button class="icon add-layer "
+                ng-click="browseData()"
+                draft-only ng-disabled="isAttributeGridOn" ng-click="addBlankLayer()" title="Browse Data"></button>
                 <button class="icon delete-layer" draft-only ng-click="deleteSelectedLayer()" ng-disabled="!enableRemove()" title="Remove active layer">
                     </button>
                 <!-- <button class="icon" ng-disabled="!enableZoom()" id="zoom-to-layer" ng-click="zoomToSelectedLayer()" title="Zoom to active layer">

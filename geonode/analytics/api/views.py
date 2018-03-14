@@ -1,8 +1,11 @@
 
-from geonode.analytics.models import MapLoad,Visitor,LayerLoad,PinpointUserActivity
+from django.contrib.contenttypes.models import ContentType
+from geonode.analytics.enum import ContentTypeEnum
+from geonode.analytics.models import MapLoad,Visitor,LayerLoad,PinpointUserActivity, LoadActivity
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.documents.models import Document
 
 from geonode.analytics.api.serializers import (
     MapLoadSerializer,
@@ -12,7 +15,7 @@ from geonode.analytics.api.serializers import (
 )
 
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -66,7 +69,7 @@ class PinpointUserActivityCreateAPIView(APIView):
         pinpoint_user_activity.activity_type = str(data['activity_type'])
         pinpoint_user_activity.latitude = None if str(data['latitude']) == '' else float(data['latitude'])
         pinpoint_user_activity.longitude = None if str(data['longitude']) == '' else float(data['longitude'])
-        pinpoint_user_activity.point = None
+        pinpoint_user_activity.the_geom = "Point()"
 
         try:
             pinpoint_user_activity.save()
@@ -147,16 +150,20 @@ class MapListAPIView(AnalyticsMixin, ListAPIView):
     Will send summary of Map activity
     """
     def get_queryset(self):
-        return MapLoad.objects.all().order_by('map', 'last_modified')
+        content_model = ContentType.objects.get_for_model(Map)
+        return LoadActivity.objects.filter(content_type=content_model).order_by('last_modified')
 
     def get(self, request, **kwargs):
         keys = ['map_id', 'last_modified_date', 'activity_type']
-        map_load_data = self.format_data(query=self.get_queryset(),extra_field=dict(activity_type='load'))
+
+        map_load_data = self.format_data(query=self.get_queryset())
         pin_point_data = self.format_data(model_instance=PinpointUserActivity, filters=dict(map_id__isnull=False))
 
-        results = self.get_analytics(map_load_data, keys) + self.get_analytics(pin_point_data, keys)
+        results = self.get_analytics(map_load_data, ['object_id','last_modified_date', 'activity_type']) + self.get_analytics(pin_point_data, keys)
 
         for r in results:
+            if 'object_id' in r:
+                r['map_id'] = r.pop('object_id')
             map = Map.objects.get(id=r['map_id'])
             r.update(dict(name=map.title,
                         user_organization = map.owner.organization,                        
@@ -171,7 +178,9 @@ class LayerListAPIView(AnalyticsMixin, ListAPIView):
     Will send summary of Layer activity
     """
     def get_queryset(self):
-        return LayerLoad.objects.all().order_by('layer', 'last_modified')
+        content_model = ContentType.objects.get_for_model(Layer)
+        return LoadActivity.objects.filter(content_type=content_model).order_by('last_modified')
+
 
     def get(self, request, **kwargs):
         keys = ['layer_id', 'last_modified_date', 'activity_type']
@@ -179,9 +188,11 @@ class LayerListAPIView(AnalyticsMixin, ListAPIView):
         layer_load_data = self.format_data(query=self.get_queryset(),extra_field=dict(activity_type='load'))
         pin_point_data = self.format_data(model_instance=PinpointUserActivity, filters=dict(layer_id__isnull=False))
 
-        results = self.get_analytics(layer_load_data, keys) + self.get_analytics(pin_point_data, keys)
+        results = self.get_analytics(layer_load_data, ['object_id','last_modified_date', 'activity_type']) + self.get_analytics(pin_point_data, keys)
         
         for r in results:
+            if 'object_id' in r:
+                r['layer_id'] = r.pop('object_id')
             layer = Layer.objects.get(id=r['layer_id'])
             r.update(dict(name=layer.title, 
                         user_organization = layer.owner.organization,
@@ -189,5 +200,100 @@ class LayerListAPIView(AnalyticsMixin, ListAPIView):
                         layer_organization=layer.group.title))
 
         return Response(data=results, status=status.HTTP_200_OK)
-            
-                
+    
+
+class DocumentListAPIView(AnalyticsMixin, ListAPIView):
+    """
+    Will send summary of Layer activity
+    """
+    def get_queryset(self):
+        content_model = ContentType.objects.get_for_model(Document)
+        return LoadActivity.objects.filter(content_type=content_model).order_by('last_modified')
+
+
+    def get(self, request, **kwargs):
+        keys = ['object_id', 'last_modified_date', 'activity_type']
+
+        document_load_data = self.format_data(query=self.get_queryset(),extra_field=dict(activity_type='load'))
+        
+
+        results = self.get_analytics(document_load_data, keys)
+        
+        for r in results:
+            if 'object_id' in r:
+                r['document_id'] = r.pop('object_id')
+            document = Document.objects.get(id=r['document_id'])
+            r.update(dict(name=document.title, 
+                        user_organization = document.owner.organization,
+                        document_category=document.category.identifier, 
+                        document_organization=document.group.title))
+
+        return Response(data=results, status=status.HTTP_200_OK)
+
+
+class NonGISActivityCreateAPIView(CreateAPIView):
+    """
+    """
+    def _save(self, content_object, ip, activity_type, agent,latitude=None, longitude=None, user=None):
+        obj = LoadActivity(content_object=content_object, 
+                            ip=ip, agent=agent, 
+                            activity_type=activity_type,
+                            latitude=float(latitude) if latitude is not None else None, 
+                            longitude= float(longitude) if longitude is not None else None, 
+                            user=user if user is not None and user.id is not None else None)
+        obj.save()
+
+    def post(self, request, **kwargs):
+        data = request.data
+        content_type = kwargs.get('content_type', data.get('content_type', None))
+
+        if content_type is None:
+            raise Exception('Unable to determine the the activity type')
+        
+        model_instance = ContentTypeEnum.CONTENT_TYPES.get(content_type, None)
+        
+        if not model_instance:
+            raise Exception('Invalid activity action')
+        
+        content_object = model_instance.objects.get(pk=data.get('id'))
+        
+        self._save(content_object=content_object, 
+                ip = str(request.environ['REMOTE_ADDR']),
+                agent = str(request.environ['HTTP_USER_AGENT']),
+                activity_type = data.get('activity_type', None),
+                user = None if request.user.id is None else request.user,
+                latitude = data.get('latitude', None),
+                longitude = data.get('longitude', None)
+                )
+
+        return Response(status=status.HTTP_201_CREATED)
+
+class GISActivityCreateAPIView(CreateAPIView):
+    """
+    """
+    def _save(self, ip, agent, activity_type, map_id=None, layer_id=None,latitude=None, longitude=None, user=None):
+        obj = PinpointUserActivity(ip=ip, 
+                            agent=agent,  
+                            activity_type = activity_type,
+                            map_id = None if map_id is None else int(map_id),
+                            layer_id = None if layer_id is None else int(layer_id),
+                            latitude=float(latitude) if latitude is not None else None, 
+                            longitude= float(longitude) if longitude is not None else None, 
+                            user=user if user is not None and user.id is not None else None,
+                            the_geom= "POINT({0} {1})".format(longitude,latitude))
+        obj.save()
+
+    def post(self, request, **kwargs):
+        for data in request.data:      
+            self._save(
+                    ip = str(request.environ['REMOTE_ADDR']),
+                    agent = str(request.environ['HTTP_USER_AGENT']),
+                    activity_type= data.get('activity_type'),
+                    map_id= data.get('map_id', None),
+                    layer_id= data.get('layer_id', None),
+                    latitude = data.get('latitude', None),
+                    longitude = data.get('longitude', None),
+                    user = None if request.user.id is None else request.user,
+                    )
+
+        return Response(status=status.HTTP_201_CREATED)

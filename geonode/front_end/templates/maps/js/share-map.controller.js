@@ -3,9 +3,9 @@
     appModule
         .controller('ShareMapController', ShareMapController);
 
-    ShareMapController.$inject = ['$modalInstance', '$window'];
+    ShareMapController.$inject = ['$modalInstance', '$window','analyticsService'];
 
-    function ShareMapController($modalInstance, $window) {
+    function ShareMapController($modalInstance, $window,analyticsService) {
         var self = this;
 
         function initialize() {
@@ -37,6 +37,19 @@
             self.getUrl();
         }
 
+        function postMapShareAnalyticsData(){
+            var user_href = window.location.href.split('/');
+            var mapId=user_href[4];
+            var data={
+                id : mapId,
+                content_type : "map",
+                activity_type: "share",
+                latitude : undefined,
+                longitude : undefined
+            };
+            return analyticsService.postNonGISData('api/analytics/non-gis/',data);
+        }
+
         self.getUrl = function() {
             var re = /\d+/g;
             var href = $window.location.pathname;
@@ -59,7 +72,7 @@
 
         self.init = function(){
             initialize();
-           
+            postMapShareAnalyticsData();
         };
     }
 })();

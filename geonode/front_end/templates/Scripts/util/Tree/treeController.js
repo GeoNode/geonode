@@ -61,7 +61,17 @@
                 }
             });
         };
-
+        $scope.browseData = function() {
+            $modal.open({
+                templateUrl: '/static/Templates/CatalogBrowser/Browser.html',
+                controller: 'catalogBrowserController',
+                backdrop: 'static',
+                keyboard: false,
+                windowClass: 'fullScreenModal First',
+                windowTopClass: 'Second',
+                openedClass: 'Third'
+            });
+        };
         // $scope.showAttributeGrid = function() {
         //     $scope.layerId = activeLayerTool.getActiveLayer().getId();
         //     //$rootScope.isAttributeGridOn = true;
