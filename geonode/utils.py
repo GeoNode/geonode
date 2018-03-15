@@ -388,7 +388,8 @@ class GXPMapBase(object):
                 'url': service.service_url,
                 'remote': True,
                 'ptype': 'gxp_wmscsource',
-                'name': service.name
+                'name': service.name,
+                'title': "[R] %s" % service.title
             }
             if remote_source['url'] not in source_urls:
                 index += 1

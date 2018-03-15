@@ -61,7 +61,7 @@ def service_proxy(request, service_id):
         if urljoin(settings.SITEURL, reverse('proxy')) != service.proxy_base:
             service_url = "{proxy_base}?url={service_url}".format(proxy_base=service.proxy_base,
                                                                   service_url=quote(service_url, safe=''))
-    return proxy(request, url=service_url)
+    return proxy(request, url=service_url, sec_chk_hosts=False)
 
 
 @login_required

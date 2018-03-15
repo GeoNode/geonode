@@ -36,7 +36,7 @@ class Service(ResourceBase):
     """Service Class to represent remote Geo Web Services"""
 
     type = models.CharField(
-        max_length=4,
+        max_length=6,
         choices=(
             (enumerations.AUTO, _('Auto-detect')),
             (enumerations.OWS, _('Paired WMS/WFS/WCS')),
@@ -45,6 +45,8 @@ class Service(ResourceBase):
             (enumerations.REST, _('ArcGIS REST Service')),
             (enumerations.OGP, _('OpenGeoPortal')),
             (enumerations.HGL, _('Harvard Geospatial Library')),
+            (enumerations.GN_WMS, _('GeoNode (Web Map Service)')),
+            (enumerations.GN_CSW, _('GeoNode (Catalogue Service)')),
         )
     )
     method = models.CharField(

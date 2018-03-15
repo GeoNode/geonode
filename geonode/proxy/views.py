@@ -29,17 +29,11 @@ from django.middleware.csrf import get_token
 
 
 @requires_csrf_token
-def proxy(request, url=None, response_callback=None, **kwargs):
+def proxy(request, url=None, response_callback=None, sec_chk_hosts=True, sec_chk_rules=True, **kwargs):
+    # Security rules and settings
     PROXY_ALLOWED_HOSTS = getattr(settings, 'PROXY_ALLOWED_HOSTS', ())
 
-    host = None
-
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
-        from geonode.geoserver.helpers import ogc_server_settings
-        hostname = (ogc_server_settings.hostname,) if ogc_server_settings else ()
-        PROXY_ALLOWED_HOSTS += hostname
-        host = ogc_server_settings.netloc
-
+    # Sanity url checks
     if 'url' not in request.GET and not url:
         return HttpResponse("The proxy service requires a URL-encoded URL as a parameter.",
                             status=400,
@@ -56,20 +50,34 @@ def proxy(request, url=None, response_callback=None, **kwargs):
 
     access_token = None
     if 'access_token' in request.session:
-        access_token = request.session['access_token']    #
+        access_token = request.session['access_token']
 
-    if not settings.DEBUG:
+    # White-Black Listing Hosts
+    if sec_chk_hosts and not settings.DEBUG:
+        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+            from geonode.geoserver.helpers import ogc_server_settings
+            hostname = (ogc_server_settings.hostname,) if ogc_server_settings else ()
+            if hostname not in PROXY_ALLOWED_HOSTS:
+                PROXY_ALLOWED_HOSTS += hostname
+
         if not validate_host(url.hostname, PROXY_ALLOWED_HOSTS):
             return HttpResponse("DEBUG is set to False but the host of the path provided to the proxy service"
                                 " is not in the PROXY_ALLOWED_HOSTS setting.",
                                 status=403,
                                 content_type="text/plain"
                                 )
+
+    # Security checks based on rules; allow only specific requests
+    if sec_chk_rules:
+        # TODO: Not yet implemented
+        pass
+
+    # Collecting headers and cookies
     headers = {}
     cookies = None
     csrftoken = None
 
-    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(url=raw_url, host=host):
+    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(url=raw_url, host=url.hostname):
         cookies = request.META["HTTP_COOKIE"]
 
     for cook in request.COOKIES:

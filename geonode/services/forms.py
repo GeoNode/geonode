@@ -52,6 +52,8 @@ class CreateServiceForm(forms.Form):
             # (enumerations.AUTO, _('Auto-detect')),
             # (enumerations.OWS, _('Paired WMS/WFS/WCS')),
             (enumerations.WMS, _('Web Map Service')),
+            (enumerations.GN_WMS, _('GeoNode (Web Map Service)')),
+            # (enumerations.GN_CSW, _('GeoNode (Catalogue Service)')),
             # (enumerations.CSW, _('Catalogue Service')),
             # (enumerations.REST, _('ArcGIS REST Service')),
             # (enumerations.OGP, _('OpenGeoPortal')),
