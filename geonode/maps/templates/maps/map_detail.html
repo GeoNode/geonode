@@ -2,7 +2,6 @@
 {% load i18n %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
-{% load url from future %}
 {% load base_tags %}
 {% load guardian_tags %}
 {% load client_lib_tags %}
@@ -223,7 +222,7 @@
           <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
           <a href="{% url "new_map" %}?copy={{ resource.id }}" class="btn btn-default btn-md btn-block">{% trans "Create a New Map" %}</a>
         </li>
-        {% if 'geonode.qgis_server' in INSTALLED_APPS %}
+        {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
           <li class="list-group-item">
               <h4>{% trans "Embed this map" %}</h4>
               <p>{% trans "Embed this map to your own sites" %}</p>

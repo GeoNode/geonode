@@ -194,7 +194,7 @@ class Map(ResourceBase, GXPMapBase):
         for ordering, layer in enumerate(layers):
             self.layer_set.add(
                 layer_from_viewer_config(
-                    MapLayer, layer, source_for(layer), ordering
+                    self.id, MapLayer, layer, source_for(layer), ordering
                 ))
 
         self.save()
@@ -210,7 +210,7 @@ class Map(ResourceBase, GXPMapBase):
             return []
 
     def get_absolute_url(self):
-        return reverse('geonode.maps.views.map_detail', None, [str(self.id)])
+        return reverse('map_detail', None, [str(self.id)])
 
     def get_bbox_from_layers(self, layers):
         """

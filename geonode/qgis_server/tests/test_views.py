@@ -47,6 +47,7 @@ class DefaultViewsTest(TestCase):
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
 
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_default_context(self):
         """Test default context provided by qgis_server."""
 
@@ -340,9 +341,9 @@ class QGISServerViewsTest(LiveServerTestCase):
 
         response = self.client.post(
             reverse('new_map_json'),
-            json.dumps(json_payload),
+            data=json.dumps(json_payload),
             content_type='application/json')
-        # map is successfull saved
+        # map is successfully saved
         self.assertEqual(response.status_code, 200)
 
         map_id = json.loads(response.content).get('id')
@@ -367,6 +368,7 @@ class QGISServerViewsTest(LiveServerTestCase):
         layer1.delete()
         layer2.delete()
 
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_map_json(self):
         # 2 layers to be added to the map
         filename = os.path.join(

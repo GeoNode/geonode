@@ -184,8 +184,11 @@ def _style_name(resource):
 def extract_name_from_sld(gs_catalog, sld, sld_file=None):
     try:
         if sld:
+            if isfile(sld):
+                sld = open(sld, "r").read()
             dom = etree.XML(sld)
         elif sld_file and isfile(sld_file):
+            sld = open(sld_file, "r").read()
             dom = etree.parse(sld_file)
     except Exception:
         logger.exception("The uploaded SLD file is not valid XML")
@@ -299,8 +302,20 @@ def fixup_style(cat, resource, style):
 
 def set_layer_style(saved_layer, title, sld, base_file=None):
     # Check SLD is valid
-    extract_name_from_sld(gs_catalog, sld, sld_file=base_file)
+    try:
+        if sld:
+            if isfile(sld):
+                sld = open(sld, "r").read()
+            etree.XML(sld)
+        elif base_file and isfile(base_file):
+            sld = open(base_file, "r").read()
+            etree.parse(base_file)
+    except Exception:
+        logger.exception("The uploaded SLD file is not valid XML")
+        raise Exception(
+            "The uploaded SLD file is not valid XML")
 
+    # Check Layer's available styles
     match = None
     styles = list(saved_layer.styles.all()) + [
         saved_layer.default_style]
@@ -778,9 +793,9 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     then store in GeoNode database using Attribute model
     """
     attribute_map = []
-    server_url = ogc_server_settings.LOCATION if layer.storeType != "remoteStore" else layer.service.base_url
+    server_url = ogc_server_settings.LOCATION if layer.storeType != "remoteStore" else layer.remote_service.service_url
 
-    if layer.storeType == "remoteStore" and layer.service.ptype == "gxp_arcrestsource":
+    if layer.storeType == "remoteStore" and layer.remote_service.ptype == "gxp_arcrestsource":
         dft_url = server_url + ("%s?f=json" % layer.alternate)
         try:
             # The code below will fail if http_client cannot be imported
@@ -789,11 +804,10 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                              for n in body["fields"] if n.get("name") and n.get("type")]
         except Exception:
             attribute_map = []
-
     elif layer.storeType in ["dataStore", "remoteStore", "wmsStore"]:
         dft_url = re.sub("\/wms\/?$",
                          "/",
-                         server_url) + "wfs?" + urllib.urlencode({"service": "wfs",
+                         server_url) + "ows?" + urllib.urlencode({"service": "wfs",
                                                                   "version": "1.0.0",
                                                                   "request": "DescribeFeatureType",
                                                                   "typename": layer.alternate.encode('utf-8'),
@@ -805,7 +819,6 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             doc = etree.fromstring(body)
             path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(
                 xsd="{http://www.w3.org/2001/XMLSchema}")
-
             attribute_map = [[n.attrib["name"], n.attrib["type"]] for n in doc.findall(
                 path) if n.attrib.get("name") and n.attrib.get("type")]
         except Exception:

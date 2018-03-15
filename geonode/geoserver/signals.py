@@ -65,7 +65,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        if instance.service is None or instance.service.method == CASCADED:
+        if instance.remote_service is None or instance.remote_service.method == CASCADED:
             if instance.alternate:
                 cascading_delete(gs_catalog, instance.alternate)
 
@@ -99,7 +99,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         * Point of Contact name and url
     """
     # Don't run this signal if is a Layer from a remote service
-    if getattr(instance, "service", None) is not None:
+    if getattr(instance, "remote_service", None) is not None:
         return
 
     # Don't run this signal handler if it is a tile layer or a remote store (Service)
@@ -252,13 +252,11 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if not settings.FREETEXT_KEYWORDS_READONLY:
         if gs_resource.keywords:
             for keyword in gs_resource.keywords:
-                instance.keywords.add(keyword)
+                if keyword not in instance.keyword_list():
+                    instance.keywords.add(keyword)
 
     if any(instance.keyword_list()):
         keywords = instance.keyword_list()
-        if settings.FREETEXT_KEYWORDS_READONLY:
-            if gs_resource.keywords:
-                keywords += gs_resource.keywords
         gs_resource.keywords = list(set(keywords))
 
         # gs_resource should only be called if
@@ -470,7 +468,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                )
                                )
 
-    ogc_wms_path = '%s/wms' % instance.workspace
+    ogc_wms_path = '%s/ows' % instance.workspace
     ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
     ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,

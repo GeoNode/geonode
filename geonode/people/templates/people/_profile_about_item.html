@@ -1,10 +1,9 @@
-{% load friendly_loader %}
-{% friendly_load avatar_tags %}
+{% load avatar_tags %}
 {% load i18n %}
 
 <section class="last">
   {% with 40 as avatar_size %}
-    <div class="avatar span1 pull-left"><a href="{% url "profile_detail" profile.username %}">{% avatar profile avatar_size %}</a></div>
+    <div class="avatar span1 pull-left"><a href="{% url "profile_detail" profile.username %}">{% autoescape off %}{% avatar profile avatar_size %}{% endautoescape %}</a></div>
   {% endwith %}
   <div>
     <div>

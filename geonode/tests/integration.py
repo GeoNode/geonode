@@ -259,10 +259,10 @@ class GeoNodeMapTest(TestCase):
         uploaded = file_upload(filename)
         try:
             # Check bbox value
-            bbox_x0 = Decimal('96.9560000000')
-            bbox_x1 = Decimal('97.1097053200')
-            bbox_y0 = Decimal('-5.5187330000')
-            bbox_y1 = Decimal('-5.3035455520')
+            bbox_x0 = Decimal('96.956000000000000')
+            bbox_x1 = Decimal('97.109705320000000')
+            bbox_y0 = Decimal('-5.518732999999900')
+            bbox_y1 = Decimal('-5.303545551999900')
             srid = u'EPSG:4326'
 
             self.assertEqual(bbox_x0, uploaded.bbox_x0)
@@ -273,17 +273,17 @@ class GeoNodeMapTest(TestCase):
 
             # bbox format: [xmin,xmax,ymin,ymax]
             expected_bbox = [
-                Decimal('96.9560000000'),
-                Decimal('97.1097053200'),
-                Decimal('-5.5187330000'),
-                Decimal('-5.3035455520'),
+                Decimal('96.956000000000000'),
+                Decimal('97.109705320000000'),
+                Decimal('-5.518732999999900'),
+                Decimal('-5.303545551999900'),
                 u'EPSG:4326'
             ]
             self.assertEqual(expected_bbox, uploaded.bbox)
 
             # bbox format: [xmin,ymin,xmax,ymax]
             expected_bbox_string = (
-                '96.9560000000,-5.5187330000,97.1097053200,-5.3035455520')
+                '96.956000000000000,-5.518732999999900,97.109705320000000,-5.303545551999900')
             self.assertEqual(expected_bbox_string, uploaded.bbox_string)
         finally:
             # Clean up and completely delete the layer
@@ -1050,7 +1050,7 @@ class GeoNodePermissionsTest(TestCase):
         # Set the layer private for not authenticated users
         layer.set_permissions({'users': {'AnonymousUser': []}})
 
-        url = 'http://localhost:8080/geoserver/geonode/wms?' \
+        url = 'http://localhost:8000/gs/geonode/ows?' \
             'LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES=' \
             '&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' \
             '&SRS=EPSG%3A4326' \

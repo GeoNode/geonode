@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#########################################################################
+#
 #
 # Copyright (C) 2016 OSGeo
 #
@@ -16,16 +16,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-#########################################################################
+#
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.generic import TemplateView
+from . import views
 
-urlpatterns = patterns('geonode.people.views',
-                       url(r'^$', TemplateView.as_view(template_name='people/profile_list.html'),
-                           name='profile_browse'),
-                       url(r"^edit/$", "profile_edit", name="profile_edit"),
-                       url(r"^edit/(?P<username>[^/]*)$", "profile_edit", name="profile_edit"),
-                       url(r"^profile/(?P<username>[^/]*)/$", "profile_detail", name="profile_detail"),
-                       url(r'^forgotname', 'forgot_username', name='forgot_username'),
-                       )
+urlpatterns = [  # 'geonode.people.views',
+    url(r'^$', TemplateView.as_view(template_name='people/profile_list.html'),
+        name='profile_browse'),
+    url(r"^edit/$", views.profile_edit, name="profile_edit"),
+    url(r"^edit/(?P<username>[^/]*)$",
+        views.profile_edit, name="profile_edit"),
+    url(r"^profile/(?P<username>[^/]*)/$",
+        views.profile_detail, name="profile_detail"),
+    url(r'^forgotname', views.forgot_username, name='forgot_username'),
+]

@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from geonode.qgis_server.views import (
     download_zip,
@@ -36,10 +36,9 @@ from geonode.qgis_server.views import (
     qml_style, set_thumbnail, default_qml_style)
 
 
-urlpatterns = patterns(
-
+urlpatterns = [
     # Specific for a QGIS Layer
-    '',
+    # '',
     url(
         r'^download-zip/(?P<layername>[\w]*)$',
         download_zip,
@@ -165,4 +164,4 @@ urlpatterns = patterns(
        download_qlr,
        name='download-qlr'
     ),
-)
+]

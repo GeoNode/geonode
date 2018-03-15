@@ -31,9 +31,8 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
-from django.shortcuts import render_to_response, get_object_or_404, render
+from django.shortcuts import render, get_object_or_404
 from django.conf import settings
-from django.template import RequestContext
 from django.utils.translation import ugettext as _
 try:
     # Django >= 1.7
@@ -175,7 +174,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, map_obj)
 
-    return render_to_response(template, RequestContext(request, context_dict))
+    return render(request, template, context=context_dict)
 
 
 @login_required
@@ -326,7 +325,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
             if not is_manager or not can_change_metadata:
                 map_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         "config": json.dumps(config),
         "resource": map_obj,
         "map": map_obj,
@@ -339,7 +338,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
         "metadata_author_groups": metadata_author_groups,
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
-    }))
+    })
 
 
 @login_required
@@ -360,9 +359,9 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
         _PERMISSION_MSG_VIEW)
 
     if request.method == 'GET':
-        return render_to_response(template, RequestContext(request, {
+        return render(request, template, context={
             "map": map_obj
-        }))
+        })
 
     elif request.method == 'POST':
 
@@ -415,9 +414,9 @@ def map_embed(
             config = snapshot_config(
                 snapshot, map_obj, request.user, access_token)
 
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         'config': json.dumps(config)
-    }))
+    })
 
 
 def map_embed_widget(request, mapid,
@@ -539,14 +538,14 @@ def map_view(request, mapid, snapshot=None, layer_name=None, template='maps/map_
     if layer_name:
         config = add_layers_to_map_config(request, map_obj, (layer_name, ), False)
 
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         'config': json.dumps(config),
         'map': map_obj,
         'preview': getattr(
             settings,
             'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
             'geoext')
-    }))
+    })
 
 
 def map_view_js(request, mapid):
@@ -647,7 +646,7 @@ def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
     else:
         config = snapshot_config(snapshot, map_obj, request.user, access_token)
 
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         'mapId': mapid,
         'config': json.dumps(config),
         'map': map_obj,
@@ -655,7 +654,7 @@ def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
             settings,
             'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
             'geoext')
-    }))
+    })
 
 
 # NEW MAPS #
@@ -696,9 +695,10 @@ def new_map(request, template='maps/map_new.html'):
     if isinstance(config, HttpResponse):
         return config
     else:
-        return render_to_response(
-            template, RequestContext(
-                request, context_dict))
+        return render(
+            request,
+            template,
+            context=context_dict)
 
 
 def new_map_json(request):
@@ -824,6 +824,16 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
 
         layer_bbox = layer.bbox
         # assert False, str(layer_bbox)
+
+        def decimal_encode(bbox):
+            import decimal
+            _bbox = []
+            for o in [float(coord) for coord in bbox]:
+                if isinstance(o, decimal.Decimal):
+                    o = (str(o) for o in [o])
+                _bbox.append(o)
+            return _bbox
+
         if bbox is None:
             bbox = list(layer_bbox[0:4])
         else:
@@ -844,22 +854,22 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         config["wrapDateLine"] = True
         config["srs"] = getattr(
             settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
-        config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
+        config["bbox"] = decimal_encode(bbox) if config["srs"] != 'EPSG:900913' \
             else llbbox_to_mercator([float(coord) for coord in bbox])
 
         if layer.storeType == "remoteStore":
-            service = layer.service
+            service = layer.remote_service
             # Probably not a good idea to send the access token to every remote service.
             # This should never match, so no access token should be
             # sent to remote services.
             ogc_server_url = urlparse.urlsplit(
                 ogc_server_settings.PUBLIC_LOCATION).netloc
-            service_url = urlparse.urlsplit(service.base_url).netloc
+            service_url = urlparse.urlsplit(service.service_url).netloc
 
-            if access_token and ogc_server_url == service_url and 'access_token' not in service.base_url:
-                url = service.base_url + '?access_token=' + access_token
+            if access_token and ogc_server_url == service_url and 'access_token' not in service.service_url:
+                url = service.service_url + '?access_token=' + access_token
             else:
-                url = service.base_url
+                url = service.service_url
             maplayer = MapLayer(map=map_obj,
                                 name=layer.alternate,
                                 ows_url=layer.ows_url,
@@ -869,7 +879,8 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
                                     "ptype": service.ptype,
                                     "remote": True,
                                     "url": url,
-                                    "name": service.name}))
+                                    "name": service.name,
+                                    "title": "[R] %s" % service.title}))
         else:
             ogc_server_url = urlparse.urlsplit(
                 ogc_server_settings.PUBLIC_LOCATION).netloc
@@ -936,7 +947,6 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         request.user, access_token, *layers_to_add)
 
     config['fromLayer'] = True
-
     return config
 
 
@@ -975,10 +985,12 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
 
-        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        if 'geonode.geoserver' in settings.INSTALLED_APPS \
+                and ogc_server_settings.BACKEND == 'geonode.geoserver':
             # TODO the url needs to be verified on geoserver
             url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        elif 'geonode.qgis_server' in settings.INSTALLED_APPS:
+        elif 'geonode.qgis_server' in settings.INSTALLED_APPS \
+                and ogc_server_settings.BACKEND == 'geonode.qgis_server':
             url = urljoin(settings.SITEURL,
                           reverse("qgis_server:download-map", kwargs={'mapid': mapid}))
             # qgis-server backend stop here, continue on qgis_server/views.py
@@ -1017,7 +1029,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
                             [l for l in downloadable_layers if l.name == lyr.name]) == 0:
                         downloadable_layers.append(lyr)
 
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         "geoserver": ogc_server_settings.PUBLIC_LOCATION,
         "map_status": map_status,
         "map": map_obj,
@@ -1025,7 +1037,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
         "remote_layers": remote_layers,
         "downloadable_layers": downloadable_layers,
         "site": settings.SITEURL
-    }))
+    })
 
 
 def map_download_check(request):
@@ -1061,10 +1073,10 @@ def map_wmc(request, mapid, template="maps/wmc.xml"):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
 
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         'map': map_obj,
         'siteurl': settings.SITEURL,
-    }), content_type='text/xml')
+    }, content_type='text/xml')
 
 
 def map_wms(request, mapid):
@@ -1153,6 +1165,7 @@ def snapshot_config(snapshot, map_obj, user, access_token):
         for ordering, layer in enumerate(layers):
             maplayers.append(
                 layer_from_viewer_config(
+                    map_obj.id,
                     MapLayer,
                     layer,
                     config["sources"][
@@ -1300,11 +1313,11 @@ def map_metadata_detail(
             group = GroupProfile.objects.get(slug=map_obj.group.name)
         except GroupProfile.DoesNotExist:
             group = None
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         "resource": map_obj,
         "group": group,
         'SITEURL': settings.SITEURL[:-1]
-    }))
+    })
 
 
 @login_required

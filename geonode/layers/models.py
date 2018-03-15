@@ -150,7 +150,7 @@ class Layer(ResourceBase):
         null=True,
         blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')
-    service = models.ForeignKey("services.Service", null=True, blank=True)
+    remote_service = models.ForeignKey("services.Service", null=True, blank=True)
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
@@ -184,8 +184,8 @@ class Layer(ResourceBase):
 
     @property
     def ows_url(self):
-        if self.service is not None and self.service.method == INDEXED:
-            result = self.service.base_url
+        if self.remote_service is not None and self.remote_service.method == INDEXED:
+            result = self.remote_service.service_url
         else:
             result = "{base}ows".format(
                 base=settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
@@ -194,12 +194,12 @@ class Layer(ResourceBase):
 
     @property
     def ptype(self):
-        return self.service.ptype if self.service else "gxp_wmscsource"
+        return self.remote_service.ptype if self.remote_service else "gxp_wmscsource"
 
     @property
     def service_typename(self):
-        if self.service is not None and self.service.method == INDEXED:
-            return "%s:%s" % (self.service.name, self.alternate)
+        if self.remote_service is not None and self.remote_service.method == INDEXED:
+            return "%s:%s" % (self.remote_service.name, self.alternate)
         else:
             return self.alternate
 
@@ -484,9 +484,9 @@ class Attribute(models.Model):
 
 
 def _get_alternate_name(instance):
-    if instance.service is not None and instance.service.method == INDEXED:
+    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
         result = instance.name
-    elif instance.service is not None and instance.service.method == CASCADED:
+    elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
         result = "{}:{}".format(
             getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE),
             instance.name
@@ -564,8 +564,8 @@ def pre_delete_layer(instance, sender, **kwargs):
     Remove any associated style to the layer, if it is not used by other layers.
     Default style will be deleted in post_delete_layer
     """
-    if instance.service is not None and instance.service.method == INDEXED:
-        # we need to delete the maplayers here because in the post save layer.service is not available anymore
+    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
+        # we need to delete the maplayers here because in the post save layer.remote_service is not available anymore
         # REFACTOR
         from geonode.maps.models import MapLayer
         logger.debug(
@@ -598,7 +598,7 @@ def post_delete_layer(instance, sender, **kwargs):
     Removed the layer from any associated map, if any.
     Remove the layer default style.
     """
-    if instance.service is not None and instance.service.method == INDEXED:
+    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
         return
 
     from geonode.maps.models import MapLayer

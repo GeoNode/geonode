@@ -27,8 +27,8 @@ from django.db import models
 from django.db.models import signals
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.urlresolvers import reverse
-from django.contrib.contenttypes import fields
 from django.contrib.staticfiles import finders
 from django.utils.translation import ugettext as _
 
@@ -107,7 +107,7 @@ class DocumentResourceLink(models.Model):
     # relation to the resource model
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    resource = fields.GenericForeignKey('content_type', 'object_id')
+    resource = GenericForeignKey('content_type', 'object_id')
 
 
 def get_related_documents(resource):

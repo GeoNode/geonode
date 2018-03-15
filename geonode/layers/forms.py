@@ -61,7 +61,7 @@ class LayerForm(ResourceBaseForm):
             'default_style',
             'styles',
             'upload_session',
-            'service',)
+            'remote_service',)
         # widgets = {
         #     'title': forms.TextInput({'placeholder': title_help_text})
         # }
