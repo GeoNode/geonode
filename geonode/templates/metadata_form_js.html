@@ -524,20 +524,23 @@
                 $('#group_mandatoryDialog').modal();
             } else {
                 var formData = $(this).serializeArray();
-                // edit data here
-                    /* var date = $('#id_resource-date').val();
-                    var resource_date = $.grep(formData, function(e){ return e.name == 'resource-date'; });
-                    if (resource_date.length >= 1) {
-                        resource_date[0].value = date + ' AM';
-                    } */
                 formData.forEach(function(entry) {
-                    if(entry["name"].contains("keywords")) {
-                        entry["value"] = escape(entry["value"]);
+                    try{
+                        if(entry["name"].contains("keywords")) {
+                            entry["value"] = escape(entry["value"]);
+                        }
+                    }catch(err){
+                        console.log(err);
                     }
                 });
 
-                $.post('metadata', /*$(this).serialize()*/ $.param(formData))
-                    .done(function(data){
+                // $.post('metadata', /*$(this).serialize()*/ $.param(formData))
+                $.ajax({
+                        url: "metadata",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: $.param(formData)
+                   }).done(function(data){
                         // Do something more fancy with your respone
                         // $('.message').html(data.message);
                         if (!is_advanced) {
@@ -550,9 +553,9 @@
                                 console.log(err);
                             }
                         }
-                        $('#preview_pleaseWaitDialog').modal('hide');
-                    })
-                    .fail(function(xhr, status, error) {
+                        metadata_update_done = true;
+                    }).fail(function(xhr, status, error) {
+                        alert(is_advanced);
                         // error handling
                         console.log(error);
                         if(xhr.responseJSON && xhr.responseJSON['errors']) {
@@ -565,14 +568,20 @@
                         } else {
                             $("#preview_errorDialog .modal-body").html(xhr.responseText);
                         }
-                        $('#preview_pleaseWaitDialog').modal('hide');
                         $('#preview_errorDialog').modal();
+                        metadata_update_done = false;
+                    }).always(function (a, textStatus, b) {
+                          $('#preview_pleaseWaitDialog').modal('hide');
+                          if(textStatus === 'success' && metadata_update_done) {
+                              if(new RegExp(".*/metadata$").test(e.target.action)) {
+                                  window.location.replace(e.target.action.replace('/metadata',''));
+                              } else if(new RegExp(".*/"+metadata_uri+"$").test(e.target.action)) {
+                                  window.location.replace(e.target.action.replace('/'+metadata_uri,''));
+                              }
+                          }
                     });
             }
             e.preventDefault();
-            if (metadata_update_done) {
-                window.location.replace(e.target.action.replace('/'+metadata_uri,''));
-            }
         });
 
         if(totalNum == prevNum) {
