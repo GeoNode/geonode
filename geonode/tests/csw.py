@@ -126,12 +126,12 @@ class GeoNodeCSWTest(TestCase):
                 if link['scheme'] == 'OGC:WMS':
                     self.assertEqual(
                         link['url'],
-                        'http://localhost:8080/geoserver/geonode/wms',
+                        'http://localhost:8000/gs/geonode/ows',
                         'Expected a specific OGC:WMS URL')
                 elif link['scheme'] == 'OGC:WFS':
                     self.assertEqual(
                         link['url'],
-                        'http://localhost:8080/geoserver/geonode/wfs',
+                        'http://localhost:8000/gs/geonode/wfs',
                         'Expected a specific OGC:WFS URL')
             elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                 if link['scheme'] == 'OGC:WMS':
@@ -198,12 +198,12 @@ class GeoNodeCSWTest(TestCase):
                 if link.protocol == 'OGC:WMS':
                     self.assertEqual(
                         link.url,
-                        'http://localhost:8080/geoserver/geonode/wms',
+                        'http://localhost:8000/gs/geonode/ows',
                         'Expected a specific OGC:WMS URL')
                 elif link.protocol == 'OGC:WFS':
                     self.assertEqual(
                         link.url,
-                        'http://localhost:8080/geoserver/geonode/wfs',
+                        'http://localhost:8000/gs/geonode/wfs',
                         'Expected a specific OGC:WFS URL')
             if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                 if link.protocol == 'OGC:WMS':

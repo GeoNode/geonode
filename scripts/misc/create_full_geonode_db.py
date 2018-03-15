@@ -40,7 +40,7 @@ from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.layers.utils import file_upload
-from geonode.tasks.deletion import delete_layer
+from geonode.layers.tasks import delete_layer
 
 
 def get_random_user():

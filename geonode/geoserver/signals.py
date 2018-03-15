@@ -36,14 +36,15 @@ from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
 from geonode.geoserver.helpers import set_styles, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.geoserver.helpers import geoserver_upload
 from geonode.geoserver.helpers import create_gs_thumbnail
+from geonode.geoserver.upload import geoserver_upload
 from geonode.base.models import ResourceBase
 from geonode.base.models import Link
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
 from geonode.social.signals import json_serializer_producer
 from geonode.catalogue.models import catalogue_post_save
+from geonode.services.enumerations import CASCADED
 
 import geoserver
 from geoserver.layer import Layer as GsLayer
@@ -64,7 +65,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        if not getattr(instance, "service", None):
+        if instance.service is None or instance.service.method == CASCADED:
             if instance.alternate:
                 cascading_delete(gs_catalog, instance.alternate)
 
@@ -85,7 +86,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         producer.geoserver_upload_layer(payload)
 
 
-def geoserver_post_save_local(layer_id, *args, **kwargs):
+def geoserver_post_save_local(instance, *args, **kwargs):
     """Send information to geoserver.
 
        The attributes sent include:
@@ -97,14 +98,6 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    # If it is a layer object, post process it. If not, abort.
-    try:
-        instance = Layer.objects.get(id=layer_id)
-    except Layer.DoesNotExist as e:
-        logger.exception(e)
-        return
-        # raise e
-
     # Don't run this signal if is a Layer from a remote service
     if getattr(instance, "service", None) is not None:
         return
@@ -259,13 +252,11 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
     if not settings.FREETEXT_KEYWORDS_READONLY:
         if gs_resource.keywords:
             for keyword in gs_resource.keywords:
-                instance.keywords.add(keyword)
+                if keyword not in instance.keyword_list():
+                    instance.keywords.add(keyword)
 
     if any(instance.keyword_list()):
         keywords = instance.keyword_list()
-        if settings.FREETEXT_KEYWORDS_READONLY:
-            if gs_resource.keywords:
-                keywords += gs_resource.keywords
         gs_resource.keywords = list(set(keywords))
 
         # gs_resource should only be called if
@@ -477,7 +468,7 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
                                )
                                )
 
-    ogc_wms_path = '%s/wms' % instance.workspace
+    ogc_wms_path = '%s/ows' % instance.workspace
     ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
     ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,

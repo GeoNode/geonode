@@ -30,7 +30,11 @@ import os.path
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.urlresolvers import reverse
+
 from geonode.layers.models import Layer
+from geonode.maps.models import Map
+from geonode.documents.models import Document
+
 from geonode.people.models import Profile
 from geonode.upload.models import Upload
 from geonode.upload.views import _ALLOW_TIME_STEP
@@ -276,6 +280,13 @@ class UploaderBase(unittest.TestCase):
     def tearDown(self):
         super(UploaderBase, self).tearDown()
         map(os.unlink, self._tempfiles)
+        # move to original settings
+        settings.OGC_SERVER['default']['DATASTORE'] = ''
+        del settings.DATABASES['datastore']
+        # Cleanup
+        Layer.objects.all().delete()
+        Map.objects.all().delete()
+        Document.objects.all().delete()
 
     def check_layer_geonode_page(self, path):
         """ Check that the final layer page render's correctly after
