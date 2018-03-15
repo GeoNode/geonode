@@ -355,7 +355,8 @@ def set_geofence_all(instance):
               http://<host>:<port>/geoserver/geofence/rest/rules.json?layer=<layer_name>
         """
         headers = {'Content-type': 'application/json'}
-        r = requests.get(url + 'geofence/rest/rules.json?layer=' + resource.layer.name,
+        r = requests.get(url + 'geofence/rest/rules.json?layer=' + resource.layer.name +
+                         '&workspace=' + resource.layer.workspace,
                          headers=headers,
                          auth=HTTPBasicAuth(user, passwd))
 
@@ -595,7 +596,7 @@ def autologin(sender, **kwargs):
 
 def _get_layer_workspace(layer):
     """Get the workspace where the input layer belongs"""
-    default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
+    default_workspace = layer.workspace
     try:
         if layer.service.method == CASCADED:
             workspace = getattr(
