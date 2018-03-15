@@ -2312,6 +2312,7 @@ ul.resources-summery li {
     float: left;
     display: block;
     position: relative;
+    margin-right: 15px;
 }
 ul.resources-summery li a {
     padding: 0 12px;

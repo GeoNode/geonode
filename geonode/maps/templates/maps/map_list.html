@@ -12,9 +12,100 @@
         
                                         <div class="pull-right">
         
+
+                                            <div class="btn-group" role="group" aria-label="tools">
+                                                <div id="profileSortId" class="btn-group" role="group">
+                                                    <a href="javascript:;" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                                       aria-haspopup="true" aria-expanded="false">
+                                                        <span id="currtenSortTitle">{% trans "Most recent" %}</span>
+                                                        <span class="caret"></span>
+                                                    </a>
+                                                    <ul class="dropdown-menu dropdown-menu-right" id="sort">
+                                                        <li>
+                                                          <a data-value="-date" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">
+                                                              {% trans "Most recent" %}
+                                                          </a>
+                                                        </li>
+                                                        <li>
+                                                          <a data-value="date" data-filter="order_by" ng-click="single_choice_listener($event)">
+                                                            {% trans "Less recent" %}
+                                                          </a>
+                                                        </li>
+                                                        <li>
+                                                          <a data-value="title" data-filter="order_by" ng-click="single_choice_listener($event)">
+                                                            {% trans "A - Z" %}
+                                                          </a>
+                                                        </li>
+                                                        <li>
+                                                          <a data-value="-title" data-filter="order_by" ng-click="single_choice_listener($event)">
+                                                            {% trans "Z - A" %}
+                                                          </a>
+                                                        </li>
+                                                        <!--<li>-->
+                                                          <!--<a data-value="-popular_count" data-filter="order_by" ng-click="single_choice_listener($event)">-->
+                                                            <!--{% trans "Most popular" %}-->
+                                                          <!--</a>-->
+                                                        <!--</li>-->
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+
+
+                                            <div class="btn-group" role="group" aria-label="tools">
+                                                <div id="profileSortId" class="btn-group" role="group">
+                                                    <a href="javascript:;" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                                       aria-haspopup="true" aria-expanded="false">
+                                                        <span id="limitOfpage">100</span>
+                                                        <span class="caret"></span>
+                                                    </a>
+                                                    <ul class="dropdown-menu dropdown-menu-right" id="sort">
+                                                        <li>
+                                                            <a ng-click="limit_choice_listener(20)">
+                                                                20
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a ng-click="limit_choice_listener(40)">
+                                                                40
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a ng-click="limit_choice_listener(100)">
+                                                                100
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="btn-group" role="group">
+                                                
+                                                                                       
+                                            
+                                            
+                                                                                                
+                                                                                                        <a href="javascript:;" ng-class="{'btn-success' : pageViewing == 'list'}" class="btn btn-default" ng-click="displayView('list')">
+                                                                                                            <i class="fa fa-bars"></i>
+                                                                                                        </a>
+                                                                                                   
+                                            
+                                                                                                    
+                                                                                                            <a href="javascript:;" ng-class="{'btn-success' : pageViewing == 'grid'}" class="btn btn-default" ng-click="displayView('grid')">
+                                                                                                                <i class="fa fa-th-large"></i>
+                                                                                                                <!--<img src="images/user-separator-icon.png" />-->
+                                                                                                            </a>
+                                                                                                        
+                                                            
+                                                
+                                                                                   
+                                                
+                                                                                   
+                                                </div>
                                            
                                           
-                                                <div class="small-content text-right">
+                                                <div class="btn-group">
                                                         <div ng-show="cart.getCart().items.length > 0" ng-controller="CartList">
                                                             <div class="selectfixed">
                                                                 <resource-cart></resource-cart>
