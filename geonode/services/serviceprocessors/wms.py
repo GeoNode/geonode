@@ -25,7 +25,6 @@ import logging
 from uuid import uuid4
 from urlparse import urlsplit, urljoin
 from httplib import HTTPConnection, HTTPSConnection
-from decimal import Decimal
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
