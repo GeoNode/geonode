@@ -227,18 +227,18 @@
 
     <div class="container-fluid" style="padding: 0;">
         <div class="row">
-            <div class="col-md-5" style="padding-right: 0">
+            <div class="col-md-4" style="padding-right: 0">
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <h3 class="panel-title">Query</h3>
                     </div>
                     <div class="panel-body">
-                        <div class="col-md-12">
+                        
                                 <input type="checkbox" checked 
                                 ng-model="isBoundaryBoxEnabled"
                                 
-                                >Query by current map extent</label>
-                        </div>
+                                > Query by current map extent</label>
+                        
                         <div class="clearfix"></div>
                         <query-builder layer-id="layerId" group="group"></query-builder>
                     </div>
@@ -246,12 +246,12 @@
                     <div class="panel-footer">
                         <a href="" 
                         ng-click="getQueryResult()"
-                        class="btn btn-gd-primary pull-right icon-btn-color">
-                                                        Query <i class="fa fa-binoculars" aria-hidden="true"></i>    
+                        class="btn btn-gd-primary btn-sm pull-right icon-btn-color">
+                                                        Query <i class="fa fa-binoculars" style="font-size: 16px;" aria-hidden="true"></i>    
                                                     </a>
                         <a href="" 
                         onclick="animating()"
-                        class="btn btn-default pull-right" target="_self" style="margin-right: 5px;">
+                        class="btn btn-default btn-sm pull-right" target="_self" style="margin-right: 5px;">
                                                             Cancel <i class="fa fa-times" aria-hidden="true"></i></a>
 
                         <div style="clear:both"></div>
@@ -259,10 +259,15 @@
                 </div>
             </div>
 
-            <div class="col-md-7" style="padding-left: 3px">
+            <div class="col-md-8" style="padding-left: 3px">
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Attribute Grid</h3>
+                        <h3 class="panel-title">
+                            Attribute Grid 
+
+                            <a href="" onclick="animating()" class="btn btn-default btn-sm pull-right" target="_self" style="position: absolute;right:20px;top:4px;padding:1px 6px;">
+                                    <i class="fa fa-times" aria-hidden="true"></i></a>
+                        </h3>
                     </div>
 
                     <div class="table-responsive panel-bottom-table">
