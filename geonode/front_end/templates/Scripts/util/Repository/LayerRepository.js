@@ -154,7 +154,7 @@
                     });
                 });
             },
-            getLayers: function(url) {
+            getWmsLayers: function(url) {
                 // http://172.16.0.237:8000/proxy/?url=http%3A%2F%2F172.16.0.247%3A8080%2Fgeoserver%2Fwms%3Faccess_token%3D9df608bcabe911e7a833080027252357%26SERVICE%3DWMS%26REQUEST%3DGetCapabilities%26TILED%3Dtrue%26AcceptFormats%3D
 
                 return $q(function(resolve, reject) {
@@ -166,6 +166,19 @@
                         reject(res);
                     });
                 });
+            },
+            getLayers: function(url) {
+                var deferred = $q.defer();
+                $http.get('api/layers/', {
+                    headers: {
+                        'X-CSRFToken': $cookies.get('csrftoken')
+                    }
+                }).then(function(res) {
+                    deferred.resolve(res.data.objects);
+                }, function(res) {
+                    deferred.reject(res);
+                });
+                return deferred.promise;
             },
             get: function(url) {
                 var deferred = $q.defer();

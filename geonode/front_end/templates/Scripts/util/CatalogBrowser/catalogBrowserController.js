@@ -37,31 +37,42 @@ function catalogBrowserController($scope, $rootScope, $modal, catalogDataService
     };
 
     $scope.serverList = [{
-        name: 'Geoserver',
-        url: $window.GeoServerHttp2Root + 'wms',
-        type: 'wms'
-    }, 
-    // {
-    //     name: 'geodata.nationaalgeoregister',
-    //     url: 'https://geodata.nationaalgeoregister.nl/bestuurlijkegrenzen/wms',
-    //     type: 'wms'
-    // }
-];
+            name: 'Geoserver',
+            method: loadLayersByApi
+        },
+        // {
+        //     name: 'geodata.nationaalgeoregister',
+        //     url: 'https://geodata.nationaalgeoregister.nl/bestuurlijkegrenzen/wms',
+        //     type: 'wms',
+        //     method: loadLayersByWms
 
-    $scope.loadLayers = function(server) {
-        $scope.selectedServerName = server.name;
+        // }
+    ];
+
+    function loadLayersByWms(server) {
         var url = server.url + '?service=wms&tiled=true&request=GetCapabilities&access_token=9df608bcabe911e7a833080027252357';
-        layerService.fetchLayers(url)
+        layerService.fetchWmsLayers(url)
             .then(function(res) {
-                console.log(res);
                 $scope.layers = res;
                 $scope.layers.forEach(function(e) {
                     e.geoserverUrl = server.url;
                 }, this);
             });
+    }
+
+    function loadLayersByApi(server) {
+        layerService.fetchLayers()
+            .then(function(res) {
+                $scope.layers = res;
+            });
+    }
+    $scope.loadLayers = function(server) {
+        $scope.selectedServerName = server.name;
+        server.method(server);
+
     };
 
-    $scope.addLayer = function(layer){
+    $scope.addLayer = function(layer) {
         console.log(layer);
         $rootScope.$broadcast('LayerAdded', layer);
     }
