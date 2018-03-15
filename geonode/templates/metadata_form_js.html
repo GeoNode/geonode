@@ -555,7 +555,6 @@
                         }
                         metadata_update_done = true;
                     }).fail(function(xhr, status, error) {
-                        alert(is_advanced);
                         // error handling
                         console.log(error);
                         if(xhr.responseJSON && xhr.responseJSON['errors']) {
