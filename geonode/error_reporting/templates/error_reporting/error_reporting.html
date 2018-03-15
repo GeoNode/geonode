@@ -4,11 +4,11 @@
 {% block title %}{% trans "Error Logs" %}{% endblock %}
 
 {% block body_outer %}
-    <br>
-    <h1>Error Logs</h1>
+
+    <div class="d-title">Error Logs</div>
     {% if object_list %}
-        <div class="table-responsive">
-            <table class="table table-bordered">
+        <div class="table-responsive ">
+            <table class="table table-bordered panel panel-default table-striped">
                 <tr>
                     <th><b>{% trans "User Name" %}</b></th>
                     <th><b>{% trans "Level" %}</b></th>
@@ -24,7 +24,7 @@
                         {% comment %}<td>{{ error.custom_msg }}</td>{% endcomment %}
                         <td>{{ error.msg }}</td>
                         <td>{{ error.trace }}</td>
-                        <td>{{ error.create_datetime }}</td>
+                        <td style="width: 200px;">{{ error.create_datetime }}</td>
 
                     </tr>
                 {% endfor %}
