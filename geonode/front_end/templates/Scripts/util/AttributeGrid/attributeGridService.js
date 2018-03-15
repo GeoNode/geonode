@@ -102,6 +102,7 @@
                 editedRows = [];
             },
             highlightFeature : function(featureJson){
+                vectorSource.clear();
                 var mapFeatures = (new ol.format.GeoJSON()).readFeatures(featureJson, { featureProjection: 'EPSG:3857' });
                 vectorSource.addFeatures(mapFeatures);
                 var extent = mapFeatures[0].getGeometry().getExtent();

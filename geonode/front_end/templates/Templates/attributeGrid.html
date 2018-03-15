@@ -9,7 +9,7 @@
 
     <div class="modal-body" style="overflow: visible;">
             
-        <form ng-submit="searchByAttribute()" class="attributeGridFilter form-inline">
+        <!-- <form ng-submit="searchByAttribute()" class="attributeGridFilter form-inline">
                 <div class="form-group">
             <select class="form-control" ng-model="search.attribute" ng-options="attribute.Name for attribute in gridData.attributeDefinitions">
                 <option value="">Select an Attribute</option>
@@ -17,7 +17,7 @@
             <input class="form-control" type="text" ng-model="search.value" placeholder="search by attribute" ng-disabled="!search.attribute"/>
             <input type="submit" class="btn btn-primary" value="Search"/>
         </div>
-        </form>
+        </form> -->
         <div class="attribute-grid-container">
             <div ng-if="loading"><i class="fa fa-spinner fa-spin"></i></div>
             <!-- <div id="attribute-grid" hands-on-table="gridData.attributeRows" config="config" class="hot handsontable"></div> -->

@@ -73,7 +73,6 @@ def proxy(request):
     conn.request(request.method, locator, request.body, headers)
 
     result = conn.getresponse()
-
     # If we get a redirect, let's add a useful message.
     if result.status in (301, 302, 303, 307):
         response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
