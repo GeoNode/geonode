@@ -997,7 +997,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
             return redirect(url)
 
         # the path to geoserver backend continue here
-        resp, content = http_client.request(url, 'POST', layers=mapJson)
+        resp, content = http_client.request(url, 'POST', body=mapJson)
 
         status = int(resp.status)
 
