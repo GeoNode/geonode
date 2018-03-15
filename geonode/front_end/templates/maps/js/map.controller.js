@@ -83,6 +83,10 @@
             var query = queryOutputFactory.getOutput($scope.group);
             $rootScope.$broadcast('filterDataWithCqlFilter', {query: query,bbox:$scope.isBoundaryBoxEnabled});
         };
+        $scope.disableQuery=function(){
+            $rootScope.$broadcast('reloadAttributeGrid', "");
+            $scope.group = { "a": "AND", "rules": [] };
+        };
         $scope.$watch(function() {
             return $rootScope.layerId;
         }, function() {

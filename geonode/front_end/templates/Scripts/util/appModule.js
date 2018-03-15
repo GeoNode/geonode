@@ -6,8 +6,8 @@
         $interpolateProvider.startSymbol('[{');
         $interpolateProvider.endSymbol('}]');
     })
-    .run(['$rootScope', '$window', '$timeout', '$http', 'mapRepository', 'mapService', 'dirtyManager', 'surfToastr', 'urlResolver', 'userProfileService', 'mapAccessLevel', '$modal', 'layerService', 'interactionHandler', 'GeoLocationTool', 'LocationSearchTool', 'ActiveLayerTool', 'AllSelectableLayerTool', 'google', 'SurfMap', 'layerRenderingModeFactory', 'ZoomTrackerTool', 'ZoomToLayerTool', 'BaseMapTool', 'reprojection', 'mapTools', 'mapToolsFactory', 'onZoomHandler', '$cookies', 'LayerService',
-        function($rootScope, $window, $timeout, $http, mapRepository, mapService, dirtyManager, surfToastr, urlResolver, userProfileService, mapAccessLevel, $modal, layerService, interactionHandler, GeoLocationTool, LocationSearchTool, ActiveLayerTool, AllSelectableLayerTool, google, SurfMap, layerRenderingModeFactory, ZoomTrackerTool, ZoomToLayerTool, BaseMapTool, reprojection, mapTools, mapToolsFactory, onZoomHandler, $cookies, LayerService) {
+    .run(['$rootScope', '$window', '$timeout', '$http', 'mapRepository', 'mapService', 'dirtyManager', 'surfToastr', 'urlResolver', 'userProfileService', 'mapAccessLevel', '$modal', 'layerService', 'interactionHandler', 'GeoLocationTool', 'LocationSearchTool', 'ActiveLayerTool', 'AllSelectableLayerTool', 'google', 'SurfMap', 'layerRenderingModeFactory', 'ZoomTrackerTool', 'ZoomToLayerTool', 'BaseMapTool', 'reprojection', 'mapTools', 'mapToolsFactory', 'onZoomHandler', '$cookies', 'LayerService','jantrik.Event',
+        function($rootScope, $window, $timeout, $http, mapRepository, mapService, dirtyManager, surfToastr, urlResolver, userProfileService, mapAccessLevel, $modal, layerService, interactionHandler, GeoLocationTool, LocationSearchTool, ActiveLayerTool, AllSelectableLayerTool, google, SurfMap, layerRenderingModeFactory, ZoomTrackerTool, ZoomToLayerTool, BaseMapTool, reprojection, mapTools, mapToolsFactory, onZoomHandler, $cookies, LayerService,Event) {
             urlResolver.setGeoserverRoot($window.GeoServerHttp2Root, $window.GeoServerTileRoot);
             // $window.GeoServerHttp2Root = "";
             // $window.GeoServerTileRoot = "";
@@ -18,9 +18,25 @@
             // $cookies.put('ASP.NET_SessionId', 'l20edewgv2bqa41dgdwijcuq');
             // $cookies.put('shape-maker-uat', '7F496AF1D3F4D37373D6DA951DD7D3797424FFC4480B582CF7879450C6FE952B084F5BE79EABCFA0B38C9F52340F8C1E8F36B92C3DD2BFDC4E7C728167588CD1BF4F075966AF13E7EFF01C177B13D19074408E517BAF9827EAEDE29C5ED8700FED2584EAB2F79CBD81DC8021512BBEC1EC474D5C6ABB44418A42967D2546770E');
 
+            var count = 0;
+            function animating(){
+                if(count === 0){
+                    // $("#panel-bottom").slideDown();
+                    // $('#panel-bottom').css("top", "");
+                    document.getElementById('panel-bottom').className = 'panel-bottom slideInUp'; 
+                    count++;
+                }else{
+                    document.getElementById('panel-bottom').className = 'panel-bottom slideOutDown';
+                    // $("#panel-bottom").slideUp();
+                    // $('#panel-bottom').css("top", "");
+                    count--;
+                    }
+            }
             $rootScope.showAttributeGrid = function() {
-                console.log('show grid');
-                $rootScope.layerId = mapTools.activeLayer.getActiveLayer().getId();
+                $timeout(function(){
+                    // $( "#panel-bottom" ).removeClass( "slideOutDown" );
+                    animating();
+                });
             };
 
             $rootScope.showProperties = function(selectedTabIndex) {
@@ -163,6 +179,10 @@
             $rootScope.bodyClicked = function() {
                 jantrik.EventPool.broadcast("bodyClicked");
             };
+
+            mapTools.activeLayer.events.register('changed', function (newActiveLayer) {
+                $rootScope.layerId = mapTools.activeLayer.getActiveLayer().getId();
+            });
 
             $rootScope.$on('featureAttributeSelectionChanged', function(event, info) {
                 mapService.setFeatureSelected(fid, info.isSelected);

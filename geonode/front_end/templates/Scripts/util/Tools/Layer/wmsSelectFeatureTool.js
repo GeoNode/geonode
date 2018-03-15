@@ -1,6 +1,6 @@
 ﻿mapModule.factory('WmsSelectFeatureTool', [
-    'featureService', 'jantrik.Event', 'surfFeatureFactory',
-    function (featureService, Event, surfFeatureFactory) {
+    'featureService', 'jantrik.Event', 'surfFeatureFactory','LayerService',
+    function (featureService, Event, surfFeatureFactory,LayerService) {
         function WmsSelectFeature(olMap, surfLayer, olLayer, surfMap, options) {
             var isActivated = false;
             
@@ -90,10 +90,10 @@
                     var viewProjection = view.getProjection();
                     var url = wmsSource.getGetFeatureInfoUrl(
                         event.coordinate, viewResolution, viewProjection,
-                        { 'INFO_FORMAT': 'application/vnd.ogc.gml', 'FEATURE_COUNT': '1' });
+                        { 'INFO_FORMAT': 'application/json', 'FEATURE_COUNT': '1' });
 
                     _lastSuccessfulUrl = null;
-                    surfFeatureFactory.getFeatureFromUrl(url, surfLayer).then(function(features) {
+                    surfFeatureFactory.getGeoJsonFeatureFromUrl('/proxy/?url='+encodeURIComponent(url), surfLayer).then(function(features) {
                         _lastSuccessfulUrl = url;
 
                         featureReceived(features[0]);
