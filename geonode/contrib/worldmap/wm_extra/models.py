@@ -117,31 +117,44 @@ class ExtLayer(models.Model):
     #     else:
     #         return service_layers[0].service
     #
+
     # def queue_gazetteer_update(self):
     #     from geonode.queue.models import GazetteerUpdateJob
     #     if GazetteerUpdateJob.objects.filter(layer=self.id).exists() == 0:
     #         newJob = GazetteerUpdateJob(layer=self)
     #         newJob.save()
-    #
-    # def update_gazetteer(self):
-    #     from geonode.gazetteer.utils import add_to_gazetteer, delete_from_gazetteer
-    #     if not self.in_gazetteer:
-    #         delete_from_gazetteer(self.name)
-    #     else:
-    #         includedAttributes = []
-    #         gazetteerAttributes = self.attribute_set.filter(in_gazetteer=True)
-    #         for attribute in gazetteerAttributes:
-    #             includedAttributes.append(attribute.attribute)
-    #
-    #         startAttribute = self.attribute_set.filter(is_gaz_start_date=True)[0].attribute if self.attribute_set.filter(is_gaz_start_date=True).exists() > 0 else None
-    #         endAttribute = self.attribute_set.filter(is_gaz_end_date=True)[0].attribute if self.attribute_set.filter(is_gaz_end_date=True).exists() > 0 else None
-    #
-    #         add_to_gazetteer(self.name,
-    #                          includedAttributes,
-    #                          start_attribute=startAttribute,
-    #                          end_attribute=endAttribute,
-    #                          project=self.gazetteer_project,
-    #                          user=self.owner.username)
+
+    def update_gazetteer(self):
+        from geonode.contrib.worldmap.gazetteer.utils import add_to_gazetteer, delete_from_gazetteer
+        if not self.in_gazetteer:
+            delete_from_gazetteer(self.name)
+        else:
+            includedAttributes = []
+            #from geonode.contrib.worldmap.gazetteer.models import GazetteerAttribute
+            for attribute in self.layer.attribute_set.all():
+                if hasattr(attribute, 'gazetteerattribute'):
+                    if attribute.gazetteerattribute.in_gazetteer:
+                        includedAttributes.append(attribute.attribute)
+
+            print includedAttributes
+
+            #includedAttributes = []
+            #gazetteerAttributes = self.attribute_set.filter(in_gazetteer=True)
+            #for attribute in gazetteerAttributes:
+            #    includedAttributes.append(attribute.attribute)
+
+            # TODO implement this
+            startAttribute = None
+            endAttribute = None
+            #startAttribute = self.attribute_set.filter(is_gaz_start_date=True)[0].attribute if self.attribute_set.filter(is_gaz_start_date=True).exists() > 0 else None
+            #endAttribute = self.attribute_set.filter(is_gaz_end_date=True)[0].attribute if self.attribute_set.filter(is_gaz_end_date=True).exists() > 0 else None
+
+            add_to_gazetteer(self.layer.name,
+                             includedAttributes,
+                             start_attribute=startAttribute,
+                             end_attribute=endAttribute,
+                             project=self.gazetteer_project,
+                             user=self.layer.owner.username)
 
     # this must be added in a pre-delete signal
     # if settings.USE_GAZETTEER and instance.in_gazetteer:

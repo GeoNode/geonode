@@ -10,6 +10,8 @@ class Command(BaseCommand):
     """
     args = '[none]'
 
+    # TODO update this to new version
+
     def handle(self, *args, **kwargs):
         gaz_layers = GazetteerEntry.objects.filter(
             username__isnull=True).values('layer_name').distinct()

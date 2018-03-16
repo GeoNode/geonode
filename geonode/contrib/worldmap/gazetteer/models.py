@@ -1,6 +1,8 @@
 from django.utils.translation import ugettext as _
 from django.contrib.gis.db import models
 
+from geonode.layers.models import Attribute
+
 # Querying postgis database for features then saving as django model object is
 # significantly slower than doing everything via SQL on postgis database only.
 # from django.modelsinspector import add_introspection_rules
@@ -27,3 +29,17 @@ class GazetteerEntry(models.Model):
 
     class Meta:
         unique_together = (("layer_name", "layer_attribute", "feature_fid"))
+
+
+class GazetteerAttribute(models.Model):
+    attribute = models.OneToOneField(
+        Attribute,
+        blank=False,
+        null=False)
+    in_gazetteer = models.BooleanField(default=False)
+    is_start_date = models.BooleanField(default=False)
+    is_end_date = models.BooleanField(default=False)
+    date_format = models.TextField(blank=True, null=True)
+
+    def layer_name(self):
+        return self.attribute.layer.name

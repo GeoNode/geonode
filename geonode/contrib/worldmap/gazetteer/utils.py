@@ -1,19 +1,23 @@
-from array import array
+import re
 import logging
+import psycopg2
+from array import array
+
+from geopy import geocoders
+
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from geonode.gazetteer.models import GazetteerEntry
-#from psycopg2 import extras
-from geonode.gazetteer.models import GazetteerEntry
-from geopy import geocoders
+
 from django.conf import settings
-import psycopg2
 from django.db.models import Q
-from geonode.maps.models import Layer, MapLayer, Map
 from django.core.cache import cache
-from geonode.flexidates import parse_julian_date
-import re
+
+from geonode.maps.models import Layer, MapLayer, Map
+from geonode.layers.models import Attribute
+from .flexidates import parse_julian_date
+from .models import GazetteerEntry
+from .models import GazetteerEntry
 
 GAZETTEER_TABLE = 'gazetteer_gazetteerentry'
 
@@ -162,7 +166,7 @@ def delete_from_gazetteer(layer_name):
     GazetteerEntry.objects.filter(layer_name__exact=layer_name).delete()
 
 
-def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
+def add_to_gazetteer(layer, name_attributes, start_attribute=None,
                      end_attribute=None, project=None, user=None):
     """
     Add placenames from a WorldMap layer into the gazetteer.
@@ -176,16 +180,16 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
     def get_date_format(date_attribute):
         field_name = "l.\"" + date_attribute.attribute + "\""
         date_format = []
-        if "xsd:date" not in date_attribute.attribute_type and date_attribute.date_format is not None:
+        if "xsd:date" not in date_attribute.attribute_type and date_attribute.gazetteerattribute.date_format is not None:
             # This could be in any of multiple formats, and postgresql needs a format pattern to convert it.
             # User should supply this format when adding the layer attribute to the gazetteer
             date_format.append(
                 "TO_CHAR(TO_DATE(CAST({name} AS TEXT), '{format}'), 'YYYY-MM-DD BC')".format(
-                    name=field_name, format=date_attribute.date_format)
+                    name=field_name, format=date_attribute.gazetteerattribute.date_format)
             )
             date_format.append(
                 "CAST(TO_CHAR(TO_DATE(CAST({name} AS TEXT), '{format}'), 'J') AS integer)".format(
-                    name=field_name, format=date_attribute.date_format)
+                    name=field_name, format=date_attribute.gazetteerattribute.date_format)
                 )
         elif "xsd:date" in date_attribute.attribute_type:
             # It's a date, convert to string
@@ -206,7 +210,7 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
                 metadata_date))
         return date_format
 
-    layer = get_object_or_404(Layer, name=layer_name)
+    layer_name = layer.name
     layer_type, geocolumn, projection = get_geometry_type(layer)
 
     namelist = "'" + "','".join(name_attributes) + "'"
@@ -237,7 +241,7 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
 
     start_format, julian_start = None, None
     if start_attribute is not None:
-        start_attribute_obj = get_object_or_404(Layer.Attribute, layer=layer, attribute=start_attribute)
+        start_attribute_obj = get_object_or_404(Attribute, layer=layer, attribute=start_attribute)
         start_dates = get_date_format(start_attribute_obj)
         start_format = start_dates[0]
         julian_start = start_dates[1]
@@ -246,7 +250,7 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
 
     end_format, julian_end = None, None
     if end_attribute is not None:
-        end_attribute_obj = get_object_or_404(Layer.Attribute, layer=layer, attribute=end_attribute)
+        end_attribute_obj = get_object_or_404(Attribute, layer=layer, attribute=end_attribute)
         end_dates = get_date_format(end_attribute_obj)
         end_format = end_dates[0]
         julian_end = end_dates[1]
@@ -286,7 +290,7 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
     """
 
     for name in name_attributes:
-        attribute = get_object_or_404(Layer.Attribute, layer=layer, attribute=name)
+        attribute = get_object_or_404(Attribute, layer=layer, attribute=name)
 
         # detect column type, needed by dblink
         cur = conn.cursor(layer.store)
@@ -298,7 +302,6 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
         Update layer placenames where placename FID = layer FID
         and placename layer attribute = name attribute
         """
-
         updateQuery =updateTemplate.format(
             table=GAZETTEER_TABLE,
             attribute=attribute.attribute,
@@ -361,8 +364,6 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
         conn.close()
 
 
-
-
 def getExternalServiceResults(place_name, services):
     results = []
     for service in services.split(',', ):
@@ -379,8 +380,11 @@ def getExternalServiceResults(place_name, services):
 
 
 def getGoogleResults(place_name):
-    g = geocoders.GoogleV3(client_id=settings.GOOGLE_API_KEY,
-        secret_key=settings.GOOGLE_SECRET_KEY) if settings.GOOGLE_SECRET_KEY is not None else geocoders.GoogleV3()
+    if hasattr(settings, 'GOOGLE_SECRET_KEY'):
+        g = geocoders.GoogleV3(client_id=settings.GOOGLE_API_KEY,
+                                secret_key=settings.GOOGLE_SECRET_KEY)
+    else:
+        g = geocoders.GoogleV3()
     try:
         results = g.geocode(place_name, exactly_one=False)
         formatted_results = []
@@ -403,7 +407,7 @@ def getNominatimResults(place_name):
         return []
 
 def getConnection(layer_store=None):
-    dbname = settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['NAME']
+    dbname = settings.DATABASES['default']['NAME']
     if layer_store:
         dbname = layer_store
     return psycopg2.connect(

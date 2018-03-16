@@ -16,6 +16,7 @@ certifi==2017.7.27.1
 chardet==3.0.4
 coverage==4.4.1
 decorator==4.1.2
+dicttoxml==1.7.4
 diff-match-patch==20121119
 dj-database-url==0.4.2
 django-allauth==0.34.0
@@ -63,6 +64,7 @@ Faker==0.8.4
 flake8==2.5.4
 funcsigs==1.0.2
 geolinks==0.2.0
+geopy==1.11.0
 geonode-agon-ratings==0.3.5
 geonode-announcements==1.0.8
 geonode-arcrest==10.2

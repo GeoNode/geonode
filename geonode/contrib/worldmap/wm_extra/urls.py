@@ -5,7 +5,7 @@ from geonode.maps.views import snapshot_create
 
 from .views import (proxy, ajax_snapshot_history, ajax_layer_update, ajax_layer_edit_check, upload_layer,
     create_pg_layer, ajax_increment_layer_stats, add_layer_wm, new_map_wm, new_map_json_wm,
-    map_view_wm, map_json_wm, map_detail_wm, add_endpoint, printmap)
+    map_view_wm, map_json_wm, map_detail_wm, add_endpoint, printmap, )
 from tastypie.api import Api
 from .api.resources import (LayerResource, TagResource, TopicCategoryResource,
         ActionAllResource, ActionLayerCreateResource, ActionLayerDeleteResource,
