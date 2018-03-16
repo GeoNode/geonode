@@ -58,6 +58,7 @@ setup(name='GeoNode',
             # Other
             "amqp<=2.2.2",  # (python-amqp 2.2.2 in our ppa)
             "anyjson<=0.3.3",  # (python-anyjson 0.3.3 in our ppa)
+            "arcrest==10.3",  # TODO
             "arrow==0.12.1",  # TODO
             "attrs==17.4.0",  # TODO
             "PyYAML<=3.12",  # (python-pyyaml 3.12 in out ppa)

@@ -743,7 +743,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         help_text=_('Should this resource be published and searchable?'))
     is_approved = models.BooleanField(
         _("Approved"),
-        default=False,
+        default=True,
         help_text=_('Is this resource validated from a publisher or editor?'))
 
     # fields necessary for the apis
@@ -1164,6 +1164,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def handle_moderated_uploads(self):
         if settings.ADMIN_MODERATE_UPLOADS:
+            self.is_approved = False
             self.is_published = False
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)

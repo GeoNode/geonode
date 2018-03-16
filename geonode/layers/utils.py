@@ -80,7 +80,6 @@ def _clean_string(
 
 
 def resolve_regions(regions):
-
     regions_resolved = []
     regions_unresolved = []
     if regions:

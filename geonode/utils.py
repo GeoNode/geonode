@@ -75,7 +75,7 @@ BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
 SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')
 
-http_client = httplib2.Http()
+http_client = httplib2.Http(".cache", timeout=10)
 
 custom_slugify = Slugify(separator='_')
 
@@ -248,6 +248,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering):
               "fixed", "group", "visibility", "source", "getFeatureInfo"]:
         if k in layer_cfg:
             del layer_cfg[k]
+    layer_cfg["id"] = 1
     layer_cfg["wrapDateLine"] = True
     layer_cfg["displayOutsideMaxExtent"] = True
 
@@ -382,18 +383,20 @@ class GXPMapBase(object):
 
         # adding remote services sources
         from geonode.services.models import Service
-        index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
-        for service in Service.objects.all():
-            remote_source = {
-                'url': service.service_url,
-                'remote': True,
-                'ptype': 'gxp_wmscsource',
-                'name': service.name,
-                'title': "[R] %s" % service.title
-            }
-            if remote_source['url'] not in source_urls:
-                index += 1
-                sources[index] = remote_source
+        from geonode.maps.models import Map
+        if not self.sender or isinstance(self.sender, Map):
+            index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
+            for service in Service.objects.all():
+                remote_source = {
+                    'url': service.service_url,
+                    'remote': True,
+                    'ptype': service.ptype,
+                    'name': service.name,
+                    'title': "[R] %s" % service.title
+                }
+                if remote_source['url'] not in source_urls:
+                    index += 1
+                    sources[index] = remote_source
 
         config = {
             'id': self.id,
@@ -434,9 +437,10 @@ class GXPMapBase(object):
 
 class GXPMap(GXPMapBase):
 
-    def __init__(self, projection=None, title=None, abstract=None,
+    def __init__(self, sender=None, projection=None, title=None, abstract=None,
                  center_x=None, center_y=None, zoom=None):
         self.id = 0
+        self.sender = sender
         self.projection = projection
         self.title = title or DEFAULT_TITLE
         self.abstract = abstract or DEFAULT_ABSTRACT

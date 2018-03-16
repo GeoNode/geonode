@@ -2,6 +2,7 @@ Django==1.8.19
 six==1.10.0
 amqp==2.2.2
 anyjson==0.3.3
+arcrest==10.3
 arrow==0.12.1
 attrs==17.4.0
 autoflake==0.7
@@ -43,7 +44,7 @@ django-extensions==2.0.3
 django-filter==1.1.0
 django-floppyforms==1.7.0
 
-django-geoexplorer==4.0.38
+django-geoexplorer==4.0.39
 django-geonode-client==1.0.0
 django-guardian==1.4.9
 django-haystack==2.8.0

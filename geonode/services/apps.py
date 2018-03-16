@@ -19,6 +19,7 @@
 #########################################################################
 
 from geonode.notifications_helper import NotificationsAppConfigBase
+from .signals import *  # noqa
 
 
 class ServicesAppConfig(NotificationsAppConfigBase):

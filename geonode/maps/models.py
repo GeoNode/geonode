@@ -290,6 +290,10 @@ class Map(ResourceBase, GXPMapBase):
         self.save()
 
     @property
+    def sender(self):
+        return None
+
+    @property
     def class_name(self):
         return self.__class__.__name__
 
