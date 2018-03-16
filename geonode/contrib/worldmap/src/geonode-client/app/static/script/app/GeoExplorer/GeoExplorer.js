@@ -1798,6 +1798,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 method: 'POST',
                 params : {query:urlField.getValue(), mapid: as ? 0 : geoEx.mapID},
                 success: function(response, options) {
+                    var mapid = geoEx.mapID;
+                    createMapThumbnail(mapid);
                     var urlcount = Ext.decode(response.responseText).count;
                     var rt = "";
                     var isValid = true;
