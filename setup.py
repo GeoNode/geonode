@@ -201,6 +201,7 @@ setup(name='GeoNode',
             "requests<=2.18.4",
             "simplejson<=3.13.2",  # (3.8.1 in ppa) FIXME
             "tablib<=0.12.1",  # (0.9.11 in ppa) FIXME
+            "timeout-decorator==0.4.0",  # TODO
             "typing<=3.6.4",  # TODO
 
             "psutil",  # (3.4.2 in ppa) FIXME

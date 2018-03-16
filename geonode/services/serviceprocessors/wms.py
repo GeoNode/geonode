@@ -441,9 +441,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         self.indexing_method = (
             INDEXED if self._offers_geonode_projection() else CASCADED)
         # self.url = self.parsed_service.url
-        _title = self.parsed_service.identification.title
-        self.name = slugify(
-            _title if _title else urlsplit(self.url).netloc)[:40]
+        self.name = slugify(urlsplit(self.url).netloc)[:40]
 
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service

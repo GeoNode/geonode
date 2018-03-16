@@ -148,7 +148,7 @@
                     <li role="separator" class="divider"></li>
                     <li><a href="{% url "admin:index" %}">Admin</a></li>
                     {% if 'geonode.geoserver' in INSTALLED_APPS %}
-                    <!-- li><a href="{% url "proxy" %}?url={{ GEOSERVER_LOCAL_URL }}web">GeoServer</a></li -->
+                    <li><a href="{% url "proxy" %}?url=/geoserver">GeoServer</a></li>
                     {% endif %}
                     {% if USE_MONITORING %}
                     <li role="separator" class="divider"></li>

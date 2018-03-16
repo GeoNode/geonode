@@ -266,7 +266,7 @@ def layer_style_manage(request, layername):
                    'to manage style information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer.name)
                    )
-            logger.warn(msg, e)
+            logger.warn(msg)
             # If geoserver is not online, return an error
             return render(
                 request,
@@ -310,7 +310,7 @@ def layer_style_manage(request, layername):
         except (FailedRequestError, EnvironmentError, MultiValueDictKeyError) as e:
             msg = ('Error Saving Styles for Layer "%s"' % (layer.name)
                    )
-            logger.warn(msg, e)
+            logger.warn(msg)
             return render(
                 request,
                 'layers/layer_style_manage.html',

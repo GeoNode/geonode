@@ -82,7 +82,10 @@ def geoserver_upload(
 
         # If the store is empty, we just delete it.
         if len(resources) == 0:
-            cat.delete(store)
+            try:
+                cat.delete(store)
+            except:
+                logger.warning("Error trying to delete Store %s " % name)
         else:
             # If our resource is already configured in the store it needs
             # to have the right resource type

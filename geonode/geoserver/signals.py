@@ -565,7 +565,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
             msg = 'Could not connect to catalog to verify if layer %s was local' % instance.name
             try:
                 # HACK: The logger on signals throws an exception
-                logger.warn(msg, e)
+                logger.warn(msg)
             except:
                 pass
         else:

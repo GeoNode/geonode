@@ -391,7 +391,7 @@ def cascading_delete(cat, layer_name):
                    'to save information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer_name)
                    )
-            logger.warn(msg, e)
+            logger.warn(msg)
             return None
         else:
             raise e

@@ -157,7 +157,7 @@
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "geonode.invitations:geonode-send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite Users" %}</a></li>
       {% if user.is_superuser or user.is_staff %}
-          <!-- li class="list-group-item"><a href="{% url "proxy" %}?url={{ GEOSERVER_LOCAL_URL }}web"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li -->
+          <li class="list-group-item"><a href="{% url "proxy" %}?url=/geoserver"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
           <li class="list-group-item"><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
       {% endif %}
     </ul>
