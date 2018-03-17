@@ -35,6 +35,12 @@
             <div class="form-group" style="margin-left: 5px;margin-bottom:5px;">
                 <input autocomplete="off" id="ext-comp-1094" name="legend" class=" x-form-checkbox x-form-field" checked="" ng-model="ctrl.includeLegend" type="checkbox"> <label for="ext-comp-1094" class="x-form-cb-label" id="ext-gen294">Include legend?</label>
             </div>
+            <div class="form-group" style="margin-left: 30px;">
+                <label for="" style="display:block">Scales:</label>
+                <select class="form-control" style="width: 200px;" ng-model="ctrl.selectedScale"> 
+                    <option ng-repeat="scale in ctrl.scales" value="[{scale.value}]" ng-selected="$index == 0"> [{scale.name}]</option>
+                </select>
+            </div>
         </div>
 
         <div style="margin-bottom: 15px;">

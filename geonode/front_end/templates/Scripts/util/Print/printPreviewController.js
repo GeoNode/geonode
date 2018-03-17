@@ -12,15 +12,18 @@
         function initialize(){
             map.getPrintingConfiguration()
                 .then(function(res){
+                    var metaInfo = map.getMeta();
+                    self.mapTitle = metaInfo.title;
+                    self.comments = metaInfo.abstract;
                     self.layouts = res.data.layouts;
                     self.dpis = res.data.dpis;
                     self.printURL = res.data.printURL;
                     self.createURL = res.data.createURL;
                     self.scales = res.data.scales;
 
-                    self.selectedLayout = self.layouts[0];
-                    self.selectedScale = self.scales[0];
-                    self.selectedDpi  = self.dpis[0];
+                    self.selectedLayout = self.layouts[0].name;
+                    self.selectedScale = self.scales[0].value;
+                    self.selectedDpi  = self.dpis[0].value;
                     self.includeLegend = true;
             });
         }
@@ -161,15 +164,14 @@
                 "layers": mapLayers(map.getLayers()),
                 "pages": [{
                     "center": map.getCenter(),
-                    "scale": self.selectedScale.value,
+                    "scale": self.selectedScale,
                     "rotation": 0
                 }]
             };
 
             $http.post('/geoserver/pdf/create.json', data )
                 .then(function(res) {
-                    console.log(res);
-
+                    $window.location = res.data.getURL;
                 });
         };
 
