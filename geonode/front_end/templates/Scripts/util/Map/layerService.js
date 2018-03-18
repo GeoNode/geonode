@@ -231,7 +231,7 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
         fetchWMSFeatures: function(params) {
             return layerRepository.getWMS(undefined, params);
         },
-        fetchLayers: function(url) {
+        fetchWmsLayers: function(url) {
             var mappedLayer = [];
             return $q(function(resolve, reject) {
                 if (!url)
@@ -246,6 +246,22 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
                     });
                 }
             });
+        },
+        fetchLayers: function() {
+            var mappedLayer = [];
+            var deferred = $q.defer();
+            layerRepository.getLayers()
+                .then(function(res) {
+                    mappedLayer = res.map(function(e) {
+                        return _map({
+                            Name: e.detail_url.match(/\w+:\w+/)[0],
+                            bbox: ol.proj.transformExtent([e.bbox_x0, e.bbox_y0, e.bbox_x1, e.bbox_y1], 'EPSG:4326', 'EPSG:3857'),
+                            geoserverUrl: $window.GeoServerHttp2Root + 'wms?access_token=' + $window.mapConfig.access_token
+                        });
+                    });
+                    deferred.resolve(mappedLayer);
+                });
+            return deferred.promise;
         },
         map: function(layer, order) {
             return _map(layer, order);

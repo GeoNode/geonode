@@ -15,9 +15,13 @@ class GeoserverWMSGetFeatureInfoListAPIView(ListAPIView, GeoServerMixin):
 
         if not layers:
             layers = data.get('LAYERS')[0]
-            
+
+        access_token = None
+        if 'access_token' in request.session:
+            access_token = request.session['access_token']
+                
         query = self.get_configuration(data)
-        query.update(dict(SERVICE='WMS', REQUEST='GetFeatureInfo'))
+        query.update(dict(SERVICE='WMS', REQUEST='GetFeatureInfo', access_token=access_token))
 
         result = self.get_response_from_geoserver('wms', query)
         

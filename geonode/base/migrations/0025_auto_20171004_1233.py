@@ -15,73 +15,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='DockedResource',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('active', models.BooleanField(default=True)),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('date_updated', models.DateTimeField(auto_now=True)),
-                ('group', models.ForeignKey(blank=True, to='groups.GroupProfile', null=True)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='FavoriteResource',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('active', models.BooleanField(default=True)),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('date_updated', models.DateTimeField(auto_now=True)),
-                ('group', models.ForeignKey(blank=True, to='groups.GroupProfile', null=True)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='KeywordIgnoreListModel',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('key', models.CharField(max_length=100, null=True, blank=True)),
-                ('is_active', models.BooleanField(default=True)),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('date_updated', models.DateTimeField(auto_now=True)),
-            ],
-        ),
-        migrations.AddField(
-            model_name='resourcebase',
-            name='current_iteration',
-            field=models.IntegerField(default=0),
-        ),
-        migrations.AddField(
-            model_name='resourcebase',
-            name='date_created',
-            field=models.DateTimeField(default=datetime.datetime(2017, 10, 4, 12, 33, 14, 481108), auto_now_add=True),
-            preserve_default=False,
-        ),
-        migrations.AddField(
-            model_name='resourcebase',
-            name='date_updated',
-            field=models.DateTimeField(default=datetime.datetime(2017, 10, 4, 12, 33, 21, 304750), auto_now=True),
-            preserve_default=False,
-        ),
-        migrations.AddField(
-            model_name='resourcebase',
-            name='group',
-            field=models.ForeignKey(blank=True, to='groups.GroupProfile', null=True),
-        ),
-        migrations.AddField(
-            model_name='resourcebase',
-            name='last_auditor',
-            field=models.ForeignKey(related_name='a_last_auditor', blank=True, to=settings.AUTH_USER_MODEL, null=True),
-        ),
-        migrations.AddField(
-            model_name='resourcebase',
-            name='resource_type',
-            field=models.CharField(default=b'', help_text='type of resource layer, map or document', max_length=50),
-        ),
-        migrations.AddField(
-            model_name='resourcebase',
-            name='status',
-            field=models.CharField(default=b'DRAFT', max_length=10, choices=[(b'DRAFT', 'Draft'), (b'PENDING', 'Pending'), (b'ACTIVE', 'Active'), (b'INACTIVE', 'Inactive'), (b'DENIED', 'Denied'), (b'DELETED', 'Deleted'), (b'CANCELED', 'Canceled')]),
-        ),
         migrations.AlterField(
             model_name='resourcebase',
             name='abstract',
@@ -106,25 +39,5 @@ class Migration(migrations.Migration):
             model_name='topiccategory',
             name='is_choice',
             field=models.BooleanField(default=True, verbose_name='Is active'),
-        ),
-        migrations.AddField(
-            model_name='favoriteresource',
-            name='resource',
-            field=models.ForeignKey(blank=True, to='base.ResourceBase', null=True),
-        ),
-        migrations.AddField(
-            model_name='favoriteresource',
-            name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
-        ),
-        migrations.AddField(
-            model_name='dockedresource',
-            name='resource',
-            field=models.ForeignKey(blank=True, to='base.ResourceBase', null=True),
-        ),
-        migrations.AddField(
-            model_name='dockedresource',
-            name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
         ),
     ]
