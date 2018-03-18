@@ -2,10 +2,10 @@
    
         <div class="form-horizontal">
                 
-            <div class="form-group" style="padding: 15px 0;border-bottom:1px solid #eee;padding-bottom:10px;">
+            <div class="form-group" style="padding: 15px;border-bottom:1px solid #eee;padding-bottom:10px;margin-bottom:0">
 
-        <label class="col-md-5" style="width: 100px;">Visualization </label>
-        <div class="col-md-7" style="width: 150px;">
+        <label class="col-md-2 control-label">Visualization </label>
+        <div class="col-md-4">
         <select class="form-control input-sm" ng-model="option.selected" ng-options="setting as setting.name for setting in settings" ng-change="setSelectedAttribute()">
                 <option value="">--None--</option>
             </select>
@@ -30,7 +30,7 @@
     </div>
 
     <div class="form-group" ng-if="option.selected.name == visualizationTypes.chart && option.selected">
-        <label class="col-md-2" style="text-align: right">Chart Type: </label>
+        <label class="col-md-2 control-label" style="text-align: right">Chart Type: </label>
         <div class="col-md-4">
             <select class="form-control input-sm" ng-model="option.selected.chartId"
                     ng-init="initializeAttributeListItemForChart()"
@@ -39,7 +39,7 @@
     </div>
 
         <div class="form-group" ng-if="option.selected.name == visualizationTypes.chart && option.selected">
-            <label class="col-md-2" style="text-align: right">Chart Size Attribute: </label>
+            <label class="col-md-2 control-label" style="text-align: right">Chart Size Attribute: </label>
             <div class="col-md-4">
                 <select class="form-control input-sm" ng-model="option.selected.chartSizeAttributeId"
                         ng-init="setSelectedChartSizeAttribute()"
@@ -59,10 +59,10 @@
                     Select All
                 </h3>
             </div>
-            <div class="panel-body" style="padding: 5px; min-height: 163px;">
+            <div class="panel-body" style="padding: 5px;height:150px;overflow-y:auto">
                <!-- <ul class="nav-stacked" style="margin-bottom: 0; max-height: 165px; min-height: 165px; overflow-y: auto; margin-left: 0">-->
                     <!--<div ng-if="flags.PropertyData.length == 0" class="alert" ng-show="!isLoading()">No item</div>-->
-                    <table style="width: 500px;">
+                    <table style="width: 100%;">
                         <tr ng-repeat="item in option.selected.chartAttributeList" class="list-group-item" style="white-space: nowrap;">
                             <td style="width: 125px;">
                                 <input type="checkbox" ng-model="item.checked" style="margin-top: 0;" />

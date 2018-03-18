@@ -3604,6 +3604,10 @@ width: 80%;
   {
       color: #3c3c3c;
   }
+  .modal-dialog .modal-body
+  {
+    min-height: 250px;
+  }
   .modal-content label
   {
      font-size: 12px;
@@ -3611,6 +3615,32 @@ width: 80%;
   .modal-header
   {
     padding: 10px 15px;
+  }
+  .modal-dialog .input-sm
+  {
+    height: 25px;
+    line-height: 25px;
+  }
+  .modal-dialog .btn-sm
+  {
+    padding: 2px 10px;
+  }
+  .modal-dialog .control-label
+  {
+    padding-top: 4px;
+  }
+  .modal-footer
+  {
+      padding: 10px 15px;
+  }
+  .tabbable
+  {
+      font-size: 11px;
+  }
+  .tabbable .nav > li > a
+  {
+    padding: 8px 15px;
+    font-size: 12px;
   }
   .sidebar-toggle-btn {
     background-color: #ffffff;
