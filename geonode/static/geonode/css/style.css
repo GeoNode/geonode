@@ -2312,6 +2312,7 @@ ul.resources-summery li {
     float: left;
     display: block;
     position: relative;
+    margin-right: 15px;
 }
 ul.resources-summery li a {
     padding: 0 12px;
@@ -3709,13 +3710,22 @@ background-color: #fff;
 }
 .panel-bottom .panel-body
 { 
-    height: 205px;
+    height: 230px;
     overflow-y: auto;
+    padding: 10px;
 }
 .panel-bottom-table
 {
-    height: 205px;
+    height: 270px;
     overflow-y: auto;  
+}
+.panel-bottom .panel-heading
+{
+    padding: 5px 10px;
+}
+.panel-bottom .panel-footer
+{
+    padding: 5px 10px;
 }
 .slideOutDown
 {
@@ -3752,5 +3762,45 @@ background-color: #fff;
 {
     top: 141px !important;
 }
-
+.round {
+    line-height: 48px;
+    color: #ffffff;
+    width: 60px;
+    height: 60px;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    border-radius: 100%;
+    background: #1e88e5;
+}
+.round.round-info {
+    background: #1e88e5;
+}
+.round.round-warning {
+    background: #ffb22b;
+}
+.round.round-primary {
+    background: #7460ee;
+}
+.round.round-danger {
+    background: #fc4b6c;
+}
+.round i
+{
+    font-size: 26px;
+    line-height: 59px;
+}
+.analytics-box
+{
+    font-size: 16px;
+}
+.analytics-box h3
+{
+   margin: 7px 0 0 10px;
+}
+.analytics-box p
+{
+    color: #99abb4 ;
+   margin: 0 0 0 10px;
+}
 

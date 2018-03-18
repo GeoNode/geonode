@@ -7,34 +7,46 @@
 }
 
     .group-conditions{
-        margin-left: 20px;
+        margin-left: 10px;
     }
 
     .alert-group{
-        margin-top: 10px;
-        margin-bottom: 10px;
+        margin-top: 5px;
+        margin-bottom: 5px;
         border-color: rgb(192, 152, 83);
         border-color: rgb(251, 238, 213);
         border-color: rgb(220, 200, 150);
     }
 
     .condition, .group{
-        margin-top: 15px;
-        margin-bottom: 15px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    .group-conditions input
+    {
+        padding: 0 3px;
+        height: 26px;
+line-height: 26px;
+    }
+    .group-conditions select
+    {
+        padding: 0 3px;
+        height: 26px;
+line-height: 26px;
     }
 </style>
-<div class="alert alert-warning alert-group">
+<div class="alert alert-warning alert-group" style="padding: 10px;">
     [{groups}]
         <div class="form-inline">
-            <select ng-options="o.name as o.name for o in operators" ng-model="group.operator" class="form-control input-sm">
+            <select style="padding: 0 3px;width:110px;height:26px;line-height:26px;" ng-options="o.name as o.name for o in operators" ng-model="group.operator" class="form-control input-sm">
                     <option style="display: none" value="">select condition</option>
             </select>
-            <button style="margin-left: 5px;margin-bottom: 5px" ng-click="addCondition()" class="btn btn-sm btn-success">
+            <button ng-click="addCondition()" class="btn btn-sm btn-success" style="padding: 0 10px;height:26px;line-height:26px;">
                     <i class="fa fa-plus"></i>
                     Add Condition</button>
-            <button ng-show="options.addGroup" style="margin-left: 5px" ng-click="addGroup()" class="btn btn-sm btn-success">
+            <button ng-show="options.addGroup" style="margin-left: 5px;padding: 0 10px;height:26px;line-height:26px;" ng-click="addGroup()" class="btn btn-sm btn-success">
                     <i class="fa fa-plus"></i> Add Group</button>
-            <button ng-show="options.removeGroup" style="margin-left: 5px" ng-click="removeGroup()" class="btn btn-sm btn-danger">
+            <button ng-show="options.removeGroup" style="margin-left: 5px;padding: 0 10px;height:26px;line-height:26px;" ng-click="removeGroup()" class="btn btn-sm btn-danger">
                     <i class="fa fa-minus"></i> Remove Group</button>
         </div>
     
@@ -53,18 +65,18 @@
                             <select ng-change="attributeChange(rule)" ng-options="t as t.name for t in fields" ng-model="rule.field" class="form-control input-sm">
                                 <option style="display: none" value="">select attribute</option>
                             </select>
-                            <select style="margin-left: 5px" ng-options="c.value as c.name for c in conditionDictionary[rule.field.controlType]" ng-model="rule.condition" class="form-control input-sm">
+                            <select ng-options="c.value as c.name for c in conditionDictionary[rule.field.controlType]" ng-model="rule.condition" class="form-control input-sm">
                                     <option style="display: none" value="">select operator</option>
                             </select>
     
-                            <input ng-show="textControlVisible(rule)" style="margin-left: 5px" type="text" ng-model="rule.data" class="form-control input-sm"/>
+                            <input ng-show="textControlVisible(rule)" style="width:70px;" type="text" ng-model="rule.data" class="form-control input-sm"/>
     
     
                             <select ng-show="dropdownControlVisible(rule)" style="margin-left: 5px" ng-options="c.name as c.name for c in rule.field.fieldUniqueValues" ng-model="rule.firstDropdownValue" class="form-control input-sm"></select>
-                            <input ng-show="IsSecondInputBoxVisible(rule)" style="margin-left: 5px" type="text" ng-model="rule.dataAnother" class="form-control input-sm"/>
+                            <input ng-show="IsSecondInputBoxVisible(rule)" style="margin-left: 5px;width:70px;" type="text" ng-model="rule.dataAnother" class="form-control input-sm"/>
                             <select ng-show="IsSecondDropdownBoxVisible(rule)" style="margin-left: 5px" ng-options="c.name as c.name for c in rule.field.fieldUniqueValues" ng-model="rule.secondDropdownValue" class="form-control input-sm"></select>
     
-                            <button style="margin-left: 5px" ng-click="removeCondition($index)" class="btn btn-sm btn-danger">
+                            <button ng-click="removeCondition($index)" class="btn btn-sm btn-danger" style="padding: 3px 10px;">
                                     <i class="fa fa-minus"></i></button>
     
                         </div>
