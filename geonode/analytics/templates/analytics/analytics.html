@@ -31,64 +31,114 @@
     }
     </style>
 
-    <div class="row">
-        <div class="col-md-12 analytics-header"><p class="text-center">WEB MAP METRICS</p></div>
-        <div class="col-md-12 analytics-heading"><h2 class="text-center">Track the metrics that convert</h2></div>
+    <div class="d-title">
+        Analytics
     </div>
+
+
+           
     <div class="row">
-        <div class="col-md-2">&nbsp;</div>
-        {% comment %}<div class="col-md-2 analytics-box">
+      
+        
+        {% comment %}
+        <div class="col-md-2">
             <h3 class="text-center">58%</h3>
             <p class="text-center">Bounce Rate</p>
         </div>
-        <div class="col-md-1">&nbsp;</div>{% endcomment %}
-        <div class="col-md-3 analytics-box">
-            <h3 class="text-center">{{ map_loads }}</h3>
-            <p class="text-center">Map Loads</p>
+        {% endcomment %}
+
+
+        <div class="col-md-3">
+                <div class="panel panel-default analytics-box">
+                <div class="panel-body">
+                    
+            <div class="round round-info pull-left"><i class="fa fa-map-o" aria-hidden="true"></i></div>
+            <div class="pull-left">
+            <h3>{{ map_loads }}</h3>
+            <p>Map Loads</p>
         </div>
-        <div class="col-md-2">&nbsp;</div>
-        <div class="col-md-3 analytics-box">
-            <h3 class="text-center">{{ average_activity_load }}</h3>
-            <p class="text-center">Avg. Activities / Load</p>
+            </div>
+            </div>
         </div>
-        <div class="col-md-2">&nbsp;</div>
+
+        
+        <div class="col-md-3">
+                <div class="panel panel-default analytics-box">
+                        <div class="panel-body">
+                                <div class="round round-warning pull-left"><i class="fa fa-street-view" aria-hidden="true"></i></div>
+                                <div class="pull-left">
+            <h3>{{ average_activity_load }}</h3>
+            <p>Avg. Activities / Load</p>
+        </div>
+            </div>
+            </div>
+        </div>
+       
+   
+   
+   
+       
+        {% comment %}
+        <div class="col-md-2">
+                <div class="panel panel-default analytics-box">
+                        <div class="panel-body">
+                                <div class="round round-primary pull-left"><i class="fa fa-map-o" aria-hidden="true"></i></div>
+                                <div class="pull-left">
+            <h3>2</h3>
+            <p>Avg. Visitor Duration (min)</p>
+        </div>
+            </div>
+            </div>
+        </div>
+        {% endcomment %}
+
+
+        <div class="col-md-3">
+                <div class="panel panel-default analytics-box">
+                        <div class="panel-body">
+                                <div class="round round-primary pull-left"><i class="fa fa-clone" aria-hidden="true"></i></div>
+                                <div class="pull-left">
+                                <h3>{{ average_layer_load }}</h3>
+            <p>Avg. Layer Load (sec)</p>
+            </div>
+            </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+                <div class="panel panel-default analytics-box">
+                        <div class="panel-body">
+                                <div class="round round-danger pull-left"><i class="fa fa-search" aria-hidden="true"></i></div>
+                            <div class="pull-left">
+            <h3>{{ zooms }}</h3>
+            <p>Zooms</p>
+            </div>
+            </div>
+        </div>
+        
     </div>
-    <div class="row">
-        <div class="col-md-12">&nbsp;</div>
-    </div>
-    <div class="row">
-        <div class="col-md-2">&nbsp;</div>
-        {% comment %}<div class="col-md-2 analytics-box">
-            <h3 class="text-center">2</h3>
-            <p class="text-center">Avg. Visitor Duration (min)</p>
-        </div>
-        <div class="col-md-1">&nbsp;</div>{% endcomment %}
-        <div class="col-md-3 analytics-box">
-            <h3 class="text-center">{{ average_layer_load }}</h3>
-            <p class="text-center">Avg. Layer Load (sec)</p>
-        </div>
-        <div class="col-md-2">&nbsp;</div>
-        <div class="col-md-3 analytics-box">
-            <h3 class="text-center">{{ zooms }}</h3>
-            <p class="text-center">Zooms</p>
-        </div>
-        <div class="col-md-2">&nbsp;</div>
-    </div>
-    <div class="row">
+
+</div>
+
+    <!-- <div class="row">
         <div class="col-md-12">
             <div id="container-highchart" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
         </div>
-    </div>
-    <div class="col-md-10 col-md-offset-1" style="margin-top: 20px;margin-bottom: 20px">
+    </div> -->
+
+    <div class="row">
+         <div class="col-md-12">
         <div class="btn-group btn-group-justified">
             <a onclick='showMapData()' id="mapData" class="btn btn-default">Map Data</a>
             <a onclick='showLayerData()' id="layerData" class="btn btn-primary active">Layer Data</a>
             <a onclick='showDocumentData()' id="documentData" class="btn btn-default">Document Data</a>
-          </div>
+        </div>  
+        </div>  
+        
     </div> 
     <div class="row">
-        <div class="col-md-4 col-md-offset-5">
-            <div class="loader hidden" id="analyticsLoader"></div>
+        <div class="col-md-12">
+            <div class="loader hidden" style="margin: 30px auto" id="analyticsLoader"></div>
         </div>
     </div>
     <div class="row" id="output" style="width:100%; margin: 10px">

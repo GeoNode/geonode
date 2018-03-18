@@ -3762,5 +3762,45 @@ background-color: #fff;
 {
     top: 141px !important;
 }
-
+.round {
+    line-height: 48px;
+    color: #ffffff;
+    width: 60px;
+    height: 60px;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    border-radius: 100%;
+    background: #1e88e5;
+}
+.round.round-info {
+    background: #1e88e5;
+}
+.round.round-warning {
+    background: #ffb22b;
+}
+.round.round-primary {
+    background: #7460ee;
+}
+.round.round-danger {
+    background: #fc4b6c;
+}
+.round i
+{
+    font-size: 26px;
+    line-height: 59px;
+}
+.analytics-box
+{
+    font-size: 16px;
+}
+.analytics-box h3
+{
+   margin: 7px 0 0 10px;
+}
+.analytics-box p
+{
+    color: #99abb4 ;
+   margin: 0 0 0 10px;
+}
 
