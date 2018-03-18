@@ -221,10 +221,10 @@
                     //     "YMax": 0.0
                     // }
                 };
-                layerService.fetchLayers().then(function(layers) {
-                        mapInfo.Layers = layers;
-                        factory.loadMap(mapInfo);
-                    })
+                // layerService.fetchLayers().then(function(layers) {
+                // })
+                mapInfo.Layers = [];
+                    factory.loadMap(mapInfo);
                     // return mapRepository.getWorkingMapInfo().success(function (mapInfo) {
                     //     factory.loadMap(mapInfo);
                     // });
@@ -362,7 +362,7 @@
 
                 $q.all([p1, p2, p3])
                     .then(function() {
-                        map.addLayer(layer, true);
+                        map.addLayer(layer, false);
                     });
             },
             removeLayer: function(layerId) {
@@ -474,6 +474,12 @@
             },
             getMeta: function() {
                 return map.Meta || {};
+            },
+            getPrintingConfiguration: function (){
+                return mapRepository.getPrintingConfiguration();
+            },
+            getCenter: function(){
+                return map.getView().getCenter();
             }
 
         };

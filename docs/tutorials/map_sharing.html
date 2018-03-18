@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="iframeApp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body ng-controller="MainController">
+
+    <label for="division">Division</label>:
+    <select ng-model="selectedDivision" ng-change="onFilterChange()">
+            <option value="">------</option> 
+            <option ng-repeat="d in Divisions" ng-value="d">{{d.name}}</option>
+
+        </select>
+
+    <label for="district">District</label>:
+    <select ng-model="selectedDistrict" ng-change="onFilterChange()">
+            <option value="">------</option>
+            <option ng-repeat="d in Districts |filter: {divisionId: selectedDivision.id }" ng-value="d">{{d.name}}</option>
+        </select>
+
+    <label for="union">Union</label>:
+    <select id="union" ng-model="selectedUnion" ng-change="onFilterChange()">
+            <option value="">------</option>
+            <option ng-repeat="u in Unions| filter:  {districtId: selectedDistrict.id, divisionId:selectedDivision.id}" ng-value="u">{{u.name}}</option>
+        </select>
+
+    <br>
+    <!-- <iframe style="border: none;" height="400" width="600" src="http://172.16.0.237:8000/maps/3/embed?NAME_2='Ranpur'"></iframe> -->
+	<!--- Original 921 -->
+    <iframe id="iframe" style="border: none;" height="400" width="600" src="https://geodash.gov.bd/maps/921/embed"></iframe>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+    <script>
+        (function() {
+            angular
+                .module('iframeApp', [])
+                .controller('MainController', MainController);
+            MainController.$inject = ['$scope'];
+
+            function MainController($scope) {
+                $scope.Divisions = [{
+                    id: 1,
+                    name: 'Rajshahi',
+                    value: "NAME_1='Rajshahi'"
+                }, {
+                    id: 2,
+                    name: 'Dhaka',
+                    value: "NAME_1='Dhaka'"
+                }]
+                $scope.Districts = [{
+                    id: 1,
+                    divisionId: 1,
+                    name: 'Bogra',
+                    value: "NAME_2='Bogra'"
+                }, {
+                    id: 2,
+                    divisionId: 1,
+                    name: 'Pabna',
+                    value: "NAME_2='Pabna'"
+                }, {
+                    id: 3,
+                    divisionId: 2,
+                    name: 'Mymensingh',
+                    value: "NAME_2='Mymensingh'"
+                }, {
+                    id: 4,
+                    divisionId: 2,
+                    name: 'Faridpur',
+                    value: "NAME_2='Faridpur'"
+                }, ]
+                $scope.Unions = [{
+                    id: 1,
+                    divisionId: 1,
+                    districtId: 1,
+                    name: 'Panchbibi',
+                    value: "NAME_4='Panchbibi'"
+                }, {
+                    id: 2,
+                    divisionId: 1,
+                    districtId: 1,
+                    name: 'Sariakandi',
+                    value: "NAME_4='Sariakandi'"
+                }, {
+                    id: 3,
+                    divisionId: 1,
+                    districtId: 2,
+                    name: 'Sujanagar',
+                    value: "NAME_4='Sujanagar'"
+                }, {
+                    id: 4,
+                    divisionId: 1,
+                    districtId: 2,
+                    name: 'Kazipur',
+                    value: "NAME_4='Kazipur'"
+                }, {
+                    id: 5,
+                    divisionId: 2,
+                    districtId: 3,
+                    name: 'Bhaluka',
+                    value: "NAME_4='Bhaluka'"
+                }, {
+                    id: 6,
+                    divisionId: 2,
+                    districtId: 3,
+                    name: 'Phulpur',
+                    value: "NAME_4='Phulpur'"
+                }, {
+                    id: 7,
+                    divisionId: 2,
+                    districtId: 4,
+                    name: 'Zanjira',
+                    value: "NAME_4='Zanjira'"
+                }, {
+                    id: 8,
+                    divisionId: 2,
+                    districtId: 4,
+                    name: 'Bhedarganj',
+                    value: "NAME_4='Bhedarganj'"
+                }, ]
+
+                $scope.onUnionChange = function() {
+                    $scope.Divisions.forEach(function(div) {
+                        if (div.id == $scope.selectedUnion.divisionId) {
+                            $scope.selectedDivision = div;
+                        }
+                    }, this);
+                    $scope.Districts.forEach(function(dis) {
+                        if (dis.id == $scope.selectedUnion.districtId) {
+                            $scope.selectedDistrict = dis;
+                        }
+                    }, this);
+                }
+                $scope.onDistrictChange = function() {
+                    $scope.Divisions.forEach(function(div) {
+                        if (div.id == $scope.selectedDistrict.divisionId) {
+                            $scope.selectedDivision = div;
+                        }
+                    }, this);
+                }
+                $scope.onFilterChange = function() {
+                    // debugger
+                    var division_value = $scope.selectedDivision && $scope.selectedDivision.value;
+                    var district_value = $scope.selectedDistrict && $scope.selectedDistrict.value;
+                    var union_value = $scope.selectedUnion && $scope.selectedUnion.value;
+                    var iframe = document.getElementById("iframe");
+                    var src = iframe.src.split('?')[0];
+                    var array = [division_value, district_value, union_value];
+                    var param = '?';
+                    for (i = 0; i < array.length; i++) {
+                        if (i && array[i] && param != '?') {
+                            param += ' AND ';
+                        }
+                        if (array[i]) {
+                            param += array[i]
+                        }
+
+                    }
+                    // debugger
+                    // iframe.src = src + '?' + division_value + (district_value ? ' AND ': '') + district_value + (union_value ? ' AND ': '') + union_value ;
+                    iframe.src = src + param;
+                }
+            }
+        })();
+    </script>
+</body>
+
+</html>

@@ -12,8 +12,10 @@ class GeoserverWFSListAPIView(ListAPIView, GeoServerMixin):
     """
     
     def get(self, request, **kwargs):
-        data = dict(request.query_params)
-            
+        access_token = None
+        if 'access_token' in request.session:
+            access_token = request.session['access_token']
+        data = dict(request.query_params, access_token=access_token)
         query = self.get_configuration(data)
         query.update(dict(SERVICE='WFS'))
 
@@ -108,6 +110,7 @@ class GeoserverCreateLayerByFeature(GeoServerMixin, CreateAPIView):
         cookies.update(dict(csrftoken=csrftoken))
 
         headers = {'X-CSRFToken': csrftoken }
+        # import pdb;pdb.set_trace()
         response = requests.post(url, cookies=cookies, headers=headers, data=data, files=files)
 
         return json.loads(response.content)
@@ -129,8 +132,11 @@ class GeoserverCreateLayerByFeature(GeoServerMixin, CreateAPIView):
             
         query = self.get_configuration(data)
 
-        query.update(dict(SERVICE='WFS'))
+        access_token = None
+        if 'access_token' in request.session:
+            access_token = request.session['access_token']
 
+        query.update(dict(SERVICE='WFS', access_token=access_token))
         result = self.get_response_from_geoserver('wfs', query)
         mem_file, geom_type = self.create_csv(result)
         

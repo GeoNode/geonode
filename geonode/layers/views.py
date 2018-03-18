@@ -545,7 +545,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     else:
         u = uuid.uuid1()
         access_token = u.hex
-
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, access_token, * (NON_WMS_BASE_LAYERS + [maplayer])))
     context_dict["preview"] = getattr(
@@ -1229,7 +1228,7 @@ def layer_delete(request, layer_pk):
         except:
             return Http404("requested layer does not exists")
         else:
-            if layer.status == 'ACTIVE' and (request.user == request.user.is_superuser or request.user == layer.owner or request.user in layer.group.get_managers()):
+            if layer.status == 'DRAFT' and (request.user.is_superuser or request.user == layer.owner or request.user in layer.group.get_managers()):
                 layer.status = "DELETED"
                 layer.save()
 
