@@ -26,6 +26,10 @@ a:hover{
 {
     width: 1240px;
 }
+label
+{
+    color: rgb(92, 92, 92);
+}
 #id_email{
     background-color: #fff;
     background-image: none;
@@ -3599,6 +3603,10 @@ width: 80%;
   .modal-content
   {
       color: #3c3c3c;
+  }
+  .modal-header
+  {
+    padding: 10px 15px;
   }
   .sidebar-toggle-btn {
     background-color: #ffffff;
