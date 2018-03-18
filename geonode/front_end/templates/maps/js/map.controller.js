@@ -143,7 +143,7 @@
 
         function postMapOrLayerLoadData(){
             var loadData=getMapOrLayerLoadNonGISData();
-            if(loadData.id!='new'){
+            if(parseInt(loadData.id)){
                 analyticsService.postNonGISData(analyticsNonGISUrl,loadData).then(function(response){
             
                 },function(error){
@@ -192,14 +192,25 @@
                     var analyticsData=getAnalyticsGISData(mapCenter,"zoom");
                     analyticsData=setMapAndLayerId(analyticsData);
                     resolutionChanged=false;
-                    if(analyticsData.map_id!='new')
+                    if(!isLayerPage()){
+                        if(parseInt(analyticsData.map_id)){
+                            
+                        }
+                    }else{
                         analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+                    }
+                        
                 }else{
                     var dragCoordinate=ol.proj.transform(map.getView().getCenter(), 'EPSG:3857','EPSG:4326');
                     var analyticsData=getAnalyticsGISData(dragCoordinate,"pan");
                     analyticsData=setMapAndLayerId(analyticsData);
-                    if(analyticsData.map_id!='new')
-                         analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+                    if(!isLayerPage()){
+                        if(parseInt(analyticsData.map_id)){
+                            analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+                        }
+                    }else{
+                        analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+                    }
                 }
               }
 
@@ -214,8 +225,13 @@
                 var clickCoordinate=ol.proj.transform(evt.coordinate, 'EPSG:3857','EPSG:4326');
                 var analyticsData=getAnalyticsGISData(clickCoordinate,"click");
                 analyticsData=setMapAndLayerId(analyticsData);
-                if(analyticsData.map_id!='new')
+                if(!isLayerPage()){
+                    if(parseInt(analyticsData.map_id)){
+                        analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+                    }
+                }else{
                     analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
+                }
             }
             keyMoveEnd=map.on('moveend', onMoveEnd);
             // keyPointerDrag=map.on('pointerdrag', onPointerDrag);
