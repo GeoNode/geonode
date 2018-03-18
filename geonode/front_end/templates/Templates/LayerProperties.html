@@ -9,10 +9,10 @@
 
     <div class="modal-sub-header form-inline">
 
-    <select name="styleSelect" class="form-control" style="width: 400px;margin-right: 5px;" ng-change="onStyleChange()" ng-model="nodeData.selectedStyle"  ng-options="style.title for style in Styles">
+    <select name="styleSelect" class="form-control input-sm" style="width: 400px;margin-right: 5px;" ng-change="onStyleChange()" ng-model="nodeData.selectedStyle"  ng-options="style.title for style in Styles">
             <option value="">-- Select Style --</option>
     </select>
-    <input class="btn btn-gd-primary icon-btn-color" style="padding: 7px 12px;" type="button" value="New" ng-click="newStyle()">
+    <input class="btn btn-gd-primary btn-sm icon-btn-color" type="button" value="New" ng-click="newStyle()">
 
     </div>
 
@@ -33,7 +33,7 @@
                             </label>
 
                             <div class="col-sm-6">
-                                <input class="form-control" draft-only type='text' ng-model='nodeData.layer.style.Title' maxlength="100" validatefilename focus-me="true"
+                                <input class="form-control input-sm" draft-only type='text' ng-model='nodeData.layer.style.Title' maxlength="100" validatefilename focus-me="true"
                                 />
                             </div>
 
@@ -67,7 +67,7 @@
                                 Minimum Zoom Level :
                             </label>
                             <div class="col-sm-2">
-                                <input type="number" ng-model="nodeData.layer.zoomlevel" class="form-control input-mini" min="0" max="21" fixed-number-range
+                                <input type="number" ng-model="nodeData.layer.zoomlevel" class="form-control input-sm" min="0" max="21" fixed-number-range
                                     ng-init="nodeData.layer.zoomlevel = nodeData.layer.zoomlevel == undefined ? 0: nodeData.layer.zoomlevel"
                                 />
                             </div>

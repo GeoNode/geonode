@@ -26,6 +26,10 @@ a:hover{
 {
     width: 1240px;
 }
+label
+{
+    color: rgb(92, 92, 92);
+}
 #id_email{
     background-color: #fff;
     background-image: none;
@@ -3272,7 +3276,7 @@ ul.termsuseandcondition li {
 
  }
 .modal-dialog{
-    margin: 80px auto;
+    margin: 50px auto 0;
     /*width: 600px;*/
 }
 
@@ -3322,11 +3326,11 @@ width: 80%;
 }
 .style-editor
 {
-    height: 50px;
+    height: 32px;
 }
 .style-label
 {
-    height: 50px;
+    height: 32px;
     margin: 0;
     padding: 0;
     display: block;
@@ -3599,6 +3603,44 @@ width: 80%;
   .modal-content
   {
       color: #3c3c3c;
+  }
+  .modal-dialog .modal-body
+  {
+    min-height: 250px;
+  }
+  .modal-content label
+  {
+     font-size: 12px;
+  }
+  .modal-header
+  {
+    padding: 10px 15px;
+  }
+  .modal-dialog .input-sm
+  {
+    height: 25px;
+    line-height: 25px;
+  }
+  .modal-dialog .btn-sm
+  {
+    padding: 2px 10px;
+  }
+  .modal-dialog .control-label
+  {
+    padding-top: 4px;
+  }
+  .modal-footer
+  {
+      padding: 10px 15px;
+  }
+  .tabbable
+  {
+      font-size: 11px;
+  }
+  .tabbable .nav > li > a
+  {
+    padding: 8px 15px;
+    font-size: 12px;
   }
   .sidebar-toggle-btn {
     background-color: #ffffff;

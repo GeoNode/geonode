@@ -5,12 +5,12 @@
 
 <div class="row">
 
-        <label class="col-md-4">
+        <label class="col-md-4 control-label">
             Label From
         </label>
 
         <div class="col-md-3">
-            <select class="form-control" ng-model="labelConfig.attribute" style="margin-left: -17px;"
+            <select class="form-control input-sm" ng-model="labelConfig.attribute" style="margin-left: -17px;"
                     ng-options="attribute.Id as attribute.Name for attribute in attributeDefs">
                 <option value="">--No Attribute Selected--</option>
             </select>
@@ -25,11 +25,11 @@
 
         <div class="row">
 
-        <label class="col-md-6" style="text-align: right;">
+        <label class="col-md-6 control-label" style="text-align: right;">
             Visibility Zoom Level
         </label>
         <div class="col-md-3">
-            <input type="number" ng-model="labelConfig.visibilityZoomLevel" class="input-mini form-control"
+            <input type="number" ng-model="labelConfig.visibilityZoomLevel" class="input-sm form-control"
                    min="0" max="21" fixed-number-range
                    ng-init="labelConfig.visibilityZoomLevel = labelConfig.visibilityZoomLevel == undefined ? 0: labelConfig.visibilityZoomLevel" />
         </div>
@@ -48,38 +48,38 @@
             <div class="form-horizontal">
                
                     <div class="form-group">
-                        <label class="col-md-5">Font</label>
+                        <label class="col-md-5 control-label">Font</label>
                         <div class="col-md-7">
-                            <select class="form-control" ng-model="labelConfig.font" ng-disabled="!labelConfig.attribute"
+                            <select class="form-control input-sm" ng-model="labelConfig.font" ng-disabled="!labelConfig.attribute"
                                     ng-options="font.value as font.label for font in service.fontFamilies"></select>
                         </div>
                     </div>
                 
                
                     <div class="form-group">
-                            <label class="col-md-5">
+                            <label class="col-md-5 control-label">
                             Font Style
                             </label>
                         <div class="col-md-7">
-                            <select class="form-control" ng-model="labelConfig.fontStyle" ng-disabled="!labelConfig.attribute"
+                            <select class="form-control input-sm" ng-model="labelConfig.fontStyle" ng-disabled="!labelConfig.attribute"
                                     ng-options="fontStyle.value as fontStyle.label for fontStyle in service.fontStyles"></select>
                         </div>
                     </div>
               
               
                     <div class="form-group">
-                            <label class="col-md-5">
+                            <label class="col-md-5 control-label">
                             Font Weight
                             </label>
                         <div class="col-md-7">
-                            <select class="form-control" ng-model="labelConfig.fontWeight" ng-disabled="!labelConfig.attribute"
+                            <select class="form-control input-sm" ng-model="labelConfig.fontWeight" ng-disabled="!labelConfig.attribute"
                                     ng-options="fontWeight.value as fontWeight.label for fontWeight in service.fontWeights"></select>
                         </div>
                     </div>
                
                 
                     <div class="form-group">
-                            <label class="col-md-5">
+                            <label class="col-md-5 control-label">
                             Color
                             </label>
                         <div class="col-md-7">
@@ -90,7 +90,7 @@
                
              
                     <div class="form-group">
-                            <label class="col-md-5">
+                            <label class="col-md-5 control-label">
                             Border Color
                             </label>
                         <div class="col-md-7">
@@ -102,11 +102,11 @@
                
             
                     <div class="form-group">
-                            <label class="col-md-5">
+                            <label class="col-md-5 control-label">
                             Size
                             </label>
                         <div class="col-md-7">
-                            <input class="form-control" type="number" minval="1" maxval="50" defaultval="12" min-max-validator ng-disabled="!labelConfig.attribute" ng-model="labelConfig.size" />
+                            <input class="form-control input-sm" type="number" minval="1" maxval="50" defaultval="12" min-max-validator ng-disabled="!labelConfig.attribute" ng-model="labelConfig.size" />
                         </div>
                     </div>
                
@@ -119,11 +119,11 @@
                 
                 <div class="form-group" ng-if="!isPolylineType">
                     
-                        <label class="col-md-5">
+                        <label class="col-md-5 control-label">
                             Alignment
                         </label>
                         <div class="col-md-7">
-                            <select class="form-control" ng-model="labelConfig.alignment" ng-disabled="!labelConfig.attribute"
+                            <select class="form-control input-sm" ng-model="labelConfig.alignment" ng-disabled="!labelConfig.attribute"
                                     ng-options="alignment.value as alignment.label for alignment in service.alignments"></select>
                         </div>
                    
@@ -131,32 +131,32 @@
                 
                     <div class="form-group" ng-if="!isPolylineType">
                     
-                        <label class="col-md-5">
+                        <label class="col-md-5 control-label">
                             Offset left
                         </label>
                         <div class="col-md-7">
-                            <input class="form-control" type="number" minval="0" maxval="100" defaultval="0" min-max-validator ng-disabled="!labelConfig.attribute" ng-model="labelConfig.offsetX" />
+                            <input class="form-control input-sm" type="number" minval="0" maxval="100" defaultval="0" min-max-validator ng-disabled="!labelConfig.attribute" ng-model="labelConfig.offsetX" />
                         </div>
                  
                 </div>
 
                
                 <div class="form-group">
-                        <label class="col-md-5">
+                        <label class="col-md-5 control-label">
                             Offset bottom
                         </label>
                         <div class="col-md-7">
-                            <input class="form-control" type="number" minval="0" maxval="100" defaultval="0" min-max-validator ng-disabled="!labelConfig.attribute" ng-model="labelConfig.offsetY" />
+                            <input class="form-control input-sm" type="number" minval="0" maxval="100" defaultval="0" min-max-validator ng-disabled="!labelConfig.attribute" ng-model="labelConfig.offsetY" />
                         </div>
                     </div>
                
                 
                     <div class="form-group" ng-if="!isPolylineType">
-                        <label class="col-md-5">
+                        <label class="col-md-5 control-label">
                             Rotation(degree)
                         </label>
                         <div class="col-md-7">
-                            <input class="form-control" type="number" minval="0" maxval="360" defaultval="0" min-max-validator ng-disabled="!labelConfig.attribute" ng-model="labelConfig.rotation" min="-360" max="360" />
+                            <input class="form-control input-sm" type="number" minval="0" maxval="360" defaultval="0" min-max-validator ng-disabled="!labelConfig.attribute" ng-model="labelConfig.rotation" min="-360" max="360" />
                         </div>
                     </div>
              
@@ -184,7 +184,7 @@
 
                 <div>
                     <div class="row">
-                        <label class="col-md-5">
+                        <label class="col-md-5 control-label">
                           
                         </label>
                         <div class="col-md-7">
@@ -192,7 +192,7 @@
                                 <input type="checkbox" ng-disabled="!labelConfig.attribute" ng-model="labelConfig.wrap" />
                                 Wrap Words
 
-                            <input class="form-control" style="width: 150px;" ng-if="labelConfig.wrap" type="number" minval="0" maxval="1000" defaultval="50" min-max-validator
+                            <input class="form-control input-sm" style="width: 150px;" ng-if="labelConfig.wrap" type="number" minval="0" maxval="1000" defaultval="50" min-max-validator
                                    ng-disabled="!labelConfig.attribute" ng-model="labelConfig.wrapPixel" placeholder="Wrap Pixel" />
                         </div>
                     </div>
@@ -232,4 +232,7 @@
         margin-bottom: 16px;
         padding-bottom: 8px;
     }
+    .form-group {
+    margin-bottom: 10px;
+}
 </style>

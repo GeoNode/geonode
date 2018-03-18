@@ -22,9 +22,9 @@
         <div class="row" style="margin-bottom: 10px;">
 
             <div class="col-md-2">
-                <label style="font-weight: bold">Select Attribute</label>
+                <label class="control-label">Select Attribute</label>
 
-                <select ng-disabled="isEnvironmentProd" draft-only ng-model="flags.field" style="width: 150px;" class="form-control" ng-change="dropdownSelectionChanged()" ng-options="i.id as i.name for i in NeededAttributes">
+                <select ng-disabled="isEnvironmentProd" draft-only ng-model="flags.field" class="form-control input-sm" ng-change="dropdownSelectionChanged()" ng-options="i.id as i.name for i in NeededAttributes">
                     <option value="">-- No Item Selected --</option>
                 </select>
             </div>
@@ -33,8 +33,8 @@
                 <label style="font-weight: bold">Color Ramp</label>
                 <sti-plt-pkr ng-model="flags.chosenPalette" sti-pkr-options="paletteItems"></sti-plt-pkr>
             </div>
-            <div class="col-md-3 text-right">
-                <div ng-if="isUnique()" style="padding: 3px; margin-top: 25px;">
+            <div class="col-md-4 text-right">
+                <div ng-if="isUnique()" style="margin-top: 25px;">
                     <button type="button" class="btn btn-danger" ng-disabled="chosenValuesForGrid.length == 0"
                             style="padding: 2px 6px;" ng-click="removeAll()">
                         <i class="fa fa-minus-circle"></i>&nbsp;Remove All
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <div class="row" ng-show="isRange()">
+        <div ng-show="isRange()">
             <div class="col-md-3">
                 <label style="font-weight: bold; display: inline;">Divisions :</label>
                 <input type="number" class="form-control" style="width: 100px;" min="1" max="100" ng-model="flags.division" ng-change="divisionChanged()" />
@@ -152,7 +152,7 @@
                         <i class="fa fa-arrow-circle-up" style="cursor: pointer;" ng-click="moveUp()"></i>
                         <i class="fa fa-arrow-circle-down" style="cursor: pointer;" ng-click="moveDown()"></i>
                     </div>-->
-                    <div class="col-md-4" ng-if="isUnique()">
+                    <div class="col-md-5" ng-if="isUnique()">
                         <div class="panel panel-default" style="margin-bottom: 0">
                             <div class="panel-heading" style="padding: 3px 6px;">
                                 <h3 class="panel-title" style="font-size: 14px; line-height: 24px; font-family: RobotoRegular, Trebuchet MS, Verdana, Helvetica, Sans-Serif;">
@@ -160,8 +160,8 @@
                                     Select All
                                 </h3>
                             </div>
-                            <div class="panel-body" style="padding: 5px; min-height: 163px;">
-                                <ul class="nav-stacked" style="margin-bottom: 0; max-height: 165px; min-height: 165px; overflow-y: auto; margin-left: 0;padding:0">
+                            <div class="panel-body" style="padding: 5px; height: 145px;">
+                                <ul class="nav-stacked" style="margin-bottom: 0; height: 139px;overflow-y: auto; margin-left: 0;padding:0">
                                     <div ng-if="flags.PropertyData.length == 0" class="alert" ng-show="!isLoading()">No item</div>
                                     <li ng-repeat="item in flags.PropertyData" class="list-group-item" ng-show="!isLoading()" style="white-space: nowrap;">
                                         <input type="checkbox" ng-attr-name="{{item.value}}" ng-model="item.checked" ng-change="selectionModeChanged(item)" style="margin-top: 0;" />
