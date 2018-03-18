@@ -88,12 +88,13 @@
             $(document.querySelector('#map-footer-box')).focus();
         };
 
-        function mapLayers(layers) {
+        function mapLayers(baseMap, layers) {
            
             var baseMap = {
-                "baseURL":  "http://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=50d64afdbe424011bdaabb6b9315b7ed",
+                "baseURL": baseMap.url || "http://tile.thunderforest.com/cycle",
+                "customParams":baseMap.customParams || {"apikey":'50d64afdbe424011bdaabb6b9315b7ed'},
                 "opacity": 1,
-                "type": "xyz",
+                "type": baseMap.type || "xyz",
                 "maxExtent": [-20037508.3392, -20037508.3392,
                     20037508.3392,
                     20037508.3392
@@ -125,7 +126,7 @@
                     0.5971642833948135
                 ]
             };
-            var mappedLayers = [];
+            var mappedLayers = [baseMap];
             for (var k in layers) {
                 var layer = layers[k];
                 mappedLayers.push({
@@ -151,7 +152,7 @@
         }
         $scope.pageSize = 'LEGAL';
         self.downloadMap = function() {
-            var baseMap = mapTools.baseMap;
+            var baseMap = mapTools.baseMap.getBaseMap();
             console.log(map);
             // window.print();
             var data = {
@@ -162,7 +163,7 @@
                 "outputFilename": "GeoExplorer-print",
                 "mapTitle": self.mapTitle,
                 "comment": self.comments,
-                "layers": mapLayers(map.getLayers()),
+                "layers": mapLayers(baseMap, map.getLayers()),
                 "pages": [{
                     "center": map.getCenter(),
                     "scale": self.selectedScale,
