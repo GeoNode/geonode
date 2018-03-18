@@ -79,8 +79,38 @@
             }
         }
 
+        function getGeoJsonFeatureFromUrl(url, surfLayer){
+            if (url) {
+                return $http.get(url).then(function(response) {
+                    var geoJson = response.data;
+                    geoJson.features.map(function(feature){
+                        if(!feature.geometry){
+                            feature.geometry = { 
+                                type: "MultiPolygon", 
+                                coordinates: [],
+                                geometry_name: 'the_geom'
+                            };
+                        }
+                    });
+                    var parser = new ol.format.GeoJSON();
+                    var olFeatures = parser.readFeatures(geoJson);
+                    return olFeatures.map(function(olFeature) {
+                        return {
+                            surfFeature: new SurfFeature(olFeature, surfLayer),
+                            olFeature: olFeature
+                        };
+                    });
+                });
+            } else {
+                var differed = $q.defer();
+                differed.reject();
+                return differed.promise;
+            }
+        }
+
         return {
             getFeatureFromUrl: getFeatureFromUrl,
+            getGeoJsonFeatureFromUrl : getGeoJsonFeatureFromUrl,
             getCompleteFeature: getCompleteFeature,
             upsertToCache: upsertToCache,
             createSurfFeature: createSurfFeature,

@@ -29,6 +29,10 @@
         $scope.gridOptions = {
             enableSorting: true,
             enableColumnResizing: true,
+            enableRowSelection: true,
+            enableSelectAll: true,
+            multiSelect: false,
+            enableRowHeaderSelection : true,
             onRegisterApi: function(gridApi) {
                 $scope.gridApi = gridApi;
                 gridApi.selection.on.rowSelectionChanged($scope, function(rows) {
@@ -82,7 +86,9 @@
                 enableSorting: true,
                 enableColumnResizing: true,
                 enableRowSelection: true,
-                enableSelectAll: false,
+                enableSelectAll: true,
+                multiSelect: false,
+                enableRowHeaderSelection : true,
                 columnDefs: attributeGridService.getColumns($scope.gridData.attributeDefinitions, attributeTypes),
                 onRegisterApi: function(gridApi) {
                     $scope.gridApi = gridApi;
@@ -188,6 +194,11 @@
                 surfToastr.error("please enter a valid query","Error");
             }
         });
+
+        $rootScope.$on('reloadAttributeGrid', function(event, data) {
+            initGrid($rootScope.layerId);
+        });
+
 
         function getRequestObject(currentPage) {
             var currentPageSize = $scope.pagination.itemsPerPage;

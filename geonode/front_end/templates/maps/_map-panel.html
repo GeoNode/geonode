@@ -170,11 +170,11 @@
             </li> -->
             <li class="divider-vertical" draft-only></li>
 
-            <li draft-only>
+            <!-- <li draft-only>
                 <button class="control-button icon" onclick="animating()" title="Query">
                             <i class="fa fa-binoculars"></i>                                  
                                 </button>
-            </li>
+            </li> -->
             <li draft-only>
                 <button class="control-button icon" 
                 ng-style="{'background-color':isHeatMapVisible ? 'red' : 'white'}"
@@ -227,7 +227,7 @@
 
     <div class="container-fluid" style="padding: 0;">
         <div class="row">
-            <div class="col-md-4" style="padding-right: 0">
+            <div class="col-md-5" style="padding-right: 0" id="query-grid">
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <h3 class="panel-title">Query</h3>
@@ -250,8 +250,8 @@
                                                         Query <i class="fa fa-binoculars" style="font-size: 16px;" aria-hidden="true"></i>    
                                                     </a>
                         <a href="" 
-                        onclick="animating()"
-                        class="btn btn-default btn-sm pull-right" target="_self" style="margin-right: 5px;">
+                        ng-click="disableQuery()"
+                        class="btn btn-default pull-right" target="_self" style="margin-right: 5px;">
                                                             Cancel <i class="fa fa-times" aria-hidden="true"></i></a>
 
                         <div style="clear:both"></div>
@@ -259,7 +259,7 @@
                 </div>
             </div>
 
-            <div class="col-md-8" style="padding-left: 3px">
+            <div class="col-md-7" style="padding-left: 3px" id="attribute-grid">
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <h3 class="panel-title">
@@ -297,17 +297,34 @@
 
 
 <script>
-    var count = 0;
+    $(document).ready(function(){
+        $("#panel-bottom").resizable({
+            handles: 'n'
+        }).bind( "resize", function(){
+            var height = $("#panel-bottom").height();
+            $('#query-grid').css('height', height);
+            $('#attribute-grid').css('height', height);
 
-    function animating() {
-        if (count === 0) {
-            document.getElementById('panel-bottom').className = 'panel-bottom slideInUp';
+        });
 
-            count++;
-        } else {
-            document.getElementById('panel-bottom').className = 'panel-bottom slideOutDown'; //hide
+        var total_width = $( "#panel-bottom" ).width();
 
-            count--;
+        $("#query-grid").resizable({
+            grid: [1, 10000]
+        }).bind( "resize", resize_other);
+
+
+        function resize_other(event, ui) {
+            var width = $("#query-grid").width();
+
+            if(width > total_width) {
+                width = total_width;
+
+                $('#query-grid').css('width', width);
+            }
+
+            $('#attribute-grid').css('width', (total_width - width));
         }
-    }
+    });
+
 </script>

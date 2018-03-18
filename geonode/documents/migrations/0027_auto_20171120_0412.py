@@ -27,10 +27,6 @@ class Migration(migrations.Migration):
             model_name='document',
             name='content_type',
         ),
-        migrations.RemoveField(
-            model_name='document',
-            name='object_id',
-        ),
         migrations.AddField(
             model_name='documentlayers',
             name='document',

@@ -12,9 +12,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='profile',
-            name='last_notification_view',
-            field=models.DateTimeField(default=datetime.datetime.now),
-        ),
     ]

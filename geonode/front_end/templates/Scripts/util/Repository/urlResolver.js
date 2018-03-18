@@ -108,7 +108,8 @@
         },
         getGeoServerRoot: function(){
             return geoServerRoot();
-        }
+        },
+        addParams : addParams,
 
     };
 }]);
