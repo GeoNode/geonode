@@ -89,10 +89,11 @@
         };
 
         function mapLayers(layers) {
+           
             var baseMap = {
-                "baseURL": "https://a.tile.openstreetmap.org/",
+                "baseURL":  "http://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=50d64afdbe424011bdaabb6b9315b7ed",
                 "opacity": 1,
-                "type": "OSM",
+                "type": "xyz",
                 "maxExtent": [-20037508.3392, -20037508.3392,
                     20037508.3392,
                     20037508.3392
