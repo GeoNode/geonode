@@ -18,6 +18,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from rest_framework_gis.filters import InBBoxFilter
 
@@ -149,6 +150,8 @@ class MapListAPIView(AnalyticsMixin, ListAPIView):
     """
     Will send summary of Map activity
     """
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
     def get_queryset(self):
         content_model = ContentType.objects.get_for_model(Map)
         return LoadActivity.objects.filter(content_type=content_model).order_by('last_modified')
@@ -185,9 +188,9 @@ class LayerListAPIView(AnalyticsMixin, ListAPIView):
     def get(self, request, **kwargs):
         keys = ['layer_id', 'last_modified_date', 'activity_type']
 
-        layer_load_data = self.format_data(query=self.get_queryset(),extra_field=dict(activity_type='load'))
+        layer_load_data = self.format_data(query=self.get_queryset())
         pin_point_data = self.format_data(model_instance=PinpointUserActivity, filters=dict(layer_id__isnull=False))
-
+        
         results = self.get_analytics(layer_load_data, ['object_id','last_modified_date', 'activity_type']) + self.get_analytics(pin_point_data, keys)
         
         for r in results:
@@ -214,7 +217,7 @@ class DocumentListAPIView(AnalyticsMixin, ListAPIView):
     def get(self, request, **kwargs):
         keys = ['object_id', 'last_modified_date', 'activity_type']
 
-        document_load_data = self.format_data(query=self.get_queryset(),extra_field=dict(activity_type='load'))
+        document_load_data = self.format_data(query=self.get_queryset())
         
 
         results = self.get_analytics(document_load_data, keys)
