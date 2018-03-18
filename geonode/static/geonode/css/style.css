@@ -3272,7 +3272,7 @@ ul.termsuseandcondition li {
 
  }
 .modal-dialog{
-    margin: 80px auto;
+    margin: 50px auto 0;
     /*width: 600px;*/
 }
 
@@ -3322,11 +3322,11 @@ width: 80%;
 }
 .style-editor
 {
-    height: 50px;
+    height: 32px;
 }
 .style-label
 {
-    height: 50px;
+    height: 32px;
     margin: 0;
     padding: 0;
     display: block;
