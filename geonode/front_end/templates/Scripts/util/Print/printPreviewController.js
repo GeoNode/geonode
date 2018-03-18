@@ -12,15 +12,18 @@
         function initialize(){
             map.getPrintingConfiguration()
                 .then(function(res){
+                    var metaInfo = map.getMeta();
+                    self.mapTitle = metaInfo.title;
+                    self.comments = metaInfo.abstract;
                     self.layouts = res.data.layouts;
                     self.dpis = res.data.dpis;
                     self.printURL = res.data.printURL;
                     self.createURL = res.data.createURL;
                     self.scales = res.data.scales;
 
-                    self.selectedLayout = self.layouts[0];
-                    self.selectedScale = self.scales[0];
-                    self.selectedDpi  = self.dpis[0];
+                    self.selectedLayout = self.layouts[0].name;
+                    self.selectedScale = self.scales[0].value;
+                    self.selectedDpi  = self.dpis[0].value;
                     self.includeLegend = true;
             });
         }
@@ -85,11 +88,13 @@
             $(document.querySelector('#map-footer-box')).focus();
         };
 
-        function mapLayers(layers) {
+        function mapLayers(baseMap, layers) {
+           
             var baseMap = {
-                "baseURL": "https://a.tile.openstreetmap.org/",
+                "baseURL": baseMap.url || "http://tile.thunderforest.com/cycle",
+                "customParams":baseMap.customParams || {"apikey":'50d64afdbe424011bdaabb6b9315b7ed'},
                 "opacity": 1,
-                "type": "OSM",
+                "type": baseMap.type || "xyz",
                 "maxExtent": [-20037508.3392, -20037508.3392,
                     20037508.3392,
                     20037508.3392
@@ -121,7 +126,7 @@
                     0.5971642833948135
                 ]
             };
-            var mappedLayers = [];
+            var mappedLayers = [baseMap];
             for (var k in layers) {
                 var layer = layers[k];
                 mappedLayers.push({
@@ -147,7 +152,7 @@
         }
         $scope.pageSize = 'LEGAL';
         self.downloadMap = function() {
-            var baseMap = mapTools.baseMap;
+            var baseMap = mapTools.baseMap.getBaseMap();
             console.log(map);
             // window.print();
             var data = {
@@ -158,18 +163,17 @@
                 "outputFilename": "GeoExplorer-print",
                 "mapTitle": self.mapTitle,
                 "comment": self.comments,
-                "layers": mapLayers(map.getLayers()),
+                "layers": mapLayers(baseMap, map.getLayers()),
                 "pages": [{
                     "center": map.getCenter(),
-                    "scale": self.selectedScale.value,
+                    "scale": self.selectedScale,
                     "rotation": 0
                 }]
             };
 
             $http.post('/geoserver/pdf/create.json', data )
                 .then(function(res) {
-                    console.log(res);
-
+                    $window.location = res.data.getURL;
                 });
         };
 

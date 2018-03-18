@@ -232,10 +232,10 @@
                         // windowClass: 'fullScreenModal printPreviewModal'
                 });
 
-                moveShape();
-                removeLayerSwitcher();
-                removeZoomControl();
-                styleContents();
+                // moveShape();
+                // removeLayerSwitcher();
+                // removeZoomControl();
+                // styleContents();
 
                 // html2canvas($('#mainContent'), {
                 //     useCORS: true,
