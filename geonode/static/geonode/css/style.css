@@ -3604,6 +3604,10 @@ width: 80%;
   {
       color: #3c3c3c;
   }
+  .modal-content label
+  {
+     font-size: 12px;
+  }
   .modal-header
   {
     padding: 10px 15px;
