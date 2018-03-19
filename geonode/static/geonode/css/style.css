@@ -790,9 +790,9 @@ table.gd-list-table tr td .media-body {
 
 
 /* start footer style*/
-#gd-wrapper{
+/* #gd-wrapper{
     min-height:100%;
-}
+} */
 #gd-footer{
     position: relative;
     margin-top: -100px; /* negative value of footer height */
