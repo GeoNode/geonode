@@ -17,7 +17,7 @@
 
     <hr style="margin: 10px 0 5px;" />
 
-    <div id="second-section">
+    <div id="second-section" style="position:relative">
 
         <div class="row" style="margin-bottom: 10px;">
 
@@ -30,7 +30,7 @@
             </div>
 
             <div class="col-md-6" draft-only>
-                <label style="font-weight: bold">Color Ramp</label>
+                <label class="control-label">Color Ramp</label>
                 <sti-plt-pkr ng-model="flags.chosenPalette" sti-pkr-options="paletteItems"></sti-plt-pkr>
             </div>
             <div class="col-md-4 text-right">
@@ -44,9 +44,9 @@
         </div>
 
         <div ng-show="isRange()">
-            <div class="col-md-3">
-                <label style="font-weight: bold; display: inline;">Divisions :</label>
-                <input type="number" class="form-control" style="width: 100px;" min="1" max="100" ng-model="flags.division" ng-change="divisionChanged()" />
+            <div class="col-md-3" style="position: absolute;left:572px;top:0;">
+                <label class="control-label">Divisions :</label>
+                <input type="number" class="form-control input-sm" style="width: 100px;" min="1" max="100" ng-model="flags.division" ng-change="divisionChanged()" />
             </div>
             <div class="col-md-3">
                 <i class="fa fa-spinner fa-spin" style="text-align: center; width: 100%; margin-top: 35px;" ng-show="isLoading()"></i>
