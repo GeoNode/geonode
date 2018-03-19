@@ -3845,4 +3845,19 @@ background-color: #fff;
     color: #99abb4 ;
    margin: 0 0 0 10px;
 }
+.classification-style-editor-container {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    float: left;
+    left: -362px;
+    margin-right: 15px;
+    position: relative;
+    width: 357px;
+    height: 207px;
+    overflow-y: auto;
+}
+.style-editor-shown {
+    left: 0 !important;
+    top: 3px;
+}
 

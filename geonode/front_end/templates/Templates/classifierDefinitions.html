@@ -53,13 +53,13 @@
             </div>
         </div>
 
-        <div style="overflow: hidden; width: 100%">
+        <div style="overflow: hidden; width: 1045px;white-space:nowrap;">
 
             <div class="classification-style-editor-container" ng-if="selectedClass && !classificationEditor.hide" ng-class="{'style-editor-shown':!classificationEditor.hide}">
 
                 <i class="fa fa-times-circle" aria-hidden="true" ng-click="classificationEditor.hide = true" style="position: absolute; right: 7px; top: 5px; font-size: 17px; cursor: pointer;"></i>
 
-                <table>
+                <table style="width: 100%;">
                     <tr class="preview-row">
                         <td></td>
                         <td>
@@ -79,7 +79,7 @@
 
             <div id="ListOfValues" class="list-of-values" ng-if="isRange() || isUnique()" ng-class="{'classification-table-hidden-line':!classificationEditor.hide && featureType=='polyline', 'classification-table-hidden-polygon':!classificationEditor.hide && featureType=='polygon', 'classification-table-hidden-point':!classificationEditor.hide && featureType=='point'  }">
                 <div class="row">
-                    <div ng-attr-class="{{isUnique() ? 'col-md-7':'col-md-9'}}">
+                    <div ng-attr-class="{{isUnique() ? 'col-md-7':'col-md-9'}}" style="width: 688px;display: inline-block">
                         <div class="fixed-table-container">
                             
                             <div class="fixed-table-container-inner">
@@ -152,7 +152,7 @@
                         <i class="fa fa-arrow-circle-up" style="cursor: pointer;" ng-click="moveUp()"></i>
                         <i class="fa fa-arrow-circle-down" style="cursor: pointer;" ng-click="moveDown()"></i>
                     </div>-->
-                    <div class="col-md-5" ng-if="isUnique()">
+                    <div class="col-md-5" ng-if="isUnique()" style="width: 384px;float:none;display: inline-block">
                         <div class="panel panel-default" style="margin-bottom: 0">
                             <div class="panel-heading" style="padding: 3px 6px;">
                                 <h3 class="panel-title" style="font-size: 14px; line-height: 24px; font-family: RobotoRegular, Trebuchet MS, Verdana, Helvetica, Sans-Serif;">
@@ -185,3 +185,14 @@
 
     </div>
 </div>
+
+<style>
+    .modal-dialog
+    {
+        width: 1077px;
+    }
+    .dropdown-menu
+{
+  top: -169px !important;
+}
+</style>
