@@ -111,6 +111,19 @@ UPLOADER = {
         'EPSG:900913',
         'EPSG:32647',
         'EPSG:32736'
+    ],
+    'SUPPORTED_EXT': [
+        '.shp',
+        '.csv',
+        '.kml',
+        '.kmz',
+        '.json',
+        '.geojson',
+        '.tif',
+        '.tiff',
+        '.geotiff',
+        '.gml',
+        '.xml'
     ]
 }
 
@@ -204,8 +217,8 @@ DEFAULT_MAP_CENTER = (0, 0)
 DEFAULT_MAP_ZOOM = 0
 
 # Default preview library
-LAYER_PREVIEW_LIBRARY = 'geoext'
-#LAYER_PREVIEW_LIBRARY = 'leaflet'
+GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'
+#GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'
 # LEAFLET_CONFIG = {
 #    'TILES': [
 #        # Find tiles at:
@@ -286,7 +299,7 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     LOCAL_GEOSERVER = {
         "source": {
             "ptype": "gxp_wmscsource",
-            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows",
             "restUrl": "/gs/rest"
         }
     }
@@ -351,10 +364,6 @@ LOGGING = {
         }
     },
     'handlers': {
-        'null': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.NullHandler',
-        },
         'console': {
             'level': 'ERROR',
             'class': 'logging.StreamHandler',

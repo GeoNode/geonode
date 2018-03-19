@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 #########################################################################
 #
@@ -20,6 +19,7 @@
 #########################################################################
 
 # Django settings for the GeoNode project.
+import ast
 import os
 import re
 import sys
@@ -54,8 +54,8 @@ DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
 EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'False'))
 
 if EMAIL_ENABLE:
-    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND', \
-        default='django.core.mail.backends.smtp.EmailBackend')
+    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
+                              default='django.core.mail.backends.smtp.EmailBackend')
     EMAIL_HOST = 'localhost'
     EMAIL_PORT = 25
     EMAIL_HOST_USER = ''
@@ -63,15 +63,18 @@ if EMAIL_ENABLE:
     EMAIL_USE_TLS = False
     DEFAULT_FROM_EMAIL = 'GeoNode <no-reply@geonode.org>'
 else:
-    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND', \
-        default='django.core.mail.backends.console.EmailBackend')
+    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
+                              default='django.core.mail.backends.console.EmailBackend')
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
 
-ALLOWED_HOSTS = ['localhost', 'django'] if os.getenv('ALLOWED_HOSTS') is None \
-    else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
+if os.getenv('DOCKER_ENV'):
+    ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
+else:
+    ALLOWED_HOSTS = ['localhost', ] if os.getenv('ALLOWED_HOSTS') is None \
+        else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
 # to only whitelisted IP addresses.
@@ -106,6 +109,14 @@ DATABASE_URL = os.getenv(
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 }
+
+if os.getenv('DEFAULT_BACKEND_DATASTORE'):
+    GEODATABASE_URL = os.getenv('GEODATABASE_URL',
+                                'postgis://\
+geonode_data:geonode_data@localhost:5432/geonode_data')
+    DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = dj_database_url.parse(
+        GEODATABASE_URL, conn_max_age=600
+    )
 
 MANAGERS = ADMINS = os.getenv('ADMINS', [])
 
@@ -264,10 +275,17 @@ MAX_DOCUMENT_SIZE = int(os.getenv('MAX_DOCUMENT_SIZE ', '2'))  # MB
 # DOCUMENT_TYPE_MAP = {}
 # DOCUMENT_MIMETYPE_MAP = {}
 
+UNOCONV_ENABLE = strtobool(os.getenv('UNOCONV_ENABLE', 'False'))
+
+if UNOCONV_ENABLE:
+    UNOCONV_EXECUTABLE = os.getenv('UNOCONV_EXECUTABLE', '/usr/bin/unoconv')
+    UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
+
 GEONODE_APPS = (
     # GeoNode internal apps
     'geonode.people',
     'geonode.base',
+    'geonode.client',
     'geonode.layers',
     'geonode.maps',
     'geonode.proxy',
@@ -280,7 +298,7 @@ GEONODE_APPS = (
     'geonode.services',
 
     # QGIS Server Apps
-    # 'geonode.qgis_server',
+    'geonode.qgis_server',
 
     # GeoServer Apps
     # Geoserver needs to come last because
@@ -289,7 +307,6 @@ GEONODE_APPS = (
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
-
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -305,6 +322,7 @@ GEONODE_CONTRIB_APPS = (
     # 'geonode.contrib.datastore_shards',
     'geonode.contrib.metadataxsl',
     'geonode.contrib.api_basemaps',
+    'geonode.contrib.ows_api',
 )
 
 # Uncomment the following line to enable contrib apps
@@ -330,17 +348,15 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'django.contrib.gis',
 
-    # Third party apps
-
     # Utility
-    'pagination',
+    'dj_pagination',
     'taggit',
     'treebeard',
-    'friendlytagloader',
     'geoexplorer',
     'leaflet',
+    'bootstrap3_datetime',
     'django_extensions',
-    # 'geonode-client',
+    'django_basic_auth',
     # 'haystack',
     'autocomplete_light',
     'mptt',
@@ -365,7 +381,7 @@ INSTALLED_APPS = (
     'announcements',
     'actstream',
     'user_messages',
-    'tastypie',
+    # 'tastypie',
     'polymorphic',
     'guardian',
     'oauth2_provider',
@@ -387,7 +403,6 @@ MONITORING_DATA_TTL = timedelta(days=7)
 # use with caution - for dev purpose only
 MONITORING_DISABLE_CSRF = False
 
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -406,10 +421,6 @@ LOGGING = {
         }
     },
     'handlers': {
-        'null': {
-            'level': 'ERROR',
-            'class': 'logging.NullHandler',
-        },
         'console': {
             'level': 'ERROR',
             'class': 'logging.StreamHandler',
@@ -426,7 +437,7 @@ LOGGING = {
         "geonode": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode.qgis_server": {
-            "handlers": ["console"], "level": "DEBUG", },
+            "handlers": ["console"], "level": "ERROR", },
         "gsconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
         "owslib": {
@@ -449,15 +460,21 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.contrib.auth.context_processors.auth',
-                'django.core.context_processors.debug',
-                'django.core.context_processors.i18n',
-                'django.core.context_processors.tz',
-                'django.core.context_processors.media',
-                'django.core.context_processors.static',
-                'django.core.context_processors.request',
-                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.tz',
                 'django.template.context_processors.request',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.contrib.auth.context_processors.auth',
+                # 'django.core.context_processors.debug',
+                # 'django.core.context_processors.i18n',
+                # 'django.core.context_processors.tz',
+                # 'django.core.context_processors.media',
+                # 'django.core.context_processors.static',
+                # 'django.core.context_processors.request',
                 'geonode.context_processors.resource_urls',
                 'geonode.geoserver.context_processors.geoserver_urls',
             ],
@@ -471,14 +488,16 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-
+    'dj_pagination.middleware.PaginationMiddleware',
     # The setting below makes it possible to serve different languages per
     # user depending on things like headers in HTTP requests.
     'django.middleware.locale.LocaleMiddleware',
-    'pagination.middleware.PaginationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Security settings
+    'django.middleware.security.SecurityMiddleware',
 
     # This middleware allows to print private layers for the users that have
     # the permissions to view them.
@@ -494,6 +513,18 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
 )
+
+# Security stuff
+MIDDLEWARE_CLASSES += ('django.middleware.security.SecurityMiddleware',)
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_SSL_REDIRECT = False
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
@@ -564,8 +595,6 @@ ACTSTREAM_SETTINGS = {
 }
 
 
-
-
 # Email for users to contact admins.
 THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
     'THEME_ACCOUNT_CONTACT_EMAIL', 'admin@example.com'
@@ -613,7 +642,7 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8000/gs/'
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -651,7 +680,8 @@ OGC_SERVER = {
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log'
         % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
-        'DATASTORE': '',  # 'datastore',
+        # 'datastore',
+        'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE', ''),
         'PG_GEOGIG': False,
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
@@ -673,6 +703,19 @@ UPLOADER = {
         'EPSG:900913',
         'EPSG:32647',
         'EPSG:32736'
+    ],
+    'SUPPORTED_EXT': [
+        '.shp',
+        '.csv',
+        '.kml',
+        '.kmz',
+        '.json',
+        '.geojson',
+        '.tif',
+        '.tiff',
+        '.geotiff',
+        '.gml',
+        '.xml'
     ]
 }
 
@@ -1048,8 +1091,8 @@ CACHES = {
     #     }
 }
 
-LAYER_PREVIEW_LIBRARY = 'geoext'
-# LAYER_PREVIEW_LIBRARY = 'leaflet'
+GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'  # DEPRECATED use HOOKSET instead
+GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
 
 SERVICE_UPDATE_INTERVAL = 0
 
@@ -1079,6 +1122,7 @@ _EMAIL_BACKEND = "pinax.notifications.backends.email.EmailBackend"
 PINAX_NOTIFICATIONS_BACKENDS = [
     ("email", _EMAIL_BACKEND),
 ]
+PINAX_NOTIFICATIONS_HOOKSET = "pinax.notifications.hooks.DefaultHookSet"
 
 # Queue non-blocking notifications.
 PINAX_NOTIFICATIONS_QUEUE_ALL = False
@@ -1095,8 +1139,8 @@ NOTIFICATIONS_MODULE = 'pinax.notifications'
 USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = False
 
 if NOTIFICATION_ENABLED:
-    INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
-
+    if NOTIFICATIONS_MODULE not in INSTALLED_APPS:
+        INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 # async signals can be the same as broker url
 # but they should have separate setting anyway
@@ -1116,14 +1160,12 @@ CELERY_TASK_RESULT_EXPIRES = 1
 CELERY_WORKER_DISABLE_RATE_LIMITS = True
 CELERY_WORKER_SEND_TASK_EVENTS = False
 
-
 CELERY_QUEUES = [
     Queue('default', routing_key='default'),
     Queue('cleanup', routing_key='cleanup'),
     Queue('update', routing_key='update'),
     Queue('email', routing_key='email'),
 ]
-
 
 # AWS S3 Settings
 
@@ -1193,15 +1235,27 @@ if os.name == 'nt':
 # define the urls after the settings are overridden
 USE_GEOSERVER = 'geonode.geoserver' in INSTALLED_APPS
 if USE_GEOSERVER:
+    PUBLIC_GEOSERVER = {
+        "source": {
+            "title": "GeoServer - Public Layers",
+            "attribution": "&copy; %s" % SITEURL,
+            "ptype": "gxp_wmscsource",
+            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows",
+            "restUrl": "/gs/rest"
+        }
+    }
     LOCAL_GEOSERVER = {
         "source": {
+            "title": "GeoServer - Private Layers",
+            "attribution": "&copy; %s" % SITEURL,
             "ptype": "gxp_wmscsource",
-            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+            "url": "/gs/ows",
             "restUrl": "/gs/rest"
         }
     }
     baselayers = MAP_BASELAYERS
-    MAP_BASELAYERS = [LOCAL_GEOSERVER]
+    # MAP_BASELAYERS = [PUBLIC_GEOSERVER, LOCAL_GEOSERVER]
+    MAP_BASELAYERS = [PUBLIC_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
 
 # Keywords thesauri
@@ -1222,9 +1276,11 @@ ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
 if MONITORING_ENABLED:
-    INSTALLED_APPS += ('geonode.contrib.monitoring',)
-    MIDDLEWARE_CLASSES += \
-        ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+    if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode.contrib.monitoring',)
+    if 'geonode.contrib.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
+        MIDDLEWARE_CLASSES += \
+            ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
 
 GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIPCities.dat')
 # If this option is enabled, Resources belonging to a Group won't be
@@ -1255,3 +1311,6 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional'
 SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
 
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
+
+# Choose thumbnail generator -- this is the default generator
+THUMBNAIL_GENERATOR = "geonode.layers.utils.create_gs_thumbnail_geonode"

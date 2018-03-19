@@ -183,23 +183,23 @@ class Region(MPTTModel):
     # This is useful for spatial searches and for generating thumbnail images
     # and metadata records.
     bbox_x0 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_x1 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_y0 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_y1 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     srid = models.CharField(max_length=255, default='EPSG:4326')
@@ -672,23 +672,23 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # This is useful for spatial searches and for generating thumbnail images
     # and metadata records.
     bbox_x0 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_x1 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_y0 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_y1 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     srid = models.CharField(max_length=255, default='EPSG:4326')
@@ -1036,6 +1036,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """Determine if the thumbnail object exists and an image exists"""
         return self.link_set.filter(name='Thumbnail').exists()
 
+    # Note - you should probably broadcast layer#post_save() events to ensure
+    # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
         upload_to = 'thumbs/'
         upload_path = os.path.join('thumbs/', filename)
@@ -1057,14 +1059,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 '/')
             url = urljoin(settings.SITEURL, url_path)
 
-            Link.objects.get_or_create(resource=self,
-                                       url=url,
-                                       defaults=dict(
-                                           name='Thumbnail',
-                                           extension='png',
-                                           mime='image/png',
-                                           link_type='image',
-                                       ))
+            # should only have one 'Thumbnail' link
+            obj, created = Link.objects.get_or_create(resource=self,
+                                                      name='Thumbnail',
+                                                      defaults=dict(
+                                                          url=url,
+                                                          extension='png',
+                                                          mime='image/png',
+                                                          link_type='image',
+                                                      ))
+            self.thumbnail_url = url
+            obj.url = url
+            obj.save()
 
             ResourceBase.objects.filter(id=self.id).update(
                 thumbnail_url=url

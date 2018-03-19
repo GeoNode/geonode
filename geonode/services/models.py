@@ -19,11 +19,13 @@
 #########################################################################
 
 import logging
-from django.conf import settings
 from django.db import models
+from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from geonode.base.models import ResourceBase
 from geonode.people.enumerations import ROLE_VALUES
+from urlparse import urljoin
 
 from . import enumerations
 
@@ -34,7 +36,7 @@ class Service(ResourceBase):
     """Service Class to represent remote Geo Web Services"""
 
     type = models.CharField(
-        max_length=4,
+        max_length=6,
         choices=(
             (enumerations.AUTO, _('Auto-detect')),
             (enumerations.OWS, _('Paired WMS/WFS/WCS')),
@@ -43,6 +45,8 @@ class Service(ResourceBase):
             (enumerations.REST, _('ArcGIS REST Service')),
             (enumerations.OGP, _('OpenGeoPortal')),
             (enumerations.HGL, _('Harvard Geospatial Library')),
+            (enumerations.GN_WMS, _('GeoNode (Web Map Service)')),
+            (enumerations.GN_CSW, _('GeoNode (Catalogue Service)')),
         )
     )
     method = models.CharField(
@@ -60,6 +64,10 @@ class Service(ResourceBase):
     base_url = models.URLField(
         unique=True,
         db_index=True
+    )
+    proxy_base = models.URLField(
+        null=True,
+        blank=True
     )
     version = models.CharField(
         max_length=10,
@@ -159,6 +167,12 @@ class Service(ResourceBase):
         return self.name
 
     @property
+    def service_url(self):
+        service_url = self.base_url if not self.proxy_base else urljoin(
+            settings.SITEURL, reverse('service_proxy', args=[self.id]))
+        return service_url
+
+    @property
     def ptype(self):
         # Return the gxp ptype that should be used to display layers
         return enumerations.GXP_PTYPES[self.type]
@@ -192,7 +206,7 @@ class HarvestJob(models.Model):
         default=enumerations.QUEUED,
         max_length=15,
     )
-    details = models.TextField(default=_("Resource is queued"))
+    details = models.TextField(null=True, blank=True, default=_("Resource is queued"))
 
     def update_status(self, status, details=""):
         self.status = status

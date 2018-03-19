@@ -43,6 +43,7 @@ def harvest_resource(self, harvest_job_id):
     try:
         handler = get_service_handler(
             base_url=harvest_job.service.base_url,
+            proxy_base=harvest_job.service.proxy_base,
             service_type=harvest_job.service.type
         )
         with transaction.atomic():

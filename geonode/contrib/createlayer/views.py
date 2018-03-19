@@ -21,8 +21,7 @@
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.template.defaultfilters import slugify
 from django.shortcuts import redirect
 
@@ -60,4 +59,4 @@ def layer_create(request, template='createlayer/layer_create.html'):
         'error': error,
     }
 
-    return render_to_response(template, RequestContext(request, ctx))
+    return render(request, template, context=ctx)

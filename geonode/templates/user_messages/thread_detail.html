@@ -10,7 +10,7 @@
 <hr />
 {% for message in thread.messages.all %}
   <div class="well">
-    {% avatar message.sender 50 %}
+    {% autoescape off %}{% avatar message.sender 50 %}{% endautoescape %}
     {{ message.sent_at }} by {% ifequal request.user message.sender %}{% trans "me" %}{% else %}<a href="{{ message.sender.get_absolute_url }}">{{ message.sender }}</a>{% endifequal %}
     <p>{{ message.content }}</p>
   </div>

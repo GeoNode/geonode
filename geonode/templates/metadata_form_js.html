@@ -138,9 +138,11 @@
               }
           };
 
-          $('#id_resource-date_picker').datetimepicker(pickerOptions);
-          $('#id_resource-temporal_extent_start_picker').datetimepicker(pickerOptions);
-          $('#id_resource-temporal_extent_end_picker').datetimepicker(pickerOptions);
+          /*
+            $('#id_resource-date_picker').datetimepicker(options=pickerOptions);
+            $('#id_resource-temporal_extent_start_picker').datetimepicker(pickerOptions);
+            $('#id_resource-temporal_extent_end_picker').datetimepicker(pickerOptions);
+          */
     });
 
     $(document).ready(function() {
@@ -528,6 +530,12 @@
                     if (resource_date.length >= 1) {
                         resource_date[0].value = date + ' AM';
                     } */
+                formData.forEach(function(entry) {
+                    if(entry["name"].contains("keywords")) {
+                        entry["value"] = escape(entry["value"]);
+                    }
+                });
+
                 $.post('metadata', /*$(this).serialize()*/ $.param(formData))
                     .done(function(data){
                         // Do something more fancy with your respone
@@ -547,7 +555,18 @@
                     .fail(function(xhr, status, error) {
                         // error handling
                         console.log(error);
+                        if(xhr.responseJSON && xhr.responseJSON['errors']) {
+                            var errors = "<ul>";
+                            for(error in xhr.responseJSON['errors']) {
+                                errors += "<li>" + error + ": " + xhr.responseJSON['errors'][error][0] + "</li>";
+                            }
+                            errors += "</ul>";
+                            $("#preview_errorDialog .modal-body").html(errors);
+                        } else {
+                            $("#preview_errorDialog .modal-body").html(xhr.responseText);
+                        }
                         $('#preview_pleaseWaitDialog').modal('hide');
+                        $('#preview_errorDialog').modal();
                     });
             }
             e.preventDefault();

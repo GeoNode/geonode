@@ -24,8 +24,7 @@ from autocomplete_light.autocomplete.shortcuts import AutocompleteModelBase, Aut
 from guardian.shortcuts import get_objects_for_user
 from django.conf import settings
 from django.db.models import Q
-from django.contrib.auth.models import Group
-from geonode.groups.models import GroupProfile
+from geonode.security.utils import get_visible_resources
 
 from models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
 
@@ -41,92 +40,12 @@ class ResourceBaseAutocomplete(AutocompleteModelTemplate):
             'base.view_resourcebase')
         self.choices = self.choices.filter(id__in=permitted)
 
-        is_admin = False
-        is_manager = False
-        if request.user:
-            is_admin = request.user.is_superuser if request.user else False
-            try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except:
-                is_manager = False
-
-        # Get the list of objects the user has access to
-        anonymous_group = None
-        public_groups = GroupProfile.objects.exclude(access="private").values('group')
-        groups = []
-        group_list_all = []
-        manager_groups = []
-        try:
-            group_list_all = request.user.group_list_all().values('group')
-        except:
-            pass
-        try:
-            manager_groups = Group.objects.filter(
-                name__in=request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
-        except:
-            pass
-        try:
-            anonymous_group = Group.objects.get(name='anonymous')
-            if anonymous_group and anonymous_group not in groups:
-                groups.append(anonymous_group)
-        except:
-            pass
-
-        if settings.ADMIN_MODERATE_UPLOADS:
-            if not is_admin:
-                if is_manager:
-                    self.choices = self.choices.filter(
-                        Q(is_published=True) |
-                        Q(group__in=manager_groups) |
-                        Q(owner__username__iexact=str(request.user)))
-                elif request.user:
-                    self.choices = self.choices.filter(
-                        Q(is_published=True) |
-                        Q(owner__username__iexact=str(request.user)))
-                else:
-                    self.choices = self.choices.filter(Q(is_published=True))
-
-        if settings.RESOURCE_PUBLISHING:
-            if not is_admin:
-                if is_manager:
-                    self.choices = self.choices.filter(
-                        Q(group__isnull=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=manager_groups) |
-                        Q(group__in=group_list_all) |
-                        Q(group__in=public_groups) |
-                        Q(owner__username__iexact=str(request.user)))
-                elif request.user:
-                    self.choices = self.choices.filter(
-                        Q(is_published=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=group_list_all) |
-                        Q(owner__username__iexact=str(request.user)))
-                else:
-                    self.choices = self.choices.filter(Q(is_published=True))
-
-        if settings.GROUP_PRIVATE_RESOURCES:
-            public_groups = GroupProfile.objects.exclude(access="private").values('group')
-            if is_admin:
-                self.choices = self.choices
-            elif request.user:
-                self.choices = self.choices.filter(
-                    Q(group__isnull=True) |
-                    Q(group__in=groups) |
-                    Q(group__in=manager_groups) |
-                    Q(group__in=public_groups) |
-                    Q(group__in=group_list_all) |
-                    Q(owner__username__iexact=str(request.user)))
-            else:
-                if anonymous_group:
-                    self.choices = self.choices.filter(
-                        Q(group__isnull=True) |
-                        Q(group__in=public_groups) |
-                        Q(group=anonymous_group))
-                else:
-                    self.choices = self.choices.filter(
-                        Q(group__isnull=True) |
-                        Q(group__in=public_groups))
+        self.choices = get_visible_resources(
+            self.choices,
+            request.user if request else None,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         return super(ResourceBaseAutocomplete, self).choices_for_request()
 

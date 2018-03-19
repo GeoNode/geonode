@@ -47,12 +47,10 @@ from geonode.base.models import TopicCategory
 from geonode.base.models import Region
 from geonode.base.models import HierarchicalKeyword
 from geonode.base.models import ThesaurusKeywordLabel
-
 from geonode.layers.models import Layer, Style
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile, GroupCategory
-from django.contrib.auth.models import Group
 from django.core.serializers.json import DjangoJSONEncoder
 from tastypie.serializers import Serializer
 from tastypie import fields
@@ -61,6 +59,7 @@ from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
 
 from geonode.utils import check_ogc_backend
+from geonode.security.utils import get_visible_resources
 
 FILTER_TYPES = {
     'layer': Layer,
@@ -80,8 +79,13 @@ class CountJSONSerializer(Serializer):
                 options['user'],
                 'base.view_resourcebase'
             )
-        if settings.RESOURCE_PUBLISHING:
-            resources = resources.filter(Q(is_published=True) | Q(owner__username__iexact=str(options['user'])))
+
+        resources = get_visible_resources(
+            resources,
+            options['user'],
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         if options['title_filter']:
             resources = resources.filter(title__icontains=options['title_filter'])
@@ -248,95 +252,12 @@ class TopicCategoryResource(TypeFilteredResource):
         filter_set = bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id'))
 
         if not settings.SKIP_PERMS_FILTER:
-            is_admin = False
-            is_manager = False
-            if request.user:
-                is_admin = request.user.is_superuser if request.user else False
-                try:
-                    is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-                except:
-                    is_manager = False
-
-            # Get the list of objects the user has access to
-            anonymous_group = None
-            public_groups = GroupProfile.objects.exclude(access="private").values('group')
-            groups = []
-            group_list_all = []
-            manager_groups = []
-            try:
-                group_list_all = request.user.group_list_all().values('group')
-            except:
-                pass
-            try:
-                manager_groups = Group.objects.filter(
-                    name__in=request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
-            except:
-                pass
-            try:
-                anonymous_group = Group.objects.get(name='anonymous')
-                if anonymous_group and anonymous_group not in groups:
-                    groups.append(anonymous_group)
-            except:
-                pass
-
-            if settings.ADMIN_MODERATE_UPLOADS:
-                if not is_admin:
-                    if is_manager:
-                        filter_set = filter_set.filter(
-                            Q(is_published=True) |
-                            Q(group__in=groups) |
-                            Q(group__in=manager_groups) |
-                            Q(group__in=group_list_all) |
-                            Q(owner__username__iexact=str(request.user)))
-                    elif request.user:
-                        filter_set = filter_set.filter(
-                            Q(is_published=True) |
-                            Q(group__in=groups) |
-                            Q(group__in=group_list_all) |
-                            Q(owner__username__iexact=str(request.user)))
-                    else:
-                        filter_set = filter_set.filter(Q(is_published=True))
-
-            if settings.RESOURCE_PUBLISHING:
-                if not is_admin:
-                    if is_manager:
-                        filter_set = filter_set.filter(
-                            Q(group__isnull=True) |
-                            Q(group__in=groups) |
-                            Q(group__in=manager_groups) |
-                            Q(group__in=group_list_all) |
-                            Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                    elif request.user:
-                        filter_set = filter_set.filter(
-                            Q(is_published=True) |
-                            Q(group__in=groups) |
-                            Q(group__in=group_list_all) |
-                            Q(owner__username__iexact=str(request.user)))
-                    else:
-                        filter_set = filter_set.filter(Q(is_published=True))
-
-            if settings.GROUP_PRIVATE_RESOURCES:
-                if is_admin:
-                    filter_set = filter_set
-                elif request.user:
-                    filter_set = filter_set.filter(
-                        Q(group__isnull=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=manager_groups) |
-                        Q(group__in=public_groups) |
-                        Q(group__in=group_list_all) |
-                        Q(owner__username__iexact=str(request.user)))
-                else:
-                    if anonymous_group:
-                        filter_set = filter_set.filter(
-                            Q(group__isnull=True) |
-                            Q(group__in=public_groups) |
-                            Q(group=anonymous_group))
-                    else:
-                        filter_set = filter_set.filter(
-                            Q(group__isnull=True) |
-                            Q(group__in=public_groups))
+            filter_set = get_visible_resources(
+                filter_set,
+                request.user if request else None,
+                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         return filter_set.distinct().count()
 
