@@ -47,7 +47,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from geoserver.catalog import Catalog, FailedRequestError
 from geoserver.resource import FeatureType, Coverage
 from geoserver.store import CoverageStore, DataStore, datastore_from_index, \
@@ -67,7 +67,6 @@ from geonode.security.views import _perms_info_json
 from geonode.utils import set_attributes
 import xml.etree.ElementTree as ET
 from django.utils.module_loading import import_string
-
 
 logger = logging.getLogger(__name__)
 
@@ -391,7 +390,7 @@ def cascading_delete(cat, layer_name):
                    'to save information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer_name)
                    )
-            logger.warn(msg)
+            logger.warning(msg)
             return None
         else:
             raise e
@@ -1323,6 +1322,8 @@ class OGC_Servers_Handler(object):
         server.setdefault('PASSWORD', 'geoserver')
         server.setdefault('DATASTORE', str())
         server.setdefault('GEOGIG_DATASTORE_DIR', str())
+        server.setdefault('CACHE', None)
+        server.setdefault('TIMEOUT', 10)
 
         for option in ['MAPFISH_PRINT_ENABLED', 'PRINT_NG_ENABLED', 'GEONODE_SECURITY_ENABLED',
                        'GEOFENCE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:
@@ -1356,7 +1357,7 @@ def get_wms():
     wms_url = ogc_server_settings.internal_ows + \
         "?service=WMS&request=GetCapabilities&version=1.1.0"
     netloc = urlparse(wms_url).netloc
-    http = httplib2.Http()
+    http = httplib2.Http(cache=ogc_server_settings.CACHE, timeout=ogc_server_settings.TIMEOUT)
     http.add_credentials(_user, _password)
     http.authorizations.append(
         httplib2.BasicAuthentication(
@@ -1435,7 +1436,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
 
 
 def _invalidate_geowebcache_layer(layer_name, url=None):
-    http = httplib2.Http()
+    http = httplib2.Http(cache=ogc_server_settings.CACHE, timeout=ogc_server_settings.TIMEOUT)
     username, password = ogc_server_settings.credentials
     auth = base64.encodestring(username + ':' + password)
     # http.add_credentials(username, password)
@@ -1589,7 +1590,7 @@ _wms = None
 _csw = None
 _user, _password = ogc_server_settings.credentials
 
-http_client = httplib2.Http()
+http_client = httplib2.Http(cache=ogc_server_settings.CACHE, timeout=ogc_server_settings.TIMEOUT)
 http_client.add_credentials(_user, _password)
 http_client.add_credentials(_user, _password)
 _netloc = urlparse(ogc_server_settings.LOCATION).netloc

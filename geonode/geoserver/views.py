@@ -261,7 +261,10 @@ def layer_style_manage(request, layername):
                     "default_style": default_style
                 }
             )
-        except (FailedRequestError, EnvironmentError) as e:
+        except (FailedRequestError, EnvironmentError):
+            import traceback
+            tb = traceback.format_exc()
+            logger.error(tb)
             msg = ('Could not connect to geoserver at "%s"'
                    'to manage style information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer.name)
@@ -307,7 +310,10 @@ def layer_style_manage(request, layername):
                     args=(
                         layer.service_typename,
                     )))
-        except (FailedRequestError, EnvironmentError, MultiValueDictKeyError) as e:
+        except (FailedRequestError, EnvironmentError, MultiValueDictKeyError):
+            import traceback
+            tb = traceback.format_exc()
+            logger.error(tb)
             msg = ('Error Saving Styles for Layer "%s"' % (layer.name)
                    )
             logger.warn(msg)
@@ -710,7 +716,7 @@ def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=F
         wms_url = '%s?service=wms&version=%s&request=GetCapabilities'\
             % (layer.remote_service.service_url, version)
 
-    http = httplib2.Http()
+    http = httplib2.Http(cache=ogc_server_settings.CACHE, timeout=ogc_server_settings.TIMEOUT)
     response, getcap = http.request(wms_url)
     # TODO this is to bypass an actual bug of GeoServer 2.12.x
     if tolerant and response.status == 404:
@@ -791,12 +797,12 @@ def get_capabilities(request, layerid=None, user=None,
                         rootlayerelem = rootdoc.find('.//Capability/Layer')
                         format_online_resource(workspace, layername, rootdoc)
                         rootdoc.find('.//Service/Name').text = cap_name
-                    except Exception as e:
+                    except Exception:
                         import traceback
-                        traceback.print_exc()
+                        tb = traceback.format_exc()
                         logger.error(
                             "Error occurred creating GetCapabilities for %s: %s" %
-                            (layer.typename, str(e)))
+                            (layer.typename, str(tb)))
                 else:
                     # Get the required info from layer model
                     tpl = get_template("geoserver/layer.xml")
@@ -809,12 +815,12 @@ def get_capabilities(request, layerid=None, user=None,
                     gc_str = gc_str.encode("utf-8")
                     layerelem = etree.XML(gc_str)
                     rootlayerelem.append(layerelem)
-            except Exception as e:
+            except Exception:
                 import traceback
-                traceback.print_exc()
+                tb = traceback.format_exc()
                 logger.error(
                     "Error occurred creating GetCapabilities for %s:%s" %
-                    (layer.typename, str(e)))
+                    (layer.typename, str(tb)))
                 pass
     if rootdoc is not None:
         capabilities = etree.tostring(

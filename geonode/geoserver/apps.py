@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2018 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,18 @@
 #
 #########################################################################
 
-default_app_config = 'geonode.geoserver.apps.GeoserverAppConfig'
+from django.utils.translation import ugettext_noop as _
+from geonode.notifications_helper import NotificationsAppConfigBase
+from .signals import *  # noqa
 
-BACKEND_PACKAGE = 'geonode.geoserver'
+
+class GeoserverAppConfig(NotificationsAppConfigBase):
+    name = 'geonode.geoserver'
+    NOTIFICATIONS = (("layer_uploaded", _("Layer Uploaded"), _("A layer was uploaded"),),
+                     ("layer_comment", _("Comment on Layer"), _("A layer was commented on"),),
+                     ("layer_rated", _("Rating for Layer"), _("A rating was given to a layer"),),
+                     )
+
+    def ready(self):
+        """Connect relevant signals to their corresponding handlers"""
+        super(GeoserverAppConfig, self).ready()

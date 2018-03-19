@@ -26,11 +26,9 @@ from django.utils.translation import ugettext as _
 import urllib
 from urlparse import urljoin
 
-from .helpers import OGC_Servers_Handler
+from .helpers import ogc_server_settings
 
 logger = logging.getLogger(__name__)
-
-ogc_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
 
 DEFAULT_EXCLUDE_FORMATS = ['PNG', 'JPEG', 'GIF', 'TIFF']
 
@@ -39,7 +37,7 @@ def _wcs_get_capabilities():
     try:
         wcs_url = urljoin(settings.SITEURL, reverse('wcs_endpoint'))
     except:
-        wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
+        wcs_url = urljoin(ogc_server_settings.PUBLIC_LOCATION, 'ows')
     wcs_url += '&' if '?' in wcs_url else '?'
 
     return wcs_url + urllib.urlencode({
@@ -77,7 +75,7 @@ def _wfs_get_capabilities():
     try:
         wfs_url = urljoin(settings.SITEURL, reverse('wfs_endpoint'))
     except:
-        wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
+        wfs_url = urljoin(ogc_server_settings.PUBLIC_LOCATION, 'ows')
     wfs_url += '&' if '?' in wfs_url else '?'
 
     return wfs_url + urllib.urlencode({
@@ -119,7 +117,7 @@ def _wms_get_capabilities():
     try:
         wms_url = urljoin(settings.SITEURL, reverse('wms_endpoint'))
     except:
-        wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
+        wms_url = urljoin(ogc_server_settings.PUBLIC_LOCATION, 'ows')
     wms_url += '&' if '?' in wms_url else '?'
 
     return wms_url + urllib.urlencode({

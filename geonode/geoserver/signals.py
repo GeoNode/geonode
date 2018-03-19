@@ -24,7 +24,10 @@ import urllib
 
 from urlparse import urlparse, urljoin
 
-from django.utils.translation import ugettext
+from django.dispatch import receiver
+from django.db.models import signals
+
+from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.forms.models import model_to_dict
 
@@ -33,15 +36,16 @@ from django.forms.models import model_to_dict
 from geonode import geoserver as geoserver_app
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
-from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
-from geonode.geoserver.helpers import set_styles, gs_catalog
-from geonode.geoserver.helpers import ogc_server_settings
-from geonode.geoserver.helpers import create_gs_thumbnail
+from geonode.geoserver.helpers import (cascading_delete,
+                                       set_attributes_from_geoserver,
+                                       set_styles, gs_catalog,
+                                       ogc_server_settings,
+                                       create_gs_thumbnail)
 from geonode.geoserver.upload import geoserver_upload
-from geonode.base.models import ResourceBase
-from geonode.base.models import Link
+from geonode.base.models import ResourceBase, Link
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
+from geonode.maps.models import Map, MapLayer
 from geonode.social.signals import json_serializer_producer
 from geonode.catalogue.models import catalogue_post_save
 from geonode.services.enumerations import CASCADED
@@ -59,6 +63,7 @@ def geoserver_delete(typename):
         cascading_delete(gs_catalog, typename)
 
 
+@receiver(signals.pre_delete, sender=Layer)
 def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer
     """
@@ -70,12 +75,14 @@ def geoserver_pre_delete(instance, sender, **kwargs):
                 cascading_delete(gs_catalog, instance.alternate)
 
 
+@receiver(signals.pre_save, sender=Layer)
 def geoserver_pre_save(*args, **kwargs):
     # nothing to do here, processing is pushed to post-save
     pass
 
 
 @on_ogc_backend(geoserver_app.BACKEND_PACKAGE)
+@receiver(signals.post_save, sender=ResourceBase)
 def geoserver_post_save(instance, sender, **kwargs):
     from geonode.messaging import producer
     # this is attached to various models, (ResourceBase, Document)
@@ -315,7 +322,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
     for ext, name, mime, wms_url in links:
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                   name=ugettext(name),
+                                   name=_(name),
                                    defaults=dict(
                                        extension=ext,
                                        url=wms_url,
@@ -549,6 +556,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     catalogue_post_save(instance, Layer)
 
 
+@receiver(signals.pre_save, sender=MapLayer)
 def geoserver_pre_save_maplayer(instance, sender, **kwargs):
     # If this object was saved via fixtures,
     # do not do post processing.
@@ -572,6 +580,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
             raise e
 
 
+@receiver(signals.post_save, sender=Map)
 def geoserver_post_save_map(instance, sender, **kwargs):
     instance.set_missing_info()
     create_gs_thumbnail(instance, overwrite=False)
