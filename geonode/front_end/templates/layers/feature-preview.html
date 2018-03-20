@@ -12,7 +12,7 @@
                     [{tab.name}]
                     <span ng-if="tab.active" class="selected-down-arrow"></span>
                 </tab-heading>
-                <div ui-grid="ctrl.data[tab.name].gridOptions" ui-grid-pagination class="grid"></div>
+                <div ui-grid="ctrl.data[tab.name].gridOptions" ui-grid-pagination ui-grid-selection  class="grid"></div>
             </tab>
         </tabset>
         <div style="clear:both"></div>
