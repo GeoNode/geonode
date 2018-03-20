@@ -2,6 +2,7 @@
 
 html,body{
     height: 100%;
+    font-family: 'Roboto', sans-serif;
 }
 *:focus {
     /*outline: none;*/
@@ -3551,8 +3552,7 @@ width: 80%;
   .delete-notification
   {
     background-color: #fff;
-    border: 1px solid #ccc;
-    color: #f2555b;
+    color: #c0c0c0;
     font-size: 10px;
     padding: 1px 5px;
     position: absolute;
