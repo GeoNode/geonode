@@ -126,12 +126,12 @@ class GeoNodeCSWTest(TestCase):
                 if link['scheme'] == 'OGC:WMS':
                     self.assertEqual(
                         link['url'],
-                        'http://localhost:8000/gs/geonode/ows',
+                        'http://localhost:8000/gs/geonode/ows?service=wms&',
                         'Expected a specific OGC:WMS URL')
                 elif link['scheme'] == 'OGC:WFS':
                     self.assertEqual(
                         link['url'],
-                        'http://localhost:8000/gs/geonode/wfs',
+                        'http://localhost:8000/gs/geonode/ows?service=wfs&',
                         'Expected a specific OGC:WFS URL')
             elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                 if link['scheme'] == 'OGC:WMS':
@@ -198,12 +198,12 @@ class GeoNodeCSWTest(TestCase):
                 if link.protocol == 'OGC:WMS':
                     self.assertEqual(
                         link.url,
-                        'http://localhost:8000/gs/geonode/ows',
+                        'http://localhost:8000/gs/geonode/ows?service=wms&',
                         'Expected a specific OGC:WMS URL')
                 elif link.protocol == 'OGC:WFS':
                     self.assertEqual(
                         link.url,
-                        'http://localhost:8000/gs/geonode/wfs',
+                        'http://localhost:8000/gs/geonode/ows?service=wfs&',
                         'Expected a specific OGC:WFS URL')
             if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                 if link.protocol == 'OGC:WMS':
@@ -295,6 +295,7 @@ class GeoNodeCSWTest(TestCase):
 
         csw = get_catalogue()
         csw.catalogue.getrecords(bbox=[-140, -70, 80, 70])
+        print(" ********************* %s " % csw.catalogue.results)
         self.assertEqual(
             csw.catalogue.results,
             {'matches': 7, 'nextrecord': 0, 'returned': 7},

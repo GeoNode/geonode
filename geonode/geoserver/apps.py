@@ -20,7 +20,6 @@
 
 from django.utils.translation import ugettext_noop as _
 from geonode.notifications_helper import NotificationsAppConfigBase
-from .signals import *  # noqa
 
 
 class GeoserverAppConfig(NotificationsAppConfigBase):
@@ -32,4 +31,5 @@ class GeoserverAppConfig(NotificationsAppConfigBase):
 
     def ready(self):
         """Connect relevant signals to their corresponding handlers"""
+        from .signals import *  # noqa
         super(GeoserverAppConfig, self).ready()

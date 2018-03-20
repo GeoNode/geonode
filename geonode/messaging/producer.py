@@ -28,7 +28,10 @@ from kombu.common import maybe_declare
 from queues import queue_email_events, queue_geoserver_events,\
                    queue_notifications_events, queue_layer_viewers
 
-from . import producers, connection, broker_socket_timeout
+from . import (producers,
+               connection,
+               broker_socket_timeout,
+               task_serializer)
 from .consumer import Consumer
 
 logger = logging.getLogger(__name__)
@@ -81,7 +84,7 @@ def send_email_producer(layer_uuid, user_id):
         producer.publish(
             payload,
             exchange='geonode',
-            serializer='json',
+            serializer=task_serializer,
             routing_key='email',
             timeout=broker_socket_timeout
         )
@@ -95,7 +98,7 @@ def geoserver_upload_layer(payload):
         producer.publish(
             payload,
             exchange='geonode',
-            serializer='json',
+            serializer=task_serializer,
             routing_key='geonode.geoserver',
             timeout=broker_socket_timeout
         )
@@ -110,7 +113,7 @@ def notifications_send(payload, created=None):
         producer.publish(
             payload,
             exchange='geonode',
-            serializer='json',
+            serializer=task_serializer,
             routing_key='notifications',
             timeout=broker_socket_timeout
         )
@@ -127,7 +130,7 @@ def viewing_layer(user, owner, layer_id):
         producer.publish(
             payload,
             exchange='geonode',
-            serializer='json',
+            serializer=task_serializer,
             routing_key='geonode.viewer',
             timeout=broker_socket_timeout
         )

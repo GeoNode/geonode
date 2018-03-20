@@ -30,15 +30,21 @@ import subprocess
 import select
 import tempfile
 import tarfile
-# import traceback
+import time
+import shutil
+import string
+import httplib2
+import urlparse
+import urllib
+import gc
+import weakref
+import traceback
 
-from zipfile import ZipFile, is_zipfile
-
+from contextlib import closing
+from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from StringIO import StringIO
-
 from osgeo import ogr
 from slugify import Slugify
-import string
 
 from django.conf import settings
 from django.core.cache import cache
@@ -51,12 +57,6 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection, transaction
 from django.core.serializers.json import DjangoJSONEncoder
-import httplib2
-import urlparse
-import urllib
-
-import gc
-import weakref
 
 try:
     import json
@@ -1057,70 +1057,72 @@ def designals():
     global signals_store
 
     for signalname in signalnames:
-        signaltype = getattr(models.signals, signalname)
-        logger.debug("RETRIEVE: %s: %d" %
-                     (signalname, len(signaltype.receivers)))
-        signals_store[signalname] = []
-        signals = signaltype.receivers[:]
-        for signal in signals:
-            uid = receiv_call = None
-            sender_ista = sender_call = None
-            # first tuple element:
-            # - case (id(instance), id(method))
-            if not isinstance(signal[0], tuple):
-                raise "Malformed signal"
+        if signalname in signals_store:
+            signaltype = getattr(models.signals, signalname)
+            logger.debug("RETRIEVE: %s: %d" %
+                         (signalname, len(signaltype.receivers)))
+            signals_store[signalname] = []
+            signals = signaltype.receivers[:]
+            for signal in signals:
+                uid = receiv_call = None
+                sender_ista = sender_call = None
+                # first tuple element:
+                # - case (id(instance), id(method))
+                if not isinstance(signal[0], tuple):
+                    raise "Malformed signal"
 
-            lookup = signal[0]
+                lookup = signal[0]
 
-            if isinstance(lookup[0], tuple):
-                # receiv_ista = id_to_obj(lookup[0][0])
-                receiv_call = id_to_obj(lookup[0][1])
-            else:
-                # - case id(function) or uid
-                try:
-                    receiv_call = id_to_obj(lookup[0])
-                except BaseException:
-                    uid = lookup[0]
+                if isinstance(lookup[0], tuple):
+                    # receiv_ista = id_to_obj(lookup[0][0])
+                    receiv_call = id_to_obj(lookup[0][1])
+                else:
+                    # - case id(function) or uid
+                    try:
+                        receiv_call = id_to_obj(lookup[0])
+                    except BaseException:
+                        uid = lookup[0]
 
-            if isinstance(lookup[1], tuple):
-                sender_call = id_to_obj(lookup[1][0])
-                sender_ista = id_to_obj(lookup[1][1])
-            else:
-                sender_ista = id_to_obj(lookup[1])
+                if isinstance(lookup[1], tuple):
+                    sender_call = id_to_obj(lookup[1][0])
+                    sender_ista = id_to_obj(lookup[1][1])
+                else:
+                    sender_ista = id_to_obj(lookup[1])
 
-            # second tuple element
-            if (isinstance(signal[1], weakref.ReferenceType)):
-                is_weak = True
-                receiv_call = signal[1]()
-            else:
-                is_weak = False
-                receiv_call = signal[1]
+                # second tuple element
+                if (isinstance(signal[1], weakref.ReferenceType)):
+                    is_weak = True
+                    receiv_call = signal[1]()
+                else:
+                    is_weak = False
+                    receiv_call = signal[1]
 
-            signals_store[signalname].append({
-                'uid': uid, 'is_weak': is_weak,
-                'sender_ista': sender_ista, 'sender_call': sender_call,
-                'receiv_call': receiv_call,
-            })
+                signals_store[signalname].append({
+                    'uid': uid, 'is_weak': is_weak,
+                    'sender_ista': sender_ista, 'sender_call': sender_call,
+                    'receiv_call': receiv_call,
+                })
 
-            signaltype.disconnect(
-                receiver=receiv_call,
-                sender=sender_ista,
-                weak=is_weak,
-                dispatch_uid=uid)
+                signaltype.disconnect(
+                    receiver=receiv_call,
+                    sender=sender_ista,
+                    weak=is_weak,
+                    dispatch_uid=uid)
 
 
 def resignals():
     global signals_store
 
     for signalname in signalnames:
-        signals = signals_store[signalname]
-        signaltype = getattr(models.signals, signalname)
-        for signal in signals:
-            signaltype.connect(
-                signal['receiv_call'],
-                sender=signal['sender_ista'],
-                weak=signal['is_weak'],
-                dispatch_uid=signal['uid'])
+        if signalname in signals_store:
+            signals = signals_store[signalname]
+            signaltype = getattr(models.signals, signalname)
+            for signal in signals:
+                signaltype.connect(
+                    signal['receiv_call'],
+                    sender=signal['sender_ista'],
+                    weak=signal['is_weak'],
+                    dispatch_uid=signal['uid'])
 
 
 def run_subprocess(*cmd, **kwargs):
@@ -1207,3 +1209,73 @@ def check_ogc_backend(backend_package):
         return in_installed_apps and is_configured
     except BaseException:
         return False
+
+
+def get_dir_time_suffix():
+    """Returns the name of a folder with the 'now' time as suffix"""
+    dirfmt = "%4d-%02d-%02d_%02d%02d%02d"
+    now = time.localtime()[0:6]
+    dirname = dirfmt % now
+
+    return dirname
+
+
+def zip_dir(basedir, archivename):
+    assert os.path.isdir(basedir)
+    with closing(ZipFile(archivename, "w", ZIP_DEFLATED, allowZip64=True)) as z:
+        for root, dirs, files in os.walk(basedir):
+            # NOTE: ignore empty directories
+            for fn in files:
+                absfn = os.path.join(root, fn)
+                zfn = absfn[len(basedir)+len(os.sep):]  # XXX: relative path
+                z.write(absfn, zfn)
+
+
+def copy_tree(src, dst, symlinks=False, ignore=None):
+    try:
+        for item in os.listdir(src):
+            s = os.path.join(src, item)
+            d = os.path.join(dst, item)
+            if os.path.isdir(s):
+                # shutil.rmtree(d)
+                if os.path.exists(d):
+                    try:
+                        os.remove(d)
+                    except:
+                        try:
+                            shutil.rmtree(d)
+                        except:
+                            pass
+                try:
+                    shutil.copytree(s, d, symlinks, ignore)
+                except:
+                    pass
+            else:
+                try:
+                    shutil.copy2(s, d)
+                except:
+                    pass
+    except Exception:
+        traceback.print_exc()
+
+
+def extract_archive(zip_file, dst):
+    target_folder = os.path.join(dst, os.path.splitext(os.path.basename(zip_file))[0])
+    if not os.path.exists(target_folder):
+        os.makedirs(target_folder)
+
+    with ZipFile(zip_file, "r", allowZip64=True) as z:
+        z.extractall(target_folder)
+
+    return target_folder
+
+
+def chmod_tree(dst, permissions=0o777):
+    for dirpath, dirnames, filenames in os.walk(dst):
+        for filename in filenames:
+            path = os.path.join(dirpath, filename)
+            os.chmod(path, permissions)
+
+        for dirname in dirnames:
+            path = os.path.join(dirpath, dirname)
+            os.chmod(path, permissions)

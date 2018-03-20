@@ -49,7 +49,7 @@ CONFIGURATION = {
         'profiles': 'apiso,ebrim',
     },
     'repository': {
-        'source': 'geonode',
+        'source': 'geonode.catalogue.backends.pycsw_plugin.GeoNodeRepository',
         'filter': 'is_published = %s' % true_value,
         'mappings': os.path.join(os.path.dirname(__file__), 'pycsw_local_mappings.py')
     }

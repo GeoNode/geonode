@@ -159,6 +159,9 @@ class Layer(ResourceBase):
     def is_vector(self):
         return self.storeType == 'dataStore'
 
+    def get_upload_session(self):
+        return self.upload_session
+
     @property
     def display_type(self):
         return ({

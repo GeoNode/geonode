@@ -488,6 +488,11 @@ def geoserver_proxy(request,
             re.match(r'/(ows).*$', path, re.IGNORECASE)):
         _url = str("".join([ogc_server_settings.LOCATION, '', path[1:]]))
         raw_url = _url
+    elif downstream_path in 'kml' and (
+            '/gs/kml' == proxy_path):
+        _url = str(
+            "".join([ogc_server_settings.LOCATION, 'wms/kml?', path[1:]]))
+        raw_url = _url
 
     url = urlsplit(raw_url)
 
@@ -508,7 +513,8 @@ def geoserver_proxy(request,
                 affected_layers = style_update(request, raw_url)
 
     kwargs = {'affected_layers': affected_layers}
-    return proxy(request, url=raw_url, response_callback=_response_callback, **kwargs)
+    return proxy(request, url=raw_url,
+                 response_callback=_response_callback, **kwargs)
 
 
 def _response_callback(**kwargs):
@@ -701,11 +707,13 @@ def layer_acls(request):
 
 
 # capabilities
-def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=False):
+def get_layer_capabilities(layer, version='1.1.0',
+                           access_token=None, tolerant=False):
     """
     Retrieve a layer-specific GetCapabilities document
     """
-    workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
+    workspace, layername = layer.alternate.split(
+        ":") if ":" in layer.alternate else (None, layer.alternate)
     if not layer.remote_service:
         # TODO implement this for 1.3.0 too
         wms_url = '%s%s/%s/ows?service=wms&version=%s&request=GetCapabilities'\
@@ -716,7 +724,9 @@ def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=F
         wms_url = '%s?service=wms&version=%s&request=GetCapabilities'\
             % (layer.remote_service.service_url, version)
 
-    http = httplib2.Http(cache=ogc_server_settings.CACHE, timeout=ogc_server_settings.TIMEOUT)
+    http = httplib2.Http(
+        cache=ogc_server_settings.CACHE,
+        timeout=ogc_server_settings.TIMEOUT)
     response, getcap = http.request(wms_url)
     # TODO this is to bypass an actual bug of GeoServer 2.12.x
     if tolerant and response.status == 404:
@@ -786,7 +796,8 @@ def get_capabilities(request, layerid=None, user=None,
                 access_token = None
 
             try:
-                workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
+                workspace, layername = layer.alternate.split(
+                    ":") if ":" in layer.alternate else (None, layer.alternate)
                 if rootdoc is None:  # 1st one, seed with real GetCapabilities doc
                     try:
                         layercap = get_layer_capabilities(layer,

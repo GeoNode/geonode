@@ -793,11 +793,13 @@ class UtilsTests(TestCase):
         self.OGC_DEFAULT_SETTINGS = {
             'default': {
                 'BACKEND': 'geonode.geoserver',
+                'CACHE': None,
                 'LOCATION': 'http://localhost:8080/geoserver/',
                 'USER': 'admin',
                 'PASSWORD': 'geoserver',
                 'MAPFISH_PRINT_ENABLED': True,
                 'PRINT_NG_ENABLED': True,
+                'TIMEOUT': 10,
                 'GEONODE_SECURITY_ENABLED': True,
                 'GEOFENCE_SECURITY_ENABLED': True,
                 'GEOGIG_ENABLED': False,

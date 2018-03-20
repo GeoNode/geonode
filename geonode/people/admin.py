@@ -180,7 +180,7 @@ class ProfileAdmin(admin.ModelAdmin):
         return TemplateResponse(request,
                                 self.change_user_password_template or
                                 'admin/auth/user/change_password.html',
-                                context, current_app=self.admin_site.name)
+                                context)  # , using=self.admin_site.name)
 
     def response_add(self, request, obj, post_url_continue=None):
         """

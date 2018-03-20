@@ -446,7 +446,7 @@ community."
         response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
         # self.assertEquals(response['Location'], '/maps/')
-        self.assertEquals(response['Location'], 'http://testserver/maps/')
+        self.assertEquals(response['Location'], '/maps/')
 
         # After removal, map is not existent
         response = self.client.get(url)

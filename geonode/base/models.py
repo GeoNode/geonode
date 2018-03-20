@@ -754,6 +754,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def __unicode__(self):
         return self.title
 
+    def get_upload_session(self):
+        raise NotImplementedError()
+
     @property
     def group_name(self):
         if self.group:
@@ -1194,7 +1197,7 @@ class LinkManager(models.Manager):
         return self.get_queryset().filter(link_type='image')
 
     def download(self):
-        return self.get_queryset().filter(link_type__in=['image', 'data'])
+        return self.get_queryset().filter(link_type__in=['image', 'data', 'original'])
 
     def metadata(self):
         return self.get_queryset().filter(link_type='metadata')
@@ -1332,6 +1335,9 @@ def resourcebase_post_save(instance, *args, **kwargs):
 
         if no_license and len(no_license) > 0:
             instance.license = no_license[0]
+
+    if kwargs['created']:
+        instance.save()
 
 
 def rating_post_save(instance, *args, **kwargs):

@@ -27,6 +27,7 @@ producers = pools.Producers(limit=connections.limit)
 # run in-memory if broker is not available
 # see producer code for synchronous queue
 url = getattr(settings, 'BROKER_URL', 'memory://')
+task_serializer = getattr(settings, 'CELERY_TASK_SERIALIZER', 'pickle')
 broker_transport_options = getattr(settings, 'BROKER_TRANSPORT_OPTIONS', {'socket_timeout': 10})
 broker_socket_timeout = getattr(broker_transport_options, 'socket_timeout', 10)
 connection = BrokerConnection(url, connect_timeout=broker_socket_timeout)

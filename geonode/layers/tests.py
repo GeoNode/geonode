@@ -62,7 +62,7 @@ class LayersTest(TestCase):
     """Tests geonode.layers app/module
     """
 
-    fixtures = ['initial_data.json', 'bobby', 'user1']
+    fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
         self.user = 'admin'
@@ -736,7 +736,7 @@ class LayersTest(TestCase):
         response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
         # self.assertEquals(response['Location'], '/layers/')
-        self.assertEquals(response['Location'], 'http://testserver/layers/')
+        self.assertEquals(response['Location'], '/layers/')
 
         # test that the layer is actually removed
         self.assertEquals(Layer.objects.filter(pk=layer.pk).count(), 0)
@@ -767,7 +767,7 @@ class LayersTest(TestCase):
         response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
         # self.assertEquals(response['Location'], '/layers/')
-        self.assertEquals(response['Location'], 'http://testserver/layers/')
+        self.assertEquals(response['Location'], '/layers/')
 
         # test that the layer is actually removed
 

@@ -202,6 +202,15 @@ EXTRA_LANG_INFO = {
 
 AUTH_USER_MODEL = os.getenv('AUTH_USER_MODEL', 'people.Profile')
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.SHA1PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    # 'django.contrib.auth.hashers.Argon2PasswordHasher',
+    # 'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    # 'django.contrib.auth.hashers.BCryptPasswordHasher',
+]
+
 MODELTRANSLATION_LANGUAGES = ['en', ]
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
@@ -381,7 +390,7 @@ INSTALLED_APPS = (
     'announcements',
     'actstream',
     'user_messages',
-    # 'tastypie',
+    'tastypie',
     'polymorphic',
     'guardian',
     'oauth2_provider',
@@ -453,7 +462,7 @@ LOGGING = {
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
         "celery": {
-            'handlers': ['celery', 'console'], 'level': 'DEBUG', },
+            'handlers': ['celery', 'console'], 'level': 'ERROR', },
     },
 }
 
@@ -766,6 +775,23 @@ PYCSW = {
         #    'pretty_print': 'true',
         #    'federatedcatalogues': 'http://catalog.data.gov/csw'
         # },
+        'server': {
+            'home': '.',
+            'url': CATALOGUE['default']['URL'],
+            'encoding': 'UTF-8',
+            'language': LANGUAGE_CODE,
+            'maxrecords': '20',
+            'pretty_print': 'true',
+            # 'domainquerytype': 'range',
+            'domaincounts': 'true',
+            'profiles': 'apiso,ebrim',
+        },
+        'manager': {
+            # authentication/authorization is handled by Django
+            'transactions': 'false',
+            'allowed_ips': '*',
+            # 'csw_harvest_pagesize': '10',
+        },
         'metadata:main': {
             'identification_title': 'GeoNode Catalogue',
             'identification_abstract': 'GeoNode is an open source platform' \
@@ -832,7 +858,7 @@ GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 # handle timestamps like 2017-05-30 16:04:00.719 UTC
 DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS +\
-    ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
+    ['%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z']
 
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
@@ -1169,7 +1195,7 @@ BROKER_TRANSPORT_OPTIONS = {
     'visibility_timeout': 86400
 }
 
-CELERY_RESULT_BACKEND = BROKER_URL
+# CELERY_RESULT_BACKEND = BROKER_URL
 CELERY_RESULT_PERSISTENT = False
 
 # Allow to recover from any unknown crash.
@@ -1177,9 +1203,10 @@ CELERY_ACKS_LATE = True
 
 # Set this to False in order to run async
 CELERY_TASK_ALWAYS_EAGER = True
-CELERY_TASK_IGNORE_RESULT = True
+CELERY_TASK_IGNORE_RESULT = False
 
 # Set Tasks Queues
+CELERY_TASK_SERIALIZER = 'json'
 CELERY_TASK_DEFAULT_QUEUE = "default"
 CELERY_TASK_DEFAULT_EXCHANGE = "default"
 CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"

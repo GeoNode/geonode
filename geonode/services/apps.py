@@ -19,7 +19,6 @@
 #########################################################################
 
 from geonode.notifications_helper import NotificationsAppConfigBase
-from .signals import *  # noqa
 
 
 class ServicesAppConfig(NotificationsAppConfigBase):
@@ -27,4 +26,5 @@ class ServicesAppConfig(NotificationsAppConfigBase):
 
     def ready(self):
         """Connect relevant signals to their corresponding handlers"""
+        from .signals import *  # noqa
         super(ServicesAppConfig, self).ready()

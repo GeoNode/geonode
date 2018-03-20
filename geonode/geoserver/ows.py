@@ -47,26 +47,29 @@ def _wcs_get_capabilities():
     })
 
 
-def _wcs_link(wcs_url, identifier, mime, srid, bbox):
-    return wcs_url + urllib.urlencode({
+def _wcs_link(wcs_url, identifier, mime, srid=None, bbox=None):
+    wcs_params = {
         'service': 'WCS',
         'request': 'GetCoverage',
         'coverageid': identifier,
         'format': mime,
         'version': '2.0.1',
-        'srs': srid,
-        'bbox': bbox,
-    })
+    }
+    if srid:
+        wcs_params['srs'] = srid
+    if bbox:
+        wcs_params['bbox'] = bbox
+    return wcs_url + urllib.urlencode(wcs_params)
 
 
-def wcs_links(wcs_url, identifier, bbox, srid):
+def wcs_links(wcs_url, identifier, bbox=None, srid=None):
     types = [
         ("x-gzip", _("GZIP"), "application/x-gzip"),
         ("geotiff", _("GeoTIFF"), "image/tiff"),
     ]
     output = []
     for ext, name, mime in types:
-        url = _wcs_link(wcs_url, identifier, mime, srid, bbox)
+        url = _wcs_link(wcs_url, identifier, mime, bbox=bbox, srid=srid)
         output.append((ext, name, mime, url))
     return output
 
