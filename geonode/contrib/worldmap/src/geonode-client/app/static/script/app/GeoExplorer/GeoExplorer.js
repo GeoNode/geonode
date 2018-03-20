@@ -1061,8 +1061,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             // if (isIninstanceofGeoNodeSource && source.url.replace(this.urlPortRegEx, "$1/").indexOf(
             //     this.localGeoServerBaseUrl.replace(this.urlPortRegEx, "$1/")) === 0) {
             //     this.worldMapSourceKey = id;
-            // }
-            this.worldMapSourceKey = id;
+            //}
+            if (isIninstanceofGeoNodeSource){
+                this.worldMapSourceKey = id;
+            }
         }
     },
 

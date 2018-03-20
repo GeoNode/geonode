@@ -119,13 +119,15 @@ def ajax_layer_edit_check(request, layername):
     """
     Check if the the layer style is editable.
     """
-    # TODO implement this
-    #layer = get_object_or_404(Layer, typename=layername);
-    #editable = request.user.has_perm("maps.change_layer", obj=layer)
-    editable = True
+    layer = get_object_or_404(Layer, typename=layername);
+
+    can_edit_data = request.user.has_perms('change_layer_data', layer)
+    # TODO implement this for styles
+    can_edit_sytle = request.user.has_perms('change_layer_style', layer)
+
     return HttpResponse(
-        str(editable),
-        status=200 if editable else 403
+        str(can_edit_data),
+        status=200 if can_edit_data else 403
     )
 
 @login_required
@@ -740,6 +742,17 @@ def gxp2wm(config, map_obj=None):
     else:
         # TODO check if this works with different languages
         config['about']['introtext'] = unicode(DEFAULT_CONTENT)
+
+    # make sure if gnsource is in sources
+    add_gnsource = True
+    for source in config['sources']:
+        if config['sources'][source]['ptype'] == 'gxp_gnsource':
+            add_gnsource = False
+    if add_gnsource:
+        config['sources']['wm'] = {
+                                    'url': settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+                                    'restUrl': '/gs/rest', 'ptype': 'gxp_gnsource'
+                                  }
 
     if config_is_string:
         config = json.dumps(config)
