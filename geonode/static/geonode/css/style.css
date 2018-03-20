@@ -3849,13 +3849,14 @@ background-color: #fff;
     background-color: #fff;
     border: 1px solid #ccc;
     float: left;
-    left: -362px;
+    left: 0;
     margin-right: 15px;
     position: relative;
     width: 357px;
     height: 207px;
     overflow-y: auto;
 }
+
 .style-editor-shown {
     left: 0 !important;
     top: 3px;

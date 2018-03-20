@@ -54,8 +54,11 @@
         </div>
 
         <div style="overflow: hidden; width: 1045px;white-space:nowrap;">
+            <div style="position: relative">
+
 
             <div class="classification-style-editor-container" ng-if="selectedClass && !classificationEditor.hide" ng-class="{'style-editor-shown':!classificationEditor.hide}">
+            
 
                 <i class="fa fa-times-circle" aria-hidden="true" ng-click="classificationEditor.hide = true" style="position: absolute; right: 7px; top: 5px; font-size: 17px; cursor: pointer;"></i>
 
@@ -181,6 +184,8 @@
                 </div>
             </div>
 
+
+        </div>
         </div>
 
     </div>
@@ -196,3 +201,5 @@
   top: -169px !important;
 }
 </style>
+
+
