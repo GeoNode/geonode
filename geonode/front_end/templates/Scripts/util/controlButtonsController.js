@@ -82,6 +82,7 @@
                 LayerService.getWFS('api/geoserver/', requestObj,false).then(function(response){
                     var data={};
                     data[$scope.searchItemLayer]=response.features.map(function(e) {
+                        e.properties["Feature_Id"]=e.id;
                         return e.properties;
                     });
                     showFeaturePreviewDialog(data, requestObj);
@@ -201,6 +202,7 @@
                         var data = {};
                         for (var i in layer_names) {
                             data[layer_names[i]] = response[i].features.map(function(e) {
+                                e.properties["Feature_Id"]=e.id;
                                 return e.properties;
                             });
                         }

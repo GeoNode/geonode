@@ -126,6 +126,7 @@ mapModule.directive('routePopUpDirective', [
                                 var data = {};
                                 for (var i in layer_names) {
                                     data[layer_names[i]] = response[i].features.map(function(e) {
+                                        e.properties["Feature_Id"]=e.id;
                                         return e.properties;
                                     });
                                 }
