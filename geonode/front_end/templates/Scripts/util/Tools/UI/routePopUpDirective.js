@@ -102,30 +102,25 @@ mapModule.directive('routePopUpDirective', [
                     $scope.coordinate= coordinate;
                     evt.preventDefault();
                     container.style.visibility = 'visible';
-                    });  
-                    
-                    $scope.searchForBuffer=function(){
-                        var center = $scope.coordinate;
-                        var centerLongLat = ol.proj.transform([center[0], center[1]], 'EPSG:3857', 'EPSG:4326');
+                    }); 
+
+                    function showFeatures(params) {
                         var layers = mapService.getLayers();
-                        var radius=1000;
                         var promises = [];
                         var layer_names = [];
+
                         for (var k in layers) {
                             var layer = layers[k];
                             if (!layer.IsVisible)
                                 continue;
                             layer_names.push(k);
-                            let p = LayerService.getWFS('api/geoserver/', {
-                                version: '1.0.0',
-                                request: 'GetFeature',
-                                outputFormat: 'JSON',
-                                srsName: 'EPSG:4326',
-                                typeNames: layer.getName(),
-                                cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + radius + ',  meters)',
-                            }, false);
+
+                            let p = LayerService.getWFS('api/geoserver/', Object.assign({}, params, {
+                                typeNames: layer.getName()
+                            }), false);
                             promises.push(p);
                         }
+
                         $q.all(promises)
                             .then(function(response) {
                                 var data = {};
@@ -134,12 +129,10 @@ mapModule.directive('routePopUpDirective', [
                                         return e.properties;
                                     });
                                 }
-                                showFeaturePreviewDialog(data);
-                        });
-                        closer.onclick();
-                    };
-
-                    function showFeaturePreviewDialog(data) {
+                                showFeaturePreviewDialog(data, params);
+                            });
+                    } 
+                    function showFeaturePreviewDialog(data, wfsConfig) {
                         $modal.open({
                             templateUrl: '/static/layers/feature-preview.html',
                             controller: 'FeaturePreviewController as ctrl',
@@ -149,12 +142,30 @@ mapModule.directive('routePopUpDirective', [
                             resolve: {
                                 data: function() {
                                     return data;
+                                },
+                                wfsConfig: function() {
+                                    return wfsConfig;
                                 }
                             }
                         });
                     }
-
                     
+                    $scope.searchForBuffer=function(){
+                        var center = $scope.coordinate;
+                        var centerLongLat = ol.proj.transform([center[0], center[1]], 'EPSG:3857', 'EPSG:4326');
+                        var radius=1000;
+                        var params = {
+                            version: '1.0.0',
+                            request: 'GetFeature',
+                            outputFormat: 'JSON',
+                            srsName: 'EPSG:3857',
+                            typeNames: '',
+                            cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + radius + ',meters)',
+                        };
+                        showFeatures(params);  
+                        closer.onclick();
+                    };
+ 
                     function addBlankOverlay(){
                         closer.onclick = function(e) {
                             overlay.setPosition(undefined);
