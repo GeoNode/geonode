@@ -246,7 +246,7 @@
             },
             setLayerRenderingMode: function (surfLayer) {
                 var mode;
-                if(surfLayer.Style && surfLayer.Style.VisualizationSettings && surfLayer.Style.VisualizationSettings.name === 'Heatmap' ){
+                if(surfLayer.Style && surfLayer.Style.visualizationSettings && surfLayer.Style.visualizationSettings.name === 'Heatmap' ){
                     mode = factory.createSingleTileRenderingMode(surfLayer);
                 }
                 else{

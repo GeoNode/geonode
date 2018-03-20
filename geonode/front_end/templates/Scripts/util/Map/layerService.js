@@ -120,17 +120,19 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
 
             layerRenderingModeFactory.setLayerRenderingMode(surfLayer);
 
-            if (surfLayer.Style.VisualizationSettings) {
-                visualizationService.getVisualizationSld(surfLayer, surfLayer.Style.VisualizationSettings)
+			var q = $q.defer();
+            if (surfLayer.Style.visualizationSettings) {
+                visualizationService.getVisualizationSld(surfLayer, surfLayer.Style.visualizationSettings)
                     .then(function(visSld) {
-                        if (visualizationService.isChart(surfLayer.Style.VisualizationSettings)) {
+                        if (visualizationService.isChart(surfLayer.Style.visualizationSettings)) {
                             defaultStyleSld = defaultStyleSld.replace(chartSldRegex, visSld);
-                        } else if (visualizationService.isHeatMap(surfLayer.Style.VisualizationSettings)) {
+                        } else if (visualizationService.isHeatMap(surfLayer.Style.visualizationSettings)) {
                             defaultStyleSld = visSld;
                         }
 
                         return doAction();
                     });
+				return q.promise;
             } else {
                 return doAction();
             }
