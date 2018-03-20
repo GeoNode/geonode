@@ -108,11 +108,11 @@ class CategoryChoiceField(forms.ModelChoiceField):
 class TreeWidget(TaggitWidget):
     input_type = 'text'
 
-    def render(self, name, values, attrs=None):
-        if isinstance(values, basestring):
-            vals = values
-        elif values:
-            vals = ','.join([str(i.tag.name) for i in values])
+    def render(self, name, value, attrs=None):
+        if isinstance(value, basestring):
+            vals = value
+        elif value:
+            vals = ','.join([str(i.tag.name) for i in value])
         else:
             vals = ""
         output = ["""<div class="keywords-container"><span class="input-group">
@@ -130,6 +130,7 @@ class TreeWidget(TaggitWidget):
 
 
 class RegionsMultipleChoiceField(forms.MultipleChoiceField):
+
     def validate(self, value):
         """
         Validates that the input is a list or tuple.
@@ -145,7 +146,8 @@ class RegionsSelect(forms.Select):
     def render(self, name, value, attrs=None):
         if value is None:
             value = []
-        final_attrs = self.build_attrs(attrs, name=name)
+        final_attrs = self.build_attrs(attrs)
+        final_attrs["name"] = name
         output = [
             format_html(
                 '<select multiple="multiple"{}>',
@@ -200,7 +202,7 @@ class RegionsSelect(forms.Select):
 
     def render_options(self, selected_choices):
         # Normalize to strings.
-        selected_choices = set(force_text(v) for v in selected_choices)
+        selected_choices = set(force_text(v.id) for v in selected_choices)
         output = []
 
         output.append(format_html('<optgroup label="{}">', 'Global'))
@@ -302,7 +304,7 @@ class ResourceBaseDateTimePicker(DateTimePicker):
         if extra_attrs:
             base_attrs.update(extra_attrs)
         base_attrs.update(kwargs)
-        return super(ResourceBaseDateTimePicker, self).build_attrs(**base_attrs)
+        return super(ResourceBaseDateTimePicker, self).build_attrs(base_attrs)
         # return base_attrs
 
 

@@ -57,6 +57,7 @@ from geoserver.layer import Layer as GsLayer
 logger = logging.getLogger("geonode.geoserver.signals")
 
 
+@on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_delete(typename):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
@@ -64,6 +65,7 @@ def geoserver_delete(typename):
         cascading_delete(gs_catalog, typename)
 
 
+@on_ogc_backend(BACKEND_PACKAGE)
 @receiver(signals.pre_delete, sender=Layer)
 def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer
@@ -76,6 +78,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
                 cascading_delete(gs_catalog, instance.alternate)
 
 
+@on_ogc_backend(BACKEND_PACKAGE)
 @receiver(signals.pre_save, sender=Layer)
 def geoserver_pre_save(*args, **kwargs):
     # nothing to do here, processing is pushed to post-save
@@ -95,6 +98,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         producer.geoserver_upload_layer(payload)
 
 
+@on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_post_save_local(instance, *args, **kwargs):
     """Send information to geoserver.
 

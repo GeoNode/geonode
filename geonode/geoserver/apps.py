@@ -31,5 +31,5 @@ class GeoserverAppConfig(NotificationsAppConfigBase):
 
     def ready(self):
         """Connect relevant signals to their corresponding handlers"""
-        from .signals import *  # noqa
+        from .signals import (geoserver_pre_delete, geoserver_pre_save, geoserver_post_save, geoserver_post_save_local, geoserver_pre_save_maplayer, geoserver_post_save_map)  # noqa
         super(GeoserverAppConfig, self).ready()

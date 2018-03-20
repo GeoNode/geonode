@@ -295,7 +295,6 @@ class GeoNodeCSWTest(TestCase):
 
         csw = get_catalogue()
         csw.catalogue.getrecords(bbox=[-140, -70, 80, 70])
-        print(" ********************* %s " % csw.catalogue.results)
         self.assertEqual(
             csw.catalogue.results,
             {'matches': 7, 'nextrecord': 0, 'returned': 7},
