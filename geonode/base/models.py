@@ -1262,17 +1262,23 @@ def resourcebase_post_save(instance, *args, **kwargs):
                 link.delete()
 
     try:
+        # set default License if no specified
+        if instance.license is None:
+            license = License.objects.filter(name="Not Specified")
+
+            if license and len(license) > 0:
+                instance.license = license[0]
+
         ResourceBase.objects.filter(id=instance.id).update(
             thumbnail_url=instance.get_thumbnail_url(),
             detail_url=instance.get_absolute_url(),
-            csw_insert_date=datetime.datetime.now())
+            csw_insert_date=datetime.datetime.now(),
+            license=instance.license)
+        instance.refresh_from_db()
     except BaseException:
-        pass
-
-    try:
-        instance.thumbnail_url = instance.get_thumbnail_url()
-        instance.detail_url = instance.get_absolute_url()
-        instance.csw_insert_date = datetime.datetime.now()
+        tb = traceback.format_exc()
+        if tb:
+            logger.debug(tb)
     finally:
         instance.set_missing_info()
 
@@ -1328,16 +1334,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
-
-    # set default License if no specified
-    if instance.license is None:
-        no_license = License.objects.filter(name="Not Specified")
-
-        if no_license and len(no_license) > 0:
-            instance.license = no_license[0]
-
-    if kwargs['created']:
-        instance.save()
 
 
 def rating_post_save(instance, *args, **kwargs):

@@ -33,7 +33,6 @@ from helpers import Config
 
 from distutils import dir_util
 from requests.auth import HTTPBasicAuth
-from optparse import make_option
 
 from geonode.utils import (designals,
                            resignals,
@@ -50,39 +49,46 @@ class Command(BaseCommand):
 
     help = 'Restore the GeoNode application data'
 
-    option_list = BaseCommand.option_list + Config.geoserver_option_list + (
-        Config.option,
-        make_option(
+    def add_arguments(self, parser):
+
+        # Named (optional) arguments
+        helpers.option(parser)
+
+        helpers.geoserver_option_list(parser)
+
+        parser.add_argument(
             '-i',
             '--ignore-errors',
             action='store_true',
             dest='ignore_errors',
             default=False,
-            help='Stop after any errors are encountered.'),
-        make_option(
+            help='Stop after any errors are encountered.')
+
+        parser.add_argument(
             '-f',
             '--force',
             action='store_true',
             dest='force_exec',
             default=False,
-            help='Forces the execution without asking for confirmation.'),
-        make_option(
+            help='Forces the execution without asking for confirmation.')
+
+        parser.add_argument(
             '--skip-geoserver',
             action='store_true',
             default=False,
-            help='Skips geoserver backup'),
-        make_option(
+            help='Skips geoserver backup')
+
+        parser.add_argument(
             '--backup-file',
             dest='backup_file',
-            type="string",
             default=None,
-            help='Backup archive containing GeoNode data to restore.'),
-        make_option(
+            help='Backup archive containing GeoNode data to restore.')
+
+        parser.add_argument(
             '--backup-dir',
             dest='backup_dir',
-            type="string",
             default=None,
-            help='Backup directory containing GeoNode data to restore.'))
+            help='Backup directory containing GeoNode data to restore.')
 
     def restore_geoserver_backup(self, settings, target_folder):
         """Restore GeoServer Catalog"""

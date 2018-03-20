@@ -277,26 +277,26 @@ def get_sld_for(gs_catalog, layer):
 def fixup_style(cat, resource, style):
     logger.debug("Creating styles for layers associated with [%s]", resource)
     layers = cat.get_layers(resource=resource)
-    logger.info("Found %d layers associated with [%s]", len(layers), resource)
+    logger.debug("Found %d layers associated with [%s]", len(layers), resource)
     for lyr in layers:
         if lyr.default_style.name in _style_templates:
-            logger.info("%s uses a default style, generating a new one", lyr)
+            logger.debug("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
             if style is None:
                 sld = get_sld_for(cat, lyr)
             else:
                 sld = style.read()
-            logger.info("Creating style [%s]", name)
+            logger.debug("Creating style [%s]", name)
             style = cat.create_style(name, sld, overwrite=True, raw=True, workspace=settings.DEFAULT_WORKSPACE)
             style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
             lyr.default_style = style
-            logger.info("Saving changes to %s", lyr)
+            logger.debug("Saving changes to %s", lyr)
             cat.save(lyr)
 
             # Invalidate GeoWebCache for the updated resource
             _invalidate_geowebcache_layer(resource)
 
-            logger.info("Successfully updated %s", lyr)
+            logger.debug("Successfully updated %s", lyr)
 
 
 def set_layer_style(saved_layer, title, sld, base_file=None):
@@ -360,7 +360,10 @@ def cascading_delete(cat, layer_name):
     try:
         if layer_name.find(':') != -1 and len(layer_name.split(':')) == 2:
             workspace, name = layer_name.split(':')
-            ws = cat.get_workspace(workspace)
+            try:
+                ws = cat.get_workspace(workspace)
+            except:
+                ws = settings.DEFAULT_WORKSPACE
             try:
                 store = get_store(cat, name, workspace=ws)
             except FailedRequestError:
@@ -423,7 +426,7 @@ def cascading_delete(cat, layer_name):
         for s in styles:
             if s is not None and s.name not in _default_style_names:
                 try:
-                    logger.info("Trying to delete Style [%s]" % s.name)
+                    logger.debug("Trying to delete Style [%s]" % s.name)
                     cat.delete(s, purge='true')
                     workspace, name = layer_name.split(':')
                 except FailedRequestError as e:
@@ -451,7 +454,7 @@ def cascading_delete(cat, layer_name):
         else:
             if store.resource_type == 'coverageStore':
                 try:
-                    logger.info(" - Going to purge the " + store.resource_type + " : " + store.href)
+                    logger.debug(" - Going to purge the " + store.resource_type + " : " + store.href)
                     cat.reset()  # this resets the coverage readers and unlocks the files
                     cat.delete(store, purge='all', recurse=True)
                     # cat.reload()  # this preservers the integrity of geoserver
@@ -597,6 +600,7 @@ def gs_slurp(
         the_store = resource.store
         workspace = the_store.workspace
         try:
+            print(" ******************** %s " % dir(resource))
             layer, created = Layer.objects.get_or_create(name=name, defaults={
                 "workspace": workspace.name,
                 "store": the_store.name,
@@ -1150,7 +1154,10 @@ def get_store(cat, name, workspace=None):
     # Make sure workspace is a workspace object and not a string.
     # If the workspace does not exist, continue as if no workspace had been defined.
     if isinstance(workspace, basestring):
-        workspace = cat.get_workspace(workspace)
+        try:
+            workspace = cat.get_workspace(workspace)
+        except:
+            workspace = None
 
     if workspace is None:
         workspace = cat.get_default_workspace()

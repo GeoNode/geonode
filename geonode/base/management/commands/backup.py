@@ -31,7 +31,6 @@ import helpers
 from helpers import Config
 
 from requests.auth import HTTPBasicAuth
-from optparse import make_option
 from xmltodict import parse as parse_xml
 
 from django.conf import settings
@@ -50,59 +49,39 @@ class Command(BaseCommand):
 
     help = 'Backup the GeoNode application data'
 
-    """
-    # DEPRECATED on Django > 1.8
-    use 'add_arguments' instead e.g.:
-        def add_arguments(self, parser):
-            parser.add_argument(
-                '--force',
-                action='store_true',
-                default=False,
-                dest="force",
-                help='Import even if files are up-to-date.'
-            )
-            parser.add_argument(
-                '--import',
-                metavar="DATA_TYPES",
-                default='all',
-                dest="import",
-                help='Selectively import data. Comma separated list of data ' +
-                     'types: ' + str(import_opts).replace("'", '')
-            )
-            parser.add_argument(
-                '--flush',
-                metavar="DATA_TYPES",
-                default='',
-                dest="flush",
-                help="Selectively flush data. Comma separated list of data types."
-            )
-    """
-    option_list = BaseCommand.option_list + Config.geoserver_option_list + (
-        Config.option,
-        make_option(
+    def add_arguments(self, parser):
+
+        # Named (optional) arguments
+        helpers.option(parser)
+
+        helpers.geoserver_option_list(parser)
+
+        parser.add_argument(
             '-i',
             '--ignore-errors',
             action='store_true',
             dest='ignore_errors',
             default=False,
-            help='Stop after any errors are encountered.'),
-        make_option(
+            help='Stop after any errors are encountered.')
+
+        parser.add_argument(
             '-f',
             '--force',
             action='store_true',
             dest='force_exec',
             default=False,
-            help='Forces the execution without asking for confirmation.'),
-        make_option(
+            help='Forces the execution without asking for confirmation.')
+
+        parser.add_argument(
             '--skip-geoserver',
             action='store_true',
             default=False,
-            help='Skips geoserver backup'),
-        make_option(
+            help='Skips geoserver backup')
+
+        parser.add_argument(
             '--backup-dir',
             dest='backup_dir',
-            type="string",
-            help='Destination folder where to store the backup archive. It must be writable.'))
+            help='Destination folder where to store the backup archive. It must be writable.')
 
     def create_geoserver_backup(self, settings, target_folder):
         # Create GeoServer Backup

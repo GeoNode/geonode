@@ -889,7 +889,7 @@ def check_shp_columnnames(layer):
     inDriver = ogr.GetDriverByName('ESRI Shapefile')
     inDataSource = inDriver.Open(inShapefile, 1)
     if inDataSource is None:
-        print 'Could not open %s' % (inShapefile)
+        logger.warning('Could not open %s' % (inShapefile))
         return False, None, None
     else:
         inLayer = inDataSource.GetLayer()
@@ -933,7 +933,7 @@ def check_shp_columnnames(layer):
                         new_field_name = new_field_name[:-2] + '_' + str(j)
                 list_col.update({field_name: new_field_name})
     except UnicodeDecodeError as e:
-        print str(e)
+        logger.error(str(e))
         return False, None, None
 
     if len(list_col) == 0:
@@ -1050,7 +1050,7 @@ def printsignals():
         signaltype = getattr(models.signals, signalname)
         signals = signaltype.receivers[:]
         for signal in signals:
-            logger.info(signal)
+            logger.debug(signal)
 
 
 def designals():

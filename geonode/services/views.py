@@ -242,7 +242,7 @@ def rescan_service(request, service_id):
             "services/remote_service_unavailable.html",
             {"service": service}
         )
-    print("Finished rescaning service. About to redirect back...")
+    logger.debug("Finished rescaning service. About to redirect back...")
     messages.add_message(
         request, messages.SUCCESS, _("Service rescanned successfully"))
     return redirect(

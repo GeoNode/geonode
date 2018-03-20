@@ -779,8 +779,7 @@ def test_integration(options):
             sh('sleep 30')
             settings = 'REUSE_DB=1 %s' % settings
 
-        sh(('%s python manage.py test %s'
-            ' --noinput --liveserver=0.0.0.0:8000' % (settings, name)))
+        sh(('%s python manage.py test %s --noinput' % (settings, name)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))

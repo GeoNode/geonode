@@ -31,10 +31,6 @@ from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from django.utils.translation import ugettext_lazy as _
 
-
-# use different name to avoid module clash
-from . import BACKEND_PACKAGE
-from geonode.decorators import on_ogc_backend
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import (cascading_delete,
                                        set_attributes_from_geoserver,
@@ -57,7 +53,6 @@ from geoserver.layer import Layer as GsLayer
 logger = logging.getLogger("geonode.geoserver.signals")
 
 
-@on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_delete(typename):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
@@ -65,7 +60,6 @@ def geoserver_delete(typename):
         cascading_delete(gs_catalog, typename)
 
 
-@on_ogc_backend(BACKEND_PACKAGE)
 @receiver(signals.pre_delete, sender=Layer)
 def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer
@@ -78,14 +72,12 @@ def geoserver_pre_delete(instance, sender, **kwargs):
                 cascading_delete(gs_catalog, instance.alternate)
 
 
-@on_ogc_backend(BACKEND_PACKAGE)
 @receiver(signals.pre_save, sender=Layer)
 def geoserver_pre_save(*args, **kwargs):
     # nothing to do here, processing is pushed to post-save
     pass
 
 
-@on_ogc_backend(BACKEND_PACKAGE)
 @receiver(signals.post_save, sender=ResourceBase)
 @receiver(signals.post_save, sender=Layer)
 def geoserver_post_save(instance, sender, **kwargs):
@@ -98,7 +90,6 @@ def geoserver_post_save(instance, sender, **kwargs):
         producer.geoserver_upload_layer(payload)
 
 
-@on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_post_save_local(instance, *args, **kwargs):
     """Send information to geoserver.
 
@@ -481,7 +472,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
     if not ('update_fields' in kwargs and kwargs['update_fields'] is not None and
             'thumbnail_url' in kwargs['update_fields']):
-        logger.info("Creating Thumbnail for Layer [%s]" % (instance.alternate))
+        logger.debug("Creating Thumbnail for Layer [%s]" % (instance.alternate))
         create_gs_thumbnail(instance, overwrite=True)
 
     legend_url = ogc_server_settings.PUBLIC_LOCATION + \

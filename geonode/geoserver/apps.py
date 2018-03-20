@@ -31,5 +31,16 @@ class GeoserverAppConfig(NotificationsAppConfigBase):
 
     def ready(self):
         """Connect relevant signals to their corresponding handlers"""
-        from .signals import (geoserver_pre_delete, geoserver_pre_save, geoserver_post_save, geoserver_post_save_local, geoserver_pre_save_maplayer, geoserver_post_save_map)  # noqa
+        # use different name to avoid module clash
+        from . import BACKEND_PACKAGE
+        from geonode.utils import check_ogc_backend
+
+        if check_ogc_backend(BACKEND_PACKAGE):
+            from .signals import (geoserver_pre_delete,  # noqa
+                                  geoserver_pre_save,  # noqa
+                                  geoserver_post_save,  # noqa
+                                  geoserver_post_save_local,  # noqa
+                                  geoserver_pre_save_maplayer,  # noqa
+                                  geoserver_post_save_map)  # noqa
+
         super(GeoserverAppConfig, self).ready()

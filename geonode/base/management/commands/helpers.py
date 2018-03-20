@@ -26,8 +26,6 @@ import ConfigParser
 import os
 import sys
 
-from optparse import make_option
-
 try:
     import json
 except ImportError:
@@ -41,46 +39,52 @@ LOCALE_PATHS = 'locale_dirs'
 EXTERNAL_ROOT = 'external'
 
 
-class Config(object):
+def option(parser):
 
-    option = make_option(
+    # Named (optional) arguments
+    parser.add_argument(
         '-c',
         '--config',
-        type="string",
         help='Use custom settings.ini configuration file')
 
-    geoserver_option_list = (
-        make_option(
-            '--geoserver-data-dir',
-            dest="gs_data_dir",
-            type="string",
-            default=None,
-            help="Geoserver data directory"),
-        make_option(
-            '--dump-geoserver-vector-data',
-            dest="dump_gs_vector_data",
-            action="store_true",
-            default=None,
-            help="Dump geoserver vector data"),
-        make_option(
-            '--no-geoserver-vector-data',
-            dest="dump_gs_vector_data",
-            action="store_false",
-            default=None,
-            help="Don't dump geoserver vector data"),
-        make_option(
-            '--dump-geoserver-raster-data',
-            dest="dump_gs_raster_data",
-            action="store_true",
-            default=None,
-            help="Dump geoserver raster data"),
-        make_option(
-            '--no-geoserver-raster-data',
-            dest="dump_gs_raster_data",
-            action="store_false",
-            default=None,
-            help="Don't dump geoserver raster data"),
-    )
+def geoserver_option_list(parser):
+
+    # Named (optional) arguments
+    parser.add_argument(
+        '--geoserver-data-dir',
+        dest="gs_data_dir",
+        default=None,
+        help="Geoserver data directory")
+
+    parser.add_argument(
+        '--dump-geoserver-vector-data',
+        dest="dump_gs_vector_data",
+        action="store_true",
+        default=None,
+        help="Dump geoserver vector data")
+
+    parser.add_argument(
+        '--no-geoserver-vector-data',
+        dest="dump_gs_vector_data",
+        action="store_false",
+        default=None,
+        help="Don't dump geoserver vector data")
+
+    parser.add_argument(
+        '--dump-geoserver-raster-data',
+        dest="dump_gs_raster_data",
+        action="store_true",
+        default=None,
+        help="Dump geoserver raster data")
+
+    parser.add_argument(
+        '--no-geoserver-raster-data',
+        dest="dump_gs_raster_data",
+        action="store_false",
+        default=None,
+        help="Don't dump geoserver raster data")
+
+class Config(object):
 
     def __init__(self, options):
         self.load_settings(settings_path=options.get('config'))

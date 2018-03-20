@@ -255,7 +255,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
                     build_slack_message_map(
                         "map_edit", the_map))
             except BaseException:
-                print "Could not send slack message for modified map."
+                logger.error("Could not send slack message for modified map.")
 
         return HttpResponseRedirect(
             reverse(
@@ -372,7 +372,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
                 from geonode.contrib.slack.utils import build_slack_message_map
                 slack_message = build_slack_message_map("map_delete", map_obj)
             except BaseException:
-                print "Could not build slack message for delete map."
+                logger.error("Could not build slack message for delete map.")
 
             delete_map.delay(object_id=map_obj.id)
 
@@ -380,7 +380,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
                 from geonode.contrib.slack.utils import send_slack_messages
                 send_slack_messages(slack_message)
             except BaseException:
-                print "Could not send slack message for delete map."
+                logger.error("Could not send slack message for delete map.")
 
         else:
             delete_map.delay(object_id=map_obj.id)
@@ -1060,7 +1060,7 @@ def map_download_check(request):
             status = 400
     except ValueError:
         # TODO: Is there any useful context we could include in this log?
-        logger.warn(
+        logger.warning(
             "User tried to check status, but has no download in progress.")
     return HttpResponse(content=content, status=status)
 

@@ -54,7 +54,7 @@ def get_service_handler(base_url, proxy_base=None, service_type=enumerations.AUT
         else:
             to_check = [k for k, v in handlers.items() if v["OWS"]]
         for type_ in to_check:
-            logger.info("Checking {}...".format(type_))
+            logger.debug("Checking {}...".format(type_))
             try:
                 service = get_service_handler(base_url, type_)
             except Exception:

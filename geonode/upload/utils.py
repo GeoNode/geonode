@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.info(msg, *args)
+    logger.debug(msg, *args)
 
 
 iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012]))' +
@@ -652,7 +652,7 @@ def create_geoserver_db_featurestore(
                     settings,
                     'GEOGIG_DATASTORE_NAME'):
                 store_name = settings.GEOGIG_DATASTORE_NAME
-            logger.info(
+            logger.debug(
                 'Creating target datastore %s' %
                 store_name)
 

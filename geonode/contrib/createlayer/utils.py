@@ -49,9 +49,9 @@ def create_layer(name, title, owner_name, geometry_type, attributes=None):
         raise GeoNodeException(msg)
     name = get_valid_name(name)
     # we can proceed
-    print 'Creating the layer in GeoServer'
+    logger.debug('Creating the layer in GeoServer')
     workspace, datastore = create_gs_layer(name, title, geometry_type, attributes)
-    print 'Creating the layer in GeoNode'
+    logger.debug('Creating the layer in GeoNode')
     return create_gn_layer(workspace, datastore, name, title, owner_name)
 
 

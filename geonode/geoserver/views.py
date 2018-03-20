@@ -507,7 +507,7 @@ def geoserver_proxy(request,
                     content_type="text/plain",
                     status=401)
             elif downstream_path == 'rest/styles':
-                logger.info(
+                logger.debug(
                     "[geoserver_proxy] Updating Style to ---> url %s" %
                     url.path)
                 affected_layers = style_update(request, raw_url)

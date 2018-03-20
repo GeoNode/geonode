@@ -391,7 +391,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 raise RuntimeError("Could not cascade resource {!r} through "
                                    "geoserver".format(layer_meta))
         else:
-            logger.info("Layer {} is already present. Skipping...".format(
+            logger.debug("Layer {} is already present. Skipping...".format(
                 layer_meta.id))
         return layer_resource
 

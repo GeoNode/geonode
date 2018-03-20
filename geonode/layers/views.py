@@ -501,7 +501,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         else:
             name = layers_names
     except BaseException:
-        print "Can not identify workspace type and layername"
+        logger.error("Can not identify workspace type and layername")
 
     context_dict["layer_name"] = json.dumps(layers_names)
 
@@ -544,7 +544,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             context_dict["filtered_attributes"] = filtered_attributes
 
     except BaseException:
-        print "Possible error with OWSLib. Turning all available properties to string"
+        logger.error("Possible error with OWSLib. Turning all available properties to string")
 
     # maps owned by user needed to fill the "add to existing map section" in
     # template
@@ -607,7 +607,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     except BaseException:
         import traceback
         traceback.print_exc()
-        print "Possible error with OWSLib."
+        logger.error("Possible error with OWSLib.")
     return HttpResponse(json.dumps(context_dict),
                         content_type="application/json")
 
@@ -877,7 +877,7 @@ def layer_metadata(
                     build_slack_message_layer(
                         "layer_edit", the_layer))
             except BaseException:
-                print "Could not send slack message."
+                logger.error("Could not send slack message.")
 
         if not ajax:
             return HttpResponseRedirect(

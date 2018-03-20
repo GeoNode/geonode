@@ -271,10 +271,10 @@ def get_valid_name(layer_name):
     while Layer.objects.filter(name=proposed_name).exists():
         proposed_name = "%s_%d" % (name, count)
         count = count + 1
-        logger.info('Requested name already used; adjusting name '
-                    '[%s] => [%s]', layer_name, proposed_name)
+        logger.warning('Requested name already used; adjusting name '
+                       '[%s] => [%s]', layer_name, proposed_name)
     else:
-        logger.info("Using name as requested")
+        logger.debug("Using name as requested")
 
     return proposed_name
 
@@ -525,7 +525,7 @@ def file_upload(filename,
                 regions_resolved.extend(nlp_metadata.get('regions', []))
                 keywords.extend(nlp_metadata.get('keywords', []))
         except BaseException:
-            print "NLP extraction failed."
+            logger.error("NLP extraction failed.")
 
     # If it is a vector file, create the layer in postgis.
     if is_vector(filename):
@@ -574,8 +574,10 @@ def file_upload(filename,
         defaults['bbox_x1'] = defaults.get('bbox_x1', None) or layer.bbox_x1
         defaults['bbox_y0'] = defaults.get('bbox_y0', None) or layer.bbox_y0
         defaults['bbox_y1'] = defaults.get('bbox_y1', None) or layer.bbox_y1
-        defaults['is_approved'] = defaults.get('is_approved', None) or layer.is_approved
-        defaults['is_published'] = defaults.get('is_published', None) or layer.is_published
+        defaults['is_approved'] = defaults.get(
+            'is_approved', None) or layer.is_approved
+        defaults['is_published'] = defaults.get(
+            'is_published', None) or layer.is_published
         defaults['license'] = defaults.get('license', None) or layer.license
         defaults['category'] = defaults.get('category', None) or layer.category
 
@@ -785,7 +787,7 @@ def upload(incoming, user=None, overwrite=False,
                             build_slack_message_layer(
                                 ("layer_new" if status == "created" else "layer_edit"), layer))
                     except BaseException:
-                        print "Could not send slack message."
+                        logger.error("Could not send slack message.")
 
             except Exception as e:
                 if ignore_errors:
@@ -869,11 +871,11 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
             resp, image = ogc_client.request(thumbnail_create_url)
             if 'ServiceException' in image or \
                resp.status < 200 or resp.status > 299:
-                    msg = 'Unable to obtain thumbnail: %s' % image
-                    logger.debug(msg)
+                msg = 'Unable to obtain thumbnail: %s' % image
+                logger.debug(msg)
 
-                    # Replace error message with None.
-                    image = None
+                # Replace error message with None.
+                image = None
 
         if image is not None:
             instance.save_thumbnail(thumbnail_name, image=image)
@@ -920,8 +922,12 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     _p = "&".join("%s=%s" % item for item in params.items())
 
     import posixpath
-    thumbnail_remote_url = posixpath.join(ogc_server_settings.PUBLIC_LOCATION, wms_endpoint) + "?" + _p
-    thumbnail_create_url = posixpath.join(ogc_server_settings.LOCATION, wms_endpoint) + "?" + _p
+    thumbnail_remote_url = posixpath.join(
+        ogc_server_settings.PUBLIC_LOCATION,
+        wms_endpoint) + "?" + _p
+    thumbnail_create_url = posixpath.join(
+        ogc_server_settings.LOCATION,
+        wms_endpoint) + "?" + _p
     create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
                      ogc_client=http_client, overwrite=overwrite, check_bbox=check_bbox)
 
