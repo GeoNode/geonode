@@ -13,6 +13,8 @@
         mapService.setMapName(self.MapConfig.about.title);
         mapService.setId(self.MapConfig.id);
         mapService.setMeta(self.MapConfig.about);
+        var extent = ol.extent.createEmpty();
+
 
         function setLayers() {
             self.MapConfig.map.layers.forEach(function(layer) {
@@ -20,8 +22,10 @@
                 if (url) {
                     layer.geoserverUrl = re.test($window.location.pathname) ? getCqlFilterUrl(url) : url;
                     mapService.addDataLayer(oldLayerService.map(layer), false);
+                    ol.extent.extend(extent, layer.bbox);
                 }
             });
+            map.getView().fit(extent, map.getSize()); 
         }
 
         function errorFn() {
@@ -194,7 +198,7 @@
                     resolutionChanged=false;
                     if(!isLayerPage()){
                         if(parseInt(analyticsData.map_id)){
-                            
+                            analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
                         }
                     }else{
                         analyticsService.saveGISAnalyticsToLocalStorage(analyticsData);
