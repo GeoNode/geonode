@@ -641,7 +641,7 @@ def start_geoserver(options):
                 javapath = 'START /B "" "' + javapath_opt + '"'
 
             sh((
-                '%(javapath)s -Xms512m -Xmx1024m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=256m'
+                '%(javapath)s -Xms512m -Xmx2048m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=512m'
                 ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
                 ' -Dgeofence.dir=%(geofence_dir)s'
                 # ' -Dgeofence-ovr=geofence-datasource-ovr.properties'
