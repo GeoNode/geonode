@@ -86,11 +86,11 @@ body
 .palette-choice
 {
     background-color: #F8F8F8;
-    padding: 1px 3px;
+    padding: 0;
     border-top: 1px solid #fff;
     border-bottom: 1px solid #ccc;
     padding-left: 4px;
-    line-height: 17px;
+    line-height: normal;
 }
 
     .palette-choice:first-child
