@@ -62,6 +62,42 @@
             $scope.action.overpassApiQuery = function() {
                 showOverpassApiQueryDialog();
             };
+            $scope.layers=[];
+            $scope.searchItemLayer;
+            $scope.baseLayer;
+            $scope.distance=0;
+            var source = $window.GeoServerHttp2Root;
+
+            $scope.getCrossLayerData=function(){
+                var requestObj = {
+                    //service: 'WFS',
+                    request: 'GetFeature',
+                    typeName: $scope.searchItemLayer,
+                    CQL_FILTER : "DWITHIN(the_geom, collectGeometries(queryCollection('"+$scope.baseLayer+"','the_geom','INCLUDE')), "+$scope.distance*1000+", meters)",
+                    version: '1.0.0',
+                    maxFeatures : 100,
+                    outputFormat: 'json',
+                    exceptions: 'application/json'
+                };
+                LayerService.getWFS('api/geoserver/', requestObj,false).then(function(response){
+                    var data={};
+                    data[$scope.searchItemLayer]=response.features.map(function(e) {
+                        e.properties["Feature_Id"]=e.id;
+                        return e.properties;
+                    });
+                    showFeaturePreviewDialog(data, requestObj);
+                });
+            };
+            $scope.getLayers=function(){
+                var layers=mapService.getLayers();
+                var customArray=[];
+                angular.forEach(layers,function(layer){
+                    customArray.push({Id : layer.LayerId,Name : layer.Name});
+                });
+                $timeout(function(){
+                    $scope.layers= customArray;
+                });
+            };
 
             $scope.action.browseData = function() {
                 $modal.open({
@@ -166,6 +202,7 @@
                         var data = {};
                         for (var i in layer_names) {
                             data[layer_names[i]] = response[i].features.map(function(e) {
+                                e.properties["Feature_Id"]=e.id;
                                 return e.properties;
                             });
                         }

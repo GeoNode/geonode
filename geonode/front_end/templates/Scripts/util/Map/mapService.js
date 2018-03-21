@@ -362,7 +362,7 @@
 
                 $q.all([p1, p2, p3])
                     .then(function() {
-                        map.addLayer(layer, false);
+                        map.addLayer(layer, true);
                     });
             },
             removeLayer: function(layerId) {

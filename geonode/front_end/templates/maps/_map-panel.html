@@ -1,4 +1,4 @@
-<div class="navbar" style="min-height: 36px;margin-bottom:0;" ng-cloak ng-controller="controlButtonsController">
+<div class="navbar" style="min-height: 36px;margin-bottom:0;position:absolute;width:100%" ng-cloak ng-controller="controlButtonsController">
     <div class="navbar-inner map-toolbar">
 
 
@@ -46,6 +46,70 @@
                         </li>
                     </ul>
                 </div>
+            </li>
+            <li>
+                <div class="btn-group">
+                    <button class="control-button icon dropdown-toggle" ng-click="getLayers()"  type="button" id="dropdownMenu1" aria-haspopup="true" aria-expanded="true">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" style="height: 200px;width: 350px">
+                            <form class="form-inline" style="padding: 10px">
+                                <div class="form-group" style="margin: 5px">
+                                  <label for="email">Search</label>
+                                  <select class="form-control"
+                                    ng-options="item.Id as item.Name for item in layers"
+                                    ng-model="searchItemLayer"
+                                    >
+                                    <option style="display: none;" value="">Select a layer</option>
+                                </select>
+                                <label>from selected</label>
+                                </div>
+                                <div class="form-group" style="margin: 5px">
+                                  <label for="pwd">item of</label>
+                                  <select class="form-control"
+                                    ng-options="item.Id as item.Name for item in layers"
+                                    ng-model="baseLayer"
+                                    >
+                                 <option style="display: none;" value="">Select a layer</option>
+                                 </select>
+                                 
+                                </div>
+                                <div class="form-group" style="margin: 5px">
+                                        <label>within </label>
+                                        <input type="number" class="form-control" ng-model="distance"> 
+                                        <label>km buffer</label>
+                                </div>
+                                <div class="form-group text-center" style="margin: 15px">
+                                        <button class="btn btn-gd-primary" ng-click="getCrossLayerData()">Search Cross Layer</button>
+                                </div>
+                              </form>
+                        <!-- <p>
+                                Search 
+                                <select
+                                ng-options="item.Id as item.Name for item in layers"
+                                ng-model="searchItemLayer"
+                                >
+                                    <option style="display: none;" value="">Select a layer</option>
+                                </select> from selected
+                        </p>
+                        <p>
+                                item of 
+                                <select
+                                ng-options="item.Id as item.Name for item in layers"
+                                ng-model="baseLayer"
+                                >
+                                 <option style="display: none;" value="">Select a layer</option>
+                                 </select>
+                                 within
+                        </p>
+                        <p>
+                                <input type="number" ng-model="distance"> km buffer
+                        </p>
+                         -->
+                        
+                    </ul>
+                  </div>
             </li>
             <li class="divider-vertical" draft-only></li>
             <!-- <li draft-only>
@@ -325,6 +389,9 @@
 
             $('#attribute-grid').css('width', (total_width - width));
         }
+        $( "#dropdownMenu1" ).click(function() {
+            $( this ).parent().toggleClass( "open" );
+        });
     });
 
 </script>

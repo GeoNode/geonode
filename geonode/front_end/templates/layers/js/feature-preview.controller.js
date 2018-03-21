@@ -5,9 +5,9 @@
         .module('LayerApp')
         .controller('FeaturePreviewController', FeaturePreviewController);
 
-    FeaturePreviewController.$inject = ['data', 'wfsConfig', '$modalInstance', 'uiGridConstants', 'AngularUiGridOptions', 'LayerService', '$modal', '$window', 'layerService', 'mapService'];
+    FeaturePreviewController.$inject = ['$scope','data', 'wfsConfig', '$modalInstance', 'uiGridConstants', 'AngularUiGridOptions', 'LayerService', '$modal', '$window', 'layerService', 'mapService','attributeGridService'];
 
-    function FeaturePreviewController(data, wfsConfig, $modalInstance, uiGridConstants, AngularUiGridOptions, LayerService, $modal, $window, layerService, mapService) {
+    function FeaturePreviewController(scope,data, wfsConfig, $modalInstance, uiGridConstants, AngularUiGridOptions, LayerService, $modal, $window, layerService, mapService,attributeGridService) {
         var self = this;
 
         function initializeTabs() {
@@ -21,11 +21,40 @@
             self.selectedTab = self.tabs[0];
         }
 
+        self.gridApi={};
+
+        function getRequestObjectToGetFeature(featureID) {
+            var requestObj = {
+                request: 'GetFeature',
+                typeName: self.selectedTab.name,
+                maxFeatures: 1,
+                featureID: featureID,
+                version: '2.0.0',
+                outputFormat: 'json',
+                exceptions: 'application/json'
+            };
+            return requestObj;
+        }
+
         function initializeData() {
             self.data = {};
             for (var d in data) {
                 self.data[d] = {};
                 self.data[d].gridOptions = new AngularUiGridOptions();
+                self.data[d].gridOptions.multiSelect= false;
+                self.data[d].gridOptions.onRegisterApi= function (gridApi) {
+                    self.gridApi[d] = gridApi;        
+                    gridApi.selection.on.rowSelectionChanged(scope, function(rows) {
+                        scope.selectedFeatures = gridApi.selection.getSelectedRows();
+                        if(scope.selectedFeatures.length>0){
+                            var featureId=scope.selectedFeatures[0].Feature_Id;
+                            var requestObj = getRequestObjectToGetFeature(featureId);
+                            LayerService.getWFSWithGeom('api/geoserver/', requestObj, false).then(function(response) {
+                                attributeGridService.highlightFeature(response);
+                            });
+                        }
+                    });
+                };
                 self.data[d].gridOptions.exporterCsvFilename = d + '.csv';
                 if (data[d].length == 0)
                     continue;
