@@ -184,8 +184,9 @@ gxp.plugins.Styler = Ext.extend(gxp.plugins.Tool, {
             if (this.sameOriginStyling) {
                 // this could be made more robust
                 // for now, only style for sources with relative url
-                editableStyles = url.charAt(0) === "/";
-                // and assume that local sources are GeoServer instances with
+                //editableStyles = url.charAt(0) === "/";
+                editableStyles = layerRec.get("local");
+		// and assume that local sources are GeoServer instances with
                 // styling capabilities
                 if (editableStyles) {
                     this.enableEditingIfAuthorized(layerRec, url);
