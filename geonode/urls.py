@@ -36,6 +36,9 @@ from . import views
 from geonode.api.urls import api
 from geonode.api.views import verify_token, roles, users, admin_role
 
+from geonode import geoserver, qgis_server  # noqa
+from geonode.utils import check_ogc_backend
+
 from autocomplete_light.registry import autodiscover
 
 # Setup Django Admin
@@ -183,7 +186,7 @@ if "geonode.contrib.createlayer" in settings.INSTALLED_APPS:
             include('geonode.contrib.createlayer.urls')),
     ]
 
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.views import get_capabilities
     # GeoServer Helper Views
     urlpatterns += [  # '',
@@ -200,7 +203,7 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
             get_capabilities, name='capabilities_category'),
         url(r'^gs/', include('geonode.geoserver.urls')),
     ]
-if 'geonode.qgis_server' in settings.INSTALLED_APPS:
+if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     # QGIS Server's urls
     urlpatterns += [  # '',
         url(r'^qgis-server/',

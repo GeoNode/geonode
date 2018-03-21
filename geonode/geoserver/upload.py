@@ -27,6 +27,7 @@ from geoserver.resource import FeatureType, Coverage
 from django.conf import settings
 
 from geonode import GeoNodeException
+from geonode.utils import bbox_to_projection
 from geonode.layers.utils import layer_type, get_files
 from .helpers import (GEOSERVER_LAYER_TYPES,
                       gs_catalog,
@@ -180,24 +181,28 @@ def geoserver_upload(
     logger.debug('>>> Step 6. Making sure [%s] has a valid projection' % name)
     if gs_resource.latlon_bbox is None:
         box = gs_resource.native_bbox[:4]
+        proj = gs_resource.native_bbox[-1]
         minx, maxx, miny, maxy = [float(a) for a in box]
-        if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
-           - 90 <= miny <= 90 and -90 <= maxy <= 90:
+        if 'EPSG:4326' == proj:
             logger.debug('GeoServer failed to detect the projection for layer '
                          '[%s]. Guessing EPSG:4326', name)
             # If GeoServer couldn't figure out the projection, we just
             # assume it's lat/lon to avoid a bad GeoServer configuration
-
             gs_resource.latlon_bbox = gs_resource.native_bbox
             gs_resource.projection = "EPSG:4326"
             cat.save(gs_resource)
         else:
-            msg = ('GeoServer failed to detect the projection for layer '
-                   '[%s]. It doesn\'t look like EPSG:4326, so backing out '
-                   'the layer.')
-            logger.error(msg, name)
-            cascading_delete(cat, name)
-            raise GeoNodeException(msg % name)
+            try:
+                gs_resource.latlon_bbox = bbox_to_projection(gs_resource.native_bbox, target_srid=4326)
+                gs_resource.projection = "EPSG:4326"
+                cat.save(gs_resource)
+            except:
+                msg = ('GeoServer failed to detect the projection for layer '
+                       '[%s]. It doesn\'t look like EPSG:4326, so backing out '
+                       'the layer.')
+                logger.error(msg, name)
+                cascading_delete(cat, name)
+                raise GeoNodeException(msg % name)
 
     # Step 7. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py

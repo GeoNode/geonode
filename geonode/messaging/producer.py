@@ -69,7 +69,7 @@ def sync_if_local_memory(func, *args, **kwargs):
             except:
                 tb = traceback.format_exc()
                 msg = "Exception while publishing message: {}".format(tb)
-                logger.warning(msg)
+                logger.error(msg)
 
 
 @sync_if_local_memory

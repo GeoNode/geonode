@@ -31,6 +31,8 @@ from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from django.utils.translation import ugettext_lazy as _
 
+from . import BACKEND_PACKAGE
+from geonode.utils import check_ogc_backend
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import (cascading_delete,
                                        set_attributes_from_geoserver,
@@ -64,6 +66,9 @@ def geoserver_delete(typename):
 def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer
     """
+    if not check_ogc_backend(BACKEND_PACKAGE):
+        return
+
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
@@ -74,6 +79,9 @@ def geoserver_pre_delete(instance, sender, **kwargs):
 
 @receiver(signals.pre_save, sender=Layer)
 def geoserver_pre_save(*args, **kwargs):
+    if not check_ogc_backend(BACKEND_PACKAGE):
+        return
+
     # nothing to do here, processing is pushed to post-save
     pass
 
@@ -81,6 +89,9 @@ def geoserver_pre_save(*args, **kwargs):
 @receiver(signals.post_save, sender=ResourceBase)
 @receiver(signals.post_save, sender=Layer)
 def geoserver_post_save(instance, sender, **kwargs):
+    if not check_ogc_backend(BACKEND_PACKAGE):
+        return
+
     from geonode.messaging import producer
     # this is attached to various models, (ResourceBase, Document)
     # so we should select what will be handled here
@@ -102,6 +113,9 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
+    if not check_ogc_backend(BACKEND_PACKAGE):
+        return
+
     # Don't run this signal if is a Layer from a remote service
     if getattr(instance, "remote_service", None) is not None:
         return
@@ -227,13 +241,13 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     instance.workspace = gs_resource.store.workspace.name
     instance.store = gs_resource.store.name
 
-    bbox = gs_resource.latlon_bbox
+    bbox = gs_resource.native_bbox
 
-    # FIXME(Ariel): Correct srid setting below
-    # self.srid = gs_resource.src
-
-    instance.srid_url = "http://www.spatialreference.org/ref/" + \
-        instance.srid.replace(':', '/').lower() + "/"
+    # Set projection SRID
+    instance.srid = gs_resource.native_bbox[-1]
+    if instance.srid:
+        instance.srid_url = "http://www.spatialreference.org/ref/" + \
+            instance.srid.replace(':', '/').lower() + "/"
 
     # Set bounding box values
     instance.bbox_x0 = bbox[0]
@@ -278,10 +292,11 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         'title': instance.title or instance.name,
         'abstract': instance.abstract or "",
         'alternate': instance.alternate,
-        'bbox_x0': instance.bbox_x0,
-        'bbox_x1': instance.bbox_x1,
-        'bbox_y0': instance.bbox_y0,
-        'bbox_y1': instance.bbox_y1
+        'bbox_x0': instance.bbox_x0 or '-180',
+        'bbox_x1': instance.bbox_x1 or '180',
+        'bbox_y0': instance.bbox_y0 or '-90',
+        'bbox_y1': instance.bbox_y1 or '90',
+        'srid': instance.srid or 'EPSG:4326'
     }
 
     # Update ResourceBase
@@ -303,7 +318,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # store the resource to avoid another geoserver call in the post_save
     instance.gs_resource = gs_resource
 
-    bbox = gs_resource.latlon_bbox
+    bbox = gs_resource.native_bbox
     dx = float(bbox[1]) - float(bbox[0])
     dy = float(bbox[3]) - float(bbox[2])
 
@@ -573,6 +588,9 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
 @receiver(signals.pre_save, sender=MapLayer)
 def geoserver_pre_save_maplayer(instance, sender, **kwargs):
+    if not check_ogc_backend(BACKEND_PACKAGE):
+        return
+
     # If this object was saved via fixtures,
     # do not do post processing.
     if kwargs.get('raw', False):
@@ -597,5 +615,8 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 
 @receiver(signals.post_save, sender=Map)
 def geoserver_post_save_map(instance, sender, **kwargs):
+    if not check_ogc_backend(BACKEND_PACKAGE):
+        return
+
     instance.set_missing_info()
     create_gs_thumbnail(instance, overwrite=False)

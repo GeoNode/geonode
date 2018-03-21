@@ -73,7 +73,8 @@ def create_gn_layer(workspace, datastore, name, title, owner_name):
         bbox_x0=-180,
         bbox_x1=180,
         bbox_y0=-90,
-        bbox_y1=90
+        bbox_y1=90,
+        srid='EPSG:4326',
     )
     return layer
 

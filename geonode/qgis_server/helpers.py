@@ -254,7 +254,8 @@ def tile_url(layer, z, x, y, style=None, internal=True):
         style = 'default'
 
     if style not in [s.name for s in qgis_layer.styles.all()]:
-        style = qgis_layer.default_style.name
+        if qgis_layer.default_style:
+            style = qgis_layer.default_style.name
 
     query_string = {
         'SERVICE': 'WMS',
@@ -352,7 +353,8 @@ def layer_thumbnail_url(instance, style=None, bbox=None, internal=True):
         style = 'default'
 
     if style not in [s.name for s in qgis_layer.styles.all()]:
-        style = qgis_layer.default_style.name
+        if qgis_layer.default_style:
+            style = qgis_layer.default_style.name
 
     if not bbox:
         # We get the extent of the layer.
@@ -455,7 +457,8 @@ def legend_url(layer, layertitle=False, style=None, internal=True):
         style = 'default'
 
     if style not in [s.name for s in qgis_layer.styles.all()]:
-        style = qgis_layer.default_style.name
+        if qgis_layer.default_style:
+            style = qgis_layer.default_style.name
 
     query_string = {
         'MAP': qgis_project_path,
@@ -785,81 +788,86 @@ def style_list(layer, internal=True, generating_qgis_capabilities=False):
     # We get the list of style from GetCapabilities request
     # Must call from public URL because we need public LegendURL
     url = wms_get_capabilities_url(layer, internal=internal)
-    response = requests.get(url)
-
-    root_xml = etree.fromstring(response.content)
-    styles_xml = root_xml.xpath(
-        'wms:Capability/wms:Layer/wms:Layer/wms:Style',
-        namespaces={
-            'xlink': 'http://www.w3.org/1999/xlink',
-            'wms': 'http://www.opengis.net/wms'
-        })
-
-    # Fetch styles body
     try:
-        qgis_layer = QGISServerLayer.objects.get(layer=layer)
-    except QGISServerLayer.DoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer {0}'.format(layer.name)
-        logger.debug(msg)
-        raise
+        response = requests.get(url)
 
-    styles_obj = [
-        QGISServerStyle.from_get_capabilities_style_xml(
-            qgis_layer, style_xml)[0]
-        for style_xml in styles_xml]
+        root_xml = etree.fromstring(response.content)
+        styles_xml = root_xml.xpath(
+            'wms:Capability/wms:Layer/wms:Layer/wms:Style',
+            namespaces={
+                'xlink': 'http://www.w3.org/1999/xlink',
+                'wms': 'http://www.opengis.net/wms'
+            })
 
-    # Only tried to generate/fix QGIS GetCapabilities to return correct style
-    # list, if:
-    # - the current request return empty styles_obj (no styles, not possible)
-    # - does not currently tried to generate QGIS GetCapabilities to fix this
-    #   problem
-    if not styles_obj and not generating_qgis_capabilities:
-        # It's not possible to have empty style. There will always be default
-        # style.
-        # Initiate a dummy requests to trigger build style list on QGIS Server
-        # side
+        # Fetch styles body
+        try:
+            qgis_layer = QGISServerLayer.objects.get(layer=layer)
+        except QGISServerLayer.DoesNotExist:
+            msg = 'No QGIS Server Layer for existing layer {0}'.format(layer.name)
+            logger.debug(msg)
+            raise
 
-        # write an empty file if it doesn't exists
-        open(qgis_layer.qml_path, 'a').close()
+        styles_obj = [
+            QGISServerStyle.from_get_capabilities_style_xml(
+                qgis_layer, style_xml)[0]
+            for style_xml in styles_xml]
 
-        # Basically add a new style then deletes it to force QGIS to refresh
-        # style list in project properties. We don't care the request result.
-        dummy_style_name = '__tmp__dummy__name__'
-        style_url = style_add_url(layer, dummy_style_name)
-        requests.get(style_url)
-        style_url = style_remove_url(layer, dummy_style_name)
-        requests.get(style_url)
+        # Only tried to generate/fix QGIS GetCapabilities to return correct style
+        # list, if:
+        # - the current request return empty styles_obj (no styles, not possible)
+        # - does not currently tried to generate QGIS GetCapabilities to fix this
+        #   problem
+        if not styles_obj and not generating_qgis_capabilities:
+            # It's not possible to have empty style. There will always be default
+            # style.
+            # Initiate a dummy requests to trigger build style list on QGIS Server
+            # side
 
-        # End the requests and rely on the next request to build style models
-        # to avoid infinite recursion
+            # write an empty file if it doesn't exists
+            open(qgis_layer.qml_path, 'a').close()
 
-        # Set generating_qgis_capabilities flag to True to avoid next
-        # recursion
-        return style_list(
-            layer, internal=internal, generating_qgis_capabilities=True)
+            # Basically add a new style then deletes it to force QGIS to refresh
+            # style list in project properties. We don't care the request result.
+            dummy_style_name = '__tmp__dummy__name__'
+            style_url = style_add_url(layer, dummy_style_name)
+            requests.get(style_url)
+            style_url = style_remove_url(layer, dummy_style_name)
+            requests.get(style_url)
 
-    # Manage orphaned styles
-    style_names = [s.name for s in styles_obj]
-    for style in qgis_layer.styles.all():
-        if style.name not in style_names:
-            if style == qgis_layer.default_style:
-                qgis_layer.default_style = None
-                qgis_layer.save()
-            style.delete()
+            # End the requests and rely on the next request to build style models
+            # to avoid infinite recursion
 
-    # Set default style if not yet set
-    set_default_style = False
-    try:
-        if not qgis_layer.default_style:
+            # Set generating_qgis_capabilities flag to True to avoid next
+            # recursion
+            return style_list(
+                layer, internal=internal, generating_qgis_capabilities=True)
+
+        # Manage orphaned styles
+        style_names = [s.name for s in styles_obj]
+        for style in qgis_layer.styles.all():
+            if style.name not in style_names:
+                if style == qgis_layer.default_style:
+                    qgis_layer.default_style = None
+                    qgis_layer.save()
+                style.delete()
+
+        # Set default style if not yet set
+        set_default_style = False
+        try:
+            if not qgis_layer.default_style:
+                set_default_style = True
+        except:
             set_default_style = True
-    except:
-        set_default_style = True
 
-    if set_default_style and styles_obj:
-        qgis_layer.default_style = styles_obj[0]
-        qgis_layer.save()
+        if set_default_style and styles_obj:
+            qgis_layer.default_style = styles_obj[0]
+            qgis_layer.save()
 
-    return styles_obj
+        return styles_obj
+    except BaseException:
+        msg = 'No QGIS Style for existing layer {0}'.format(layer.name)
+        logger.debug(msg)
+        return None
 
 
 def create_qgis_project(

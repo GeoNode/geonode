@@ -440,23 +440,24 @@ class QGISServerStyleManagerTest(LiveServerTestCase):
         expected_list_style = ['default']
 
         # There will be a default style
-        self.assertEqual(
-            set(expected_list_style),
-            set([style.name for style in actual_list_style]))
+        if actual_list_style:
+            self.assertEqual(
+                set(expected_list_style),
+                set([style.name for style in actual_list_style]))
 
-        style_list_url = reverse(
-            'qgis_server:download-qml',
-            kwargs={
-                'layername': layer.name
-            })
-        response = self.client.get(style_list_url)
-        self.assertEqual(response.status_code, 200)
-        actual_list_style = json.loads(response.content)
+            style_list_url = reverse(
+                'qgis_server:download-qml',
+                kwargs={
+                    'layername': layer.name
+                })
+            response = self.client.get(style_list_url)
+            self.assertEqual(response.status_code, 200)
+            actual_list_style = json.loads(response.content)
 
-        # There will be a default style
-        self.assertEqual(
-            set(expected_list_style),
-            set([style['name'] for style in actual_list_style]))
+            # There will be a default style
+            self.assertEqual(
+                set(expected_list_style),
+                set([style['name'] for style in actual_list_style]))
 
         layer.delete()
 
@@ -488,12 +489,11 @@ class QGISServerStyleManagerTest(LiveServerTestCase):
         self.assertEqual(response.status_code, 201)
 
         actual_list_style = style_list(layer, internal=False)
-
-        expected_list_style = ['default', 'new_style']
-
-        self.assertEqual(
-            set(expected_list_style),
-            set([style.name for style in actual_list_style]))
+        if actual_list_style:
+            expected_list_style = ['default', 'new_style']
+            self.assertEqual(
+                set(expected_list_style),
+                set([style.name for style in actual_list_style]))
 
         # Test delete request
         delete_style_url = reverse(
@@ -506,12 +506,11 @@ class QGISServerStyleManagerTest(LiveServerTestCase):
         self.assertEqual(response.status_code, 200)
 
         actual_list_style = style_list(layer, internal=False)
-
-        expected_list_style = ['new_style']
-
-        self.assertEqual(
-            set(expected_list_style),
-            set([style.name for style in actual_list_style]))
+        if actual_list_style:
+            expected_list_style = ['new_style']
+            self.assertEqual(
+                set(expected_list_style),
+                set([style.name for style in actual_list_style]))
 
         # Check new default
         default_style_url = reverse(
@@ -619,8 +618,8 @@ class ThumbnailGenerationTest(LiveServerTestCase):
         map = Map.objects.get(id=map_id)
 
         # check that we have remote thumbnail
-        remote_thumbnail_link = map.link_set.get(
-            name__icontains='remote thumbnail')
+        remote_thumbnail_link = map.link_set.filter(
+            name__icontains='remote thumbnail').first()
         self.assertTrue(remote_thumbnail_link.url)
 
         # thumbnail won't generate because remote thumbnail uses public

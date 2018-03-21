@@ -56,7 +56,10 @@ from django.shortcuts import get_object_or_404
 # i18n infra is up
 from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection, transaction
+from django.contrib.gis.geos import GEOSGeometry
 from django.core.serializers.json import DjangoJSONEncoder
+
+from geonode import geoserver, qgis_server  # noqa
 
 try:
     import json
@@ -74,15 +77,6 @@ ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
 SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')
-
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
-    ogc_server_settings = settings.OGC_SERVER['default']
-    http_client = httplib2.Http(
-        cache=getattr(
-            ogc_server_settings, 'CACHE', None), timeout=getattr(
-            ogc_server_settings, 'TIMEOUT', 10))
-else:
-    http_client = httplib2.Http(timeout=10)
 
 custom_slugify = Slugify(separator='_')
 
@@ -194,6 +188,20 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     else:
         wkt = 'SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'
     return wkt
+
+
+def bbox_to_projection(native_bbox, target_srid=4326):
+    """
+        native_bbox must be in the form
+            ('-81.3962935', '-81.3490249', '13.3202891', '13.3859614', 'EPSG:4326')
+    """
+    box = native_bbox[:4]
+    proj = native_bbox[-1]
+    minx, maxx, miny, maxy = [float(a) for a in box]
+    wkt = bbox_to_wkt(minx, maxx, miny, maxy, srid=proj.split(":")[1])
+    poly = GEOSGeometry(wkt, srid=int(proj.split(":")[1]))
+    poly.transform(target_srid)
+    return tuple([str(x) for x in poly.extent]) + ("EPSG:%s" % poly.srid,)
 
 
 def llbbox_to_mercator(llbbox):
@@ -1209,6 +1217,16 @@ def check_ogc_backend(backend_package):
         return in_installed_apps and is_configured
     except BaseException:
         return False
+
+
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    ogc_server_settings = settings.OGC_SERVER['default']
+    http_client = httplib2.Http(
+        cache=getattr(
+            ogc_server_settings, 'CACHE', None), timeout=getattr(
+            ogc_server_settings, 'TIMEOUT', 10))
+else:
+    http_client = httplib2.Http(timeout=10)
 
 
 def get_dir_time_suffix():

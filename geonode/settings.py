@@ -431,17 +431,17 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
+            'level': 'ERROR',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-        'celery': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'celery.log',
-            'formatter': 'simple',
-            'maxBytes': 1024 * 1024 * 10,  # 10 mb
-        },
+        # 'celery': {
+        #     'level': 'ERROR',
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'filename': 'celery.log',
+        #     'formatter': 'simple',
+        #     'maxBytes': 1024 * 1024 * 10,  # 10 mb
+        # },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
@@ -452,7 +452,7 @@ LOGGING = {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "INFO", },
+            "handlers": ["console"], "level": "ERROR", },
         "geonode.qgis_server": {
             "handlers": ["console"], "level": "ERROR", },
         "gsconfig.catalog": {
@@ -461,8 +461,8 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
-        "celery": {
-            'handlers': ['celery', 'console'], 'level': 'ERROR', },
+        # "celery": {
+        #     'handlers': ['celery', 'console'], 'level': 'ERROR', },
     },
 }
 

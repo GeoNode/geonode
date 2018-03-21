@@ -42,8 +42,10 @@ from django.core.files.storage import default_storage as storage
 from geonode.base.models import Link
 from geonode.layers.models import Layer, LayerFile
 from geonode.utils import (resolve_object,
+                           check_ogc_backend,
                            get_dir_time_suffix,
                            zip_dir)
+from geonode import geoserver, qgis_server  # noqa
 
 TIMEOUT = 30
 
@@ -89,7 +91,7 @@ def proxy(request, url=None, response_callback=None,
         if site_url.hostname not in PROXY_ALLOWED_HOSTS:
             PROXY_ALLOWED_HOSTS += (site_url.hostname, )
 
-        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import ogc_server_settings
             hostname = (
                 ogc_server_settings.hostname,

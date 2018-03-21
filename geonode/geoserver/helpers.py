@@ -600,7 +600,6 @@ def gs_slurp(
         the_store = resource.store
         workspace = the_store.workspace
         try:
-            print(" ******************** %s " % dir(resource))
             layer, created = Layer.objects.get_or_create(name=name, defaults={
                 "workspace": workspace.name,
                 "store": the_store.name,
@@ -610,10 +609,11 @@ def gs_slurp(
                 "abstract": resource.abstract or unicode(_('No abstract provided')).encode('utf-8'),
                 "owner": owner,
                 "uuid": str(uuid.uuid4()),
-                "bbox_x0": Decimal(resource.latlon_bbox[0]),
-                "bbox_x1": Decimal(resource.latlon_bbox[1]),
-                "bbox_y0": Decimal(resource.latlon_bbox[2]),
-                "bbox_y1": Decimal(resource.latlon_bbox[3])
+                "bbox_x0": Decimal(resource.native_bbox[0]),
+                "bbox_x1": Decimal(resource.native_bbox[1]),
+                "bbox_y0": Decimal(resource.native_bbox[2]),
+                "bbox_y1": Decimal(resource.native_bbox[3]),
+                "srid": resource.native_bbox[-1]
             })
 
             # sync permissions in GeoFence

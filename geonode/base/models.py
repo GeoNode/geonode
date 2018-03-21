@@ -202,7 +202,11 @@ class Region(MPTTModel):
         decimal_places=15,
         blank=True,
         null=True)
-    srid = models.CharField(max_length=255, default='EPSG:4326')
+    srid = models.CharField(
+        max_length=30,
+        blank=False,
+        null=False,
+        default='EPSG:4326')
 
     def __unicode__(self):
         return self.name
@@ -691,7 +695,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         decimal_places=15,
         blank=True,
         null=True)
-    srid = models.CharField(max_length=255, default='EPSG:4326')
+    srid = models.CharField(
+        max_length=30,
+        blank=False,
+        null=False,
+        default='EPSG:4326')
 
     # CSW specific fields
     csw_typename = models.CharField(
@@ -871,15 +879,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         else:
             return ''
 
-    def set_latlon_bounds(self, box):
-        """
-        Set the four bounds in lat lon projection
-        """
-        self.bbox_x0 = box[0]
-        self.bbox_x1 = box[1]
-        self.bbox_y0 = box[2]
-        self.bbox_y1 = box[3]
-
     def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
         """
         Calculate zoom level and center coordinates in mercator.
@@ -921,7 +920,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.bbox_y0 = lat - distance_y_degrees
         self.bbox_y1 = lat + distance_y_degrees
 
-    def set_bounds_from_bbox(self, bbox):
+    def set_bounds_from_bbox(self, bbox, srid):
         """
         Calculate zoom level and center coordinates in mercator.
 
@@ -930,7 +929,19 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             [xmin, xmax, ymin, ymax]
         :type bbox: list
         """
-        self.set_latlon_bounds(bbox)
+        if not bbox or len(bbox) < 4:
+            raise ValidationError(
+                'Bounding Box cannot be empty %s for a given resource' %
+                self.name)
+        if not srid:
+            raise ValidationError(
+                'Projection cannot be empty %s for a given resource' %
+                self.name)
+        self.bbox_x0 = bbox[0]
+        self.bbox_x1 = bbox[1]
+        self.bbox_y0 = bbox[2]
+        self.bbox_y1 = bbox[3]
+        self.srid = srid
 
         minx, maxx, miny, maxy = [float(c) for c in bbox]
         x = (minx + maxx) / 2

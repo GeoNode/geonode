@@ -68,9 +68,10 @@ from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
 from geonode.groups.models import GroupProfile
 
-from geonode.utils import default_map_config, check_ogc_backend
-from geonode.utils import GXPLayer
-from geonode.utils import GXPMap
+from geonode.utils import (default_map_config,
+                           check_ogc_backend,
+                           GXPLayer,
+                           GXPMap)
 from geonode.layers.utils import file_upload, is_raster, is_vector
 from geonode.utils import resolve_object, llbbox_to_mercator
 from geonode.people.forms import ProfileForm, PocForm
@@ -111,7 +112,7 @@ _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 
 def log_snippet(log_file):
-    if not os.path.isfile(log_file):
+    if not log_file or not os.path.isfile(log_file):
         return "No log file at %s" % log_file
 
     with open(log_file, "r") as f:
@@ -379,7 +380,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             granules = {"features": []}
             all_granules = {"features": []}
 
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from geonode.geoserver.views import get_capabilities
         if layer.has_time:
             workspace, layername = layer.alternate.split(

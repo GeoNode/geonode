@@ -22,14 +22,14 @@
 """
 
 # Standard Modules
-import logging
 import re
 import os
 import glob
 import sys
+import logging
 
 from geonode.maps.models import Map
-from osgeo import gdal
+from osgeo import gdal, osr
 
 # Django functionality
 from django.contrib.auth import get_user_model
@@ -340,16 +340,19 @@ def get_resolution(filename):
 def get_bbox(filename):
     """Return bbox in the format [xmin,xmax,ymin,ymax]."""
     from django.contrib.gis.gdal import DataSource
+    srid = None
     bbox_x0, bbox_y0, bbox_x1, bbox_y1 = None, None, None, None
 
     if is_vector(filename):
         datasource = DataSource(filename)
         layer = datasource[0]
         bbox_x0, bbox_y0, bbox_x1, bbox_y1 = layer.extent.tuple
-
+        srid = layer.srs.srid if layer.srs else 'EPSG:4326'
     elif is_raster(filename):
         gtif = gdal.Open(filename)
         gt = gtif.GetGeoTransform()
+        prj = gtif.GetProjection()
+        srs = osr.SpatialReference(wkt=prj)
         cols = gtif.RasterXSize
         rows = gtif.RasterYSize
 
@@ -372,8 +375,9 @@ def get_bbox(filename):
         bbox_y0 = min(ext[0][1], ext[2][1])
         bbox_x1 = max(ext[0][0], ext[2][0])
         bbox_y1 = max(ext[0][1], ext[2][1])
+        srid = srs.GetAuthorityCode(None) if srs else 'EPSG:4326'
 
-    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1]
+    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
 
 
 def file_upload(filename,
@@ -459,7 +463,9 @@ def file_upload(filename,
                 assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
     # Get a bounding box
-    bbox_x0, bbox_x1, bbox_y0, bbox_y1 = get_bbox(filename)
+    bbox_x0, bbox_x1, bbox_y0, bbox_y1, srid = get_bbox(filename)
+    if srid:
+        srid_url = "http://www.spatialreference.org/ref/" + srid.replace(':', '/').lower() + "/"  # noqa
 
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
     # must be set to False
@@ -479,6 +485,7 @@ def file_upload(filename,
         'bbox_x1': bbox_x1,
         'bbox_y0': bbox_y0,
         'bbox_y1': bbox_y1,
+        'srid': srid,
         'is_approved': is_approved,
         'is_published': is_published,
         'license': license,
@@ -646,13 +653,18 @@ def file_upload(filename,
     if not to_update:
         pass
     else:
-        ResourceBase.objects.filter(
-            id=layer.resourcebase_ptr.id).update(
-            **to_update)
-        Layer.objects.filter(id=layer.id).update(**to_update)
+        try:
+            ResourceBase.objects.filter(
+                id=layer.resourcebase_ptr.id).update(
+                **to_update)
+            Layer.objects.filter(id=layer.id).update(**to_update)
 
-        # Refresh from DB
-        layer.refresh_from_db()
+            # Refresh from DB
+            layer.refresh_from_db()
+        except BaseException:
+            import traceback
+            tb = traceback.format_exc()
+            logger.error(tb)
 
     return layer
 
@@ -868,11 +880,15 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 .update(thumbnail_url=thumbnail_remote_url)
 
             # Download thumbnail and save it locally.
-            resp, image = ogc_client.request(thumbnail_create_url)
-            if 'ServiceException' in image or \
-               resp.status < 200 or resp.status > 299:
-                msg = 'Unable to obtain thumbnail: %s' % image
-                logger.debug(msg)
+            try:
+                resp, image = ogc_client.request(thumbnail_create_url)
+                if 'ServiceException' in image or \
+                   resp.status < 200 or resp.status > 299:
+                    msg = 'Unable to obtain thumbnail: %s' % image
+                    raise Exception(msg)
+            except BaseException:
+                import traceback
+                logger.debug(traceback.format_exc())
 
                 # Replace error message with None.
                 image = None

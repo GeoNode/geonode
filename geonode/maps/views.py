@@ -48,13 +48,14 @@ from django.views.decorators.http import require_http_methods
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.layers.views import _resolve_layer
-from geonode.utils import forward_mercator, llbbox_to_mercator, \
-    check_ogc_backend
-from geonode.utils import DEFAULT_TITLE
-from geonode.utils import DEFAULT_ABSTRACT
-from geonode.utils import default_map_config
-from geonode.utils import resolve_object
-from geonode.utils import layer_from_viewer_config
+from geonode.utils import (DEFAULT_TITLE,
+                           DEFAULT_ABSTRACT,
+                           forward_mercator,
+                           llbbox_to_mercator,
+                           default_map_config,
+                           resolve_object,
+                           layer_from_viewer_config,
+                           check_ogc_backend)
 from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
 from geonode.base.forms import CategoryForm
@@ -985,12 +986,10 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
 
-        if 'geonode.geoserver' in settings.INSTALLED_APPS \
-                and ogc_server_settings.BACKEND == 'geonode.geoserver':
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # TODO the url needs to be verified on geoserver
             url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        elif 'geonode.qgis_server' in settings.INSTALLED_APPS \
-                and ogc_server_settings.BACKEND == 'geonode.qgis_server':
+        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
             url = urljoin(settings.SITEURL,
                           reverse("qgis_server:download-map", kwargs={'mapid': mapid}))
             # qgis-server backend stop here, continue on qgis_server/views.py
