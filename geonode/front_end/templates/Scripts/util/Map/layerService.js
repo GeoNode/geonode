@@ -118,6 +118,7 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
             defaultStyleSld = defaultStyleSld.replace(reClassifier, classificationSlds.classificationStyle);
             defaultStyleSld = defaultStyleSld.replace(reLabel, labelingSld);
 
+            surfLayer.Style = style;
             layerRenderingModeFactory.setLayerRenderingMode(surfLayer);
 
 			var q = $q.defer();
