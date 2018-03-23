@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#
+# ##############################################################################
 #
 # Copyright (C) 2016 OSGeo
 #
@@ -16,10 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-#
+# ##############################################################################
 
+from geonode import geoserver, qgis_server  # noqa
+from geonode.utils import check_ogc_backend
 from django.conf.urls import url
-from django.conf import settings
 from django.views.generic import TemplateView
 
 from . import views
@@ -71,7 +72,7 @@ urlpatterns = [
 
 # -- Deprecated url routes for Geoserver authentication -- remove after GeoNode 2.1
 # -- Use /gs/acls, gs/resolve_user/, gs/download instead
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.views import layer_acls, resolve_user, layer_batch_download
     urlpatterns = [  # 'geonode.geoserver.views',
         url(r'^acls/?$', layer_acls, name='layer_acls_dep'),

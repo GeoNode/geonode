@@ -70,7 +70,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.info(msg, *args)
+    logger.debug(msg, *args)
 
 
 class UploadException(Exception):
@@ -274,7 +274,7 @@ def _check_geoserver_store(store_name, layer_type, overwrite):
                                    "match type of existing resource type "
                                    "{}".format(store_name, layer_type,
                                                existing_type))
-                            logger.info(msg)
+                            logger.error(msg)
                             raise GeoNodeException(msg)
 
 
@@ -292,7 +292,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
               time_presentation=None, time_presentation_res=None,
               time_presentation_default_value=None,
               time_presentation_reference_value=None):
-    logger.info(
+    logger.debug(
         'Uploading layer: {}, files {!r}'.format(layer, spatial_files))
     if len(spatial_files) > 1:
         # we only support more than one file if they're rasters for mosaicing
@@ -301,7 +301,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
             raise UploadException(
                 "Please upload only one type of file at a time")
     name = get_valid_layer_name(layer, overwrite)
-    logger.info('Name for layer: {!r}'.format(name))
+    logger.debug('Name for layer: {!r}'.format(name))
     if not any(spatial_files.all_files()):
         raise UploadException("Unable to recognize the uploaded file(s)")
     the_layer_type = _get_layer_type(spatial_files)
@@ -313,7 +313,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
                            "Coverage, not {}".format(the_layer_type))
     files_to_upload = preprocess_files(spatial_files)
     logger.debug("files_to_upload: {}".format(files_to_upload))
-    logger.info('Uploading {}'.format(the_layer_type))
+    logger.debug('Uploading {}'.format(the_layer_type))
     error_msg = None
     try:
         next_id = _get_next_id()
@@ -495,7 +495,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
         )
 
     if transforms:
-        logger.info('Setting transforms %s' % transforms)
+        logger.debug('Setting transforms %s' % transforms)
         upload_session.import_session.tasks[0].add_transforms(transforms)
         try:
             upload_session.time_transforms = transforms
@@ -526,7 +526,7 @@ def srs_step(upload_session, source, target):
     import_session = upload_session.import_session
     task = import_session.tasks[0]
     if source:
-        logger.info('Setting SRS to %s', source)
+        logger.debug('Setting SRS to %s', source)
         task.set_srs(source)
 
     transform = {'type': 'ReprojectTransform',

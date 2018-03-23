@@ -457,7 +457,7 @@
        <gco:Boolean>0</gco:Boolean>
      </gmd:includedWithDataset>
      <gmd:MD_FeatureCatalogueDescription>
-       <gmd:featureCatalogueCitation xlink:href="{{ SITEURL }}{{ layer.get_absolute_url }}/feature_catalogue"/>
+       <gmd:featureCatalogueCitation uuidref="{{layer.uuid}}" xlink:href="{{ SITEURL }}{{ layer.get_absolute_url }}/feature_catalogue"/>
      </gmd:MD_FeatureCatalogueDescription>
      {% endif %}
    </gmd:contentInfo>

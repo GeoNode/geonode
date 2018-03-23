@@ -159,6 +159,9 @@ class Layer(ResourceBase):
     def is_vector(self):
         return self.storeType == 'dataStore'
 
+    def get_upload_session(self):
+        return self.upload_session
+
     @property
     def display_type(self):
         return ({
@@ -507,6 +510,8 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_x1 = instance.resourcebase_ptr.bbox_x1
         instance.bbox_y0 = instance.resourcebase_ptr.bbox_y0
         instance.bbox_y1 = instance.resourcebase_ptr.bbox_y1
+        instance.srid = instance.resourcebase_ptr.srid
+        instance.srid_url = instance.resourcebase_ptr.srid_url
 
     if instance.abstract == '' or instance.abstract is None:
         instance.abstract = unicode(_('No abstract provided'))
@@ -556,7 +561,7 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_y0,
         instance.bbox_y1]
 
-    instance.set_bounds_from_bbox(bbox)
+    instance.set_bounds_from_bbox(bbox, instance.srid)
 
 
 def pre_delete_layer(instance, sender, **kwargs):

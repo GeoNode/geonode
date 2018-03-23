@@ -25,17 +25,19 @@ try:
 except ImportError:
     from django.core.urlresolvers import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 from .forms import GeoNodeInviteForm
 from invitations import signals
 from invitations.views import SendInvite
 from invitations.utils import get_invitation_model
 from invitations.adapters import get_invitations_adapter
+from geonode.decorators import view_decorator, superuser_only
 
 Invitation = get_invitation_model()
 
 
+@view_decorator(superuser_only, subclass=True)
 class GeoNodeSendInvite(SendInvite):
     template_name = 'invitations/forms/_invite.html'
     form_class = GeoNodeInviteForm

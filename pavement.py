@@ -641,7 +641,7 @@ def start_geoserver(options):
                 javapath = 'START /B "" "' + javapath_opt + '"'
 
             sh((
-                '%(javapath)s -Xms512m -Xmx1024m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=256m'
+                '%(javapath)s -Xms512m -Xmx2048m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=512m'
                 ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
                 ' -Dgeofence.dir=%(geofence_dir)s'
                 # ' -Dgeofence-ovr=geofence-datasource-ovr.properties'
@@ -779,8 +779,7 @@ def test_integration(options):
             sh('sleep 30')
             settings = 'REUSE_DB=1 %s' % settings
 
-        sh(('%s python manage.py test %s'
-            ' --noinput --liveserver=0.0.0.0:8000' % (settings, name)))
+        sh(('%s python manage.py test %s --noinput' % (settings, name)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -821,8 +820,7 @@ def run_tests(options):
                   options={'name': 'geonode.upload.tests.integration',
                            'settings': 'geonode.upload.tests.test_settings'})
 
-    # AF: Getting timeout currently
-    # TODO call_task('test_bdd', options={'local': local})
+    call_task('test_bdd', options={'local': local})
     sh('flake8 geonode')
 
 

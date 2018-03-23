@@ -432,7 +432,7 @@ def remove_object_permissions(instance):
                     headers=headers,
                     auth=HTTPBasicAuth(user, passwd)
                 )
-                if (r.status_code >= 200):
+                if (r.status_code >= 200 and r.status_code < 300):
                     gs_rules = r.json()
                     r_ids = []
                     if gs_rules and gs_rules['rules']:

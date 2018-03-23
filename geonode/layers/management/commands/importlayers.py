@@ -19,7 +19,6 @@
 #########################################################################
 
 from django.core.management.base import BaseCommand
-from optparse import make_option
 from geonode.layers.utils import upload
 from geonode.people.utils import get_valid_user
 import traceback
@@ -31,91 +30,96 @@ class Command(BaseCommand):
             " GeoNode site.  Layers are added to the Django database, the"
             " GeoServer configuration, and the pycsw metadata index.")
 
-    args = 'path [path...]'
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('path', nargs='*', help='path [path...]')
 
-    option_list = BaseCommand.option_list + (
-        make_option(
+        # Named (optional) arguments
+        parser.add_argument(
             '-u',
             '--user',
             dest="user",
             default=None,
-            help="Name of the user account which should own the imported layers"),
-        make_option(
+            help="Name of the user account which should own the imported layers")
+
+        parser.add_argument(
             '-i',
             '--ignore-errors',
             action='store_true',
             dest='ignore_errors',
             default=False,
-            help='Stop after any errors are encountered.'),
-        make_option(
+            help='Stop after any errors are encountered.')
+
+        parser.add_argument(
             '-o',
             '--overwrite',
             dest='overwrite',
             default=False,
             action="store_true",
-            help="Overwrite existing layers if discovered (defaults False)"),
-        make_option(
+            help="Overwrite existing layers if discovered (defaults False)")
+
+        parser.add_argument(
             '-k',
             '--keywords',
             dest='keywords',
             default="",
             help=("The default keywords, separated by comma, for the imported"
                   " layer(s). Will be the same for all imported layers"
-                  " if multiple imports are done in one command")
-        ),
-        make_option(
+                  " if multiple imports are done in one command"))
+
+        parser.add_argument(
             '-l',
             '--license',
             dest='license',
             default=None,
             help=("The license for the imported layer(s). Will be the same for"
                   " all imported layers if multiple imports are done"
-                  " in one command")
-        ),
-        make_option(
+                  " in one command"))
+
+        parser.add_argument(
             '-c',
             '--category',
             dest='category',
             default=None,
             help=("The category for the imported layer(s). Will be the same"
                   " for all imported layers if multiple imports are done"
-                  " in one command")
-        ),
-        make_option(
+                  " in one command"))
+
+        parser.add_argument(
             '-r',
             '--regions',
             dest='regions',
             default="",
             help=("The default regions, separated by comma, for the imported"
                   " layer(s). Will be the same for all imported layers if"
-                  " multiple imports are done in one command")
-        ),
-        make_option(
+                  " multiple imports are done in one command"))
+
+        parser.add_argument(
             '-n',
             '--name',
             dest='layername',
             default=None,
-            help="The name for the imported layer(s). Can not be used with multiple imports"
-        ),
-        make_option(
+            help="The name for the imported layer(s). Can not be used with multiple imports")
+
+        parser.add_argument(
             '-t',
             '--title',
             dest='title',
             default=None,
             help=("The title for the imported layer(s). Will be the same for"
                   " all imported layers if multiple imports are done"
-                  " in one command")
-        ),
-        make_option(
+                  " in one command"))
+
+        parser.add_argument(
             '-a',
             '--abstract',
             dest='abstract',
             default=None,
             help=("The abstract for the imported layer(s). Will be the same for"
                   "all imported layers if multiple imports are done"
-                  "in one command")
-        ),
-        make_option(
+                  "in one command"))
+
+        parser.add_argument(
             '-d',
             '--date',
             dest='date',
@@ -123,32 +127,30 @@ class Command(BaseCommand):
             help=('The date and time for the imported layer(s). Will be the '
                   'same for all imported layers if multiple imports are done '
                   'in one command. Use quotes to specify both the date and '
-                  'time in the format \'YYYY-MM-DD HH:MM:SS\'.')
-        ),
-        make_option(
+                  'time in the format \'YYYY-MM-DD HH:MM:SS\'.'))
+
+        parser.add_argument(
             '-p',
             '--private',
             dest='private',
             default=False,
             action="store_true",
-            help="Make layer viewable only to owner"
-        ),
-        make_option(
+            help="Make layer viewable only to owner")
+
+        parser.add_argument(
             '-m',
             '--metadata_uploaded_preserve',
             dest='metadata_uploaded_preserve',
             default=False,
             action="store_true",
-            help="Force metadata XML to be preserved"
-        ),
-        make_option(
+            help="Force metadata XML to be preserved")
+
+        parser.add_argument(
             '-C',
             '--charset',
             dest='charset',
             default='UTF-8',
-            help=("Specify the charset of the data")
-        )
-    )
+            help=("Specify the charset of the data"))
 
     def handle(self, *args, **options):
         verbosity = int(options.get('verbosity'))
@@ -189,7 +191,8 @@ class Command(BaseCommand):
             regions = map(str.strip, regions)
         start = datetime.datetime.now()
         output = []
-        for path in args:
+
+        for path in options['path']:
             out = upload(
                 path,
                 user=user,

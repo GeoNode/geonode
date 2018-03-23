@@ -53,11 +53,12 @@ setup(name='GeoNode',
             "Pillow<=3.3.1",  # python-imaging (3.1.2) - python-pillow (3.3.1 in our ppa)
             "lxml<=3.8.0",  # python-lxml (3.6.2 in our ppa) FIXME
             "psycopg2<=2.7.3.1",  # python-psycopg2 (2.7.3.1 in our ppa)
-            "Django<=1.8.19",  # python-django (1.8.18 in our ppa) FIXME
+            "Django==1.11.11",  # python-django (1.8.18 in our ppa) FIXME
 
             # Other
             "amqp<=2.2.2",  # (python-amqp 2.2.2 in our ppa)
             "anyjson<=0.3.3",  # (python-anyjson 0.3.3 in our ppa)
+            "arcrest==10.3",  # TODO
             "arrow==0.12.1",  # TODO
             "attrs==17.4.0",  # TODO
             "PyYAML<=3.12",  # (python-pyyaml 3.12 in out ppa)
@@ -114,8 +115,8 @@ setup(name='GeoNode',
 
             # geopython dependencies
             "pyproj>=1.9.5,<=1.9.5.1",  # python-pyproj (1.9.5.1)
-            "OWSLib>=0.10.3,<=0.15.0",  # python-owslib (0.15.0 in our ppa) FIXME
-            "pycsw>=1.10.1,<=2.0.3",  # python-pycsw (1.10.1, 2.0.0, 2.0.3 in our ppa)
+            "OWSLib==0.16.0",  # python-owslib (0.15.0 in our ppa) FIXME
+            "pycsw==2.2.0",  # python-pycsw (1.10.1, 2.0.0, 2.0.3 in our ppa) FIXME
             "%s" % shapely_dep,  # python-shapely (1.5.13)
 
             # # Apps with packages provided in GeoNode's PPA on Launchpad.
@@ -179,7 +180,7 @@ setup(name='GeoNode',
             "vine<=1.1.4",  # (1.1.4 in our ppa)
             "xlrd<=1.1.0",  # (0.9.4 in ppa) FIXME
             "xlwt<=1.3.0",  # (0.7.5 in ppa) FIXME
-            "xmltodict<=0.9.2",  # (0.9.2 in ppa)
+            "xmltodict<=0.10.2",  # (0.9.2 in ppa) FIXME
             "funcsigs<=1.0.2",  # (0.4 in ppa) FIXME
             "geolinks<=0.2.0",  # python-geolinks (0.2.0 in ppa)
             "idna<=2.6",  # (2.0 in ppa) FIXME
@@ -200,6 +201,7 @@ setup(name='GeoNode',
             "requests<=2.18.4",
             "simplejson<=3.13.2",  # (3.8.1 in ppa) FIXME
             "tablib<=0.12.1",  # (0.9.11 in ppa) FIXME
+            "timeout-decorator==0.4.0",  # TODO
             "typing<=3.6.4",  # TODO
 
             "psutil",  # (3.4.2 in ppa) FIXME
@@ -211,12 +213,18 @@ setup(name='GeoNode',
             "xmljson",  # python-xmljson (0.1.9 in our ppa)
 
             # tests
-            "coverage<=4.4.1",
+            "coverage<=4.5.1",
             "factory-boy<=2.9.2",
             "Faker<=0.8.4",
-            "pytest",
-            "pytest-bdd<=2.5.0",  # latest requires six>=1.11.0
-            "pytest-splinter",
+            "more-itertools==4.1.0",
+            "parse==1.8.2",
+            "parse-type==0.4.1",
+            "py==1.5.3",
+            "pytest==3.5.0",
+            "pytest-bdd==2.20.0",
+            "pytest-splinter==1.8.5",
+            "pytest-django==3.1.2",
+            "setuptools==39.0.1",
       ],
       zip_safe=False
       )

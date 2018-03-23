@@ -68,7 +68,7 @@ else:
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
-os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
+DJANGO_LIVE_TEST_SERVER_ADDRESS = 'localhost:8000'
 
 if os.getenv('DOCKER_ENV'):
     ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
@@ -201,6 +201,15 @@ EXTRA_LANG_INFO = {
 
 
 AUTH_USER_MODEL = os.getenv('AUTH_USER_MODEL', 'people.Profile')
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.SHA1PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    # 'django.contrib.auth.hashers.Argon2PasswordHasher',
+    # 'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    # 'django.contrib.auth.hashers.BCryptPasswordHasher',
+]
 
 MODELTRANSLATION_LANGUAGES = ['en', ]
 
@@ -381,7 +390,7 @@ INSTALLED_APPS = (
     'announcements',
     'actstream',
     'user_messages',
-    # 'tastypie',
+    'tastypie',
     'polymorphic',
     'guardian',
     'oauth2_provider',
@@ -426,8 +435,16 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
+        # 'celery': {
+        #     'level': 'ERROR',
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'filename': 'celery.log',
+        #     'formatter': 'simple',
+        #     'maxBytes': 1024 * 1024 * 10,  # 10 mb
+        # },
         'mail_admins': {
-            'level': 'ERROR', 'filters': ['require_debug_false'],
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
@@ -444,6 +461,8 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
+        # "celery": {
+        #     'handlers': ['celery', 'console'], 'level': 'ERROR', },
     },
 }
 
@@ -683,6 +702,7 @@ OGC_SERVER = {
         # 'datastore',
         'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE', ''),
         'PG_GEOGIG': False,
+        #'CACHE': ".cache"  # local cache file to for HTTP requests
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }
@@ -755,6 +775,23 @@ PYCSW = {
         #    'pretty_print': 'true',
         #    'federatedcatalogues': 'http://catalog.data.gov/csw'
         # },
+        'server': {
+            'home': '.',
+            'url': CATALOGUE['default']['URL'],
+            'encoding': 'UTF-8',
+            'language': LANGUAGE_CODE,
+            'maxrecords': '20',
+            'pretty_print': 'true',
+            # 'domainquerytype': 'range',
+            'domaincounts': 'true',
+            'profiles': 'apiso,ebrim',
+        },
+        'manager': {
+            # authentication/authorization is handled by Django
+            'transactions': 'false',
+            'allowed_ips': '*',
+            # 'csw_harvest_pagesize': '10',
+        },
         'metadata:main': {
             'identification_title': 'GeoNode Catalogue',
             'identification_abstract': 'GeoNode is an open source platform' \
@@ -821,7 +858,7 @@ GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 # handle timestamps like 2017-05-30 16:04:00.719 UTC
 DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS +\
-    ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
+    ['%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z']
 
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
@@ -1146,19 +1183,64 @@ if NOTIFICATION_ENABLED:
 # but they should have separate setting anyway
 # use amqp:// for local rabbitmq server
 ASYNC_SIGNALS_BROKER_URL = 'memory://'
+BROKER_URL = os.environ.get('BROKER_URL', ASYNC_SIGNALS_BROKER_URL)
 
-CELERY_BROKER_URL = os.getenv('BROKER_URL', "amqp://")
-CELERY_RESULT_BACKEND = None
-CELERY_TASK_ALWAYS_EAGER = True  # set this to False in order to run async
-CELERY_TASK_IGNORE_RESULT = True
+# Disabling the heartbeat because workers seems often disabled in flower,
+# thanks to http://stackoverflow.com/a/14831904/654755
+BROKER_HEARTBEAT=0
+
+# Avoid long running and retried tasks to be run over-and-over again.
+BROKER_TRANSPORT_OPTIONS = {
+    'socket_timeout': 10,
+    'visibility_timeout': 86400
+}
+
+# CELERY_RESULT_BACKEND = BROKER_URL
+CELERY_RESULT_PERSISTENT = False
+
+# Allow to recover from any unknown crash.
+CELERY_ACKS_LATE = True
+
+# Set this to False in order to run async
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_IGNORE_RESULT = False
+
+# Set Tasks Queues
+CELERY_TASK_SERIALIZER = 'json'
 CELERY_TASK_DEFAULT_QUEUE = "default"
 CELERY_TASK_DEFAULT_EXCHANGE = "default"
 CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
 CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
 CELERY_TASK_CREATE_MISSING_QUEUES = True
-CELERY_TASK_RESULT_EXPIRES = 1
+# Half a day is enough
+CELERY_TASK_RESULT_EXPIRES = 43200
+
+# Sometimes, Ask asks us to enable this to debug issues.
+# BTW, it will save some CPU cycles.
+CELERY_DISABLE_RATE_LIMITS = True
+CELERY_SEND_TASK_EVENTS = False
 CELERY_WORKER_DISABLE_RATE_LIMITS = True
 CELERY_WORKER_SEND_TASK_EVENTS = False
+
+# Allow our remote workers to get tasks faster if they have a
+# slow internet connection (yes Gurney, I'm thinking of you).
+CELERY_MESSAGE_COMPRESSION = 'gzip'
+
+# The default beiing 5000, we need more than this.
+CELERY_MAX_CACHED_RESULTS = 32768
+
+# NOTE: I don't know if this is compatible with upstart.
+CELERYD_POOL_RESTARTS = True
+
+# I use these to debug kombu crashes; we get a more informative message.
+#CELERY_TASK_SERIALIZER = 'json'
+#CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_TRACK_STARTED = True
+CELERY_SEND_TASK_SENT_EVENT = True
+
+# Disabled by default and I like it, because we use Sentry for this.
+#CELERY_SEND_TASK_ERROR_EMAILS = False
 
 CELERY_QUEUES = [
     Queue('default', routing_key='default'),

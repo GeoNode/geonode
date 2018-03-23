@@ -75,7 +75,7 @@ def create_postgis_shard(db_name, shard_strategy):
     """
     shardatabase, created = Database.objects.get_or_create(name=db_name, strategy_type=shard_strategy)
     if created:
-        logger.info("Creating a new PostGIS datatase: %s" % db_name)
+        logger.debug("Creating a new PostGIS datatase: %s" % db_name)
         try:
             datastore_db = dj_database_url.parse(settings.DATASTORE_URL)
             user = datastore_db['USER']
@@ -97,7 +97,6 @@ def create_postgis_shard(db_name, shard_strategy):
             conn.commit()
             conn.close()
         except Exception as e:
-            print str(e)
             logger.error(
                 "Error creating PostGIS database shard %s: %s" % (db_name, str(e)))
         finally:
@@ -113,7 +112,7 @@ def drop_postgis_shard(db_name):
     Drop a PostGIS shard database by name.
     """
     Database.objects.filter(name=db_name).delete()
-    logger.info("Dropping PostGIS datatase shard: %s" % db_name)
+    logger.debug("Dropping PostGIS datatase shard: %s" % db_name)
     try:
         datastore_db = dj_database_url.parse(settings.DATASTORE_URL)
         user = datastore_db['USER']
@@ -127,7 +126,6 @@ def drop_postgis_shard(db_name):
         cur.close()
         conn.close()
     except Exception as e:
-        print str(e)
         logger.error(
             "Error dropping PostGIS database shard %s: %s" % (db_name, str(e)))
     finally:

@@ -21,7 +21,6 @@
 import logging
 
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.urlresolvers import reverse
@@ -34,6 +33,7 @@ from django.template import loader
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import requires_csrf_token
 from django.views.decorators.cache import cache_control
+from geonode.decorators import superuser_only
 from geonode.security.views import _perms_info_json
 from geonode.layers.models import Layer
 from geonode.proxy.views import proxy
@@ -64,7 +64,6 @@ def service_proxy(request, service_id):
     return proxy(request, url=service_url, sec_chk_hosts=False)
 
 
-@login_required
 def services(request):
     """This view shows the list of all registered services"""
     return render(
@@ -74,7 +73,7 @@ def services(request):
     )
 
 
-@login_required
+@superuser_only
 def register_service(request):
     service_register_template = "services/service_register.html"
     if request.method == "POST":
@@ -127,7 +126,7 @@ def _get_service_handler(request, service):
     return service_handler
 
 
-@login_required()
+@superuser_only
 def harvest_resources(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
     try:
@@ -140,9 +139,9 @@ def harvest_resources(request, service_id):
     is_sync = getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False)
     if request.method == "GET":
         already_harvested = HarvestJob.objects.values_list(
-            "resource_id", flat=True).filter(service=service)
+            "resource_id", flat=True).filter(service=service, status=enumerations.PROCESSED)
         not_yet_harvested = [
-            r for r in available_resources if r.id not in already_harvested]
+            r for r in available_resources if str(r.id) not in already_harvested]
         not_yet_harvested.sort(key=lambda resource: resource.id)
         paginator = Paginator(
             not_yet_harvested, getattr(settings, "CLIENT_RESULTS_LIMIT", 100))
@@ -171,9 +170,9 @@ def harvest_resources(request, service_id):
             logger.debug("id: {}".format(id))
             harvest_job, created = HarvestJob.objects.get_or_create(
                 service=service,
-                resource_id=id,
+                resource_id=id
             )
-            if created:
+            if created or harvest_job.status != enumerations.PROCESSED:
                 resources_to_harvest.append(id)
                 tasks.harvest_resource.apply_async((harvest_job.id,))
             else:
@@ -196,7 +195,7 @@ def harvest_resources(request, service_id):
     return result
 
 
-@login_required()
+@superuser_only
 def harvest_single_resource(request, service_id, resource_id):
     service = get_object_or_404(Service, pk=service_id)
     handler = _get_service_handler(request, service)
@@ -225,14 +224,14 @@ def harvest_single_resource(request, service_id, resource_id):
 
 
 def _gen_harvestable_ids(requested_ids, available_resources):
-    available_resource_ids = [r.id for r in available_resources]
+    available_resource_ids = [str(r.id) for r in available_resources]
     for id in requested_ids:
         identifier = str(id)
         if identifier in available_resource_ids:
             yield identifier
 
 
-@login_required
+@superuser_only
 def rescan_service(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
     try:
@@ -243,7 +242,7 @@ def rescan_service(request, service_id):
             "services/remote_service_unavailable.html",
             {"service": service}
         )
-    print("Finished rescaning service. About to redirect back...")
+    logger.debug("Finished rescaning service. About to redirect back...")
     messages.add_message(
         request, messages.SUCCESS, _("Service rescanned successfully"))
     return redirect(
@@ -303,7 +302,7 @@ def service_detail(request, service_id):
     )
 
 
-@login_required
+@superuser_only
 def edit_service(request, service_id):
     """
     Edit an existing Service
@@ -329,7 +328,7 @@ def edit_service(request, service_id):
                   context={"service": service_obj, "service_form": service_form})
 
 
-@login_required
+@superuser_only
 def remove_service(request, service_id):
     """Delete a service and its constituent layers"""
     service = get_object_or_404(Service, pk=service_id)

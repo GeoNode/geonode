@@ -48,13 +48,14 @@ from django.views.decorators.http import require_http_methods
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.layers.views import _resolve_layer
-from geonode.utils import forward_mercator, llbbox_to_mercator, \
-    check_ogc_backend
-from geonode.utils import DEFAULT_TITLE
-from geonode.utils import DEFAULT_ABSTRACT
-from geonode.utils import default_map_config
-from geonode.utils import resolve_object
-from geonode.utils import layer_from_viewer_config
+from geonode.utils import (DEFAULT_TITLE,
+                           DEFAULT_ABSTRACT,
+                           forward_mercator,
+                           llbbox_to_mercator,
+                           default_map_config,
+                           resolve_object,
+                           layer_from_viewer_config,
+                           check_ogc_backend)
 from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
 from geonode.base.forms import CategoryForm
@@ -255,7 +256,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
                     build_slack_message_map(
                         "map_edit", the_map))
             except BaseException:
-                print "Could not send slack message for modified map."
+                logger.error("Could not send slack message for modified map.")
 
         return HttpResponseRedirect(
             reverse(
@@ -372,7 +373,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
                 from geonode.contrib.slack.utils import build_slack_message_map
                 slack_message = build_slack_message_map("map_delete", map_obj)
             except BaseException:
-                print "Could not build slack message for delete map."
+                logger.error("Could not build slack message for delete map.")
 
             delete_map.delay(object_id=map_obj.id)
 
@@ -380,7 +381,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
                 from geonode.contrib.slack.utils import send_slack_messages
                 send_slack_messages(slack_message)
             except BaseException:
-                print "Could not send slack message for delete map."
+                logger.error("Could not send slack message for delete map.")
 
         else:
             delete_map.delay(object_id=map_obj.id)
@@ -985,12 +986,10 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
 
-        if 'geonode.geoserver' in settings.INSTALLED_APPS \
-                and ogc_server_settings.BACKEND == 'geonode.geoserver':
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # TODO the url needs to be verified on geoserver
             url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        elif 'geonode.qgis_server' in settings.INSTALLED_APPS \
-                and ogc_server_settings.BACKEND == 'geonode.qgis_server':
+        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
             url = urljoin(settings.SITEURL,
                           reverse("qgis_server:download-map", kwargs={'mapid': mapid}))
             # qgis-server backend stop here, continue on qgis_server/views.py
@@ -1060,7 +1059,7 @@ def map_download_check(request):
             status = 400
     except ValueError:
         # TODO: Is there any useful context we could include in this log?
-        logger.warn(
+        logger.warning(
             "User tried to check status, but has no download in progress.")
     return HttpResponse(content=content, status=status)
 

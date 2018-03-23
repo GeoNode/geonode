@@ -1,7 +1,9 @@
-Django==1.8.19
+Django==1.11.11
+Shapely==1.5.17
 six==1.10.0
 amqp==2.2.2
 anyjson==0.3.3
+arcrest==10.3
 arrow==0.12.1
 attrs==17.4.0
 autoflake==0.7
@@ -16,7 +18,7 @@ chardet==3.0.4
 click==6.7
 coreapi==2.3.3
 coreschema==0.0.4
-coverage==4.4.1
+coverage==4.5.1
 decorator==4.1.2
 diff-match-patch==20121119
 dj-database-url==0.4.2
@@ -31,8 +33,6 @@ django-autoslug==1.9.3
 django-basic-authentication-decorator==0.9
 django-bootstrap-form==3.3
 django-bootstrap3-datetimepicker-2==2.5.0
-django-forms-bootstrap==3.1.0
-
 django-braces==1.12.0
 django-celery-beat==1.1.1
 django-celery-results==1.0.1
@@ -42,8 +42,8 @@ django-downloadview==1.9
 django-extensions==2.0.3
 django-filter==1.1.0
 django-floppyforms==1.7.0
-
-django-geoexplorer==4.0.38
+django-forms-bootstrap==3.1.0
+django-geoexplorer==4.0.39
 django-geonode-client==1.0.0
 django-guardian==1.4.9
 django-haystack==2.8.0
@@ -58,7 +58,7 @@ django-modeltranslation==0.12.2
 django-mptt==0.9.0
 django-multi-email-field==0.5.1
 django-nose==1.4.5
-django-oauth-toolkit<1.0
+django-oauth-toolkit==0.12.0
 django-polymorphic==1.3
 django-rest-swagger==2.1.2
 django-reversion==2.0.13
@@ -98,7 +98,7 @@ itypes==1.1.0
 jdcal==1.3
 Jinja2==2.10
 kombu==4.1.0
-lxml==3.8.0
+lxml==3.6.2
 Mako==1.0.7
 MarkupSafe==1.0
 mccabe==0.4.0
@@ -110,7 +110,7 @@ oauthlib==2.0.6
 odfpy==1.3.6
 openapi-codec==1.3.2
 openpyxl==2.5.0
-OWSLib==0.15.0
+OWSLib==0.16.0
 Paver==1.2.4
 pbr==3.1.1
 pep8==1.7.1
@@ -124,16 +124,19 @@ pluggy==0.6.0
 proj==0.1.0
 psutil==5.4.3
 psycopg2==2.7.3.1
-py==1.5.2
-pycsw==2.0.3
+py==1.5.3
+pycsw==2.2.0
 pyelasticsearch==0.6.1
 pyflakes==1.6.0
 pyproj==1.9.5.1
 pyshp==1.2.12
-pytest==2.9.0 # latest fails with bdd library at 2.5.0
-pytest-bdd==2.5.0 # latest requires six>=1.11.0
-pytest-splinter
-pytest-django
+pytest==3.5.0
+pytest-bdd==2.20.0
+pytest-splinter==1.8.5
+pytest-django==3.1.2
+parse==1.8.2
+parse-type==0.4.1
+setuptools==39.0.1
 python-dateutil==2.6.1
 python-gnupg==0.4.1
 python-memcached==1.59
@@ -150,6 +153,7 @@ simplejson==3.13.2
 splinter==0.7.7
 SQLAlchemy==1.1.14
 tablib==0.12.1
+timeout-decorator==0.4.0
 transifex-client==0.12.4
 typing==3.6.4
 ua-parser==0.7.3
@@ -162,4 +166,4 @@ vine==1.1.4
 xlrd==1.1.0
 xlwt==1.3.0
 xmljson==0.1.9
-xmltodict==0.9.2
+xmltodict==0.10.2

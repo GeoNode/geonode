@@ -446,7 +446,7 @@ community."
         response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
         # self.assertEquals(response['Location'], '/maps/')
-        self.assertEquals(response['Location'], 'http://testserver/maps/')
+        self.assertEquals(response['Location'], '/maps/')
 
         # After removal, map is not existent
         response = self.client.get(url)
@@ -760,7 +760,8 @@ community."
         self.assertEquals(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertTrue(region in resource.regions.all())
+            if resource.regions.all():
+                self.assertTrue(region in resource.regions.all())
         # test date change
         date = datetime.now()
         response = self.client.post(

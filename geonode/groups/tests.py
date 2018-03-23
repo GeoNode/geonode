@@ -616,6 +616,9 @@ class GroupCategoriesTestCase(TestCase):
         u = User.objects.create(username='test')
         u.set_password('test')
         u.save()
+        User = get_user_model()
+        u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
+        u.save()
 
     def test_api(self):
         api_url = '/api/groupcategory/'
@@ -646,13 +649,21 @@ class GroupCategoriesTestCase(TestCase):
 
     def test_group_categories_add(self):
         view_url = reverse('group_category_create')
+        # Test that the view is protected to anonymous users
+        r = self.client.get(view_url)
+        self.assertEqual(r.status_code, 302)
+
+        # Test that the view is protected to non-admin users
+        self.client.login(username='test', password='test')
+        r = self.client.post(view_url)
+        self.assertEqual(r.status_code, 401)
+
+        # Test that the view is accessible to administrators
+        self.client.login(username='admin', password='admin')
         r = self.client.get(view_url)
         self.assertEqual(r.status_code, 200)
 
-        r = self.client.post(view_url)
-        self.assertEqual(r.status_code, 200)
-
-        self.client.login(username='test', password='test')
+        # Create e new category
         category = 'test #3 category'
         r = self.client.post(view_url, {'name': category})
 
