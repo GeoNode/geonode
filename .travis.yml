@@ -20,17 +20,16 @@ addons:
 
 env:
   - BACKEND: 'geonode.geoserver'
-  # AF: TODO QGIS Server does not start anymore
-  # - BACKEND: 'geonode.qgis_server'
-  #   DOCKER_COMPOSE_VERSION: 1.11.2
-  #   # This is qgis server address
-  #   QGIS_SERVER_URL: http://localhost:9000/
-  #   # This is the location of docker network bridge
-  #   # So QGIS server can access this address
-  #   SITEURL: http://localhost:8000/
-  #   QGIS_SERVER_PORT: 9000
-  #   ON_TRAVIS: True
-  #   CELERY_ALWAYS_EAGER: True
+  - BACKEND: 'geonode.qgis_server'
+    DOCKER_COMPOSE_VERSION: 1.11.2
+    # This is qgis server address
+    QGIS_SERVER_URL: http://localhost:9000/
+    # This is the location of docker network bridge
+    # So QGIS server can access this address
+    SITEURL: http://localhost:8000/
+    QGIS_SERVER_PORT: 9000
+    ON_TRAVIS: True
+    CELERY_ALWAYS_EAGER: True
 
 branches:
   only:
