@@ -19,7 +19,7 @@
 #########################################################################
 
 import os
-import sys
+# import sys
 from urlparse import urlparse
 
 import django
