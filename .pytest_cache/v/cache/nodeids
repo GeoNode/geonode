@@ -1,0 +1,4 @@
+[
+  "geonode/tests/bdd/e2e/test_login.py::test_user_can_access_login_page", 
+  "geonode/tests/bdd/e2e/test_login.py::test_admin_user"
+]

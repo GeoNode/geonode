@@ -53,7 +53,7 @@ class NotificationsAppConfigBase(AppConfig):
 
     def _register_notifications(self, *args, **kwargs):
         if has_notifications and notifications:
-            self._get_logger().info("Creating notifications")
+            self._get_logger().debug("Creating notifications")
             for label, display, description in self.NOTIFICATIONS:
                 notifications.models.NoticeType.create(
                     label, display, description)

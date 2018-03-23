@@ -47,7 +47,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from geoserver.catalog import Catalog, FailedRequestError
 from geoserver.resource import FeatureType, Coverage
 from geoserver.store import CoverageStore, DataStore, datastore_from_index, \
@@ -67,7 +67,6 @@ from geonode.security.views import _perms_info_json
 from geonode.utils import set_attributes
 import xml.etree.ElementTree as ET
 from django.utils.module_loading import import_string
-
 
 logger = logging.getLogger(__name__)
 
@@ -278,26 +277,26 @@ def get_sld_for(gs_catalog, layer):
 def fixup_style(cat, resource, style):
     logger.debug("Creating styles for layers associated with [%s]", resource)
     layers = cat.get_layers(resource=resource)
-    logger.info("Found %d layers associated with [%s]", len(layers), resource)
+    logger.debug("Found %d layers associated with [%s]", len(layers), resource)
     for lyr in layers:
         if lyr.default_style.name in _style_templates:
-            logger.info("%s uses a default style, generating a new one", lyr)
+            logger.debug("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
             if style is None:
                 sld = get_sld_for(cat, lyr)
             else:
                 sld = style.read()
-            logger.info("Creating style [%s]", name)
+            logger.debug("Creating style [%s]", name)
             style = cat.create_style(name, sld, overwrite=True, raw=True, workspace=settings.DEFAULT_WORKSPACE)
             style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
             lyr.default_style = style
-            logger.info("Saving changes to %s", lyr)
+            logger.debug("Saving changes to %s", lyr)
             cat.save(lyr)
 
             # Invalidate GeoWebCache for the updated resource
             _invalidate_geowebcache_layer(resource)
 
-            logger.info("Successfully updated %s", lyr)
+            logger.debug("Successfully updated %s", lyr)
 
 
 def set_layer_style(saved_layer, title, sld, base_file=None):
@@ -361,7 +360,10 @@ def cascading_delete(cat, layer_name):
     try:
         if layer_name.find(':') != -1 and len(layer_name.split(':')) == 2:
             workspace, name = layer_name.split(':')
-            ws = cat.get_workspace(workspace)
+            try:
+                ws = cat.get_workspace(workspace)
+            except:
+                ws = settings.DEFAULT_WORKSPACE
             try:
                 store = get_store(cat, name, workspace=ws)
             except FailedRequestError:
@@ -391,7 +393,7 @@ def cascading_delete(cat, layer_name):
                    'to save information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer_name)
                    )
-            logger.warn(msg, e)
+            logger.warning(msg)
             return None
         else:
             raise e
@@ -424,7 +426,7 @@ def cascading_delete(cat, layer_name):
         for s in styles:
             if s is not None and s.name not in _default_style_names:
                 try:
-                    logger.info("Trying to delete Style [%s]" % s.name)
+                    logger.debug("Trying to delete Style [%s]" % s.name)
                     cat.delete(s, purge='true')
                     workspace, name = layer_name.split(':')
                 except FailedRequestError as e:
@@ -452,7 +454,7 @@ def cascading_delete(cat, layer_name):
         else:
             if store.resource_type == 'coverageStore':
                 try:
-                    logger.info(" - Going to purge the " + store.resource_type + " : " + store.href)
+                    logger.debug(" - Going to purge the " + store.resource_type + " : " + store.href)
                     cat.reset()  # this resets the coverage readers and unlocks the files
                     cat.delete(store, purge='all', recurse=True)
                     # cat.reload()  # this preservers the integrity of geoserver
@@ -607,10 +609,11 @@ def gs_slurp(
                 "abstract": resource.abstract or unicode(_('No abstract provided')).encode('utf-8'),
                 "owner": owner,
                 "uuid": str(uuid.uuid4()),
-                "bbox_x0": Decimal(resource.latlon_bbox[0]),
-                "bbox_x1": Decimal(resource.latlon_bbox[1]),
-                "bbox_y0": Decimal(resource.latlon_bbox[2]),
-                "bbox_y1": Decimal(resource.latlon_bbox[3])
+                "bbox_x0": Decimal(resource.native_bbox[0]),
+                "bbox_x1": Decimal(resource.native_bbox[1]),
+                "bbox_y0": Decimal(resource.native_bbox[2]),
+                "bbox_y1": Decimal(resource.native_bbox[3]),
+                "srid": resource.native_bbox[-1]
             })
 
             # sync permissions in GeoFence
@@ -1151,7 +1154,10 @@ def get_store(cat, name, workspace=None):
     # Make sure workspace is a workspace object and not a string.
     # If the workspace does not exist, continue as if no workspace had been defined.
     if isinstance(workspace, basestring):
-        workspace = cat.get_workspace(workspace)
+        try:
+            workspace = cat.get_workspace(workspace)
+        except:
+            workspace = None
 
     if workspace is None:
         workspace = cat.get_default_workspace()
@@ -1323,6 +1329,8 @@ class OGC_Servers_Handler(object):
         server.setdefault('PASSWORD', 'geoserver')
         server.setdefault('DATASTORE', str())
         server.setdefault('GEOGIG_DATASTORE_DIR', str())
+        server.setdefault('CACHE', None)
+        server.setdefault('TIMEOUT', 10)
 
         for option in ['MAPFISH_PRINT_ENABLED', 'PRINT_NG_ENABLED', 'GEONODE_SECURITY_ENABLED',
                        'GEOFENCE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:
@@ -1356,7 +1364,7 @@ def get_wms():
     wms_url = ogc_server_settings.internal_ows + \
         "?service=WMS&request=GetCapabilities&version=1.1.0"
     netloc = urlparse(wms_url).netloc
-    http = httplib2.Http()
+    http = httplib2.Http(cache=ogc_server_settings.CACHE, timeout=ogc_server_settings.TIMEOUT)
     http.add_credentials(_user, _password)
     http.authorizations.append(
         httplib2.BasicAuthentication(
@@ -1435,7 +1443,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
 
 
 def _invalidate_geowebcache_layer(layer_name, url=None):
-    http = httplib2.Http()
+    http = httplib2.Http(cache=ogc_server_settings.CACHE, timeout=ogc_server_settings.TIMEOUT)
     username, password = ogc_server_settings.credentials
     auth = base64.encodestring(username + ':' + password)
     # http.add_credentials(username, password)
@@ -1589,7 +1597,7 @@ _wms = None
 _csw = None
 _user, _password = ogc_server_settings.credentials
 
-http_client = httplib2.Http()
+http_client = httplib2.Http(cache=ogc_server_settings.CACHE, timeout=ogc_server_settings.TIMEOUT)
 http_client.add_credentials(_user, _password)
 http_client.add_credentials(_user, _password)
 _netloc = urlparse(ogc_server_settings.LOCATION).netloc

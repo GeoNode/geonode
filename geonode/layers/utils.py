@@ -22,14 +22,14 @@
 """
 
 # Standard Modules
-import logging
 import re
 import os
 import glob
 import sys
+import logging
 
 from geonode.maps.models import Map
-from osgeo import gdal
+from osgeo import gdal, osr
 
 # Django functionality
 from django.contrib.auth import get_user_model
@@ -80,7 +80,6 @@ def _clean_string(
 
 
 def resolve_regions(regions):
-
     regions_resolved = []
     regions_unresolved = []
     if regions:
@@ -272,10 +271,10 @@ def get_valid_name(layer_name):
     while Layer.objects.filter(name=proposed_name).exists():
         proposed_name = "%s_%d" % (name, count)
         count = count + 1
-        logger.info('Requested name already used; adjusting name '
-                    '[%s] => [%s]', layer_name, proposed_name)
+        logger.warning('Requested name already used; adjusting name '
+                       '[%s] => [%s]', layer_name, proposed_name)
     else:
-        logger.info("Using name as requested")
+        logger.debug("Using name as requested")
 
     return proposed_name
 
@@ -341,16 +340,19 @@ def get_resolution(filename):
 def get_bbox(filename):
     """Return bbox in the format [xmin,xmax,ymin,ymax]."""
     from django.contrib.gis.gdal import DataSource
+    srid = None
     bbox_x0, bbox_y0, bbox_x1, bbox_y1 = None, None, None, None
 
     if is_vector(filename):
         datasource = DataSource(filename)
         layer = datasource[0]
         bbox_x0, bbox_y0, bbox_x1, bbox_y1 = layer.extent.tuple
-
+        srid = layer.srs.srid if layer.srs else 'EPSG:4326'
     elif is_raster(filename):
         gtif = gdal.Open(filename)
         gt = gtif.GetGeoTransform()
+        prj = gtif.GetProjection()
+        srs = osr.SpatialReference(wkt=prj)
         cols = gtif.RasterXSize
         rows = gtif.RasterYSize
 
@@ -373,8 +375,9 @@ def get_bbox(filename):
         bbox_y0 = min(ext[0][1], ext[2][1])
         bbox_x1 = max(ext[0][0], ext[2][0])
         bbox_y1 = max(ext[0][1], ext[2][1])
+        srid = srs.GetAuthorityCode(None) if srs else 'EPSG:4326'
 
-    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1]
+    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
 
 
 def file_upload(filename,
@@ -460,7 +463,9 @@ def file_upload(filename,
                 assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
     # Get a bounding box
-    bbox_x0, bbox_x1, bbox_y0, bbox_y1 = get_bbox(filename)
+    bbox_x0, bbox_x1, bbox_y0, bbox_y1, srid = get_bbox(filename)
+    if srid:
+        srid_url = "http://www.spatialreference.org/ref/" + srid.replace(':', '/').lower() + "/"  # noqa
 
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
     # must be set to False
@@ -480,6 +485,7 @@ def file_upload(filename,
         'bbox_x1': bbox_x1,
         'bbox_y0': bbox_y0,
         'bbox_y1': bbox_y1,
+        'srid': srid,
         'is_approved': is_approved,
         'is_published': is_published,
         'license': license,
@@ -526,7 +532,7 @@ def file_upload(filename,
                 regions_resolved.extend(nlp_metadata.get('regions', []))
                 keywords.extend(nlp_metadata.get('keywords', []))
         except BaseException:
-            print "NLP extraction failed."
+            logger.error("NLP extraction failed.")
 
     # If it is a vector file, create the layer in postgis.
     if is_vector(filename):
@@ -575,8 +581,10 @@ def file_upload(filename,
         defaults['bbox_x1'] = defaults.get('bbox_x1', None) or layer.bbox_x1
         defaults['bbox_y0'] = defaults.get('bbox_y0', None) or layer.bbox_y0
         defaults['bbox_y1'] = defaults.get('bbox_y1', None) or layer.bbox_y1
-        defaults['is_approved'] = defaults.get('is_approved', None) or layer.is_approved
-        defaults['is_published'] = defaults.get('is_published', None) or layer.is_published
+        defaults['is_approved'] = defaults.get(
+            'is_approved', None) or layer.is_approved
+        defaults['is_published'] = defaults.get(
+            'is_published', None) or layer.is_published
         defaults['license'] = defaults.get('license', None) or layer.license
         defaults['category'] = defaults.get('category', None) or layer.category
 
@@ -645,13 +653,18 @@ def file_upload(filename,
     if not to_update:
         pass
     else:
-        ResourceBase.objects.filter(
-            id=layer.resourcebase_ptr.id).update(
-            **to_update)
-        Layer.objects.filter(id=layer.id).update(**to_update)
+        try:
+            ResourceBase.objects.filter(
+                id=layer.resourcebase_ptr.id).update(
+                **to_update)
+            Layer.objects.filter(id=layer.id).update(**to_update)
 
-        # Refresh from DB
-        layer.refresh_from_db()
+            # Refresh from DB
+            layer.refresh_from_db()
+        except BaseException:
+            import traceback
+            tb = traceback.format_exc()
+            logger.error(tb)
 
     return layer
 
@@ -786,7 +799,7 @@ def upload(incoming, user=None, overwrite=False,
                             build_slack_message_layer(
                                 ("layer_new" if status == "created" else "layer_edit"), layer))
                     except BaseException:
-                        print "Could not send slack message."
+                        logger.error("Could not send slack message.")
 
             except Exception as e:
                 if ignore_errors:
@@ -867,14 +880,18 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 .update(thumbnail_url=thumbnail_remote_url)
 
             # Download thumbnail and save it locally.
-            resp, image = ogc_client.request(thumbnail_create_url)
-            if 'ServiceException' in image or \
-               resp.status < 200 or resp.status > 299:
+            try:
+                resp, image = ogc_client.request(thumbnail_create_url)
+                if 'ServiceException' in image or \
+                   resp.status < 200 or resp.status > 299:
                     msg = 'Unable to obtain thumbnail: %s' % image
-                    logger.debug(msg)
+                    raise Exception(msg)
+            except BaseException:
+                import traceback
+                logger.debug(traceback.format_exc())
 
-                    # Replace error message with None.
-                    image = None
+                # Replace error message with None.
+                image = None
 
         if image is not None:
             instance.save_thumbnail(thumbnail_name, image=image)
@@ -921,8 +938,12 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     _p = "&".join("%s=%s" % item for item in params.items())
 
     import posixpath
-    thumbnail_remote_url = posixpath.join(ogc_server_settings.PUBLIC_LOCATION, wms_endpoint) + "?" + _p
-    thumbnail_create_url = posixpath.join(ogc_server_settings.LOCATION, wms_endpoint) + "?" + _p
+    thumbnail_remote_url = posixpath.join(
+        ogc_server_settings.PUBLIC_LOCATION,
+        wms_endpoint) + "?" + _p
+    thumbnail_create_url = posixpath.join(
+        ogc_server_settings.LOCATION,
+        wms_endpoint) + "?" + _p
     create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
                      ogc_client=http_client, overwrite=overwrite, check_bbox=check_bbox)
 

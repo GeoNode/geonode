@@ -62,7 +62,7 @@ class LayersTest(TestCase):
     """Tests geonode.layers app/module
     """
 
-    fixtures = ['initial_data.json', 'bobby', 'user1']
+    fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
         self.user = 'admin'
@@ -736,7 +736,7 @@ class LayersTest(TestCase):
         response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
         # self.assertEquals(response['Location'], '/layers/')
-        self.assertEquals(response['Location'], 'http://testserver/layers/')
+        self.assertEquals(response['Location'], '/layers/')
 
         # test that the layer is actually removed
         self.assertEquals(Layer.objects.filter(pk=layer.pk).count(), 0)
@@ -767,7 +767,7 @@ class LayersTest(TestCase):
         response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
         # self.assertEquals(response['Location'], '/layers/')
-        self.assertEquals(response['Location'], 'http://testserver/layers/')
+        self.assertEquals(response['Location'], '/layers/')
 
         # test that the layer is actually removed
 
@@ -869,7 +869,8 @@ class LayersTest(TestCase):
         self.assertEquals(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertTrue(region in resource.regions.all())
+            if resource.regions.all():
+                self.assertTrue(region in resource.regions.all())
         # test date change
         date = datetime.now()
         response = self.client.post(
@@ -1073,7 +1074,13 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
     def testLayerNotifications(self):
         with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
             self.clear_notifications_queue()
-            l = Layer.objects.create(name='test notifications')
+            l = Layer.objects.create(
+                name='test notifications',
+                bbox_x0=-180,
+                bbox_x1=180,
+                bbox_y0=-90,
+                bbox_y1=90,
+                srid='EPSG:4326')
             l.name = 'test notifications 2'
             l.save()
             self.assertTrue(self.check_notification_out('layer_updated', self.u))

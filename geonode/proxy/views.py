@@ -18,18 +18,48 @@
 #
 #########################################################################
 
-from django.http import HttpResponse
+import os
+import re
+import json
+import shutil
+import logging
+import requests
+import tempfile
+import traceback
+
+from slugify import Slugify
 from httplib import HTTPConnection, HTTPSConnection
-from urlparse import urlsplit
+from urlparse import urlsplit, urljoin
 from django.conf import settings
+from django.http import HttpResponse
 from django.utils.http import is_safe_url
 from django.http.request import validate_host
 from django.views.decorators.csrf import requires_csrf_token
 from django.middleware.csrf import get_token
+from distutils.version import StrictVersion
+from django.utils.translation import ugettext as _
+from django.core.files.storage import default_storage as storage
+from geonode.base.models import Link
+from geonode.layers.models import Layer, LayerFile
+from geonode.utils import (resolve_object,
+                           check_ogc_backend,
+                           get_dir_time_suffix,
+                           zip_dir)
+from geonode import geoserver, qgis_server  # noqa
+
+TIMEOUT = 30
+
+logger = logging.getLogger(__name__)
+
+custom_slugify = Slugify(separator='_')
+
+ows_regexp = re.compile(
+    "^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
 
 
 @requires_csrf_token
-def proxy(request, url=None, response_callback=None, sec_chk_hosts=True, sec_chk_rules=True, **kwargs):
+def proxy(request, url=None, response_callback=None,
+          sec_chk_hosts=True, sec_chk_rules=True, **kwargs):
     # Security rules and settings
     PROXY_ALLOWED_HOSTS = getattr(settings, 'PROXY_ALLOWED_HOSTS', ())
 
@@ -41,6 +71,9 @@ def proxy(request, url=None, response_callback=None, sec_chk_hosts=True, sec_chk
                             )
 
     raw_url = url or request.GET['url']
+    raw_url = urljoin(
+        settings.SITEURL,
+        raw_url) if raw_url.startswith("/") else raw_url
     url = urlsplit(raw_url)
     locator = str(url.path)
     if url.query != "":
@@ -54,13 +87,29 @@ def proxy(request, url=None, response_callback=None, sec_chk_hosts=True, sec_chk
 
     # White-Black Listing Hosts
     if sec_chk_hosts and not settings.DEBUG:
-        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        site_url = urlsplit(settings.SITEURL)
+        if site_url.hostname not in PROXY_ALLOWED_HOSTS:
+            PROXY_ALLOWED_HOSTS += (site_url.hostname, )
+
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import ogc_server_settings
-            hostname = (ogc_server_settings.hostname,) if ogc_server_settings else ()
+            hostname = (
+                ogc_server_settings.hostname,
+            ) if ogc_server_settings else ()
             if hostname not in PROXY_ALLOWED_HOSTS:
                 PROXY_ALLOWED_HOSTS += hostname
 
-        if not validate_host(url.hostname, PROXY_ALLOWED_HOSTS):
+        if url.query and ows_regexp.match(url.query):
+            ows_tokens = ows_regexp.match(url.query).groups()
+            if len(ows_tokens) == 4 and 'version' == ows_tokens[0] and StrictVersion(
+                    ows_tokens[1]) >= StrictVersion("1.0.0") and StrictVersion(
+                        ows_tokens[1]) <= StrictVersion("3.0.0") and ows_tokens[2].lower() in (
+                            'getcapabilities') and ows_tokens[3].upper() in ('OWS', 'WCS', 'WFS', 'WMS', 'WPS', 'CSW'):
+                if url.hostname not in PROXY_ALLOWED_HOSTS:
+                    PROXY_ALLOWED_HOSTS += (url.hostname, )
+
+        if not validate_host(
+                url.hostname, PROXY_ALLOWED_HOSTS):
             return HttpResponse("DEBUG is set to False but the host of the path provided to the proxy service"
                                 " is not in the PROXY_ALLOWED_HOSTS setting.",
                                 status=403,
@@ -77,7 +126,8 @@ def proxy(request, url=None, response_callback=None, sec_chk_hosts=True, sec_chk
     cookies = None
     csrftoken = None
 
-    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(url=raw_url, host=url.hostname):
+    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(
+            url=raw_url, host=url.hostname):
         cookies = request.META["HTTP_COOKIE"]
 
     for cook in request.COOKIES:
@@ -115,9 +165,12 @@ def proxy(request, url=None, response_callback=None, sec_chk_hosts=True, sec_chk
             headers['Authorization'] = 'Bearer %s' % access_token
         if access_token and 'access_token' not in locator:
             query_separator = '&' if '?' in locator else '?'
-            locator = ('%s%saccess_token=%s' % (locator, query_separator, access_token))
+            locator = ('%s%saccess_token=%s' %
+                       (locator, query_separator, access_token))
     elif 'HTTP_AUTHORIZATION' in request.META:
-        auth = request.META.get('HTTP_AUTHORIZATION', request.META.get('HTTP_AUTHORIZATION2'))
+        auth = request.META.get(
+            'HTTP_AUTHORIZATION',
+            request.META.get('HTTP_AUTHORIZATION2'))
         if auth:
             headers['Authorization'] = auth
 
@@ -126,7 +179,8 @@ def proxy(request, url=None, response_callback=None, sec_chk_hosts=True, sec_chk
     pragma = "no-cache"
     referer = request.META[
         "HTTP_REFERER"] if "HTTP_REFERER" in request.META else \
-        "{scheme}://{netloc}/".format(scheme=site_url.scheme, netloc=site_url.netloc)
+        "{scheme}://{netloc}/".format(scheme=site_url.scheme,
+                                      netloc=site_url.netloc)
     encoding = request.META["HTTP_ACCEPT_ENCODING"] if "HTTP_ACCEPT_ENCODING" in request.META else "gzip"
 
     headers.update({"Pragma": pragma,
@@ -164,10 +218,10 @@ def proxy(request, url=None, response_callback=None, sec_chk_hosts=True, sec_chk
         # If we get a redirect, let's add a useful message.
         if status in (301, 302, 303, 307):
             _response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
-                                     'asked for a redirect to "%s"' % (url, response.getheader('Location'))),
+                                      'asked for a redirect to "%s"' % (url, response.getheader('Location'))),
                                      status=status,
                                      content_type=content_type
-                                    )
+                                     )
             _response['Location'] = response.getheader('Location')
             return _response
         else:
@@ -175,3 +229,117 @@ def proxy(request, url=None, response_callback=None, sec_chk_hosts=True, sec_chk
                 content=content,
                 status=status,
                 content_type=content_type)
+
+
+def download(request, resourceid, sender=Layer):
+
+    instance = resolve_object(request,
+                              sender,
+                              {'pk': resourceid},
+                              permission='base.download_resourcebase',
+                              permission_msg=_("You are not permitted to save or edit this resource."))
+
+    if isinstance(instance, Layer):
+        try:
+            upload_session = instance.get_upload_session()
+            layer_files = [item for idx, item in enumerate(LayerFile.objects.filter(upload_session=upload_session))]
+
+            # Create Target Folder
+            dirpath = tempfile.mkdtemp()
+            dir_time_suffix = get_dir_time_suffix()
+            target_folder = os.path.join(dirpath, dir_time_suffix)
+            if not os.path.exists(target_folder):
+                os.makedirs(target_folder)
+
+            # Copy all Layer related files into a temporary folder
+            for l in layer_files:
+                if storage.exists(l.file):
+                    geonode_layer_path = storage.path(l.file)
+                    base_filename, original_ext = os.path.splitext(geonode_layer_path)
+                    shutil.copy2(geonode_layer_path, target_folder)
+
+            # Let's check for associated SLD files (if any)
+            try:
+                for s in instance.styles.all():
+                    sld_file = os.path.join(target_folder, "".join([s.name, ".sld"]))
+                    sld_file = open(sld_file, "w")
+                    sld_file.write(s.sld_body.strip())
+                    sld_file.close()
+
+                    sld_file = open(sld_file, "w")
+                    try:
+                        response = requests.get(s.sld_url, timeout=TIMEOUT)
+                        sld_remote_content = response.text
+                        sld_file = os.path.join(target_folder, "".join([s.name, "_remote.sld"]))
+                        sld_file.write(sld_remote_content.strip())
+                    except:
+                        traceback.print_exc()
+                        tb = traceback.format_exc()
+                        logger.debug(tb)
+                    finally:
+                        sld_file.close()
+            except:
+                traceback.print_exc()
+                tb = traceback.format_exc()
+                logger.debug(tb)
+
+            # Let's dump metadata
+            target_md_folder = os.path.join(target_folder, ".metadata")
+            if not os.path.exists(target_md_folder):
+                os.makedirs(target_md_folder)
+
+            try:
+                links = Link.objects.filter(resource=instance.resourcebase_ptr)
+                for link in links:
+                    link_name = custom_slugify(link.name)
+                    link_file = os.path.join(target_md_folder, "".join([link_name, ".%s" % link.extension]))
+                    if link.link_type in ('metadata', 'data', 'image'):
+                        link_file = open(link_file, "wb")
+                        try:
+                            response = requests.get(link.url, stream=True, timeout=TIMEOUT)
+                            response.raw.decode_content = True
+                            shutil.copyfileobj(response.raw, link_file)
+                        except:
+                            traceback.print_exc()
+                            tb = traceback.format_exc()
+                            logger.debug(tb)
+                        finally:
+                            link_file.close()
+                    elif link.link_type.startswith('OGC'):
+                        link_file = open(link_file, "w")
+                        link_file.write(link.url.strip())
+                        link_file.close()
+            except:
+                traceback.print_exc()
+                tb = traceback.format_exc()
+                logger.debug(tb)
+
+            # ZIP everything and return
+            target_file_name = "".join([instance.name, ".zip"])
+            target_file = os.path.join(dirpath, target_file_name)
+            zip_dir(target_folder, target_file)
+            response = HttpResponse(
+                content=open(target_file),
+                status=200,
+                content_type="application/zip")
+            response['Content-Disposition'] = 'attachment; filename="%s"' % target_file_name
+            return response
+        except NotImplementedError:
+            traceback.print_exc()
+            tb = traceback.format_exc()
+            logger.debug(tb)
+            return HttpResponse(
+                json.dumps({
+                    'error': 'file_not_found'
+                }),
+                status=404,
+                content_type="application/json"
+            )
+
+    return HttpResponse(
+        json.dumps({
+            'error': 'unauthorized_request'
+        }),
+        status=403,
+        content_type="application/json"
+    )

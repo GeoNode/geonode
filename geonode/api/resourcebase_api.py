@@ -113,6 +113,18 @@ class CommonModelApi(ModelResource):
         'uuid',
         'title',
         'date',
+        'date_type',
+        'edition',
+        'purpose',
+        'maintenance_frequency',
+        'restriction_code_type',
+        'constraints_other',
+        'license',
+        'language',
+        'spatial_representation_type',
+        'temporal_extent_start',
+        'temporal_extent_end',
+        'data_quality_statement',
         'abstract',
         'csw_wkt_geometry',
         'csw_type',
@@ -120,6 +132,10 @@ class CommonModelApi(ModelResource):
         'share_count',
         'popular_count',
         'srid',
+        'bbox_x0',
+        'bbox_x1',
+        'bbox_y0',
+        'bbox_y1',
         'category__gn_description',
         'supplemental_information',
         'thumbnail_url',
@@ -723,6 +739,15 @@ class LayerResource(CommonModelApi):
                     bundle)
             # Add resource uri
             formatted_obj['resource_uri'] = self.get_resource_uri(bundle)
+
+            # Probe Remote Services
+            formatted_obj['store_type'] = 'dataset'
+            formatted_obj['online'] = True
+            if hasattr(obj, 'storeType'):
+                formatted_obj['store_type'] = obj.storeType
+                if obj.storeType == 'remoteStore' and hasattr(obj, 'remote_service'):
+                    formatted_obj['online'] = (obj.remote_service.probe == 200)
+
             # put the object on the response stack
             formatted_objects.append(formatted_obj)
         return formatted_objects
@@ -879,6 +904,10 @@ class MapResource(CommonModelApi):
             formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
             formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
 
+            # Probe Remote Services
+            formatted_obj['store_type'] = 'map'
+            formatted_obj['online'] = True
+
             # get map layers
             map_layers = obj.layers
             formatted_layers = []
@@ -940,6 +969,10 @@ class DocumentResource(CommonModelApi):
 
             formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
             formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
+
+            # Probe Remote Services
+            formatted_obj['store_type'] = 'dataset'
+            formatted_obj['online'] = True
 
             formatted_objects.append(formatted_obj)
         return formatted_objects

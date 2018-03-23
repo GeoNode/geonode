@@ -18,9 +18,9 @@
 #
 #########################################################################
 
-
 from functools import wraps
-
+from django.utils.decorators import classonlymethod
+from django.core.exceptions import PermissionDenied
 from geonode.utils import check_ogc_backend
 
 
@@ -46,3 +46,52 @@ def on_ogc_backend(backend_package):
         return wrapper
 
     return decorator
+
+
+def view_decorator(fdec, subclass=False):
+    """
+    Change a function decorator into a view decorator.
+
+    https://github.com/lqc/django/tree/cbvdecoration_ticket14512
+    """
+    def decorator(cls):
+        if not hasattr(cls, "as_view"):
+            raise TypeError(
+                "You should only decorate subclasses of View, not mixins.")
+        if subclass:
+            cls = type("%sWithDecorator(%s)" %
+                       (cls.__name__, fdec.__name__), (cls,), {})
+        original = cls.as_view.im_func
+
+        @wraps(original)
+        def as_view(current, **initkwargs):
+            return fdec(original(current, **initkwargs))
+        cls.as_view = classonlymethod(as_view)
+        return cls
+    return decorator
+
+
+def superuser_only(function):
+    """
+    Limit view to superusers only.
+
+    Usage:
+    --------------------------------------------------------------------------
+    @superuser_only
+    def my_view(request):
+        ...
+    --------------------------------------------------------------------------
+
+    or in urls:
+
+    --------------------------------------------------------------------------
+    urlpatterns = patterns('',
+        (r'^foobar/(.*)', is_staff(my_view)),
+    )
+    --------------------------------------------------------------------------
+    """
+    def _inner(request, *args, **kwargs):
+        if not request.user.is_superuser and not request.user.is_staff:
+            raise PermissionDenied
+        return function(request, *args, **kwargs)
+    return _inner

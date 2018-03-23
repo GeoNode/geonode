@@ -153,9 +153,9 @@ class Client(object):
         except urllib2.HTTPError as ex:
             if not debug:
                 raise
-            logger.info('error in request to %s' % path)
-            logger.info(ex.reason)
-            logger.info(ex.read())
+            logger.error('error in request to %s' % path)
+            logger.error(ex.reason)
+            logger.error(ex.read())
             raise
 
     def get(self, path, debug=True):
