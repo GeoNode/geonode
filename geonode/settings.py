@@ -68,7 +68,7 @@ else:
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
-os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
+DJANGO_LIVE_TEST_SERVER_ADDRESS = 'localhost:8000'
 
 if os.getenv('DOCKER_ENV'):
     ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))

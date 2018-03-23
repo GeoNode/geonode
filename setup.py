@@ -213,12 +213,18 @@ setup(name='GeoNode',
             "xmljson",  # python-xmljson (0.1.9 in our ppa)
 
             # tests
-            "coverage<=4.4.1",
+            "coverage<=4.5.1",
             "factory-boy<=2.9.2",
             "Faker<=0.8.4",
-            "pytest",
-            "pytest-bdd<=2.5.0",  # latest requires six>=1.11.0
-            "pytest-splinter",
+            "more-itertools==4.1.0",
+            "parse==1.8.2",
+            "parse-type==0.4.1",
+            "py==1.5.3",
+            "pytest==3.5.0",
+            "pytest-bdd==2.20.0",
+            "pytest-splinter==1.8.5",
+            "pytest-django==3.1.2",
+            "setuptools==39.0.1",
       ],
       zip_safe=False
       )

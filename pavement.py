@@ -820,8 +820,7 @@ def run_tests(options):
                   options={'name': 'geonode.upload.tests.integration',
                            'settings': 'geonode.upload.tests.test_settings'})
 
-    # AF: TODO - Test Server does not start anymore
-    # call_task('test_bdd', options={'local': local})
+    call_task('test_bdd', options={'local': local})
     sh('flake8 geonode')
 
 
