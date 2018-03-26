@@ -36,7 +36,7 @@ from urlparse import urljoin, urlsplit
 from django.db import models
 from django.core import serializers
 from django.db.models import Q, signals
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
@@ -1036,6 +1036,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """Determine if the thumbnail object exists and an image exists"""
         return self.link_set.filter(name='Thumbnail').exists()
 
+    # Note - you should probably broadcast layer#post_save() events to ensure
+    # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
         upload_to = 'thumbs/'
         upload_path = os.path.join('thumbs/', filename)
@@ -1057,14 +1059,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 '/')
             url = urljoin(settings.SITEURL, url_path)
 
-            Link.objects.get_or_create(resource=self,
-                                       url=url,
-                                       defaults=dict(
-                                           name='Thumbnail',
-                                           extension='png',
-                                           mime='image/png',
-                                           link_type='image',
-                                       ))
+            # should only have one 'Thumbnail' link
+            obj, created = Link.objects.get_or_create(resource=self,
+                                                      name='Thumbnail',
+                                                      defaults=dict(
+                                                          url=url,
+                                                          extension='png',
+                                                          mime='image/png',
+                                                          link_type='image',
+                                                      ))
+            self.thumbnail_url = url
+            obj.url = url
+            obj.save()
 
             ResourceBase.objects.filter(id=self.id).update(
                 thumbnail_url=url

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2017 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,5 +21,10 @@
 from django.test import TestCase
 
 
-class TasksTests(TestCase):
-    pass
+class TasksTest(TestCase):
+    """
+    Tests geonode.messaging
+    """
+    def setUp(self):
+        self.adm_un = "admin"
+        self.adm_pw = "admin"

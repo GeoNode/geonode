@@ -30,11 +30,8 @@ import dj_database_url
 #
 # General Django development settings
 #
-import django
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
-from geonode import __file__ as geonode_path
 from geonode import get_version
-from geonode.celery_app import app  # flake8: noqa
 from kombu import Queue
 
 # GeoNode Version
@@ -94,7 +91,7 @@ DATABASE_URL = os.getenv(
     )
 )
 
-#DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
+# DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
 
 # Defines settings for development
 
@@ -238,13 +235,14 @@ _DEFAULT_LOCALE_PATHS = (
 
 LOCALE_PATHS = os.getenv('LOCALE_PATHS', _DEFAULT_LOCALE_PATHS)
 
-
 # Location of url mappings
 ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'geonode.urls')
 
 # Login and logout urls override
 LOGIN_URL = os.getenv('LOGIN_URL', '/account/login/')
 LOGOUT_URL = os.getenv('LOGOUT_URL', '/account/logout/')
+
+LOGIN_REDIRECT_URL = '/'
 
 # Documents application
 ALLOWED_DOCUMENT_TYPES = [
@@ -303,6 +301,7 @@ GEONODE_CONTRIB_APPS = (
     # 'geonode.contrib.datastore_shards',
     'geonode.contrib.metadataxsl',
     'geonode.contrib.api_basemaps',
+    'geonode.contrib.ows_api',
 )
 
 # Uncomment the following line to enable contrib apps
@@ -338,7 +337,7 @@ INSTALLED_APPS = (
     'geoexplorer',
     'leaflet',
     'django_extensions',
-    # 'geonode-client',
+    'django_basic_auth',
     # 'haystack',
     'autocomplete_light',
     'mptt',
@@ -382,7 +381,6 @@ MONITORING_DATA_TTL = timedelta(days=7)
 # use with caution - for dev purpose only
 MONITORING_DISABLE_CSRF = False
 
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -401,10 +399,6 @@ LOGGING = {
         }
     },
     'handlers': {
-        'null': {
-            'level': 'ERROR',
-            'class': 'logging.NullHandler',
-        },
         'console': {
             'level': 'ERROR',
             'class': 'logging.StreamHandler',
@@ -473,6 +467,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    # Security settings
+    'django.middleware.security.SecurityMiddleware',
+
     # This middleware allows to print private layers for the users that have
     # the permissions to view them.
     # It sets temporary the involved layers as public before restoring the
@@ -482,10 +479,23 @@ MIDDLEWARE_CLASSES = (
     # 'geonode.middleware.PrintProxyMiddleware',
 
     # If you use SessionAuthenticationMiddleware, be sure it appears before OAuth2TokenMiddleware.
-    # SessionAuthenticationMiddleware is NOT required for using django-oauth-toolkit.
+    # SessionAuthenticationMiddleware is NOT required for using
+    # django-oauth-toolkit.
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
 )
+
+# Security stuff
+MIDDLEWARE_CLASSES += ('django.middleware.security.SecurityMiddleware',)
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_SSL_REDIRECT = False
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
@@ -520,7 +530,7 @@ DEFAULT_ANONYMOUS_VIEW_PERMISSION = strtobool(
     os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True')
 )
 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = strtobool(
-    os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True')
+    os.getenv('DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', 'True')
 )
 
 #
@@ -594,8 +604,6 @@ NOSE_ARGS = [
 #
 SITEURL = os.getenv('SITEURL', "http://localhost:8000/")
 
-USE_QUEUE = strtobool(os.getenv('USE_QUEUE', 'False'))
-
 DEFAULT_WORKSPACE = os.getenv('DEFAULT_WORKSPACE', 'geonode')
 CASCADE_WORKSPACE = os.getenv('CASCADE_WORKSPACE', 'geonode')
 
@@ -617,7 +625,7 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8000/gs/'
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -668,7 +676,28 @@ UPLOADER = {
         'TIME_ENABLED': False,
         'MOSAIC_ENABLED': False,
         'GEOGIG_ENABLED': False,
-    }
+    },
+    'SUPPORTED_CRS': [
+        'EPSG:4326',
+        'EPSG:3785',
+        'EPSG:3857',
+        'EPSG:900913',
+        'EPSG:32647',
+        'EPSG:32736'
+    ],
+    'SUPPORTED_EXT': [
+        '.shp',
+        '.csv',
+        '.kml',
+        '.kmz',
+        '.json',
+        '.geojson',
+        '.tif',
+        '.tiff',
+        '.geotiff',
+        '.gml',
+        '.xml'
+    ]
 }
 
 # CSW settings
@@ -1090,35 +1119,26 @@ NOTIFICATIONS_MODULE = 'pinax.notifications'
 USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = False
 
 if NOTIFICATION_ENABLED:
-    INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
-
-
-# broker url is for celery worker
-BROKER_URL = os.getenv('BROKER_URL', "django://")
+    if NOTIFICATIONS_MODULE not in INSTALLED_APPS:
+        INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 # async signals can be the same as broker url
 # but they should have separate setting anyway
 # use amqp:// for local rabbitmq server
 ASYNC_SIGNALS_BROKER_URL = 'memory://'
 
-CELERY_ALWAYS_EAGER = True
-CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
-CELERY_IGNORE_RESULT = True
-CELERY_SEND_EVENTS = False
+CELERY_BROKER_URL = os.getenv('BROKER_URL', "amqp://")
 CELERY_RESULT_BACKEND = None
+CELERY_TASK_ALWAYS_EAGER = True  # set this to False in order to run async
+CELERY_TASK_IGNORE_RESULT = True
+CELERY_TASK_DEFAULT_QUEUE = "default"
+CELERY_TASK_DEFAULT_EXCHANGE = "default"
+CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
+CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
+CELERY_TASK_CREATE_MISSING_QUEUES = True
 CELERY_TASK_RESULT_EXPIRES = 1
-CELERY_DISABLE_RATE_LIMITS = True
-CELERY_DEFAULT_QUEUE = "default"
-CELERY_DEFAULT_EXCHANGE = "default"
-CELERY_DEFAULT_EXCHANGE_TYPE = "direct"
-CELERY_DEFAULT_ROUTING_KEY = "default"
-CELERY_CREATE_MISSING_QUEUES = True
-CELERY_IMPORTS = (
-    'geonode.tasks.deletion',
-    'geonode.tasks.update',
-    'geonode.tasks.email'
-)
-
+CELERY_WORKER_DISABLE_RATE_LIMITS = True
+CELERY_WORKER_SEND_TASK_EVENTS = False
 
 CELERY_QUEUES = [
     Queue('default', routing_key='default'),
@@ -1126,7 +1146,6 @@ CELERY_QUEUES = [
     Queue('update', routing_key='update'),
     Queue('email', routing_key='email'),
 ]
-
 
 # AWS S3 Settings
 
@@ -1163,14 +1182,14 @@ if S3_MEDIA_ENABLED:
 # 3. Override settings in a local_settings.py file, legacy.
 # Load more settings from a file called local_settings.py if it exists
 try:
-    from geonode.local_settings import *
+    from geonode.local_settings import *  # flake8: noqa
 except ImportError:
     pass
 
 
 # Load additonal basemaps, see geonode/contrib/api_basemap/README.md
 try:
-    from geonode.contrib.api_basemaps import *
+    from geonode.contrib.api_basemaps import *  # flake8: noqa
 except ImportError:
     pass
 
@@ -1190,21 +1209,33 @@ if os.name == 'nt':
             GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
         else:
             # maybe it will be found regardless if not it will throw 500 error
-            from django.contrib.gis.geos import GEOSGeometry
+            from django.contrib.gis.geos import GEOSGeometry  # flake8: noqa
 
 
 # define the urls after the settings are overridden
 USE_GEOSERVER = 'geonode.geoserver' in INSTALLED_APPS
 if USE_GEOSERVER:
+    PUBLIC_GEOSERVER = {
+        "source": {
+            "title": "GeoServer - Public Layers",
+            "attribution": "&copy; %s" % SITEURL,
+            "ptype": "gxp_wmscsource",
+            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows",
+            "restUrl": "/gs/rest"
+        }
+    }
     LOCAL_GEOSERVER = {
         "source": {
+            "title": "GeoServer - Private Layers",
+            "attribution": "&copy; %s" % SITEURL,
             "ptype": "gxp_wmscsource",
-            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+            "url": "/gs/ows",
             "restUrl": "/gs/rest"
         }
     }
     baselayers = MAP_BASELAYERS
-    MAP_BASELAYERS = [LOCAL_GEOSERVER]
+    # MAP_BASELAYERS = [PUBLIC_GEOSERVER, LOCAL_GEOSERVER]
+    MAP_BASELAYERS = [PUBLIC_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
 
 # Keywords thesauri
@@ -1225,15 +1256,19 @@ ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
 if MONITORING_ENABLED:
-    INSTALLED_APPS += ('geonode.contrib.monitoring',)
-    MIDDLEWARE_CLASSES += \
-        ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+    if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode.contrib.monitoring',)
+    if 'geonode.contrib.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
+        MIDDLEWARE_CLASSES += \
+            ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
 
 GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIPCities.dat')
-# If this option is enabled, Resources belonging to a Group won't be visible by others
+# If this option is enabled, Resources belonging to a Group won't be
+# visible by others
 GROUP_PRIVATE_RESOURCES = False
 
-# If this option is enabled, Groups will become strictly Mandatory on Metadata Wizard
+# If this option is enabled, Groups will become strictly Mandatory on
+# Metadata Wizard
 GROUP_MANDATORY_RESOURCES = False
 
 # A boolean which specifies wether to display the email in user's profile
@@ -1244,3 +1279,6 @@ MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = strtobool(os.getenv(
     'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS',
     'False'
 ))
+
+# Choose thumbnail generator -- this is the default generator
+THUMBNAIL_GENERATOR = "geonode.layers.utils.create_gs_thumbnail_geonode"

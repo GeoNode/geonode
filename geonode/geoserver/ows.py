@@ -20,12 +20,33 @@
 
 import logging
 
+from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 import urllib
+from urlparse import urljoin
+
+from .helpers import OGC_Servers_Handler
 
 logger = logging.getLogger(__name__)
 
+ogc_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
+
 DEFAULT_EXCLUDE_FORMATS = ['PNG', 'JPEG', 'GIF', 'TIFF']
+
+
+def _wcs_get_capabilities():
+    try:
+        wcs_url = urljoin(settings.SITEURL, reverse('wcs_endpoint'))
+    except:
+        wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
+    wcs_url += '&' if '?' in wcs_url else '?'
+
+    return wcs_url + urllib.urlencode({
+        'service': 'WCS',
+        'request': 'GetCapabilities',
+        'version': '2.0.1',
+    })
 
 
 def _wcs_link(wcs_url, identifier, mime, srid, bbox):
@@ -50,6 +71,20 @@ def wcs_links(wcs_url, identifier, bbox, srid):
         url = _wcs_link(wcs_url, identifier, mime, srid, bbox)
         output.append((ext, name, mime, url))
     return output
+
+
+def _wfs_get_capabilities():
+    try:
+        wfs_url = urljoin(settings.SITEURL, reverse('wfs_endpoint'))
+    except:
+        wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
+    wfs_url += '&' if '?' in wfs_url else '?'
+
+    return wfs_url + urllib.urlencode({
+        'service': 'WFS',
+        'request': 'GetCapabilities',
+        'version': '1.1.0',
+    })
 
 
 def _wfs_link(wfs_url, identifier, mime, extra_params):
@@ -78,6 +113,20 @@ def wfs_links(wfs_url, identifier):
         url = _wfs_link(wfs_url, identifier, mime, extra_params)
         output.append((ext, name, mime, url))
     return output
+
+
+def _wms_get_capabilities():
+    try:
+        wms_url = urljoin(settings.SITEURL, reverse('wms_endpoint'))
+    except:
+        wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
+    wms_url += '&' if '?' in wms_url else '?'
+
+    return wms_url + urllib.urlencode({
+        'service': 'WMS',
+        'request': 'GetCapabilities',
+        'version': '1.1.1',
+    })
 
 
 def _wms_link(wms_url, identifier, mime, height, width, srid, bbox):

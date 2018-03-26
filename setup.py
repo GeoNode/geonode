@@ -102,7 +102,7 @@ setup(name='GeoNode',
 
             # geopython dependencies
             "pyproj>=1.9.5,<=1.9.5.1",  # python-pyproj (1.9.5.1)
-            "OWSLib>=0.10.3,<=0.15.0",  # python-owslib (0.15.0 in our ppa)
+            "OWSLib>=0.10.3,<=0.15.0",  # python-owslib (0.15.0 in our ppa) FIXME
             "pycsw>=1.10.1,<=2.0.3",  # python-pycsw (1.10.1, 2.0.0, 2.0.3 in our ppa)
             "%s" % shapely_dep,  # python-shapely (1.5.13)
 
@@ -127,6 +127,7 @@ setup(name='GeoNode',
             "django-modeltranslation>=0.11,<=0.12.1",  # python-django-modeltranslation (0.12 Debian)
             "django-import-export<=0.5.1",  # missing from ppa FIXME
             "django-utils<=0.0.2",  # missing from ppa FIXME
+            "django-basic-authentication-decorator==0.9",  # missing from ppa FIXME
 
             # GeoNode org maintained apps.
             "django-geoexplorer>=4.0.0,<5.0",  # python-django-geoexplorer (4.0.37 in our ppa)
@@ -151,6 +152,9 @@ setup(name='GeoNode',
 
             # AWS S3 dependencies
             "django-storages<=1.6.5",  # python-django-storages (1.6.5 in our ppa)
+
+            # DJango Caches
+            "python-memcached<=1.59",  # missing from ppa FIXME
 
             # Contribs
             "et-xmlfile<=1.0.1",  # python-et-xmlfile (1.0.1 in our ppa)

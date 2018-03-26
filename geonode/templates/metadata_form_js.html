@@ -528,6 +528,12 @@
                     if (resource_date.length >= 1) {
                         resource_date[0].value = date + ' AM';
                     } */
+                formData.forEach(function(entry) {
+                    if(entry["name"].contains("keywords")) {
+                        entry["value"] = escape(entry["value"]);
+                    }
+                });
+
                 $.post('metadata', /*$(this).serialize()*/ $.param(formData))
                     .done(function(data){
                         // Do something more fancy with your respone

@@ -73,7 +73,7 @@ class GeoNodeSmokeTests(TestCase):
     def test_layer_acls(self):
         'Test if the data/acls endpoint renders.'
         response = self.client.get(reverse('layer_acls'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.failUnlessEqual(response.status_code, 401)
 
     # Maps Pages #
 
