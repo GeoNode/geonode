@@ -585,8 +585,10 @@
                     }
                 {% endfor %}
                 populate_background_layer(all_layers_list, all_layers);
-                console.log("{{ map.center_x }}, {{ map.center_y }}), {{ map.zoom }}");
-                map.setView(new L.LatLng({{ map.center_x }}, {{ map.center_y }}), {{ map.zoom }});
+                {% if map and map.center_x %}
+                    // console.log("{{ map.center_x }}, {{ map.center_y }}), {{ map.zoom }}");
+                    map.setView(new L.LatLng({{ map.center_x }}, {{ map.center_y }}), {{ map.zoom }});
+                {% endif %}
             {% else %}
                 // Check layer parameter in url
                 var qd = {};

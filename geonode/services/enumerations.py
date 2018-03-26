@@ -27,6 +27,8 @@ CSW = "CSW"
 REST = "REST"
 OGP = "OGP"
 HGL = "HGL"
+GN_WMS = "GN_WMS"
+GN_CSW = "GN_CSW"
 
 LOCAL = "L"
 CASCADED = "C"
@@ -42,6 +44,7 @@ GXP_PTYPES = {
     'WCS': 'gxp_wmscsource',
     'REST': 'gxp_arcrestsource',
     'HGL': 'gxp_hglsource',
+    'GN_WMS': 'gxp_wmscsource',
 }
 
 QUEUED = "QUEUED"

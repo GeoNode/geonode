@@ -1,5 +1,4 @@
-{% load friendly_loader %}
-{% friendly_load relationship_tags %}
+{% load relationship_tags %}
 
 {% if_relationship request.user profile.user "following" %}
     {# they are following them, so show a "remove" url #}

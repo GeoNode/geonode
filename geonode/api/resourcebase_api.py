@@ -224,7 +224,7 @@ class CommonModelApi(ModelResource):
         treeqs = HierarchicalKeyword.objects.none()
         for keyword in keywords:
             try:
-                kws = HierarchicalKeyword.objects.filter(name__iexact=keyword)
+                kws = HierarchicalKeyword.objects.filter(Q(name__iexact=keyword) | Q(slug__iexact=keyword))
                 for kw in kws:
                     treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
             except ObjectDoesNotExist:
@@ -707,6 +707,9 @@ class LayerResource(CommonModelApi):
                 except GroupProfile.DoesNotExist:
                     formatted_obj['group_name'] = obj.group
 
+            formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
+            formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
+
             # add the geogig link
             formatted_obj['geogig_link'] = obj.geogig_link
 
@@ -873,6 +876,9 @@ class MapResource(CommonModelApi):
                 except GroupProfile.DoesNotExist:
                     formatted_obj['group_name'] = obj.group
 
+            formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
+            formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
+
             # get map layers
             map_layers = obj.layers
             formatted_layers = []
@@ -906,7 +912,37 @@ class MapResource(CommonModelApi):
 
 class DocumentResource(CommonModelApi):
 
-    """Maps API"""
+    """Documents API"""
+
+    def format_objects(self, objects):
+        """
+        Formats the objects and provides reference to list of layers in map
+        resources.
+
+        :param objects: Map objects
+        """
+        formatted_objects = []
+        for obj in objects:
+            # convert the object to a dict using the standard values.
+            formatted_obj = model_to_dict(obj, fields=self.VALUES)
+            username = obj.owner.get_username()
+            full_name = (obj.owner.get_full_name() or username)
+            formatted_obj['owner__username'] = username
+            formatted_obj['owner_name'] = full_name
+            if obj.category:
+                formatted_obj['category__gn_description'] = obj.category.gn_description
+            if obj.group:
+                formatted_obj['group'] = obj.group
+                try:
+                    formatted_obj['group_name'] = GroupProfile.objects.get(slug=obj.group.name)
+                except GroupProfile.DoesNotExist:
+                    formatted_obj['group_name'] = obj.group
+
+            formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
+            formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
+
+            formatted_objects.append(formatted_obj)
+        return formatted_objects
 
     class Meta(CommonMetaApi):
         filtering = CommonMetaApi.filtering

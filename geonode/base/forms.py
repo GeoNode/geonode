@@ -295,6 +295,17 @@ class TKeywordForm(forms.Form):
         return cleaned_data
 
 
+class ResourceBaseDateTimePicker(DateTimePicker):
+
+    def build_attrs(self, base_attrs=None, extra_attrs=None, **kwargs):
+        "Helper function for building an attribute dictionary."
+        if extra_attrs:
+            base_attrs.update(extra_attrs)
+        base_attrs.update(kwargs)
+        return super(ResourceBaseDateTimePicker, self).build_attrs(**base_attrs)
+        # return base_attrs
+
+
 class ResourceBaseForm(TranslationModelForm):
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
 
@@ -306,37 +317,25 @@ class ResourceBaseForm(TranslationModelForm):
             username='AnonymousUser'),
         widget=ChoiceWidget('ProfileAutocomplete'))
 
-    _date_widget_options = {
-        "icon_attrs": {"class": "fa fa-calendar"},
-        "attrs": {"class": "form-control input-sm"},
-        # "format": "%Y-%m-%d %I:%M %p",
-        "format": "%Y-%m-%d %H:%M %p",
-        # Options for the datetimepickers are not set here on purpose.
-        # They are set in the metadata_form_js.html template because
-        # bootstrap-datetimepicker uses jquery for its initialization
-        # and we need to ensure it is available before trying to
-        # instantiate a new datetimepicker. This could probably be improved.
-        "options": False,
-    }
     date = forms.DateTimeField(
         label=_("Date"),
         localize=True,
-        input_formats=['%Y-%m-%d %H:%M'],
-        widget=DateTimePicker(**_date_widget_options)
+        input_formats=['%Y-%m-%d %H:%M %p'],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
     temporal_extent_start = forms.DateTimeField(
         label=_("temporal extent start"),
         required=False,
         localize=True,
-        input_formats=['%Y-%m-%d %H:%M'],
-        widget=DateTimePicker(**_date_widget_options)
+        input_formats=['%Y-%m-%d %H:%M %p'],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
     temporal_extent_end = forms.DateTimeField(
         label=_("temporal extent end"),
         required=False,
         localize=True,
-        input_formats=['%Y-%m-%d %H:%M'],
-        widget=DateTimePicker(**_date_widget_options)
+        input_formats=['%Y-%m-%d %H:%M %p'],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
 
     poc = forms.ModelChoiceField(
@@ -389,6 +388,20 @@ class ResourceBaseForm(TranslationModelForm):
                         'data-placement': 'right',
                         'data-container': 'body',
                         'data-html': 'true'})
+
+    def clean_keywords(self):
+        import urllib
+
+        keywords = self.cleaned_data['keywords']
+        _unsescaped_kwds = []
+        for k in keywords:
+            _k = urllib.unquote(k.decode('utf-8')).decode('utf-8').split(",")
+            if not isinstance(_k, basestring):
+                for _kk in [x.strip() for x in _k]:
+                    _unsescaped_kwds.append(_kk)
+            else:
+                _unsescaped_kwds.append(_k)
+        return _unsescaped_kwds
 
     class Meta:
         exclude = (

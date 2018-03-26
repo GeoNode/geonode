@@ -23,6 +23,8 @@ from xml.etree import ElementTree
 import os
 import shutil
 
+from geonode import qgis_server
+from geonode.decorators import on_ogc_backend
 from geonode.qgis_server.xml_utilities import (
     insert_xml_element, update_xml)
 
@@ -31,6 +33,7 @@ class XMLUtilitiesTest(TestCase):
 
     """Test for xml utilities module."""
 
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_insert_xml_element(self):
         """Check we can't insert custom nested elements"""
         root = ElementTree.Element('root')
@@ -46,6 +49,7 @@ class XMLUtilitiesTest(TestCase):
 
         self.assertEquals(expected_xml, result_xml)
 
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_update_xml(self):
         """Test inserting xml element."""
         file_path = os.path.realpath(__file__)

@@ -2,7 +2,6 @@
 {% load i18n %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
-{% load url from future %}
 {% load base_tags %}
 {% load guardian_tags %}
 {% load client_lib_tags %}
@@ -48,18 +47,19 @@
       </div>
 
       <div class="tab-content">
-        {% include "base/resourcebase_info_panel.html" %}
+        <article id="info" class="tab-pane{% if tab == 'info' or not tab %} active{% endif %}">
+          {% include "base/resourcebase_info_panel.html" %}
 
-        {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
-        <p>
-          {% if request.user.is_authenticated and 'access_token' in request.session %}
-            <a href="{% url 'capabilities_map' resource.id %}?access_token={{ request.session.access_token }}">
-          {% else %}
-            <a href="{% url 'capabilities_map' resource.id %}">
+          {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
+          <p>
+            {% if request.user.is_authenticated and 'access_token' in request.session %}
+              <a href="{% url 'capabilities_map' resource.id %}?access_token={{ request.session.access_token }}">
+            {% else %}
+              <a href="{% url 'capabilities_map' resource.id %}">
+            {% endif %}
+            <i class="fa fa-map"></i> {% trans 'Map layers WMS GetCapabilities document' %}</a></p>
           {% endif %}
-          <i class="fa fa-map"></i> {% trans 'Map layers WMS GetCapabilities document' %}</a></p>
-        {% endif %}
-
+        </article>
         {% block social_links %}
             {% if DISPLAY_SOCIAL %}
               {% include "social_links.html" %}
@@ -222,7 +222,7 @@
           <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
           <a href="{% url "new_map" %}?copy={{ resource.id }}" class="btn btn-default btn-md btn-block">{% trans "Create a New Map" %}</a>
         </li>
-        {% if 'geonode.qgis_server' in INSTALLED_APPS %}
+        {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
           <li class="list-group-item">
               <h4>{% trans "Embed this map" %}</h4>
               <p>{% trans "Embed this map to your own sites" %}</p>

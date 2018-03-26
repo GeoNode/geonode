@@ -23,7 +23,7 @@ Ext.onReady(function() {
         {% endif %}
 
         {% if MAPFISH_PRINT_ENABLED %}
-        printService: "{{GEOSERVER_BASE_URL}}pdf/",
+        printService: "{{ GEOSERVER_BASE_URL }}pdf/",
         {% else %}
         printService: null,
         printCapabilities: null,

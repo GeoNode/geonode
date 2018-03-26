@@ -103,6 +103,8 @@ def unzip_file(upload_file, extension='.shp', tempdir=None):
     absolute_base_file = None
     if tempdir is None:
         tempdir = tempfile.mkdtemp()
+    if not os.path.isdir(tempdir):
+        os.makedirs(tempdir)
 
     the_zip = ZipFile(upload_file)
     the_zip.extractall(tempdir)
@@ -231,7 +233,7 @@ def inverse_mercator(xy):
     return (lon, lat)
 
 
-def layer_from_viewer_config(model, layer, source, ordering):
+def layer_from_viewer_config(map_id, model, layer, source, ordering):
     """
     Parse an object out of a parsed layer configuration from a GXP
     viewer.
@@ -265,7 +267,8 @@ def layer_from_viewer_config(model, layer, source, ordering):
                     if 'href' in legend:
                         legend['href'] = re.sub(r'\&access_token=.*', '', legend['href'])
 
-    return model(
+    _model = model(
+        map_id=map_id,
         stack_order=ordering,
         format=layer.get("format", None),
         name=layer.get("name", None),
@@ -279,6 +282,10 @@ def layer_from_viewer_config(model, layer, source, ordering):
         layer_params=json.dumps(layer_cfg),
         source_params=json.dumps(source_cfg)
     )
+    if map_id:
+        _model.save()
+
+    return _model
 
 
 class GXPMapBase(object):
@@ -378,10 +385,11 @@ class GXPMapBase(object):
         index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
         for service in Service.objects.all():
             remote_source = {
-                'url': service.base_url,
+                'url': service.service_url,
                 'remote': True,
                 'ptype': 'gxp_wmscsource',
-                'name': service.name
+                'name': service.name,
+                'title': "[R] %s" % service.title
             }
             if remote_source['url'] not in source_urls:
                 index += 1
@@ -558,6 +566,7 @@ def default_map_config(request):
 
     def _baselayer(lyr, order):
         return layer_from_viewer_config(
+            None,
             GXPLayer,
             layer=lyr,
             source=lyr["source"],
@@ -694,8 +703,10 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)
-    if settings.MONITORING_ENABLED:
-        request.add_resource(model._meta.verbose_name_raw, obj.alternate if hasattr(obj, 'alternate') else obj.title)
+    if settings.MONITORING_ENABLED and obj:
+        if hasattr(obj, 'alternate') or obj.title:
+            resource_name = obj.alternate if hasattr(obj, 'alternate') else obj.title
+            request.add_resource(model._meta.verbose_name_raw, resource_name)
     return obj
 
 

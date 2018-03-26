@@ -183,23 +183,23 @@ class Region(MPTTModel):
     # This is useful for spatial searches and for generating thumbnail images
     # and metadata records.
     bbox_x0 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_x1 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_y0 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_y1 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     srid = models.CharField(max_length=255, default='EPSG:4326')
@@ -672,23 +672,23 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # This is useful for spatial searches and for generating thumbnail images
     # and metadata records.
     bbox_x0 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_x1 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_y0 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_y1 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     srid = models.CharField(max_length=255, default='EPSG:4326')

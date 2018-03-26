@@ -1,7 +1,8 @@
 {% extends "people/profile_base.html" %}
 {% load static %}
-{% load friendly_loader %}
-{% friendly_load i18n avatar_tags relationship_tags activity_tags %}
+{% load i18n %}
+{% load avatar_tags %}
+{% load activity_tags %}
 {% load pagination_tags %}
 
 {% block title %} {% trans "Profile of " %}{{ profile.first_name|default:profile.username }}{% endblock %}
@@ -25,7 +26,7 @@
 </div>
 
 <div class="col-xs-3 col-md-2 profile-image">
-  {% avatar profile 240 %}
+  {% autoescape off %}{% avatar profile 240 %}{% endautoescape %}
 </div>
 
 <div class="col-xs-9 col-md-7 profile-details">
@@ -157,15 +158,12 @@
       <li class="list-group-item"><a href="{% url "geonode.invitations:geonode-send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite Users" %}</a></li>
       {% if user.is_superuser %}
       <li class="list-group-item"><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
-      <li class="list-group-item"><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
+      <li class="list-group-item"><a href="{% url "proxy" %}?url={{ GEOSERVER_LOCAL_URL }}web"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
       {% endif %}
       {% if user.is_staff %}
       <li class="list-group-item"><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
       {% endif %}
     </ul>
-    {% if_has_tag if_relationship %}
-      {% include "relationships/_manage_connections.html" %}
-    {% endif_has_tag %}
   {% else %}
     {% if user.is_superuser %}
     <ul class="list-group">
@@ -175,14 +173,7 @@
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "user-activity" profile.username %}"><i class="fa fa-fire"></i> {% trans "User Activities" %}</a></li>
     </ul>
-    {% if_has_tag if_relationship %}
-      {% include "relationships/_profile_follow.html" %}
-    {% endif_has_tag %}
   {% endif %}
-
-  {% if_has_tag if_relationship %}
-    {% include "relationships/_list_connections.html" %}
-  {% endif_has_tag %}
 </div>
 
 <div class="col-md-9">

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#########################################################################
+#
 #
 # Copyright (C) 2016 OSGeo
 #
@@ -16,15 +16,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-#########################################################################
+#
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from geonode.upload.views import UploadFileCreateView, UploadFileDeleteView
 
-urlpatterns = patterns('geonode.upload.views',
-                       url(r'^new/$', UploadFileCreateView.as_view(), name='data_upload_new'),
-                       url(r'^progress$', 'data_upload_progress', name='data_upload_progress'),
-                       url(r'^(?P<step>\w+)?$', 'view', name='data_upload'),
-                       url(r'^delete/(?P<id>\d+)?$', 'delete', name='data_upload_delete'),
-                       url(r'^remove/(?P<pk>\d+)$', UploadFileDeleteView.as_view(), name='data_upload_remove'),
-                       )
+from . import views
+
+urlpatterns = [  # 'geonode.upload.views',
+    url(r'^new/$', UploadFileCreateView.as_view(),
+        name='data_upload_new'),
+    url(r'^progress$', views.data_upload_progress,
+        name='data_upload_progress'),
+    url(r'^(?P<step>\w+)?$', views.view, name='data_upload'),
+    url(r'^delete/(?P<id>\d+)?$',
+        views.delete, name='data_upload_delete'),
+    url(r'^remove/(?P<pk>\d+)$',
+        UploadFileDeleteView.as_view(), name='data_upload_remove'),
+]

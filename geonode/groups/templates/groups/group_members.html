@@ -70,7 +70,7 @@
           <article id="members" class="tab-pane">
             <ul class="no-style-list">
             {% for member in members %}
-              {% if member.role = 'member' %}
+              {% if member.role == 'member' %}
               <h4>
                 <i class="fa fa-user"></i> <a href="{{ member.user.get_absolute_url }}">{{ member.user.username }}</a>
                 {% if member.user.email %}

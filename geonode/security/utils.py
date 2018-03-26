@@ -324,7 +324,7 @@ def set_geofence_owner(instance, username=None, view_perms=False, download_perms
         pass
     else:
         services = (
-            (["WMS", "GWC"] if view_perms else []) +
+            (["*", "WMS", "GWC"] if view_perms else []) +
             (["WFS", "WCS", "WPS"] if download_perms else [])
         )
         try:
@@ -484,15 +484,17 @@ def remove_object_permissions(instance):
 
 def _get_layer_workspace(layer):
     """Get the workspace where the input layer belongs"""
-    default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
-    try:
-        if layer.service.method == CASCADED:
-            workspace = getattr(
-                settings, "CASCADE_WORKSPACE", default_workspace)
-        else:
-            raise RuntimeError("Layer is not cascaded")
-    except AttributeError:  # layer does not have a service
-        workspace = default_workspace
+    workspace = layer.workspace
+    if not workspace:
+        default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
+        try:
+            if layer.remote_service.method == CASCADED:
+                workspace = getattr(
+                    settings, "CASCADE_WORKSPACE", default_workspace)
+            else:
+                raise RuntimeError("Layer is not cascaded")
+        except AttributeError:  # layer does not have a service
+            workspace = default_workspace
     return workspace
 
 
@@ -514,7 +516,7 @@ def _get_geofence_payload(layer, workspace, access, user=None, group=None,
     layer_el.text = layer
     access_el = etree.SubElement(root_el, "access")
     access_el.text = access
-    if service is not None:
+    if service is not None and service is not "*":
         service_el = etree.SubElement(root_el, "service")
         service_el.text = service
     return etree.tostring(root_el)
