@@ -186,7 +186,7 @@ gxp.plugins.Styler = Ext.extend(gxp.plugins.Tool, {
                 // for now, only style for sources with relative url
                 //editableStyles = url.charAt(0) === "/";
                 editableStyles = layerRec.get("local");
-		// and assume that local sources are GeoServer instances with
+                // and assume that local sources are GeoServer instances with
                 // styling capabilities
                 if (editableStyles) {
                     this.enableEditingIfAuthorized(layerRec, url);
@@ -207,7 +207,7 @@ gxp.plugins.Styler = Ext.extend(gxp.plugins.Tool, {
     enableEditingIfAuthorized: function(layerRec, url) {
         Ext.Ajax.request({
             method: "PUT",
-            url:"/data/" + layerRec.getLayer().params.LAYERS + "/ajax-edit-check",
+            url:"/data/" + layerRec.getLayer().params.LAYERS + "/ajax-edit-style-check",
             callback: function(options, success, response) {
                 this.editable = (response.status == 200);
                 this.launchAction.enable();

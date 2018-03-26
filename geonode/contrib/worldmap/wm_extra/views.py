@@ -119,16 +119,29 @@ def ajax_layer_edit_check(request, layername):
     """
     Check if the the layer style is editable.
     """
-    layer = get_object_or_404(Layer, typename=layername);
 
-    can_edit_data = request.user.has_perms('change_layer_data', layer)
-    # TODO implement this for styles
-    can_edit_sytle = request.user.has_perms('change_layer_style', layer)
+    layer = get_object_or_404(Layer, typename=layername);
+    can_edit_data = request.user.has_perm('change_layer_data', layer)
 
     return HttpResponse(
         str(can_edit_data),
         status=200 if can_edit_data else 403
     )
+
+
+def ajax_layer_edit_style_check(request, layername):
+    """
+    Check if the the layer style is editable.
+    """
+
+    layer = get_object_or_404(Layer, typename=layername);
+    can_edit_style = request.user.has_perm('change_layer_style', layer)
+
+    return HttpResponse(
+        str(can_edit_style),
+        status=200 if can_edit_style else 403
+    )
+
 
 @login_required
 def ajax_layer_update(request, layername):

@@ -3,7 +3,7 @@ from django.views.generic.base import RedirectView
 
 from geonode.maps.views import snapshot_create
 
-from .views import (proxy, ajax_snapshot_history, ajax_layer_update, ajax_layer_edit_check, upload_layer,
+from .views import (proxy, ajax_snapshot_history, ajax_layer_update, ajax_layer_edit_check, ajax_layer_edit_style_check, upload_layer,
     create_pg_layer, ajax_increment_layer_stats, add_layer_wm, new_map_wm, new_map_json_wm,
     map_view_wm, map_json_wm, map_detail_wm, add_endpoint, printmap, )
 from tastypie.api import Api
@@ -42,6 +42,7 @@ urlpatterns = patterns('',
                         # layers
                         url(r'^data/(?P<layername>[^/]*)$', RedirectView.as_view(pattern_name='layer_detail', permanent=False)),
                         url(r'^data/(?P<layername>[^/]*)/ajax-edit-check/?$', ajax_layer_edit_check, name = 'ajax_layer_edit_check'),
+                        url(r'^data/(?P<layername>[^/]*)/ajax-edit-style-check/?$', ajax_layer_edit_style_check, name = 'ajax_layer_edit_style_check'),
                         url(r'^data/(?P<layername>[^/]*)/ajax_layer_update/?$', ajax_layer_update, name = 'ajax_layer_update'),
                         #url(r'^data/create_pg_layer', create_pg_layer, name='create_pg_layer'),
                         url(r'^/data/upload', upload_layer, name='data_upload'),
