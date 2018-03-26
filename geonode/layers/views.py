@@ -556,6 +556,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     except:
         print "Possible error with OWSLib. Turning all available properties to string"
 
+
+    if settings.GEOTIFF_IO_ENABLED:
+        from geonode.contrib.geotiffio import create_geotiff_io_url
+        context_dict["link_geotiff_io"] = create_geotiff_io_url(layer, access_token)
+
     # maps owned by user needed to fill the "add to existing map section" in template
     if request.user.is_authenticated():
         context_dict["maps"] = Map.objects.filter(owner=request.user)

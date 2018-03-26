@@ -1267,3 +1267,16 @@ TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context.processors.request', )
 
 # Choose thumbnail generator -- this is the default generator
 THUMBNAIL_GENERATOR = "geonode.geoserver.helpers.create_gs_thumbnail_geonode"
+
+
+
+GEOTIFF_IO_ENABLED = strtobool(
+    os.getenv('GEOTIFF_IO_ENABLED', 'False')
+)
+
+# if your public geoserver location does not use HTTPS,
+# you must set GEOTIFF_IO_BASE_URL to use http://
+# for example, http://app.geotiff.io
+GEOTIFF_IO_BASE_URL = os.getenv(
+    'GEOTIFF_IO_BASE_URL', 'https://app.geotiff.io'
+)
