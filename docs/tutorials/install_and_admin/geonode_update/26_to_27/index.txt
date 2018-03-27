@@ -57,17 +57,17 @@ Upgrade Development Environment
           # WARNING: your GDAL version might be different. Use the right one accordingly to gdal-config --version
           pip install pygdal==2.2.1.3
 
-    .. note:: Starting from an old environment will require you to manually remove some old deps **before** runnin any kind of management command.
+     .. note:: Starting from an old environment will require you to manually remove some old deps **before** runnin any kind of management command.
 
-      .. code-block:: bash
+       .. code-block:: bash
 
-          pip uninstall geonode-user-accounts -y
-          pip uninstall django-pagination -y
-          pip uninstall pinax-theme-bootstrap-account -y
+           pip uninstall geonode-user-accounts -y
+           pip uninstall django-pagination -y
+           pip uninstall pinax-theme-bootstrap-account -y
 
-     * Update/tweak GeoNode ``local_settings`` (for GeoServer)
+    * Update/tweak GeoNode ``local_settings`` (for GeoServer)
 
-        .. code-block:: diff
+       .. code-block:: diff
 
             Left file: D:\work\code\python\geonode\geonode-2.7.x\geonode\local_settings.py.geoserver.sample
             Right file: D:\work\code\python\geonode\geonode-2.6.x\geonode\local_settings.py.geoserver.sample
