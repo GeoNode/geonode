@@ -25,6 +25,7 @@ import logging
 from uuid import uuid4
 from urlparse import urlsplit, urljoin
 from httplib import HTTPConnection, HTTPSConnection
+from decimal import Decimal
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -218,7 +219,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         keywords = resource_fields.pop("keywords") or []
         geonode_layer = Layer(
             owner=geonode_service.owner,
-            service=geonode_service,
+            remote_service=geonode_service,
             uuid=str(uuid4()),
             **resource_fields
         )
@@ -243,7 +244,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         }
         kvp = "&".join("{}={}".format(*item) for item in params.items())
         thumbnail_remote_url = "{}?{}".format(
-            geonode_layer.service.service_url, kvp)
+            geonode_layer.remote_service.service_url, kvp)
         logger.debug("thumbnail_remote_url: {}".format(thumbnail_remote_url))
         create_thumbnail(
             instance=geonode_layer,
@@ -275,7 +276,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         }
         kvp = "&".join("{}={}".format(*item) for item in params.items())
         legend_url = "{}?{}".format(
-            geonode_layer.service.service_url, kvp)
+            geonode_layer.remote_service.service_url, kvp)
         logger.debug("legend_url: {}".format(legend_url))
         Link.objects.get_or_create(
             resource=geonode_layer.resourcebase_ptr,
@@ -296,20 +297,29 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             defaults={
                 "extension": "html",
                 "name": "OGC {}: {} Service".format(
-                    geonode_layer.service.type,
+                    geonode_layer.remote_service.type,
                     geonode_layer.store
                 ),
                 "url": geonode_layer.ows_url,
                 "mime": "text/html",
-                "link_type": "OGC:{}".format(geonode_layer.service.type),
+                "link_type": "OGC:{}".format(geonode_layer.remote_service.type),
             }
         )
+
+    def _decimal_encode(self, bbox):
+        _bbox = []
+        for o in [float(coord) for coord in bbox]:
+            if isinstance(o, Decimal):
+                o = (str(o) for o in [o])
+            _bbox.append("{0:.15f}".format(round(o, 2)))
+        return _bbox
 
     def _get_cascaded_layer_fields(self, geoserver_resource):
         name = geoserver_resource.name
         workspace = geoserver_resource.workspace.name
         store = geoserver_resource.store
-        bbox = geoserver_resource.latlon_bbox
+
+        bbox = self._decimal_encode(geoserver_resource.latlon_bbox)
         return {
             "name": name,
             "workspace": workspace,
@@ -325,7 +335,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         }
 
     def _get_indexed_layer_fields(self, layer_meta):
-        bbox = layer_meta.boundingBoxWGS84
+        bbox = self._decimal_encode(layer_meta.boundingBoxWGS84)
         return {
             "name": layer_meta.name,
             "store": self.name,

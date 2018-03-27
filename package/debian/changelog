@@ -1,8 +1,9 @@
-geonode (2.7.5+dev20180124154147) xenial; urgency=high   * [c8abc4] GeoNode 2.7.5.dev20180123130714
+geonode (2.8.0+rc10) xenial; urgency=high 
+  * [c8abc4] GeoNode 2.7.5.dev20180123130714
 
- -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Thu, 25 Jan 2018 14:58:53 +0100
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Wed, 24 Jan 2018 16:41:05 +0100
 
-geonode (2.7.5+dev20180123112419) xenial; urgency=high 
+geonode (2.7.5+dev20180123112419) xenial; urgency=high
   * [dd4a19] [Fixes #3568] - Fix, improve and adapt Backup/Restore Scripts to GeoNode 2.6+ (#3571)
   * [c8bd21] [Fixes #3565 #3566] Topic Category is no more visible on the Layer summary list / If a Resource belongs to a Group, it should be also visible on the summary list
 
@@ -9562,7 +9563,7 @@ geonode (1.2+beta2) precise; urgency=high
   * Fixed missing links to local layers in map detail
   * Map composer fixes
   * More helpful importlayers
- 
+
  -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 1 Aug 2012 11:44:33 -0500
 
 geonode (1.2+beta1) precise; urgency=high

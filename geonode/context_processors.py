@@ -33,12 +33,12 @@ def resource_urls(request):
         STATIC_URL=settings.STATIC_URL,
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
         ACCOUNT_OPEN_SIGNUP=settings.ACCOUNT_OPEN_SIGNUP,
+        ACCOUNT_APPROVAL_REQUIRED=settings.ACCOUNT_APPROVAL_REQUIRED,
         VERSION=get_version(),
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
         SITEURL=settings.SITEURL,
         INSTALLED_APPS=settings.INSTALLED_APPS,
-        RESOURCE_PUBLISHING=settings.RESOURCE_PUBLISHING,
         THEME_ACCOUNT_CONTACT_EMAIL=settings.THEME_ACCOUNT_CONTACT_EMAIL,
         DEBUG_STATIC=getattr(
             settings,
@@ -83,6 +83,18 @@ def resource_urls(request):
         ADMIN_MODERATE_UPLOADS=getattr(
             settings,
             'ADMIN_MODERATE_UPLOADS',
+            False),
+        GROUP_MANDATORY_RESOURCES=getattr(
+            settings,
+            'GROUP_MANDATORY_RESOURCES',
+            False),
+        GROUP_PRIVATE_RESOURCES=getattr(
+            settings,
+            'GROUP_PRIVATE_RESOURCES',
+            False),
+        RESOURCE_PUBLISHING=getattr(
+            settings,
+            'RESOURCE_PUBLISHING',
             False),
         HAYSTACK_SEARCH=getattr(
             settings,

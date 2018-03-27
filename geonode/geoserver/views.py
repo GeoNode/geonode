@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#########################################################################
+#
 #
 # Copyright (C) 2016 OSGeo
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-#########################################################################
+#
 
 import os
 import re
@@ -31,7 +31,7 @@ from urlparse import urlsplit, urljoin
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
@@ -39,7 +39,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.template.loader import get_template
 from django.template import Context
-from django.template import RequestContext
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 
@@ -252,15 +251,15 @@ def layer_style_manage(request, layername):
             except BaseException:
                 pass
             default_style = (layer.default_style.name, sld_title)
-            return render_to_response(
+            return render(
+                request,
                 'layers/layer_style_manage.html',
-                RequestContext(request, {
+                context={
                     "layer": layer,
                     "gs_styles": gs_styles,
                     "layer_styles": layer_styles,
                     "default_style": default_style
                 }
-                )
             )
         except (FailedRequestError, EnvironmentError) as e:
             msg = ('Could not connect to geoserver at "%s"'
@@ -269,13 +268,13 @@ def layer_style_manage(request, layername):
                    )
             logger.warn(msg, e)
             # If geoserver is not online, return an error
-            return render_to_response(
+            return render(
+                request,
                 'layers/layer_style_manage.html',
-                RequestContext(request, {
+                context={
                     "layer": layer,
                     "error": msg
                 }
-                )
             )
     elif request.method == 'POST':
         try:
@@ -312,13 +311,13 @@ def layer_style_manage(request, layername):
             msg = ('Error Saving Styles for Layer "%s"' % (layer.name)
                    )
             logger.warn(msg, e)
-            return render_to_response(
+            return render(
+                request,
                 'layers/layer_style_manage.html',
-                RequestContext(request, {
+                context={
                     "layer": layer,
                     "error": msg
                 }
-                )
             )
 
 
@@ -701,7 +700,7 @@ def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=F
     Retrieve a layer-specific GetCapabilities document
     """
     workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
-    if not layer.service:
+    if not layer.remote_service:
         # TODO implement this for 1.3.0 too
         wms_url = '%s%s/%s/ows?service=wms&version=%s&request=GetCapabilities'\
             % (ogc_server_settings.LOCATION, workspace, layername, version)
@@ -709,7 +708,7 @@ def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=F
             wms_url += ('&access_token=%s' % access_token)
     else:
         wms_url = '%s?service=wms&version=%s&request=GetCapabilities'\
-            % (layer.service.service_url, version)
+            % (layer.remote_service.service_url, version)
 
     http = httplib2.Http()
     response, getcap = http.request(wms_url)

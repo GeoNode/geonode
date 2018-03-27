@@ -484,15 +484,17 @@ def remove_object_permissions(instance):
 
 def _get_layer_workspace(layer):
     """Get the workspace where the input layer belongs"""
-    default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
-    try:
-        if layer.service.method == CASCADED:
-            workspace = getattr(
-                settings, "CASCADE_WORKSPACE", default_workspace)
-        else:
-            raise RuntimeError("Layer is not cascaded")
-    except AttributeError:  # layer does not have a service
-        workspace = default_workspace
+    workspace = layer.workspace
+    if not workspace:
+        default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
+        try:
+            if layer.remote_service.method == CASCADED:
+                workspace = getattr(
+                    settings, "CASCADE_WORKSPACE", default_workspace)
+            else:
+                raise RuntimeError("Layer is not cascaded")
+        except AttributeError:  # layer does not have a service
+            workspace = default_workspace
     return workspace
 
 

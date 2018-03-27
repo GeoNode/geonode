@@ -206,7 +206,7 @@ class HarvestJob(models.Model):
         default=enumerations.QUEUED,
         max_length=15,
     )
-    details = models.TextField(default=_("Resource is queued"))
+    details = models.TextField(null=True, blank=True, default=_("Resource is queued"))
 
     def update_status(self, status, details=""):
         self.status = status

@@ -113,17 +113,20 @@ class BaseServiceHandler(object):
 
     def collect(self, since=None, until=None, **kwargs):
         utc = pytz.utc
-        now = self.now
+        now = self.now or datetime.utcnow().replace(tzinfo=utc)
         if since is None:
             since = self.service.last_check.astimezone(utc) if self.service.last_check else now
         if until is None:
             until = now
+        if not self.service.last_check:
+            self.service.last_check = self.now
+            self.service.save()
         if self.service.last_check and not self.force_check:
             last_check = self.service.last_check.astimezone(utc) if self.service.last_check else now
             if last_check + self.service.check_interval > now:
                 log.warning("Next check too soon")
                 return
-        _collected = self._collect(since, until, **kwargs)
+        _collected = self._collect(since.astimezone(utc), until.astimezone(utc), **kwargs)
         return self.handle_collected(_collected)
 
     def _collect(self, since, until, *args, **kwargs):
@@ -210,7 +213,6 @@ class HostGeoNodeService(BaseServiceHandler):
         return data
 
     def handle_collected(self, data, *args, **kwargs):
-
         return data
 
 

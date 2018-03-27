@@ -102,6 +102,6 @@ def create_maplayers():
             source_params=ml['source_params'],
             stack_order=ml['stack_order'],
             opacity=ml['opacity'],
-            transparent=ml['stack_order'],
-            visibility=ml['stack_order'],
+            transparent=True,
+            visibility=True,
         )

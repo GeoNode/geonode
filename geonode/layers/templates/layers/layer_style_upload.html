@@ -5,7 +5,6 @@
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load pagination_tags %}
-{% load url from future %}
 {% load base_tags %}
 {% load guardian_tags %}
 
@@ -127,11 +126,11 @@
     {% autoescape off %}
 
       csrf_token =  "{{ csrf_token }}",
-      form_target = "{{ UPLOADER_URL }}",
+      form_target = "{{ LAYER_ANCILLARY_FILES_UPLOAD_URL }}",
       geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
-      time_enabled = {{ TIME_ENABLED|lower  }},
-      mosaic_enabled = {{ MOSAIC_ENABLED|lower  }},
-      userLookup = "{% url "geonode.views.ajax_lookup" %}"
+      time_enabled = false,
+      mosaic_enabled = false,
+      userLookup = "{% url "account_ajax_lookup" %}"
 
     {% endautoescape %}
 

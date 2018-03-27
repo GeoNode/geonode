@@ -21,10 +21,10 @@
 import logging
 import time
 
-from django.conf import settings
+# from django.conf import settings
 from kombu.mixins import ConsumerMixin
 from geonode.geoserver.signals import geoserver_post_save_local
-from geonode.security.views import send_email_consumer, send_email_owner_on_view
+from geonode.security.views import send_email_consumer  # , send_email_owner_on_view
 # from geonode.social.signals import notification_post_save_resource2
 from geonode.layers.views import layer_view_counter
 from geonode.layers.models import Layer
@@ -144,12 +144,13 @@ class Consumer(ConsumerMixin):
     def on_layer_viewer(self, body, message):
         # logger.debug("on_layer_viewer: RECEIVED MSG - body: %r" % (body,))
         viewer = body.get("viewer")
-        owner_layer = body.get("owner_layer")
+        # owner_layer = body.get("owner_layer")
         layer_id = body.get("layer_id")
         layer_view_counter(layer_id, viewer)
 
-        if settings.EMAIL_ENABLE:
-            send_email_owner_on_view(owner_layer, viewer, layer_id)
+        # TODO Disabled for now. This should be handeld through Notifications
+        # if settings.EMAIL_ENABLE:
+        #     send_email_owner_on_view(owner_layer, viewer, layer_id)
         message.ack()
         logger.info("on_layer_viewer: finished")
         self._check_message_limit()

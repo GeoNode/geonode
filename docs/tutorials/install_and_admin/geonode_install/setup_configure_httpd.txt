@@ -14,7 +14,7 @@ Preliminary Steps & Checks
     **If not already active** let's activate the new `geonode` Python Virtual Environment:
 
     .. code-block:: bash
-        
+
         $ workon geonode
 
     Move into the `geonode` home folder
@@ -43,9 +43,9 @@ Preliminary Steps & Checks
         .. code-block:: bash
 
             $ vim my_geonode/local_settings.py
-        
+
         Un-comment the following pieces
-        
+
         .. code-block:: python
 
             ...
@@ -87,7 +87,7 @@ Place the following content inside the file
 
         LimitRequestFieldSize 32760
         LimitRequestLine 32760
-    
+
         ErrorLog /var/log/apache2/error.log
         LogLevel warn
         CustomLog /var/log/apache2/access.log combined
@@ -159,7 +159,7 @@ Place the following content inside the file
             Require all granted
             IndexOptions FancyIndexing
         </Directory>
-        
+
         <Directory "/home/geonode/my_geonode/my_geonode/uploaded/layers/">
             Order allow,deny
             Options Indexes FollowSymLinks
@@ -207,14 +207,14 @@ In order to make GeoNode being able to send e-mails you will need to enable the 
 .. code-block:: bash
 
     $ sudo ufw disable
-    # This will be switch-off the 
+    # This will be switch-off the
 
 Edit the ``postfix`` configuration in order to allow the service act as a web service
 
 .. code-block:: bash
 
     $ sudo vim /etc/postfix/main.cf
-    
+
 Check that at the end of the file the following properties are configured as follows
 
 .. code-block:: bash
@@ -239,7 +239,7 @@ Once the Apache2 Virtual Host has been correctly configured, we can finalize the
 **If not already active** let's activate the new `geonode` Python Virtual Environment:
 
 .. code-block:: bash
-    
+
     $ workon geonode
 
 Move into the `geonode` home folder
@@ -260,9 +260,9 @@ In order to do that, edit the ``my_geonode/local_settings.py`` file:
     .. code-block:: bash
 
         $ vim my_geonode/local_settings.py
-    
+
     Double check that exitsting properties match the following and add the missing ones
-    
+
     .. code-block:: python
 
         SITEURL = 'http://localhost'
@@ -335,9 +335,9 @@ In order to do that, edit the ``my_geonode/local_settings.py`` file:
             }
         }
         ...
-        
+
     In the end the ``my_geonode/local_settings.py`` should be something like this
-    
+
     .. code-block:: python
 
         # -*- coding: utf-8 -*-
@@ -600,10 +600,6 @@ In order to do that, edit the ``my_geonode/local_settings.py`` file:
                 }
             },
             'handlers': {
-                'null': {
-                    'level': 'ERROR',
-                    'class': 'django.utils.log.NullHandler',
-                },
                 'console': {
                     'level': 'DEBUG',
                     'class': 'logging.StreamHandler',

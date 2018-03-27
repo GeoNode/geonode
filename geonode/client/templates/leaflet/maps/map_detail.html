@@ -1,0 +1,17 @@
+{% load client_lib_tags %}
+
+  {% if TWITTER_CARD %}
+    {% include "base/_resourcebase_twittercard.html" %}
+  {% endif %}
+  {% if OPENGRAPH_ENABLED %}
+    {% include "base/_resourcebase_opengraph.html" %}
+  {% endif %}
+
+  {% get_map_detail %}
+  {{ block.super }}
+
+
+
+      <div id="embedded_map">
+        <div id="the_map"></div>
+      </div>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2017 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 #########################################################################
 
 from django import forms
-from django.core.validators import validate_email, ValidationError
 from slugify import slugify
 from django.utils.translation import ugettext as _
 from modeltranslation.forms import TranslationModelForm
@@ -84,80 +83,33 @@ class GroupUpdateForm(forms.ModelForm):
 
 
 class GroupMemberForm(forms.Form):
-    role = forms.ChoiceField(choices=[
-        ("member", "Member"),
-        ("manager", "Manager"),
-    ])
     user_identifiers = forms.CharField(
         widget=forms.TextInput(
             attrs={
-                'class': 'user-select'}))
+                'class': 'user-select'
+            }
+        )
+    )
+    manager_role = forms.BooleanField(
+        required=False,
+        label=_("Assign manager role")
+    )
 
     def clean_user_identifiers(self):
         value = self.cleaned_data["user_identifiers"]
-        new_members, errors = [], []
-
-        for ui in value.split(","):
-            ui = ui.strip()
-
+        new_members = []
+        errors = []
+        for name in (v.strip() for v in value.split(",")):
             try:
-                validate_email(ui)
-                try:
-                    new_members.append(get_user_model().objects.get(email=ui))
-                except get_user_model().DoesNotExist:
-                    new_members.append(ui)
-            except ValidationError:
-                try:
-                    new_members.append(
-                        get_user_model().objects.get(
-                            username=ui))
-                except get_user_model().DoesNotExist:
-                    errors.append(ui)
-
+                new_members.append(get_user_model().objects.get(username=name))
+            except get_user_model().DoesNotExist:
+                errors.append(name)
         if errors:
-            message = (
-                "The following are not valid email addresses or "
-                "usernames: %s; not added to the group" %
-                ", ".join(errors))
-            raise forms.ValidationError(message)
-
+            raise forms.ValidationError(
+                _("The following are not valid usernames: %(errors)s; "
+                  "not added to the group"),
+                params={
+                    "errors": ", ".join(errors)
+                }
+            )
         return new_members
-
-
-class GroupInviteForm(forms.Form):
-
-    invite_role = forms.ChoiceField(label="Role", choices=[
-        ("member", "Member"),
-        ("manager", "Manager"),
-    ])
-    invite_user_identifiers = forms.CharField(
-        label="E-mail addresses list",
-        widget=forms.Textarea)
-
-    def clean_user_identifiers(self):
-        value = self.cleaned_data["invite_user_identifiers"]
-        invitees, errors = [], []
-
-        for ui in value.split(","):
-            ui = ui.strip()
-
-            try:
-                validate_email(ui)
-                try:
-                    invitees.append(get_user_model().objects.get(email=ui))
-                except get_user_model().DoesNotExist:
-                    invitees.append(ui)
-            except ValidationError:
-                try:
-                    invitees.append(get_user_model().objects.get(username=ui))
-                except get_user_model().DoesNotExist:
-                    errors.append(ui)
-
-        if errors:
-            message = (
-                "The following are not valid email addresses or "
-                "usernames: %s; no invitations sent" %
-                ", ".join(errors))
-            raise forms.ValidationError(message)
-
-        return invitees
