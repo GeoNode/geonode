@@ -1,7 +1,7 @@
 .. _dev_core:
 
 Development Prerequisites and Core Modules
-=========================================
+==========================================
 
 This module will introduce you to the basic tools and skills required to start actively developing GeoNode.
 

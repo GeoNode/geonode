@@ -162,8 +162,6 @@ function postinstall() {
     setup_postgres_every_time
     setup_django_every_time
     setup_apache_every_time
-    $TOMCAT_SERVICE restart
-    $APACHE_SERVICE restart
 
     $GEONODE_BIN/geonode-updateip localhost
 }
