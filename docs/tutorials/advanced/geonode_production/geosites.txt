@@ -84,7 +84,7 @@ Permissions by Site
 By default GeoNode is publicly available. In the case of GeoSites, new data will be publicly available, but only for the site it was added to, and the master site (all data is added to the master site). 
 
 Activate geosites app
-================
+=====================
 In order to use geonode in Multi-tenancy mode, follow these steps:
 1. check in settings.py if 'geonode.contrib.geosites' in GEONODE_CONTRIB_APPS is rightly uncommented
 2. add in settings.py 'geonode.contrib.geosites' in INSTALLED_APPS

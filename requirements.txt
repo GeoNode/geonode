@@ -1,4 +1,5 @@
 Django==1.8.19
+Shapely<=1.5.17
 six==1.10.0
 amqp==2.2.2
 anyjson==0.3.3
