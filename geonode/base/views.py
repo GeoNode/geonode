@@ -20,8 +20,7 @@
 
 
 # Geonode functionality
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from geonode.documents.models import Document
@@ -62,26 +61,22 @@ def batch_modify(request, ids, model):
             return HttpResponseRedirect(
                 '/admin/{model}s/{model}/'.format(model=model.lower())
             )
-        return render_to_response(
-            template,
-            RequestContext(
-                request,
-                {
-                    'form': form,
-                    'ids': ids,
-                    'model': model,
-                }
-            )
-        )
-    form = BatchEditForm()
-    return render_to_response(
-        template,
-        RequestContext(
+        return render(
             request,
-            {
+            template,
+            context={
                 'form': form,
                 'ids': ids,
                 'model': model,
-            },
+            }
         )
+    form = BatchEditForm()
+    return render(
+        request,
+        template,
+        context={
+            'form': form,
+            'ids': ids,
+            'model': model,
+        }
     )

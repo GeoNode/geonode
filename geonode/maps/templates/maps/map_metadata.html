@@ -1,6 +1,5 @@
 {% extends "metadata_base.html" %}
 {% load i18n %}
-{% load url from future %}
 {% load bootstrap_tags %}
 {% load base_tags %}
 {% load guardian_tags %}
@@ -9,7 +8,7 @@
 {% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-    {% include "maps/map_ol2.html" %}
+    {% include "ol/maps/map_ol2.html" %}
 {{ block.super }}
 {% endblock head %}
 

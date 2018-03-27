@@ -232,7 +232,7 @@ The resulting configuration file should look like this:::
     }
 
     # Default preview library
-    #LAYER_PREVIEW_LIBRARY = 'geoext'
+    # GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'
 
 .. _geonode_install_initialization:
 

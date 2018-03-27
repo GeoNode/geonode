@@ -18,7 +18,9 @@
 #
 #########################################################################
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns('geonode.proxy.views',
-                       url(r'^proxy/', 'proxy', name='proxy'), )
+from . import views
+
+urlpatterns = [  # 'geonode.proxy.views',
+               url(r'^proxy/', views.proxy, name='proxy'), ]

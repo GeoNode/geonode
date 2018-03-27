@@ -24,7 +24,6 @@ from agon_ratings.models import Rating
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
 from django.db.models import Count
 from django.conf import settings
 
@@ -35,8 +34,17 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 from geonode.base.models import HierarchicalKeyword
+from geonode.security.utils import get_visible_resources
 
 register = template.Library()
+
+FACETS = {
+    'raster': 'Raster Layer',
+    'vector': 'Vector Layer',
+    'vector_time': 'Vector Temporal Serie',
+    'remote': 'Remote Layer',
+    'wms': 'WMS Cascade Layer'
+}
 
 
 @register.assignment_tag
@@ -48,17 +56,6 @@ def num_ratings(obj):
 @register.assignment_tag(takes_context=True)
 def facets(context):
     request = context['request']
-    is_admin = False
-    is_staff = False
-    is_manager = False
-    if request.user:
-        is_admin = request.user.is_superuser if request.user else False
-        is_staff = request.user.is_staff if request.user else False
-        try:
-            is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-        except:
-            is_manager = False
-
     title_filter = request.GET.get('title__icontains', '')
     extent_filter = request.GET.get('extent', None)
     keywords_filter = request.GET.getlist('keywords__slug__in', None)
@@ -95,92 +92,12 @@ def facets(context):
         if date_range_filter:
             documents = documents.filter(date__range=date_range_filter.split(','))
 
-        if settings.ADMIN_MODERATE_UPLOADS:
-            if not is_admin and not is_staff:
-                if is_manager:
-                    groups = request.user.groups.all()
-                    group_list_all = []
-                    try:
-                        group_list_all = request.user.group_list_all().values('group')
-                    except:
-                        pass
-                    public_groups = GroupProfile.objects.exclude(access="private").values('group')
-                    try:
-                        anonymous_group = Group.objects.get(name='anonymous')
-                        documents = documents.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=public_groups) | Q(group=anonymous_group) |
-                            Q(group__in=group_list_all) |
-                            Q(owner__username__iexact=str(request.user)))
-                    except:
-                        documents = documents.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                else:
-                    documents = documents.filter(Q(is_published=True) |
-                                                 Q(owner__username__iexact=str(request.user)))
-
-        if settings.RESOURCE_PUBLISHING:
-            if not is_admin and not is_staff:
-                if is_manager:
-                    groups = request.user.groups.all()
-                    group_list_all = []
-                    try:
-                        group_list_all = request.user.group_list_all().values('group')
-                    except:
-                        pass
-                    public_groups = GroupProfile.objects.exclude(access="private").values('group')
-                    try:
-                        anonymous_group = Group.objects.get(name='anonymous')
-                        documents = documents.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=public_groups) | Q(group=anonymous_group) |
-                            Q(group__in=group_list_all) |
-                            Q(owner__username__iexact=str(request.user)))
-                    except:
-                        documents = documents.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                else:
-                    documents = documents.filter(Q(is_published=True) |
-                                                 Q(owner__username__iexact=str(request.user)))
-
-        if settings.GROUP_PRIVATE_RESOURCES:
-            public_groups = GroupProfile.objects.exclude(access="private").values('group')
-            try:
-                anonymous_group = Group.objects.get(name='anonymous')
-            except:
-                anonymous_group = None
-
-            if is_admin:
-                pass
-            elif request.user:
-                groups = request.user.groups.all()
-                group_list_all = []
-                try:
-                    group_list_all = request.user.group_list_all().values('group')
-                except:
-                    pass
-                if anonymous_group:
-                    documents = documents.filter(
-                        Q(group__isnull=True) | Q(group__in=group_list_all) |
-                        Q(group__in=groups) | Q(group__in=public_groups) |
-                        Q(group=anonymous_group) |
-                        Q(owner__username__iexact=str(request.user)))
-                else:
-                    documents = documents.filter(
-                        Q(group__isnull=True) | Q(group__in=group_list_all) |
-                        Q(group__in=groups) | Q(group__in=public_groups) |
-                        Q(owner__username__iexact=str(request.user)))
-            else:
-                if anonymous_group:
-                    documents = documents.filter(
-                        Q(group__isnull=True) | Q(group__in=public_groups) | Q(group=anonymous_group))
-                else:
-                    documents = documents.filter(
-                        Q(group__isnull=True) | Q(group__in=public_groups))
+        documents = get_visible_resources(
+            documents,
+            request.user if request else None,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         if keywords_filter:
             treeqs = HierarchicalKeyword.objects.none()
@@ -223,91 +140,12 @@ def facets(context):
         if date_range_filter:
             layers = layers.filter(date__range=date_range_filter.split(','))
 
-        if settings.ADMIN_MODERATE_UPLOADS:
-            if not is_admin and not is_staff:
-                if is_manager:
-                    groups = request.user.groups.all()
-                    group_list_all = []
-                    try:
-                        group_list_all = request.user.group_list_all().values('group')
-                    except:
-                        pass
-                    public_groups = GroupProfile.objects.exclude(access="private").values('group')
-                    try:
-                        anonymous_group = Group.objects.get(name='anonymous')
-                        layers = layers.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(group=anonymous_group) |
-                            Q(owner__username__iexact=str(request.user)))
-                    except:
-                        layers = layers.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                else:
-                    layers = layers.filter(Q(is_published=True) |
-                                           Q(owner__username__iexact=str(request.user)))
-
-        if settings.RESOURCE_PUBLISHING:
-            if not is_admin and not is_staff:
-                if is_manager:
-                    groups = request.user.groups.all()
-                    group_list_all = []
-                    try:
-                        group_list_all = request.user.group_list_all().values('group')
-                    except:
-                        pass
-                    public_groups = GroupProfile.objects.exclude(access="private").values('group')
-                    try:
-                        anonymous_group = Group.objects.get(name='anonymous')
-                        layers = layers.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(group=anonymous_group) |
-                            Q(owner__username__iexact=str(request.user)))
-                    except:
-                        layers = layers.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                else:
-                    layers = layers.filter(Q(is_published=True) |
-                                           Q(owner__username__iexact=str(request.user)))
-
-        if settings.GROUP_PRIVATE_RESOURCES:
-            public_groups = GroupProfile.objects.exclude(access="private").values('group')
-            try:
-                anonymous_group = Group.objects.get(name='anonymous')
-            except:
-                anonymous_group = None
-
-            if is_admin:
-                pass
-            elif request.user:
-                groups = request.user.groups.all()
-                group_list_all = []
-                try:
-                    group_list_all = request.user.group_list_all().values('group')
-                except:
-                    pass
-                if anonymous_group:
-                    layers = layers.filter(
-                        Q(group__isnull=True) | Q(group__in=groups) |
-                        Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                        Q(group=anonymous_group) | Q(owner__username__iexact=str(request.user)))
-                else:
-                    layers = layers.filter(
-                        Q(group__isnull=True) | Q(group__in=group_list_all) |
-                        Q(group__in=groups) | Q(group__in=public_groups) |
-                        Q(owner__username__iexact=str(request.user)))
-            else:
-                if anonymous_group:
-                    layers = layers.filter(
-                        Q(group__isnull=True) | Q(group__in=public_groups) | Q(group=anonymous_group))
-                else:
-                    layers = layers.filter(
-                        Q(group__isnull=True) | Q(group__in=public_groups))
+        layers = get_visible_resources(
+            layers,
+            request.user if request else None,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         if extent_filter:
             bbox = extent_filter.split(
@@ -337,9 +175,16 @@ def facets(context):
         counts = layers.values('storeType').annotate(count=Count('storeType'))
         count_dict = dict([(count['storeType'], count['count']) for count in counts])
 
+        vector_time_series = layers.exclude(has_time=False).filter(storeType='dataStore'). \
+            values('storeType').annotate(count=Count('storeType'))
+
+        if vector_time_series:
+            count_dict['vectorTimeSeries'] = vector_time_series[0]['count']
+
         facets = {
             'raster': count_dict.get('coverageStore', 0),
             'vector': count_dict.get('dataStore', 0),
+            'vector_time': count_dict.get('vectorTimeSeries', 0),
             'remote': count_dict.get('remoteStore', 0),
             'wms': count_dict.get('wmsStore', 0),
         }
@@ -373,119 +218,18 @@ def facets(context):
             maps = maps.filter(date__range=date_range_filter.split(','))
             documents = documents.filter(date__range=date_range_filter.split(','))
 
-        if settings.ADMIN_MODERATE_UPLOADS:
-            if not is_admin and not is_staff:
-                if is_manager:
-                    groups = request.user.groups.all()
-                    group_list_all = []
-                    try:
-                        group_list_all = request.user.group_list_all().values('group')
-                    except:
-                        pass
-                    public_groups = GroupProfile.objects.exclude(access="private").values('group')
-                    try:
-                        anonymous_group = Group.objects.get(name='anonymous')
-                        maps = maps.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(group=anonymous_group) |
-                            Q(owner__username__iexact=str(request.user)))
-                        documents = documents.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(group=anonymous_group) |
-                            Q(owner__username__iexact=str(request.user)))
-                    except:
-                        maps = maps.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                        documents = documents.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                else:
-                    maps = maps.filter(Q(is_published=True) |
-                                       Q(owner__username__iexact=str(request.user)))
-                    documents = documents.filter(Q(is_published=True) |
-                                                 Q(owner__username__iexact=str(request.user)))
-
-        if settings.RESOURCE_PUBLISHING:
-            if not is_admin and not is_staff:
-                if is_manager:
-                    groups = request.user.groups.all()
-                    group_list_all = []
-                    try:
-                        group_list_all = request.user.group_list_all().values('group')
-                    except:
-                        pass
-                    public_groups = GroupProfile.objects.exclude(access="private").values('group')
-                    try:
-                        anonymous_group = Group.objects.get(name='anonymous')
-                        maps = maps.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(group=anonymous_group) |
-                            Q(owner__username__iexact=str(request.user)))
-                        documents = documents.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(group=anonymous_group) |
-                            Q(owner__username__iexact=str(request.user)))
-                    except:
-                        maps = maps.filter(
-                            Q(group__isnull=True) | Q(group__in=group_list_all) |
-                            Q(group__in=groups) | Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                        documents = documents.filter(
-                            Q(group__isnull=True) | Q(group__in=group_list_all) |
-                            Q(group__in=groups) | Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                else:
-                    maps = maps.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
-                    documents = documents.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
-
-        if settings.GROUP_PRIVATE_RESOURCES:
-            public_groups = GroupProfile.objects.exclude(access="private").values('group')
-            try:
-                anonymous_group = Group.objects.get(name='anonymous')
-            except:
-                anonymous_group = None
-
-            if is_admin:
-                pass
-            elif request.user:
-                groups = request.user.groups.all()
-                group_list_all = []
-                try:
-                    group_list_all = request.user.group_list_all().values('group')
-                except:
-                    pass
-                if anonymous_group:
-                    maps = maps.filter(
-                        Q(group__isnull=True) | Q(group__in=group_list_all) |
-                        Q(group__in=groups) | Q(group=anonymous_group) |
-                        Q(owner__username__iexact=str(request.user)))
-                    documents = documents.filter(
-                        Q(group__isnull=True) | Q(group__in=group_list_all) |
-                        Q(group__in=groups) | Q(group=anonymous_group) |
-                        Q(owner__username__iexact=str(request.user)))
-                else:
-                    maps = maps.filter(
-                        Q(group__isnull=True) | Q(group__in=group_list_all) |
-                        Q(group__in=groups) |
-                        Q(owner__username__iexact=str(request.user)))
-                    documents = documents.filter(
-                        Q(group__isnull=True) | Q(group__in=group_list_all) |
-                        Q(group__in=groups) |
-                        Q(owner__username__iexact=str(request.user)))
-            else:
-                if anonymous_group:
-                    maps = maps.filter(Q(group__isnull=True) | Q(group=anonymous_group))
-                    documents = documents.filter(Q(group__isnull=True) | Q(group=anonymous_group))
-                else:
-                    maps = maps.filter(Q(group__isnull=True))
-                    documents = documents.filter(Q(group__isnull=True))
+        maps = get_visible_resources(
+            maps,
+            request.user if request else None,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
+        documents = get_visible_resources(
+            documents,
+            request.user if request else None,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         if extent_filter:
             bbox = extent_filter.split(
@@ -526,9 +270,17 @@ def facets(context):
                 access="private").count()
 
             facets['layer'] = facets['raster'] + \
-                facets['vector'] + facets['remote'] + facets['wms']
+                facets['vector'] + facets['remote'] + facets['wms']  # + facets['vector_time']
 
     return facets
+
+
+@register.filter(is_safe=True)
+def get_facet_title(value):
+    """Converts a facet_type into a human readable string"""
+    if value in FACETS.keys():
+        return FACETS[value]
+    return value
 
 
 @register.assignment_tag(takes_context=True)

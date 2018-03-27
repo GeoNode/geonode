@@ -44,6 +44,9 @@ these apps for your specific needs.
       geonode.security
         Provides a Django auth backend.
 
+       geonode.people
+        User registration and profile management.
+
 
 ``geonode.base`` - GeoNode core functionality
 =============================================
@@ -380,6 +383,147 @@ has_obj_perm <user> <obj> <permission>
   Checks whether the user has the specified permission on an object.
 
   ``{% has_obj_perm user obj "app.view_thing" as can_view_thing %}``
+
+
+``geonode.people`` - User account registration and profile management
+=====================================================================
+
+This app provides functionality related to user accounts and user profiles.
+
+User authentication is based on `django-allauth`_, with some geonode-specific
+customizations. Users can register to a geonode instance by either creating
+a new account or by using one of their social providers, such as linkedin,
+facebook, etc.
+
+User invitations are leveraged via `django-invitations`_.
+
+
+.. _django-allauth: https://django-allauth.readthedocs.io/en/latest/index.html
+.. _django-notifications: https://github.com/bee-keeper/django-invitations
+
+
+Adding authentication with a social provider
+--------------------------------------------
+
+Configuring geonode user authentication with a social provider is a multi-step
+process:
+
+* Create an application on the provider's developer site. For example, for
+linkedin:
+
+  * Go to https://developer.linkedin.com/apps and select ``Create Application``
+
+  * Proceed to create an application, referring to `django-allauth's
+    documentation`_ where needed. Be sure to select the ``r_basicprofile``
+    and ``r_emailaddress``  application permissions. These will enable geonode
+    to access some information regarding the user's linkedin public profile.
+    Once created, take note of the ``Client ID`` and ``Client Secret``
+    parameters which linkedin assigns to your new application
+
+* Follow the `post-install`_ instructions on django-allauth's documentation.
+  These basically instruct you to:
+
+  * include the relevant app in geonode's ``INSTALLED_APPS`` setting for the
+    social provider that you are using. For linkedin this means adding
+    ``allauth.socialaccount.providers.linkedin_oauth2``.
+
+  * Access geonode's admin interface and add a new ``Social App`` for the
+    provider. Add the previously gathered ``Client id`` and ``Secret key``
+    parameters that were obtained when creating a linkedin application.
+
+  * Optionally add relevant value to geonode's ``SOCIALACCOUNT_PROVIDERS``
+    setting. Consult django-allauth's provider-specific documentation for more
+    information on this setting
+
+* Optionally add a profile extractor entry to geonode's
+  ``SOCIALACCOUNT_PROFILE_EXTRACTORS`` setting. This setting is specific to
+  geonode and is not part of django-allauth. The expected value is a dictionary
+  with the provider's id as key and the python path to a data
+  extractor class as the value. Example:
+
+  .. code::
+
+     # settings.py
+     SOCIALACCOUNT_PROFILE_EXTRACTORS = {
+       "linkedin_oauth2": "geonode.people.profileextractors.LinkedInExtractor"
+     }
+
+   A profile extractor class can retrieve information from each social account
+   provider and use that to enhance a user's profile information on geonode.
+   Look into the ``geonode.people.profileextractors`` module on geonode's
+   source code for more information.
+
+
+.. _django-allauth's documentation: http://django-allauth.readthedocs.io/en/latest/providers.html#authorized-redirect-urls-oauth2
+.. _post-install: http://django-allauth.readthedocs.io/en/latest/installation.html#post-installation
+
+
+``settings.py`` entries
+-----------------------
+
+ACCOUNT_OPEN_SIGNUP
+  Default: ``True``
+
+  Whether the geonode site allows new users to register for an account. When
+  set to ``False`` new users cannot register, they must be created by a staff
+  member
+
+ACCOUNT_APPROVAL_REQUIRED
+  Default: ``False``
+
+  Whether new user registrations must be manually approved. When set to
+  ``True``, the site's staff must manually approve every new account. The
+  approval flow goes like this:
+
+  * User registers in the site (either with a local account or by using a social login);
+  * Staff users receive an email notification that a new user is requesting access;
+  * Staff users manually approve the user by using geonode's administration interface;
+  * User receives an e-mail notification when the account has been approved;
+  * User can now login to the geonode site.
+
+ACCOUNT_ADAPTER
+  Default: ``geonode.people.adapters.LocalAccountAdapter``
+
+  This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+  It allows specifying a custom class to handle authentication for local
+  accounts.
+
+ACCOUNT_CONFIRM_EMAIL_ON_GET
+  Default: ``True``
+
+  This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+  It allows specifying the HTTP method used when confirming e-mail addresses.
+
+ACCOUNT_EMAIL_REQUIRED
+  Default: ``True``
+
+  This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+  Controls whehter the user is required to provide an e-mail address upon
+  registration
+
+ACCOUNT_EMAIL_VERIFICATION
+  Default: ``optional``
+
+  This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+
+SOCIALACCOUNT_ADAPTER
+  Default: ``geonode.people.adapters.SocialAccountAdapter``
+
+  This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+  It allows specifying a custom class to handle authentication for social
+  accounts.
+
+SOCIALACCOUNT_PROVIDERS
+  Default: ``None``
+
+  This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+  It should be a dictionary with provider specific settings
+
+SOCIALACCOUNT_PROFILE_EXTRACTORS
+  Default: ``None``
+
+  A dictionary with provider ids as keys and path to custom profile extractor
+  classes as values.
 
 
 Django's error templates

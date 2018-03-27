@@ -27,8 +27,8 @@ from django.db import models
 from django.db.models import signals
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.urlresolvers import reverse
-from django.contrib.contenttypes import fields
 from django.contrib.staticfiles import finders
 from django.utils.translation import ugettext as _
 
@@ -37,7 +37,7 @@ from geonode.base.models import ResourceBase, resourcebase_post_save, Link
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
-from geonode.security.models import remove_object_permissions
+from geonode.security.utils import remove_object_permissions
 
 IMGTYPES = ['jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif']
 
@@ -107,7 +107,7 @@ class DocumentResourceLink(models.Model):
     # relation to the resource model
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    resource = fields.GenericForeignKey('content_type', 'object_id')
+    resource = GenericForeignKey('content_type', 'object_id')
 
 
 def get_related_documents(resource):

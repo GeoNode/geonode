@@ -30,8 +30,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
-from django.shortcuts import render_to_response
-from django.template import RequestContext, loader
+from django.template import loader
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import requires_csrf_token
 from django.views.decorators.cache import cache_control
@@ -261,7 +260,7 @@ def service_detail(request, service_id):
     )
     resources_being_harvested = HarvestJob.objects.filter(
         service=service, status__in=job_statuses)
-    already_imported_layers = Layer.objects.filter(service=service)
+    already_imported_layers = Layer.objects.filter(remote_service=service)
     service_list = service.service_set.all()
     all_resources = (list(resources_being_harvested) +
                      list(already_imported_layers) + list(service_list))
@@ -325,10 +324,9 @@ def edit_service(request, service_id):
         service_form = forms.ServiceForm(
             instance=service_obj, prefix="service")
 
-    return render_to_response("services/service_edit.html",
-                              RequestContext(request,
-                                             {"service": service_obj,
-                                              "service_form": service_form}))
+    return render(request,
+                  "services/service_edit.html",
+                  context={"service": service_obj, "service_form": service_form})
 
 
 @login_required
@@ -338,11 +336,10 @@ def remove_service(request, service_id):
     if not request.user.has_perm('maps.delete_service', obj=service):
         return HttpResponse(
             loader.render_to_string(
-                '401.html', RequestContext(
-                    request, {
+                '401.html', context={
                         'error_message': _(
                             "You are not permitted to remove this service."
-                        )})), status=401)
+                        )}, request=request), status=401)
     if request.method == 'GET':
         return render(request, "services/service_remove.html",
                       {"service": service})

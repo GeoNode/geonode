@@ -13,7 +13,7 @@
     "requirejs-text": "2.0.3",
     "underscore": "1.4.2",
     "jquery-waypoints": "2.0.5",
-    "bootstrap": "3.1.1",
+    "bootstrap": "3.3.7",
     "moment": "2.17.1",
     "raty": "2.5.2",
     "json2": "43d7836c8ec9b31a02a31ae0c400bdae04d3650d",
@@ -22,7 +22,6 @@
     "multi-select": "https://github.com/lou/multi-select.git",
     "jquery-ajaxprogress": "https://github.com/kpozin/jquery-ajaxprogress.git",
     "jquery.ajaxQueue": "https://github.com/gnarf/jquery-ajaxQueue.git",
-    "jquery-tree-multiselect": "https://github.com/patosai/tree-multiselect.js.git",
     "angular": "1.4.0",
     "angular-cookies": "1.4.0",
     "angular-leaflet-directive": "0.7.9",
@@ -37,12 +36,15 @@
     "bootstrap-datepicker": "1.6.4",
     "bootstrap-select": "1.12.1",
     "bootstrap-multiselect": "https://github.com/davidstutz/bootstrap-multiselect",
+    "bootstrap-table": "1.11.1",
+    "bootstrap-toggle": "2.2.2",
     "fastselect": "https://github.com/dbrekalo/fastselect.git",
     "clipboard": "^1.7.1",
     "Leaflet.EasyButton": "^2.2.4"
   },
   "resolutions": {
     "angular": "1.4.0",
-    "leaflet": "~1.0.1"
+    "leaflet": "~1.0.1",
+    "bootstrap": "3.3.7"
   }
 }

@@ -1,0 +1,47 @@
+.. _setup_docker_compose:
+
+=============================================
+Orchestrate GeoNode stack with Docker Compose
+=============================================
+
+`Docker Compose <https://docs.docker.com/compose/>`_ is a tool for defining and running multi-container Docker applications automatically.
+This tool relies on **Docker** daemon so make sure you have completed successfully the section on :ref:`_setup_docker`.
+
+Introducing main concepts
+=========================
+
+In a composed application, different pieces of the application are called **services**. A service runs just one image but it specifies how that image is executed, what ports have to be used, which containers are depending each other, which volumes and so on.
+
+A **stack** is a group of interrelated services that share dependencies, and can be orchestrated and scaled together. A single stack is capable of defining and coordinating the functionality of an entire application like GeoNode.
+
+Install Docker Compose on Ubuntu
+================================
+
+Download the latest version of ``docker-compose`` binary::
+
+    sudo curl -L \
+    https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` \
+    -o /usr/local/bin/docker-compose
+
+Adjust executable permissions to the binary::
+
+    sudo chmod +x /usr/local/bin/docker-compose
+
+Verify the installation::
+
+    docker-compose --version
+
+Running GeoNode stack
+=====================
+
+Clone the repository::
+
+    git clone https://github.com/GeoNode/geonode.git
+
+Launch the stack with the build of GeoNode so any changes you did will be immediately available::
+
+    docker-compose up --build
+
+GeoNode will be available at the ip address of the ``docker0`` interface::
+
+    ifconfig -a

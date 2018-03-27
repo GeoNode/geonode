@@ -1,3 +1,0 @@
-You have been invited to join the group "{{ group.title }}" at {{ domain }}.
-
-http://{{ domain }}/groups/group/{{ group.slug }}/invite/{{ invite.token }}

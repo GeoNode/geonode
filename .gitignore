@@ -7,6 +7,7 @@ pip-log.txt
 MANIFEST
 dist
 .idea/
+.vscode/
 # supporting stuff pulled in by paver script
 geonode/development.db
 /geoserver/
@@ -82,6 +83,7 @@ geonode/qgis_tiles
 #Testing output
 .coverage
 .noseids
+.cache
 geonode_test_data/
 nosetests.xml
 geonode/static/geonode/junit.xml
@@ -90,7 +92,7 @@ geonode/static/geonode/junit.xml
 *~
 *.swp
 celerybeat-schedule.*
-celerybeat-schedule
+*.log
 
 # OSX specific
 .Python
@@ -129,3 +131,7 @@ geonode/contrib/monitoring/frontend/node_modules
 geonode/contrib/monitoring/frontend/static
 # celery files
 celerybeat-schedule.*
+
+geonode\.tests\.bdd\.e2e\.test_login/
+
+*.log
