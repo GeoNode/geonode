@@ -162,14 +162,14 @@ def qgis_server_post_save(instance, sender, **kwargs):
             dataset = ogr.Open(geonode_layer_path)
             layer = dataset.GetLayer()
             spatial_ref = layer.GetSpatialRef()
-            srid = spatial_ref.GetAuthorityCode(None)
+            srid = spatial_ref.GetAuthorityCode(None) if spatial_ref else None
             if srid:
                 instance.srid = srid
         else:
             dataset = gdal.Open(geonode_layer_path)
             prj = dataset.GetProjection()
             srs = osr.SpatialReference(wkt=prj)
-            srid = srs.GetAuthorityCode(None)
+            srid = srs.GetAuthorityCode(None) if srs else None
             if srid:
                 instance.srid = srid
     except Exception as e:

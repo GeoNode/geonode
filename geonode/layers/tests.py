@@ -116,7 +116,6 @@ class LayersTest(TestCase):
 
     # Test layer upload endpoint
     def test_upload_layer(self):
-
         # Test redirection to login form when not logged in
         response = self.client.get(reverse('layer_upload'))
         self.assertEquals(response.status_code, 302)
@@ -937,20 +936,30 @@ class UnpublishedObjectTests(TestCase):
         self.failUnlessEqual(response.status_code, 200)
 
         # with resource publishing
-        with self.settings(RESOURCE_PUBLISHING=True):
-            # 404 if layer is unpublished
-            response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
-            self.failUnlessEqual(response.status_code, 404)
-            # 200 if layer is unpublished but user has permission
-            assign_perm('publish_resourcebase', user, layer.get_self_resource())
-            response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
-            self.failUnlessEqual(response.status_code, 200)
-            # 200 if layer is published
-            layer.is_published = True
-            layer.save()
-            remove_perm('publish_resourcebase', user, layer.get_self_resource())
-            response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
-            self.failUnlessEqual(response.status_code, 200)
+        with self.settings(ADMIN_MODERATE_UPLOADS=True):
+            with self.settings(RESOURCE_PUBLISHING=True):
+                # 404 if layer is unpublished
+                response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+                self.failUnlessEqual(response.status_code, 404)
+
+                # 404 if layer is unpublished but user has permission but does not belong to the group
+                assign_perm('publish_resourcebase', user, layer.get_self_resource())
+                response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+                self.failUnlessEqual(response.status_code, 404)
+
+                # 200 if layer is unpublished and user is owner
+                remove_perm('publish_resourcebase', user, layer.get_self_resource())
+                layer.owner = user
+                layer.save()
+                response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+                self.failUnlessEqual(response.status_code, 200)
+
+                # 200 if layer is published
+                layer.is_published = True
+                layer.save()
+                self.client.login(username='bobby', password='bob')
+                response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+                self.failUnlessEqual(response.status_code, 200)
 
         layer.is_published = True
         layer.save()
@@ -1039,7 +1048,7 @@ class LayerModerationTestCase(LiveServerTestCase):
             lname = data['url'].split(':')[-1]
             l = Layer.objects.get(name=lname)
 
-            self.assertTrue(l.is_published)
+            self.assertFalse(l.is_published)
             l.delete()
 
 
