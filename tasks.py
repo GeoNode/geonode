@@ -38,7 +38,7 @@ http://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
     ctx.run("echo export SITEURL=\
 http://{public_fqdn}/ >> {override_fn}".format(**envs), pty=True)
     ctx.run("echo export ALLOWED_HOSTS=\
-\"\\\"['{public_fqdn}', '{public_host}',]\\\"\" \
+\"\\\"['{public_fqdn}', '{public_host}', 'django', 'geonode',]\\\"\" \
 >> {override_fn}".format(**envs), pty=True)
     ctx.run("echo export DATABASE_URL=\
 {dburl} >> {override_fn}".format(**envs), pty=True)
