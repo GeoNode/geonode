@@ -363,6 +363,7 @@ def sync(options):
     sh("%s python manage.py loaddata sample_admin.json" % settings)
     sh("%s python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" % settings)
     sh("%s python manage.py loaddata geonode/base/fixtures/initial_data.json" % settings)
+    sh("%s python manage.py set_all_layers_alternate" % settings)
 
 
 @task
