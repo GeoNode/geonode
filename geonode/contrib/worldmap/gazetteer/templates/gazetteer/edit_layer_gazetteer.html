@@ -17,7 +17,7 @@
 <p>
 {% trans "By adding your layer features to the gazetteer, they will be searchable and viewable by anyone regardless of your layer's security permissions. If you do not choose at least one depict-date field, the system will use the depict-date in the layer metadata (if any)." %}</p>
 
-<form method="POST">
+<form method="POST">{% csrf_token %}
 
   <div class="form-group">
     <label for="fields">{% trans "Select fields for this layer to be part of the gazetteer" %}</label>
