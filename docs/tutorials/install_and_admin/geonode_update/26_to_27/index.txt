@@ -536,7 +536,6 @@ Upgrade Development Environment
       .. code-block:: bash
 
           DJANGO_SETTINGS_MODULE=geonode.local_settings paver sync
-          DJANGO_SETTINGS_MODULE=geonode.local_settings python manage.py set_all_layers_alternate
 
     * Download the latest GeoServer WAR (http://build.geonode.org/geoserver/latest/geoserver-2.12.2.war)
 
@@ -820,10 +819,11 @@ Upgrade Development Environment
                 Right file: D:\tmp\data-2.9.x-oauth2\data\security\rest.properties
                 ------------------------------------------------------------------------
                 18 /rest/monitor/*;GET=ROLE_ADMINISTRATOR                                                             +-
-                19 /geofence/rest/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
+                19 /rest/br/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
+                20 /geofence/rest/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
                 ------------------------------------------------------------------------
                 ------------------------------------------------------------------------
-                21 /**;POST,DELETE,PUT=ROLE_AUTHENTICATED                                                             <> 4 /**;POST,DELETE,PUT=ROLE_ADMINISTRATOR
+                22 /**;POST,DELETE,PUT=ROLE_AUTHENTICATED                                                             <> 4 /**;POST,DELETE,PUT=ROLE_ADMINISTRATOR
                 ------------------------------------------------------------------------
 
     .. note:: In case of dubts you can always try to do a "diff" between your old GEOSERVER_DATA_DIR and http://build.geonode.org/geoserver/latest/data-2.12.2.zip
