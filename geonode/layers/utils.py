@@ -863,3 +863,10 @@ def collect_epsg(tmp_dir, prj_file_name):
             epsg_code = result[0][2]
 
     return epsg_code
+
+class SafeDict(dict):
+    def __missing__(self, key):
+        return "{" + key + "}"
+        
+
+

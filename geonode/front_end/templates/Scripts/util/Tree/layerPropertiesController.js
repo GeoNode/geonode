@@ -10,7 +10,7 @@ function($timeout, $scope, $http, $filter, $modalInstance, data, inputData, sett
     $scope.tabs = [{}, {}, {}, {}, {}];
     $scope.showSelectStyle = false;
 
-    //$scope.visualizationSettings = { selected: layer.Style.VisualizationSettings };
+    $scope.visualizationSettings = { selected: layer.Style.VisualizationSettings };
 
     $timeout(function() {
         $scope.tabs[data.selectedTabIndex].active = true;

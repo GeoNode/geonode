@@ -84,7 +84,7 @@ from geonode.base.models import TopicCategory
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
-from geonode.layers.utils import file_upload, is_raster, is_vector
+from geonode.layers.utils import file_upload, is_raster, is_vector, SafeDict
 from geonode.utils import resolve_object, llbbox_to_mercator
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
@@ -1427,7 +1427,8 @@ class LayerStyleView(View):
             json_field=json_field, created_by=request.user, modified_by=request.user)
 
         title = data.get('Title', str(style_extension.uuid))
-        sld_body = sld_body.format(style_name=str(style_extension.uuid))
+        formatter = string.Formatter()
+        sld_body = formatter.vformat(sld_body, (), SafeDict(style_name=str(style_extension.uuid)))
 
         style = Style(name=str(style_extension.uuid),
                       sld_body=sld_body, sld_title=title)

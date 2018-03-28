@@ -18,7 +18,7 @@ width: 100%;">
                 <label for="user_organization">Organization:</label>
                 <select id="user_organization" ng-model="ctrl.organizationId" class="form-control">
                     <option value="">---Please select---</option>
-    <option value="[{org.id}]" ng-repeat="org in ctrl.UserOrganizationList" >[{org.group.title}]</option>
+    <option value="[{org.group.id}]" ng-repeat="org in ctrl.UserOrganizationList" >[{org.group.title}]</option>
 </select>
             </div>
             <div class="form-group">
