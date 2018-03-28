@@ -3,6 +3,7 @@ from urllib import urlencode
 
 from django.conf import settings
 
+
 def create_geotiff_io_url(layer, access_token):
 
     # check if layer is a raster
