@@ -642,7 +642,7 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8000/geoserver/'
+    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
