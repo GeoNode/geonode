@@ -198,6 +198,10 @@
             getAttributesName: function(layerName) {
                 var deferred = $q.defer();
                 this.getLayerFeatureByName($window.GeoServerHttp2Root, layerName).then(function(res) {
+                    if (typeof res.featureTypes === 'undefined') {
+                        deferred.resolve([]);
+                        return;
+                    }
                     res.featureTypes.forEach(function(featureType) {
                         var attributes = [];
                         featureType.properties.forEach(function(e) {
@@ -222,8 +226,12 @@
             getShapeType: function(layerName) {
                 var deferred = $q.defer();
                 this.getLayerFeatureByName($window.GeoServerHttp2Root, layerName).then(function(res) {
+                    var shapeType = "";
+                    if (typeof res.featureTypes === 'undefined') {
+                        deferred.resolve('geoTiff');
+                        return;
+                    }
                     res.featureTypes.forEach(function(featureType) {
-                        var shapeType = "";
                         featureType.properties.forEach(function(e) {
                             if (e.name === 'the_geom') {
                                 if (e.localType.toLowerCase().search('polygon') != -1)
