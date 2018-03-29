@@ -722,8 +722,10 @@ def gxp2wm(config, map_obj=None):
             layer_config["srs"] = getattr(
                 settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
             bbox = layer.bbox[:-1]
-            #layer_config["bbox"] = bbox if layer_config["srs"] != 'EPSG:900913' \
-            #    else llbbox_to_mercator([float(coord) for coord in bbox])
+            # WorldMap GXP use a different bbox representation than GeoNode
+            bbox = [bbox[0], bbox[2], bbox[1], bbox[3]]
+            layer_config["bbox"] = [float(coord) for coord in bbox] if layer_config["srs"] != 'EPSG:900913' \
+                else llbbox_to_mercator([float(coord) for coord in bbox])
         if is_hh:
             layer_config['local'] = False
             layer_config['styles'] = ''
@@ -734,12 +736,7 @@ def gxp2wm(config, map_obj=None):
                 layer_config['group'] = group
             if group not in groups:
                 groups.add(group)
-            layer_config['llbbox'] = [
-                                        float(layer.bbox_x0),
-                                        float(layer.bbox_y0),
-                                        float(layer.bbox_x1),
-                                        float(layer.bbox_y1)
-                                    ]
+            layer_config['llbbox'] = [float(coord) for coord in bbox]
             # ml = layers.filter(name=layer_config['name'])
             #     layer_config['url'] = ml[0].ows_url
 
