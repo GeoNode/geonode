@@ -241,8 +241,8 @@ class NonGISActivityCreateAPIView(CreateAPIView):
         obj = LoadActivity(content_object=content_object, 
                             ip=ip, agent=agent, 
                             activity_type=activity_type,
-                            latitude=float(latitude) if latitude is not None else None, 
-                            longitude= float(longitude) if longitude is not None else None, 
+                            latitude=float(latitude) if latitude else None, 
+                            longitude= float(longitude) if longitude else None, 
                             user=user if user is not None and user.id is not None else None)
         obj.save()
 

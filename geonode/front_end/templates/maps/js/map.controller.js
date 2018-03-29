@@ -121,14 +121,14 @@
             return url;
         }
 
-        var user_href = window.location.href.split('/');
+        var mapId = window.location.pathname.split('/').pop();
         function isLayerPage(){
-            return _.contains(user_href,"layers");
+            return /\/layers\//g.test(window.location.pathname);
          }
 
          function getMapId(){
             if(!isLayerPage()){
-                return user_href[4];
+                return mapId;
             }else 
                 return "";
          }
@@ -182,7 +182,7 @@
                 if(isLayerPage()){
                     analyticsData.layer_id=layer_info;
                 }else{
-                    analyticsData.map_id=user_href[4];
+                    analyticsData.map_id=mapId;
                 }
                 return analyticsData;
             }
