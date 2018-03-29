@@ -59,7 +59,7 @@
     right: 8px;
     text-align: center;
     top: 45px;
-    width: 138px;
+    width: 100px;
     z-index: 1;
     background-color: rgba(0,60,136,.6);
 }
@@ -449,7 +449,7 @@
           border-radius: 0;
       }
       .modal-content{
-          min-height: 500px;
+          /*min-height: 500px;*/
       }
       
 

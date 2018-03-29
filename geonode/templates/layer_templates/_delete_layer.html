@@ -7,7 +7,7 @@
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h4 class="modal-title text-center" id="myModalLabel">{% trans "Delete Layer" %}</h4>
         </div>
-        <div class="modal-body" style="padding:0px 50px 0px 50px;">
+        <div class="modal-body">
           <div class="form-group">
             <h5> Are you sure you want to Delete this layer ? </h5>
           </div>
@@ -18,11 +18,10 @@
         </div>
       <form method="post" id="Layer_Del" action="">
       {% csrf_token %}
-      <div class="modal-footer" style="padding:10px 50px 0px 50px;">
+      <div class="modal-footer">
           <button class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
           <button type="submit" class="btn btn-primary" >{% trans "Yes" %}</button>
       </div>
-      <div class="block-separator"></div>
       </form>
       </div>
     </div>
