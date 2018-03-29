@@ -43,6 +43,7 @@ from geonode.layers.utils import (
     collect_epsg
 )
 import zipfile
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.gis.db import models
 from guardian.shortcuts import get_perms
 from django.contrib import messages
@@ -1374,15 +1375,19 @@ class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
 class LayerStyleView(View):
     def get(self, request, layername):
-        layer_obj = _resolve_layer(request, layername)
-        layer_style = layer_obj.default_style
-        serializer = StyleExtensionSerializer(layer_style.styleextension)
-        return HttpResponse(
-            json.dumps(
-                serializer.data,
-                ensure_ascii=False),
-            status=200,
-            content_type='application/javascript')
+        try:
+            layer_obj = _resolve_layer(request, layername)
+            serializer = StyleExtensionSerializer(layer_obj.default_style.styleextension)
+            
+        except ObjectDoesNotExist as ex:
+            return HttpResponse(ex,status=404,content_type='application/javascript')
+        else:    
+            return HttpResponse(
+                json.dumps(
+                    serializer.data,
+                    ensure_ascii=False),
+                status=200,
+                content_type='application/javascript')
 
     @custom_login_required
     def put(self, request, layername, **kwargs):
