@@ -56,18 +56,18 @@
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" style="height: 200px;width: 350px">
                             <form class="form-inline" style="padding: 10px">
                                 <div class="form-group" style="margin: 5px">
-                                  <label for="email">Search</label>
-                                  <select class="form-control"
+                                  <label for="email" style="width: 125px;">Search</label>
+                                  <select class="form-control" style="width: 189px;"
                                     ng-options="item.Id as item.Name for item in layers"
                                     ng-model="searchItemLayer"
                                     >
                                     <option style="display: none;" value="">Select a layer</option>
                                 </select>
-                                <label>from selected</label>
+
                                 </div>
                                 <div class="form-group" style="margin: 5px">
-                                  <label for="pwd">item of</label>
-                                  <select class="form-control"
+                                  <label for="pwd" style="width: 125px;">from selected item of</label>
+                                  <select class="form-control" style="width: 189px;"
                                     ng-options="item.Id as item.Name for item in layers"
                                     ng-model="baseLayer"
                                     >
@@ -76,13 +76,18 @@
                                  
                                 </div>
                                 <div class="form-group" style="margin: 5px">
-                                        <label>within </label>
-                                        <input type="number" class="form-control" ng-model="distance"> 
+                                        <label style="width: 125px;">within </label>
+                                        <input type="number" style="width: 131px;" class="form-control" ng-model="distance">
                                         <label>km buffer</label>
                                 </div>
-                                <div class="form-group text-center" style="margin: 15px">
-                                        <button class="btn btn-gd-primary" ng-click="getCrossLayerData()">Search Cross Layer</button>
+
+
+                                 <div class="form-group" style="margin: 5px">
+                                        <label style="width: 125px;"></label>
+                                          <button class="btn btn-primary" ng-click="getCrossLayerData()">Search Cross Layer</button>
+
                                 </div>
+
                               </form>
                         <!-- <p>
                                 Search 
