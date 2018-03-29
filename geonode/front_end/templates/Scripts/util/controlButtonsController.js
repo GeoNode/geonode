@@ -14,6 +14,10 @@
         (function() {
             $scope.action = {};
 
+            $scope.action.isNewMap = function(){
+                return typeof mapService.getId() === "undefined" ||  mapService.getId() == 0;
+            };
+
             $rootScope.action = $rootScope.action || {};
             $rootScope.action.saveProject = function() {
                 var projectName = mapService.getMapName();
