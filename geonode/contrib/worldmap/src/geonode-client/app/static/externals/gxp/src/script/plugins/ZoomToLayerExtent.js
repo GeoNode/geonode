@@ -62,7 +62,7 @@ gxp.plugins.ZoomToLayerExtent = Ext.extend(gxp.plugins.ZoomToExtent, {
             dataExtent = layer instanceof OpenLayers.Layer.Vector &&
                 layer.getDataExtent();
         }
-        return layer.restrictedExtent2 || dataExtent || layer.maxExtent || map.maxExtent;
+        return layer.restrictedExtent || dataExtent || layer.maxExtent || map.maxExtent;
     },
 
     /** api: method[addActions]

@@ -488,6 +488,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
 
         config["srs"] = getattr(
             settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
+
         config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
             else llbbox_to_mercator([float(coord) for coord in bbox])
 
@@ -534,7 +535,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         layers.append(maplayer)
 
     if bbox is not None:
-        minx, miny, maxx, maxy = [float(coord) for coord in bbox]
+        minx, maxx, miny, maxy = [float(coord) for coord in bbox]
         x = (minx + maxx) / 2
         y = (miny + maxy) / 2
 
@@ -764,6 +765,7 @@ def gxp2wm(config, map_obj=None):
                                     'restUrl': '/gs/rest', 'ptype': 'gxp_gnsource'
                                   }
 
+    del(config['map']['layers'][0])
     if config_is_string:
         config = json.dumps(config)
 

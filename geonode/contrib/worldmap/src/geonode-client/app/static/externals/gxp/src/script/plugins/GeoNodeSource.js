@@ -112,7 +112,6 @@ gxp.plugins.GeoNodeSource = Ext.extend(gxp.plugins.WMSSource, {
                     this.url,
                     params, {
                         maxExtent: maxExtent,
-                        restrictedExtent2: maxExtent,
                         restrictedExtent: maxExtent,
                         singleTile: ("tiled" in config) ? !config.tiled : false,
                         ratio: config.ratio || 1,
