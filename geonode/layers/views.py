@@ -1352,7 +1352,7 @@ class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
             style_extension.title = data.get('Title', style_extension.title)
             style_extension.style.sld_title = style_extension.title
         except Exception as ex:
-            raise ex
+            return HttpResponse(ex,status=404,content_type='application/javascript')
 
         style_extension.style.save()
         style_extension.save()
@@ -1378,7 +1378,6 @@ class LayerStyleView(View):
         try:
             layer_obj = _resolve_layer(request, layername)
             serializer = StyleExtensionSerializer(layer_obj.default_style.styleextension)
-            
         except ObjectDoesNotExist as ex:
             return HttpResponse(ex,status=404,content_type='application/javascript')
         else:    

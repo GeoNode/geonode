@@ -27,7 +27,7 @@ width: 100%;">
     <div class="modal-body" data-ng-show="project.showNameInput">
         <form ng-submit="save()">
             <div class="form-group">
-                <label>Filename</label>
+                <label>Name</label>
                 <input required type="text" placeholder="Map name" validatefilename class="form-control input-sm" maxlength="100" ng-model="file.saveAs" autofocus />
             </div>
             <div class="form-group">
@@ -49,7 +49,12 @@ width: 100%;">
                 <label for="map_abstract">Abstract</label>
                 <textarea required ng-app="file.abstract" id="map_abstract" ng-model="file.abstract"  class="form-control" rows="10" style="height: 100px;"></textarea>
             </div>
-            <input class="btn btn-gd-primary pull-right icon-btn-color" type="submit" value="Save" />
+
+             <div class="text-right">
+               <input class="btn btn-primary" type="submit" value="Save" />
+            </div>
+
+
         </form>
     </div>
     <div style="clear:both"></div>

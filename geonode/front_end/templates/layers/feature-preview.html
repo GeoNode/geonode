@@ -2,9 +2,9 @@
     <div class="modal-header">
             <i class="fa fa-times-circle modal-close-icon" style="float: right; cursor: pointer" ng-click="ctrl.closeDialog()"></i>
         <h4 class="modal-title">Features</h4>
-        <button class="btn btn-default" ng-click="ctrl.SaveAsLayer()">Save as layer [{ctrl.selectedTab.name}]</button>
+
     </div>
-    <div class="modal-body" style="padding-top: 0;padding-bottom:0;">
+    <div class="modal-body" style="padding-top: 15px;padding-bottom:0;">
 
         <tabset>
             <tab active='tab.active' ng-click="ctrl.selectedTab = tab" ng-repeat="tab in ctrl.tabs">
@@ -12,9 +12,13 @@
                     [{tab.name}]
                     <span ng-if="tab.active" class="selected-down-arrow"></span>
                 </tab-heading>
-                <div ui-grid="ctrl.data[tab.name].gridOptions" ui-grid-pagination ui-grid-selection  class="grid"></div>
+
+                <div ui-grid="ctrl.data[tab.name].gridOptions" ui-grid-pagination ui-grid-selection style="height: 300px;margin-top: 15px;"  class="grid"></div>
             </tab>
         </tabset>
         <div style="clear:both"></div>
+    </div>
+    <div class="modal-footer">
+         <button class="btn btn-primary" ng-click="ctrl.SaveAsLayer()">Save as layer [{ctrl.selectedTab.name}]</button>
     </div>
 </div>

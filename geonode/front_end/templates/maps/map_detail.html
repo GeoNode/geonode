@@ -17,6 +17,7 @@
     {% endif %}
     {# include "maps/map_include.html" #}
     {% include 'Templates/_base-headers.html' %}
+    {% include "map_templates/_publish_map.html" %}
     {{ block.super }}
 {% endblock %}
 
@@ -65,7 +66,7 @@
                                     </ul>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default btn-gd"
+                                    <button type="button" class="btn btn-primary"
                                             data-dismiss="modal">
                                         {% trans "Close" %}
                                     </button>
@@ -125,7 +126,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default btn-gd"
+                                    <button type="button" class="btn btn-primary"
                                             data-dismiss="modal">
                                         {% trans "Close" %}
                                     </button>
@@ -174,7 +175,7 @@
                                                 {% endif %}
                                                 <li class="list-group-item">
                                                         <button class="btn btn-gd-primary btn-md btn-block" data-toggle="modal" data-target="#_publish_map">{% trans "Push for Approval" %}</button>
-                                                        {% include "map_templates/_publish_map.html" %}
+
                                                     {% endif %}
                                                 </li>
                                                 {% if user_role == "manager" and status == 'PENDING' %}
@@ -236,7 +237,7 @@
                                                             </ul>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-default btn-gd"
+                                                            <button type="button" class="btn btn-primary"
                                                                     data-dismiss="modal">
                                                                 {% trans "Close" %}
                                                             </button>

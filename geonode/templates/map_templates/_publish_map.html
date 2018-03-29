@@ -7,7 +7,7 @@
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h4 class="modal-title text-center" id="myModalLabel">{% trans "Push Map" %}</h4>
         </div>
-        <div class="modal-body" style="padding:0px 50px 0px 50px;">
+        <div class="modal-body">
           <div class="form-group">
             <!--<h5>Are you sure you want to push Map : <a href="{{ resource.detail_url }}/member">{{ resource.title }}</a> </h5>-->
             Are you sure you want to push Map : <a href="{{ resource.detail_url }}/member">{{ resource.title }}</a>
@@ -19,11 +19,10 @@
         </div>
           <form method="post" action="{% url "map-publish" resource.id %}">
               {% csrf_token %}
-          <div class="modal-footer" style="padding:10px 50px 0px 50px;">
+          <div class="modal-footer" >
               <button class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
               <button type="submit" class="btn btn-primary" >{% trans "Yes" %}</button>
           </div>
-          <div class="block-separator"></div>
           </form>
       </div>
     </div>

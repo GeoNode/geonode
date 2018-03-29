@@ -103,8 +103,8 @@ a{
 {
     position: absolute;
     z-index: 2;
-    top: 82px;
-    left: 11px;
+    top: 55px;
+    right: 120px;
 }
 
 .map-loading-icon i {
