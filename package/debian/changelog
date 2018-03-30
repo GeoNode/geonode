@@ -1,3 +1,14 @@
+geonode (2.8.0+rc13) xenial; urgency=high 
+  [ afabiani ]
+  * [ac8065] - Preparing for RELEASE RC13
+  * [cc48eb] - Preparing for RELEASE RC13
+
+  [ Alessio Fabiani ]
+  * [7b6ea8]  - preparing for release 2.8.0
+  * [1d1911] bump version to 2.8.0rc13
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 30 Mar 2018 13:28:33 +0200
+
 geonode (2.8.0+rc12) xenial; urgency=high 
   [ Alessio Fabiani ]
   * [27db87]  - Fix GeoNode 2.6.3 to 2.7.x+ Migration (#3547)
