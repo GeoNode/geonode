@@ -601,14 +601,16 @@ def post_delete_layer(instance, sender, **kwargs):
     if instance.service is not None and instance.service.method == INDEXED:
         return
 
+    from urlparse import urlparse
     from geonode.maps.models import MapLayer
     if instance.alternate:
+        hostname = urlparse(instance.ows_url).hostname
         logger.debug(
             "Going to delete associated maplayers for [%s]",
             instance.alternate.encode('utf-8'))
         MapLayer.objects.filter(
             name=instance.alternate,
-            ows_url=instance.ows_url).delete()
+            ows_url__icontains=hostname).delete()
 
     if instance.alternate:
         logger.debug(
