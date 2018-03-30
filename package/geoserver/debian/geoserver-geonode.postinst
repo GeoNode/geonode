@@ -11,6 +11,7 @@ if [ "$(grep ^GEOSERVER /etc/default/tomcat8)" == "" ]; then
 	echo '# GEOSERVER additions' >> /etc/default/tomcat8
 	echo 'JAVA_HOME=/usr/' >> /etc/default/tomcat8
 	echo $JVM_OPTS >> /etc/default/tomcat8
+    sed -i -e 's/xom-\*\.jar/xom-\*\.jar,bcprov\*\.jar/g' /var/lib/tomcat8/conf/catalina.properties
     mv /etc/tomcat8/tomcat-users.xml /etc/tomcat8/tomcat-users.xml.org
     echo '<tomcat-users xmlns="http://tomcat.apache.org/xml"' >> /etc/tomcat8/tomcat-users.xml
     echo '          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' >> /etc/tomcat8/tomcat-users.xml
