@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.info(msg, *args)
+    logger.debug(msg, *args)
 
 
 iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012]))' +
@@ -579,9 +579,10 @@ def run_import(upload_session, async=_ASYNC_UPLOAD):
             target.name,
             target.workspace.name)
         task.set_target(target.name, target.workspace.name)
-
     elif ogc_server_settings.datastore_db and task.target.store_type != 'coverageStore':
-        target = create_geoserver_db_featurestore()
+        target = create_geoserver_db_featurestore(
+            store_name=ogc_server_settings.DATASTORE,
+        )
         _log(
             'setting target datastore %s %s',
             target.name,
@@ -632,7 +633,7 @@ def create_geoserver_db_featurestore(
         store_type=None, store_name=None,
         author_name='admin', author_email='admin@geonode.org'):
     cat = gs_catalog
-    dsname = ogc_server_settings.DATASTORE
+    dsname = store_name or ogc_server_settings.DATASTORE
     # get or create datastore
     try:
         if store_type == 'geogig' and ogc_server_settings.GEOGIG_ENABLED:
@@ -652,7 +653,7 @@ def create_geoserver_db_featurestore(
                     settings,
                     'GEOGIG_DATASTORE_NAME'):
                 store_name = settings.GEOGIG_DATASTORE_NAME
-            logger.info(
+            logger.debug(
                 'Creating target datastore %s' %
                 store_name)
 
@@ -676,8 +677,8 @@ def create_geoserver_db_featurestore(
         else:
             logging.info(
                 'Creating target datastore %s' % dsname)
-            ds = cat.create_datastore(dsname)
             db = ogc_server_settings.datastore_db
+            ds = cat.create_datastore(dsname)
             ds.connection_parameters.update(
                 host=db['HOST'],
                 port=db['PORT'] if isinstance(

@@ -21,7 +21,7 @@
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.forms import AdminPasswordChangeForm
-from django.utils.translation import ugettext, ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.db import transaction
@@ -152,7 +152,7 @@ class ProfileAdmin(admin.ModelAdmin):
                     form,
                     None)
                 self.log_change(request, user, change_message)
-                msg = ugettext('Password changed successfully.')
+                msg = _('Password changed successfully.')
                 messages.success(request, msg)
                 return HttpResponseRedirect('..')
         else:
@@ -180,7 +180,7 @@ class ProfileAdmin(admin.ModelAdmin):
         return TemplateResponse(request,
                                 self.change_user_password_template or
                                 'admin/auth/user/change_password.html',
-                                context, current_app=self.admin_site.name)
+                                context)  # , using=self.admin_site.name)
 
     def response_add(self, request, obj, post_url_continue=None):
         """

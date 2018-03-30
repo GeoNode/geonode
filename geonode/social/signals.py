@@ -29,7 +29,7 @@ from dialogos.models import Comment
 
 from django.conf import settings
 from django.db.models import signals
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 # from actstream.exceptions import ModelNotActionable
 
@@ -231,9 +231,21 @@ def json_serializer_producer(dictionary):
     if 'doc_file' in dictionary.keys():
         file_object = dictionary['doc_file']
         dictionary['doc_file'] = str(file_object)
+    if 'regions' in dictionary.keys():
+        keys = dictionary['regions']
+        dictionary['regions'] = str(keys)
     if 'keywords' in dictionary.keys():
         keys = dictionary['keywords']
         dictionary['keywords'] = str(keys)
+    if 'tkeywords' in dictionary.keys():
+        keys = dictionary['tkeywords']
+        dictionary['tkeywords'] = str(keys)
+    if 'styles' in dictionary.keys():
+        keys = dictionary['styles']
+        dictionary['styles'] = str(keys)
+    if 'contacts' in dictionary.keys():
+        keys = dictionary['contacts']
+        dictionary['contacts'] = str(keys)
     for (x, y) in dictionary.items():
         if not y:
             # this is used to solve

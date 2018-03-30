@@ -37,7 +37,7 @@ INSTALLED_APPS = list(INSTALLED_APPS)
 # QGIS Server Backend settings
 
 # Delete Geoserver settings
-
+USE_GEOSERVER = False
 if 'geonode.geoserver' in INSTALLED_APPS:
     INSTALLED_APPS.remove("geonode.geoserver")
 
@@ -48,6 +48,9 @@ if 'LOCAL_GEOSERVER' in locals():
     MAP_BASELAYERS.remove(LOCAL_GEOSERVER)
     del LOCAL_GEOSERVER
 
+if 'PUBLIC_GEOSERVER' in locals():
+    MAP_BASELAYERS.remove(PUBLIC_GEOSERVER)
+    del PUBLIC_GEOSERVER
 
 # Change context processors
 geoserver_context_processor = 'geonode.geoserver.context_processors.geoserver_urls'

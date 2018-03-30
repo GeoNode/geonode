@@ -159,39 +159,35 @@ Ext.onReady(function() {
                 var map = app.mapPanel.map;
                 var layer = app.map.layers.slice(-1)[0];
                 var bbox = layer.bbox;
-                var crs = layer.crs
-
+                var crs = layer.srs
                 if (bbox != undefined)
                 {
-                   if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
-                       bbox = bbox[Object.keys(layer.srs)].bbox;
-                   }
-
                    var extent = new OpenLayers.Bounds();
 
-                   if(crs && crs.properties) {
-                       extent.left = bbox[0];
-                       extent.right = bbox[2];
-                       extent.bottom = bbox[1];
-                       extent.top = bbox[3];
-
-                       if (crs.properties != map.projection) {
-                           extent = extent.clone().transform(crs.properties, map.projection);
-                       }
-                   } else {
+                   if (layer.capability.bbox &&
+                            !Array.isArray(layer.capability.bbox) &&
+                                    map.projection in layer.capability.bbox) {
+                       bbox = layer.capability.bbox[map.projection].bbox;
                        extent = OpenLayers.Bounds.fromArray(bbox);
+                   } else {
+                       if (crs != map.projection) {
+                           extent = OpenLayers.Bounds.fromArray(bbox);
+                           extent = extent.clone().transform(crs, map.projection);
+                       } else {
+                           extent = OpenLayers.Bounds.fromArray(bbox);
+                       }
                    }
 
                    var zoomToData = function()
                    {
-                       map.zoomToExtent(extent, false);
+                       map.zoomToExtent(extent, true);
                        app.mapPanel.center = map.center;
                        app.mapPanel.zoom = map.zoom;
                        map.events.unregister('changebaselayer', null, zoomToData);
                    };
-                   map.events.register('changebaselayer',null, zoomToData);
+                   map.events.register('changebaselayer',null,zoomToData);
                    if(map.baseLayer){
-                       map.zoomToExtent(extent, false);
+                       map.zoomToExtent(extent, true);
                    }
                 }
             },

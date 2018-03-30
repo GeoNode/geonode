@@ -212,10 +212,15 @@ def legend(request, layername, layertitle=False, style=None):
     if not style:
         # generate style cache
         if not qgis_layer.default_style:
-            style_list(layer, internal=False)
+            try:
+                style_list(layer, internal=False)
+            except:
+                print 'Failed to fetch styles'
+
             # refresh values
             qgis_layer.refresh_from_db()
-        style = qgis_layer.default_style.name
+        if qgis_layer.default_style:
+            style = qgis_layer.default_style.name
 
     legend_path = QGIS_SERVER_CONFIG['legend_path']
     legend_filename = legend_path % (qgis_layer.qgis_layer_name, style)
@@ -299,10 +304,15 @@ def tile(request, layername, z, x, y, style=None):
     if not style:
         # generate style cache
         if not qgis_layer.default_style:
-            style_list(layer, internal=False)
+            try:
+                style_list(layer, internal=False)
+            except:
+                print 'Failed to fetch styles'
+
             # refresh values
             qgis_layer.refresh_from_db()
-        style = qgis_layer.default_style.name
+        if qgis_layer.default_style:
+            style = qgis_layer.default_style.name
 
     tile_path = QGIS_SERVER_CONFIG['tile_path']
     tile_filename = tile_path % (qgis_layer.qgis_layer_name, style, z, x, y)
@@ -542,22 +552,29 @@ def qml_style(request, layername, style_name=None):
         # Request QML from QGIS server
         if not style_name:
             # If no style name provided, then it is a List request
-            styles_obj = style_list(layer, internal=False)
-            styles_dict = [model_to_dict(s) for s in styles_obj]
+            styles_obj = None
+            try:
+                styles_obj = style_list(layer, internal=False)
+            except:
+                print 'Failed to fetch styles'
 
-            # If no style returned by GetCapabilities, this is a bug in QGIS
-            # Attempt to generate default style name
-            if not styles_dict:
-                style_url = style_get_url(layer, 'default')
-                response = requests.get(style_url)
-                if response.status_code == 200:
-                    style_url = style_add_url(layer, 'default')
-                    with open(layer.qgis_layer.qml_path, 'w') as f:
-                        f.write(response.content)
+            styles_dict = []
+            if styles_obj:
+                styles_dict = [model_to_dict(s) for s in styles_obj]
+
+                # If no style returned by GetCapabilities, this is a bug in QGIS
+                # Attempt to generate default style name
+                if not styles_dict:
+                    style_url = style_get_url(layer, 'default')
                     response = requests.get(style_url)
                     if response.status_code == 200:
-                        styles_obj = style_list(layer, internal=False)
-                        styles_dict = [model_to_dict(s) for s in styles_obj]
+                        style_url = style_add_url(layer, 'default')
+                        with open(layer.qgis_layer.qml_path, 'w') as f:
+                            f.write(response.content)
+                        response = requests.get(style_url)
+                        if response.status_code == 200:
+                            styles_obj = style_list(layer, internal=False)
+                            styles_dict = [model_to_dict(s) for s in styles_obj]
 
             response = HttpResponse(
                 json.dumps(styles_dict), content_type='application/json')
@@ -635,7 +652,11 @@ def qml_style(request, layername, style_name=None):
             response = requests.get(style_url)
 
             if not (response.status_code == 200 and response.content == 'OK'):
-                style_list(layer, internal=False)
+                try:
+                    style_list(layer, internal=False)
+                except:
+                    print 'Failed to fetch styles'
+
                 return TemplateResponse(
                     request,
                     'qgis_server/forms/qml_style.html',
@@ -651,12 +672,15 @@ def qml_style(request, layername, style_name=None):
             # We succeeded on adding new style
 
             # Refresh style models
-            style_list(layer, internal=False)
-            qgis_style = layer.qgis_layer.styles.get(name=style_name)
-            qgis_style.title = style_title
-            qgis_style.save()
+            try:
+                style_list(layer, internal=False)
+                qgis_style = layer.qgis_layer.styles.get(name=style_name)
+                qgis_style.title = style_title
+                qgis_style.save()
 
-            alert_message = 'Successfully add style %s' % style_name
+                alert_message = 'Successfully add style %s' % style_name
+            except:
+                alert_message = 'Failed to fetch styles'
 
             return TemplateResponse(
                 request,
@@ -684,7 +708,7 @@ def qml_style(request, layername, style_name=None):
         try:
             style = layer.qgis_layer.styles.get(name=style_name)
             shutil.rmtree(style.style_tile_cache_path)
-        except OSError:
+        except:
             pass
 
         style_url = style_remove_url(layer, style_name)
@@ -695,7 +719,11 @@ def qml_style(request, layername, style_name=None):
             alert_message = response.content
             if 'NAME is NOT an existing style.' in response.content:
                 alert_message = '%s is not an existing style' % style_name
-            style_list(layer, internal=False)
+            try:
+                style_list(layer, internal=False)
+            except:
+                print 'Failed to fetch styles'
+
             return TemplateResponse(
                 request,
                 'qgis_server/forms/qml_style.html',
@@ -711,9 +739,12 @@ def qml_style(request, layername, style_name=None):
         # Successfully removed styles
         # Handle when default style is deleted.
         # Will be handled by style_list method
-        style_list(layer, internal=False)
+        try:
+            style_list(layer, internal=False)
 
-        alert_message = 'Successfully deleted style %s' % style_name
+            alert_message = 'Successfully deleted style %s' % style_name
+        except:
+            alert_message = 'Failed to fetch styles'
 
         return TemplateResponse(
             request,

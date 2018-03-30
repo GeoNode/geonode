@@ -215,9 +215,12 @@ setup(name='GeoNode',
             "coverage<=4.4.1",
             "factory-boy<=2.9.2",
             "Faker<=0.8.4",
-            "pytest",
-            "pytest-bdd<=2.5.0",  # latest requires six>=1.11.0
-            "pytest-splinter",
+            "parse==1.8.2",
+            "parse-type==0.4.1",
+            "pytest==3.5.0",
+            "pytest-bdd==2.20.0",
+            "pytest-splinter==1.8.5",
+            "pytest-django==3.1.2",
       ],
       zip_safe=False
       )
