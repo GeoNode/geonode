@@ -336,7 +336,8 @@ class DocumentUpdateView(UpdateView):
 def document_metadata(
         request,
         docid,
-        template='documents/document_metadata.html'):
+        template='documents/document_metadata.html',
+        ajax=True):
 
     document = None
     try:
@@ -453,12 +454,18 @@ def document_metadata(
                 except BaseException:
                     print "Could not send slack message for modified document."
 
-            return HttpResponseRedirect(
-                reverse(
-                    'document_detail',
-                    args=(
-                        document.id,
-                    )))
+            if not ajax:
+                return HttpResponseRedirect(
+                    reverse(
+                        'document_detail',
+                        args=(
+                            document.id,
+                        )))
+
+            message = document.id
+
+            return HttpResponse(json.dumps({'message': message}))
+
         # - POST Request Ends here -
 
         # Request.GET
