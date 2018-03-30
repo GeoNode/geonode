@@ -11,9 +11,15 @@ if [ "$(grep ^GEOSERVER /etc/default/tomcat8)" == "" ]; then
 	echo '# GEOSERVER additions' >> /etc/default/tomcat8
 	echo 'JAVA_HOME=/usr/' >> /etc/default/tomcat8
 	echo $JVM_OPTS >> /etc/default/tomcat8
-    echo '<role rolename="tomcat"/>' >> /etc/tomcat8/tomcat-users.xml
-    echo '<role rolename="manager-gui"/>' >> /etc/tomcat8/tomcat-users.xml
-    echo '<user username="tomcat" password="tomcat" roles="tomcat,manager-gui"/>' >> /etc/tomcat8/tomcat-users.xml
+    mv /etc/tomcat8/tomcat-users.xml /etc/tomcat8/tomcat-users.xml.org
+    echo '<tomcat-users xmlns="http://tomcat.apache.org/xml"' >> /etc/tomcat8/tomcat-users.xml
+    echo '          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' >> /etc/tomcat8/tomcat-users.xml
+    echo '          xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd"' >> /etc/tomcat8/tomcat-users.xml
+    echo '          version="1.0">' >> /etc/tomcat8/tomcat-users.xml
+    echo '    <role rolename="tomcat"/>' >> /etc/tomcat8/tomcat-users.xml
+    echo '    <role rolename="manager-gui"/>' >> /etc/tomcat8/tomcat-users.xml
+    echo '    <user username="tomcat" password="tomcat" roles="tomcat,manager-gui"/>' >> /etc/tomcat8/tomcat-users.xml
+    echo '</tomcat-users>' >> /etc/tomcat8/tomcat-users.xml
 fi
 
 # Fix permissions on deployed jar
