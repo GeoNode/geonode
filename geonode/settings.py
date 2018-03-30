@@ -803,6 +803,8 @@ PYCSW = {
 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
 DEFAULT_MAP_CRS = "EPSG:3857"
 
+DEFAULT_LAYER_FORMAT = "image/png8"
+
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)
 
