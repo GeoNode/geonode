@@ -1,9 +1,20 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic);
 
 html,body{
-    height: 100%;
     font-family: 'Roboto', sans-serif;
 }
+html {
+    height: 100%;
+    box-sizing: border-box;
+  }
+  body {
+    position: relative;
+    margin: 0;
+    padding-bottom: 100px;
+    min-height: 100%;
+    background-color: #f7f7f7;
+  }
+
 *:focus {
     /*outline: none;*/
     outline: 0;
@@ -795,14 +806,16 @@ table.gd-list-table tr td .media-body {
     min-height:100%;
 } */
 #gd-footer{
-    position: relative;
-    margin-top: -100px; /* negative value of footer height */
-    clear:both;
+  
     background:#5a5d63;
     color:#FFF;
-    min-height:100px;
+    height:100px;
     width:100%;
     z-index:100;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
 }
 #gd-footer .navbar-toggle {
     background:#cbcaca;
@@ -1163,10 +1176,7 @@ fieldset[disabled] .btn-gd-yellow.focus {
     border-bottom-width: 0;
 }
 /* start wrapper or contenter or body of page */
-#gd-wrapper{
-    background:#f7f7f7;
-    padding-bottom: 100px; /* 120 */
-}
+
 .gd-content {
 
 }
