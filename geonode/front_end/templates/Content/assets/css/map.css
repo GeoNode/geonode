@@ -84,11 +84,11 @@
 
 .surfgis .base-map-switcher {
     
-    padding: 15px 20px;
+    padding: 5px 0 0 0;
     position: absolute;
     right: 8px;
     top: 87px;
-    width: 508px;
+    width: 455px;
     z-index: 2;
 }
 
@@ -401,13 +401,13 @@
    
       .base-map-list
       {
-         list-style-type: none;
-         margin: 0;
-         padding: 0;
-         width: 465px;
-         display: inline-block;
-         padding: 5px 0 11px;
-         border-bottom: 1px solid #e0e0e0;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        width: 452px;
+        display: inline-block;
+        padding: 0px 0 5px;
+        border-bottom: 1px solid #e0e0e0;
       } 
       .base-map-list:last-child
       {
@@ -416,15 +416,15 @@
      .base-map-list li
      {
          float: left;
-         margin-right: 10px;
+         margin-right: 6px;
      } 
      .base-map-list li.name
      {
-        font-size: 17px;
+        font-size: 14px;
         color:#73757d;
-        margin-right: 15px;
         width: 100px;
         line-height: 40px;
+        margin: 0 7px 0;
      } 
      .base-map-list li img
      {
