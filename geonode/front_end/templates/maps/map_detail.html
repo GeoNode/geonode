@@ -25,6 +25,11 @@
 
 {% block body_outer %}
     {% overall_rating resource "map" as map_rating %}
+    <style>
+        #gd-footer {
+        display: none;
+    }
+    </style>
     <div class="gd-content">
         <div class="gd-content-body layer-test">
             <div class="row">
@@ -540,7 +545,7 @@
         }*/
         function resetWrapperHight() {
             var bodyHeight = $("body").height();
-            bodyHeight = parseInt(parseInt(bodyHeight) - 53);
+            bodyHeight = parseInt(parseInt(bodyHeight) + 40);
             console.log("bodyHeight", bodyHeight);
             GD_WRAPPER__HEIGHT = bodyHeight;
             $("#gd-wrapper .map-details-information, #gd-wrapper .map-details-info").css("height", bodyHeight + "px");
