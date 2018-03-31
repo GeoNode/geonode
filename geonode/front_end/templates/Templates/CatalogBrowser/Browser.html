@@ -55,32 +55,41 @@
         </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-9">
         <div class="file-container">
-                <div style="padding:20px 0px 60px 0px" ng-show="layers.length != 0">
-                        <span class="col-md-2" style="font-weight:bold">Search</span>
-                        <span class="col-md-6">
-                        <input type="text" class="form-control ng-pristine ng-valid" ng-model="searchKeyword">
-                        </span>
-                    </div>
-                <div class="list-group">
+              
+<div style="background-color: #f9f9f9;padding:10px;margin: -1px 0 0;border: 1px solid #e9e9e9;">
+                    <div class="input-group">
+                            <span class="input-group-addon" id="basic-addon1"><i class="fa fa-search"></i></span>
+                            <input type="text" class="form-control ng-pristine ng-valid" ng-model="searchKeyword">
+                          </div>
+                        </div>
+
+
+                <div class="list-group" style="overflow-y: auto;height:382px;margin-right:2px;">
            
-                <a class="list-group-item" ng-repeat="layer in layers | filter: searchKeyword" ng-dblclick="addLayer(layer)">[{layer.Name}]</a>
+                <a class="list-group-item" style="overflow: hidden;border-radius:0" ng-repeat="layer in layers | filter: searchKeyword" ng-dblclick="addLayer(layer)">[{layer.Name}]</a>
             
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
+    <!-- <div class="col-md-3">
         <div class="file-properties">
             <ng-include ng-if="!!selectedFile.Name" src="templates.properties"></ng-include>
             <div class="clearer">
             </div>
         </div>
-    </div>
+    </div> -->
 
     </div>
 
     </div>
 
 </div>
+
+<style>
+  .modal-dialog {
+    width: 800px;
+}  
+</style>
