@@ -35,6 +35,7 @@ At the end of this section you will be able to setup from scratch the whole GeoN
     setup_on_centos/index
     network_conf_issues
     win_bin_install/win_binary_installer
+    geonode_update/index
 
 :ref:`quick_installation`
     This section is a quick guide to get GeoNode up and running in most common operating systems. This is meant to be run on a fresh machine with no previously installed packages or GeoNode versions.
@@ -59,3 +60,5 @@ At the end of this section you will be able to setup from scratch the whole GeoN
 :ref:`network_configuration_issues`
     This section will guide the user through the steps necessary to understand and possibly solve any of the most common configuration issues on communication between Django and GeoServer.
 
+:ref:`geonode_update`
+    This section will guide the user through the steps necessary to update GeoNode from old versions.

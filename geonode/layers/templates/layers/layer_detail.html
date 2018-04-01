@@ -255,6 +255,11 @@
 
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
+        {% if link_geotiff_io %}
+        <li class="list-group-item">
+          <a href="{{link_geotiff_io}}" class="btn btn-primary btn-block" target="_blank">{% trans "Analyze with" %} GeoTIFF.io</a>
+        </li>
+        {% endif %}
         <li class="list-group-item">
         {% if links or links_download %}
            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>

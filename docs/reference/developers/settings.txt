@@ -680,6 +680,18 @@ Default: ``False``
 
 A boolean that specifies whether the Exif contrib app is enabled.  If enabled, metadata is generated from Exif tags when documents are uploaded.
 
+GEOTIFF_IO_ENABLED
+------------
+Default: ``False``
+
+A boolean that specifies whether the GeoTIFF.io contrib feature is enabled.  If enabled, an 'Analyze with GeoTIFF.io' button is added to the layer_detail page.
+
+GEOTIFF_IO_BASE_URL
+------------
+Default: `https://app.geotiff.io`
+
+A string that specifies what instance of GeoTIFF.io should be opened when the 'Analyze with GeoTIFF.io' button is clicked.
+
 NLP_ENABLED
 -----------
 Default: ``False``
