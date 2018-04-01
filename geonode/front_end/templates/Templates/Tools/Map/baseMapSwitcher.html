@@ -49,6 +49,9 @@
             border-style: solid;
             border-color: black transparent transparent transparent;
         }
+        .dropBox::before {
+    right: 40px;
+}
         </style>
 
 <button ng-show="!expanded" class="on-map-button pull-right" ng-click="expanded=true"><img src="/static/geonode/images/map-thumb.jpg" width="20" height="20"/>&nbsp;Basemaps</button>
@@ -59,7 +62,7 @@
 
     <div>
 
-            <div class="arrow-up"></div>
+            <div class="arrow-up" style="right: 40px;"></div>
 
             <ul class="base-map-list" ng-repeat="(key, value) in baseMapGroups">
                 <li class="name"> {{key}} </li>     
