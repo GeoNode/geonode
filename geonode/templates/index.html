@@ -1513,7 +1513,7 @@ $(document).ready(function() {
 </script>
 {% if not request.user.is_authenticated %}
 <div class="modal fade modal_top_mar" id="welcomeHelpModal" tabindex="-1" role="dialog" aria-labelledby="memberModalLabel" aria-hidden="true">
-    <div class="modal-dialog home-modal-border">
+    <div class="modal-dialog home-modal-border" style="width: 600px">
         <div class="modal-content">
             <div class="welcomeHelpModalBox ehmb_1 activeitem" id="uploadlayerdoc" style="height:220px;">
                 <div class="modal-header home-modal-hbg">
@@ -1522,7 +1522,7 @@ $(document).ready(function() {
                 </div>
                 <div class="modal-body">
                     <p>
-                        You can upload your data layer on following formats on GeoDASH platform:
+                        You can upload your data layer on following formats on GeoDASH platform asdasd:
                         <br> <br><i class="fa fa-check home-modal"></i>Shape Layer : .shp .shx .dbf .prj
                         <br> <i class="fa fa-check home-modal"></i>Zipped Shape Layer : .shp .shx .dbf .prj
                         <br> <i class="fa fa-check home-modal"></i>Open Street Map Layer : .osm
@@ -1620,7 +1620,7 @@ $(document).ready(function() {
             <div class="modal-body" class="do-show">
                 <p><input type="checkbox" id="helpmodal" value="0"/>  Do not show this message again!.</p>
             </div>
-            <div class="modal-body text-center">
+            <div class="text-center">
                 <p>
                     <a href="javascript:;" onclick="previousItem()" title="Previous"> < </a>
                     <a class="helpselector ehmbl_1 activeitem home-modal-limit" data-show-index="1" id="uploadlayerdocno">1</a>
@@ -1633,7 +1633,7 @@ $(document).ready(function() {
                     <a class="helpselector ehmbl_8 home-modal-limit" data-show-index="8" id="message_no">8</a>
                     <a href="javascript:;" onclick="nextItem()" title="Next"> > </a>
                 </p>
-            <div class="modal-footer" style="margin-bottom:-20px;">
+            <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
             </div>
             </div>

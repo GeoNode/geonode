@@ -17,6 +17,7 @@
     {% endif %}
     {# include "maps/map_include.html" #}
     {% include 'Templates/_base-headers.html' %}
+    {% include "map_templates/_publish_map.html" %}
     {{ block.super }}
 {% endblock %}
 
@@ -24,6 +25,15 @@
 
 {% block body_outer %}
     {% overall_rating resource "map" as map_rating %}
+    <style>
+        #gd-footer {
+        display: none;
+    }
+    .container
+    {
+        width: 100%;
+    }
+    </style>
     <div class="gd-content">
         <div class="gd-content-body layer-test">
             <div class="row">
@@ -65,7 +75,7 @@
                                     </ul>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default btn-gd"
+                                    <button type="button" class="btn btn-primary"
                                             data-dismiss="modal">
                                         {% trans "Close" %}
                                     </button>
@@ -125,7 +135,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default btn-gd"
+                                    <button type="button" class="btn btn-primary"
                                             data-dismiss="modal">
                                         {% trans "Close" %}
                                     </button>
@@ -174,7 +184,7 @@
                                                 {% endif %}
                                                 <li class="list-group-item">
                                                         <button class="btn btn-gd-primary btn-md btn-block" data-toggle="modal" data-target="#_publish_map">{% trans "Push for Approval" %}</button>
-                                                        {% include "map_templates/_publish_map.html" %}
+
                                                     {% endif %}
                                                 </li>
                                                 {% if user_role == "manager" and status == 'PENDING' %}
@@ -236,7 +246,7 @@
                                                             </ul>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-default btn-gd"
+                                                            <button type="button" class="btn btn-primary"
                                                                     data-dismiss="modal">
                                                                 {% trans "Close" %}
                                                             </button>
@@ -539,7 +549,7 @@
         }*/
         function resetWrapperHight() {
             var bodyHeight = $("body").height();
-            bodyHeight = parseInt(parseInt(bodyHeight) - 53);
+            bodyHeight = parseInt(parseInt(bodyHeight) + 40);
             console.log("bodyHeight", bodyHeight);
             GD_WRAPPER__HEIGHT = bodyHeight;
             $("#gd-wrapper .map-details-information, #gd-wrapper .map-details-info").css("height", bodyHeight + "px");
