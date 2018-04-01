@@ -49,6 +49,7 @@ from guardian.shortcuts import get_perms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.urlresolvers import reverse
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from django.conf import settings
@@ -136,6 +137,7 @@ _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this layer")
 _PERMISSION_MSG_METADATA = _(
     "You are not permitted to modify this layer's metadata")
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
+_PERMISSION_MSG_CHANGE_STYLE = ("You are not permitted to modify this style")
 
 
 def log_snippet(log_file):
@@ -1347,11 +1349,18 @@ class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         # check already style extension created or not
         try:
             style_extension = StyleExtension.objects.get(pk=pk)
+            layer_obj = resolve_object(request, 
+                                    Layer, 
+                                    dict(typename=style_extension.style.layer_styles.first().typename),
+                                     'layers.change_layer_style',
+                                     _PERMISSION_MSG_CHANGE_STYLE)
             style_extension.json_field = data.get("StyleString", None)
             style_extension.sld_body = data.get('SldStyle', None)
             style_extension.title = data.get('Title', style_extension.title)
             style_extension.style.sld_title = style_extension.title
-        except Exception as ex:
+        except PermissionDenied as ex:
+            return HttpResponse(ex,status=403,content_type='application/javascript')
+        except ObjectDoesNotExist as ex:
             return HttpResponse(ex,status=404,content_type='application/javascript')
 
         style_extension.style.save()
@@ -1390,7 +1399,7 @@ class LayerStyleView(View):
 
     @custom_login_required
     def put(self, request, layername, **kwargs):
-        layer_obj = _resolve_layer(request, layername)
+        layer_obj = _resolve_layer(request, layername, 'layers.change_layer_style')
         data = json.loads(request.body)
         # check already style extension created or not
         try:
@@ -1420,7 +1429,10 @@ class LayerStyleView(View):
 
     @custom_login_required
     def post(self, request, layername, **kwargs):
-        layer_obj = _resolve_layer(request, layername)
+        layer_obj = _resolve_layer(request, 
+                    layername,
+                    'base.view_resourcebase',
+                    _PERMISSION_MSG_VIEW)
         data = json.loads(request.body)
         json_field = data.get("StyleString", None)
         sld_body = data.get('SldStyle', None)
