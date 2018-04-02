@@ -13,6 +13,7 @@
             <option value="">-- Select Style --</option>
     </select>
     <input class="btn btn-gd-primary btn-sm icon-btn-color" type="button" value="New" ng-click="newStyle()">
+    <input class="btn btn-danger btn-sm icon-btn-color" type="button" ng-if="nodeData.selectedStyle" value="Delete" ng-click="deleteStyle()">
 
     </div>
 

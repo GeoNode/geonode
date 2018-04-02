@@ -103,7 +103,7 @@ from geonode.base.models import KeywordIgnoreListModel
 from geonode.system_settings.models import SystemSettings
 from geonode.system_settings.system_settings_enum import SystemSettingsEnum
 # from geonode.authentication_decorators import login_required as custom_login_required
-from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
 from .serializers import StyleExtensionSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework import permissions, status
@@ -1339,7 +1339,7 @@ class LayerStyleListAPIView(ListAPIView):
         return StyleExtension.objects.filter(style__in=styles)
 
 
-class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateDestroyAPIView):
     queryset = StyleExtension.objects.all()
     serializer_class = StyleExtensionSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
@@ -1348,12 +1348,13 @@ class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         data = json.loads(request.body)
         # check already style extension created or not
         try:
-            style_extension = StyleExtension.objects.get(pk=pk)
-            layer_obj = resolve_object(request, 
+            style_extension = self.queryset.get(pk=pk)
+            if style_extension.created_by != request.user:
+                layer_obj = resolve_object(request, 
                                     Layer, 
                                     dict(typename=style_extension.style.layer_styles.first().typename),
-                                     'layers.change_layer_style',
-                                     _PERMISSION_MSG_CHANGE_STYLE)
+                                    'layers.change_layer_style',
+                                    _PERMISSION_MSG_CHANGE_STYLE)
             style_extension.json_field = data.get("StyleString", None)
             style_extension.sld_body = data.get('SldStyle', None)
             style_extension.title = data.get('Title', style_extension.title)
@@ -1380,6 +1381,22 @@ class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
                 ensure_ascii=False),
             status=200,
             content_type='application/javascript')
+    
+    def delete(self, request, pk, **kwargs):
+        try:
+            style_extension = self.queryset.get(pk=pk)
+            if not (style_extension.created_by == request.user or request.user.is_superuser):
+                raise PermissionDenied('You are not authorized to delete this style');
+            style_extension.style.delete()
+
+            full_path = '/gs/rest/styles/{0}.xml'.format(style_extension.style.name)
+            save_sld_geoserver(request_method='DELETE', full_path=full_path, sld_body=style_extension.sld_body)
+        except PermissionDenied as ex:
+            return HttpResponse(ex,status=403,content_type='application/javascript')
+        except ObjectDoesNotExist as ex:
+            return HttpResponse(ex,status=404,content_type='application/javascript')
+        else:
+            return HttpResponse(True, status=200, content_type='application/javascript')
 
 
 class LayerStyleView(View):

@@ -629,7 +629,8 @@ class StyleExtension(models.Model):
         Style,
         verbose_name = _('Style'),
         help_text=_('Designats related Style'),
-        null=False, blank=False
+        null=False, blank=False,
+        on_delete=models.CASCADE
     )
     json_field = models.TextField(
         verbose_name=_('Json Field'),

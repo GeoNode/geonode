@@ -45,6 +45,21 @@
             return deferred.promise;
         }
 
+        function remove(url) {
+            var deferred = $q.defer();
+            $http.delete(url, {
+                    headers: {
+                        "X-CSRFToken": $cookies.get('csrftoken')
+                    }
+                })
+                .success(function(res) {
+                    deferred.resolve(res);
+                }).error(function(error, status) {
+                    deferred.reject({ error: error, status: status });
+                });
+            return deferred.promise;
+        }
+
         function _uuid() {
             function _() {
                 var rand = Math.ceil(1e15 + Math.random() * 1e5).toString(16);
@@ -183,6 +198,15 @@
                     deferred.resolve(style);
                 }, function() {
                     deferred.reject({});
+                });
+                return deferred.promise;
+            },
+            deleteStyle: function(id) {
+                var deferred = $q.defer();
+                remove('/layers/style/' + id + '/').then(function(res) {
+                    deferred.resolve(res);
+                }, function(error) {
+                    deferred.reject(error);
                 });
                 return deferred.promise;
             },
