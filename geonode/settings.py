@@ -298,7 +298,8 @@ GEONODE_APPS = (
     'geonode.services',
 
     # QGIS Server Apps
-    'geonode.qgis_server',
+    # Only enable this if using QGIS Server
+    # 'geonode.qgis_server',
 
     # GeoServer Apps
     # Geoserver needs to come last because
