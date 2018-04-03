@@ -55,7 +55,7 @@ iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012])
 _SUPPORTED_CRS = getattr(settings, 'UPLOADER', None)
 if _SUPPORTED_CRS:
     _SUPPORTED_CRS = _SUPPORTED_CRS.get('SUPPORTED_CRS',
-                                        ['EPSG:4326', 'EPSG:3857', 'EPSG:900913'])
+                                        ['EPSG:4326', 'EPSG:3857'])
 
 _SUPPORTED_EXT = getattr(settings, 'UPLOADER', None)
 if _SUPPORTED_EXT:

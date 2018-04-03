@@ -712,7 +712,6 @@ UPLOADER = {
         'EPSG:4326',
         'EPSG:3785',
         'EPSG:3857',
-        'EPSG:900913',
         'EPSG:32647',
         'EPSG:32736'
     ],
@@ -1160,19 +1159,64 @@ if NOTIFICATION_ENABLED:
 # but they should have separate setting anyway
 # use amqp:// for local rabbitmq server
 ASYNC_SIGNALS_BROKER_URL = 'memory://'
+BROKER_URL = os.environ.get('BROKER_URL', ASYNC_SIGNALS_BROKER_URL)
 
-CELERY_BROKER_URL = os.getenv('BROKER_URL', "amqp://")
-CELERY_RESULT_BACKEND = None
-CELERY_TASK_ALWAYS_EAGER = True  # set this to False in order to run async
-CELERY_TASK_IGNORE_RESULT = True
+# Disabling the heartbeat because workers seems often disabled in flower,
+# thanks to http://stackoverflow.com/a/14831904/654755
+BROKER_HEARTBEAT=0
+
+# Avoid long running and retried tasks to be run over-and-over again.
+BROKER_TRANSPORT_OPTIONS = {
+    'socket_timeout': 10,
+    'visibility_timeout': 86400
+}
+
+# CELERY_RESULT_BACKEND = BROKER_URL
+CELERY_RESULT_PERSISTENT = False
+
+# Allow to recover from any unknown crash.
+CELERY_ACKS_LATE = True
+
+# Set this to False in order to run async
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_IGNORE_RESULT = False
+
+# Set Tasks Queues
+CELERY_TASK_SERIALIZER = 'json'
 CELERY_TASK_DEFAULT_QUEUE = "default"
 CELERY_TASK_DEFAULT_EXCHANGE = "default"
 CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
 CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
 CELERY_TASK_CREATE_MISSING_QUEUES = True
-CELERY_TASK_RESULT_EXPIRES = 1
+# Half a day is enough
+CELERY_TASK_RESULT_EXPIRES = 43200
+
+# Sometimes, Ask asks us to enable this to debug issues.
+# BTW, it will save some CPU cycles.
+CELERY_DISABLE_RATE_LIMITS = True
+CELERY_SEND_TASK_EVENTS = False
 CELERY_WORKER_DISABLE_RATE_LIMITS = True
 CELERY_WORKER_SEND_TASK_EVENTS = False
+
+# Allow our remote workers to get tasks faster if they have a
+# slow internet connection (yes Gurney, I'm thinking of you).
+CELERY_MESSAGE_COMPRESSION = 'gzip'
+
+# The default beiing 5000, we need more than this.
+CELERY_MAX_CACHED_RESULTS = 32768
+
+# NOTE: I don't know if this is compatible with upstart.
+CELERYD_POOL_RESTARTS = True
+
+# I use these to debug kombu crashes; we get a more informative message.
+#CELERY_TASK_SERIALIZER = 'json'
+#CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_TRACK_STARTED = True
+CELERY_SEND_TASK_SENT_EVENT = True
+
+# Disabled by default and I like it, because we use Sentry for this.
+#CELERY_SEND_TASK_ERROR_EMAILS = False
 
 CELERY_QUEUES = [
     Queue('default', routing_key='default'),

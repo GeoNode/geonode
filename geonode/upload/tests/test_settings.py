@@ -108,7 +108,6 @@ UPLOADER = {
         'EPSG:4326',
         'EPSG:3785',
         'EPSG:3857',
-        'EPSG:900913',
         'EPSG:32647',
         'EPSG:32736'
     ],
@@ -206,7 +205,7 @@ PYCSW = {
 
 # default map projection
 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
-DEFAULT_MAP_CRS = "EPSG:900913"
+DEFAULT_MAP_CRS = "EPSG:3857"
 
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)
