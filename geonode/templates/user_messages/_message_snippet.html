@@ -34,7 +34,7 @@
                         {% with profile=group.groupprofile %}
                             <div class="media-left">
                                 <a href="{{ profile.get_absolute_url }}">
-                                    {% group_profile_image profile css_classes="media-object" size=30 %}
+                                    {% autoescape off %}{% group_profile_image profile css_classes="media-object" size=30 %}{% endautoescape %}
                                 </a>
                             </div>
                             <div class="media-body">
