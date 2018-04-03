@@ -25,9 +25,9 @@ from setuptools import find_packages
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
-    shapely_dep = "Shapely<1.5.13"
+    shapely_dep = "Shapely==1.5.17"
 else:
-    shapely_dep = "Shapely>=1.5.13,<1.6.dev0"
+    shapely_dep = "Shapely>=1.5.17,<1.6.dev0"
 
 setup(name='GeoNode',
       version=__import__('geonode').get_version(),
@@ -114,8 +114,8 @@ setup(name='GeoNode',
 
             # geopython dependencies
             "pyproj>=1.9.5,<=1.9.5.1",  # python-pyproj (1.9.5.1)
-            "OWSLib>=0.10.3,<=0.15.0",  # python-owslib (0.15.0 in our ppa)
-            "pycsw>=1.10.1,<=2.0.3",  # python-pycsw (1.10.1, 2.0.0, 2.0.3 in our ppa)
+            "OWSLib==0.16.0",  # python-owslib (0.15.0 in our ppa) FIXME
+            "pycsw==2.2.0",  # python-pycsw (1.10.1, 2.0.0, 2.0.3 in our ppa) FIXME
             "%s" % shapely_dep,  # python-shapely (1.5.13)
 
             # # Apps with packages provided in GeoNode's PPA on Launchpad.
@@ -179,7 +179,7 @@ setup(name='GeoNode',
             "vine<=1.1.4",  # (1.1.4 in our ppa)
             "xlrd<=1.1.0",  # (1.1.0 in ppa)
             "xlwt<=1.3.0",  # (1.3.0 in our ppa)
-            "xmltodict<=0.9.2",  # (0.9.2 in ppa)
+            "xmltodict<=0.10.2",  # (0.9.2 in ppa)
             "funcsigs<=1.0.2",  # (1.0.2 in our ppa)
             "geolinks<=0.2.0",  # python-geolinks (0.2.0 in ppa)
             "inflection<=0.3.1"  # python-inflection (0.3.1 in our ppa)
@@ -212,15 +212,18 @@ setup(name='GeoNode',
             "xmljson",  # python-xmljson (0.1.9 in our ppa)
 
             # tests
-            "coverage<=4.4.1",
+            "coverage<=4.5.1",
             "factory-boy<=2.9.2",
             "Faker<=0.8.4",
+            "more-itertools==4.1.0",
             "parse==1.8.2",
             "parse-type==0.4.1",
+            "py==1.5.3",
             "pytest==3.5.0",
             "pytest-bdd==2.20.0",
             "pytest-splinter==1.8.5",
             "pytest-django==3.1.2",
+            "setuptools==39.0.1",
       ],
       zip_safe=False
       )
