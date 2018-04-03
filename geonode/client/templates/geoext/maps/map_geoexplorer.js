@@ -159,7 +159,7 @@ Ext.onReady(function() {
                 var map = app.mapPanel.map;
                 var layer = app.map.layers.slice(-1)[0];
                 var bbox = layer.bbox;
-                var crs = layer.srs
+                var crs = layer.srs;
                 if (bbox != undefined)
                 {
                    var extent = new OpenLayers.Bounds();
