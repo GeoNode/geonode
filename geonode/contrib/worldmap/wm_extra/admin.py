@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ExtLayer, ExtMap, LayerStats, MapStats, Endpoint, Action
+from .models import ExtLayer, ExtMap, ExtLayerAttribute, LayerStats, MapStats, Endpoint, Action
 
 
 class ExtLayerAdmin(admin.ModelAdmin):
@@ -35,6 +35,12 @@ class MapStatsAdmin(admin.ModelAdmin):
         'last_modified',
     )
 
+class ExtLayerAttributeAdmin(admin.ModelAdmin):
+    list_display = (
+        'layer_name',
+        'searchable',
+    )
+
 class EndpointAdmin(admin.ModelAdmin):
     list_display = ('id', 'description', 'owner', 'url')
     list_display_links = ('id',)
@@ -55,5 +61,6 @@ admin.site.register(ExtLayer, ExtLayerAdmin)
 admin.site.register(ExtMap, ExtMapAdmin)
 admin.site.register(LayerStats, LayerStatsAdmin)
 admin.site.register(MapStats, MapStatsAdmin)
+admin.site.register(ExtLayerAttribute, ExtLayerAttributeAdmin)
 admin.site.register(Endpoint, EndpointAdmin)
 admin.site.register(Action, ActionAdmin)

@@ -7,7 +7,7 @@ from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import signals
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, Attribute
 from geonode.maps.models import Map
 from geonode.people.models import Profile
 
@@ -160,6 +160,17 @@ class ExtLayer(models.Model):
     # if settings.USE_GAZETTEER and instance.in_gazetteer:
     #     instance.in_gazetteer = False
     #     instance.update_gazetteer()
+
+
+class ExtLayerAttribute(models.Model):
+    attribute = models.OneToOneField(
+        Attribute,
+        blank=False,
+        null=False)
+    searchable = models.BooleanField(default=False)
+
+    def layer_name(self):
+        return self.attribute.layer.name
 
 
 class ExtMap(models.Model):

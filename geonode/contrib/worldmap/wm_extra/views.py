@@ -34,7 +34,7 @@ from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import build_social_links
 from geonode.security.views import _perms_info_json
 
-from .models import LayerStats
+from .models import LayerStats, ExtLayerAttribute
 from .models import DEFAULT_CONTENT
 from .forms import EndpointForm
 from .encode import despam, XssCleaner
@@ -710,6 +710,7 @@ def gxp2wm(config, map_obj=None):
             layer_config['queryable'] = True
             alternate = layer_config['name']
             layer = Layer.objects.get(alternate=alternate)
+            layer_config['attributes'] = (get_layer_attributes(layer))
             # layer_config['url'] = layer.ows_url
             layer_config['url'] = layer.ows_url.replace('ows', 'wms')
             if 'styles' not in layer_config:
@@ -765,11 +766,24 @@ def gxp2wm(config, map_obj=None):
                                     'restUrl': '/gs/rest', 'ptype': 'gxp_gnsource'
                                   }
 
-    del(config['map']['layers'][0])
     if config_is_string:
         config = json.dumps(config)
 
     return config
+
+
+def get_layer_attributes(layer):
+    """
+    Return a dictionary of attributes for a layer.
+    """
+    attribute_fields = []
+    attributes = layer.attribute_set.filter(visible=True).order_by('display_order')
+    for la in attributes:
+        attribute_fields.append({"id": la.attribute,
+                                 "header": la.attribute_label,
+                                 "searchable" : la.extlayerattribute.searchable
+                                })
+    return attribute_fields
 
 
 def snapshot_config(snapshot, map_obj, user, access_token):
@@ -840,7 +854,7 @@ def snapshot_config(snapshot, map_obj, user, access_token):
                 if gnLayer.srs: cfg['srs'] = gnLayer.srs
                 if gnLayer.bbox: cfg['bbox'] = json.loads(gnLayer.bbox)
                 if gnLayer.llbbox: cfg['llbbox'] = json.loads(gnLayer.llbbox)
-                cfg['attributes'] = (gnLayer.layer_attributes())
+                cfg['attributes'] = (get_layer_attributes(gnLayer))
                 attribute_cfg = gnLayer.attribute_config()
                 if "getFeatureInfo" in attribute_cfg:
                     cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
@@ -923,6 +937,7 @@ def snapshot_config(snapshot, map_obj, user, access_token):
                 access_token) for l in maplayers]
     else:
         config = map_obj.viewer_json(user, access_token)
+    print config
     return config
 
 
@@ -968,3 +983,47 @@ def official_site(request, site):
     """
     map_obj = get_object_or_404(Map,urlsuffix=site)
     return map_view_wm(request, str(map_obj.id))
+
+
+@login_required
+def layer_searchable_fields(
+        request,
+        layername):
+    """
+    Manage the layer in the gazetteer.
+    """
+
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.change_resourcebase_metadata',
+        'permissions message from searchable layers')
+
+    status_message = None
+    if request.method == "POST":
+        attributes_list = request.POST.getlist('attributes')
+        status_message = ""
+        for attribute in layer.attributes:
+            ext_att, created = ExtLayerAttribute.objects.get_or_create(attribute=attribute)
+            if attribute.attribute in attributes_list:
+                ext_att.searchable = True
+                status_message += ' %s' % attribute.attribute
+            else:
+                ext_att.searchable = False
+            ext_att.save()
+
+    searchable_attributes = []
+    for attribute in layer.attributes:
+        if hasattr(attribute, 'extlayerattribute'):
+            attribute.searchable = attribute.extlayerattribute.searchable
+        else:
+            attribute.searchable = False
+        searchable_attributes.append(attribute)
+
+    template='wm_extra/layers/edit_searchable_fields.html'
+
+    return render_to_response(template, RequestContext(request, {
+        "layer": layer,
+        "searchable_attributes": searchable_attributes,
+        "status_message": status_message,
+    }))
