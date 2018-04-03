@@ -589,6 +589,8 @@ def document_thumb_upload(
                     logger.error(
                         'Pillow not installed, could not generate thumbnail.')
 
+                if not thumbnail_content:
+                    logger.warning("Thumbnail for document #{} empty.".format(docid))
                 document.save_thumbnail(filename, thumbnail_content)
                 logger.debug(
                     "Thumbnail for document #{} created.".format(docid))

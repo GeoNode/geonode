@@ -298,7 +298,10 @@ def qgis_server_post_save(instance, sender, **kwargs):
         logger.debug('Result : %s' % response.content)
 
     # Generate style model cache
-    style_list(instance, internal=False)
+    try:
+        style_list(instance, internal=False)
+    except:
+        print 'Failed to fetch styles'
 
     # Remove QML file if necessary
     try:
@@ -512,12 +515,13 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
     # Set default bounding box based on all layers extents.
     # bbox format [xmin, xmax, ymin, ymax]
     bbox = instance.get_bbox_from_layers(instance.local_layers)
-    instance.set_bounds_from_bbox(bbox)
+    instance.set_bounds_from_bbox(bbox, instance.srid)
     Map.objects.filter(id=map_id).update(
         bbox_x0=instance.bbox_x0,
         bbox_x1=instance.bbox_x1,
         bbox_y0=instance.bbox_y0,
         bbox_y1=instance.bbox_y1,
+        srid=instance.srid,
         zoom=instance.zoom,
         center_x=instance.center_x,
         center_y=instance.center_y)

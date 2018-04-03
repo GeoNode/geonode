@@ -30,7 +30,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles import finders
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, resourcebase_post_save, Link

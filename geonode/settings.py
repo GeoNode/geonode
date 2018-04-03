@@ -426,8 +426,16 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
+        # 'celery': {
+        #     'level': 'ERROR',
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'filename': 'celery.log',
+        #     'formatter': 'simple',
+        #     'maxBytes': 1024 * 1024 * 10,  # 10 mb
+        # },
         'mail_admins': {
-            'level': 'ERROR', 'filters': ['require_debug_false'],
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
@@ -444,6 +452,8 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
+        # "celery": {
+        #     'handlers': ['celery', 'console'], 'level': 'ERROR', },
     },
 }
 
@@ -681,8 +691,9 @@ OGC_SERVER = {
         % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
         # 'datastore',
-        'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE', ''),
+        'DATASTORE': '',
         'PG_GEOGIG': False,
+        #'CACHE': ".cache"  # local cache file to for HTTP requests
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }

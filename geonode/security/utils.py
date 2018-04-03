@@ -208,7 +208,6 @@ def set_geofence_invalidate_cache():
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
-            raise
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -262,7 +261,6 @@ def set_geofence_all(instance):
                             rules_already_present = True
             except Exception:
                 logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                raise
 
         # Create GeoFence Rules for ANONYMOUS to the Layer
         """
@@ -293,7 +291,6 @@ def set_geofence_all(instance):
     except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
-        raise
     finally:
         set_geofence_invalidate_cache()
 
@@ -338,7 +335,6 @@ def set_geofence_owner(instance, username=None, view_perms=False, download_perms
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
-            raise
         finally:
             set_geofence_invalidate_cache()
 
@@ -372,7 +368,6 @@ def set_geofence_group(instance, groupname, view_perms=False,
             except Exception:
                 tb = traceback.format_exc()
                 logger.debug(tb)
-                raise
             finally:
                 set_geofence_invalidate_cache()
 
@@ -432,7 +427,7 @@ def remove_object_permissions(instance):
                     headers=headers,
                     auth=HTTPBasicAuth(user, passwd)
                 )
-                if (r.status_code >= 200):
+                if (r.status_code >= 200 and r.status_code < 300):
                     gs_rules = r.json()
                     r_ids = []
                     if gs_rules and gs_rules['rules']:
@@ -457,7 +452,6 @@ def remove_object_permissions(instance):
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
-            raise
         finally:
             set_geofence_invalidate_cache()
 
