@@ -107,10 +107,8 @@ if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     urlpatterns += [
         url(r'^(?P<mapid>[^/]+)/qlr$',
             map_download_qlr,
-            name='map_download_qlr',
-            prefix='geonode.maps.views'),
+            name='map_download_qlr'),
         url(r'^(?P<mapid>[^/]+)/download_leaflet',
             map_download_leaflet,
-            name='map_download_leaflet',
-            prefix='geonode.maps.views'),
+            name='map_download_leaflet'),
     ]

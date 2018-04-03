@@ -119,7 +119,13 @@ class TestSetAttributes(TestCase):
         disconnected_post_save = signals.post_save.disconnect(geoserver_post_save, sender=Layer)
 
         # Create dummy layer to attach attributes to
-        l = Layer.objects.create(name='dummy_layer')
+        l = Layer.objects.create(
+            name='dummy_layer',
+            bbox_x0=-180,
+            bbox_x1=180,
+            bbox_y0=-90,
+            bbox_y1=90,
+            srid='EPSG:4326')
 
         # Reconnect the signal if it was disconnected
         if disconnected_post_save:

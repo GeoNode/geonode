@@ -556,15 +556,19 @@
                         metadata_update_done = true;
                     }).fail(function(xhr, status, error) {
                         // error handling
-                        console.log(error);
-                        if(xhr.responseJSON && xhr.responseJSON['errors']) {
-                            var errors = "<ul>";
-                            for(error in xhr.responseJSON['errors']) {
-                                errors += "<li>" + error + ": " + xhr.responseJSON['errors'][error][0] + "</li>";
+                        // console.log(error);
+                        try {
+                            if(xhr.responseJSON && xhr.responseJSON['errors']) {
+                                var errors = "<ul>";
+                                for(error in xhr.responseJSON['errors']) {
+                                    errors += "<li>" + error + ": " + xhr.responseJSON['errors'][error][0] + "</li>";
+                                }
+                                errors += "</ul>";
+                                $("#preview_errorDialog .modal-body").html(errors);
+                            } else {
+                                $("#preview_errorDialog .modal-body").html(xhr.responseText);
                             }
-                            errors += "</ul>";
-                            $("#preview_errorDialog .modal-body").html(errors);
-                        } else {
+                        } catch(err) {
                             $("#preview_errorDialog .modal-body").html(xhr.responseText);
                         }
                         $('#preview_errorDialog').modal();

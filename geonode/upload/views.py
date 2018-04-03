@@ -87,7 +87,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.info(msg, *args)
+    logger.debug(msg, *args)
 
 
 def data_upload_progress(req):

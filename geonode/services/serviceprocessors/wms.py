@@ -107,14 +107,15 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     def __init__(self, url):
         self.proxy_base = urljoin(
             settings.SITEURL, reverse('proxy'))
+        # (self.url, self.parsed_service) = WebMapService(
+        #     url, proxy_base=self.proxy_base)
         (self.url, self.parsed_service) = WebMapService(
-            url, proxy_base=self.proxy_base)
+            url, proxy_base=None)
         self.indexing_method = (
             INDEXED if self._offers_geonode_projection() else CASCADED)
         # self.url = self.parsed_service.url
-        _title = self.parsed_service.identification.title
-        self.name = slugify(
-            _title if _title else urlsplit(self.url).netloc)[:40]
+        # TODO: Check if the name already esists
+        self.name = slugify(urlsplit(self.url).netloc)[:40]
 
     def create_cascaded_store(self):
         store = self._get_store(create=True)
@@ -319,12 +320,13 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         workspace = geoserver_resource.workspace.name
         store = geoserver_resource.store
 
-        bbox = self._decimal_encode(geoserver_resource.latlon_bbox)
+        bbox = self._decimal_encode(geoserver_resource.native_bbox)
         return {
             "name": name,
             "workspace": workspace,
             "store": store.name,
             "typename": "{}:{}".format(workspace, name),
+            "alternate": "{}:{}".format(workspace, name),
             "storeType": "remoteStore",  # store.resource_type,
             "title": geoserver_resource.title,
             "abstract": geoserver_resource.abstract,
@@ -342,6 +344,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             "storeType": "remoteStore",
             "workspace": "remoteWorkspace",
             "typename": layer_meta.name,
+            "alternate": layer_meta.name,
             "title": layer_meta.title,
             "abstract": layer_meta.abstract,
             "bbox_x0": bbox[0],

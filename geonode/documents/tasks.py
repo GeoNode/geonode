@@ -63,12 +63,15 @@ def create_document_thumbnail(self, object_id):
                      .format(object_id))
         return
 
+    thumbnail_content = None
     try:
         thumbnail_content = generate_thumbnail_content(image_path)
     except MissingPILError:
         logger.error('Pillow not installed, could not generate thumbnail.')
         return
 
+    if not thumbnail_content:
+        logger.warning("Thumbnail for document #{} empty.".format(object_id))
     filename = 'document-{}-thumb.png'.format(document.uuid)
     document.save_thumbnail(filename, thumbnail_content)
     logger.debug("Thumbnail for document #{} created.".format(object_id))

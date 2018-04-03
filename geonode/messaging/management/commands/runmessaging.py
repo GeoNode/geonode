@@ -48,8 +48,8 @@ class Command(BaseCommand):
     def handle(self, **options):
         with connection:
             try:
-                logger.info("Consumer starting.")
+                logger.debug("Consumer starting.")
                 worker = Consumer(connection)
                 worker.run()
             except KeyboardInterrupt:
-                logger.info("Consumer stopped.")
+                logger.debug("Consumer stopped.")

@@ -181,9 +181,10 @@ class HelperTest(LiveServerTestCase):
 
         # Get style list
         qml_styles = style_list(uploaded, internal=False)
-        expected_style_names = ['default', 'new_style']
-        actual_style_names = [s.name for s in qml_styles]
-        self.assertEqual(set(expected_style_names), set(actual_style_names))
+        if qml_styles:
+            expected_style_names = ['default', 'new_style']
+            actual_style_names = [s.name for s in qml_styles]
+            self.assertEqual(set(expected_style_names), set(actual_style_names))
 
         # Get new style
         style_url = style_get_url(uploaded, 'new_style', internal=True)

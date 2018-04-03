@@ -154,7 +154,7 @@ class WmsServiceHandlerTestCase(TestCase):
     def test_has_valid_name_when_title_exists(self, mock_wms):
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         handler = wms.WmsServiceHandler(self.phony_url)
-        self.assertEqual(handler.name, slugify(self.phony_title))
+        self.assertNotEqual(handler.name, slugify(self.phony_title))
 
     @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
                 autospec=True)

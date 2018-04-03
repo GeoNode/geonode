@@ -616,6 +616,9 @@ class GroupCategoriesTestCase(TestCase):
         u = User.objects.create(username='test')
         u.set_password('test')
         u.save()
+        User = get_user_model()
+        u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
+        u.save()
 
     def test_api(self):
         api_url = '/api/groupcategory/'

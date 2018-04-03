@@ -28,7 +28,7 @@ import logging
 import zipfile
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 from ..geoserver.helpers import ogc_server_settings
 from . import files

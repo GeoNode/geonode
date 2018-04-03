@@ -23,12 +23,15 @@
 
 # Standard Modules
 import os
+import logging
 
 # Django functionality
 from django.conf import settings
 
 # Geonode functionality
 from geonode.documents.models import ResourceBase
+
+logger = logging.getLogger('geonode.base.utils')
 
 
 def delete_orphaned_thumbs():
@@ -41,8 +44,8 @@ def delete_orphaned_thumbs():
         model = filename.split('-')[0]
         uuid = filename.replace(model, '').replace('-thumb.png', '')[1:]
         if ResourceBase.objects.filter(uuid=uuid).count() == 0:
-            print 'Removing orphan thumb %s' % fn
+            logger.debug('Removing orphan thumb %s' % fn)
             try:
                 os.remove(fn)
             except OSError:
-                print 'Could not delete file %s' % fn
+                logger.debug('Could not delete file %s' % fn)

@@ -23,7 +23,15 @@ from .conf import settings
 class HookProxy(object):
 
     def __getattr__(self, attr):
-        return getattr(settings.GEONODE_CLIENT_HOOKSET, attr)
+        if not isinstance(settings.GEONODE_CLIENT_HOOKSET, basestring):
+            return getattr(settings.GEONODE_CLIENT_HOOKSET, attr)
+        else:
+            import importlib
+            cls = settings.GEONODE_CLIENT_HOOKSET.split(".")
+            module_name, class_name = (".".join(cls[:-1]), cls[-1])
+            i = importlib.import_module(module_name)
+            hook = getattr(i, class_name)()
+            return getattr(hook, attr)
 
 
 hookset = HookProxy()

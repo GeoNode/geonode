@@ -202,7 +202,11 @@ class Region(MPTTModel):
         decimal_places=15,
         blank=True,
         null=True)
-    srid = models.CharField(max_length=255, default='EPSG:4326')
+    srid = models.CharField(
+        max_length=30,
+        blank=False,
+        null=False,
+        default='EPSG:4326')
 
     def __unicode__(self):
         return self.name
@@ -691,7 +695,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         decimal_places=15,
         blank=True,
         null=True)
-    srid = models.CharField(max_length=255, default='EPSG:4326')
+    srid = models.CharField(
+        max_length=30,
+        blank=False,
+        null=False,
+        default='EPSG:4326')
 
     # CSW specific fields
     csw_typename = models.CharField(
@@ -743,7 +751,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         help_text=_('Should this resource be published and searchable?'))
     is_approved = models.BooleanField(
         _("Approved"),
-        default=False,
+        default=True,
         help_text=_('Is this resource validated from a publisher or editor?'))
 
     # fields necessary for the apis
@@ -868,15 +876,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         else:
             return ''
 
-    def set_latlon_bounds(self, box):
-        """
-        Set the four bounds in lat lon projection
-        """
-        self.bbox_x0 = box[0]
-        self.bbox_x1 = box[1]
-        self.bbox_y0 = box[2]
-        self.bbox_y1 = box[3]
-
     def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
         """
         Calculate zoom level and center coordinates in mercator.
@@ -918,7 +917,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.bbox_y0 = lat - distance_y_degrees
         self.bbox_y1 = lat + distance_y_degrees
 
-    def set_bounds_from_bbox(self, bbox):
+    def set_bounds_from_bbox(self, bbox, srid):
         """
         Calculate zoom level and center coordinates in mercator.
 
@@ -927,7 +926,19 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             [xmin, xmax, ymin, ymax]
         :type bbox: list
         """
-        self.set_latlon_bounds(bbox)
+        if not bbox or len(bbox) < 4:
+            raise ValidationError(
+                'Bounding Box cannot be empty %s for a given resource' %
+                self.name)
+        if not srid:
+            raise ValidationError(
+                'Projection cannot be empty %s for a given resource' %
+                self.name)
+        self.bbox_x0 = bbox[0]
+        self.bbox_x1 = bbox[1]
+        self.bbox_y0 = bbox[2]
+        self.bbox_y1 = bbox[3]
+        self.srid = srid
 
         minx, maxx, miny, maxy = [float(c) for c in bbox]
         x = (minx + maxx) / 2
@@ -1163,7 +1174,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return the_ma
 
     def handle_moderated_uploads(self):
-        if settings.ADMIN_MODERATE_UPLOADS:
+        if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
+            self.is_approved = False
             self.is_published = False
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
@@ -1258,17 +1270,23 @@ def resourcebase_post_save(instance, *args, **kwargs):
                 link.delete()
 
     try:
+        # set default License if no specified
+        if instance.license is None:
+            license = License.objects.filter(name="Not Specified")
+
+            if license and len(license) > 0:
+                instance.license = license[0]
+
         ResourceBase.objects.filter(id=instance.id).update(
             thumbnail_url=instance.get_thumbnail_url(),
             detail_url=instance.get_absolute_url(),
-            csw_insert_date=datetime.datetime.now())
+            csw_insert_date=datetime.datetime.now(),
+            license=instance.license)
+        instance.refresh_from_db()
     except BaseException:
-        pass
-
-    try:
-        instance.thumbnail_url = instance.get_thumbnail_url()
-        instance.detail_url = instance.get_absolute_url()
-        instance.csw_insert_date = datetime.datetime.now()
+        tb = traceback.format_exc()
+        if tb:
+            logger.debug(tb)
     finally:
         instance.set_missing_info()
 
@@ -1324,13 +1342,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
-
-    # set default License if no specified
-    if instance.license is None:
-        no_license = License.objects.filter(name="Not Specified")
-
-        if no_license and len(no_license) > 0:
-            instance.license = no_license[0]
 
 
 def rating_post_save(instance, *args, **kwargs):

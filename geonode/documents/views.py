@@ -336,7 +336,8 @@ class DocumentUpdateView(UpdateView):
 def document_metadata(
         request,
         docid,
-        template='documents/document_metadata.html'):
+        template='documents/document_metadata.html',
+        ajax=True):
 
     document = None
     try:
@@ -453,12 +454,18 @@ def document_metadata(
                 except BaseException:
                     print "Could not send slack message for modified document."
 
-            return HttpResponseRedirect(
-                reverse(
-                    'document_detail',
-                    args=(
-                        document.id,
-                    )))
+            if not ajax:
+                return HttpResponseRedirect(
+                    reverse(
+                        'document_detail',
+                        args=(
+                            document.id,
+                        )))
+
+            message = document.id
+
+            return HttpResponse(json.dumps({'message': message}))
+
         # - POST Request Ends here -
 
         # Request.GET
@@ -582,6 +589,8 @@ def document_thumb_upload(
                     logger.error(
                         'Pillow not installed, could not generate thumbnail.')
 
+                if not thumbnail_content:
+                    logger.warning("Thumbnail for document #{} empty.".format(docid))
                 document.save_thumbnail(filename, thumbnail_content)
                 logger.debug(
                     "Thumbnail for document #{} created.".format(docid))

@@ -45,6 +45,9 @@ from geonode.utils import default_map_config
 from geonode.utils import num_encode
 from geonode.security.utils import remove_object_permissions
 
+from geonode import geoserver, qgis_server  # noqa
+from geonode.utils import check_ogc_backend
+
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
@@ -281,7 +284,7 @@ class Map(ResourceBase, GXPMapBase):
         # bbox format: [xmin, xmax, ymin, ymax]
         bbox = self.get_bbox_from_layers(self.local_layers)
 
-        self.set_bounds_from_bbox(bbox)
+        self.set_bounds_from_bbox(bbox, self.projection)
 
         self.set_missing_info()
 
@@ -316,7 +319,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         Returns layer group name from local OWS for this map instance.
         """
-        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import gs_catalog, ogc_server_settings
             lg_name = '%s_%d' % (slugify(self.title), self.id)
             try:
@@ -336,7 +339,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         Publishes local map layers as WMS layer group on local OWS.
         """
-        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import gs_catalog
             from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
         else:
