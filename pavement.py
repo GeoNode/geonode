@@ -961,7 +961,8 @@ def publish():
 
     call_task('deb', options={
         'key': key,
-        'ppa': 'geonode/testing',
+        'ppa': 'geonode/stable',
+        # 'ppa': 'geonode/testing',
         # 'ppa': 'geonode/unstable',
     })
 
