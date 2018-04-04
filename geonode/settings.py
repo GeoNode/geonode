@@ -422,7 +422,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'ERROR',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
@@ -443,7 +443,7 @@ LOGGING = {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "ERROR", },
+            "handlers": ["console"], "level": "INFO", },
         "geonode.qgis_server": {
             "handlers": ["console"], "level": "ERROR", },
         "gsconfig.catalog": {
@@ -830,7 +830,7 @@ PYCSW = {
 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
 DEFAULT_MAP_CRS = "EPSG:3857"
 
-DEFAULT_LAYER_FORMAT = "image/png8"
+DEFAULT_LAYER_FORMAT = "image/png"
 
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)

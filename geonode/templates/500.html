@@ -228,7 +228,7 @@
               <li><a href="{% url "geonode.invitations:geonode-send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite Users" %}</a></li>
               <li class="modal-divider"></li>
               {% if user.is_superuser or user.is_staff %}
-                <li><a href="{% url "proxy" %}?url=/geoserver"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
+                <li><a href="{% url "proxy" %}?url={{ OGC_SERVER.default.LOCATION }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
                 <li><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
               {% endif %}
               {% block extra_user_menu %}

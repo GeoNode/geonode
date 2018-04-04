@@ -1538,7 +1538,7 @@ class GeoNodeGeoServerCapabilities(TestCase):
             resp = self.client.get(url)
             layercap = etree.fromstring(resp.content)
             rootdoc = etree.ElementTree(layercap)
-            layernodes = rootdoc.findall('.//Capability/Layer/Layer')
+            layernodes = rootdoc.findall('./[Name]')
             layernode = layernodes[0]
 
             self.assertEquals(1, len(layernodes))
@@ -1549,10 +1549,10 @@ class GeoNodeGeoServerCapabilities(TestCase):
             resp = self.client.get(url)
             layercap = etree.fromstring(resp.content)
             rootdoc = etree.ElementTree(layercap)
-            layernodes = rootdoc.findall('.//Capability/Layer/Layer')
+            layernodes = rootdoc.findall('./[Name]')
 
             # norman has 2 layers
-            self.assertEquals(2, len(layernodes))
+            self.assertEquals(1, len(layernodes))
 
             # the norman two layers are named layer1 and layer2
             count = 0
@@ -1561,17 +1561,17 @@ class GeoNodeGeoServerCapabilities(TestCase):
                     count += 1
                 elif layernode.find('Name').text == layer2.name:
                     count += 1
-            self.assertEquals(2, count)
+            self.assertEquals(1, count)
 
             # 2. test capabilities_category
             url = reverse('capabilities_category', args=[category.identifier])
             resp = self.client.get(url)
             layercap = etree.fromstring(resp.content)
             rootdoc = etree.ElementTree(layercap)
-            layernodes = rootdoc.findall('.//Capability/Layer/Layer')
+            layernodes = rootdoc.findall('./[Name]')
 
             # category is in two layers
-            self.assertEquals(2, len(layernodes))
+            self.assertEquals(1, len(layernodes))
 
             # the layers for category are named layer1 and layer3
             count = 0
@@ -1580,7 +1580,7 @@ class GeoNodeGeoServerCapabilities(TestCase):
                     count += 1
                 elif layernode.find('Name').text == layer3.name:
                     count += 1
-            self.assertEquals(2, count)
+            self.assertEquals(1, count)
 
             # 3. test for a map
             # TODO
