@@ -202,6 +202,15 @@ EXTRA_LANG_INFO = {
 
 AUTH_USER_MODEL = os.getenv('AUTH_USER_MODEL', 'people.Profile')
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.SHA1PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    # 'django.contrib.auth.hashers.Argon2PasswordHasher',
+    # 'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    # 'django.contrib.auth.hashers.BCryptPasswordHasher',
+]
+
 MODELTRANSLATION_LANGUAGES = ['en', ]
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
