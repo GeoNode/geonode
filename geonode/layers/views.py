@@ -342,6 +342,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                              layer.owner.last_name) if layer.owner.first_name or layer.owner.last_name else str(
         layer.owner)
     srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
+    srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
     config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
     config["format"] = getattr(
         settings, 'DEFAULT_LAYER_FORMAT', 'image/png')
@@ -366,13 +367,19 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                 "srs": srs,
                 "bbox": decimal_encode(
                     bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
-                                       target_srid=int(srs.split(":")[1]))[:4])
+                                       target_srid=srs_srid)[:4])
             },
             "EPSG:4326": {
                 "srs": "EPSG:4326",
                 "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
                 decimal_encode(bbox_to_projection(
                     [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4])
+            },
+            "EPSG:900913": {
+                "srs": "EPSG:900913",
+                "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:900913' else
+                decimal_encode(bbox_to_projection(
+                    [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=3857)[:4])
             }
         },
         "srs": {
@@ -402,23 +409,25 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     }
 
     if layer.storeType == "remoteStore":
-        service = layer.remote_service
-        source_params = {
-            "ptype": service.ptype,
-            "remote": True,
-            "url": service.service_url,
-            "name": service.name,
-            "title": "[R] %s" % service.title}
+        # service = layer.remote_service
+        # source_params = {
+        #     "ptype": service.ptype,
+        #     "remote": True,
+        #     "url": service.service_url,
+        #     "name": service.name,
+        #     "title": "[R] %s" % service.title}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
             layer_params=json.dumps(config),
-            source_params=json.dumps(source_params))
+            # source_params=json.dumps(source_params)
+        )
     else:
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
-            layer_params=json.dumps(config))
+            layer_params=json.dumps(config)
+        )
 
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
@@ -426,6 +435,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(
+        sender=Layer,
         projection=getattr(
             settings,
             'DEFAULT_MAP_CRS',
@@ -470,28 +480,27 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from geonode.geoserver.views import get_capabilities
-        if layer.has_time:
-            workspace, layername = layer.alternate.split(
-                ":") if ":" in layer.alternate else (None, layer.alternate)
-            # WARNING Please make sure to have enabled DJANGO CACHE as per
-            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-            wms_capabilities_resp = get_capabilities(
-                request, layer.id, tolerant=True)
-            if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
-                wms_capabilities = wms_capabilities_resp.getvalue()
-                if wms_capabilities:
-                    import xml.etree.ElementTree as ET
-                    e = ET.fromstring(wms_capabilities)
-                    for atype in e.findall(
-                            "Capability/Layer/Layer[Name='%s']/Extent" % (layername)):
-                        dim_name = atype.get('name')
-                        if dim_name:
-                            dim_name = str(dim_name).lower()
-                            if dim_name == 'time':
-                                dim_values = atype.text
-                                if dim_values:
-                                    all_times = dim_values.split(",")
-                                    break
+        workspace, layername = layer.alternate.split(
+            ":") if ":" in layer.alternate else (None, layer.alternate)
+        # WARNING Please make sure to have enabled DJANGO CACHE as per
+        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+        wms_capabilities_resp = get_capabilities(
+            request, layer.id, tolerant=True)
+        if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
+            wms_capabilities = wms_capabilities_resp.getvalue()
+            if wms_capabilities:
+                import xml.etree.ElementTree as ET
+                e = ET.fromstring(wms_capabilities)
+                for atype in e.findall(
+                        "./[Name='%s']/Extent[@name='time']" % (layername)):
+                    dim_name = atype.get('name')
+                    if dim_name:
+                        dim_name = str(dim_name).lower()
+                        if dim_name == 'time':
+                            dim_values = atype.text
+                            if dim_values:
+                                all_times = dim_values.split(",")
+                                break
 
     group = None
     if layer.group:
@@ -779,18 +788,19 @@ def layer_metadata(
     config["queryable"] = True
 
     if layer.storeType == "remoteStore":
-        service = layer.remote_service
-        source_params = {
-            "ptype": service.ptype,
-            "remote": True,
-            "url": service.service_url,
-            "name": service.name,
-            "title": "[R] %s" % service.title}
+        # service = layer.remote_service
+        # source_params = {
+        #     "ptype": service.ptype,
+        #     "remote": True,
+        #     "url": service.service_url,
+        #     "name": service.name,
+        #     "title": "[R] %s" % service.title}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
             layer_params=json.dumps(config),
-            source_params=json.dumps(source_params))
+            # source_params=json.dumps(source_params)
+        )
     else:
         maplayer = GXPLayer(
             name=layer.alternate,

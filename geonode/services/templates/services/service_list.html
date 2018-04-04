@@ -20,7 +20,7 @@
   <tr>
 	<td><a href='{% url "service_detail" service.id %}'>{{ service.title }} <span class="badge">{{ service.layer_set.count }}</span></a></td>
 	<td><a href='{{ service.base_url }}' target="_blank" rel="noopener noreferrer">{{ service.base_url }}</a></td>
-    <td>{{ service.type }}</td>
+    <td>{{ service.service_type }}</td>
   </tr>
   {% endfor %}
 </table>

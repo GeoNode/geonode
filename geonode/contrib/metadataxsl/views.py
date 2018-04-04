@@ -45,7 +45,7 @@ def prefix_xsl_line(req, id):
         record = catalogue.get_record(resource.uuid)
     except Exception, err:
         msg = 'Could not connect to catalogue to save information for layer "%s"' % str(resource.title)
-        logger.warn(msg, err)
+        logger.warn(msg)
         raise err
 
     try:

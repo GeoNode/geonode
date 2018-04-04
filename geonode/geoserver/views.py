@@ -23,6 +23,7 @@ import re
 import json
 import logging
 import httplib2
+import traceback
 from lxml import etree
 from os.path import isfile
 
@@ -261,12 +262,14 @@ def layer_style_manage(request, layername):
                     "default_style": default_style
                 }
             )
-        except (FailedRequestError, EnvironmentError) as e:
+        except (FailedRequestError, EnvironmentError):
+            tb = traceback.format_exc()
+            logger.debug(tb)
             msg = ('Could not connect to geoserver at "%s"'
                    'to manage style information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer.name)
                    )
-            logger.warn(msg, e)
+            logger.warn(msg)
             # If geoserver is not online, return an error
             return render(
                 request,
@@ -307,10 +310,12 @@ def layer_style_manage(request, layername):
                     args=(
                         layer.service_typename,
                     )))
-        except (FailedRequestError, EnvironmentError, MultiValueDictKeyError) as e:
+        except (FailedRequestError, EnvironmentError, MultiValueDictKeyError):
+            tb = traceback.format_exc()
+            logger.debug(tb)
             msg = ('Error Saving Styles for Layer "%s"' % (layer.name)
                    )
-            logger.warn(msg, e)
+            logger.warn(msg)
             return render(
                 request,
                 'layers/layer_style_manage.html',
@@ -713,14 +718,17 @@ def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=F
     http = httplib2.Http()
     response, getcap = http.request(wms_url)
     # TODO this is to bypass an actual bug of GeoServer 2.12.x
-    if tolerant and response.status == 404:
+    if tolerant and ('ServiceException' in getcap or response.status == 404):
         # WARNING Please make sure to have enabled DJANGO CACHE as per
         # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-        wms_url = '%s%s/ows?service=wms&version=1.1.0&request=GetCapabilities&layers=%s'\
-            % (ogc_server_settings.public_url, workspace, layer)
+        wms_url = '%s%s/ows?service=wms&version=%s&request=GetCapabilities&layers=%s'\
+            % (ogc_server_settings.public_url, workspace, version, layer)
         if access_token:
             wms_url += ('&access_token=%s' % access_token)
         response, getcap = http.request(wms_url)
+
+    if 'ServiceException' in getcap or response.status == 404:
+        return None
     return getcap
 
 
@@ -747,9 +755,7 @@ def get_capabilities(request, layerid=None, user=None,
     """
 
     rootdoc = None
-    rootlayerelem = None
     layers = None
-
     cap_name = ' Capabilities - '
     if layerid is not None:
         layer_obj = Layer.objects.get(id=layerid)
@@ -781,24 +787,26 @@ def get_capabilities(request, layerid=None, user=None,
 
             try:
                 workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
-                if rootdoc is None:  # 1st one, seed with real GetCapabilities doc
+                layercap = get_layer_capabilities(layer,
+                                                  access_token=access_token,
+                                                  tolerant=tolerant)
+                if layercap:  # 1st one, seed with real GetCapabilities doc
                     try:
-                        layercap = get_layer_capabilities(layer,
-                                                          access_token=access_token,
-                                                          tolerant=tolerant)
                         layercap = etree.fromstring(layercap)
                         rootdoc = etree.ElementTree(layercap)
-                        rootlayerelem = rootdoc.find('.//Capability/Layer')
                         format_online_resource(workspace, layername, rootdoc)
                         rootdoc.find('.//Service/Name').text = cap_name
+                        rootdoc = rootdoc.find('.//Capability/Layer/Layer')
                     except Exception as e:
                         import traceback
                         traceback.print_exc()
                         logger.error(
                             "Error occurred creating GetCapabilities for %s: %s" %
                             (layer.typename, str(e)))
+                        rootdoc = None
                 else:
                     # Get the required info from layer model
+                    # TODO: store time dimension on DB also
                     tpl = get_template("geoserver/layer.xml")
                     ctx = Context({
                         'layer': layer,
@@ -808,14 +816,14 @@ def get_capabilities(request, layerid=None, user=None,
                     gc_str = tpl.render(ctx)
                     gc_str = gc_str.encode("utf-8")
                     layerelem = etree.XML(gc_str)
-                    rootlayerelem.append(layerelem)
+                    rootdoc = etree.ElementTree(layerelem)
             except Exception as e:
                 import traceback
                 traceback.print_exc()
                 logger.error(
                     "Error occurred creating GetCapabilities for %s:%s" %
                     (layer.typename, str(e)))
-                pass
+                rootdoc = None
     if rootdoc is not None:
         capabilities = etree.tostring(
             rootdoc,
