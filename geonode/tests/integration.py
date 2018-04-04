@@ -47,7 +47,7 @@ from tastypie.test import ResourceTestCaseMixin
 
 from geonode.qgis_server.models import QGISServerLayer
 
-from geoserver.catalog import FailedRequestError, UploadError
+from geoserver.catalog import FailedRequestError
 
 # from geonode.security.models import *
 from geonode.contrib import geotiffio
@@ -596,16 +596,10 @@ class GeoNodeMapTest(TestCase):
         """
         thefile = os.path.join(gisdata.BAD_DATA, 'points_epsg2249_no_prj.shp')
         try:
+            # with self.assertRaises(GeoNodeException):
             thefile = file_upload(thefile, overwrite=True)
-        except UploadError:
-            pass
-        except GeoNodeException:
-            pass
-        except Exception:
-            raise
-            # msg = ('Was expecting a %s, got %s instead.' %
-            #        (GeoNodeException, type(e)))
-            # assert e is GeoNodeException, msg
+        except GeoNodeException, e:
+            self.assertEqual(str(e), "Invalid Projection. Layer is missing CRS!")
         finally:
             # Clean up and completely delete the layer
             try:

@@ -130,6 +130,7 @@ class TreeWidget(TaggitWidget):
 
 
 class RegionsMultipleChoiceField(forms.MultipleChoiceField):
+
     def validate(self, value):
         """
         Validates that the input is a list or tuple.

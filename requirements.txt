@@ -31,8 +31,6 @@ django-autoslug==1.9.3
 django-basic-authentication-decorator==0.9
 django-bootstrap-form==3.3
 django-bootstrap3-datetimepicker-2==2.5.0
-django-forms-bootstrap==3.1.0
-
 django-braces==1.12.0
 django-celery-beat==1.1.1
 django-celery-results==1.0.1
@@ -42,8 +40,8 @@ django-downloadview==1.9
 django-extensions==2.0.3
 django-filter==1.1.0
 django-floppyforms==1.7.0
-
-django-geoexplorer==4.0.38
+django-forms-bootstrap==3.1.0
+django-geoexplorer==4.0.39
 django-geonode-client==1.0.0
 django-guardian==1.4.9
 django-haystack==2.8.0
@@ -58,7 +56,7 @@ django-modeltranslation==0.12.2
 django-mptt==0.9.0
 django-multi-email-field==0.5.1
 django-nose==1.4.5
-django-oauth-toolkit<1.0
+django-oauth-toolkit==0.12.0
 django-polymorphic==1.3
 django-rest-swagger==2.1.2
 django-reversion==2.0.13
@@ -69,8 +67,8 @@ django-taggit==0.22.2
 django-tastypie==0.14.0
 django-treebeard==4.2.1
 django-utils==0.0.2
-djangorestframework==3.7.7
-djangorestframework-gis==0.12
+# djangorestframework==3.7.7
+# djangorestframework-gis==0.12
 drf-nested-routers==0.90.0
 drf-openapi==1.3.0
 elasticsearch==2.4.0
@@ -98,7 +96,7 @@ itypes==1.1.0
 jdcal==1.3
 Jinja2==2.10
 kombu==4.1.0
-lxml==3.8.0
+lxml==3.6.2
 Mako==1.0.7
 MarkupSafe==1.0
 mccabe==0.4.0
@@ -130,10 +128,13 @@ pyelasticsearch==0.6.1
 pyflakes==1.6.0
 pyproj==1.9.5.1
 pyshp==1.2.12
-pytest==2.9.0 # latest fails with bdd library at 2.5.0
-pytest-bdd==2.5.0 # latest requires six>=1.11.0
-pytest-splinter
-pytest-django
+pytest==3.5.0
+pytest-bdd==2.20.0
+pytest-splinter==1.8.5
+pytest-django==3.1.2
+parse==1.8.2
+parse-type==0.4.1
+setuptools==39.0.1
 python-dateutil==2.6.1
 python-gnupg==0.4.1
 python-memcached==1.59

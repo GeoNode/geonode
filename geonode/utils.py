@@ -30,15 +30,21 @@ import subprocess
 import select
 import tempfile
 import tarfile
-# import traceback
+import time
+import shutil
+import string
+import httplib2
+import urlparse
+import urllib
+import gc
+import weakref
+import traceback
 
-from zipfile import ZipFile, is_zipfile
-
+from contextlib import closing
+from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from StringIO import StringIO
-
 from osgeo import ogr
 from slugify import Slugify
-import string
 
 from django.conf import settings
 from django.core.cache import cache
@@ -50,13 +56,10 @@ from django.shortcuts import get_object_or_404
 # i18n infra is up
 from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection, transaction
+from django.contrib.gis.geos import GEOSGeometry
 from django.core.serializers.json import DjangoJSONEncoder
-import httplib2
-import urlparse
-import urllib
 
-import gc
-import weakref
+from geonode import geoserver, qgis_server  # noqa
 
 try:
     import json
@@ -74,8 +77,6 @@ ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
 SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')
-
-http_client = httplib2.Http()
 
 custom_slugify = Slugify(separator='_')
 
@@ -179,7 +180,7 @@ def _split_query(query):
 
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
-    if srid and srid.startswith('EPSG:'):
+    if srid and str(srid).startswith('EPSG:'):
         srid = srid[5:]
     if None not in [x0, x1, y0, y1]:
         wkt = 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (
@@ -187,6 +188,28 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     else:
         wkt = 'SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'
     return wkt
+
+
+def bbox_to_projection(native_bbox, target_srid=4326):
+    """
+        native_bbox must be in the form
+            ('-81.3962935', '-81.3490249', '13.3202891', '13.3859614', 'EPSG:4326')
+    """
+    box = native_bbox[:4]
+    proj = native_bbox[-1]
+    minx, maxx, miny, maxy = [float(a) for a in box]
+    source_srid = int(proj.split(":")[1])
+    if source_srid != target_srid:
+        try:
+            wkt = bbox_to_wkt(minx, maxx, miny, maxy, srid=source_srid)
+            poly = GEOSGeometry(wkt, srid=source_srid)
+            poly.transform(target_srid)
+            return tuple([str(x) for x in poly.extent]) + ("EPSG:%s" % poly.srid,)
+        except BaseException:
+            tb = traceback.format_exc()
+            logger.error(tb)
+
+    return native_bbox
 
 
 def llbbox_to_mercator(llbbox):
@@ -248,6 +271,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering):
               "fixed", "group", "visibility", "source", "getFeatureInfo"]:
         if k in layer_cfg:
             del layer_cfg[k]
+    layer_cfg["id"] = 1
     layer_cfg["wrapDateLine"] = True
     layer_cfg["displayOutsideMaxExtent"] = True
 
@@ -265,7 +289,8 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering):
                 if 'legend' in style:
                     legend = style['legend']
                     if 'href' in legend:
-                        legend['href'] = re.sub(r'\&access_token=.*', '', legend['href'])
+                        legend['href'] = re.sub(
+                            r'\&access_token=.*', '', legend['href'])
 
     _model = model(
         map_id=map_id,
@@ -645,7 +670,8 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                     for manager in managers:
                         if manager not in obj_group_managers and not manager.is_superuser:
                             obj_group_managers.append(manager)
-                if group_profile.user_is_member(request.user) and request.user not in obj_group_members:
+                if group_profile.user_is_member(
+                        request.user) and request.user not in obj_group_members:
                     obj_group_members.append(request.user)
             except GroupProfile.DoesNotExist:
                 pass
@@ -658,32 +684,48 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
             is_admin = request.user.is_superuser if request.user else False
             try:
                 is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except:
+            except BaseException:
                 is_manager = False
         if (not obj_to_check.is_published):
             if not is_admin:
-                if is_owner or (is_manager and request.user in obj_group_managers):
+                if is_owner or (
+                        is_manager and request.user in obj_group_managers):
                     if (not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
                         not request.user.has_perm('view_resourcebase', obj_to_check)) and (
                             not request.user.has_perm('change_resourcebase_metadata', obj_to_check)) and (
                                 not is_owner and not settings.ADMIN_MODERATE_UPLOADS):
-                                    raise Http404
+                        raise Http404
                     else:
-                        assign_perm('view_resourcebase', request.user, obj_to_check)
-                        assign_perm('publish_resourcebase', request.user, obj_to_check)
-                        assign_perm('change_resourcebase_metadata', request.user, obj_to_check)
-                        assign_perm('download_resourcebase', request.user, obj_to_check)
+                        assign_perm(
+                            'view_resourcebase', request.user, obj_to_check)
+                        assign_perm(
+                            'publish_resourcebase',
+                            request.user,
+                            obj_to_check)
+                        assign_perm(
+                            'change_resourcebase_metadata',
+                            request.user,
+                            obj_to_check)
+                        assign_perm(
+                            'download_resourcebase',
+                            request.user,
+                            obj_to_check)
 
                         if is_owner:
-                            assign_perm('change_resourcebase', request.user, obj_to_check)
-                            assign_perm('delete_resourcebase', request.user, obj_to_check)
-                            assign_perm('change_resourcebase_permissions', request.user, obj_to_check)
+                            assign_perm(
+                                'change_resourcebase', request.user, obj_to_check)
+                            assign_perm(
+                                'delete_resourcebase', request.user, obj_to_check)
+                            assign_perm(
+                                'change_resourcebase_permissions',
+                                request.user,
+                                obj_to_check)
                 else:
                     if request.user in obj_group_members:
                         if (not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
                             not request.user.has_perm('view_resourcebase', obj_to_check)) and (
                                 not request.user.has_perm('change_resourcebase_metadata', obj_to_check)):
-                                    raise Http404
+                            raise Http404
                     else:
                         raise Http404
 
@@ -705,7 +747,8 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
         raise PermissionDenied(mesg)
     if settings.MONITORING_ENABLED and obj:
         if hasattr(obj, 'alternate') or obj.title:
-            resource_name = obj.alternate if hasattr(obj, 'alternate') else obj.title
+            resource_name = obj.alternate if hasattr(
+                obj, 'alternate') else obj.title
             request.add_resource(model._meta.verbose_name_raw, resource_name)
     return obj
 
@@ -859,7 +902,7 @@ def check_shp_columnnames(layer):
     inDriver = ogr.GetDriverByName('ESRI Shapefile')
     inDataSource = inDriver.Open(inShapefile, 1)
     if inDataSource is None:
-        print 'Could not open %s' % (inShapefile)
+        logger.warning('Could not open %s' % (inShapefile))
         return False, None, None
     else:
         inLayer = inDataSource.GetLayer()
@@ -903,7 +946,7 @@ def check_shp_columnnames(layer):
                         new_field_name = new_field_name[:-2] + '_' + str(j)
                 list_col.update({field_name: new_field_name})
     except UnicodeDecodeError as e:
-        print str(e)
+        logger.error(str(e))
         return False, None, None
 
     if len(list_col) == 0:
@@ -1020,77 +1063,79 @@ def printsignals():
         signaltype = getattr(models.signals, signalname)
         signals = signaltype.receivers[:]
         for signal in signals:
-            logger.info(signal)
+            logger.debug(signal)
 
 
 def designals():
     global signals_store
 
     for signalname in signalnames:
-        signaltype = getattr(models.signals, signalname)
-        logger.debug("RETRIEVE: %s: %d" %
-                     (signalname, len(signaltype.receivers)))
-        signals_store[signalname] = []
-        signals = signaltype.receivers[:]
-        for signal in signals:
-            uid = receiv_call = None
-            sender_ista = sender_call = None
-            # first tuple element:
-            # - case (id(instance), id(method))
-            if not isinstance(signal[0], tuple):
-                raise "Malformed signal"
+        if signalname in signals_store:
+            signaltype = getattr(models.signals, signalname)
+            logger.debug("RETRIEVE: %s: %d" %
+                         (signalname, len(signaltype.receivers)))
+            signals_store[signalname] = []
+            signals = signaltype.receivers[:]
+            for signal in signals:
+                uid = receiv_call = None
+                sender_ista = sender_call = None
+                # first tuple element:
+                # - case (id(instance), id(method))
+                if not isinstance(signal[0], tuple):
+                    raise "Malformed signal"
 
-            lookup = signal[0]
+                lookup = signal[0]
 
-            if isinstance(lookup[0], tuple):
-                # receiv_ista = id_to_obj(lookup[0][0])
-                receiv_call = id_to_obj(lookup[0][1])
-            else:
-                # - case id(function) or uid
-                try:
-                    receiv_call = id_to_obj(lookup[0])
-                except BaseException:
-                    uid = lookup[0]
+                if isinstance(lookup[0], tuple):
+                    # receiv_ista = id_to_obj(lookup[0][0])
+                    receiv_call = id_to_obj(lookup[0][1])
+                else:
+                    # - case id(function) or uid
+                    try:
+                        receiv_call = id_to_obj(lookup[0])
+                    except BaseException:
+                        uid = lookup[0]
 
-            if isinstance(lookup[1], tuple):
-                sender_call = id_to_obj(lookup[1][0])
-                sender_ista = id_to_obj(lookup[1][1])
-            else:
-                sender_ista = id_to_obj(lookup[1])
+                if isinstance(lookup[1], tuple):
+                    sender_call = id_to_obj(lookup[1][0])
+                    sender_ista = id_to_obj(lookup[1][1])
+                else:
+                    sender_ista = id_to_obj(lookup[1])
 
-            # second tuple element
-            if (isinstance(signal[1], weakref.ReferenceType)):
-                is_weak = True
-                receiv_call = signal[1]()
-            else:
-                is_weak = False
-                receiv_call = signal[1]
+                # second tuple element
+                if (isinstance(signal[1], weakref.ReferenceType)):
+                    is_weak = True
+                    receiv_call = signal[1]()
+                else:
+                    is_weak = False
+                    receiv_call = signal[1]
 
-            signals_store[signalname].append({
-                'uid': uid, 'is_weak': is_weak,
-                'sender_ista': sender_ista, 'sender_call': sender_call,
-                'receiv_call': receiv_call,
-            })
+                signals_store[signalname].append({
+                    'uid': uid, 'is_weak': is_weak,
+                    'sender_ista': sender_ista, 'sender_call': sender_call,
+                    'receiv_call': receiv_call,
+                })
 
-            signaltype.disconnect(
-                receiver=receiv_call,
-                sender=sender_ista,
-                weak=is_weak,
-                dispatch_uid=uid)
+                signaltype.disconnect(
+                    receiver=receiv_call,
+                    sender=sender_ista,
+                    weak=is_weak,
+                    dispatch_uid=uid)
 
 
 def resignals():
     global signals_store
 
     for signalname in signalnames:
-        signals = signals_store[signalname]
-        signaltype = getattr(models.signals, signalname)
-        for signal in signals:
-            signaltype.connect(
-                signal['receiv_call'],
-                sender=signal['sender_ista'],
-                weak=signal['is_weak'],
-                dispatch_uid=signal['uid'])
+        if signalname in signals_store:
+            signals = signals_store[signalname]
+            signaltype = getattr(models.signals, signalname)
+            for signal in signals:
+                signaltype.connect(
+                    signal['receiv_call'],
+                    sender=signal['sender_ista'],
+                    weak=signal['is_weak'],
+                    dispatch_uid=signal['uid'])
 
 
 def run_subprocess(*cmd, **kwargs):
@@ -1130,7 +1175,7 @@ def parse_datetime(value):
                 return datetime.datetime.strptime(value_obj, patt)
             else:
                 return datetime.datetime.strptime(value, patt)
-        except:
+        except BaseException:
             # tb = traceback.format_exc()
             # logger.error(tb)
             pass
@@ -1175,5 +1220,85 @@ def check_ogc_backend(backend_package):
         ogc_conf = settings.OGC_SERVER['default']
         is_configured = ogc_conf.get('BACKEND') == backend_package
         return in_installed_apps and is_configured
-    except:
+    except BaseException:
         return False
+
+
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    ogc_server_settings = settings.OGC_SERVER['default']
+    http_client = httplib2.Http(
+        cache=getattr(
+            ogc_server_settings, 'CACHE', None), timeout=getattr(
+            ogc_server_settings, 'TIMEOUT', 10))
+else:
+    http_client = httplib2.Http(timeout=10)
+
+
+def get_dir_time_suffix():
+    """Returns the name of a folder with the 'now' time as suffix"""
+    dirfmt = "%4d-%02d-%02d_%02d%02d%02d"
+    now = time.localtime()[0:6]
+    dirname = dirfmt % now
+
+    return dirname
+
+
+def zip_dir(basedir, archivename):
+    assert os.path.isdir(basedir)
+    with closing(ZipFile(archivename, "w", ZIP_DEFLATED, allowZip64=True)) as z:
+        for root, dirs, files in os.walk(basedir):
+            # NOTE: ignore empty directories
+            for fn in files:
+                absfn = os.path.join(root, fn)
+                zfn = absfn[len(basedir)+len(os.sep):]  # XXX: relative path
+                z.write(absfn, zfn)
+
+
+def copy_tree(src, dst, symlinks=False, ignore=None):
+    try:
+        for item in os.listdir(src):
+            s = os.path.join(src, item)
+            d = os.path.join(dst, item)
+            if os.path.isdir(s):
+                # shutil.rmtree(d)
+                if os.path.exists(d):
+                    try:
+                        os.remove(d)
+                    except:
+                        try:
+                            shutil.rmtree(d)
+                        except:
+                            pass
+                try:
+                    shutil.copytree(s, d, symlinks, ignore)
+                except:
+                    pass
+            else:
+                try:
+                    shutil.copy2(s, d)
+                except:
+                    pass
+    except Exception:
+        traceback.print_exc()
+
+
+def extract_archive(zip_file, dst):
+    target_folder = os.path.join(dst, os.path.splitext(os.path.basename(zip_file))[0])
+    if not os.path.exists(target_folder):
+        os.makedirs(target_folder)
+
+    with ZipFile(zip_file, "r", allowZip64=True) as z:
+        z.extractall(target_folder)
+
+    return target_folder
+
+
+def chmod_tree(dst, permissions=0o777):
+    for dirpath, dirnames, filenames in os.walk(dst):
+        for filename in filenames:
+            path = os.path.join(dirpath, filename)
+            os.chmod(path, permissions)
+
+        for dirname in dirnames:
+            path = os.path.join(dirpath, dirname)
+            os.chmod(path, permissions)

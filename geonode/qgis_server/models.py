@@ -167,7 +167,7 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
 
         # Removing the cache.
         path = self.cache_path
-        logger.info('Removing the cache from a qgis layer : %s' % path)
+        logger.debug('Removing the cache from a qgis layer : %s' % path)
         try:
             rmtree(path)
         except OSError:
