@@ -939,7 +939,7 @@ def layer_metadata(
             la = Attribute.objects.get(id=int(form['id'].id))
             la.description = form["description"]
             la.attribute_label = form["attribute_label"]
-            la.visible = form["visible"]
+            la.visible = True if form["attribute_label"] else False  # form["visible"]
             la.display_order = form["display_order"]
             la.save()
 
