@@ -779,9 +779,12 @@ def get_layer_attributes(layer):
     attribute_fields = []
     attributes = layer.attribute_set.filter(visible=True).order_by('display_order')
     for la in attributes:
+        searchable = False
+        if hasattr(la, 'extlayerattribute'):
+            searchable = la.extlayerattribute.searchable
         attribute_fields.append({"id": la.attribute,
                                  "header": la.attribute_label,
-                                 "searchable" : la.extlayerattribute.searchable
+                                 "searchable" : searchable
                                 })
     return attribute_fields
 
