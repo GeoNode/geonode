@@ -1800,8 +1800,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 method: 'POST',
                 params : {query:urlField.getValue(), mapid: as ? 0 : geoEx.mapID},
                 success: function(response, options) {
-                    var mapid = geoEx.mapID;
-                    createMapThumbnail(mapid);
                     var urlcount = Ext.decode(response.responseText).count;
                     var rt = "";
                     var isValid = true;
@@ -2321,6 +2319,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     Ext.getCmp('gx_saveButton').enable();
                     if (!saveAsButton.hidden)
                         saveAsButton.enable();
+                    // create thumb
+                    createMapThumbnail(this.mapid);
                 },
                 failure: function(response, options) {
                     if (response.status === 401)

@@ -614,5 +614,18 @@ class MapSnapshot(models.Model):
         }
 
 
+def map_pre_save(instance, *args, **kwargs):
+    """
+    Used to fill any additional fields after the save.
+    Has to be called by the children
+    """
+    # is this a problem of WorldMap? y0, y1 for maps are switched
+    if instance.bbox_y0 > instance.bbox_y1:
+        old_y0 = instance.bbox_y0
+        instance.bbox_y0 = instance.bbox_y1
+        instance.bbox_y1 = old_y0
+
+
 signals.pre_delete.connect(pre_delete_map, sender=Map)
+signals.pre_save.connect(map_pre_save, sender=Map)
 signals.post_save.connect(resourcebase_post_save, sender=Map)
