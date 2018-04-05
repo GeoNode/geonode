@@ -221,14 +221,14 @@
                 circle.OnModificationEnd(function(feature, values) {
                     var center = feature.values_.geometry.getCenter();
                     var centerLongLat = ol.proj.transform([center[0], center[1]], 'EPSG:3857', 'EPSG:4326');
-                    
+                    var meterPerDegree = 111325;
                     var params = {
                         version: '1.0.0',
                         request: 'GetFeature',
                         outputFormat: 'JSON',
                         srsName: 'EPSG:3857',
                         typeNames: '',
-                        cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + values.radius + ',meters)',
+                        cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + values.radius / meterPerDegree + ',meters)',
                     };
                     showFeatures(params);                    
                 });
