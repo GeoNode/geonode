@@ -1101,7 +1101,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
     """
     cat = gs_catalog
     db = ogc_server_settings.datastore_db
-    dsname = db['NAME']
+    dsname = ogc_server_settings.DATASTORE
 
     ds_exists = False
     try:
