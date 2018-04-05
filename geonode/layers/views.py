@@ -28,6 +28,8 @@ import uuid
 import decimal
 import re
 
+from celery.exceptions import TimeoutError
+
 from django.contrib.gis.geos import GEOSGeometry
 from django.template.response import TemplateResponse
 from requests import Request
@@ -1239,7 +1241,20 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
     if (request.method == 'POST'):
         try:
             with transaction.atomic():
-                delete_layer.delay(object_id=layer.id)
+                # Using Tastypie
+                # from geonode.api.resourcebase_api import LayerResource
+                # res = LayerResource()
+                # request_bundle = res.build_bundle(request=request)
+                # layer_bundle = res.build_bundle(request=request, obj=layer)
+                # layer_json = res.serialize(None,
+                #                            res.full_dehydrate(layer_bundle),
+                #                            "application/json")
+                # delete_layer.delay(instance=layer_json)
+                result = delete_layer.delay(layer_id=layer.id)
+                result.wait(10)
+        except TimeoutError:
+            # traceback.print_exc()
+            pass
         except Exception as e:
             traceback.print_exc()
             message = '{0}: {1}.'.format(

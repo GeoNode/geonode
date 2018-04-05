@@ -32,7 +32,7 @@ import dj_database_url
 #
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
 from geonode import get_version
-from kombu import Queue
+from kombu import Queue, Exchange
 
 # GeoNode Version
 VERSION = get_version()
@@ -268,28 +268,6 @@ LOGOUT_URL = os.getenv('LOGOUT_URL', '/account/logout/')
 
 LOGIN_REDIRECT_URL = '/'
 
-# Documents application
-ALLOWED_DOCUMENT_TYPES = [
-    'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png',
-    'ppt', 'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml',
-    'zip', 'gz', 'qml'
-]
-MAX_DOCUMENT_SIZE = int(os.getenv('MAX_DOCUMENT_SIZE ', '2'))  # MB
-
-# DOCUMENT_TYPE_MAP and DOCUMENT_MIMETYPE_MAP update enumerations in
-# documents/enumerations.py and should only
-# need to be uncommented if adding other types
-# to settings.ALLOWED_DOCUMENT_TYPES
-
-# DOCUMENT_TYPE_MAP = {}
-# DOCUMENT_MIMETYPE_MAP = {}
-
-UNOCONV_ENABLE = strtobool(os.getenv('UNOCONV_ENABLE', 'False'))
-
-if UNOCONV_ENABLE:
-    UNOCONV_EXECUTABLE = os.getenv('UNOCONV_EXECUTABLE', '/usr/bin/unoconv')
-    UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
-
 GEONODE_APPS = (
     # GeoNode internal apps
     'geonode.people',
@@ -403,6 +381,28 @@ INSTALLED_APPS = (
     'allauth.socialaccount',
 ) + GEONODE_APPS
 
+# Documents application
+ALLOWED_DOCUMENT_TYPES = [
+    'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png',
+    'ppt', 'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml',
+    'zip', 'gz', 'qml'
+]
+MAX_DOCUMENT_SIZE = int(os.getenv('MAX_DOCUMENT_SIZE ', '2'))  # MB
+
+# DOCUMENT_TYPE_MAP and DOCUMENT_MIMETYPE_MAP update enumerations in
+# documents/enumerations.py and should only
+# need to be uncommented if adding other types
+# to settings.ALLOWED_DOCUMENT_TYPES
+
+# DOCUMENT_TYPE_MAP = {}
+# DOCUMENT_MIMETYPE_MAP = {}
+
+UNOCONV_ENABLE = strtobool(os.getenv('UNOCONV_ENABLE', 'False'))
+
+if UNOCONV_ENABLE:
+    UNOCONV_EXECUTABLE = os.getenv('UNOCONV_EXECUTABLE', '/usr/bin/unoconv')
+    UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
+
 MONITORING_ENABLED = False
 
 # how long monitoring data should be stored
@@ -435,13 +435,13 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-        # 'celery': {
-        #     'level': 'ERROR',
-        #     'class': 'logging.handlers.RotatingFileHandler',
-        #     'filename': 'celery.log',
-        #     'formatter': 'simple',
-        #     'maxBytes': 1024 * 1024 * 10,  # 10 mb
-        # },
+        'celery': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'celery.log',
+            'formatter': 'simple',
+            'maxBytes': 1024 * 1024 * 10,  # 10 mb
+        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
@@ -461,8 +461,8 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
-        # "celery": {
-        #     'handlers': ['celery', 'console'], 'level': 'ERROR', },
+        "celery": {
+            'handlers': ['celery', 'console'], 'level': 'INFO', },
     },
 }
 
@@ -706,6 +706,8 @@ OGC_SERVER = {
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }
+
+USE_GEOSERVER = 'geonode.geoserver' in INSTALLED_APPS and OGC_SERVER['default']['BACKEND'] == 'geonode.geoserver'
 
 # Uploader Settings
 UPLOADER = {
@@ -1182,46 +1184,95 @@ if NOTIFICATION_ENABLED:
 
 # async signals can be the same as broker url
 # but they should have separate setting anyway
-# use amqp:// for local rabbitmq server
-ASYNC_SIGNALS_BROKER_URL = 'memory://'
-BROKER_URL = os.environ.get('BROKER_URL', ASYNC_SIGNALS_BROKER_URL)
+# use amqp://localhost for local rabbitmq server
+"""
+    sudo apt-get install -y erlang
+    sudo apt-get install rabbitmq-server
 
+    sudo update-rc.d rabbitmq-server enable
+
+    sudo rabbitmqctl stop_app
+    sudo rabbitmqctl reset
+    sudo rabbitmqctl start_app
+
+    sudo rabbitmqctl list_queues
+"""
 # Disabling the heartbeat because workers seems often disabled in flower,
 # thanks to http://stackoverflow.com/a/14831904/654755
 BROKER_HEARTBEAT=0
 
 # Avoid long running and retried tasks to be run over-and-over again.
 BROKER_TRANSPORT_OPTIONS = {
-    'socket_timeout': 10,
+    'fanout_prefix': True,
+    'fanout_patterns': True,
+    'socket_timeout': 60,
     'visibility_timeout': 86400
 }
 
-# CELERY_RESULT_BACKEND = BROKER_URL
+ASYNC_SIGNALS = False
+RABBITMQ_SIGNALS_BROKER_URL = 'amqp://localhost:5672'
+REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
+LOCAL_SIGNALS_BROKER_URL = 'memory://'
+if ASYNC_SIGNALS:
+    _BROKER_URL = RABBITMQ_SIGNALS_BROKER_URL
+    # _BROKER_URL = REDIS_SIGNALS_BROKER_URL
+    CELERY_RESULT_BACKEND = _BROKER_URL
+else:
+    _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
+BROKER_URL = os.environ.get('BROKER_URL', _BROKER_URL)
+
 CELERY_RESULT_PERSISTENT = False
 
 # Allow to recover from any unknown crash.
 CELERY_ACKS_LATE = True
 
 # Set this to False in order to run async
-CELERY_TASK_ALWAYS_EAGER = True
-CELERY_TASK_IGNORE_RESULT = False
+CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
+CELERY_TASK_IGNORE_RESULT = True
+
+# I use these to debug kombu crashes; we get a more informative message.
+CELERY_TASK_SERIALIZER = 'json'
+#CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json', 'pickle']
 
 # Set Tasks Queues
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_TASK_DEFAULT_QUEUE = "default"
-CELERY_TASK_DEFAULT_EXCHANGE = "default"
-CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
-CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
+# CELERY_TASK_DEFAULT_QUEUE = "default"
+# CELERY_TASK_DEFAULT_EXCHANGE = "default"
+# CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
+# CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
 CELERY_TASK_CREATE_MISSING_QUEUES = True
+GEONODE_EXCHANGE = Exchange("default", type="direct", durable=True)
+GEOSERVER_EXCHANGE = Exchange("geonode", type="topic", durable=False)
+CELERY_TASK_QUEUES = (
+    Queue('default', GEONODE_EXCHANGE, routing_key='default'),
+    Queue('geonode', GEONODE_EXCHANGE, routing_key='geonode'),
+    Queue('update', GEONODE_EXCHANGE, routing_key='update'),
+    Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup'),
+    Queue('email', GEONODE_EXCHANGE, routing_key='email'),
+)
+
+if USE_GEOSERVER:
+    from geonode.messaging.queues import QUEUES
+    CELERY_TASK_QUEUES += QUEUES
+
+# CELERYBEAT_SCHEDULE = {
+#     ...
+#     'update_feeds': {
+#         'task': 'arena.social.tasks.Update',
+#         'schedule': crontab(minute='*/6'),
+#     },
+#     ...
+# }
+
 # Half a day is enough
 CELERY_TASK_RESULT_EXPIRES = 43200
 
 # Sometimes, Ask asks us to enable this to debug issues.
 # BTW, it will save some CPU cycles.
-CELERY_DISABLE_RATE_LIMITS = True
-CELERY_SEND_TASK_EVENTS = False
-CELERY_WORKER_DISABLE_RATE_LIMITS = True
-CELERY_WORKER_SEND_TASK_EVENTS = False
+CELERY_DISABLE_RATE_LIMITS = False
+CELERY_SEND_TASK_EVENTS = True
+CELERY_WORKER_DISABLE_RATE_LIMITS = False
+CELERY_WORKER_SEND_TASK_EVENTS = True
 
 # Allow our remote workers to get tasks faster if they have a
 # slow internet connection (yes Gurney, I'm thinking of you).
@@ -1233,22 +1284,11 @@ CELERY_MAX_CACHED_RESULTS = 32768
 # NOTE: I don't know if this is compatible with upstart.
 CELERYD_POOL_RESTARTS = True
 
-# I use these to debug kombu crashes; we get a more informative message.
-#CELERY_TASK_SERIALIZER = 'json'
-#CELERY_RESULT_SERIALIZER = 'json'
-
 CELERY_TRACK_STARTED = True
 CELERY_SEND_TASK_SENT_EVENT = True
 
 # Disabled by default and I like it, because we use Sentry for this.
 #CELERY_SEND_TASK_ERROR_EMAILS = False
-
-CELERY_QUEUES = [
-    Queue('default', routing_key='default'),
-    Queue('cleanup', routing_key='cleanup'),
-    Queue('update', routing_key='update'),
-    Queue('email', routing_key='email'),
-]
 
 # AWS S3 Settings
 
@@ -1316,7 +1356,6 @@ if os.name == 'nt':
 
 
 # define the urls after the settings are overridden
-USE_GEOSERVER = 'geonode.geoserver' in INSTALLED_APPS
 if USE_GEOSERVER:
     PUBLIC_GEOSERVER = {
         "source": {
