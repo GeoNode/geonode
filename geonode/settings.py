@@ -1251,7 +1251,7 @@ CELERY_TASK_QUEUES = (
     Queue('email', GEONODE_EXCHANGE, routing_key='email'),
 )
 
-if USE_GEOSERVER:
+if USE_GEOSERVER and ASYNC_SIGNALS:
     from geonode.messaging.queues import QUEUES
     CELERY_TASK_QUEUES += QUEUES
 

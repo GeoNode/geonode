@@ -56,7 +56,7 @@ setup(name='GeoNode',
             "Django<=1.8.19",  # python-django (1.8.19 in our ppa)
 
             # Other
-            "amqp==2.1.1",  # (python-amqp 2.2.2 in our ppa)
+            "amqp==2.2.2",  # (python-amqp 2.2.2 in our ppa)
             "anyjson<=0.3.3",  # (python-anyjson 0.3.3 in our ppa)
             "arrow==0.12.1",  # (python-arrow 0.12.1 in our ppa)
             "attrs==17.4.0",  # (python-attrs 17.4.0 in our ppa)
@@ -186,7 +186,7 @@ setup(name='GeoNode',
             "idna<=2.6",  # (2.6 in our ppa)
             "ipaddress<=1.0.18",  # (1.0.18 in our ppa)
             "jdcal<=1.3",  # (1.3 in our ppa)
-            "kombu<=4.1.0",  # python-kombu (4.1.0 in our ppa)
+            "kombu==4.1.0",  # python-kombu (4.1.0 in our ppa)
             "mccabe<=0.4.0",  # (0.4.0 in our ppa)
             "mock<=2.0.0",  # (1.3.0 in ppa) FIXME
             "numpy<=1.13.1",  # (1.11.0 in ppa) FIXME
