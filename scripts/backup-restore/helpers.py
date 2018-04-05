@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2018 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,18 +19,17 @@
 #########################################################################
 
 from __future__ import with_statement
-from contextlib import closing
-from zipfile import ZipFile, ZIP_DEFLATED
 
 import traceback
 import psycopg2
 import ConfigParser
 import os
-import time
-import shutil
+import sys
 
-import json
-import re
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 
 MEDIA_ROOT       = 'uploaded'
 STATIC_ROOT      = 'static_root'
@@ -43,7 +42,7 @@ config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'settings.i
 
 db_name   = config.get('targetdb', 'dbname')
 db_host   = config.get('targetdb', 'host')
-db_port   = config.get('targetdb', 'port') 
+db_port   = config.get('targetdb', 'port')
 db_user   = config.get('targetdb', 'user')
 db_passwd = config.get('targetdb', 'passwd')
 
@@ -65,19 +64,20 @@ def patch_db():
    """Apply patch to GeoNode DB"""
    conn   = get_db_conn()
    curs   = conn.cursor()
-   
-   try:
-      curs.execute("ALTER TABLE base_contactrole ALTER COLUMN resource_id DROP NOT NULL")
-      curs.execute("ALTER TABLE base_link ALTER COLUMN resource_id DROP NOT NULL")
-   except Exception, err:
-      try:
-         conn.rollback()
-      except:
-         pass
 
-      traceback.print_exc()
+    try:
+        curs.execute("ALTER TABLE base_contactrole ALTER COLUMN resource_id DROP NOT NULL;")
+        curs.execute("ALTER TABLE base_link ALTER COLUMN resource_id DROP NOT NULL;")
+        curs.execute("TRUNCATE monitoring_notificationreceiver CASCADE;")
+    except Exception:
+        try:
+            conn.rollback()
+        except:
+            pass
 
-   conn.commit()
+        traceback.print_exc()
+
+    conn.commit()
 
 
 def cleanup_db():
@@ -85,124 +85,72 @@ def cleanup_db():
    conn   = get_db_conn()
    curs   = conn.cursor()
 
-   try:
-      curs.execute("DELETE FROM base_contactrole WHERE resource_id is NULL;")
-      curs.execute("DELETE FROM base_link WHERE resource_id is NULL;")
-   except Exception, err:
-      try:
-         conn.rollback()
-      except:
-         pass
+    try:
+        curs.execute("DELETE FROM base_contactrole WHERE resource_id is NULL;")
+        curs.execute("DELETE FROM base_link WHERE resource_id is NULL;")
+    except Exception:
+        try:
+            conn.rollback()
+        except:
+            pass
 
-      traceback.print_exc()
+        traceback.print_exc()
 
-   conn.commit()
+    conn.commit()
 
 
 def load_fixture(apps, fixture_file, mangler=None, basepk=-1, owner="admin", datastore='', siteurl=''):
 
     fixture = open(fixture_file, 'rb')
-    
+
     if mangler:
-       objects = json.load(fixture, cls=mangler, **{"basepk":basepk, "owner":owner, "datastore":datastore, "siteurl":siteurl})
+        objects = json.load(fixture, cls=mangler,
+                            **{"basepk": basepk, "owner": owner, "datastore": datastore, "siteurl": siteurl})
     else:
-       objects = json.load(fixture)
+        objects = json.load(fixture)
 
     fixture.close()
 
     return objects
 
 
-def get_dir_time_suffix():
-   """Returns the name of a folder with the 'now' time as suffix"""
-   dirfmt = "%4d-%02d-%02d_%02d%02d%02d"
-   now = time.localtime()[0:6]
-   dirname = dirfmt % now
-   
-   return dirname
-
-
-def zip_dir(basedir, archivename):
-   assert os.path.isdir(basedir)
-   with closing(ZipFile(archivename, "w", ZIP_DEFLATED)) as z:
-      for root, dirs, files in os.walk(basedir):
-         #NOTE: ignore empty directories
-         for fn in files:
-            absfn = os.path.join(root, fn)
-            zfn = absfn[len(basedir)+len(os.sep):] #XXX: relative path
-            z.write(absfn, zfn)
-
-
-def copy_tree(src, dst, symlinks=False, ignore=None):
-   for item in os.listdir(src):
-       s = os.path.join(src, item)
-       d = os.path.join(dst, item)
-       if os.path.isdir(s):
-           shutil.copytree(s, d, symlinks, ignore)
-       else:
-           shutil.copy2(s, d)
-
-
-def unzip_file(zip_file, dst):
-   target_folder = os.path.join(dst, os.path.splitext(os.path.basename(zip_file))[0])
-   if not os.path.exists(target_folder):
-      os.makedirs(target_folder)
-
-   with ZipFile(zip_file, "r") as z:
-      z.extractall(target_folder)
-
-   return target_folder
-
-
-def chmod_tree(dst, permissions=0o777):
-   for dirpath, dirnames, filenames in os.walk(dst):
-      for filename in filenames:
-         path = os.path.join(dirpath, filename)
-         os.chmod(path, permissions)
- 
-      for dirname in dirnames:
-         path = os.path.join(dirpath, dirname)
-         os.chmod(path, permissions)
-
-
 def confirm(prompt=None, resp=False):
-   """prompts for yes or no response from the user. Returns True for yes and
-   False for no.
+    """prompts for yes or no response from the user. Returns True for yes and
+    False for no.
 
-   'resp' should be set to the default value assumed by the caller when
-   user simply types ENTER.
+    'resp' should be set to the default value assumed by the caller when
+    user simply types ENTER.
 
-   >>> confirm(prompt='Create Directory?', resp=True)
-   Create Directory? [y]|n: 
-   True
-   >>> confirm(prompt='Create Directory?', resp=False)
-   Create Directory? [n]|y: 
-   False
-   >>> confirm(prompt='Create Directory?', resp=False)
-   Create Directory? [n]|y: y
-   True
+    >>> confirm(prompt='Create Directory?', resp=True)
+    Create Directory? [y]|n:
+    True
+    >>> confirm(prompt='Create Directory?', resp=False)
+    Create Directory? [n]|y:
+    False
+    >>> confirm(prompt='Create Directory?', resp=False)
+    Create Directory? [n]|y: y
+    True
+    """
 
-   """
-    
-   if prompt is None:
-       prompt = 'Confirm'
+    if prompt is None:
+        prompt = 'Confirm'
 
-   if resp:
-       prompt = '%s [%s]|%s: ' % (prompt, 'y', 'n')
-   else:
-       prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
-        
-   while True:
-       ans = raw_input(prompt)
-       if not ans:
-           return resp
-       if ans not in ['y', 'Y', 'n', 'N']:
-           print 'please enter y or n.'
-           continue
-       if ans == 'y' or ans == 'Y':
-           return True
-       if ans == 'n' or ans == 'N':
-           return False
+    if resp:
+        prompt = '%s [%s]|%s: ' % (prompt, 'y', 'n')
+    else:
+        prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
+
+    while True:
+        ans = raw_input(prompt)
+        if not ans:
+            return resp
+        if ans not in ['y', 'Y', 'n', 'N']:
+            print 'please enter y or n.'
+            continue
+        if ans == 'y' or ans == 'Y':
+            return True
+        if ans == 'n' or ans == 'N':
+            return False
 
 
 def load_class(name):
@@ -214,6 +162,3 @@ def load_class(name):
         mod = getattr(mod, comp)
 
     return mod
-
-
-

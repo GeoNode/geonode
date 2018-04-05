@@ -20,8 +20,6 @@
 
 import xml.etree.ElementTree as etree
 
-from optparse import make_option
-
 from django.core.management.base import BaseCommand, CommandError
 
 from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
@@ -31,24 +29,26 @@ class Command(BaseCommand):
 
     help = 'Load a thesaurus in RDF format into DB'
 
-    option_list = BaseCommand.option_list + (
-        make_option(
+    def add_arguments(self, parser):
+
+        # Named (optional) arguments
+        parser.add_argument(
             '-d',
             '--dry-run',
             action="store_true",
             dest='dryrun',
             default=False,
-            help='Only parse and print the thesaurus file, without perform insertion in the DB.'),
-        make_option(
+            help='Only parse and print the thesaurus file, without perform insertion in the DB.')
+
+        parser.add_argument(
             '--name',
             dest='name',
-            type="string",
-            help='Identifier name for the thesaurus in this GeoNode instance.'),
-        make_option(
+            help='Identifier name for the thesaurus in this GeoNode instance.')
+
+        parser.add_argument(
             '--file',
             dest='file',
-            type="string",
-            help='Full path to a thesaurus in RDF format.'))
+            help='Full path to a thesaurus in RDF format.')
 
     def handle(self, **options):
 
