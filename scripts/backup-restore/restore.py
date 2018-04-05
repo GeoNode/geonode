@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2018 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,6 +23,11 @@ import os, sys
 import shutil
 import helpers
 
+from geonode.utils import (designals,
+                           resignals,
+                           copy_tree,
+                           extract_archive,
+                           chmod_tree)
 from django.conf import settings
 from django.core.management import call_command
 
@@ -33,9 +38,9 @@ def restore_full(archive):
       restore_folder = 'restore'
       if not os.path.exists(restore_folder):
          os.makedirs(restore_folder)
-      
+
       # Extract ZIP Archive to Target Folder
-      target_folder = helpers.unzip_file(archive, restore_folder)
+      target_folder = extract_archive(archive, restore_folder)
 
       # Prepare Target DB
       try:
@@ -49,7 +54,7 @@ def restore_full(archive):
       # Restore Fixtures
       for app_name, dump_name in zip(helpers.app_names, helpers.dump_names):
          fixture_file = os.path.join(target_folder, dump_name+'.json')
-         
+
          print "Deserializing "+fixture_file
          try:
             call_command('loaddata', fixture_file, app_label=app_name)
@@ -70,14 +75,14 @@ def restore_full(archive):
       if not os.path.exists(media_root):
          os.makedirs(media_root)
 
-      helpers.copy_tree(media_folder, media_root)
-      helpers.chmod_tree(media_root)
+      copy_tree(media_folder, media_root)
+      chmod_tree(media_root)
       print "Media Files Restored into '"+media_root+"'."
 
       # Restore Static Root
       static_root = settings.STATIC_ROOT
       static_folder = os.path.join(target_folder, helpers.STATIC_ROOT)
-      
+
       try:
          shutil.rmtree(static_root)
       except:
@@ -86,10 +91,10 @@ def restore_full(archive):
       if not os.path.exists(static_root):
          os.makedirs(static_root)
 
-      helpers.copy_tree(static_folder, static_root)
-      helpers.chmod_tree(static_root)
+      copy_tree(static_folder, static_root)
+      chmod_tree(static_root)
       print "Static Root Restored into '"+static_root+"'."
-      
+
       # Restore Static Folders
       static_folders = settings.STATICFILES_DIRS
       static_files_folders = os.path.join(target_folder, helpers.STATICFILES_DIRS)
@@ -104,8 +109,8 @@ def restore_full(archive):
          if not os.path.exists(static_files_folder):
             os.makedirs(static_files_folder)
 
-         helpers.copy_tree(os.path.join(static_files_folders, os.path.basename(os.path.normpath(static_files_folder))), static_files_folder)
-         helpers.chmod_tree(static_files_folder)
+         copy_tree(os.path.join(static_files_folders, os.path.basename(os.path.normpath(static_files_folder))), static_files_folder)
+         chmod_tree(static_files_folder)
          print "Static Files Restored into '"+static_files_folder+"'."
 
       # Restore Template Folders
@@ -122,8 +127,8 @@ def restore_full(archive):
          if not os.path.exists(template_files_folder):
             os.makedirs(template_files_folder)
 
-         helpers.copy_tree(os.path.join(template_files_folders, os.path.basename(os.path.normpath(template_files_folder))), template_files_folder)
-         helpers.chmod_tree(template_files_folder)
+         copy_tree(os.path.join(template_files_folders, os.path.basename(os.path.normpath(template_files_folder))), template_files_folder)
+         chmod_tree(template_files_folder)
          print "Template Files Restored into '"+template_files_folder+"'."
 
       # Restore Locale Folders
@@ -140,8 +145,8 @@ def restore_full(archive):
          if not os.path.exists(locale_files_folder):
             os.makedirs(locale_files_folder)
 
-         helpers.copy_tree(os.path.join(locale_files_folders, os.path.basename(os.path.normpath(locale_files_folder))), locale_files_folder)
-         helpers.chmod_tree(locale_files_folder)
+         copy_tree(os.path.join(locale_files_folders, os.path.basename(os.path.normpath(locale_files_folder))), locale_files_folder)
+         chmod_tree(locale_files_folder)
          print "Locale Files Restored into '"+locale_files_folder+"'."
 
       # Cleanup DB
@@ -171,5 +176,3 @@ if __name__ == '__main__':
    else:
       print "Please, provide the full path to the ZIP archive to Restore.\n"
       print "Usage example:  python restore.py backup/geonode_backup_test.zip\n"
-
-
