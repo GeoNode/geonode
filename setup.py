@@ -56,7 +56,7 @@ setup(name='GeoNode',
             "Django<=1.8.19",  # python-django (1.8.19 in our ppa)
 
             # Other
-            "amqp<=2.2.2",  # (python-amqp 2.2.2 in our ppa)
+            "amqp==2.1.1",  # (python-amqp 2.2.2 in our ppa)
             "anyjson<=0.3.3",  # (python-anyjson 0.3.3 in our ppa)
             "arrow==0.12.1",  # (python-arrow 0.12.1 in our ppa)
             "attrs==17.4.0",  # (python-attrs 17.4.0 in our ppa)

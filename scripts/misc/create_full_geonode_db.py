@@ -34,6 +34,8 @@ from django.conf import settings
 
 from taggit.models import Tag
 
+from celery.exceptions import TimeoutError
+
 from geonode.base.models import TopicCategory
 from geonode.base.models import Region
 from geonode.people.models import Profile
@@ -55,7 +57,7 @@ def assign_random_category(resource):
     tc = TopicCategory.objects.all()[random_index]
     resource.category = tc
     resource.save()
-    
+
 def assign_keywords(resource):
     """ Assigns up to 5 keywords to resource """
     for i in range(0, randint(0, 5)):
@@ -92,7 +94,7 @@ def create_document(number):
     doc = Document(title=title, owner=get_random_user())
     doc.save()
     with open(file_uri, 'r') as f:
-        img_file = File(f) 
+        img_file = File(f)
         doc.doc_file.save(img_filename, img_file, True)
     assign_keywords(doc)
     # regions
@@ -136,9 +138,12 @@ for d in range(0, n_docs):
 # 3. create layers
 # first we delete layers
 for layer in Layer.objects.all():
-    delete_layer.delay(object_id=layer.id)
+    try:
+        result = delete_layer.delay(layer_id=layer.id)
+        result.wait(10)
+    except TimeoutError:
+        continue
 
 for l in range(0, n_layers):
     t = Timer(lambda: create_layer(l))
     print 'Layer %s generated in: %s' % (l, t.timeit(number=1))
-

@@ -1,6 +1,6 @@
 Django==1.8.19
 six==1.10.0
-amqp==2.2.2
+amqp==2.1.1
 anyjson==0.3.3
 arrow==0.12.1
 attrs==17.4.0

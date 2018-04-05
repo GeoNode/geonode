@@ -20,7 +20,7 @@
 
 """celery tasks for geonode.layers."""
 
-from celery.app import shared_task
+from celery.task import task
 from celery.utils.log import get_task_logger
 
 from geonode.layers.models import Layer
@@ -28,15 +28,16 @@ from geonode.layers.models import Layer
 logger = get_task_logger(__name__)
 
 
-@shared_task(bind=True, queue='cleanup')
-def delete_layer(self, object_id):
+@task(bind=True,
+      name='geonode.layers.tasks.update.delete_layer',
+      queue='cleanup',
+      autoretry_for=(Layer.DoesNotExist, ),
+      retry_kwargs={'max_retries': 5, 'countdown': 5})
+def delete_layer(self, layer_id):
     """
     Deletes a layer.
     """
-    logger.debug('Deleting Layer ID {0}'.format(object_id))
-    try:
-        layer = Layer.objects.get(id=object_id)
-    except Layer.DoesNotExist:
-        return
-
+    layer = Layer.objects.get(id=layer_id)
+    logger.info('Deleting Layer {0}'.format(layer))
     layer.delete()
+    return True
