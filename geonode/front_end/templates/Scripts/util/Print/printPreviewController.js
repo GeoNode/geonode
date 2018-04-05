@@ -91,8 +91,8 @@
         function mapLayers(baseMap, layers) {
            
             var baseMap = {
-                "baseURL": baseMap.url || "http://tile.thunderforest.com/cycle",
-                "customParams":baseMap.customParams || {"apikey":'50d64afdbe424011bdaabb6b9315b7ed'},
+                "baseURL": baseMap.url,
+                "customParams":baseMap.customParams,
                 "opacity": 1,
                 "type": baseMap.type || "xyz",
                 "maxExtent": [-20037508.3392, -20037508.3392,

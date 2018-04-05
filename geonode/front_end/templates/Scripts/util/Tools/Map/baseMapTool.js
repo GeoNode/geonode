@@ -200,6 +200,7 @@
     
             function addxyzPart(baseMaps, groupName, xyzPart){
                 _.each(baseMaps, function(item){
+                    item.urlRoot = item.url;
                     item.url = item.url + xyzPart;
                     item.groupName = groupName;
                 });
@@ -209,13 +210,13 @@
                 var thunderForestAPIKey = '50d64afdbe424011bdaabb6b9315b7ed';
                 var baseMaps = [];
                 var urlRoot = 'http://tile.thunderforest.com/';
-                baseMaps.push({title: 'Thuderforest(OpenCycleMap)', url: urlRoot+'cycle/',thumb : 'Thuderforest(OpenCycleMap).jpg'});
-                baseMaps.push({title: 'Thuderforest(Transport)', url: urlRoot+'transport/',thumb : 'Thuderforest(Transport).jpg'});
-                baseMaps.push({title: 'Thuderforest(TransportDark)', url: urlRoot+'transport-dark/',thumb : 'Thuderforest(TransportDark).jpg'});
-                baseMaps.push({title: 'Thuderforest(SpinalMap)', url: urlRoot+'spinal-map/',thumb : 'Thuderforest(SpinalMap).jpg'});
-                baseMaps.push({title: 'Thuderforest(Landscape)', url: urlRoot+'landscape/',thumb : 'Thuderforest(Landscape).jpg'});
-                baseMaps.push({title: 'Thuderforest(Outdoors)', url: urlRoot+'outdoors/',thumb : 'Thuderforest(Outdoors).jpg'});
-                baseMaps.push({title: 'Thuderforest(Pioneer)', url: urlRoot+'pioneer/',thumb : 'Thuderforest(Pioneer).jpg'});
+                baseMaps.push({title: 'Thuderforest(OpenCycleMap)',customParams: {apikey: thunderForestAPIKey}, url: urlRoot+'cycle/',thumb : 'Thuderforest(OpenCycleMap).jpg'});
+                baseMaps.push({title: 'Thuderforest(Transport)',customParams: {apikey: thunderForestAPIKey}, url: urlRoot+'transport/',thumb : 'Thuderforest(Transport).jpg'});
+                baseMaps.push({title: 'Thuderforest(TransportDark)',customParams: {apikey: thunderForestAPIKey}, url: urlRoot+'transport-dark/',thumb : 'Thuderforest(TransportDark).jpg'});
+                baseMaps.push({title: 'Thuderforest(SpinalMap)',customParams: {apikey: thunderForestAPIKey}, url: urlRoot+'spinal-map/',thumb : 'Thuderforest(SpinalMap).jpg'});
+                baseMaps.push({title: 'Thuderforest(Landscape)',customParams: {apikey: thunderForestAPIKey}, url: urlRoot+'landscape/',thumb : 'Thuderforest(Landscape).jpg'});
+                baseMaps.push({title: 'Thuderforest(Outdoors)',customParams: {apikey: thunderForestAPIKey}, url: urlRoot+'outdoors/',thumb : 'Thuderforest(Outdoors).jpg'});
+                baseMaps.push({title: 'Thuderforest(Pioneer)',customParams: {apikey: thunderForestAPIKey}, url: urlRoot+'pioneer/',thumb : 'Thuderforest(Pioneer).jpg'});
                 addxyzPart(baseMaps, 'Thunderforest', '{z}/{x}/{y}.png?apikey=' + thunderForestAPIKey);
                 return baseMaps;
             }
@@ -339,7 +340,8 @@
                     return {
     
                         title: item.title,
-    
+                        url: item.urlRoot,
+                        customParams: item.customParams,
                         olLayer: new ol.layer.Tile({
     
                             title: item.title,
