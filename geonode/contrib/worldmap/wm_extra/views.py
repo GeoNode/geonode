@@ -1003,9 +1003,9 @@ def layer_searchable_fields(
         'permissions message from searchable layers')
 
     status_message = None
-    if request.method == "POST":
+    if request.method == 'POST':
         attributes_list = request.POST.getlist('attributes')
-        status_message = ""
+        status_message = ''
         for attribute in layer.attributes:
             ext_att, created = ExtLayerAttribute.objects.get_or_create(attribute=attribute)
             if attribute.attribute in attributes_list:

@@ -60,7 +60,9 @@ def edit_layer_gazetteer(
         'base.change_resourcebase_metadata',
         'permissions message from grazetteer')
 
-    if request.method == "POST":
+    status_message = None
+    if request.method == 'POST':
+        status_message = ''
         gazetteer_name = set_none_if_empty(request.POST.get('gazetteer-name', ''))
         start_attribute = set_none_if_empty(request.POST.get('start-attribute', ''))
         end_attribute = set_none_if_empty(request.POST.get('end-attribute', ''))
@@ -79,6 +81,7 @@ def edit_layer_gazetteer(
                     gaz_att.is_end_date = True
                     gaz_att.date_format = sel_end_date_format
                 gaz_att.save()
+                status_message += ' %s' % attribute.attribute
             else:
                 print 'Removing %s from gazetteer...' % attribute
                 gaz_att, created = GazetteerAttribute.objects.get_or_create(attribute=attribute)
@@ -106,4 +109,5 @@ def edit_layer_gazetteer(
     return render_to_response(template, RequestContext(request, {
         "layer": layer,
         "gazetteer_attributes": gazetteer_attributes,
+        "status_message": status_message,
     }))
