@@ -89,7 +89,10 @@ MANAGERS = ADMINS = os.getenv('ADMINS', [])
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = os.getenv('TIME_ZONE', "America/Chicago")
+# TIME_ZONE = os.getenv('TIME_ZONE', "America/Chicago")
+TIME_ZONE = 'Asia/Dhaka'
+
+
 
 SITE_ID = int(os.getenv('SITE_ID', '1'))
 
