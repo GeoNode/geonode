@@ -28,8 +28,8 @@ env:
     # So QGIS server can access this address
     SITEURL: http://localhost:8000/
     QGIS_SERVER_PORT: 9000
-    ON_TRAVIS: True
-    CELERY_ALWAYS_EAGER: True
+    ON_TRAVIS: 'True'
+    CELERY_ALWAYS_EAGER: 'True'
 
 branches:
   only:
