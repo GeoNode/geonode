@@ -20,6 +20,7 @@ def tileset_post_save(instance, sender, **kwargs):
             bbox_x1=instance.bbox_x1,
             bbox_y0=instance.bbox_y0,
             bbox_y1=instance.bbox_y1,
+            srid=instance.srid,
             uuid=layer_uuid)
 
     if settings.USE_DISK_CACHE:
@@ -50,6 +51,7 @@ def layer_post_save(instance, sender, **kwargs):
             bbox_x1=instance.bbox_x1,
             bbox_y0=instance.bbox_y0,
             bbox_y1=instance.bbox_y1,
+            srid=instance.srid,
             source_type='wms',
             server_url=settings.OGC_SERVER['default']['LOCATION'] + 'wms',
             server_username=settings.OGC_SERVER['default']['USER'],

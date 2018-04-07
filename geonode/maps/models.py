@@ -238,7 +238,7 @@ class Map(ResourceBase, GXPMapBase):
         self.owner = user
         self.title = title
         self.abstract = abstract
-        self.projection = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
+        self.projection = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
         self.zoom = 0
         self.center_x = 0
         self.center_y = 0

@@ -31,6 +31,8 @@ from geonode.base.models import TopicCategory
 from geonode.maps.models import Map, MapLayer
 from geonode.documents.models import Document
 from geonode.people.models import Profile
+from geonode import geoserver, qgis_server  # noqa
+from geonode.utils import check_ogc_backend
 from itertools import cycle
 from taggit.models import Tag
 from taggit.models import TaggedItem
@@ -65,7 +67,7 @@ def reconnect_signals():
     signals.post_save.connect(geoserver_post_save, sender=Layer)
 
 
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     disconnect_signals()
 
 # This is used to populate the database with the search fixture data. This is
@@ -193,6 +195,7 @@ def create_models(type=None):
                     bbox_x1=bbox_x1,
                     bbox_y0=bbox_y0,
                     bbox_y1=bbox_y1,
+                    srid='EPSG:4326',
                     category=category,
                     )
             m.save()
@@ -210,6 +213,7 @@ def create_models(type=None):
                          bbox_x1=bbox_x1,
                          bbox_y0=bbox_y0,
                          bbox_y1=bbox_y1,
+                         srid='EPSG:4326',
                          category=category,
                          doc_file=f)
             m.save()
@@ -229,6 +233,7 @@ def create_models(type=None):
                       bbox_x1=bbox_x1,
                       bbox_y0=bbox_y0,
                       bbox_y1=bbox_y1,
+                      srid='EPSG:4326',
                       uuid=str(uuid4()),
                       owner=owner,
                       temporal_extent_start=start,
