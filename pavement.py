@@ -980,8 +980,8 @@ def publish():
 
     call_task('deb', options={
         'key': key,
-        'ppa': 'geonode/testing',
-        # 'ppa': 'geonode/unstable',
+        # 'ppa': 'geonode/testing',
+        'ppa': 'geonode/unstable',
     })
 
     version, simple_version = versions()

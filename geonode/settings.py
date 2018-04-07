@@ -70,9 +70,11 @@ else:
 # geonode to be listening for GeoServer auth requests.
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
 
-if os.getenv('DOCKER_ENV'):
+try:
+    # try to parse python notation, default in dockerized env
     ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
-else:
+except ValueError:
+    # fallback to regular list of values separated with misc chars
     ALLOWED_HOSTS = ['localhost', ] if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
@@ -201,6 +203,15 @@ EXTRA_LANG_INFO = {
 
 
 AUTH_USER_MODEL = os.getenv('AUTH_USER_MODEL', 'people.Profile')
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.SHA1PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    # 'django.contrib.auth.hashers.Argon2PasswordHasher',
+    # 'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    # 'django.contrib.auth.hashers.BCryptPasswordHasher',
+]
 
 MODELTRANSLATION_LANGUAGES = ['en', ]
 
@@ -714,7 +725,6 @@ UPLOADER = {
         'EPSG:4326',
         'EPSG:3785',
         'EPSG:3857',
-        'EPSG:900913',
         'EPSG:32647',
         'EPSG:32736'
     ],
@@ -1187,14 +1197,14 @@ BROKER_TRANSPORT_OPTIONS = {
 
 ASYNC_SIGNALS = False
 RABBITMQ_SIGNALS_BROKER_URL = 'amqp://localhost:5672'
-# REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
+REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
 LOCAL_SIGNALS_BROKER_URL = 'memory://'
 if ASYNC_SIGNALS:
     _BROKER_URL = RABBITMQ_SIGNALS_BROKER_URL
+    # _BROKER_URL = REDIS_SIGNALS_BROKER_URL
     CELERY_RESULT_BACKEND = _BROKER_URL
 else:
     _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
-    CELERY_RESULT_BACKEND = None
 BROKER_URL = os.environ.get('BROKER_URL', _BROKER_URL)
 
 CELERY_RESULT_PERSISTENT = False
@@ -1202,21 +1212,21 @@ CELERY_RESULT_PERSISTENT = False
 # Allow to recover from any unknown crash.
 CELERY_ACKS_LATE = True
 
+# Set this to False in order to run async
+CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
+CELERY_TASK_IGNORE_RESULT = True
+
+# I use these to debug kombu crashes; we get a more informative message.
+CELERY_TASK_SERIALIZER = 'json'
 #CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json', 'pickle']
 
-# Set this to False in order to run async
-CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_TASK_IGNORE_RESULT = True
-CELERY_TASK_DEFAULT_QUEUE = "default"
-CELERY_TASK_DEFAULT_EXCHANGE = "default"
-CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
-CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
-CELERY_TASK_CREATE_MISSING_QUEUES = True
-CELERY_TASK_RESULT_EXPIRES = 1
-
 # Set Tasks Queues
+# CELERY_TASK_DEFAULT_QUEUE = "default"
+# CELERY_TASK_DEFAULT_EXCHANGE = "default"
+# CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
+# CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
+CELERY_TASK_CREATE_MISSING_QUEUES = True
 GEONODE_EXCHANGE = Exchange("default", type="direct", durable=True)
 GEOSERVER_EXCHANGE = Exchange("geonode", type="topic", durable=False)
 CELERY_TASK_QUEUES = (
@@ -1240,15 +1250,15 @@ if USE_GEOSERVER and ASYNC_SIGNALS:
 #     ...
 # }
 
+# Half a day is enough
+CELERY_TASK_RESULT_EXPIRES = 43200
+
 # Sometimes, Ask asks us to enable this to debug issues.
 # BTW, it will save some CPU cycles.
 CELERY_DISABLE_RATE_LIMITS = False
 CELERY_SEND_TASK_EVENTS = True
 CELERY_WORKER_DISABLE_RATE_LIMITS = False
 CELERY_WORKER_SEND_TASK_EVENTS = True
-CELERY_SEND_TASK_SENT_EVENT = True
-# Disabled by default and I like it, because we use Sentry for this.
-#CELERY_SEND_TASK_ERROR_EMAILS = False
 
 # Allow our remote workers to get tasks faster if they have a
 # slow internet connection (yes Gurney, I'm thinking of you).
@@ -1259,6 +1269,12 @@ CELERY_MAX_CACHED_RESULTS = 32768
 
 # NOTE: I don't know if this is compatible with upstart.
 CELERYD_POOL_RESTARTS = True
+
+CELERY_TRACK_STARTED = True
+CELERY_SEND_TASK_SENT_EVENT = True
+
+# Disabled by default and I like it, because we use Sentry for this.
+#CELERY_SEND_TASK_ERROR_EMAILS = False
 
 # AWS S3 Settings
 

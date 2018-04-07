@@ -104,7 +104,6 @@ UPLOADER = {
         'EPSG:4326',
         'EPSG:3785',
         'EPSG:3857',
-        'EPSG:900913',
         'EPSG:32647',
         'EPSG:32736'
     ],

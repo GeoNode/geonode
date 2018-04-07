@@ -308,7 +308,7 @@ Upgrade Development Environment
             ------------------------------------------------------------------------
             216 # default map projection                                                                                             +-
             217 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
-            218 DEFAULT_MAP_CRS = "EPSG:900913"
+            218 DEFAULT_MAP_CRS = "EPSG:3857"
             ------------------------------------------------------------------------
             219                                                                                                                      =
             ------------------------------------------------------------------------
@@ -819,12 +819,12 @@ Upgrade Development Environment
                 Right file: D:\tmp\data-2.9.x-oauth2\data\security\rest.properties
                 ------------------------------------------------------------------------
                 18 /rest/monitor/*;GET=ROLE_ADMINISTRATOR                                                             +-
-                20 /rest/security/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
-                21 /rest/br/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
-                22 /geofence/rest/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
+                19 /rest/security/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
+                20 /rest/br/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
+                21 /geofence/rest/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
                 ------------------------------------------------------------------------
                 ------------------------------------------------------------------------
-                24 /**;POST,DELETE,PUT=ROLE_AUTHENTICATED                                                             <> 4 /**;POST,DELETE,PUT=ROLE_ADMINISTRATOR
+                23 /**;POST,DELETE,PUT=ROLE_AUTHENTICATED                                                             <> 4 /**;POST,DELETE,PUT=ROLE_ADMINISTRATOR
                 ------------------------------------------------------------------------
 
     .. note:: In case of dubts you can always try to do a "diff" between your old GEOSERVER_DATA_DIR and http://build.geonode.org/geoserver/latest/data-2.12.2.zip

@@ -201,6 +201,7 @@ setup(name='GeoNode',
             "requests<=2.18.4",  # (2.18.4 in our ppa)
             "simplejson<=3.13.2",  # (3.13.2 in our ppa)
             "tablib<=0.12.1",  # (0.12.1 in our ppa)
+            "timeout-decorator==0.4.0",  # TODO
             "typing<=3.6.4",  # python-typing (3.6.4 in our ppa)
 
             "psutil",  # (3.4.2 in ppa)
