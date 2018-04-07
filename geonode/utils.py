@@ -575,7 +575,7 @@ class GXPLayer(GXPLayerBase):
 
 
 def default_map_config(request):
-    if getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913') == "EPSG:4326":
+    if getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857') == "EPSG:4326":
         _DEFAULT_MAP_CENTER = inverse_mercator(settings.DEFAULT_MAP_CENTER)
     else:
         _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
@@ -583,7 +583,7 @@ def default_map_config(request):
     _default_map = GXPMap(
         title=DEFAULT_TITLE,
         abstract=DEFAULT_ABSTRACT,
-        projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
+        projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
         center_x=_DEFAULT_MAP_CENTER[0],
         center_y=_DEFAULT_MAP_CENTER[1],
         zoom=settings.DEFAULT_MAP_ZOOM
@@ -620,6 +620,11 @@ def default_map_config(request):
 
 _viewer_projection_lookup = {
     "EPSG:900913": {
+        "maxResolution": 156543.03390625,
+        "units": "m",
+        "maxExtent": [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+    },
+    "EPSG:3857": {
         "maxResolution": 156543.03390625,
         "units": "m",
         "maxExtent": [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
