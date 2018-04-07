@@ -64,15 +64,17 @@
               <ul class="dropdown-menu">
                 <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
                 <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
-                {% if user.is_authenticated %}
                 <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
-                {% if 'geonode.contrib.createlayer' in INSTALLED_APPS %}
-                  <li><a href="{% url "layer_create" %}">{% trans "Create Layer" %}</a></li>
+                {% if user.is_authenticated %}
+                    <li role="separator" class="divider"></li>
+                    <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
+                    {% if 'geonode.contrib.createlayer' in INSTALLED_APPS %}
+                        <li><a href="{% url "layer_create" %}">{% trans "Create Layer" %}</a></li>
+                    {% endif %}
+                    <li><a href="{% url "document_upload" %}">Upload Document</a></li>
                 {% endif %}
-                <li><a href="{% url "document_upload" %}">Upload Document</a></li>
-                <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
+                {% if user.is_superuser or user.is_staff %}
+                    <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
                 {% endif %}
               </ul>
             </li>
@@ -207,14 +209,17 @@
             <li>Data</li>
             <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
-            {% if user.is_authenticated %}
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
-            <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
-            {% if 'geonode.contrib.createlayer' in INSTALLED_APPS %}
-              <li><a href="{% url "layer_create" %}">{% trans "Create Layer" %}</a></li>
+            {% if user.is_authenticated %}
+                <li role="separator" class="divider"></li>
+                <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
+                {% if 'geonode.contrib.createlayer' in INSTALLED_APPS %}
+                    <li><a href="{% url "layer_create" %}">{% trans "Create Layer" %}</a></li>
+                {% endif %}
+                <li><a href="{% url "document_upload" %}">Upload Document</a></li>
             {% endif %}
-            <li><a href="{% url "document_upload" %}">Upload Document</a></li>
-            <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
+            {% if user.is_superuser or user.is_staff %}
+                <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
             {% endif %}
           </ul>
         </div>

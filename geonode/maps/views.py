@@ -171,7 +171,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     context_dict["crs"] = getattr(
         settings,
         'DEFAULT_MAP_CRS',
-        'EPSG:900913')
+        'EPSG:3857')
 
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, map_obj)
@@ -347,7 +347,7 @@ def map_metadata(
         "category_form": category_form,
         "layers": layers,
         "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'geoext'),
-        "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
+        "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
         "metadata_author_groups": metadata_author_groups,
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
     })
@@ -802,7 +802,7 @@ def new_map_config(request):
 
         if 'layer' in params:
             map_obj = Map(projection=getattr(settings, 'DEFAULT_MAP_CRS',
-                                             'EPSG:900913'))
+                                             'EPSG:3857'))
             config = add_layers_to_map_config(
                 request, map_obj, params.getlist('layer'))
         else:
@@ -990,7 +990,7 @@ def add_layers_to_map_config(
         if getattr(
             settings,
             'DEFAULT_MAP_CRS',
-                'EPSG:900913') == "EPSG:4326":
+                'EPSG:3857') == "EPSG:4326":
             center = list((x, y))
         else:
             center = list(forward_mercator((x, y)))

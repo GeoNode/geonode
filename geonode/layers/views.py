@@ -439,7 +439,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         projection=getattr(
             settings,
             'DEFAULT_MAP_CRS',
-            'EPSG:900913'))
+            'EPSG:3857'))
 
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config(request)[1] if la.ows_url is None]
@@ -546,7 +546,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     context_dict["crs"] = getattr(
         settings,
         'DEFAULT_MAP_CRS',
-        'EPSG:900913')
+        'EPSG:3857')
 
     # provide bbox in EPSG:4326 for leaflet
     if context_dict["preview"] == 'leaflet':
@@ -781,8 +781,8 @@ def layer_metadata(
             'type': 'name',
             'properties': layer.srid
         }
-    config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
-    config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
+    config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
+    config["bbox"] = bbox if config["srs"] != 'EPSG:3857' \
         else llbbox_to_mercator([float(coord) for coord in bbox])
     config["title"] = layer.title
     config["queryable"] = True
@@ -818,7 +818,7 @@ def layer_metadata(
         projection=getattr(
             settings,
             'DEFAULT_MAP_CRS',
-            'EPSG:900913'))
+            'EPSG:3857'))
 
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config(request)[1] if la.ows_url is None]
@@ -939,7 +939,7 @@ def layer_metadata(
             la = Attribute.objects.get(id=int(form['id'].id))
             la.description = form["description"]
             la.attribute_label = form["attribute_label"]
-            la.visible = form["visible"]
+            la.visible = True if form["attribute_label"] else False  # form["visible"]
             la.display_order = form["display_order"]
             la.save()
 
@@ -1095,7 +1095,7 @@ def layer_metadata(
         "tkeywords_form": tkeywords_form,
         "viewer": viewer,
         "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'geoext'),
-        "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
+        "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
         "metadataxsl": metadataxsl,
         "freetext_readonly": getattr(
             settings,
