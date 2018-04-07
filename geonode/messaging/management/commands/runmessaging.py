@@ -20,7 +20,6 @@
 
 import logging
 import sys
-from optparse import make_option
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
@@ -34,22 +33,25 @@ logger = logging.getLogger(__package__)
 
 
 class Command(BaseCommand):
+
     help = 'Start the MQ consumer to perform non blocking tasks'
-    option_list = BaseCommand.option_list + (
-        make_option(
+
+    def add_arguments(self, parser):
+
+        # Named (optional) arguments
+        parser.add_argument(
             '-i',
             '--ignore-errors',
             action='store_true',
             dest='ignore_errors',
             default=False,
-            help='Stop after any errors are encountered.'),
-        )
+            help='Stop after any errors are encountered.')
 
     def handle(self, **options):
         with connection:
             try:
-                logger.info("Consumer starting.")
+                logger.debug("Consumer starting.")
                 worker = Consumer(connection)
                 worker.run()
             except KeyboardInterrupt:
-                logger.info("Consumer stopped.")
+                logger.debug("Consumer stopped.")

@@ -1,0 +1,1382 @@
+Guidelines
+==========
+
+Update from GeoNode 2.6.3 to GeoNode 2.7+
+-----------------------------------------
+
+.. warning:: Before you proceed with the following steps, it is recommended that you perform a full backup of your current environment. At the end of this section thare's a paragraph listing the steps required to perform a full / hard backup of the whole stack.
+
+Upgrade Development Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Prerequisites*
+
+1. You did backup of the old Environment
+
+2. You cloned GeoNode from GitHub (https://github.com/GeoNode/geonode/tree/2.6.x)
+
+*Steps*
+
+    * From geonode git branch do
+
+    .. code-block:: bash
+
+          # to refresh all git repos and commits
+          git pull
+
+          # get the 2.7.x code: if you want to keep your local copy
+          # WARNING: you will need to fix conflicts manually
+          git pull origin 2.7.x
+
+          # if you want to switch to the new branch
+          git checkout 2.7.x
+          git pull
+
+    * Update the Python libraries
+
+      - Exit from the current workspace
+
+      .. code-block:: bash
+
+          deactivate
+
+      - Create a new workspace
+
+      .. code-block:: bash
+
+          mkvirtualenv geonode-2.7.x
+
+      - Update the requirements
+
+      .. code-block:: bash
+
+          pip install pip --upgrade
+          pip install -r requirements.txt
+          pip install -e .
+
+          # WARNING: your GDAL version might be different. Use the right one accordingly to gdal-config --version
+          pip install pygdal==2.2.1.3
+
+     .. note:: Starting from an old environment will require you to manually remove some old deps **before** runnin any kind of management command.
+
+       .. code-block:: bash
+
+           pip uninstall geonode-user-accounts -y
+           pip uninstall django-pagination -y
+           pip uninstall pinax-theme-bootstrap-account -y
+
+    * Update/tweak GeoNode ``local_settings`` (for GeoServer)
+
+       .. code-block:: diff
+
+            Left file: D:\work\code\python\geonode\geonode-2.7.x\geonode\local_settings.py.geoserver.sample
+            Right file: D:\work\code\python\geonode\geonode-2.6.x\geonode\local_settings.py.geoserver.sample
+            21  import os                                                                                                            =  21  import os
+            ------------------------------------------------------------------------
+            22  from geonode.settings import *                                                                                       +-
+            ------------------------------------------------------------------------
+            23                                                                                                                       =  22
+            24  PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))                                                               23  PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+            25                                                                                                                          24
+            ------------------------------------------------------------------------
+            26  MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(PROJECT_ROOT, "uploaded"))                                         +-
+            ------------------------------------------------------------------------
+            27                                                                                                                       =
+            ------------------------------------------------------------------------
+            28  STATIC_ROOT = os.getenv('STATIC_ROOT',                                                                               +-
+            29                          os.path.join(PROJECT_ROOT, "static_root")
+            30                          )
+            ------------------------------------------------------------------------
+            31                                                                                                                       =
+            ------------------------------------------------------------------------
+            32  # SECRET_KEY = '************************'                                                                            +-
+            ------------------------------------------------------------------------
+            33                                                                                                                       =
+            ------------------------------------------------------------------------
+            34  SITEURL = "http://localhost:8000/"                                                                                   <> 25  SITEURL = "http://localhost:8000/"
+            ------------------------------------------------------------------------
+            35                                                                                                                       =  26
+            ------------------------------------------------------------------------
+            36  ALLOWED_HOSTS = ['localhost', 'geonode.example.com']                                                                 +-
+            ------------------------------------------------------------------------
+            37                                                                                                                       =
+            ------------------------------------------------------------------------
+            38  # TIME_ZONE = 'Europe/Paris'                                                                                         +-
+            ------------------------------------------------------------------------
+            39                                                                                                                       =
+            40  DATABASES = {                                                                                                           27  DATABASES = {
+            41      'default': {                                                                                                        28      'default': {
+            42           'ENGINE': 'django.db.backends.postgresql_psycopg2',                                                            29           'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            43           'NAME': 'geonode',                                                                                             30           'NAME': 'geonode',
+            44           'USER': 'geonode',                                                                                             31           'USER': 'geonode',
+            45           'PASSWORD': 'geonode',                                                                                         32           'PASSWORD': 'geonode',
+            ------------------------------------------------------------------------
+            46           'HOST' : 'localhost',                                                                                       +-
+            47           'PORT' : '5432',
+            ------------------------------------------------------------------------
+            48      },                                                                                                               =  33       },
+            49      # vector datastore for uploads                                                                                      34      # vector datastore for uploads
+            50      'datastore': {                                                                                                      35      'datastore' : {
+            51          #'ENGINE': 'django.contrib.gis.db.backends.postgis',                                                            36          #'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            52          'ENGINE': '', # Empty ENGINE name disables                                                                      37          'ENGINE': '', # Empty ENGINE name disables
+            ------------------------------------------------------------------------
+            53          'NAME': 'geonode_data',                                                                                      <> 38          'NAME': 'geonode',
+            ------------------------------------------------------------------------
+            54          'USER' : 'geonode',                                                                                          =  39          'USER' : 'geonode',
+            55          'PASSWORD': 'geonode',                                                                                          40          'PASSWORD' : 'geonode',
+            56          'HOST': 'localhost',                                                                                            41          'HOST' : 'localhost',
+            57          'PORT': '5432',                                                                                                 42          'PORT' : '5432',
+            58      }                                                                                                                   43      }
+            59  }                                                                                                                       44  }
+            60                                                                                                                          45
+            61  GEOSERVER_LOCATION = os.getenv(                                                                                         46  GEOSERVER_LOCATION = os.getenv(
+            62      'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'                                                            47      'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
+            63  )                                                                                                                       48  )
+            64
+            65  GEOSERVER_PUBLIC_LOCATION = os.getenv(                                                                                  49  GEOSERVER_PUBLIC_LOCATION = os.getenv(
+            ------------------------------------------------------------------------
+            66  #    'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)                                                    <>
+            67      'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'                                                            50      'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+            68  )
+            ------------------------------------------------------------------------
+            69                                                                                                                       =
+            ------------------------------------------------------------------------
+            70  OGC_SERVER_DEFAULT_USER = os.getenv(                                                                                 +-
+            71      'GEOSERVER_ADMIN_USER', 'admin'
+            72  )
+            ------------------------------------------------------------------------
+            73                                                                                                                       =
+            ------------------------------------------------------------------------
+            74  OGC_SERVER_DEFAULT_PASSWORD = os.getenv(                                                                             +-
+            75      'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
+            ------------------------------------------------------------------------
+            76  )                                                                                                                    =  51  )
+            77                                                                                                                          52
+            78  # OGC (WMS/WFS/WCS) Server Settings                                                                                     53  # OGC (WMS/WFS/WCS) Server Settings
+            79  OGC_SERVER = {                                                                                                          54  OGC_SERVER = {
+            80      'default': {                                                                                                        55      'default': {
+            81          'BACKEND': 'geonode.geoserver',                                                                                 56          'BACKEND': 'geonode.geoserver',
+            ------------------------------------------------------------------------
+            ------------------------------------------------------------------------
+            83          'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',                                                           =  58          'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
+            84          'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',                                                            59          'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
+            85          # PUBLIC_LOCATION needs to be kept like this because in dev mode                                                60          # PUBLIC_LOCATION needs to be kept like this because in dev mode
+            86          # the proxy won't work and the integration tests will fail                                                      61          # the proxy won't work and the integration tests will fail
+            87          # the entire block has to be overridden in the local_settings                                                   62          # the entire block has to be overridden in the local_settings
+            88          'PUBLIC_LOCATION': GEOSERVER_PUBLIC_LOCATION,                                                                   63          'PUBLIC_LOCATION': GEOSERVER_PUBLIC_LOCATION,
+            ------------------------------------------------------------------------
+            89          'USER' : OGC_SERVER_DEFAULT_USER,                                                                            <> 64          'USER' : 'admin',
+            90          'PASSWORD' : OGC_SERVER_DEFAULT_PASSWORD,                                                                       65          'PASSWORD' : 'geoserver',
+            ------------------------------------------------------------------------
+            91          'MAPFISH_PRINT_ENABLED' : True,                                                                              =  66          'MAPFISH_PRINT_ENABLED' : True,
+            92          'PRINT_NG_ENABLED' : True,                                                                                      67          'PRINT_NG_ENABLED' : True,
+            93          'GEONODE_SECURITY_ENABLED' : True,                                                                              68          'GEONODE_SECURITY_ENABLED' : True,
+            ------------------------------------------------------------------------
+            94          'GEOFENCE_SECURITY_ENABLED' : True,                                                                          +-
+            ------------------------------------------------------------------------
+            95          'GEOGIG_ENABLED' : False,                                                                                    =  69          'GEOGIG_ENABLED' : False,
+            96          'WMST_ENABLED' : False,                                                                                         70          'WMST_ENABLED' : False,
+            97          'BACKEND_WRITE_ENABLED': True,                                                                                  71          'BACKEND_WRITE_ENABLED': True,
+            98          'WPS_ENABLED': False,                                                                                           72          'WPS_ENABLED' : False,
+            99          'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),    73          'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
+            100         # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable            74          # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
+            101         'DATASTORE': '',  # 'datastore',                                                                                75          'DATASTORE': '', #'datastore',
+            ------------------------------------------------------------------------
+            102         'PG_GEOGIG': False,                                                                                          +-
+            103         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
+            ------------------------------------------------------------------------
+            104     }                                                                                                                =  76      }
+            105 }                                                                                                                       77  }
+            106                                                                                                                         78
+            107 # If you want to enable Mosaics use the following configuration                                                         79  # If you want to enable Mosaics use the following configuration
+            ------------------------------------------------------------------------
+            108 UPLOADER = {                                                                                                         <> 80  #UPLOADER = {
+            109     # 'BACKEND': 'geonode.rest',                                                                                        81  ##    'BACKEND': 'geonode.rest',
+            110     'BACKEND': 'geonode.importer',                                                                                      82  #    'BACKEND': 'geonode.importer',
+            111     'OPTIONS': {                                                                                                        83  #    'OPTIONS': {
+            112         'TIME_ENABLED': True,                                                                                           84  #        'TIME_ENABLED': True,
+            113         'MOSAIC_ENABLED': False,                                                                                        85  #        'MOSAIC_ENABLED': True,
+            114         'GEOGIG_ENABLED': False,                                                                                        86  #        'GEOGIG_ENABLED': False,
+            115     },                                                                                                                  87  #    }
+            116     'SUPPORTED_CRS': [
+            117         'EPSG:4326',
+            118         'EPSG:3785',
+            119         'EPSG:3857',
+            120         'EPSG:900913',
+            121         'EPSG:32647',
+            122         'EPSG:32736'
+            123     ],
+            124     'SUPPORTED_EXT': [
+            125         '.shp',
+            126         '.csv',
+            127         '.kml',
+            128         '.kmz',
+            129         '.json',
+            130         '.geojson',
+            131         '.tif',
+            132         '.tiff',
+            133         '.geotiff',
+            134         '.gml',
+            135         '.xml'
+            136     ]                                                                                                                   88  #}
+            137 }                                                                                                                       89
+            ------------------------------------------------------------------------
+            138                                                                                                                      =  90
+            139 CATALOGUE = {                                                                                                           91  CATALOGUE = {
+            140     'default': {                                                                                                        92      'default': {
+            141         # The underlying CSW implementation                                                                             93          # The underlying CSW implementation
+            142         # default is pycsw in local mode (tied directly to GeoNode Django DB)                                           94          # default is pycsw in local mode (tied directly to GeoNode Django DB)
+            143         'ENGINE': 'geonode.catalogue.backends.pycsw_local',                                                             95          'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+            ------------------------------------------------------------------------
+            ------------------------------------------------------------------------
+            146         # GeoNetwork opensource                                                                                      =  98          # GeoNetwork opensource
+            147         # 'ENGINE': 'geonode.catalogue.backends.geonetwork',                                                            99          # 'ENGINE': 'geonode.catalogue.backends.geonetwork',
+            148         # deegree and others                                                                                            100         # deegree and others
+            149         # 'ENGINE': 'geonode.catalogue.backends.generic',                                                               101         # 'ENGINE': 'geonode.catalogue.backends.generic',
+            150                                                                                                                         102
+            151         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode                                             103         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+            ------------------------------------------------------------------------
+            152         'URL': '%scatalogue/csw' % SITEURL,                                                                         <> 104         'URL': '%scatalogue/csw' % SITEURL,
+            ------------------------------------------------------------------------
+            153         # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',                                                      =  105         # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
+            154         # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',                                               106         # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
+            155                                                                                                                         107
+            156         # login credentials (for GeoNetwork)                                                                            108         # login credentials (for GeoNetwork)
+            157         'USER': 'admin',                                                                                                109         'USER': 'admin',
+            158         'PASSWORD': 'admin',                                                                                            110         'PASSWORD': 'admin',
+            159     }                                                                                                                   111     }
+            160 }                                                                                                                       112 }
+            161                                                                                                                         113
+            ------------------------------------------------------------------------
+            162 # pycsw settings                                                                                                     +-
+            163 PYCSW = {
+            164     # pycsw configuration
+            165     'CONFIGURATION': {
+            166         # uncomment / adjust to override server config system defaults
+            167         # 'server': {
+            168         #    'maxrecords': '10',
+            169         #    'pretty_print': 'true',
+            170         #    'federatedcatalogues': 'http://catalog.data.gov/csw'
+            171         # },
+            172         'metadata:main': {
+            173             'identification_title': 'GeoNode Catalogue',
+            174             'identification_abstract': 'GeoNode is an open source platform' \
+            175             ' that facilitates the creation, sharing, and collaborative use' \
+            176             ' of geospatial data',
+            177             'identification_keywords': 'sdi, catalogue, discovery, metadata,' \
+            178             ' GeoNode',
+            179             'identification_keywords_type': 'theme',
+            180             'identification_fees': 'None',
+            181             'identification_accessconstraints': 'None',
+            182             'provider_name': 'Organization Name',
+            183             'provider_url': SITEURL,
+            184             'contact_name': 'Lastname, Firstname',
+            185             'contact_position': 'Position Title',
+            186             'contact_address': 'Mailing Address',
+            187             'contact_city': 'City',
+            188             'contact_stateorprovince': 'Administrative Area',
+            189             'contact_postalcode': 'Zip or Postal Code',
+            190             'contact_country': 'Country',
+            191             'contact_phone': '+xx-xxx-xxx-xxxx',
+            192             'contact_fax': '+xx-xxx-xxx-xxxx',
+            193             'contact_email': 'Email Address',
+            194             'contact_url': 'Contact URL',
+            195             'contact_hours': 'Hours of Service',
+            196             'contact_instructions': 'During hours of service. Off on ' \
+            197             'weekends.',
+            198             'contact_role': 'pointOfContact',
+            199         },
+            200         'metadata:inspire': {
+            201             'enabled': 'true',
+            202             'languages_supported': 'eng,gre',
+            203             'default_language': 'eng',
+            204             'date': 'YYYY-MM-DD',
+            205             'gemet_keywords': 'Utility and governmental services',
+            206             'conformity_service': 'notEvaluated',
+            207             'contact_name': 'Organization Name',
+            208             'contact_email': 'Email Address',
+            209             'temp_extent': 'YYYY-MM-DD/YYYY-MM-DD',
+            210         }
+            211     }
+            212 }
+            ------------------------------------------------------------------------
+            213                                                                                                                      =
+            ------------------------------------------------------------------------
+            214 # GeoNode javascript client configuration                                                                            +-
+            ------------------------------------------------------------------------
+            215                                                                                                                      =
+            ------------------------------------------------------------------------
+            216 # default map projection                                                                                             +-
+            217 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
+            218 DEFAULT_MAP_CRS = "EPSG:3857"
+            ------------------------------------------------------------------------
+            219                                                                                                                      =
+            ------------------------------------------------------------------------
+            220 # Where should newly created maps be focused?                                                                        +-
+            221 DEFAULT_MAP_CENTER = (0, 0)
+            ------------------------------------------------------------------------
+            222                                                                                                                      =
+            ------------------------------------------------------------------------
+            223 # How tightly zoomed should newly created maps be?                                                                   +-
+            224 # 0 = entire world;
+            225 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
+            226 DEFAULT_MAP_ZOOM = 0
+            ------------------------------------------------------------------------
+            227                                                                                                                      =
+            228 # Default preview library                                                                                               114 # Default preview library
+            ------------------------------------------------------------------------
+            229 LAYER_PREVIEW_LIBRARY = 'geoext'                                                                                     <> 115 #LAYER_PREVIEW_LIBRARY = 'geoext'
+            230 #LAYER_PREVIEW_LIBRARY = 'leaflet'
+            231 #LEAFLET_CONFIG = {
+            232 #    'TILES': [
+            233 #        # Find tiles at:
+            234 #        # http://leaflet-extras.github.io/leaflet-providers/preview/
+            235 #
+            236 #        # Map Quest
+            237 #        ('Map Quest',
+            238 #         'http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',
+            239 #         'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> '
+            240 #         '&mdash; Map data &copy; '
+            241 #         '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'),
+            242 #        # Stamen toner lite.
+            243 #        # ('Watercolor',
+            244 #        #  'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
+            245 #        #  'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+            246 #        #  <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
+            247 #        #  <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+            248 #        #  <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
+            249 #        # ('Toner Lite',
+            250 #        #  'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
+            251 #        #  'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+            252 #        #  <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
+            253 #        #  <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+            254 #        #  <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
+            255 #    ],
+            256 #    'PLUGINS': {
+            257 #        'esri-leaflet': {
+            258 #            'js': 'lib/js/esri-leaflet.js',
+            259 #            'auto-include': True,
+            260 #        },
+            261 #        'leaflet-fullscreen': {
+            262 #            'css': 'lib/css/leaflet.fullscreen.css',
+            263 #            'js': 'lib/js/Leaflet.fullscreen.min.js',
+            264 #            'auto-include': True,
+            265 #        },
+            266 #    },
+            267 #    'SRID': 3857,
+            268 #    'RESET_VIEW': False
+            269 #}
+            ------------------------------------------------------------------------
+            270                                                                                                                      =
+            ------------------------------------------------------------------------
+            271 ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)                                                         +-
+            272 CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
+            273 STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
+            274 THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
+            275 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
+            276 BING_API_KEY = os.environ.get('BING_API_KEY', None)
+            ------------------------------------------------------------------------
+            277                                                                                                                      =
+            ------------------------------------------------------------------------
+            278 MAP_BASELAYERS = [{                                                                                                  +-
+            279     "source": {"ptype": "gxp_olsource"},
+            280     "type": "OpenLayers.Layer",
+            281     "args": ["No background"],
+            282     "name": "background",
+            283     "visibility": False,
+            284     "fixed": True,
+            285     "group":"background"
+            286 },
+            287 # {
+            288 #     "source": {"ptype": "gxp_olsource"},
+            289 #     "type": "OpenLayers.Layer.XYZ",
+            290 #     "title": "TEST TILE",
+            291 #     "args": ["TEST_TILE", "http://test_tiles/tiles/${z}/${x}/${y}.png"],
+            292 #     "name": "background",
+            293 #     "attribution": "&copy; TEST TILE",
+            294 #     "visibility": False,
+            295 #     "fixed": True,
+            296 #     "group":"background"
+            297 # },
+            298 {
+            299     "source": {"ptype": "gxp_osmsource"},
+            300     "type": "OpenLayers.Layer.OSM",
+            301     "name": "mapnik",
+            302     "visibility": True,
+            303     "fixed": True,
+            304     "group": "background"
+            305 }]
+            ------------------------------------------------------------------------
+            306                                                                                                                      =
+            ------------------------------------------------------------------------
+            307 if 'geonode.geoserver' in INSTALLED_APPS:                                                                            +-
+            308     LOCAL_GEOSERVER = {
+            309         "source": {
+            310             "ptype": "gxp_wmscsource",
+            311             "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+            312             "restUrl": "/gs/rest"
+            313         }
+            314     }
+            315     baselayers = MAP_BASELAYERS
+            316     MAP_BASELAYERS = [LOCAL_GEOSERVER]
+            317     MAP_BASELAYERS.extend(baselayers)
+            ------------------------------------------------------------------------
+            318                                                                                                                      =
+            ------------------------------------------------------------------------
+            319 # Use kombu broker by default                                                                                        +-
+            320 # REDIS_URL = 'redis://localhost:6379/1'
+            321 # BROKER_URL = REDIS_URL
+            322 # CELERY_RESULT_BACKEND = REDIS_URL
+            323 CELERYD_HIJACK_ROOT_LOGGER = True
+            324 CELERYD_CONCURENCY = 1
+            325 # Set this to False to run real async tasks
+            326 CELERY_ALWAYS_EAGER = True
+            327 CELERYD_LOG_FILE = None
+            328 CELERY_REDIRECT_STDOUTS = True
+            329 CELERYD_LOG_LEVEL = 1
+            ------------------------------------------------------------------------
+            330                                                                                                                      =
+            ------------------------------------------------------------------------
+            331 # Haystack Search Backend Configuration. To enable,                                                                  +-
+            332 # first install the following:
+            333 # - pip install django-haystack
+            334 # - pip install elasticsearch==2.4.0
+            335 # - pip install woosh
+            336 # - pip install pyelasticsearch
+            337 # Set HAYSTACK_SEARCH to True
+            338 # Run "python manage.py rebuild_index"
+            339 # HAYSTACK_SEARCH = False
+            340 # Avoid permissions prefiltering
+            341 SKIP_PERMS_FILTER = False
+            342 # Update facet counts from Haystack
+            343 HAYSTACK_FACET_COUNTS = True
+            344 HAYSTACK_CONNECTIONS = {
+            345    'default': {
+            346        'ENGINE': 'haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine',
+            347        'URL': 'http://127.0.0.1:9200/',
+            348        'INDEX_NAME': 'haystack',
+            349        },
+            350 #    'db': {
+            351 #        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+            352 #        'EXCLUDED_INDEXES': ['thirdpartyapp.search_indexes.BarIndex'],
+            353 #        }
+            354    }
+            355 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+            356 # HAYSTACK_SEARCH_RESULTS_PER_PAGE = 20
+            ------------------------------------------------------------------------
+            357                                                                                                                      =
+            ------------------------------------------------------------------------
+            358 LOGGING = {                                                                                                          +-
+            359     'version': 1,
+            360     'disable_existing_loggers': True,
+            361     'formatters': {
+            362         'verbose': {
+            363             'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
+            364                       '%(thread)d %(message)s'
+            365         },
+            366         'simple': {
+            367             'format': '%(message)s',
+            368         },
+            369     },
+            370     'filters': {
+            371         'require_debug_false': {
+            372             '()': 'django.utils.log.RequireDebugFalse'
+            373         }
+            374     },
+            375     'handlers': {
+            376         'null': {
+            377             'level': 'ERROR',
+            378             'class': 'django.utils.log.NullHandler',
+            379         },
+            380         'console': {
+            381             'level': 'DEBUG',
+            382             'class': 'logging.StreamHandler',
+            383             'formatter': 'simple'
+            384         },
+            385         'mail_admins': {
+            386             'level': 'ERROR', 'filters': ['require_debug_false'],
+            387             'class': 'django.utils.log.AdminEmailHandler',
+            388         }
+            389     },
+            390     "loggers": {
+            391         "django": {
+            392             "handlers": ["console"], "level": "ERROR", },
+            393         "geonode": {
+            394             "handlers": ["console"], "level": "DEBUG", },
+            395         "gsconfig.catalog": {
+            396             "handlers": ["console"], "level": "DEBUG", },
+            397         "owslib": {
+            398             "handlers": ["console"], "level": "DEBUG", },
+            399         "pycsw": {
+            400             "handlers": ["console"], "level": "ERROR", },
+            401         },
+            402     }
+            ------------------------------------------------------------------------
+            403                                                                                                                      =
+            ------------------------------------------------------------------------
+            404 CORS_ORIGIN_ALLOW_ALL = True                                                                                         +-
+            ------------------------------------------------------------------------
+            405                                                                                                                      =
+            ------------------------------------------------------------------------
+            406 GEOIP_PATH = "/usr/local/share/GeoIP"                                                                                +-
+            ------------------------------------------------------------------------
+            407                                                                                                                      =
+            ------------------------------------------------------------------------
+            408 MONITORING_ENABLED = True                                                                                            +-
+            409 # add following lines to your local settings to enable monitoring
+            410 if MONITORING_ENABLED:
+            411     INSTALLED_APPS += ('geonode.contrib.monitoring',)
+            412     MIDDLEWARE_CLASSES += ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+            413     MONITORING_CONFIG = None
+            414     MONITORING_SERVICE_NAME = 'local-geonode'
+            ------------------------------------------------------------------------
+
+    * Update the DB
+
+      .. code-block:: bash
+
+          DJANGO_SETTINGS_MODULE=geonode.local_settings paver sync
+
+    * Download the latest GeoServer WAR (http://build.geonode.org/geoserver/latest/geoserver-2.12.2.war)
+
+      .. image:: img/gn_up_0004.png
+         :width: 600px
+
+    * Stop GeoServer
+
+    * Extract the WAR content and/or substitute the old one
+
+      .. code-block:: bash
+
+          # move the old one
+          mv geoserver/ geoserver_old/
+
+          # create an ampty folder for the new one
+          mkdir geoserver
+          cd geoserver
+
+          # unzip the new GeoServer to the new folder
+          unzip /home/geosolutions/Downloads/geoserver-2.12.2.war
+
+    * Delete the notifier configuration by deleting the content of the ``GEOSERVER_DATA_DIR/notifier`` folder
+
+    * Delete the printing configuration by deleting the content of the ``GEOSERVER_DATA_DIR/printing`` folder
+
+    * Insert the content of the 2.12.2 data dir (http://build.geonode.org/geoserver/latest/data-2.12.2.zip),
+      specifically:
+
+      - The content of ``data/notifier``, into the ``GEOSERVER_DATA_DIR/notifier folder``.
+      - The content of ``data/monitoring``, into the ``GEOSERVER_DATA_DIR/monitoring folder``.
+      - The content of ``data/styles``, into the ``GEOSERVER_DATA_DIR/styles folder``.
+      - The content of ``data/user_projections``, into the ``GEOSERVER_DATA_DIR/user_projections`` folder.
+
+    * Update the ``GEOSERVER_DATA_DIR/geofence/geofence-server.properties as follows``
+
+      .. code-block:: diff
+
+            Left file: D:\tmp\data-2.12.2\data\geofence\geofence-server.properties
+            Right file: D:\tmp\data-2.9.x-oauth2\data\geofence\geofence-server.properties
+            13 useRolesToFilter=false                                                   =  13 useRolesToFilter=false
+            14 acceptedRoles=                                                              14 acceptedRoles=
+            15                                                                             15
+            16                                                                             16
+            17 ### Cache configuration                                                     17 ### Cache configuration
+            18                                                                             18
+            ------------------------------------------------------------------------
+            19 cacheSize=500000                                                         <> 19 cacheSize=50000
+            20 cacheRefresh=6000000                                                        20 cacheRefresh=600000
+            21 cacheExpire=6000000                                                         21 cacheExpire=600000
+            ------------------------------------------------------------------------
+            22                                                                          =
+            ------------------------------------------------------------------------
+            23 gwc.context.suffix=gwc                                                   +-
+            24 org.geoserver.rest.DefaultUserGroupServiceName=geonode REST role service
+            ------------------------------------------------------------------------
+
+    * Create/modify ``GEOSERVER_DATA_DIR/gwc/geowebcache-diskquota.xml`` as follows
+
+      .. code-block:: diff
+
+            File: D:\tmp\data-2.12.2\data\gwc\geowebcache-diskquota.xml
+            1  <gwcQuotaConfiguration>                                        +-
+            2    <enabled>false</enabled>
+            3    <cacheCleanUpFrequency>10</cacheCleanUpFrequency>
+            4    <cacheCleanUpUnits>SECONDS</cacheCleanUpUnits>
+            5    <maxConcurrentCleanUps>2</maxConcurrentCleanUps>
+            6    <globalExpirationPolicyName>LRU</globalExpirationPolicyName>
+            7    <globalQuota>
+            8      <value>500</value>
+            9      <units>MiB</units>
+            10   </globalQuota>
+            11   <quotaStore>H2</quotaStore>
+            12 </gwcQuotaConfiguration>
+            ----------------------------------------------------------------------
+
+    * Create/modify ``GEOSERVER_DATA_DIR/logs/gwc-gs.xml`` as follows
+
+      .. code-block:: diff
+
+            Left file: D:\tmp\data-2.12.2\data\gwc-gs.xml
+            Right file: D:\tmp\data-2.9.x-oauth2\data\gwc-gs.xml
+            2    <version>1.1.0</version>                                                                                         =  2    <version>1.1.0</version>
+            3    <directWMSIntegrationEnabled>true</directWMSIntegrationEnabled>                                                     3    <directWMSIntegrationEnabled>true</directWMSIntegrationEnabled>
+            4    <WMSCEnabled>true</WMSCEnabled>                                                                                     4    <WMSCEnabled>true</WMSCEnabled>
+            5    <TMSEnabled>true</TMSEnabled>                                                                                       5    <TMSEnabled>true</TMSEnabled>
+            6    <securityEnabled>false</securityEnabled>                                                                            6    <securityEnabled>false</securityEnabled>
+            7    <innerCachingEnabled>false</innerCachingEnabled>                                                                    7    <innerCachingEnabled>false</innerCachingEnabled>
+            ------------------------------------------------------------------------
+            8    <persistenceEnabled>true</persistenceEnabled>                                                                    <> 8    <persistenceEnabled>false</persistenceEnabled>
+            ------------------------------------------------------------------------
+            9    <cacheProviderClass>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</cacheProviderClass> =  9    <cacheProviderClass>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</cacheProviderClass>
+            10   <cacheConfigurations>                                                                                               10   <cacheConfigurations>
+            11     <entry>                                                                                                           11     <entry>
+            12       <string>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</string>                        12       <string>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</string>
+            13       <InnerCacheConfiguration>                                                                                       13       <InnerCacheConfiguration>
+            14         <hardMemoryLimit>16</hardMemoryLimit>                                                                         14         <hardMemoryLimit>16</hardMemoryLimit>
+            ------------------------------------------------------------------------
+            ------------------------------------------------------------------------
+            26   <defaultCachingGridSetIds>                                                                                       =  26   <defaultCachingGridSetIds>
+            27     <string>EPSG:4326</string>                                                                                        27     <string>EPSG:4326</string>
+            28     <string>EPSG:900913</string>                                                                                      28     <string>EPSG:900913</string>
+            29   </defaultCachingGridSetIds>                                                                                         29   </defaultCachingGridSetIds>
+            30   <defaultCoverageCacheFormats>                                                                                       30   <defaultCoverageCacheFormats>
+            31     <string>image/png</string>                                                                                        31     <string>image/png</string>
+            ------------------------------------------------------------------------
+            32     <string>image/vnd.jpeg-png</string>                                                                            +-
+            ------------------------------------------------------------------------
+            33     <string>image/jpeg</string>                                                                                    =  32     <string>image/jpeg</string>
+            34     <string>image/gif</string>                                                                                        33     <string>image/gif</string>
+            35     <string>image/png8</string>                                                                                       34     <string>image/png8</string>
+            36   </defaultCoverageCacheFormats>                                                                                      35   </defaultCoverageCacheFormats>
+            37   <defaultVectorCacheFormats>                                                                                         36   <defaultVectorCacheFormats>
+            ------------------------------------------------------------------------
+            38     <string>application/json;type=utfgrid</string>                                                                 +-
+            ------------------------------------------------------------------------
+            39     <string>image/png</string>                                                                                     =  37     <string>image/png</string>
+            ------------------------------------------------------------------------
+            40     <string>image/vnd.jpeg-png</string>                                                                            +-
+            ------------------------------------------------------------------------
+            41     <string>image/jpeg</string>                                                                                    =  38     <string>image/jpeg</string>
+            42     <string>image/gif</string>                                                                                        39     <string>image/gif</string>
+            43     <string>image/png8</string>                                                                                       40     <string>image/png8</string>
+            44   </defaultVectorCacheFormats>                                                                                        41   </defaultVectorCacheFormats>
+            45   <defaultOtherCacheFormats>                                                                                          42   <defaultOtherCacheFormats>
+            46     <string>image/png</string>                                                                                        43     <string>image/png</string>
+            ------------------------------------------------------------------------
+                                                                                                                                  -+ 44     <string>image/jpeg</string>
+                                                                                                                                     45     <string>image/gif</string>
+                                                                                                                                     46     <string>image/png8</string>
+            ------------------------------------------------------------------------
+            47   </defaultOtherCacheFormats>                                                                                      =  47   </defaultOtherCacheFormats>
+            48 </GeoServerGWCConfig>                                                                                                 48 </GeoServerGWCConfig>
+            ------------------------------------------------------------------------
+
+
+    * Create/modify ``GEOSERVER_DATA_DIR/logs/QUIET_LOGGING.properties`` as follows
+
+      .. code-block:: python
+
+            ## This log4j configuration file needs to stay here, and is used as the default logging setup
+            ## during data_dir upgrades and in case the chosen logging config isn't available.
+            ##
+            ## As GeoTools uses java.util.logging logging instead of log4j, GeoServer makes
+            ## the following mappings to adjust the log4j levels specified in this file to
+            ## the GeoTools logging system:
+            ##
+            ## Log4J Level          java.util.logging Level
+            ## --------------------------------------------
+            ## ALL                   FINEST
+            ## TRACE                 FINER
+            ## DEBUG                 FINE (includes CONFIG)
+            ## INFO                  INFO
+            ## ERROR/ERROR            ERRORING
+            ## ERROR                 SEVERE
+            ## OFF                   OFF
+
+            log4j.rootLogger=OFF, stdout
+
+            log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+            log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+            log4j.appender.stdout.layout.ConversionPattern=%d{dd MMM HH:mm:ss} %p [%c{2}] - %m%n
+
+    * Create/modify ``GEOSERVER_DATA_DIR/logs/TEST_LOGGING.properties`` as follows
+
+      .. code-block:: python
+
+            ## This log4j configuration file needs to stay here, and is used as the default logging setup
+            ## during data_dir upgrades and in case the chosen logging config isn't available.
+            ##
+            ## As GeoTools uses java.util.logging logging instead of log4j, GeoServer makes
+            ## the following mappings to adjust the log4j levels specified in this file to
+            ## the GeoTools logging system:
+            ##
+            ## Log4J Level          java.util.logging Level
+            ## --------------------------------------------
+            ## ALL                   FINEST
+            ## TRACE                 FINER
+            ## DEBUG                 FINE (includes CONFIG)
+            ## INFO                  INFO
+            ## ERROR/ERROR            ERRORING
+            ## ERROR                 SEVERE
+            ## OFF                   OFF
+
+            log4j.rootLogger=ERROR, stdout
+
+            log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+            log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+            log4j.appender.stdout.layout.ConversionPattern=%d{dd MMM HH:mm:ss} %p [%c{2}] - %m%n
+
+            GEOTOOLS_DEVELOPER_LOGGING.properties
+
+            log4j.category.org.geotools=ERROR
+            log4j.category.org.geotools.factory=ERROR
+            log4j.category.org.geoserver=ERROR
+            log4j.category.org.vfny.geoserver=ERROR
+
+            log4j.category.org.springframework=ERROR
+
+            # wicket tester
+            log4j.category.org.apache.wicket.util.tester=INFO
+
+    * Delete old security configuration files, in particular delete the following folders:
+
+      .. code-block:: bash
+
+            - GEOSERVER_DATA_DIR/security/auth/geonodeAuthProvider
+            - GEOSERVER_DATA_DIR/security/filter/geonodeAnonymousFilter
+            - GEOSERVER_DATA_DIR/security/filter/geonodeCookieFilter
+
+    * Update/modify the ``GEOSERVER_DATA_DIR/security`` as follows
+
+        - ``./filter/geonode-oauth2/config.xml``
+
+            .. code-block:: diff
+
+                Left file: D:\tmp\data-2.12.2\data\security\filter\geonode-oauth2\config.xml
+                Right file: D:\tmp\data-2.9.x-oauth2\data\security\filter\geonode-oauth2\config.xml
+                17   <!-- GeoServer Public URL -->                                                                                                                                    17   <!-- GeoServer Public URL -->
+                ------------------------------------------------------------------------
+                18   <redirectUri>http://localhost:8080/geoserver/index.html</redirectUri>                                                                                         <> 18   <redirectUri>http://localhost:8080/geoserver</redirectUri>
+                ------------------------------------------------------------------------
+
+        - ``./role/geonode REST role service/config.xml``
+
+            .. code-block:: diff
+
+                Left file: D:\tmp\data-2.12.2\data\security\role\geonode REST role service\config.xml
+                Right file: D:\tmp\data-2.9.x-oauth2\data\security\role\geonode REST role service\config.xml
+                12   <adminRoleJSONPath>$.adminRole</adminRoleJSONPath>                                       13   <adminRoleJSONPath>$.adminRole</adminRoleJSONPath>
+                ------------------------------------------------------------------------
+                13   <usersJSONPath>$.users[?(@.username==&apos;${username}&apos;)].groups</usersJSONPath> <> 14   <usersJSONPath>$.users[0].groups</usersJSONPath>
+                14   <cacheConcurrencyLevel>4</cacheConcurrencyLevel>
+                15   <cacheMaximumSize>60000</cacheMaximumSize>
+                16   <cacheExpirationTime>60000</cacheExpirationTime>
+                ------------------------------------------------------------------------
+                17 </authKeyRESTRoleService>                                                               =  15 </authKeyRESTRoleService>
+                ------------------------------------------------------------------------
+
+        - ``./config.xml``
+
+            .. code-block:: diff
+
+                Left file: D:\tmp\data-2.12.2\data\security\config.xml
+                Right file: D:\tmp\data-2.9.x-oauth2\data\security\config.xml
+                                                                                                                                                                                                                                                                                               -+ 2    <roleServiceName>geonode REST role service</roleServiceName>
+                ------------------------------------------------------------------------
+                ------------------------------------------------------------------------
+                27     <filters name="gwc" class="org.geoserver.security.ServiceLoginFilterChain" interceptorName="restInterceptor" exceptionTranslationName="exception" path="/gwc/**" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">                     <> 28     <filters name="gwc" class="org.geoserver.security.ServiceLoginFilterChain" interceptorName="restInterceptor" exceptionTranslationName="exception" path="/gwc/rest/**" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
+                ------------------------------------------------------------------------
+                ------------------------------------------------------------------------
+                30       <filter>anonymous</filter>                                                                                                                                                                                                                                            +-
+                31     </filters>
+                32     <filters name="geofence-rest" class="org.geoserver.security.ServiceLoginFilterChain" interceptorName="restInterceptor" exceptionTranslationName="exception" path="/geofence/rest/**" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
+                33       <filter>basic</filter>
+                34       <filter>geonode-oauth2</filter>
+                35       <filter>anonymous</filter>
+                36     </filters>
+                37     <filters name="geofence" class="org.geoserver.security.ServiceLoginFilterChain" interceptorName="interceptor" exceptionTranslationName="exception" path="/geofence/**" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
+                38       <filter>basic</filter>
+                39       <filter>geonode-oauth2</filter>
+                40       <filter>anonymous</filter>
+                ------------------------------------------------------------------------
+                ------------------------------------------------------------------------
+                52   <bruteForcePrevention>                                                                                                                                                                                                                                                    +-
+                53     <enabled>true</enabled>
+                54     <minDelaySeconds>1</minDelaySeconds>
+                55     <maxDelaySeconds>5</maxDelaySeconds>
+                56     <maxBlockedThreads>100</maxBlockedThreads>
+                57     <whitelistedMasks>
+                58       <string>127.0.0.1</string>
+                59     </whitelistedMasks>
+                60   </bruteForcePrevention>
+                ------------------------------------------------------------------------
+
+        - ``./rest.properties``
+
+            .. code-block:: diff
+
+                Left file: D:\tmp\data-2.12.2\data\security\rest.properties
+                Right file: D:\tmp\data-2.9.x-oauth2\data\security\rest.properties
+                ------------------------------------------------------------------------
+                18 /rest/monitor/*;GET=ROLE_ADMINISTRATOR                                                             +-
+                19 /rest/security/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
+                20 /rest/br/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
+                21 /geofence/rest/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
+                ------------------------------------------------------------------------
+                ------------------------------------------------------------------------
+                23 /**;POST,DELETE,PUT=ROLE_AUTHENTICATED                                                             <> 4 /**;POST,DELETE,PUT=ROLE_ADMINISTRATOR
+                ------------------------------------------------------------------------
+
+    .. note:: In case of dubts you can always try to do a "diff" between your old GEOSERVER_DATA_DIR and http://build.geonode.org/geoserver/latest/data-2.12.2.zip
+
+    * Update/tweak GeoNode ``settings.py``
+
+        - Add ``LOGIN_REDIRECT_URL``
+
+            .. code-block:: python
+
+                LOGIN_REDIRECT_URL = '/'
+
+        - Modify ``INSTALLED_APPS`` as follows
+
+            .. code-block:: diff
+
+                Left file: D:\work\code\python\geonode\geonode-2.7.x\geonode\settings.py
+                Right file: D:\work\code\python\geonode\geonode-2.6.x\geonode\settings.py
+                281     # GeoServer Apps                                  =  269     # GeoServer Apps
+                282     # Geoserver needs to come last because               270     # Geoserver needs to come last because
+                283     # it's signals may rely on other apps' signals.      271     # it's signals may rely on other apps' signals.
+                284     'geonode.geoserver',                                 272     'geonode.geoserver',
+                285     'geonode.upload',                                    273     'geonode.upload',
+                286     'geonode.tasks',                                     274     'geonode.tasks',
+                ------------------------------------------------------------------------
+                287     'geonode.messaging',                              +-
+                ------------------------------------------------------------------------
+                288                                                       =  275
+                289 )                                                        276 )
+                290                                                          277
+                291 GEONODE_CONTRIB_APPS = (                                 278 GEONODE_CONTRIB_APPS = (
+                292     # GeoNode Contrib Apps                               279     # GeoNode Contrib Apps
+                ------------------------------------------------------------------------
+                293     # 'geonode.contrib.dynamic',                      <> 280     'geonode.contrib.dynamic',
+                294     # 'geonode.contrib.exif',                            281     'geonode.contrib.exif',
+                295     # 'geonode.contrib.favorite',                        282     'geonode.contrib.favorite',
+                296     # 'geonode.contrib.geogig',                          283     'geonode.contrib.geogig',
+                297     # 'geonode.contrib.geosites',                        284     'geonode.contrib.geosites',
+                298     # 'geonode.contrib.nlp',                             285     'geonode.contrib.nlp',
+                299     # 'geonode.contrib.slack',                           286     'geonode.contrib.slack',
+                ------------------------------------------------------------------------
+                300     # 'geonode.contrib.createlayer',                  =
+                301     # 'geonode.contrib.datastore_shards',
+                ------------------------------------------------------------------------
+                302     'geonode.contrib.metadataxsl',                    <> 287     'geonode.contrib.metadataxsl'
+                303     'geonode.contrib.api_basemaps',
+                304     'geonode.contrib.ows_api',
+                ------------------------------------------------------------------------
+                305 )                                                     =  288 )
+                306                                                          289
+                307 # Uncomment the following line to enable contrib apps    290 # Uncomment the following line to enable contrib apps
+                ------------------------------------------------------------------------
+                308 GEONODE_APPS = GEONODE_CONTRIB_APPS + GEONODE_APPS    <> 291 # GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
+                ------------------------------------------------------------------------
+                309                                                       =  292
+                310 INSTALLED_APPS = (                                       293 INSTALLED_APPS = (
+                311                                                          294
+                312     'modeltranslation',                                  295     'modeltranslation',
+                313                                                          296
+                314     # Boostrap admin theme                               297     # Boostrap admin theme
+                ------------------------------------------------------------------------
+                ------------------------------------------------------------------------
+                334     'taggit',                                         =  317     'taggit',
+                335     'treebeard',                                         318     'treebeard',
+                336     'friendlytagloader',                                 319     'friendlytagloader',
+                337     'geoexplorer',                                       320     'geoexplorer',
+                338     'leaflet',                                           321     'leaflet',
+                339     'django_extensions',                                 322     'django_extensions',
+                ------------------------------------------------------------------------
+                340     'django_basic_auth',                              <> 323     #'geonode-client',
+                ------------------------------------------------------------------------
+                341     # 'haystack',                                     =  324     # 'haystack',
+                342     'autocomplete_light',                                325     'autocomplete_light',
+                343     'mptt',                                              326     'mptt',
+                344     # 'modeltranslation',                                327     # 'modeltranslation',
+                345     # 'djkombu',                                         328     # 'djkombu',
+                ------------------------------------------------------------------------
+                346     # 'djcelery',                                     <> 329     'djcelery',
+                ------------------------------------------------------------------------
+                347     # 'kombu.transport.django',                       =  330     # 'kombu.transport.django',
+                348
+                349     'storages',                                          331     'storages',
+                ------------------------------------------------------------------------
+                350     'floppyforms',                                    +-
+                ------------------------------------------------------------------------
+                351                                                       =  332
+                352     # Theme                                              333     # Theme
+                ------------------------------------------------------------------------
+                                                                          -+ 334     "pinax_theme_bootstrap_account",
+                ------------------------------------------------------------------------
+                353     "pinax_theme_bootstrap",                          =  335     "pinax_theme_bootstrap",
+                354     'django_forms_bootstrap',                            336     'django_forms_bootstrap',
+                355                                                          337
+                356     # Social                                             338     # Social
+                357     'account',                                           339     'account',
+                358     'avatar',                                            340     'avatar',
+                ------------------------------------------------------------------------
+                ------------------------------------------------------------------------
+                364     'actstream',                                      =  345     'actstream',
+                365     'user_messages',                                     346     'user_messages',
+                366     'tastypie',                                          347     'tastypie',
+                367     'polymorphic',                                       348     'polymorphic',
+                368     'guardian',                                          349     'guardian',
+                369     'oauth2_provider',                                   350     'oauth2_provider',
+                ------------------------------------------------------------------------
+                370     'corsheaders',                                    +-
+                ------------------------------------------------------------------------
+                371                                                       =  351
+                ------------------------------------------------------------------------
+                372     'invitations',                                    +-
+                ------------------------------------------------------------------------
+                373 ) + GEONODE_APPS                                      =  352 ) + GEONODE_APPS
+                ------------------------------------------------------------------------
+
+        - Add ``MONITORING`` flags as follows
+
+            .. code-block:: python
+
+                MONITORING_ENABLED = False
+
+                # how long monitoring data should be stored
+                MONITORING_DATA_TTL = timedelta(days=7)
+
+                # this will disable csrf check for notification config views,
+                # use with caution - for dev purpose only
+                MONITORING_DISABLE_CSRF = False
+
+        - Update ``LOGGING`` handlers as follows
+
+            .. code-block:: diff
+
+                Left file: D:\work\code\python\geonode\geonode-2.7.x\geonode\settings.py
+                Right file: D:\work\code\python\geonode\geonode-2.6.x\geonode\settings.py
+                396     'filters': {                                          =  366     'filters': {
+                397         'require_debug_false': {                             367         'require_debug_false': {
+                398             '()': 'django.utils.log.RequireDebugFalse'       368             '()': 'django.utils.log.RequireDebugFalse'
+                399         }                                                    369         }
+                400     },                                                       370     },
+                401     'handlers': {                                            371     'handlers': {
+                ------------------------------------------------------------------------
+                                                                              -+ 372         'null': {
+                                                                                 373             'level': 'ERROR',
+                                                                                 374             'class': 'django.utils.log.NullHandler',
+                                                                                 375         },
+                ------------------------------------------------------------------------
+                402         'console': {                                      =  376         'console': {
+                403             'level': 'ERROR',                                377             'level': 'ERROR',
+                404             'class': 'logging.StreamHandler',                378             'class': 'logging.StreamHandler',
+                405             'formatter': 'simple'                            379             'formatter': 'simple'
+                406         },                                                   380         },
+                407         'mail_admins': {                                     381         'mail_admins': {
+                ------------------------------------------------------------------------
+                ------------------------------------------------------------------------
+                410         }                                                 =  384         }
+                411     },                                                       385     },
+                412     "loggers": {                                             386     "loggers": {
+                413         "django": {                                          387         "django": {
+                414             "handlers": ["console"], "level": "ERROR", },    388             "handlers": ["console"], "level": "ERROR", },
+                415         "geonode": {                                         389         "geonode": {
+                ------------------------------------------------------------------------
+                416             "handlers": ["console"], "level": "ERROR", }, +-
+                417         "geonode.qgis_server": {
+                ------------------------------------------------------------------------
+                418             "handlers": ["console"], "level": "ERROR", }, =  390             "handlers": ["console"], "level": "ERROR", },
+                419         "gsconfig.catalog": {                                391         "gsconfig.catalog": {
+                420             "handlers": ["console"], "level": "ERROR", },    392             "handlers": ["console"], "level": "ERROR", },
+                421         "owslib": {                                          393         "owslib": {
+                422             "handlers": ["console"], "level": "ERROR", },    394             "handlers": ["console"], "level": "ERROR", },
+                423         "pycsw": {                                           395         "pycsw": {
+                424             "handlers": ["console"], "level": "ERROR", },    396             "handlers": ["console"], "level": "ERROR", },
+                425     },                                                       397     },
+                426 }                                                            398 }
+                ------------------------------------------------------------------------
+
+        - Update ``MIDDLEWARE`` and ``SECURITY`` flags as follows
+
+            .. code-block:: diff
+
+                Left file: D:\work\code\python\geonode\geonode-2.7.x\geonode\settings.py
+                Right file: D:\work\code\python\geonode\geonode-2.6.x\geonode\settings.py
+                458 MIDDLEWARE_CLASSES = (                                                          =  430 MIDDLEWARE_CLASSES = (
+                ------------------------------------------------------------------------
+                459     'corsheaders.middleware.CorsMiddleware',                                    +-
+                ------------------------------------------------------------------------
+                460     'django.middleware.common.CommonMiddleware',                                =  431     'django.middleware.common.CommonMiddleware',
+                461     'django.contrib.sessions.middleware.SessionMiddleware',                        432     'django.contrib.sessions.middleware.SessionMiddleware',
+                462     'django.contrib.messages.middleware.MessageMiddleware',                        433     'django.contrib.messages.middleware.MessageMiddleware',
+                463                                                                                    434
+                464     # The setting below makes it possible to serve different languages per         435     # The setting below makes it possible to serve different languages per
+                465     # user depending on things like headers in HTTP requests.                      436     # user depending on things like headers in HTTP requests.
+                ------------------------------------------------------------------------
+                ------------------------------------------------------------------------
+                467     'pagination.middleware.PaginationMiddleware',                               =  438     'pagination.middleware.PaginationMiddleware',
+                468     'django.middleware.csrf.CsrfViewMiddleware',                                   439     'django.middleware.csrf.CsrfViewMiddleware',
+                469     'django.contrib.auth.middleware.AuthenticationMiddleware',                     440     'django.contrib.auth.middleware.AuthenticationMiddleware',
+                470     'django.middleware.clickjacking.XFrameOptionsMiddleware',                      441     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+                471                                                                                    442
+                472     # Security settings
+                ------------------------------------------------------------------------
+                473     'django.middleware.security.SecurityMiddleware',                            +-
+                ------------------------------------------------------------------------
+                474                                                                                 =
+                475     # This middleware allows to print private layers for the users that have       443     # This middleware allows to print private layers for the users that have
+                476     # the permissions to view them.                                                444     # the permissions to view them.
+                477     # It sets temporary the involved layers as public before restoring the         445     # It sets temporary the involved layers as public before restoring the
+                478     # permissions.                                                                 446     # permissions.
+                479     # Beware that for few seconds the involved layers are public there could be    447     # Beware that for few seconds the involved layers are public there could be
+                ------------------------------------------------------------------------
+                ------------------------------------------------------------------------
+                485     # django-oauth-toolkit.                                                     =
+                486     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',              453     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+                487     'oauth2_provider.middleware.OAuth2TokenMiddleware',                            454     'oauth2_provider.middleware.OAuth2TokenMiddleware',
+                488 )                                                                                  455 )
+                489                                                                                    456
+                490 # Security stuff
+                ------------------------------------------------------------------------
+                491 MIDDLEWARE_CLASSES += ('django.middleware.security.SecurityMiddleware',)        +-
+                492 SESSION_COOKIE_SECURE = False
+                493 CSRF_COOKIE_SECURE = False
+                494 CSRF_COOKIE_HTTPONLY = False
+                495 X_FRAME_OPTIONS = 'DENY'
+                496 SECURE_CONTENT_TYPE_NOSNIFF = True
+                497 SECURE_BROWSER_XSS_FILTER = True
+                498 SECURE_SSL_REDIRECT = False
+                499 SECURE_HSTS_SECONDS = 3600
+                500 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+                ------------------------------------------------------------------------
+                501                                                                                 =  457
+                502 # Replacement of default authentication backend in order to support                458 # Replacement of default authentication backend in order to support
+                503 # permissions per object.                                                          459 # permissions per object.
+                504 AUTHENTICATION_BACKENDS = (                                                        460 AUTHENTICATION_BACKENDS = (
+                505     'oauth2_provider.backends.OAuth2Backend',                                      461     'oauth2_provider.backends.OAuth2Backend',
+                506     'django.contrib.auth.backends.ModelBackend',                                   462     'django.contrib.auth.backends.ModelBackend',
+                ------------------------------------------------------------------------
+                ------------------------------------------------------------------------
+                529 # Whether the uplaoded resources should be public and downloadable by default   =  485 # Whether the uplaoded resources should be public and downloadable by default
+                530 # or not                                                                           486 # or not
+                531 DEFAULT_ANONYMOUS_VIEW_PERMISSION = strtobool(                                     487 DEFAULT_ANONYMOUS_VIEW_PERMISSION = strtobool(
+                532     os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True')                         488     os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True')
+                533 )                                                                                  489 )
+                534 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = strtobool(                                 490 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = strtobool(
+                ------------------------------------------------------------------------
+                535     os.getenv('DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', 'True')                  <> 491     os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True')
+                ------------------------------------------------------------------------
+                536 )                                                                               =  492 )
+                537                                                                                    493
+                538 #                                                                                  494 #
+                539 # Settings for default search size                                                 495 # Settings for default search size
+                540 #                                                                                  496 #
+                541 DEFAULT_SEARCH_SIZE = int(os.getenv('DEFAULT_SEARCH_SIZE', '10'))                  497 DEFAULT_SEARCH_SIZE = int(os.getenv('DEFAULT_SEARCH_SIZE', '10'))
+                ------------------------------------------------------------------------
+                ------------------------------------------------------------------------
+                565     'USE_JSONFIELD': True,                                                      =  521     'USE_JSONFIELD': True,
+                566     'GFK_FETCH_DEPTH': 1,                                                          522     'GFK_FETCH_DEPTH': 1,
+                567 }                                                                                  523 }
+                568                                                                                    524
+                569
+                570 # prevent signing up by default                                                    525 # Settings for Social Apps
+                ------------------------------------------------------------------------
+                571 ACCOUNT_OPEN_SIGNUP = True                                                      <> 526 REGISTRATION_OPEN = strtobool(os.getenv('REGISTRATION_OPEN', 'False'))
+                ------------------------------------------------------------------------
+                572                                                                                 =
+                573 ACCOUNT_EMAIL_CONFIRMATION_EMAIL = strtobool(                                      527 ACCOUNT_EMAIL_CONFIRMATION_EMAIL = strtobool(
+                574     os.getenv('ACCOUNT_EMAIL_CONFIRMATION_EMAIL', 'False')                         528     os.getenv('ACCOUNT_EMAIL_CONFIRMATION_EMAIL', 'False')
+                575 )                                                                                  529 )
+                576 ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = strtobool(                                   530 ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = strtobool(
+                577     os.getenv('ACCOUNT_EMAIL_CONFIRMATION_REQUIRED', 'False')                      531     os.getenv('ACCOUNT_EMAIL_CONFIRMATION_REQUIRED', 'False')
+                578 )                                                                                  532 )
+                579 ACCOUNT_APPROVAL_REQUIRED = strtobool(                                             533 ACCOUNT_APPROVAL_REQUIRED = strtobool(
+                580     os.getenv('ACCOUNT_APPROVAL_REQUIRED', 'False')                                534     os.getenv('ACCOUNT_APPROVAL_REQUIRED', 'False')
+                581 )                                                                                  535 )
+                ------------------------------------------------------------------------
+
+        - Update the Uploader Settings as follows
+
+            .. code-block:: python
+
+                UPLOADER = {
+                    'BACKEND': 'geonode.rest',
+                    'OPTIONS': {
+                        'TIME_ENABLED': False,
+                        'MOSAIC_ENABLED': False,
+                        'GEOGIG_ENABLED': False,
+                    },
+                    'SUPPORTED_CRS': [
+                        'EPSG:4326',
+                        'EPSG:3785',
+                        'EPSG:3857',
+                        'EPSG:900913',
+                        'EPSG:32647',
+                        'EPSG:32736'
+                    ],
+                    'SUPPORTED_EXT': [
+                        '.shp',
+                        '.csv',
+                        '.kml',
+                        '.kmz',
+                        '.json',
+                        '.geojson',
+                        '.tif',
+                        '.tiff',
+                        '.geotiff',
+                        '.gml',
+                        '.xml'
+                    ]
+                }
+
+        - Update/modify ``NOTIFICATIONS`` settings as follows
+
+            .. code-block:: diff
+
+                Left file: D:\work\code\python\geonode\geonode-2.7.x\geonode\settings.py
+                Right file: D:\work\code\python\geonode\geonode-2.6.x\geonode\settings.py
+                1099 # notification settings                                            =
+                ------------------------------------------------------------------------
+                1100 NOTIFICATION_ENABLED = True or TEST                                +-
+                1101 PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "account.Account"
+                ------------------------------------------------------------------------
+                1102                                                                    =
+                1103 # notifications backends
+                ------------------------------------------------------------------------
+                1104 _EMAIL_BACKEND = "pinax.notifications.backends.email.EmailBackend" +-
+                1105 PINAX_NOTIFICATIONS_BACKENDS = [
+                1106     ("email", _EMAIL_BACKEND),
+                1107 ]
+                ------------------------------------------------------------------------
+                1108                                                                    =
+                1109 # Queue non-blocking notifications.                                   969 # Queue non-blocking notifications.
+                ------------------------------------------------------------------------
+                1110 PINAX_NOTIFICATIONS_QUEUE_ALL = False                              <> 970 NOTIFICATION_QUEUE_ALL = False
+                1111 PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = -1
+                ------------------------------------------------------------------------
+                1112                                                                    =  971
+                1113 # explicitly define NOTIFICATION_LOCK_LOCATION
+                1114 # NOTIFICATION_LOCK_LOCATION = <path>
+                1115
+                1116 # pinax.notifications
+                1117 # or notification                                                     972 # notification settings
+                ------------------------------------------------------------------------
+                1118 NOTIFICATIONS_MODULE = 'pinax.notifications'                       <> 973 NOTIFICATION_LANGUAGE_MODULE = "account.Account"
+                ------------------------------------------------------------------------
+                1119                                                                    =
+                1120 # set to true to have multiple recipients in /message/create/
+                ------------------------------------------------------------------------
+                1121 USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = False                    +-
+                ------------------------------------------------------------------------
+                1122                                                                    =
+                ------------------------------------------------------------------------
+                1123 if NOTIFICATION_ENABLED:                                           +-
+                1124     if NOTIFICATIONS_MODULE not in INSTALLED_APPS:
+                1125         INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
+                ------------------------------------------------------------------------
+
+        - Update/modify ``CELERY`` settings as follows
+
+            .. code-block:: diff
+
+                Left file: D:\work\code\python\geonode\geonode-2.7.x\geonode\settings.py
+                Right file: D:\work\code\python\geonode\geonode-2.6.x\geonode\settings.py
+                1127 # async signals can be the same as broker url                              =
+                1128 # but they should have separate setting anyway
+                1129 # use amqp:// for local rabbitmq server
+                ------------------------------------------------------------------------
+                1130 ASYNC_SIGNALS_BROKER_URL = 'memory://'                                     +-
+                ------------------------------------------------------------------------
+                1131                                                                            =
+                ------------------------------------------------------------------------
+                1132 CELERY_BROKER_URL = os.getenv('BROKER_URL', "amqp://")                     <> 974 BROKER_URL = os.getenv('BROKER_URL', "django://")
+                                                                                                   975 CELERY_ALWAYS_EAGER = True
+                                                                                                   976 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
+                                                                                                   977 CELERY_IGNORE_RESULT = True
+                                                                                                   978 CELERY_SEND_EVENTS = False
+                ------------------------------------------------------------------------
+                1133 CELERY_RESULT_BACKEND = None                                               =  979 CELERY_RESULT_BACKEND = None
+                ------------------------------------------------------------------------
+                1134 CELERY_TASK_ALWAYS_EAGER = True  # set this to False in order to run async +-
+                1135 CELERY_TASK_IGNORE_RESULT = True
+                1136 CELERY_TASK_DEFAULT_QUEUE = "default"
+                1137 CELERY_TASK_DEFAULT_EXCHANGE = "default"
+                1138 CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
+                1139 CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
+                1140 CELERY_TASK_CREATE_MISSING_QUEUES = True
+                ------------------------------------------------------------------------
+                1141 CELERY_TASK_RESULT_EXPIRES = 1                                             =  980 CELERY_TASK_RESULT_EXPIRES = 1
+                ------------------------------------------------------------------------
+                1142 CELERY_WORKER_DISABLE_RATE_LIMITS = True                                   <> 981 CELERY_DISABLE_RATE_LIMITS = True
+                                                                                                   982 CELERY_DEFAULT_QUEUE = "default"
+                                                                                                   983 CELERY_DEFAULT_EXCHANGE = "default"
+                                                                                                   984 CELERY_DEFAULT_EXCHANGE_TYPE = "direct"
+                1143 CELERY_WORKER_SEND_TASK_EVENTS = False                                        985 CELERY_DEFAULT_ROUTING_KEY = "default"
+                1144                                                                               986 CELERY_CREATE_MISSING_QUEUES = True
+                1145 CELERY_QUEUES = [                                                             987 CELERY_IMPORTS = (
+                1146     Queue('default', routing_key='default'),                                  988     'geonode.tasks.deletion',
+                1147     Queue('cleanup', routing_key='cleanup'),
+                1148     Queue('update', routing_key='update'),                                    989     'geonode.tasks.update',
+                1149     Queue('email', routing_key='email'),                                      990     'geonode.tasks.email'
+                1150 ]                                                                             991 )
+                ------------------------------------------------------------------------
+
+                1177                           =  1018
+                1178                              1019
+                --------------------------------------------------------------
+                1179 # djcelery.setup_loader() <> 1020 djcelery.setup_loader()
+                --------------------------------------------------------------
+                1180                           =  1021
+                --------------------------------------------------------------
+
+        - Additional/new Geonode behavior ``settings``
+
+            .. code-block:: python
+
+                DISPLAY_SOCIAL = strtobool(os.getenv('DISPLAY_SOCIAL', 'True'))
+                DISPLAY_COMMENTS = strtobool(os.getenv('DISPLAY_COMMENTS', 'True'))
+                DISPLAY_RATINGS = strtobool(os.getenv('DISPLAY_RATINGS', 'True'))
+                DISPLAY_WMS_LINKS = strtobool(os.getenv('DISPLAY_WMS_LINKS', 'True'))
+
+                # Number of results per page listed in the GeoNode search pages
+                CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '20'))
+
+                # Number of items returned by the apis 0 equals no limit
+                API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '200'))
+                API_INCLUDE_REGIONS_COUNT = strtobool(
+                    os.getenv('API_INCLUDE_REGIONS_COUNT', 'False'))
+                # Make Free-Text Kaywords writable from users or read-only
+                # - if True only admins can edit free-text kwds from admin dashboard
+                FREETEXT_KEYWORDS_READONLY = False
+
+                # Each uploaded Layer must be approved by an Admin before becoming visible
+                ADMIN_MODERATE_UPLOADS = False
+
+                # add following lines to your local settings to enable monitoring
+                if MONITORING_ENABLED:
+                    if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
+                        INSTALLED_APPS += ('geonode.contrib.monitoring',)
+                    if 'geonode.contrib.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
+                        MIDDLEWARE_CLASSES += \
+                            ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+
+                GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIPCities.dat')
+                # If this option is enabled, Resources belonging to a Group won't be
+                # visible by others
+                GROUP_PRIVATE_RESOURCES = False
+
+                # If this option is enabled, Groups will become strictly Mandatory on
+                # Metadata Wizard
+                GROUP_MANDATORY_RESOURCES = False
+
+                # A boolean which specifies wether to display the email in user's profile
+                SHOW_PROFILE_EMAIL = False
+
+                # Enables cross origin requests for geonode-client
+                MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = strtobool(os.getenv(
+                    'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS',
+                    'False'
+                ))
+
+        - Update/modify ``THUMBNAIL GENERATOR``
+
+            .. code-block:: diff
+
+                Left file: D:\work\code\python\geonode\geonode-2.7.x\geonode\settings.py
+                Right file: D:\work\code\python\geonode\geonode-2.6.x\geonode\settings.py
+                1284                                                                          =
+                1285 # Choose thumbnail generator -- this is the default generator               1077 # Choose thumbnail generator -- this is the default generator
+                ------------------------------------------------------------------------
+                1286 THUMBNAIL_GENERATOR = "geonode.layers.utils.create_gs_thumbnail_geonode" <> 1078 THUMBNAIL_GENERATOR = "geonode.geoserver.helpers.create_gs_thumbnail_geonode"
+                ------------------------------------------------------------------------
+
+*Final Steps*
+
+    1. Run paver setup in order to download the latest Jetty Runner
+
+        .. warning:: Don't do this if your GEOSERVER_DATA_DIR is located under ``geonode/geoserver/data``; it will be wiped out!!
+                     In this case download Jetty Runner manually from http://repo2.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.7.v20170914/jetty-runner-9.4.7.v20170914.jar
+                     And put is under ``geonode/downloaded`` folder
+
+        .. code-block:: bash
+
+          DJANGO_SETTINGS_MODULE=geonode.local_settings paver setup
+
+    2. Start the server
+
+        .. code-block:: bash
+
+          DJANGO_SETTINGS_MODULE=geonode.local_settings paver start
+
+    3. Re-sync GeoFence Security Rules
+
+        .. code-block:: bash
+
+          DJANGO_SETTINGS_MODULE=geonode.local_settings paython manage.py sync_geofence
+
+
+Appendix A
+----------
+
+.. warning:: Before you proceed with the following steps, it is recommended that you perform a full backup of your current environment. In the next section thare's a listing of the steps required to perform a full / hard backup of the whole stack.
+
+Backup of the old Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Backup of the DataBase*
+
+1. From "local_settings" or "settings" (vim ``geonode/local_settings.py``) retrieve all the DB connection parameters
+
+.. image:: img/gn_up_0001.png
+   :width: 600px
+
+2. Dump all the DBs
+
+.. code-block:: bash
+
+    sudo su - postgres
+    pg_dump -d geonode -U geonode -f /tmp/geonode.dump
+    pg_dump -d geonode_data -U geonode -f /tmp/geonode_data.dump
+
+*Backup of GeoServer*
+
+1. Backup the old GeoServer binaries
+
+.. code-block:: bash
+
+    tar czvf /tmp/geoserver.tar.gz geoserver/
+
+2. Backup of the GeoServer Data Dir
+
+   - As an admin login into GeoServer gui (http://localhost:8080/geoserver/)
+   - Click on "Server Status" and note the "Data Directory" path
+
+.. image:: img/gn_up_0002.png
+   :width: 600px
+
+.. code-block:: bash
+
+    tar czvf /tmp/geoserver_data.tar.gz /home/geosolutions/geonode/geoserver/data/
+
+3. Backup of Uploaded/Media and Static files
+
+.. code-block:: bash
+
+    DJANGO_SETTINGS_MODULE=geonode.local_settings python manage.py print_settings | grep MEDIA_ROOT
+
+.. image:: img/gn_up_0003.png
+   :width: 600px
+
+.. code-block:: bash
+
+    tar czvf /tmp/geonode_media.tar.gz /home/geosolutions/geonode/gonode/uploaded
+
+- do the same for ``STATIC_ROOT``, ``TEMPLATES`` (all folders listed), ``LOCALE`` (all folders listed)
+
+4. Backup of the original source code
+
+   - Make sure you have everything committed and pushed for your local Git branches
+   - In case you are working locally, make sure you saved everything before proceeding with the update

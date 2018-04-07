@@ -1,9 +1,65 @@
+geonode (2.8.0+rc12) xenial; urgency=high 
+  [ Alessio Fabiani ]
+  * [27db87]  - Fix GeoNode 2.6.3 to 2.7.x+ Migration (#3547)
+  * [f3970d] Updated changelog for version 2.7.5.dev20180124154147
+  * [af8b4c]  - GeoNode-2.7.5.dev20180125135927
+
+  [ François Van Der Biest ]
+  * [65e734] Sort available layer styles
+
+  [ DBlasby ]
+  * [a80e8e] Add ability to control thumbnail generation implementation (#3623)
+
+  [ NEXUS\hod135 ]
+  * [73f551] fixed tabbed content on map detail page
+
+  [ Francesco Bartoli ]
+  * [43c2dd] Update oauth2 fixture with new redirect uri
+
+  [ Alessio Fabiani ]
+  * [c1d4f6] [Ready] Refactor remote services 27x (#3657)
+
+  [ Vasu Babu Kandimalla ]
+  * [16fd4f] remove duplicate logs. This will resolve kartoza/docker-geosafe#98
+
+  [ Rizky Maulana Nugraha ]
+  * [e46ef1] Fix typo in a variable in search.js
+
+  [ afabiani ]
+  * [529daa]  - Backport stable fixes from master branch
+  * [e42d0e] [Before Release 2.7.5] Updating documentation and version
+  * [640b9b] [Before Release 2.7.5] Updating JS assets
+  * [d02dec] [Deps] geoserver-geonode-ext-2.12.2
+  * [517fa4]  - ReadTheDocs fix
+  * [642194] [Before Release 2.7.6] Updating settings and docs
+  * [7b0708]  - Fix csw test cases
+  * [1ce13c]  - Fix pub geoserver endpoint
+
+  [ Simone Dalmasso ]
+  * [3b1e50] remove nowrap to fix right columns css issues in detail pages
+
+  [ Francesco Bartoli ]
+  * [6f766a] Fix nginx service as allowed host
+
+  [ afabiani ]
+  * [e5a8a9]  - docs update
+  * [3790b8]  - updating deps ppa checks on setup.py
+  * [33ad61] [fixes #3690] Maps metadata is brfoken
+  * [2e28e4] [fixes #3690] Maps metadata is broken
+  * [39b5c9] [fixes #3644] Zoom to layer extent zooms to whole world instead #3644
+  * [664dd5]  - Preparing for RELEASE RC12
+  * [8debde] - Preparing for RELEASE RC12
+
+  [ Alessio Fabiani ]
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 30 Mar 2018 11:55:49 +0200
+
 geonode (2.8.0+rc10) xenial; urgency=high 
   * [c8abc4] GeoNode 2.7.5.dev20180123130714
 
  -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Wed, 24 Jan 2018 16:41:05 +0100
 
-geonode (2.7.5+dev20180123112419) xenial; urgency=high 
+geonode (2.7.5+dev20180123112419) xenial; urgency=high
   * [dd4a19] [Fixes #3568] - Fix, improve and adapt Backup/Restore Scripts to GeoNode 2.6+ (#3571)
   * [c8bd21] [Fixes #3565 #3566] Topic Category is no more visible on the Layer summary list / If a Resource belongs to a Group, it should be also visible on the summary list
 

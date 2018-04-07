@@ -28,8 +28,8 @@ env:
     # So QGIS server can access this address
     SITEURL: http://localhost:8000/
     QGIS_SERVER_PORT: 9000
-    ON_TRAVIS: True
-    CELERY_ALWAYS_EAGER: True
+    ON_TRAVIS: 'True'
+    CELERY_ALWAYS_EAGER: 'True'
 
 branches:
   only:
@@ -88,7 +88,7 @@ notifications:
       - "irc.freenode.org#geonode"
     use_notice: true
   email:
-    - geonode-dev@boundlessgeo.com
+    - alessio.fabiani@gmail.com
     - ingenieroariel@gmail.com
     - simone.dalmasso@gmail.com
   slack: geonode-sprint:oQylJRkU9feZ8JruGi6czWwe

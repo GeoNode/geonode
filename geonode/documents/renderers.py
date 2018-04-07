@@ -19,7 +19,10 @@
 #########################################################################
 
 import subprocess
+import traceback
 
+from django.conf import settings
+from threading import Timer
 from mimetypes import guess_type
 from urllib import pathname2url
 from tempfile import NamedTemporaryFile
@@ -63,13 +66,26 @@ def render_document(document_path, extension="png"):
 
     # spawn subprocess and render the document
     output = NamedTemporaryFile(suffix='.{}'.format(extension))
-    try:
-        subprocess.check_call(
-            ["unoconv", "-f", extension, "-o", output.name, temp_path])
-    except subprocess.CalledProcessError as e:
-        raise ConversionError(str(e))
-    except OSError as e:
-        raise ConversionError(str(e))
+    if settings.UNOCONV_ENABLE:
+        timeout = None
+        try:
+            def kill(process):
+                return process.kill()
+
+            unoconv = subprocess.Popen(
+                [settings.UNOCONV_EXECUTABLE, "-v", "-e", "PageRange=1-2",
+                    "-f", extension, "-o", output.name, temp_path],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+            timeout = Timer(settings.UNOCONV_TIMEOUT, kill, [unoconv])
+            timeout.start()
+            stdout, stderr = unoconv.communicate()
+        except Exception as e:
+            traceback.print_exc()
+            raise ConversionError(str(e))
+        finally:
+            if timeout:
+                timeout.cancel()
 
     return output
 
@@ -86,15 +102,18 @@ def generate_thumbnail_content(image_path, size=(200, 150)):
     except ImportError:
         raise MissingPILError()
 
-    image = Image.open(image_path)
-    source_width, source_height = image.size
-    target_width, target_height = size
+    try:
+        image = Image.open(image_path)
+        source_width, source_height = image.size
+        target_width, target_height = size
 
-    if source_width != target_width or source_width != target_height:
-        image = ImageOps.fit(image, size, Image.ANTIALIAS)
+        if source_width != target_width or source_width != target_height:
+            image = ImageOps.fit(image, size, Image.ANTIALIAS)
 
-    output = StringIO()
-    image.save(output, format='PNG')
-    content = output.getvalue()
-    output.close()
-    return content
+        output = StringIO()
+        image.save(output, format='PNG')
+        content = output.getvalue()
+        output.close()
+        return content
+    except:
+        return None

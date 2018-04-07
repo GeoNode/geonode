@@ -28,18 +28,23 @@ At the end of this section you will be able to setup from scratch the whole GeoN
     quick_install
     linux_admin_intro/index
     running_ansible
+    running_docker/index
     vm_setup_virtualbox
     vm_running_vagrant
     geonode_install/index
     setup_on_centos/index
     network_conf_issues
     win_bin_install/win_binary_installer
+    geonode_update/index
 
 :ref:`quick_installation`
     This section is a quick guide to get GeoNode up and running in most common operating systems. This is meant to be run on a fresh machine with no previously installed packages or GeoNode versions.
 
 :ref:`linux_admin_intro`
     This section describes how to setup a Virtual Machine running Ubuntu.
+
+:ref:`running_docker`
+    This section describes how to setup GeoNode on Docker
 
 :ref:`geonode_install`
     This section will guide the user through the steps necessary to install GeoNode on Ubuntu.
@@ -51,6 +56,9 @@ At the end of this section you will be able to setup from scratch the whole GeoN
 
 :ref:`win_binary_installer`
     Install GeoNode on Windows through the binary installer.
+
 :ref:`network_configuration_issues`
     This section will guide the user through the steps necessary to understand and possibly solve any of the most common configuration issues on communication between Django and GeoServer.
 
+:ref:`geonode_update`
+    This section will guide the user through the steps necessary to update GeoNode from old versions.

@@ -1,0 +1,272 @@
+{% include "geoexet/ext_header.html" %}
+{% include "geoexet/app_header.html" %}
+{% include "geoexet/geo_header_mini.html" %}
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-mixin.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/Geonode-CatalogueApiSearch.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-GeoExplorer.js"></script>
+<script type="text/javascript">
+{% autoescape off %}
+        var app;
+        Ext.onReady(function() {
+            GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
+            var config = {
+                tools: [{
+                    ptype: "gxp_wmsgetfeatureinfo",
+                    format: "grid",
+                    actionTarget: "main.tbar",
+                    outputConfig: {width: 400, height: 200, panIn: false}
+                }],
+                {% if PROXY_URL %}
+                proxy: '{{ PROXY_URL }}',
+                {% endif %}
+                {% if 'access_token' in request.session %}
+                localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}?access_token={{request.session.access_token}}",
+                {% else %}
+                localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+                {% endif %}
+                authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
+
+                /* The URL to a REST map configuration service.  This service
+                 * provides listing and, with an authenticated user, saving of
+                 * maps on the server for sharing and editing.
+                 */
+                rest: "/maps/",
+                {% if MAPFISH_PRINT_ENABLED %}
+                printService: "{{GEOSERVER_BASE_URL}}pdf/",
+                {% else %}
+                printService: "",
+                {% endif %}
+
+                portalConfig: {
+                    renderTo: "preview_map",
+                    height: 250
+                },
+
+                listeners: {
+                    "ready": function() {
+                        app.mapPanel.map.getResolutions = function() {
+                            return [156543.03390625, 78271.516953125, 39135.7584765625,
+                              19567.87923828125, 9783.939619140625, 4891.9698095703125,
+                              2445.9849047851562, 1222.9924523925781, 611.4962261962891,
+                              305.74811309814453, 152.87405654907226, 76.43702827453613,
+                              38.218514137268066, 19.109257068634033, 9.554628534317017,
+                              4.777314267158508, 2.388657133579254, 1.194328566789627,
+                              0.5971642833948135, 0.25, 0.1, 0.05];
+                        }
+                        app.mapPanel.map.getServerResolutions = function() {
+                              return [156543.03390625, 78271.516953125, 39135.7584765625,
+                                    19567.87923828125, 9783.939619140625,
+                                    4891.9698095703125, 2445.9849047851562,
+                                    1222.9924523925781, 611.4962261962891,
+                                    305.74811309814453, 152.87405654907226,
+                                    76.43702827453613, 38.218514137268066,
+                                    19.109257068634033, 9.554628534317017,
+                                    4.777314267158508, 2.388657133579254,
+                                    1.194328566789627, 0.5971642833948135];
+                        }
+                        app.mapPanel.map.getMaxResolution = function() {
+                            return 156543.0339 * 2;
+                        }
+                        app.mapPanel.map.getNumZoomLevels  = function() {
+                            return 28;
+                        }
+                        app.mapPanel.map.getMinZoom  = function() {
+                            return 0;
+                        }
+                        app.mapPanel.map.getMaxZoom  = function() {
+                            return 28;
+                        }
+                        app.mapPanel.map.getResolutionForZoom = function(zoom) {
+                            zoom = Math.max(0, Math.min(zoom, this.getResolutions().length - 1));
+                            var resolution;
+                            var fractionalZoom = true;
+                            if(fractionalZoom) {
+                                var low = Math.floor(zoom);
+                                var high = Math.ceil(zoom);
+                                resolution = this.getResolutions()[low] -
+                                    ((zoom-low) * (this.getResolutions()[low]-this.getResolutions()[high]));
+                            } else {
+                                resolution = this.getResolutions()[Math.round(zoom)];
+                            }
+                            return resolution;
+                        }
+                        app.mapPanel.map.adjustZoom  = function(zoom) {
+                            var maxResolution = 156543.0339 * 4;
+                            if (this.baseLayer && this.baseLayer.wrapDateLine) {
+                                var resolution, resolutions = this.getResolutions(),
+                                    // maxResolution = this.getMaxExtent().getWidth() / this.size.w;
+                                    maxResolution = this.getMaxResolution();
+                                if (this.getResolutionForZoom(zoom) > maxResolution) {
+                                    var fractionalZoom = true;
+                                    if (fractionalZoom) {
+                                        zoom = this.getZoomForResolution(maxResolution);
+                                    } else {
+                                        for (var i=zoom|0, ii=resolutions.length; i<ii; ++i) {
+                                            if (resolutions[i] <= maxResolution) {
+                                                zoom = i;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            return zoom;
+                        }
+
+                        try {
+                            l = app.selectedLayer.getLayer();
+                            l.addOptions({wrapDateLine:true, displayOutsideMaxExtent: true});
+                            l.addOptions({maxExtent:app.mapPanel.map.getMaxExtent()});
+                        } catch(err) {
+                            ;
+                        }
+
+                        {% if 'access_token' in request.session %}
+                            try {
+                                if(l.url != undefined && (typeof l.url) == "string") {
+                                    l.url += ( !l.url.match(/\b\?/gi) || l.url.match(/\b\?/gi).length == 0 ? '?' : '&');
+
+                                    if((!l.url.match(/\baccess_token/gi))) {
+                                        l.url += "access_token={{request.session.access_token}}";
+                                    } else {
+                                        l.url =
+                                            l.url.replace(/(access_token)(.+?)(?=\&)/, "$1={{request.session.access_token}}");
+                                    }
+                                }
+                            } catch(err) {
+                                console.log(err);
+                            }
+                        {% endif %}
+
+                        var map = app.mapPanel.map;
+                        var layer = app.map.layers.slice(-1)[0];
+                        var bbox = layer.bbox;
+                        var crs = layer.srs;
+                        if (bbox != undefined)
+                        {
+                           var extent = new OpenLayers.Bounds();
+
+                           if (layer.capability.bbox &&
+                                    !Array.isArray(layer.capability.bbox) &&
+                                            map.projection in layer.capability.bbox) {
+                               bbox = layer.capability.bbox[map.projection].bbox;
+                               extent = OpenLayers.Bounds.fromArray(bbox);
+                           } else {
+                               if (crs != map.projection) {
+                                   extent = OpenLayers.Bounds.fromArray(bbox);
+                                   extent = extent.clone().transform(crs, map.projection);
+                               } else {
+                                   extent = OpenLayers.Bounds.fromArray(bbox);
+                               }
+                           }
+
+                           var zoomToData = function()
+                           {
+                               map.zoomToExtent(extent, true);
+                               app.mapPanel.center = map.center;
+                               app.mapPanel.zoom = map.zoom;
+                               map.events.unregister('changebaselayer', null, zoomToData);
+                           };
+                           map.events.register('changebaselayer',null,zoomToData);
+                           if(map.baseLayer){
+                               map.zoomToExtent(extent, true);
+                           }
+                        }
+                    },
+                    "beforeunload": function() {
+                        if (modified) {
+                            // styleEditor.show();
+                            return false;
+                        }
+                    }
+                }
+            };
+
+            config = Ext.apply(config, {{ viewer|safe }});
+
+            //
+			// Extracting the layer's times
+			//
+			var is_mosaic = "{{resource.is_mosaic}}" == "True" ? true : false;
+            var has_time = "{{ resource.has_time }}" == "True" ? true : false;
+            var time_list = [];
+			if(is_mosaic){
+				var granules_features = {% if all_granules %} {{all_granules.features}} {% else %} [] {% endif %};
+
+				for(var i=0; i<granules_features.length; i++){
+					var feature = granules_features[i];
+
+					if(feature.properties.time){
+						var date = new Date(feature.properties.time);
+						var time = date.toISOString();
+
+						if(time){
+							time_list.push(time);
+						}
+					}
+				}
+			} else {
+                var time_list_is_none = "{{ all_times }}" == "None" ? true : false;
+                if(has_time && !time_list_is_none) {
+                    time_list = {{ all_times }};
+                }
+            }
+
+            //
+            // Setting the time dimension accordingly to the granule time list
+            //
+            if(time_list.length > 0) {
+                var layers = config.map.layers;
+                for(var layer in layers){
+                    l = layers[layer];
+                    if(!l.background && l.name && l.name.indexOf(resource_name) != -1){
+                        l.dimensions = {
+                            time:{
+                                "name":"time",
+                                "units":"ISO8601",
+                                "unitsymbol":null,
+                                "nearestVal":false,
+                                "multipleVal":false,
+                                "current":false,
+                                "default":"current",
+                                "values": time_list // granule time list
+                            }
+                        }
+                    }
+                }
+            }
+
+            app = new GeoNode.Viewer(config);
+
+            for (var key in app.tools) {
+                var tool = app.tools[key];
+                if (tool.ptype == 'gxp_styler') {
+                    tool.rasterStyling = false;
+                };
+            };
+
+            // change style displayed in map
+            Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
+                app.selectedLayer.getLayer().mergeNewParams({
+                    "STYLES": elem.id,
+                    "_dc": Math.random()
+                });
+            });
+
+            Ext.get(Ext.DomQuery.select(".style-edit")).on("click", function(evt, elem) {
+                for (var key in app.tools) {
+                    var tool = app.tools[key];
+                    if (tool.ptype == 'gxp_styler') {
+                        tool.actions[0].execute();
+                    };
+                }
+            });
+            Ext.Ajax.on('requestcomplete', function(req, cippa, opts){
+                if(opts.method == 'PUT'){
+                    $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());
+                }
+            }, this);
+        });
+
+    {% endautoescape %}
+    </script>

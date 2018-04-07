@@ -21,10 +21,10 @@
 import logging
 import time
 
-from django.conf import settings
+# from django.conf import settings
 from kombu.mixins import ConsumerMixin
 from geonode.geoserver.signals import geoserver_post_save_local
-from geonode.security.views import send_email_consumer, send_email_owner_on_view
+from geonode.security.views import send_email_consumer  # , send_email_owner_on_view
 # from geonode.social.signals import notification_post_save_resource2
 from geonode.layers.views import layer_view_counter
 from geonode.layers.models import Layer
@@ -71,7 +71,7 @@ class Consumer(ConsumerMixin):
 
     def on_consume_end(self, connection, channel):
         super(Consumer, self).on_consume_end(connection, channel)
-        logger.info("finished.")
+        logger.debug("finished.")
 
     def on_message(self, body, message):
         # logger.debug("broadcast: RECEIVED MSG - body: %r" % (body,))
@@ -85,7 +85,7 @@ class Consumer(ConsumerMixin):
         send_email_consumer(layer_uuid, user_id)
         # Not sure if we need to send ack on this fanout version.
         message.ack()
-        logger.info("on_email_messages: finished")
+        logger.debug("on_email_messages: finished")
         self._check_message_limit()
 
     def on_geoserver_messages(self, body, message):
@@ -99,7 +99,7 @@ class Consumer(ConsumerMixin):
         geoserver_post_save_local(layer)
         # Not sure if we need to send ack on this fanout version.
         message.ack()
-        logger.info("on_geoserver_messages: finished")
+        logger.debug("on_geoserver_messages: finished")
         self._check_message_limit()
 
     def on_notifications_messages(self, body, message):
@@ -110,48 +110,49 @@ class Consumer(ConsumerMixin):
         body.get("created")
         # notification_post_save_resource2(instance_id, app_label, model, created)
         message.ack()
-        logger.info("on_notifications_message: finished")
+        logger.debug("on_notifications_message: finished")
         self._check_message_limit()
 
     def on_geoserver_all(self, body, message):
         # logger.debug("on_geoserver_all: RECEIVED MSG - body: %r" % (body,))
         message.ack()
-        logger.info("on_geoserver_all: finished")
+        logger.debug("on_geoserver_all: finished")
         # TODO:Adding consurmer's producers.
         self._check_message_limit()
 
     def on_geoserver_catalog(self, body, message):
         # logger.debug("on_geoserver_catalog: RECEIVED MSG - body: %r" % (body,))
         message.ack()
-        logger.info("on_geoserver_catalog: finished")
+        logger.debug("on_geoserver_catalog: finished")
         self._check_message_limit()
 
     def on_geoserver_data(self, body, message):
         # logger.debug("on_geoserver_data: RECEIVED MSG - body: %r" % (body,))
         message.ack()
-        logger.info("on_geoserver_data: finished")
+        logger.debug("on_geoserver_data: finished")
         self._check_message_limit()
 
     def on_consume_ready(self, connection, channel, consumers, **kwargs):
-        # logger.info(">>> Ready:")
-        # logger.info(connection)
-        # logger.info("{} consumers:".format(len(consumers)))
+        # logger.debug(">>> Ready:")
+        # logger.debug(connection)
+        # logger.debug("{} consumers:".format(len(consumers)))
         # for i, consumer in enumerate(consumers, start=1):
-        #     logger.info("{0} {1}".format(i, consumer))
+        #     logger.debug("{0} {1}".format(i, consumer))
         super(Consumer, self).on_consume_ready(connection, channel, consumers,
                                                **kwargs)
 
     def on_layer_viewer(self, body, message):
         # logger.debug("on_layer_viewer: RECEIVED MSG - body: %r" % (body,))
         viewer = body.get("viewer")
-        owner_layer = body.get("owner_layer")
+        # owner_layer = body.get("owner_layer")
         layer_id = body.get("layer_id")
         layer_view_counter(layer_id, viewer)
 
-        if settings.EMAIL_ENABLE:
-            send_email_owner_on_view(owner_layer, viewer, layer_id)
+        # TODO Disabled for now. This should be handeld through Notifications
+        # if settings.EMAIL_ENABLE:
+        #     send_email_owner_on_view(owner_layer, viewer, layer_id)
         message.ack()
-        logger.info("on_layer_viewer: finished")
+        logger.debug("on_layer_viewer: finished")
         self._check_message_limit()
 
 

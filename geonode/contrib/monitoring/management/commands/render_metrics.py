@@ -21,6 +21,7 @@ from __future__ import print_function
 import logging
 import argparse
 import types
+import pytz
 from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand, CommandError
@@ -74,7 +75,7 @@ class Command(BaseCommand):
         if options['list_metrics']:
             self.list_metrics()
             return
-        
+
         interval = timedelta(seconds=options['interval'])
         metric_names = options['metric_name']
         resource = options['resource']
@@ -114,11 +115,16 @@ class Command(BaseCommand):
         if label:
             print(' for label: {} label'.format(label.name))
 
+        utc = pytz.utc
+        now = datetime.utcnow().replace(tzinfo=utc)
+        since = since.replace(tzinfo=utc) if since else None
+        until = until.replace(tzinfo=utc) if until else None
+
         data = self.collector.get_metrics_for(metric,
                                               valid_from=since,
                                               valid_to=until,
                                               interval=interval,
-                                              resource=resource, 
+                                              resource=resource,
                                               label=label,
                                               service=service)
         print(' since {} until {}\n'.format(data['input_valid_from'].strftime(TIMESTAMP_OUTPUT),

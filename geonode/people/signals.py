@@ -25,6 +25,11 @@ Some of these signals deal with authentication related workflows.
 
 import logging
 
+from uuid import uuid4
+
+from allauth.account.signals import user_signed_up
+from allauth.socialaccount.signals import social_account_added
+
 from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
@@ -48,8 +53,7 @@ def update_user_email_addresses(sender, **kwargs):
             EmailAddress.objects.add_email(
                 request=None, user=user, email=sociallogin_email, confirm=False)
         except IntegrityError:
-            logging.exception(msg="Could not add email address {!r } "
-                                  "to user {}".format(sociallogin_email, user))
+            logging.exception(msg="Could not add email address {} to user {}".format(sociallogin_email, user))
 
 
 def notify_admins_new_signup(sender, **kwargs):
@@ -59,3 +63,16 @@ def notify_admins_new_signup(sender, **kwargs):
         label="account_approve",
         extra_context={"from_user": kwargs["user"]}
     )
+
+
+""" Connect relevant signals to their corresponding handlers. """
+social_account_added.connect(
+    update_user_email_addresses,
+    dispatch_uid=str(uuid4()),
+    weak=False
+)
+user_signed_up.connect(
+    notify_admins_new_signup,
+    dispatch_uid=str(uuid4()),
+    weak=False
+)

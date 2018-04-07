@@ -24,7 +24,7 @@ from guardian.shortcuts import get_objects_for_user
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
 
-from geonode.security import models
+from geonode.security import utils
 
 
 class Command(BaseCommand):
@@ -42,7 +42,7 @@ class Command(BaseCommand):
             for index, layer in enumerate(layers):
                 print "[%s / %s] Setting default permissions to Layer [%s] ..." % ((index + 1), len(layers), layer.name)
                 try:
-                    models.set_geofence_all(layer)
+                    utils.set_geofence_all(layer)
                 except:
                     print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
 
@@ -52,13 +52,13 @@ class Command(BaseCommand):
                 print "[%s / %s] Setting owner permissions to Layer [%s] ..." \
                       % ((index + 1), len(protected_layers), layer.name)
                 try:
-                    perms = models.get_users_with_perms(layer)
+                    perms = utils.get_users_with_perms(layer)
                     for profile in perms.keys():
                         print " - [%s / %s]" % (str(profile), layer.name)
                         geofence_user = str(profile)
                         if "AnonymousUser" in geofence_user:
                             geofence_user = None
-                        models.set_geofence_owner(
+                        utils.set_geofence_owner(
                             layer, geofence_user,
                             view_perms=True,
                             download_perms=True

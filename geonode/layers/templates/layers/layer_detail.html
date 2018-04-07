@@ -5,9 +5,9 @@
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load pagination_tags %}
-{% load url from future %}
 {% load base_tags %}
 {% load guardian_tags %}
+{% load client_lib_tags %}
 
 {% block title %}{{ resource.title|default:resource.alternate }} — {{ block.super }}{% endblock %}
 
@@ -21,15 +21,7 @@
     {% include "base/_resourcebase_opengraph.html" %}
   {% endif %}
 
-  {% if preview == 'geoext' %}
-    {% include "layers/layer_geoext_map.html" %}
-  {% elif preview == 'OL3' %}
-    {% include "layers/layer_ol3_map.html" %}
-  {% elif preview == 'react' %}
-		{% include 'geonode-client/layer_map.html' %}
-  {% else %}
-    {% include "layers/layer_leaflet_map.html" %}
-  {% endif %}
+  {% get_layer_detail %}
 {{ block.super }}
 {% endblock %}
 
@@ -45,6 +37,7 @@
     </style>
 
     <h2 class="page-title">{{ resource.title|default:resource.alternate }}</h2>
+    {% if storeType == 'remoteStore' %}<em><i class="fa fa-power-off {% if online %}text-success{% else %}text-danger{% endif %}"></i> {% trans "Service is" %} {% if online %}{% trans "online" %}{% else %}{% trans "offline" %}{% endif %} </em>{% endif %}
 </div>
 
 <div class="row">
@@ -263,6 +256,11 @@
 
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
+        {% if link_geotiff_io %}
+        <li class="list-group-item">
+          <a href="{{link_geotiff_io}}" class="btn btn-primary btn-block" target="_blank">{% trans "Analyze with" %} GeoTIFF.io</a>
+        </li>
+        {% endif %}
         <li class="list-group-item">
         {% if links or links_download %}
            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
@@ -799,7 +797,13 @@
               $( "p" ).remove( "#missing-values" );
             }
             // validation that user enters a string for a string attribute or a number for a number attribute
-            single_value_input = ($('#single_value').select2('data').text).trim();
+            var single_value_input = '';
+            try {
+                single_value_input = ($('#single_value').select2('data').text).trim();
+            } catch (err) {
+                single_value_input = '';
+            }
+
             if (attribute_data_schema == 'yes' && attribute_data_type == 'string' && !isNaN(single_value_input) ){
               if($("#wrong-data-type").length !== 0) {
                 $('#wrong-data-type').empty();
@@ -827,7 +831,7 @@
 
               $("#added_rules").append( '<div class="input-group user-input-filters"><div class="input-group-btn" id="erase_query"><a href="#"  class="btn btn-primary btn-mg" data-toggle="modal" data-target="#myModal" title="" ><span class="glyphicon glyphicon-minus"></span></a></div><input type="text" class="form-control" id="' + input_id + '" placeholder="" data-toggle="tooltip" title="" value="' + input + '"readonly></br></div>');
               // push data to array
-              if (input != ''){
+              if (single_value_input != ''){
                   query.push(input);
               }
             }
@@ -888,7 +892,10 @@
               type: "POST",
               url: whole_url,
               data: { json_data: JSON.stringify({ layer_name: layer_name, filtered_attributes: filtered_attributes }) },
-              beforeSend: function(){
+              beforeSend: function (xhr) {
+              {% if request.user.is_authenticated and 'access_token' in request.session %}
+                xhr.setRequestHeader ("Authorization", "Bearer {{ request.session.access_token }}");
+              {% endif %}
                 $( ".loading_msg" ).show();
               },
               success: function(data) {
@@ -900,6 +907,7 @@
 
                   // functionality added for the autocomplete
                   property_name = $("#modal-button-attributes:first-child").text();
+
                   attribute_values = data['feature_properties'];
                   selected_data = attribute_values[$.trim(property_name)];
 

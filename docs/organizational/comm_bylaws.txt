@@ -43,4 +43,4 @@ Project Steering Committee
 
 In the event that a revision to these bylaws becomes necessary, authority for that decision lies with the currently presiding Project Steering Committee (PSC).  The PSC at any time is made up of the top 7 committers over the past 365 days, by number of commits.
 
-.. _GNIPS: https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals
+GNIPS: https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals
