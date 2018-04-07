@@ -23,6 +23,7 @@ import datetime
 import dj_database_url
 import gisdata
 import mock
+import logging
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -33,6 +34,8 @@ from geonode.layers.models import Layer
 from geonode.layers.utils import file_upload
 
 from .models import Database
+
+logger = logging.getLogger(__name__)
 
 """
 How to run the tests
@@ -99,7 +102,7 @@ class DatastoreShardsCoreTest(TestCase):
         owner = get_user_model().objects.get(username="bobby")
         layers_to_upload = ('layer_01', 'layer_02', 'layer_03', 'layer_04', 'layer_05')
         for layer in layers_to_upload:
-            print 'Uploading layer %s...' % layer
+            logger.debug('Uploading layer %s...' % layer)
             saved_layer = file_upload(
                 os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp'),
                 name=layer,
