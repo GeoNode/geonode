@@ -227,4 +227,3 @@ class PermissionLevelMixin(object):
                         assign_perm(perm, group, self.layer)
                     else:
                         assign_perm(perm, group, self.get_self_resource())
-
