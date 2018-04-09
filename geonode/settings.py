@@ -371,7 +371,7 @@ INSTALLED_APPS = (
     'announcements',
     'actstream',
     'user_messages',
-    # 'tastypie',
+    'tastypie',
     'polymorphic',
     'guardian',
     'oauth2_provider',
@@ -779,6 +779,23 @@ PYCSW = {
         #    'pretty_print': 'true',
         #    'federatedcatalogues': 'http://catalog.data.gov/csw'
         # },
+        'server': {
+            'home': '.',
+            'url': CATALOGUE['default']['URL'],
+            'encoding': 'UTF-8',
+            'language': LANGUAGE_CODE,
+            'maxrecords': '20',
+            'pretty_print': 'true',
+            # 'domainquerytype': 'range',
+            'domaincounts': 'true',
+            'profiles': 'apiso,ebrim',
+        },
+        'manager': {
+            # authentication/authorization is handled by Django
+            'transactions': 'false',
+            'allowed_ips': '*',
+            # 'csw_harvest_pagesize': '10',
+        },
         'metadata:main': {
             'identification_title': 'GeoNode Catalogue',
             'identification_abstract': 'GeoNode is an open source platform' \
