@@ -684,20 +684,14 @@ def layer_metadata(
     config["title"] = layer.title
     config["queryable"] = True
 
-    show_gazetteer_form = settings.USE_WORLDMAP
-    # TODO remove this hack before PR vs GeoNode
-    # hack needed to see if the layer is in Postgres (otherwise no gazetteer):
-    # all PostGIS stores starts with wm. There is also a dataverse postgres database
-    if layer.store[:2] != 'wm' and layer.store != 'dataverse':
-    	show_gazetteer_form = False
-
     if layer.storeType == "remoteStore":
-        service = layer.service
+        service = layer.remote_service
         source_params = {
             "ptype": service.ptype,
             "remote": True,
-            "url": service.base_url,
-            "name": service.name}
+            "url": service.service_url,
+            "name": service.name,
+            "title": "[R] %s" % service.title}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
@@ -737,6 +731,15 @@ def layer_metadata(
                 status=400)
 
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
+        if not layer_form.is_valid():
+            out = {
+                'success': False,
+                'errors': layer_form.errors
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
         attribute_form = layer_attribute_set(
             request.POST,
             instance=layer,
@@ -747,7 +750,6 @@ def layer_metadata(
         tkeywords_form = TKeywordForm(
             request.POST,
             prefix="tkeywords")
-
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
@@ -835,8 +837,6 @@ def layer_metadata(
             la.attribute_label = form["attribute_label"]
             la.visible = form["visible"]
             la.display_order = form["display_order"]
-            if settings.USE_WORLDMAP:
-                la.searchable = form["searchable"]
             la.save()
 
         if new_poc is not None or new_author is not None:
@@ -845,7 +845,7 @@ def layer_metadata(
             if new_author is not None:
                 layer.metadata_author = new_author
 
-        new_keywords = [x.strip() for x in layer_form.cleaned_data['keywords']]
+        new_keywords = layer_form.cleaned_data['keywords']
         if new_keywords is not None:
             layer.keywords.clear()
             layer.keywords.add(*new_keywords)
@@ -874,7 +874,7 @@ def layer_metadata(
                     build_slack_message_layer(
                         "layer_edit", the_layer))
             except BaseException:
-                print "Could not send slack message."
+                logger.error("Could not send slack message.")
 
         if not ajax:
             return HttpResponseRedirect(
@@ -923,17 +923,19 @@ def layer_metadata(
 
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
-            layer_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+            layer_form.fields['is_published'].widget.attrs.update(
+                {'disabled': 'true'})
 
             can_change_metadata = request.user.has_perm(
                 'change_resourcebase_metadata',
                 layer.get_self_resource())
             try:
                 is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except:
+            except BaseException:
                 is_manager = False
             if not is_manager or not can_change_metadata:
-                layer_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
+                layer_form.fields['is_approved'].widget.attrs.update(
+                    {'disabled': 'true'})
 
     if poc is not None:
         layer_form.fields['poc'].initial = poc.id
@@ -972,7 +974,7 @@ def layer_metadata(
             all_metadata_author_groups = chain(
                 request.user.group_list_all().distinct(),
                 GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
-        except:
+        except BaseException:
             all_metadata_author_groups = GroupProfile.objects.exclude(
                 access="private").exclude(access="public-invite")
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
