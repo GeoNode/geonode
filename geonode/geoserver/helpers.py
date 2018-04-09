@@ -600,8 +600,8 @@ def gs_slurp(
         the_store = resource.store
         workspace = the_store.workspace
         try:
-            layer, created = Layer.objects.get_or_create(name=name, defaults={
-                "workspace": workspace.name,
+            layer, created = Layer.objects.get_or_create(name=name, workspace=workspace.name, defaults={
+                # "workspace": workspace.name,
                 "store": the_store.name,
                 "storeType": the_store.resource_type,
                 "alternate": "%s:%s" % (workspace.name.encode('utf-8'), resource.name.encode('utf-8')),

@@ -550,6 +550,7 @@ def file_upload(filename,
             if not metadata_upload_form:
                 layer, created = Layer.objects.get_or_create(
                     name=valid_name,
+                    workspace=settings.DEFAULT_WORKSPACE,
                     defaults=defaults
                 )
             elif identifier:
