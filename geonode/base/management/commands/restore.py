@@ -33,9 +33,12 @@ from helpers import Config
 
 from distutils import dir_util
 from requests.auth import HTTPBasicAuth
-from optparse import make_option
 
-from geonode.utils import designals, resignals
+from geonode.utils import (designals,
+                           resignals,
+                           copy_tree,
+                           extract_archive,
+                           chmod_tree)
 
 from django.conf import settings
 from django.core.management import call_command
@@ -46,39 +49,46 @@ class Command(BaseCommand):
 
     help = 'Restore the GeoNode application data'
 
-    option_list = BaseCommand.option_list + Config.geoserver_option_list + (
-        Config.option,
-        make_option(
+    def add_arguments(self, parser):
+
+        # Named (optional) arguments
+        helpers.option(parser)
+
+        helpers.geoserver_option_list(parser)
+
+        parser.add_argument(
             '-i',
             '--ignore-errors',
             action='store_true',
             dest='ignore_errors',
             default=False,
-            help='Stop after any errors are encountered.'),
-        make_option(
+            help='Stop after any errors are encountered.')
+
+        parser.add_argument(
             '-f',
             '--force',
             action='store_true',
             dest='force_exec',
             default=False,
-            help='Forces the execution without asking for confirmation.'),
-        make_option(
+            help='Forces the execution without asking for confirmation.')
+
+        parser.add_argument(
             '--skip-geoserver',
             action='store_true',
             default=False,
-            help='Skips geoserver backup'),
-        make_option(
+            help='Skips geoserver backup')
+
+        parser.add_argument(
             '--backup-file',
             dest='backup_file',
-            type="string",
             default=None,
-            help='Backup archive containing GeoNode data to restore.'),
-        make_option(
+            help='Backup archive containing GeoNode data to restore.')
+
+        parser.add_argument(
             '--backup-dir',
             dest='backup_dir',
-            type="string",
             default=None,
-            help='Backup directory containing GeoNode data to restore.'))
+            help='Backup directory containing GeoNode data to restore.')
 
     def restore_geoserver_backup(self, settings, target_folder):
         """Restore GeoServer Catalog"""
@@ -175,7 +185,7 @@ class Command(BaseCommand):
                     gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
 
                 try:
-                    helpers.chmod_tree(gs_data_root)
+                    chmod_tree(gs_data_root)
                 except:
                     print 'Original GeoServer Data Dir "{}" must be writable by the current user. \
                         Do not forget to copy it first. It will be wiped-out by the Restore procedure!'.format(gs_data_root)
@@ -190,8 +200,8 @@ class Command(BaseCommand):
                 if not os.path.exists(gs_data_root):
                     os.makedirs(gs_data_root)
 
-                helpers.copy_tree(gs_data_folder, gs_data_root)
-                helpers.chmod_tree(gs_data_root)
+                copy_tree(gs_data_folder, gs_data_root)
+                chmod_tree(gs_data_root)
                 print "GeoServer Uploaded Data Restored to '"+gs_data_root+"'."
 
                 # Cleanup '$config.gs_data_dir/gwc-layers'
@@ -269,7 +279,7 @@ class Command(BaseCommand):
                     os.makedirs(restore_folder)
 
                 # Extract ZIP Archive to Target Folder
-                target_folder = helpers.unzip_file(backup_file, restore_folder)
+                target_folder = extract_archive(backup_file, restore_folder)
 
                 # Write Checks
                 media_root = settings.MEDIA_ROOT
@@ -285,18 +295,18 @@ class Command(BaseCommand):
 
                 try:
                     print("[Sanity Check] Full Write Access to '{}' ...".format(media_root))
-                    helpers.chmod_tree(media_root)
+                    chmod_tree(media_root)
                     print("[Sanity Check] Full Write Access to '{}' ...".format(static_root))
-                    helpers.chmod_tree(static_root)
+                    chmod_tree(static_root)
                     for static_files_folder in static_folders:
                         print("[Sanity Check] Full Write Access to '{}' ...".format(static_files_folder))
-                        helpers.chmod_tree(static_files_folder)
+                        chmod_tree(static_files_folder)
                     for template_files_folder in template_folders:
                         print("[Sanity Check] Full Write Access to '{}' ...".format(template_files_folder))
-                        helpers.chmod_tree(template_files_folder)
+                        chmod_tree(template_files_folder)
                     for locale_files_folder in locale_folders:
                         print("[Sanity Check] Full Write Access to '{}' ...".format(locale_files_folder))
-                        helpers.chmod_tree(locale_files_folder)
+                        chmod_tree(locale_files_folder)
                 except:
                     print("...Sanity Checks on Folder failed. Please make sure that the current user has full WRITE access to the above folders (and sub-folders or files).")
                     print("Reason:")
@@ -369,8 +379,8 @@ class Command(BaseCommand):
                 if not os.path.exists(media_root):
                     os.makedirs(media_root)
 
-                helpers.copy_tree(media_folder, media_root)
-                helpers.chmod_tree(media_root)
+                copy_tree(media_folder, media_root)
+                chmod_tree(media_root)
                 print "Media Files Restored into '"+media_root+"'."
 
                 # Restore Static Root
@@ -382,8 +392,8 @@ class Command(BaseCommand):
                 if not os.path.exists(static_root):
                     os.makedirs(static_root)
 
-                helpers.copy_tree(static_folder, static_root)
-                helpers.chmod_tree(static_root)
+                copy_tree(static_folder, static_root)
+                chmod_tree(static_root)
                 print "Static Root Restored into '"+static_root+"'."
 
                 # Restore Static Root
@@ -395,8 +405,8 @@ class Command(BaseCommand):
                 if not os.path.exists(static_root):
                     os.makedirs(static_root)
 
-                helpers.copy_tree(static_folder, static_root)
-                helpers.chmod_tree(static_root)
+                copy_tree(static_folder, static_root)
+                chmod_tree(static_root)
                 print "Static Root Restored into '"+static_root+"'."
 
                 # Restore Static Folders
@@ -409,10 +419,10 @@ class Command(BaseCommand):
                     if not os.path.exists(static_files_folder):
                         os.makedirs(static_files_folder)
 
-                    helpers.copy_tree(os.path.join(static_files_folders,
-                                                   os.path.basename(os.path.normpath(static_files_folder))),
-                                      static_files_folder)
-                    helpers.chmod_tree(static_files_folder)
+                    copy_tree(os.path.join(static_files_folders,
+                                           os.path.basename(os.path.normpath(static_files_folder))),
+                              static_files_folder)
+                    chmod_tree(static_files_folder)
                     print "Static Files Restored into '"+static_files_folder+"'."
 
                 # Restore Template Folders
@@ -425,10 +435,10 @@ class Command(BaseCommand):
                     if not os.path.exists(template_files_folder):
                         os.makedirs(template_files_folder)
 
-                    helpers.copy_tree(os.path.join(template_files_folders,
-                                                   os.path.basename(os.path.normpath(template_files_folder))),
-                                      template_files_folder)
-                    helpers.chmod_tree(template_files_folder)
+                    copy_tree(os.path.join(template_files_folders,
+                                           os.path.basename(os.path.normpath(template_files_folder))),
+                              template_files_folder)
+                    chmod_tree(template_files_folder)
                     print "Template Files Restored into '"+template_files_folder+"'."
 
                 # Restore Locale Folders
@@ -441,10 +451,10 @@ class Command(BaseCommand):
                     if not os.path.exists(locale_files_folder):
                         os.makedirs(locale_files_folder)
 
-                    helpers.copy_tree(os.path.join(locale_files_folders,
-                                                   os.path.basename(os.path.normpath(locale_files_folder))),
-                                      locale_files_folder)
-                    helpers.chmod_tree(locale_files_folder)
+                    copy_tree(os.path.join(locale_files_folders,
+                                           os.path.basename(os.path.normpath(locale_files_folder))),
+                              locale_files_folder)
+                    chmod_tree(locale_files_folder)
                     print "Locale Files Restored into '"+locale_files_folder+"'."
 
                 call_command('collectstatic', interactive=False)
