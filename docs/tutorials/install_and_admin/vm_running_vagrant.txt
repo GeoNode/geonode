@@ -4,7 +4,7 @@
 Running a VM with Vagrant
 =========================
 
-In this section you will find instructions on how to setup an Ubuntu 14.04 VM using
+In this section you will find instructions on how to setup an Ubuntu 16.04 VM using
 `Vagrant`_
 
 .. _Vagrant: https://www.vagrantup.com/
@@ -29,49 +29,62 @@ Open a terminal and type `vagrant version`. A message containing the installed
 version of Vagrant will be printed on the terminal
 ::
 
-    Installed Version: 1.7.2
-    Latest Version: 1.7.4
+    Installed Version: 2.0.2
+    Latest Version: 2.0.3
     ...
 
 Virtual Machine Setup
 =====================
 
 Now that Vagrant is installed let's create our Ubuntu Virtual Machine. Open the terminal
-and create a new folder called `vagrand`. enter the folder and run
+and create a new folder called `vagrand`. Within folder `vagrand` create a new file called `Vagrantfile` with following content.
+
 ::
 
-    vagrant init ubuntu/trusty32
+    Vagrant.configure(2) do |config|
 
-    A `Vagrantfile` has been placed in this directory. You are now
-    ready to `vagrant up` your first virtual environment! Please read
-    the comments in the Vagrantfile as well as documentation on
-    `vagrantup.com` for more information on using Vagrant.
+      config.vm.box = "ubuntu/xenial64"
+   
+      # To automatically configure a private network uncomment following line.
+      # config.vm.network "private_network", ip: "192.168.33.30"
+  
+      config.vm.provider "virtualbox" do |vb|
+      # Customize the amount of memory on the VM:
+         vb.memory = "4024"
+      end
+
+      # Port forwarding: If unneeded comment or remove following lines
+      config.vm.network "forwarded_port", guest: 80, host: 8001   
+      config.vm.network "forwarded_port", guest: 8000, host: 8000
+      config.vm.network "forwarded_port", guest: 8080, host: 8080
+
+    end
 
 
-This will create a configuration file called `Vagrantfile` containing the settings
-for the virtual machine, notably the `config.vm.box` variable set to "ubuntu/trusty32"
-will tell Vagrant the specific VM we want to run (Ubuntu 14.04 "Trusty Tahr", 32 bit version)
+This `Vagrantfile` containing the settings for the virtual machine, notably the `config.vm.box` variable set to "ubuntu/xenial64" will tell Vagrant the specific VM we want to run (Ubuntu 16.04 "Xenial Xerus", 64 bit version). Please take note of comments regarding private network setup, amount of memory and port forwarding within this file. Further visit official `vagrant documentation <https://www.vagrantup.com/docs>`_
+for more explanations on fine tuning your VM.
 
-To start the VM, run
+
+To finally start the VM, run
 ::
 
     vagrant up
 
-The first time you run the command it is going to take some since you do not have a
-locally available image of the VM. Vagrant will download the VM from the `Vagrant
-Could <https://vagrantcloud.com/>`_ to your local system.
+The first time you run the command it is going to take some time since you do not have a
+locally available image of the Ubuntu 16.04 VM. Vagrant will download the VM from the `Vagrant
+Cloud <https://vagrantcloud.com/>`_ to your local system.
 ::
 
     Bringing machine 'default' up with 'virtualbox' provider...
-    ==> default: Box 'ubuntu/trusty32' could not be found. Attempting to find and install...
+    ==> default: Box 'ubuntu/xenial64' could not be found. Attempting to find and install...
     default: Box Provider: virtualbox
     default: Box Version: >= 0
-    ==> default: Loading metadata for box 'ubuntu/trusty32'
-    default: URL: https://atlas.hashicorp.com/ubuntu/trusty32
-    ==> default: Adding box 'ubuntu/trusty32' (v20150928.0.0) for provider: virtualbox
-    default: Downloading: https://atlas.hashicorp.com/ubuntu/boxes/trusty32/versions/20150928.0.0/providers/virtualbox.b
-    ox
-    default: Progress: 3% (Rate: 489k/s, Estimated time remaining: 0:11:11)))
+    ==> default: Loading metadata for box 'ubuntu/xenial64'
+    default: URL: https://vagrantcloud.com/ubuntu/xenial64
+    ==> default: Adding box 'ubuntu/xenial64' (v20180406.0.0) for provider: virtualbox
+    default: Downloading:     
+    https://vagrantcloud.com/ubuntu/boxes/xenial64/versions/20180406.0.0/providers/virtualbox.box
+ 
 
 At the end of the download process Vagrant will start the VM.
 
@@ -87,4 +100,4 @@ To access the Virtual machine, run
     install MinGW or Cygwin or Git to obtain a command line SSH client. More information
     available `here <http://docs-v1.vagrantup.com/v1/docs/getting-started/ssh.html>`_
 
-You will be connected to the guest Virtual Machine over SSH as user `vagrant`.
+You will be connected to the guest Virtual Machine over SSH as user `vagrant`. Vagrant provides all files next to your Vagrantfile in a folder called `/vagrant` at your VM.
