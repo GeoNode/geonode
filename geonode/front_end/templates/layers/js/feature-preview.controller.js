@@ -5,9 +5,9 @@
         .module('LayerApp')
         .controller('FeaturePreviewController', FeaturePreviewController);
 
-    FeaturePreviewController.$inject = ['$scope','data', 'wfsConfig', '$modalInstance', 'uiGridConstants', 'AngularUiGridOptions', 'LayerService', '$modal', '$window', 'layerService', 'mapService','attributeGridService'];
+    FeaturePreviewController.$inject = ['$scope','data', 'wfsConfig', '$modalInstance', 'uiGridConstants', 'AngularUiGridOptions', 'LayerService', '$modal', '$window', 'layerService', 'mapService','attributeGridService', 'surfToastr'];
 
-    function FeaturePreviewController(scope,data, wfsConfig, $modalInstance, uiGridConstants, AngularUiGridOptions, LayerService, $modal, $window, layerService, mapService,attributeGridService) {
+    function FeaturePreviewController(scope,data, wfsConfig, $modalInstance, uiGridConstants, AngularUiGridOptions, LayerService, $modal, $window, layerService, mapService,attributeGridService, surfToastr) {
         var self = this;
 
         function initializeTabs() {
@@ -93,6 +93,8 @@
                 LayerService.createLayerByWfs(Object.assign({}, wfsConfig, {
                     typeNames: self.selectedTab.name
                 }, res)).then(function(res){
+                    surfToastr.success('Layer Created successfully', 'Success');
+                    
                     var layer_name = res.url.split('/').pop();
 
                     var layer = layerService.map({

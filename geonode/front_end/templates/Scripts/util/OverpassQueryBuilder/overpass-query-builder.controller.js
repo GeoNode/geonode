@@ -2,14 +2,15 @@
     appModule
         .controller('OverpassApiQueryBuilderController', OverpassApiQueryBuilderController);
 
-    OverpassApiQueryBuilderController.$inject = ['$scope', 'mapService', '$http', '$compile', 'BoxDrawTool', 'layerService', '$window', '$modal'];
+    OverpassApiQueryBuilderController.$inject = ['$scope', 'mapService', '$http', '$compile', 'BoxDrawTool', 'layerService', '$window', '$modal', 'surfToastr'];
 
-    function OverpassApiQueryBuilderController($scope, mapService, $http, $compile, BoxDrawTool, layerService, $window, $modal) {
+    function OverpassApiQueryBuilderController($scope, mapService, $http, $compile, BoxDrawTool, layerService, $window, $modal, surfToastr) {
         mapService.removeUserInteractions();
         mapService.removeEvents();
         var boxTool = new BoxDrawTool();
         var url = 'http://overpass-api.de/api/interpreter';
-        $scope.queryStr = "node({{bbox}});out;";
+        // $scope.queryStr = "node({{bbox}});out;";
+        $scope.queryStr = "";
         var vectorLayer;
         var boundingBox;
         var styles = {
@@ -145,6 +146,10 @@
         }
 
         $scope.executeQuery = function(query) {
+            if (mapService.getZoom() < 12){
+                surfToastr.warning('You need at least 12 zoom level to execute the query', 'Zoom level too high.')
+                return ;
+            }
             if (vectorLayer) {
                 mapService.removeVectorLayer(vectorLayer);
             }
@@ -181,6 +186,7 @@
                 var features = vectorLayer.getSource().getFeatures();
                 layerService.createLayerFromFeature(features, res)
                     .then(function(layer) {
+                        surfToastr.success('Layer Created successfully', 'Success');                        
                         if (vectorLayer) {
                             mapService.removeVectorLayer(vectorLayer);
                         }

@@ -8,7 +8,7 @@
     function LayerSaveController(layerService, $modalInstance, surfToastr, projectService) {
         var self = this;
         
-        self.title = 'untitled';
+        self.title = '';
         self.organizationId = null;
         self.categoryId = null;
 
