@@ -20,8 +20,6 @@
 
 import helpers
 
-from optparse import make_option
-
 from django.core.management.base import BaseCommand, CommandError
 
 from geonode.base.models import ResourceBase
@@ -36,31 +34,34 @@ class Command(BaseCommand):
 
     help = 'Migrate GeoNode VM Base URL'
 
-    option_list = BaseCommand.option_list + (
-        make_option(
+    def add_arguments(self, parser):
+
+        # Named (optional) arguments
+        parser.add_argument(
             '-i',
             '--ignore-errors',
             action='store_true',
             dest='ignore_errors',
             default=False,
-            help='Stop after any errors are encountered.'),
-        make_option(
+            help='Stop after any errors are encountered.')
+
+        parser.add_argument(
             '-f',
             '--force',
             action='store_true',
             dest='force_exec',
             default=False,
-            help='Forces the execution without asking for confirmation.'),
-        make_option(
+            help='Forces the execution without asking for confirmation.')
+
+        parser.add_argument(
             '--source-address',
             dest='source_address',
-            type="string",
-            help='Source Address (the one currently on DB e.g. http://192.168.1.23)'),
-        make_option(
+            help='Source Address (the one currently on DB e.g. http://192.168.1.23)')
+
+        parser.add_argument(
             '--target-address',
             dest='target_address',
-            type="string",
-            help='Target Address (the one to be changed e.g. http://my-public.geonode.org)'))
+            help='Target Address (the one to be changed e.g. http://my-public.geonode.org)')
 
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')

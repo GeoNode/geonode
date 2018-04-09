@@ -48,7 +48,7 @@ try:
 except ImportError:
     from paver.easy import pushd
 
-from geonode.settings import OGC_SERVER, INSTALLED_APPS
+from geonode.settings import OGC_SERVER, INSTALLED_APPS, ASYNC_SIGNALS
 
 assert sys.version_info >= (2, 6), \
     SystemError("GeoNode Build requires python 2.6 or better")
@@ -443,8 +443,6 @@ def start():
     """
     Start GeoNode (Django, GeoServer & Client)
     """
-    call_task('start_messaging')
-
     info("GeoNode is now available.")
 
 
@@ -453,6 +451,7 @@ def stop_django():
     """
     Stop the GeoNode Django application
     """
+    kill('python', 'celery')
     kill('python', 'runserver')
     kill('python', 'runmessaging')
 
@@ -541,6 +540,26 @@ def start_django():
     bind = options.get('bind', '0.0.0.0:8000')
     foreground = '' if options.get('foreground', False) else '&'
     sh('%s python manage.py runserver %s %s' % (settings, bind, foreground))
+
+    if ASYNC_SIGNALS:
+        celery_queues = [
+            "default",
+            "geonode",
+            "cleanup",
+            "update",
+            "email",
+            # Those queues are directly managed by messages.consumer
+            # "broadcast",
+            # "email.events",
+            # "all.geoserver",
+            # "geoserver.events",
+            # "geoserver.data",
+            # "geoserver.catalog",
+            # "notifications.events",
+            # "geonode.layer.viewer"
+        ]
+        sh('%s celery -A geonode worker -Q %s -B -E -l INFO %s' % (settings, ",".join(celery_queues),foreground))
+        sh('%s python manage.py runmessaging %s' % (settings, foreground))
 
 
 def start_messaging():
@@ -961,8 +980,8 @@ def publish():
 
     call_task('deb', options={
         'key': key,
-        'ppa': 'geonode/testing',
-        # 'ppa': 'geonode/unstable',
+        # 'ppa': 'geonode/testing',
+        'ppa': 'geonode/unstable',
     })
 
     version, simple_version = versions()

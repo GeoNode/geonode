@@ -242,11 +242,13 @@ def get_sld_for(gs_catalog, layer):
     # polygons, hope this doesn't happen for rasters  though)
     if layer.default_style is None:
         gs_catalog._cache.clear()
-        layer = gs_catalog.get_layer(layer.name)
-    name = layer.default_style.name if layer.default_style is not None else "raster"
+        gs_layer = gs_catalog.get_layer(layer.name)
+        name = gs_layer.default_style.name if gs_layer.default_style is not None else "raster"
+    else:
+        name = layer.default_style.name if layer.default_style is not None else "raster"
 
     # Detect geometry type if it is a FeatureType
-    if layer.resource.resource_type == 'featureType':
+    if layer.resource and layer.resource.resource_type == 'featureType':
         res = layer.resource
         res.fetch()
         ft = res.store.get_resources(res.name)
@@ -391,7 +393,7 @@ def cascading_delete(cat, layer_name):
                    'to save information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer_name)
                    )
-            logger.warn(msg, e)
+            logger.warn(msg)
             return None
         else:
             raise e
@@ -598,8 +600,8 @@ def gs_slurp(
         the_store = resource.store
         workspace = the_store.workspace
         try:
-            layer, created = Layer.objects.get_or_create(name=name, defaults={
-                "workspace": workspace.name,
+            layer, created = Layer.objects.get_or_create(name=name, workspace=workspace.name, defaults={
+                # "workspace": workspace.name,
                 "store": the_store.name,
                 "storeType": the_store.resource_type,
                 "alternate": "%s:%s" % (workspace.name.encode('utf-8'), resource.name.encode('utf-8')),
@@ -611,7 +613,7 @@ def gs_slurp(
                 "bbox_x1": Decimal(resource.native_bbox[1]),
                 "bbox_y0": Decimal(resource.native_bbox[2]),
                 "bbox_y1": Decimal(resource.native_bbox[3]),
-                "srid": resource.srid
+                "srid": resource.projection
             })
 
             # sync permissions in GeoFence
