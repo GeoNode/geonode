@@ -136,3 +136,8 @@ django-db-logger==0.1.6
 
 celery==4.1.0
 markdown==2.6.9
+geopandas
+
+# Do not remove below lines
+# pip install -e git+https://github.com/celery/billiard.git#egg=billiard
+# pip install -e git+https://github.com/celery/kombu.git#egg=kombu
