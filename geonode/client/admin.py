@@ -17,17 +17,21 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.apps import AppConfig as BaseAppConfig
-from django.utils.translation import ugettext_lazy as _
+
+from django.contrib import admin
+
+from .models import GeoNodeThemeCustomization
+from .forms import GeoNodeThemeCustomizationAdminForm
+from .admin_actions import (enable_theme,
+                            disable_theme,
+                            refresh_theme,)
 
 
-class AppConfig(BaseAppConfig):
-
-    name = "geonode.client"
-    label = "geonode_client"
-    verbose_name = _("GeoNode Client Library")
-
-    def ready(self):
-        """Connect relevant signals to their corresponding handlers"""
-        from .signals import (deactivate_theme_signal)  # noqa
-        super(AppConfig, self).ready()
+@admin.register(GeoNodeThemeCustomization)
+class GeoNodeThemeCustomizationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'is_enabled', 'name', 'date', 'description')
+    list_display_links = ('id', 'name',)
+    date_hierarchy = 'date'
+    readonly_fields = ('is_enabled',)
+    form = GeoNodeThemeCustomizationAdminForm
+    actions = [enable_theme, disable_theme, refresh_theme]
