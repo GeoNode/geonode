@@ -155,6 +155,7 @@ class WmsServiceHandlerTestCase(TestCase):
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         handler = wms.WmsServiceHandler(self.phony_url)
         self.assertNotEqual(handler.name, slugify(self.phony_title))
+        self.assertEqual("a-generic-title", slugify(self.phony_title))
 
     @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
                 autospec=True)

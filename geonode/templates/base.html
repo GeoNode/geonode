@@ -148,7 +148,7 @@
                     <li role="separator" class="divider"></li>
                     <li><a href="{% url "admin:index" %}">Admin</a></li>
                     {% if 'geonode.geoserver' in INSTALLED_APPS %}
-                    <li><a href="{% url "proxy" %}?url=/geoserver">GeoServer</a></li>
+                    <li><a href="{% url "proxy" %}?url={{ OGC_SERVER.default.LOCATION }}">GeoServer</a></li>
                     {% endif %}
                     {% if USE_MONITORING %}
                     <li role="separator" class="divider"></li>
@@ -247,7 +247,10 @@
             {% endif %}
           </ul>
         </div>
+
         <div class="col-md-6 text-right">
+          {% block contactus %}
+          {% endblock contactus %}
           <ul class="list-unstyled">
             <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em></li>
             <li><a href="{% url "developer" %}">{% trans "Developers" %}</a> | <a href="{% url "about" %}">{% trans "About" %}</a><li>

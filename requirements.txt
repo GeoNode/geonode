@@ -2,6 +2,7 @@ Django==1.8.19
 six==1.10.0
 amqp==2.2.2
 anyjson==0.3.3
+arcrest==10.3
 arrow==0.12.1
 attrs==17.4.0
 autoflake==0.7

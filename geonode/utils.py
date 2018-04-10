@@ -207,7 +207,7 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             return tuple([str(x) for x in poly.extent]) + ("EPSG:%s" % poly.srid,)
         except BaseException:
             tb = traceback.format_exc()
-            logger.error(tb)
+            logger.debug(tb)
 
     return native_bbox
 
@@ -407,18 +407,20 @@ class GXPMapBase(object):
 
         # adding remote services sources
         from geonode.services.models import Service
-        index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
-        for service in Service.objects.all():
-            remote_source = {
-                'url': service.service_url,
-                'remote': True,
-                'ptype': 'gxp_wmscsource',
-                'name': service.name,
-                'title': "[R] %s" % service.title
-            }
-            if remote_source['url'] not in source_urls:
-                index += 1
-                sources[index] = remote_source
+        from geonode.maps.models import Map
+        if not self.sender or isinstance(self.sender, Map):
+            index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
+            for service in Service.objects.all():
+                remote_source = {
+                    'url': service.service_url,
+                    'remote': True,
+                    'ptype': service.ptype,
+                    'name': service.name,
+                    'title': "[R] %s" % service.title
+                }
+                if remote_source['url'] not in source_urls:
+                    index += 1
+                    sources[index] = remote_source
 
         config = {
             'id': self.id,
@@ -459,9 +461,10 @@ class GXPMapBase(object):
 
 class GXPMap(GXPMapBase):
 
-    def __init__(self, projection=None, title=None, abstract=None,
+    def __init__(self, sender=None, projection=None, title=None, abstract=None,
                  center_x=None, center_y=None, zoom=None):
         self.id = 0
+        self.sender = sender
         self.projection = projection
         self.title = title or DEFAULT_TITLE
         self.abstract = abstract or DEFAULT_ABSTRACT
