@@ -18,10 +18,12 @@
 #
 #########################################################################
 from __future__ import print_function
+
 import os
 import logging
 import gzip
-import urllib
+import urllib2 as urllib
+import traceback
 
 from six import StringIO
 
@@ -29,7 +31,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.translation import ugettext_noop as _
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 URL = 'http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz'
 
@@ -51,12 +53,30 @@ class Command(BaseCommand):
         fname = options['file']
         fbase = '.'.join(os.path.basename(options['url']).split('.')[:-1])
         if not options['overwrite'] and os.path.exists(fname):
-            log.warning("File exists, won't overwrite %s", fname)
-            return 
-        log.info("Requesting %s", options['url'])
-        r = urllib.urlopen(options['url'])
-        data = StringIO(r.read())
-        with gzip.GzipFile(fileobj=data) as zfile:
-            log.info("Writing to %s", fname)
-            with open(fname, 'wb') as tofile:
-                tofile.write(zfile.read())
+            logger.warning("File exists, won't overwrite %s", fname)
+            return
+        logger.info("Requesting %s", options['url'])
+
+        r = urllib.urlopen(options['url'], timeout=10.0)
+        try:
+            data = StringIO(r.read())
+            with gzip.GzipFile(fileobj=data) as zfile:
+                logger.info("Writing to %s", fname)
+                try:
+                    os.remove(fname)
+                except OSError:
+                    logger.debug('Could not delete file %s' % fname)
+                with open(fname, 'wb') as tofile:
+                    try:
+                        tofile.write(zfile.read())
+                    except:
+                        tb = traceback.format_exc()
+                        logger.error(tb)
+
+                        try:
+                            os.remove(fname)
+                        except OSError:
+                            logger.debug('Could not delete file %s' % fname)
+        except:
+            tb = traceback.format_exc()
+            logger.error(tb)

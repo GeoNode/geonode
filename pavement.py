@@ -817,6 +817,8 @@ def test_integration(options):
 
 
 @task
+@needs(['start_geoserver',
+        'start_qgis_server'])
 @cmdopts([
     ('coverage', 'c', 'use this flag to generate coverage during test runs'),
     ('local=', 'l', 'Set to True if running bdd tests locally')
