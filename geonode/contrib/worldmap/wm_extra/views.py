@@ -783,7 +783,7 @@ def get_layer_attributes(layer):
         if hasattr(la, 'extlayerattribute'):
             searchable = la.extlayerattribute.searchable
         attribute_fields.append({"id": la.attribute,
-                                 "header": la.attribute_label,
+                                 "header": la.attribute,
                                  "searchable" : searchable
                                 })
     return attribute_fields
@@ -940,7 +940,7 @@ def snapshot_config(snapshot, map_obj, user, access_token):
                 access_token) for l in maplayers]
     else:
         config = map_obj.viewer_json(user, access_token)
-    print config
+
     return config
 
 
