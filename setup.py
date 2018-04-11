@@ -25,7 +25,7 @@ from setuptools import find_packages
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
-    shapely_dep = "Shapely==1.5.17"
+    shapely_dep = "Shapely<1.5.13"
 else:
     shapely_dep = "Shapely>=1.5.17,<1.6.dev0"
 
