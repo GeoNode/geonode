@@ -29,7 +29,7 @@ GeoExplorer
 
 GeoExplorer_ is a web application, based on the GeoExt_ framework, for composing and publishing web maps with OGC and other web based GIS Services. GeoExplorer is used inside GeoNode to provide many of the GIS and cartography functions that are a core part of the application. 
 
-.. _GeoExplorer: http://suite.opengeo.org/opengeo-docs/geoexplorer/
+.. _GeoExplorer: https://github.com/GeoNode/geoexplorer
 .. _GeoExt: http://geoext.org/
 
 PostgreSQL and PostGIS
