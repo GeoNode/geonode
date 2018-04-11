@@ -1,2 +1,1 @@
-requirements_file:
-  requirements_docs.txt
+requirements_file: ./requirements_docs.txt
