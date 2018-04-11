@@ -7,6 +7,7 @@ import geonode.security.models
 import datetime
 from django.conf import settings
 import taggit.managers
+from django.utils.timezone import now
 
 
 class Migration(migrations.Migration):
@@ -79,7 +80,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('uuid', models.CharField(max_length=36)),
                 ('title', models.CharField(help_text='name by which the cited resource is known', max_length=255, verbose_name='title')),
-                ('date', models.DateTimeField(default=datetime.datetime.now, help_text='reference date for the cited resource', verbose_name='date')),
+                ('date', models.DateTimeField(default=now, help_text='reference date for the cited resource', verbose_name='date')),
                 ('date_type', models.CharField(default=b'publication', help_text='identification of when a given event occurred', max_length=255, verbose_name='date type', choices=[(b'creation', 'Creation'), (b'publication', 'Publication'), (b'revision', 'Revision')])),
                 ('edition', models.CharField(help_text='version of the cited resource', max_length=255, null=True, verbose_name='edition', blank=True)),
                 ('abstract', models.TextField(help_text='brief narrative summary of the content of the resource(s)', verbose_name='abstract', blank=True)),

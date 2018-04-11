@@ -25,6 +25,7 @@ from datetime import timedelta
 from django.core.serializers import serialize
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils import timezone
 from django.conf import settings
 from geonode.layers.models import Layer
 from geonode.base.models import TopicCategory
@@ -108,6 +109,8 @@ def create_fixtures():
             ]
 
     user_data = [
+            ('bobby', 'bob', 'bobby', ''),
+            ('norman', 'norman', 'norman', ''),
             ('user1', 'pass', 'uniquefirst', 'foo'),
             ('user2', 'pass', 'foo', 'uniquelast'),
             ('unique_username', 'pass', 'foo', 'uniquelast'),
@@ -119,7 +122,7 @@ def create_fixtures():
             ('this contains all my interesting profile information',),
             ('some other information goes here',),
             ]
-    now = datetime.now()
+    now = datetime.now(timezone.get_current_timezone())
     step = timedelta(days=60)
 
     def get_test_date():
@@ -173,6 +176,7 @@ def create_models(type=None):
         user_name, password, first_name, last_name = ud
         u, created = get_user_model().objects.get_or_create(username=user_name)
         if created:
+            u.set_password(password)
             u.first_name = first_name
             u.last_name = last_name
             u.save()
@@ -181,6 +185,7 @@ def create_models(type=None):
 
     get_user_model().objects.get(username='AnonymousUser').groups.add(anonymous_group)
 
+    obj_ids = []
     if not type or type == 'map':
         for md, user in zip(map_data, cycle(users)):
             title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = md
@@ -199,6 +204,7 @@ def create_models(type=None):
                     category=category,
                     )
             m.save()
+            obj_ids.append(m.id)
             for kw in kws:
                 m.keywords.add(kw)
                 m.save()
@@ -217,6 +223,7 @@ def create_models(type=None):
                          category=category,
                          doc_file=f)
             m.save()
+            obj_ids.append(m.id)
             for kw in kws:
                 m.keywords.add(kw)
                 m.save()
@@ -243,9 +250,43 @@ def create_models(type=None):
                       category=category,
                       )
             l.save()
+            obj_ids.append(l.id)
             for kw in kws:
                 l.keywords.add(kw)
                 l.save()
+    return obj_ids
+
+
+def remove_models(obj_ids, type=None):
+    if not type:
+        remove_models(None, type='map')
+        remove_models(None, type='layer')
+        remove_models(None, type='document')
+
+    if type == 'map':
+        m_ids = obj_ids or [m.id for m in Map.objects.all()]
+        for id in m_ids:
+            try:
+                m = Map.objects.get(pk=id)
+                m.delete()
+            except:
+                pass
+    elif type == 'layer':
+        l_ids = obj_ids or [l.id for l in Layer.objects.all()]
+        for id in l_ids:
+            try:
+                l = Layer.objects.get(pk=id)
+                l.delete()
+            except:
+                pass
+    elif type == 'document':
+        d_ids = obj_ids or [d.id for d in Document.objects.all()]
+        for id in d_ids:
+            try:
+                d = Document.objects.get(pk=id)
+                d.delete()
+            except:
+                pass
 
 
 def dump_models(path=None):

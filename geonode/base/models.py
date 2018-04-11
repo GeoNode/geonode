@@ -36,6 +36,7 @@ from urlparse import urljoin, urlsplit
 from django.db import models
 from django.core import serializers
 from django.db.models import Q, signals
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -47,6 +48,7 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
 from django.contrib.gis.geos import GEOSGeometry
+from django.utils.timezone import now
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -550,7 +552,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     alternate = models.CharField(max_length=128, null=True, blank=True)
     date = models.DateTimeField(
         _('date'),
-        default=datetime.datetime.now,
+        default=now,
         help_text=date_help_text)
     date_type = models.CharField(
         _('date type'),
@@ -761,6 +763,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def __unicode__(self):
         return self.title
+
+    def get_upload_session(self):
+        raise NotImplementedError()
 
     @property
     def group_name(self):
@@ -1205,7 +1210,7 @@ class LinkManager(models.Manager):
         return self.get_queryset().filter(link_type='image')
 
     def download(self):
-        return self.get_queryset().filter(link_type__in=['image', 'data'])
+        return self.get_queryset().filter(link_type__in=['image', 'data', 'original'])
 
     def metadata(self):
         return self.get_queryset().filter(link_type='metadata')
@@ -1280,7 +1285,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
         ResourceBase.objects.filter(id=instance.id).update(
             thumbnail_url=instance.get_thumbnail_url(),
             detail_url=instance.get_absolute_url(),
-            csw_insert_date=datetime.datetime.now(),
+            csw_insert_date=now(),
             license=instance.license)
         instance.refresh_from_db()
     except BaseException:
@@ -1374,7 +1379,7 @@ def do_login(sender, user, request, **kwargs):
             AccessToken.objects.get_or_create(
                 user=user,
                 application=app,
-                expires=datetime.datetime.now() +
+                expires=datetime.datetime.now(timezone.get_current_timezone()) +
                 datetime.timedelta(
                     days=1),
                 token=token)

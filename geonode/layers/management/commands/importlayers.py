@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from django.utils import timezone
 from django.core.management.base import BaseCommand
 from geonode.layers.utils import upload
 from geonode.people.utils import get_valid_user
@@ -189,7 +190,7 @@ class Command(BaseCommand):
             regions = []
         else:
             regions = map(str.strip, regions)
-        start = datetime.datetime.now()
+        start = datetime.datetime.now(timezone.get_current_timezone())
         output = []
 
         for path in options['path']:
@@ -223,7 +224,7 @@ class Command(BaseCommand):
         failed = [dict_['file']
                   for dict_ in output if dict_['status'] == 'failed']
 
-        finish = datetime.datetime.now()
+        finish = datetime.datetime.now(timezone.get_current_timezone())
         td = finish - start
         duration = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
         duration_rounded = round(duration, 2)

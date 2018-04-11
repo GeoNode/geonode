@@ -69,13 +69,13 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
     )
 
     default_style = models.ForeignKey(
-        'QGISServerStyle',
+        'geonode_qgisserver.QGISServerStyle',
         related_name='layer_default_style',
         default=None,
         null=True,
         on_delete=models.SET_NULL)
     styles = models.ManyToManyField(
-        'QGISServerStyle',
+        'geonode_qgisserver.QGISServerStyle',
         related_name='layer_styles')
 
     @property
@@ -184,6 +184,9 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
             return self.layer.get_self_resource()
         except:
             return None
+
+    class Meta:
+        app_label = "geonode_qgisserver"
 
 
 class QGISServerStyle(models.Model, PermissionLevelMixin):
@@ -315,6 +318,9 @@ class QGISServerStyle(models.Model, PermissionLevelMixin):
         except:
             return None
 
+    class Meta:
+        app_label = "geonode_qgisserver"
+
 
 class QGISServerMap(models.Model, PermissionLevelMixin):
     """Model wrapper for QGIS Server Map."""
@@ -373,6 +379,9 @@ class QGISServerMap(models.Model, PermissionLevelMixin):
             return self.layer.get_self_resource()
         except:
             return None
+
+    class Meta:
+        app_label = "geonode.qgis_server"
 
 
 from geonode.qgis_server.signals import \

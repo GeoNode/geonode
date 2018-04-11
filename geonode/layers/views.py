@@ -28,6 +28,7 @@ import uuid
 import decimal
 import re
 
+from django.db.models import Q
 from celery.exceptions import TimeoutError
 
 from django.contrib.gis.geos import GEOSGeometry
@@ -560,10 +561,12 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
-            name__in=settings.DOWNLOAD_FORMATS_VECTOR)
+            Q(name__in=settings.DOWNLOAD_FORMATS_VECTOR) |
+            Q(link_type='original'))
     else:
         links = layer.link_set.download().filter(
-            name__in=settings.DOWNLOAD_FORMATS_RASTER)
+            Q(name__in=settings.DOWNLOAD_FORMATS_RASTER) |
+            Q(link_type='original'))
     links_view = [item for idx, item in enumerate(links) if
                   item.url and 'wms' in item.url or 'gwc' in item.url]
     links_download = [item for idx, item in enumerate(

@@ -68,7 +68,7 @@ else:
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
-os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
+DJANGO_LIVE_TEST_SERVER_ADDRESS = 'localhost:8000'
 
 try:
     # try to parse python notation, default in dockerized env
@@ -127,10 +127,11 @@ MANAGERS = ADMINS = os.getenv('ADMINS', [])
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = os.getenv('TIME_ZONE', "America/Chicago")
+TIME_ZONE = os.getenv('TIME_ZONE', "UTC")
 
 SITE_ID = int(os.getenv('SITE_ID', '1'))
 
+USE_TZ = True
 USE_I18N = strtobool(os.getenv('USE_I18N', 'True'))
 USE_L10N = strtobool(os.getenv('USE_I18N', 'True'))
 
@@ -406,15 +407,6 @@ if UNOCONV_ENABLE:
     UNOCONV_EXECUTABLE = os.getenv('UNOCONV_EXECUTABLE', '/usr/bin/unoconv')
     UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
 
-MONITORING_ENABLED = False
-
-# how long monitoring data should be stored
-MONITORING_DATA_TTL = timedelta(days=7)
-
-# this will disable csrf check for notification config views,
-# use with caution - for dev purpose only
-MONITORING_DISABLE_CSRF = False
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -439,7 +431,7 @@ LOGGING = {
             'formatter': 'simple'
         },
         'celery': {
-            'level': 'INFO',
+            'level': 'ERROR',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': 'celery.log',
             'formatter': 'simple',
@@ -465,7 +457,7 @@ LOGGING = {
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
         "celery": {
-            'handlers': ['celery', 'console'], 'level': 'INFO', },
+            'handlers': ['celery', 'console'], 'level': 'ERROR', },
     },
 }
 
@@ -481,7 +473,7 @@ TEMPLATES = [
         'DIRS': [os.path.join(PROJECT_ROOT, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': [
+            'context_processors': (
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.tz',
@@ -499,7 +491,12 @@ TEMPLATES = [
                 # 'django.core.context_processors.request',
                 'geonode.context_processors.resource_urls',
                 'geonode.geoserver.context_processors.geoserver_urls',
-            ],
+            ),
+            # Either remove APP_DIRS or remove the 'loaders' option.
+            # 'loaders': (
+            #      'django.template.loaders.filesystem.Loader',
+            #      'django.template.loaders.app_directories.Loader',
+            # ),
             'debug': DEBUG,
         },
     },
@@ -1400,6 +1397,17 @@ RISKS = {'DEFAULT_LOCATION': None,
 ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
+MONITORING_ENABLED = True
+MONITORING_HOST_NAME = 'localhost'
+MONITORING_SERVICE_NAME = 'geonode'
+
+# how long monitoring data should be stored
+MONITORING_DATA_TTL = timedelta(days=7)
+
+# this will disable csrf check for notification config views,
+# use with caution - for dev purpose only
+MONITORING_DISABLE_CSRF = False
+
 if MONITORING_ENABLED:
     if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
         INSTALLED_APPS += ('geonode.contrib.monitoring',)

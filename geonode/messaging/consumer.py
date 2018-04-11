@@ -98,7 +98,7 @@ class Consumer(ConsumerMixin):
         try:
             layer = _wait_for_layer(layer_id)
         except Layer.DoesNotExist as err:
-            logger.exception(err)
+            logger.debug(err)
             return
         geoserver_post_save_local(layer)
         # Not sure if we need to send ack on this fanout version.

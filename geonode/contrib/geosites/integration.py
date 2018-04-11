@@ -18,11 +18,12 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import os
 import gisdata
 from xml.dom import minidom
 
-from django.test import TestCase
 from django.test.utils import override_settings
 from django.core.management import call_command
 from django.contrib.sites.models import Site
@@ -36,9 +37,7 @@ from .models import SiteResources
 
 @override_settings(SITE_NAME='Slave')
 @override_settings(SITE_ID=2)
-class SiteGeoserverTests(TestCase):
-
-    fixtures = ['bobby']
+class SiteGeoserverTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(SiteGeoserverTests, self).setUp()

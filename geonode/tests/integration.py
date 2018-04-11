@@ -38,12 +38,11 @@ from urlparse import urljoin
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management import call_command
-from django.test import LiveServerTestCase as TestCase
+from django.test.testcases import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.auth import get_user_model
 # from guardian.shortcuts import assign_perm
-from django.test.testcases import LiveServerTestCase
 from geonode.base.populate_test_data import reconnect_signals, all_public
 from tastypie.test import ResourceTestCaseMixin
 
@@ -140,11 +139,13 @@ $ geonode createsuperuser
 """
 
 
-class GeoNodeCoreTest(TestCase):
+class GeoNodeCoreTest(LiveServerTestCase):
 
     """Tests geonode.security app/module
     """
 
+    port = 8000
+
     def setUp(self):
         User = get_user_model()
         u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
@@ -157,11 +158,13 @@ class GeoNodeCoreTest(TestCase):
         Document.objects.all().delete()
 
 
-class GeoNodeProxyTest(TestCase):
+class GeoNodeProxyTest(LiveServerTestCase):
 
     """Tests geonode.proxy app/module
     """
 
+    port = 8000
+
     def setUp(self):
         User = get_user_model()
         u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
@@ -174,11 +177,13 @@ class GeoNodeProxyTest(TestCase):
         Document.objects.all().delete()
 
 
-class NormalUserTest(TestCase):
+class NormalUserTest(LiveServerTestCase):
 
     """
     Tests GeoNode functionality for non-administrative users
     """
+
+    port = 8000
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
@@ -221,10 +226,12 @@ class NormalUserTest(TestCase):
             saved_layer.delete()
 
 
-class GeoNodeMapTest(TestCase):
+class GeoNodeMapTest(LiveServerTestCase):
 
     """Tests geonode.maps app/module
     """
+
+    port = 8000
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
@@ -1050,9 +1057,11 @@ class GeoNodeMapTest(TestCase):
             lyr.delete()
 
 
-class GeoNodePermissionsTest(TestCase):
+class GeoNodePermissionsTest(LiveServerTestCase):
     """Tests GeoNode permissions and its integration with GeoServer
     """
+
+    port = 8000
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
@@ -1246,10 +1255,12 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
                 layer.delete()
 
 
-class GeoNodeThumbnailTest(TestCase):
+class GeoNodeThumbnailTest(LiveServerTestCase):
 
     """Tests thumbnails behavior for layers and maps.
     """
+
+    port = 8000
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
@@ -1318,10 +1329,12 @@ class GeoNodeThumbnailTest(TestCase):
             saved_layer.delete()
 
 
-class GeoNodeMapPrintTest(TestCase):
+class GeoNodeMapPrintTest(LiveServerTestCase):
 
     """Tests geonode.maps print
     """
+
+    port = 8000
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
@@ -1421,10 +1434,12 @@ class GeoNodeMapPrintTest(TestCase):
             pass
 
 
-class GeoNodeGeoServerSync(TestCase):
+class GeoNodeGeoServerSync(LiveServerTestCase):
 
     """Tests GeoNode/GeoServer syncronization
     """
+
+    port = 8000
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
@@ -1474,10 +1489,12 @@ class GeoNodeGeoServerSync(TestCase):
             layer.delete()
 
 
-class GeoNodeGeoServerCapabilities(TestCase):
+class GeoNodeGeoServerCapabilities(LiveServerTestCase):
 
     """Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
     """
+
+    port = 8000
 
     def setUp(self):
         call_command('loaddata', 'initial_data', verbosity=0)
@@ -1596,6 +1613,7 @@ class LayersStylesApiInteractionTests(
 
     """Test Layers"""
 
+    port = 8000
     fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
@@ -1855,9 +1873,11 @@ class LayersStylesApiInteractionTests(
         self.assertEqual(meta['total_count'], 0)
 
 
-class GeoTIFFIOTest(TestCase):
+class GeoTIFFIOTest(LiveServerTestCase):
 
     "Tests integration of geotiff.io"
+
+    port = 8000
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)

@@ -48,6 +48,24 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_BASE_TEMPLATE = "base.html"
+DEFAULT_GEONODE_BASE_TEMPLATE = "geonode_base.html"
+
+
+def get_template_loaders():
+    try:
+        return settings.TEMPLATE_LOADERS
+    except:
+        try:
+            return settings.TEMPLATES[0]["OPTIONS"]["loaders"]
+        except:
+            try:
+                from django.template.loader import get_template
+                return [get_template(DEFAULT_BASE_TEMPLATE).origin.loader,
+                        get_template(DEFAULT_GEONODE_BASE_TEMPLATE).origin.loader, ]
+            except:
+                return None
+
 
 def find_all_templates(pattern='*.html'):
     """
@@ -57,29 +75,46 @@ def find_all_templates(pattern='*.html'):
     .. important:: At the moment egg loader is not supported.
     """
     templates = []
-    template_loaders = flatten_template_loaders(settings.TEMPLATE_LOADERS)
-    for loader_name in template_loaders:
-        module, klass = loader_name.rsplit('.', 1)
-        if loader_name in (
-            'django.template.loaders.app_directories.Loader',
-            'django.template.loaders.filesystem.Loader',
-        ):
-            loader_class = getattr(import_module(module), klass)
-            if getattr(loader_class, '_accepts_engine_in_init', False):
-                loader = loader_class(Engine.get_default())
+    template_loaders = flatten_template_loaders(get_template_loaders())
+    if template_loaders:
+        for loader_name in template_loaders:
+            module, klass = loader_name.rsplit('.', 1)
+            if loader_name in (
+                'django.template.loaders.app_directories.Loader',
+                'django.template.loaders.filesystem.Loader',
+            ):
+                loader_class = getattr(import_module(module), klass)
+                try:
+                    loader = loader_class(Engine.get_default())
+                except:
+                    loader = loader_class()
+                for dir in loader.get_template_sources(''):
+                    dir = "%s" % dir
+                    for root, dirnames, filenames in os.walk(dir):
+                        for basename in filenames:
+                            filename = os.path.join(root, basename)
+                            rel_filename = filename[len(dir) + 1:]
+                            if fnmatch.fnmatch(filename, pattern) or \
+                               fnmatch.fnmatch(basename, pattern) or \
+                               fnmatch.fnmatch(rel_filename, pattern):
+                                templates.append(filename)
             else:
-                loader = loader_class()
-            for dir in loader.get_template_sources(''):
-                for root, dirnames, filenames in os.walk(dir):
-                    for basename in filenames:
-                        filename = os.path.join(root, basename)
-                        rel_filename = filename[len(dir) + 1:]
-                        if fnmatch.fnmatch(filename, pattern) or \
-                           fnmatch.fnmatch(basename, pattern) or \
-                           fnmatch.fnmatch(rel_filename, pattern):
-                            templates.append(filename)
-        else:
-            logger.debug('{0!s} is not supported'.format(loader_name))
+                logger.debug('{0!s} is not supported'.format(loader_name))
+    else:
+        try:
+            from django.template.loader import engines
+            for engine in engines.all():
+                for dir in engine.dirs:
+                    for root, dirnames, filenames in os.walk(dir):
+                        for basename in filenames:
+                            filename = os.path.join(root, basename)
+                            rel_filename = filename[len(dir) + 1:]
+                            if fnmatch.fnmatch(filename, pattern) or \
+                               fnmatch.fnmatch(basename, pattern) or \
+                               fnmatch.fnmatch(rel_filename, pattern):
+                                templates.append(filename)
+        except:
+            pass
     return sorted(set(templates))
 
 
@@ -90,12 +125,17 @@ def flatten_template_loaders(templates):
     :return: template loaders as an iterable of strings.
     :rtype: generator expression
     """
-    for template_loader in templates:
-        if not isinstance(template_loader, string_types):
-            for subloader in flatten_template_loaders(template_loader):
-                yield subloader
-        else:
-            yield template_loader
+    if templates:
+        for template_loader in templates:
+            if not isinstance(template_loader, string_types):
+                import collections
+                if isinstance(template_loader, collections.Iterable):
+                    for subloader in flatten_template_loaders(template_loader):
+                        yield subloader
+                else:
+                    yield "%s.%s" % (template_loader.__class__.__module__, template_loader.__class__.__name__)
+            else:
+                yield template_loader
 
 
 theme_css_template = '@import "./{}.css";\n'

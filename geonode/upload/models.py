@@ -25,6 +25,7 @@ from datetime import datetime
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 from geonode.layers.models import Layer
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 from gsimporter import NotFound
@@ -90,7 +91,7 @@ class Upload(models.Model):
 
     def update_from_session(self, upload_session):
         self.state = upload_session.import_session.state
-        self.date = datetime.now()
+        self.date = datetime.now(timezone.get_current_timezone())
         if "COMPLETE" == self.state:
             self.complete = True
             self.session = None

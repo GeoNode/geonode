@@ -53,7 +53,7 @@ setup(name='GeoNode',
             "Pillow<=3.3.1",  # python-imaging (3.1.2) - python-pillow (3.3.1 in our ppa)
             "lxml<=3.8.0",  # python-lxml (3.6.2 in our ppa) FIXME
             "psycopg2<=2.7.3.1",  # python-psycopg2 (2.7.3.1 in our ppa)
-            "Django<=1.8.19",  # python-django (1.8.19 in our ppa)
+            "Django==1.11.11",  # python-django (1.8.19 in our ppa) FIXME
 
             # Other
             "amqp==2.2.2",  # (python-amqp 2.2.2 in our ppa)
@@ -149,7 +149,7 @@ setup(name='GeoNode',
 
             # GeoNode org maintained apps.
             "django-geoexplorer>=4.0.0,<5.0",  # python-django-geoexplorer (4.0.39 in our ppa)
-            "geonode-user-messages<=0.1.13",  # python-geonode-user-messages (0.1.13 in our ppa)
+            "geonode-user-messages==0.1.14",  # python-geonode-user-messages (0.1.14 in our ppa) FIXME
             "geonode-avatar<=2.1.7",  # python-geonode-avatar (2.1.7 in our ppa)
             "geonode-announcements<=1.0.13",  # python-geonode-announcements (1.0.13 in our ppa)
             "geonode-agon-ratings<=0.3.8",  # python-geonode-agon-ratings (0.3.8 in our ppa)

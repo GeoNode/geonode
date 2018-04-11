@@ -326,8 +326,8 @@ def upgradedb(options):
     """
     version = options.get('version')
     if version in ['1.1', '1.2']:
-        sh("python manage.py migrate maps 0001 --fake")
-        sh("python manage.py migrate avatar 0001 --fake")
+        sh("python -W ignore manage.py migrate maps 0001 --fake")
+        sh("python -W ignore manage.py migrate avatar 0001 --fake")
     elif version is None:
         print "Please specify your GeoNode version"
     else:
@@ -343,7 +343,7 @@ def updategeoip(options):
     if settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
-    sh("%s python manage.py updategeoip -o" % settings)
+    sh("%s python -W ignore manage.py updategeoip -o" % settings)
 
 
 @task
@@ -358,12 +358,12 @@ def sync(options):
     if settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
-    sh("%s python manage.py makemigrations --noinput" % settings)
-    sh("%s python manage.py migrate --noinput" % settings)
-    sh("%s python manage.py loaddata sample_admin.json" % settings)
-    sh("%s python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" % settings)
-    sh("%s python manage.py loaddata geonode/base/fixtures/initial_data.json" % settings)
-    sh("%s python manage.py set_all_layers_alternate" % settings)
+    sh("%s python -W ignore manage.py makemigrations --noinput" % settings)
+    sh("%s python -W ignore manage.py migrate --noinput" % settings)
+    sh("%s python -W ignore manage.py loaddata sample_admin.json" % settings)
+    sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" % settings)
+    sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" % settings)
+    sh("%s python -W ignore manage.py set_all_layers_alternate" % settings)
 
 
 @task
@@ -539,7 +539,7 @@ def start_django():
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     bind = options.get('bind', '0.0.0.0:8000')
     foreground = '' if options.get('foreground', False) else '&'
-    sh('%s python manage.py runserver %s %s' % (settings, bind, foreground))
+    sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
 
     if ASYNC_SIGNALS:
         celery_queues = [
@@ -559,7 +559,7 @@ def start_django():
             # "geonode.layer.viewer"
         ]
         sh('%s celery -A geonode worker -Q %s -B -E -l INFO %s' % (settings, ",".join(celery_queues),foreground))
-        sh('%s python manage.py runmessaging %s' % (settings, foreground))
+        sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
 
 
 def start_messaging():
@@ -570,7 +570,7 @@ def start_messaging():
     if settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     foreground = '' if options.get('foreground', False) else '&'
-    sh('%s python manage.py runmessaging %s' % (settings, foreground))
+    sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
 
 
 @cmdopts([
@@ -783,24 +783,24 @@ def test_integration(options):
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings if settings else ''
 
         if name == 'geonode.upload.tests.integration':
-            sh("%s python manage.py makemigrations --noinput" % settings)
-            sh("%s python manage.py migrate --noinput" % settings)
-            sh("%s python manage.py loaddata sample_admin.json" % settings)
-            sh("%s python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" %
+            sh("%s python -W ignore manage.py makemigrations --noinput" % settings)
+            sh("%s python -W ignore manage.py migrate --noinput" % settings)
+            sh("%s python -W ignore manage.py loaddata sample_admin.json" % settings)
+            sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" %
                settings)
-            sh("%s python manage.py loaddata geonode/base/fixtures/initial_data.json" %
+            sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" %
                settings)
             call_task('start_geoserver')
             bind = options.get('bind', '0.0.0.0:8000')
             foreground = '' if options.get('foreground', False) else '&'
-            sh('%s python manage.py runmessaging %s' % (settings, foreground))
-            sh('%s python manage.py runserver %s %s' %
+            sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
+            sh('%s python -W ignore manage.py runserver %s %s' %
                (settings, bind, foreground))
             sh('sleep 30')
             settings = 'REUSE_DB=1 %s' % settings
 
-        sh(('%s python manage.py test %s'
-            ' --noinput --liveserver=0.0.0.0:8000' % (settings, name)))
+        sh(('%s python -W ignore manage.py test %s'
+            ' --noinput' % (settings, name)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -895,7 +895,7 @@ def setup_data():
     if settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
-    sh("%s python manage.py importlayers %s -v2" % (settings, data_dir))
+    sh("%s python -W ignore manage.py importlayers %s -v2" % (settings, data_dir))
 
 
 @needs(['package'])
