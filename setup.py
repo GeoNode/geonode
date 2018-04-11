@@ -53,7 +53,7 @@ setup(name='GeoNode',
             "Pillow<=3.3.1",  # python-imaging (3.1.2) - python-pillow (3.3.1 in our ppa)
             "lxml<=3.8.0",  # python-lxml (3.6.2 in our ppa) FIXME
             "psycopg2<=2.7.3.1",  # python-psycopg2 (2.7.3.1 in our ppa)
-            "Django==1.11.11",  # python-django (1.8.19 in our ppa) FIXME
+            "Django==1.8.19",  # python-django (1.8.19 in our ppa) FIXME
 
             # Other
             "amqp==2.2.2",  # (python-amqp 2.2.2 in our ppa)

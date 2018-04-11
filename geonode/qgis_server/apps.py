@@ -23,4 +23,4 @@ from django.apps import AppConfig as BaseAppConfig
 class AppConfig(BaseAppConfig):
 
     name = "geonode.qgis_server"
-    label = "geonode_qgisserver"
+    label = "qgis_server"

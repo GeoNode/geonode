@@ -473,7 +473,7 @@ TEMPLATES = [
         'DIRS': [os.path.join(PROJECT_ROOT, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': (
+            'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.tz',
@@ -491,12 +491,12 @@ TEMPLATES = [
                 # 'django.core.context_processors.request',
                 'geonode.context_processors.resource_urls',
                 'geonode.geoserver.context_processors.geoserver_urls',
-            ),
+            ],
             # Either remove APP_DIRS or remove the 'loaders' option.
-            # 'loaders': (
+            # 'loaders': [
             #      'django.template.loaders.filesystem.Loader',
             #      'django.template.loaders.app_directories.Loader',
-            # ),
+            # ],
             'debug': DEBUG,
         },
     },
