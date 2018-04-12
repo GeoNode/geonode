@@ -728,6 +728,7 @@ def gxp2wm(config, map_obj=None):
             bbox = [bbox[0], bbox[2], bbox[1], bbox[3]]
             layer_config["bbox"] = [float(coord) for coord in bbox] if layer_config["srs"] != 'EPSG:900913' \
                 else llbbox_to_mercator([float(coord) for coord in bbox])
+            layer_config['llbbox'] = [float(coord) for coord in bbox]
         if is_hh:
             layer_config['local'] = False
             layer_config['styles'] = ''
@@ -736,9 +737,18 @@ def gxp2wm(config, map_obj=None):
         if is_wm or is_hh:
             if 'group' not in layer_config:
                 layer_config['group'] = group
+            else:
+                group = layer_config['group']
             if group not in groups:
                 groups.add(group)
-            layer_config['llbbox'] = [float(coord) for coord in bbox]
+            # let's make sure the group exists in topicArray (it could be a custom group create from user in GXP)
+            is_in_topicarray = False
+            for cat in topicArray:
+                if group == cat[1]:
+                    is_in_topicarray = True
+            if not is_in_topicarray:
+                topicArray.append([group, group])
+
             # ml = layers.filter(name=layer_config['name'])
             #     layer_config['url'] = ml[0].ows_url
 
