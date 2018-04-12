@@ -187,6 +187,7 @@ def activate_theme(theme):
         theme_html = os.path.join(os.path.dirname(geonode_base_html[0]), "%s.html" % theme.theme_uuid)
         t = loader.get_template('admin/themes/custom_theme_html.txt')
 
+        custom_theme_base_header_template = find_all_templates(pattern="custom_theme_base_header.txt")
         partners_header_template = find_all_templates(pattern="custom_theme_partners_header.txt")
         partners_footer_template = find_all_templates(pattern="custom_theme_partners_footer.txt")
         contactus_header_template = find_all_templates(pattern="custom_theme_contactus_header.txt")
@@ -203,6 +204,7 @@ def activate_theme(theme):
             else:
                 return ''
 
+        custom_theme_base_header = _read_template(custom_theme_base_header_template)
         partners_header = _read_template(partners_header_template)
         partners_footer = _read_template(partners_footer_template)
         contactus_header = _read_template(contactus_header_template)
@@ -213,6 +215,7 @@ def activate_theme(theme):
         theme_html_content = t.render(
             {
                 'theme': theme,
+                'custom_base_header': custom_theme_base_header,
                 'partners_header': partners_header,
                 'partners_footer': partners_footer,
                 'contactus_header': contactus_header,
