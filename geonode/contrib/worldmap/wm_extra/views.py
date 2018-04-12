@@ -688,6 +688,7 @@ def gxp2wm(config, map_obj=None):
     #    layer_params = {"title": "market", "selected": true, "detail_url": "http://192.168.33.15:8002/registry/hypermap/layer/13ff2fea-d479-4fc7-87a6-3eab7d349def/", "local": false}
 
     # let's detect WM or HH layers and alter configuration as needed
+    bbox = [-180, -90, 180, 90]
     for layer_config in config['map']['layers']:
         is_wm = False
         is_hh = False
@@ -728,13 +729,15 @@ def gxp2wm(config, map_obj=None):
             bbox = [bbox[0], bbox[2], bbox[1], bbox[3]]
             layer_config["bbox"] = [float(coord) for coord in bbox] if layer_config["srs"] != 'EPSG:900913' \
                 else llbbox_to_mercator([float(coord) for coord in bbox])
-            layer_config['llbbox'] = [float(coord) for coord in bbox]
         if is_hh:
             layer_config['local'] = False
             layer_config['styles'] = ''
             hh_url = '%smap/wmts/%s/default_grid/${z}/${x}/${y}.png' % (layer_config['detail_url'], layer_config['name'])
             layer_config['url'] = hh_url
         if is_wm or is_hh:
+            # bbox
+            layer_config['llbbox'] = [float(coord) for coord in bbox]
+            # group
             if 'group' not in layer_config:
                 layer_config['group'] = group
             else:
