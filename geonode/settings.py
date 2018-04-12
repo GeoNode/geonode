@@ -625,7 +625,8 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 
 # Setting a custom test runner to avoid running the tests for
 # some problematic 3rd party apps
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+TEST_RUNNER='geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
 
 TEST = 'test' in sys.argv
 INTEGRATION = 'geonode.tests.integration' in sys.argv

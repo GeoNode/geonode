@@ -18,7 +18,8 @@
 #
 #########################################################################
 
-from django.test.testcases import LiveServerTestCase
+from django.test.testcases import TransactionTestCase, LiveServerTestCase
+
 try:
     from django.utils.decorators import classproperty
 except:
@@ -36,9 +37,8 @@ except:
 from geonode.base.populate_test_data import create_models, remove_models
 
 
-class GeoNodeBaseTestSupport(LiveServerTestCase):
+class GeoNodeBaseTestSupport(TransactionTestCase):
 
-    port = 8000
     type = None
     obj_ids = []
 
@@ -59,3 +59,9 @@ class GeoNodeBaseTestSupport(LiveServerTestCase):
     def tearDown(self):
         super(GeoNodeBaseTestSupport, self).tearDown()
         remove_models(self.get_obj_ids, type=self.get_type)
+
+
+class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport,
+                             LiveServerTestCase):
+
+    port = 8000
