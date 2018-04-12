@@ -22,6 +22,30 @@ from django.db import models
 from django.template.defaultfilters import slugify
 
 
+class Partner(models.Model):
+    logo = models.ImageField(upload_to='img/%Y/%m', null=True, blank=True)
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=255)
+    href = models.CharField(max_length=255)
+
+    @property
+    def logo_class(self):
+        _logo_class = slugify("logo_%s" % self.name)
+        return u"{0}".format(_logo_class)
+
+    @property
+    def partner_link(self):
+        _href = self.href if self.href.startswith('http') else 'http://%s' % self.href
+        return u"{0}".format(_href)
+
+    def __unicode__(self):
+        return u"{0}".format(self.title)
+
+    class Meta:
+        ordering = ("name", )
+        verbose_name_plural = 'Partners'
+
+
 class GeoNodeThemeCustomization(models.Model):
     identifier = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=100)
@@ -49,6 +73,8 @@ class GeoNodeThemeCustomization(models.Model):
     contact_voice = models.TextField(null=True, blank=True)
     contact_facsimile = models.TextField(null=True, blank=True)
     contact_email = models.TextField(null=True, blank=True)
+    partners_title = models.CharField(max_length=100, null=True, blank=True, default="Our Partners")
+    partners = models.ManyToManyField(Partner, related_name="partners", blank=True)
 
     def file_link(self):
         if self.logo:

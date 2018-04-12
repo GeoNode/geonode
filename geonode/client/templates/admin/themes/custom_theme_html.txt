@@ -1,3 +1,22 @@
+
+{{ partners_header|safe }}
+{% if theme.partners %}
+<section id="partners">
+  <div class="container text-center">
+      <h2>{{ theme.partners_title }}</h2>
+      <div class="row">
+         {% for partner in theme.partners.all %}
+          <div class="col-md-6">
+              <div class="{{ partner.logo_class }}"></div>
+              <div><a href="{{ partner.partner_link }}" target="_blank">{{ partner.title }}</a></div>
+          </div>
+         {% endfor %}
+      </div>
+  </div>
+</section>
+{% endif %}
+{{ partners_footer|safe }}
+
 {{ contactus_header|safe }}
  {% if theme.contactus %}
     <ul class="list-unstyled">
