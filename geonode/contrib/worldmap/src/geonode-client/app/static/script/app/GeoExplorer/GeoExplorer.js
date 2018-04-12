@@ -1159,7 +1159,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         };
 
         if (thisRecord.get('service_type') === 'Hypermap:WorldMap'){
-            layer_detail_url = 'http://worldmap.harvard.edu/data/' + thisRecord.get('name');
+            layer_detail_url = '/data/' + thisRecord.get('name');
         };
 
         if(layer.local){
@@ -1219,7 +1219,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
       var source = this.layerSources[this.worldMapSourceKey];
       var name = thisRecord.get('name');
       var tiled = thisRecord.get('tiled');
-      var layer_detail_url = 'http://worldmap.harvard.edu/data/' + name;
+      var layer_detail_url = '/data/' + name;
       var layer = null;
 
       $.ajax({
