@@ -9,17 +9,21 @@ from Queue import Empty
 from twisted.scripts.trial import Options, _getSuite
 from twisted.trial.runner import TrialRunner
 
+from django.conf import settings
+
 from django.test.runner import DiscoverRunner
 from django.db import connections, DEFAULT_DB_ALIAS
-from django.conf import settings
 from django.test.testcases import ImproperlyConfigured
-from django import VERSION
 
 from .base import setup_test_db
 
 # "auto" - one worker per Django application
 # "cpu" - one worker per process core
-WORKER_COUNT = getattr(settings, 'WORKER_COUNT', 'auto')
+WORKER_MAX = getattr(settings, 'TEST_RUNNER_WORKER_MAX', 3)
+WORKER_COUNT = getattr(settings, 'TEST_RUNNER_WORKER_COUNT', 'auto')
+NOT_THREAD_SAFE = getattr(settings, 'TEST_RUNNER_NOT_THREAD_SAFE', None)
+PARENT_TIMEOUT = getattr(settings, 'TEST_RUNNER_PARENT_TIMEOUT', 10)
+WORKER_TIMEOUT = getattr(settings, 'TEST_RUNNER_WORKER_TIMEOUT', 10)
 
 # amqplib spits out a lot of log messages which just add a lot of noise.
 logger = logging.getLogger(__name__)
@@ -72,11 +76,11 @@ class ParallelTestSuiteRunner(object):
         self.exclude_tags = set(exclude_tags or [])
         self._keyboard_interrupt_intercepted = False
 
-        self._worker_max = kwargs.get('worker_max', 'auto')
-        self._worker_count = kwargs.get('worker_count', 'auto')
-        self._not_thread_safe = kwargs.get('not_thread_safe', None) or []
-        self._parent_timeout = kwargs.get('parent_timeout', 10)
-        self._worker_timeout = kwargs.get('worker_timeout', 10)
+        self._worker_max = kwargs.get('worker_max', WORKER_MAX)
+        self._worker_count = kwargs.get('worker_count', WORKER_COUNT)
+        self._not_thread_safe = kwargs.get('not_thread_safe', NOT_THREAD_SAFE) or []
+        self._parent_timeout = kwargs.get('parent_timeout', PARENT_TIMEOUT)
+        self._worker_timeout = kwargs.get('worker_timeout', WORKER_TIMEOUT)
         self._database_names = self._get_database_names()
 
     def _get_database_names(self):
@@ -157,7 +161,7 @@ class ParallelTestSuiteRunner(object):
                     group, result = results_queue.get(timeout=self._parent_timeout,
                                                       block=True)
                 except Exception:
-                    continue
+                    raise Empty
 
                 try:
                     if group not in pending_not_thread_safe_tests:
@@ -340,8 +344,11 @@ class DjangoParallelTestSuiteRunner(ParallelTestSuiteRunner,
         super(DjangoParallelTestSuiteRunner, self).__init__(verbosity, interactive,
                                                             failfast, **kwargs)
         self._keyboard_interrupt_intercepted = False
-        self._parent_timeout = kwargs.get('parent_timeout', 10)
-        self._worker_timeout = kwargs.get('worker_timeout', 10)
+        self._worker_max = kwargs.get('worker_max', WORKER_MAX)
+        self._worker_count = kwargs.get('worker_count', WORKER_COUNT)
+        self._not_thread_safe = kwargs.get('not_thread_safe', NOT_THREAD_SAFE) or []
+        self._parent_timeout = kwargs.get('parent_timeout', PARENT_TIMEOUT)
+        self._worker_timeout = kwargs.get('worker_timeout', WORKER_TIMEOUT)
         self._database_names = self._get_database_names()
 
     def run_tests(self, test_labels, extra_tests=None, **kwargs):
@@ -354,8 +361,6 @@ class DjangoParallelTestSuiteRunner(ParallelTestSuiteRunner,
 
     def setup_databases(self, **kwargs):
         return self.setup_databases_18(**kwargs)
-
-        raise Exception('Unsupported Django Version: %s' % (str(VERSION)))
 
     def dependency_ordered(self, test_databases, dependencies):
         """

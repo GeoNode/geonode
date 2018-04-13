@@ -20,6 +20,7 @@ addons:
 
 env:
   - BACKEND: 'geonode.geoserver'
+    ON_TRAVIS: 'True'
   - BACKEND: 'geonode.qgis_server'
     DOCKER_COMPOSE_VERSION: 1.11.2
     # This is qgis server address

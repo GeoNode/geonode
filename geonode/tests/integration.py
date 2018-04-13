@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+from .base import GeoNodeLiveTestSupport
+
 import timeout_decorator
 
 import os
@@ -38,7 +40,6 @@ from urlparse import urljoin
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management import call_command
-from django.test.testcases import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.auth import get_user_model
@@ -56,7 +57,6 @@ from geonode.decorators import on_ogc_backend
 from geonode.base.models import TopicCategory
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.documents.models import Document
 from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.layers.utils import (
     upload,
@@ -139,63 +139,11 @@ $ geonode createsuperuser
 """
 
 
-class GeoNodeCoreTest(LiveServerTestCase):
-
-    """Tests geonode.security app/module
-    """
-
-    port = 8000
-
-    def setUp(self):
-        User = get_user_model()
-        u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
-        u.save()
-        pass
-
-    def tearDown(self):
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
-
-
-class GeoNodeProxyTest(LiveServerTestCase):
-
-    """Tests geonode.proxy app/module
-    """
-
-    port = 8000
-
-    def setUp(self):
-        User = get_user_model()
-        u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
-        u.save()
-        pass
-
-    def tearDown(self):
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
-
-
-class NormalUserTest(LiveServerTestCase):
+class NormalUserTest(GeoNodeLiveTestSupport):
 
     """
     Tests GeoNode functionality for non-administrative users
     """
-
-    port = 8000
-
-    def setUp(self):
-        call_command('loaddata', 'people_data', verbosity=0)
-        User = get_user_model()
-        if not User.objects.filter(username="admin"):
-            u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
-            u.save()
-
-    def tearDown(self):
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_layer_upload(self):
@@ -226,24 +174,10 @@ class NormalUserTest(LiveServerTestCase):
             saved_layer.delete()
 
 
-class GeoNodeMapTest(LiveServerTestCase):
+class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
     """Tests geonode.maps app/module
     """
-
-    port = 8000
-
-    def setUp(self):
-        call_command('loaddata', 'people_data', verbosity=0)
-        User = get_user_model()
-        if not User.objects.filter(username="admin"):
-            u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
-            u.save()
-
-    def tearDown(self):
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
 
     # geonode.maps.utils
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -479,15 +413,14 @@ class GeoNodeMapTest(LiveServerTestCase):
                     'None',
                     'Expected specific constraint from uploaded layer XML metadata')
 
-                self.assertEqual(
-                    uploaded.date,
-                    datetime.datetime(
-                        2010,
-                        8,
-                        3,
-                        0,
-                        0),
-                    'Expected specific date from uploaded layer XML metadata')
+                from django.utils import timezone
+                date = datetime.datetime(2010, 8, 3, 0, 0)
+                date.replace(tzinfo=timezone.get_current_timezone())
+                today = date.today()
+                todoc = uploaded.date.today()
+                self.assertEquals((today.day, today.month, today.year),
+                                  (todoc.day, todoc.month, todoc.year),
+                                  'Expected specific date from uploaded layer XML metadata')
 
                 # Set
                 from geonode.layers.metadata import set_metadata
@@ -576,15 +509,14 @@ class GeoNodeMapTest(LiveServerTestCase):
                         'None',
                         'Expected specific constraint from uploaded layer XML metadata')
 
-                    self.assertEqual(
-                        uploaded.date,
-                        datetime.datetime(
-                            2010,
-                            8,
-                            3,
-                            0,
-                            0),
-                        'Expected specific date from uploaded layer XML metadata')
+                    from django.utils import timezone
+                    date = datetime.datetime(2010, 8, 3, 0, 0)
+                    date.replace(tzinfo=timezone.get_current_timezone())
+                    today = date.today()
+                    todoc = uploaded.date.today()
+                    self.assertEquals((today.day, today.month, today.year),
+                                      (todoc.day, todoc.month, todoc.year),
+                                      'Expected specific date from uploaded layer XML metadata')
 
                     # Set
                     from geonode.layers.metadata import set_metadata
@@ -1057,23 +989,9 @@ class GeoNodeMapTest(LiveServerTestCase):
             lyr.delete()
 
 
-class GeoNodePermissionsTest(LiveServerTestCase):
+class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     """Tests GeoNode permissions and its integration with GeoServer
     """
-
-    port = 8000
-
-    def setUp(self):
-        call_command('loaddata', 'people_data', verbosity=0)
-        User = get_user_model()
-        if not User.objects.filter(username="admin"):
-            u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
-            u.save()
-
-    def tearDown(self):
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
 
     """
     AF: This test must be refactored. Opening an issue for that.
@@ -1255,24 +1173,10 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
                 layer.delete()
 
 
-class GeoNodeThumbnailTest(LiveServerTestCase):
+class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
 
     """Tests thumbnails behavior for layers and maps.
     """
-
-    port = 8000
-
-    def setUp(self):
-        call_command('loaddata', 'people_data', verbosity=0)
-        User = get_user_model()
-        if not User.objects.filter(username="admin"):
-            u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
-            u.save()
-
-    def tearDown(self):
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_layer_thumbnail(self):
@@ -1329,25 +1233,10 @@ class GeoNodeThumbnailTest(LiveServerTestCase):
             saved_layer.delete()
 
 
-class GeoNodeMapPrintTest(LiveServerTestCase):
+class GeoNodeMapPrintTest(GeoNodeLiveTestSupport):
 
     """Tests geonode.maps print
     """
-
-    port = 8000
-
-    def setUp(self):
-        call_command('loaddata', 'people_data', verbosity=0)
-        User = get_user_model()
-        if not User.objects.filter(username="admin"):
-            u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
-            u.save()
-
-    def tearDown(self):
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
-
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def testPrintProxy(self):
         """ Test the PrintProxyMiddleware if activated.
@@ -1434,25 +1323,10 @@ class GeoNodeMapPrintTest(LiveServerTestCase):
             pass
 
 
-class GeoNodeGeoServerSync(LiveServerTestCase):
+class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
     """Tests GeoNode/GeoServer syncronization
     """
-
-    port = 8000
-
-    def setUp(self):
-        call_command('loaddata', 'people_data', verbosity=0)
-        User = get_user_model()
-        if not User.objects.filter(username="admin"):
-            u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
-            u.save()
-
-    def tearDown(self):
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
-
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_set_attributes_from_geoserver(self):
@@ -1489,26 +1363,10 @@ class GeoNodeGeoServerSync(LiveServerTestCase):
             layer.delete()
 
 
-class GeoNodeGeoServerCapabilities(LiveServerTestCase):
+class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
 
     """Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
     """
-
-    port = 8000
-
-    def setUp(self):
-        call_command('loaddata', 'initial_data', verbosity=0)
-        call_command('loaddata', 'people_data', verbosity=0)
-        User = get_user_model()
-        if not User.objects.filter(username="admin"):
-            u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
-            u.save()
-
-    def tearDown(self):
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
-
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_capabilities(self):
@@ -1609,17 +1467,11 @@ class GeoNodeGeoServerCapabilities(LiveServerTestCase):
 
 
 class LayersStylesApiInteractionTests(
-        ResourceTestCaseMixin, LiveServerTestCase):
+        ResourceTestCaseMixin, GeoNodeLiveTestSupport):
 
     """Test Layers"""
-
-    port = 8000
-    fixtures = ['initial_data.json', 'bobby']
-
     def setUp(self):
         super(LayersStylesApiInteractionTests, self).setUp()
-
-        call_command('loaddata', 'people_data', verbosity=0)
 
         self.layer_list_url = reverse(
             'api_dispatch_list',
@@ -1634,11 +1486,6 @@ class LayersStylesApiInteractionTests(
         filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
         self.layer = file_upload(filename)
         all_public()
-
-    def tearDown(self):
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_layer_interaction(self):
@@ -1873,20 +1720,9 @@ class LayersStylesApiInteractionTests(
         self.assertEqual(meta['total_count'], 0)
 
 
-class GeoTIFFIOTest(LiveServerTestCase):
+class GeoTIFFIOTest(GeoNodeLiveTestSupport):
 
     "Tests integration of geotiff.io"
-
-    port = 8000
-
-    def setUp(self):
-        call_command('loaddata', 'people_data', verbosity=0)
-
-    def tearDown(self):
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
-
     def testLink(self):
         thefile = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
         uploaded = file_upload(thefile, overwrite=True)

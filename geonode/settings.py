@@ -623,13 +623,21 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 # Test Settings
 #
 
+on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
+
 # Setting a custom test runner to avoid running the tests for
 # some problematic 3rd party apps
 # TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-TEST_RUNNER='geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
+TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
+TEST_RUNNER_WORKER_MAX = 3
+TEST_RUNNER_WORKER_COUNT = 'auto'
+TEST_RUNNER_NOT_THREAD_SAFE = None
+TEST_RUNNER_PARENT_TIMEOUT = 10
+TEST_RUNNER_WORKER_TIMEOUT = 10
 
 TEST = 'test' in sys.argv
 INTEGRATION = 'geonode.tests.integration' in sys.argv
+
 # Arguments for the test runner
 NOSE_ARGS = [
     '--nocapture',

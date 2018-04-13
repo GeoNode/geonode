@@ -48,7 +48,7 @@ try:
 except ImportError:
     from paver.easy import pushd
 
-from geonode.settings import OGC_SERVER, INSTALLED_APPS, ASYNC_SIGNALS
+from geonode.settings import on_travis, OGC_SERVER, INSTALLED_APPS, ASYNC_SIGNALS
 
 assert sys.version_info >= (2, 6), \
     SystemError("GeoNode Build requires python 2.6 or better")
@@ -838,7 +838,7 @@ def run_tests(options):
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
 
     # only start if using Geoserver backend
-    if 'geonode.geoserver' in INSTALLED_APPS:
+    if not on_travis and 'geonode.geoserver' in INSTALLED_APPS:
         call_task('test_integration',
                   options={'name': 'geonode.upload.tests.integration',
                            'settings': 'geonode.upload.tests.test_settings'})
