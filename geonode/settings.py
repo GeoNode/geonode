@@ -271,19 +271,23 @@ LOGOUT_URL = os.getenv('LOGOUT_URL', '/account/logout/')
 
 LOGIN_REDIRECT_URL = '/'
 
-GEONODE_APPS = (
+GEONODE_CORE_APPS = (
     # GeoNode internal apps
-    'geonode.people',
+    'geonode.api',
     'geonode.base',
-    'geonode.client',
     'geonode.layers',
     'geonode.maps',
-    'geonode.proxy',
-    'geonode.security',
-    'geonode.social',
-    'geonode.catalogue',
     'geonode.documents',
-    'geonode.api',
+    'geonode.security',
+    'geonode.catalogue',
+)
+
+GEONODE_APPS = GEONODE_CORE_APPS + (
+    # GeoNode internal apps
+    'geonode.people',
+    'geonode.client',
+    'geonode.proxy',
+    'geonode.social',
     'geonode.groups',
     'geonode.services',
 

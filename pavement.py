@@ -38,17 +38,16 @@ from paver.easy import (BuildFailure, call_task, cmdopts, info, needs, options,
 from setuptools.command import easy_install
 
 try:
-    from geonode.settings import GEONODE_APPS
-except BaseException:
-    # probably trying to run install_win_deps.
-    pass
-
-try:
     from paver.path import pushd
 except ImportError:
     from paver.easy import pushd
 
-from geonode.settings import on_travis, OGC_SERVER, INSTALLED_APPS, ASYNC_SIGNALS
+from geonode.settings import (on_travis,
+                              INSTALLED_APPS,
+                              GEONODE_CORE_APPS,
+                              GEONODE_APPS,
+                              OGC_SERVER,
+                              ASYNC_SIGNALS,)
 
 assert sys.version_info >= (2, 6), \
     SystemError("GeoNode Build requires python 2.6 or better")
@@ -715,8 +714,12 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
-                                                 '.tests '.join(GEONODE_APPS)))
+    if on_travis:
+        sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
+                                                     '.tests '.join(GEONODE_CORE_APPS)))
+    else:
+        sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
+                                                     '.tests '.join(GEONODE_APPS)))
 
 
 @task
