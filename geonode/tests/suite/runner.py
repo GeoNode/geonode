@@ -58,7 +58,7 @@ sys.stdout = null_file
 class ParallelTestSuiteRunner(object):
 
     def __init__(self, pattern=None, top_level=None, verbosity=1,
-                 interactive=True, failfast=False, keepdb=False,
+                 interactive=True, failfast=False, keepdb=True,
                  reverse=False, debug_mode=False, debug_sql=False, parallel=0,
                  tags=None, exclude_tags=None, **kwargs):
 
@@ -325,7 +325,7 @@ class DjangoParallelTestSuiteRunner(ParallelTestSuiteRunner,
                                     DiscoverRunner):
 
     def __init__(self, pattern=None, top_level=None, verbosity=1,
-                 interactive=True, failfast=False, keepdb=False,
+                 interactive=True, failfast=False, keepdb=True,
                  reverse=False, debug_mode=False, debug_sql=False, parallel=0,
                  tags=None, exclude_tags=None, **kwargs):
 
