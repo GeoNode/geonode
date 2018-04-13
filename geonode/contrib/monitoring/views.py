@@ -26,6 +26,7 @@ from django import forms
 from django.conf import settings
 from django.views.generic.base import View
 from django.core.urlresolvers import reverse
+from django.core.management import call_command
 from django.views.decorators.csrf import csrf_exempt
 
 from geonode.utils import json_response
@@ -589,7 +590,8 @@ class NotificationsList(FilteredView):
 
 
 class StatusCheckView(View):
-    fields = ('name', 'severity',
+    fields = ('name',
+              'severity',
               'offending_value',
               'threshold_value',
               'spotted_at',
@@ -645,6 +647,29 @@ class AutoconfigureView(View):
         return json_response(out)
 
 
+class CollectMetricsView(View):
+    """
+     - Run command "collect_metrics -n -t xml" via web
+    """
+    authkey = 'OzhVMECJUn9vDu2oLv1HjGPKByuTBwF8'
+    def get(self, request, *args, **kwargs):
+        authkey = kwargs.get('authkey')
+        if not authkey or authkey != self.authkey:
+            out = {'success': False,
+                   'status': 'error',
+                   'errors': {'denied': ['Call is not permitted']}
+                   }
+            return json_response(out, status=401)
+        else:
+            call_command(
+                'collect_metrics', '-n', '-t', 'xml')
+            out = {'success': True,
+                   'status': 'ok',
+                   'errors': {}
+                   }
+            return json_response(out)
+
+
 api_metrics = MetricsList.as_view()
 api_services = ServicesList.as_view()
 api_hosts = HostsList.as_view()
@@ -652,6 +677,7 @@ api_labels = LabelsList.as_view()
 api_resources = ResourcesList.as_view()
 api_ows_services = OWSServiceList.as_view()
 api_metric_data = MetricDataView.as_view()
+api_metric_collect = CollectMetricsView.as_view()
 api_exceptions = ExceptionsListView.as_view()
 api_exception = ExceptionDataView.as_view()
 api_beacon = BeaconView.as_view()
