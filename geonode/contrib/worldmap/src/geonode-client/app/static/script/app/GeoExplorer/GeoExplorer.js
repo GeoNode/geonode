@@ -2320,7 +2320,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     if (!saveAsButton.hidden)
                         saveAsButton.enable();
                     // create thumb
-                    createMapThumbnail(this.mapid);
+                    // createMapThumbnail(this.mapid);
                 },
                 failure: function(response, options) {
                     if (response.status === 401)
