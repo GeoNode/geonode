@@ -155,46 +155,47 @@ class ParallelTestSuiteRunner(object):
             logger.info('Staring worker %s' % (index))
             worker.start()
 
-        while pending_tests:
-            try:
+        if workers:
+            while pending_tests:
                 try:
-                    group, result = results_queue.get(timeout=self._parent_timeout,
-                                                      block=True)
-                except Exception:
-                    raise Empty
+                    try:
+                        group, result = results_queue.get(timeout=self._parent_timeout,
+                                                          block=True)
+                    except Exception:
+                        raise Empty
 
-                try:
-                    if group not in pending_not_thread_safe_tests:
-                        pending_tests.pop(group)
+                    try:
+                        if group not in pending_not_thread_safe_tests:
+                            pending_tests.pop(group)
+                        else:
+                            pending_not_thread_safe_tests.pop(group)
+                    except KeyError:
+                        logger.info('Got a result for unknown group: %s' % (group))
                     else:
-                        pending_not_thread_safe_tests.pop(group)
-                except KeyError:
-                    logger.info('Got a result for unknown group: %s' % (group))
-                else:
-                    completed_tests[group] = result
-                    self._print_result(result)
+                        completed_tests[group] = result
+                        self._print_result(result)
 
-                    if result.failures or result.errors:
-                        failures += len(result.failures)
-                        errors += len(result.errors)
+                        if result.failures or result.errors:
+                            failures += len(result.failures)
+                            errors += len(result.errors)
 
-                        if self.failfast:
-                            # failfast is enabled, kill all the active workers
-                            # and stop
-                            for worker in workers:
-                                if worker.is_alive():
-                                    worker.terminate()
+                            if self.failfast:
+                                # failfast is enabled, kill all the active workers
+                                # and stop
+                                for worker in workers:
+                                    if worker.is_alive():
+                                        worker.terminate()
+                                break
+                except Empty:
+                    worker_left = False
+
+                    for worker in workers:
+                        if worker.is_alive():
+                            worker_left = True
                             break
-            except Empty:
-                worker_left = False
 
-                for worker in workers:
-                    if worker.is_alive():
-                        worker_left = True
+                    if not worker_left:
                         break
-
-                if not worker_left:
-                    break
 
         # We are done, signalize all the workers to stop
         stop_event.set()
