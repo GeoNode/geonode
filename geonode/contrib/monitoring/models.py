@@ -1526,6 +1526,9 @@ def populate():
         metric.description = d
         metric.save()
 
+    if not Service.objects.all():
+        do_autoconfigure()
+
 
 def do_autoconfigure():
     """
