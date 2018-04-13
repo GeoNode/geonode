@@ -171,7 +171,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     context_dict["crs"] = getattr(
         settings,
         'DEFAULT_MAP_CRS',
-        'EPSG:900913')
+        'EPSG:3857')
 
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, map_obj)
@@ -347,7 +347,7 @@ def map_metadata(
         "category_form": category_form,
         "layers": layers,
         "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'geoext'),
-        "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
+        "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
         "metadata_author_groups": metadata_author_groups,
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
     })
@@ -802,7 +802,7 @@ def new_map_config(request):
 
         if 'layer' in params:
             map_obj = Map(projection=getattr(settings, 'DEFAULT_MAP_CRS',
-                                             'EPSG:900913'))
+                                             'EPSG:3857'))
             config = add_layers_to_map_config(
                 request, map_obj, params.getlist('layer'))
         else:
@@ -881,6 +881,7 @@ def add_layers_to_map_config(
                                  layer.owner.last_name) if layer.owner.first_name or layer.owner.last_name else str(
             layer.owner)
         srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
+        srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
         config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
         config["format"] = getattr(
             settings, 'DEFAULT_LAYER_FORMAT', 'image/png')
@@ -905,13 +906,19 @@ def add_layers_to_map_config(
                     "srs": srs,
                     "bbox": decimal_encode(
                         bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
-                                           target_srid=int(srs.split(":")[1]))[:4])
+                                           target_srid=srs_srid)[:4])
                 },
                 "EPSG:4326": {
                     "srs": "EPSG:4326",
                     "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
                     decimal_encode(bbox_to_projection(
                         [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4])
+                },
+                "EPSG:900913": {
+                    "srs": "EPSG:900913",
+                    "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:900913' else
+                    decimal_encode(bbox_to_projection(
+                        [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=3857)[:4])
                 }
             },
             "srs": {
@@ -941,29 +948,20 @@ def add_layers_to_map_config(
         }
 
         if layer.storeType == "remoteStore":
-            service = layer.remote_service
-            # Probably not a good idea to send the access token to every remote service.
-            # This should never match, so no access token should be
-            # sent to remote services.
-            ogc_server_url = urlparse.urlsplit(
-                ogc_server_settings.PUBLIC_LOCATION).netloc
-            service_url = urlparse.urlsplit(service.service_url).netloc
-
-            if access_token and ogc_server_url == service_url and 'access_token' not in service.service_url:
-                url = service.service_url + '?access_token=' + access_token
-            else:
-                url = service.service_url
+            # service = layer.remote_service
+            # url = service.service_url
             maplayer = MapLayer(map=map_obj,
                                 name=layer.alternate,
                                 ows_url=layer.ows_url,
                                 layer_params=json.dumps(config),
                                 visibility=True,
-                                source_params=json.dumps({
-                                    "ptype": service.ptype,
-                                    "remote": True,
-                                    "url": url,
-                                    "name": service.name,
-                                    "title": "[R] %s" % service.title}))
+                                # source_params=json.dumps({
+                                #     "ptype": service.ptype,
+                                #     "remote": True,
+                                #     "url": url,
+                                #     "name": service.name,
+                                #     "title": "[R] %s" % service.title})
+            )
         else:
             ogc_server_url = urlparse.urlsplit(
                 ogc_server_settings.PUBLIC_LOCATION).netloc
@@ -992,7 +990,7 @@ def add_layers_to_map_config(
         if getattr(
             settings,
             'DEFAULT_MAP_CRS',
-                'EPSG:900913') == "EPSG:4326":
+                'EPSG:3857') == "EPSG:4326":
             center = list((x, y))
         else:
             center = list(forward_mercator((x, y)))

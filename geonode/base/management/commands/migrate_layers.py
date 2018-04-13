@@ -24,8 +24,6 @@ import helpers
 import tempfile
 import json
 
-from optparse import make_option
-
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import (
@@ -37,25 +35,28 @@ class Command(BaseCommand):
 
     help = 'Migrate existing Layers and Maps on GeoNode'
 
-    option_list = BaseCommand.option_list + (
-        helpers.Config.option,
-        make_option(
+    def add_arguments(self, parser):
+
+        # Named (optional) arguments
+        helpers.option(parser)
+
+        parser.add_argument(
             '-i',
             '--ignore-errors',
             action='store_true',
             dest='ignore_errors',
             default=False,
-            help='Stop after any errors are encountered.'),
-        make_option(
+            help='Stop after any errors are encountered.')
+
+        parser.add_argument(
             '--backup-file',
             dest='backup_file',
-            type="string",
-            help='Backup archive containing GeoNode data to restore.'),
-        make_option(
+            help='Backup archive containing GeoNode data to restore.')
+
+        parser.add_argument(
             '--owner',
             dest='owner',
-            type="string",
-            help='New owner of the GeoNode Layers/Maps.'))
+            help='New owner of the GeoNode Layers/Maps.')
 
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')

@@ -24,8 +24,10 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
+
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 from django.contrib.auth import get_user_model
-from django.test import TestCase
 from django.test.utils import override_settings
 
 
@@ -33,12 +35,12 @@ TEST_DOMAIN = '.github.com'
 TEST_URL = 'https://help%s/' % TEST_DOMAIN
 
 
-class ProxyTest(TestCase):
+class ProxyTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        self.admin, created = get_user_model().objects.get_or_create(username='admin',
-                                                                     password='admin',
-                                                                     is_superuser=True)
+        super(ProxyTest, self).setUp()
+        self.admin = get_user_model().objects.get(username='admin')
+
         # FIXME(Ariel): These tests do not work when the computer is offline.
         self.proxy_url = '/proxy/'
         self.url = TEST_URL
@@ -46,7 +48,8 @@ class ProxyTest(TestCase):
     @override_settings(DEBUG=True, PROXY_ALLOWED_HOSTS=())
     def test_validate_host_disabled_in_debug(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is True, all hosts pass the proxy."""
-        response = self.client.get('%s?url=%s' % (self.proxy_url, self.url), follow=True)
+        response = self.client.get('%s?url=%s' %
+                                   (self.proxy_url, self.url), follow=True)
         # 404 - NOT FOUND
         if response.status_code != 404:
             self.assertEqual(response.status_code, 200)
@@ -54,7 +57,8 @@ class ProxyTest(TestCase):
     @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=())
     def test_validate_host_disabled_not_in_debug(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 403."""
-        response = self.client.get('%s?url=%s' % (self.proxy_url, self.url), follow=True)
+        response = self.client.get('%s?url=%s' %
+                                   (self.proxy_url, self.url), follow=True)
         # 404 - NOT FOUND
         if response.status_code != 404:
             self.assertEqual(response.status_code, 403)
@@ -63,7 +67,8 @@ class ProxyTest(TestCase):
     @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=(TEST_DOMAIN,))
     def test_proxy_allowed_host(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 403."""
-        response = self.client.get('%s?url=%s' % (self.proxy_url, self.url), follow=True)
+        response = self.client.get('%s?url=%s' %
+                                   (self.proxy_url, self.url), follow=True)
         # 404 - NOT FOUND
         if response.status_code != 404:
             self.assertEqual(response.status_code, 200)

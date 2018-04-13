@@ -23,6 +23,9 @@ from oauth2_provider.models import Application
 from oauth2_provider.generators import generate_client_id, generate_client_secret
 from geonode.people.models import Profile
 
+from geonode import geoserver, qgis_server  # noqa
+from geonode.utils import check_ogc_backend
+
 
 class Command(BaseCommand):
     """Creates or updates the oauth2 Application
@@ -33,7 +36,7 @@ class Command(BaseCommand):
         from django.conf import settings
         client_id = None
         client_secret = None
-        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import ogc_server_settings
             if Application.objects.filter(name='GeoServer').exists():
                 Application.objects.filter(name='GeoServer').update(redirect_uris=ogc_server_settings.public_url)

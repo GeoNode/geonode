@@ -21,12 +21,11 @@
 import uuid
 import logging
 
-from datetime import datetime
-
 from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
@@ -158,6 +157,9 @@ class Layer(ResourceBase):
 
     def is_vector(self):
         return self.storeType == 'dataStore'
+
+    def get_upload_session(self):
+        return self.upload_session
 
     @property
     def display_type(self):
@@ -470,7 +472,7 @@ class Attribute(models.Model):
         null=True,
         blank=True,
         default='NA')
-    last_stats_updated = models.DateTimeField(_('last modified'), default=datetime.now, help_text=_(
+    last_stats_updated = models.DateTimeField(_('last modified'), default=now, help_text=_(
         'date when attribute statistics were last updated'))  # passing the method itself, not
 
     objects = AttributeManager()

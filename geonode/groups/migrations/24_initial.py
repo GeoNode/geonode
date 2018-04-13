@@ -5,6 +5,7 @@ from django.db import migrations, models
 import datetime
 from django.conf import settings
 import taggit.managers
+from django.utils.timezone import now
 
 
 class Migration(migrations.Migration):
@@ -24,7 +25,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(max_length=254)),
                 ('role', models.CharField(max_length=10, choices=[(b'manager', 'Manager'), (b'member', 'Member')])),
                 ('state', models.CharField(default=b'sent', max_length=10, choices=[(b'sent', 'Sent'), (b'accepted', 'Accepted'), (b'declined', 'Declined')])),
-                ('created', models.DateTimeField(default=datetime.datetime.now)),
+                ('created', models.DateTimeField(default=now)),
                 ('from_user', models.ForeignKey(related_name='pg_invitations_sent', to=settings.AUTH_USER_MODEL)),
             ],
         ),
@@ -33,7 +34,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('role', models.CharField(max_length=10, choices=[(b'manager', 'Manager'), (b'member', 'Member')])),
-                ('joined', models.DateTimeField(default=datetime.datetime.now)),
+                ('joined', models.DateTimeField(default=now)),
             ],
         ),
         migrations.CreateModel(

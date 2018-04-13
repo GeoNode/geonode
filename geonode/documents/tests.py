@@ -23,13 +23,14 @@ This file demonstrates writing tests using the unittest module. These will pass
 when you run "manage.py test".
 
 """
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import os
 import StringIO
 import json
 
 import gisdata
 from datetime import datetime
-from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -50,9 +51,9 @@ from geonode.tests.utils import NotificationsTestsHelper
 from geonode.documents import DocumentsAppConfig
 
 
-class DocumentsTest(TestCase):
-    fixtures = ['initial_data.json', 'bobby']
+class DocumentsTest(GeoNodeBaseTestSupport):
 
+    type = 'document'
     perm_spec = {
         "users": {
             "admin": [
@@ -62,7 +63,7 @@ class DocumentsTest(TestCase):
         "groups": {}}
 
     def setUp(self):
-        create_models('document')
+        super(DocumentsTest, self).setUp()
         create_models('map')
         self.imgfile = StringIO.StringIO(
             'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
@@ -207,14 +208,14 @@ class DocumentsTest(TestCase):
 
     def test_document_details(self):
         """/documents/1 -> Test accessing the detail view of a document"""
-        d = Document.objects.get(pk=1)
+        d = Document.objects.all().first()
         d.set_default_permissions()
 
         response = self.client.get(reverse('document_detail', args=(str(d.id),)))
         self.assertEquals(response.status_code, 200)
 
     def test_document_metadata_details(self):
-        d = Document.objects.get(pk=1)
+        d = Document.objects.all().first()
         d.set_default_permissions()
 
         response = self.client.get(reverse('document_metadata_detail', args=(str(d.id),)))
@@ -404,15 +405,19 @@ class DocumentsTest(TestCase):
             if resource.regions.all():
                 self.assertTrue(region in resource.regions.all())
         # test date change
-        date = datetime.now()
+        from django.utils import timezone
+        date = datetime.now(timezone.get_current_timezone())
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'date': date},
         )
-        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.status_code, 200)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertEquals(resource.date, date)
+            today = date.today()
+            todoc = resource.date.today()
+            self.assertEquals((today.day, today.month, today.year),
+                              (todoc.day, todoc.month, todoc.year))
         # test language change
         language = 'eng'
         response = self.client.post(
@@ -436,9 +441,7 @@ class DocumentsTest(TestCase):
                 self.assertTrue(word.name in keywords.split(','))
 
 
-class DocumentModerationTestCase(TestCase):
-
-    fixtures = ['initial_data.json', 'bobby']
+class DocumentModerationTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(DocumentModerationTestCase, self).setUp()
@@ -503,10 +506,7 @@ class DocumentModerationTestCase(TestCase):
 
 class DocumentNotificationsTestCase(NotificationsTestsHelper):
 
-    fixtures = ['initial_data.json', 'bobby']
-
     def setUp(self):
-        super(DocumentNotificationsTestCase, self).setUp()
         self.user = 'admin'
         self.passwd = 'admin'
         create_models(type='document')
@@ -536,9 +536,7 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
             self.assertTrue(self.check_notification_out('document_comment', self.u))
 
 
-class DocumentResourceLinkTestCase(TestCase):
-
-    fixtures = ['initial_data.json', 'bobby']
+class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         create_models('document')

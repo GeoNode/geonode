@@ -58,6 +58,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection, transaction
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.serializers.json import DjangoJSONEncoder
+from django.utils import timezone
 
 from geonode import geoserver, qgis_server  # noqa
 
@@ -207,7 +208,7 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             return tuple([str(x) for x in poly.extent]) + ("EPSG:%s" % poly.srid,)
         except BaseException:
             tb = traceback.format_exc()
-            logger.error(tb)
+            logger.debug(tb)
 
     return native_bbox
 
@@ -407,18 +408,20 @@ class GXPMapBase(object):
 
         # adding remote services sources
         from geonode.services.models import Service
-        index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
-        for service in Service.objects.all():
-            remote_source = {
-                'url': service.service_url,
-                'remote': True,
-                'ptype': 'gxp_wmscsource',
-                'name': service.name,
-                'title': "[R] %s" % service.title
-            }
-            if remote_source['url'] not in source_urls:
-                index += 1
-                sources[index] = remote_source
+        from geonode.maps.models import Map
+        if not self.sender or isinstance(self.sender, Map):
+            index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
+            for service in Service.objects.all():
+                remote_source = {
+                    'url': service.service_url,
+                    'remote': True,
+                    'ptype': service.ptype,
+                    'name': service.name,
+                    'title': "[R] %s" % service.title
+                }
+                if remote_source['url'] not in source_urls:
+                    index += 1
+                    sources[index] = remote_source
 
         config = {
             'id': self.id,
@@ -459,9 +462,10 @@ class GXPMapBase(object):
 
 class GXPMap(GXPMapBase):
 
-    def __init__(self, projection=None, title=None, abstract=None,
+    def __init__(self, sender=None, projection=None, title=None, abstract=None,
                  center_x=None, center_y=None, zoom=None):
         self.id = 0
+        self.sender = sender
         self.projection = projection
         self.title = title or DEFAULT_TITLE
         self.abstract = abstract or DEFAULT_ABSTRACT
@@ -575,7 +579,7 @@ class GXPLayer(GXPLayerBase):
 
 
 def default_map_config(request):
-    if getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913') == "EPSG:4326":
+    if getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857') == "EPSG:4326":
         _DEFAULT_MAP_CENTER = inverse_mercator(settings.DEFAULT_MAP_CENTER)
     else:
         _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
@@ -583,7 +587,7 @@ def default_map_config(request):
     _default_map = GXPMap(
         title=DEFAULT_TITLE,
         abstract=DEFAULT_ABSTRACT,
-        projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
+        projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
         center_x=_DEFAULT_MAP_CENTER[0],
         center_y=_DEFAULT_MAP_CENTER[1],
         zoom=settings.DEFAULT_MAP_ZOOM
@@ -620,6 +624,11 @@ def default_map_config(request):
 
 _viewer_projection_lookup = {
     "EPSG:900913": {
+        "maxResolution": 156543.03390625,
+        "units": "m",
+        "maxExtent": [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+    },
+    "EPSG:3857": {
         "maxResolution": 156543.03390625,
         "units": "m",
         "maxExtent": [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
@@ -1033,7 +1042,7 @@ def set_attributes(
                         la.stddev = result['StandardDeviation']
                         la.sum = result['Sum']
                         la.unique_values = result['unique_values']
-                        la.last_stats_updated = datetime.datetime.now()
+                        la.last_stats_updated = datetime.datetime.now(timezone.get_current_timezone())
                     la.visible = ftype.find("gml:") != 0
                     la.display_order = iter
                     la.save()

@@ -308,7 +308,7 @@ Upgrade Development Environment
             ------------------------------------------------------------------------
             216 # default map projection                                                                                             +-
             217 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
-            218 DEFAULT_MAP_CRS = "EPSG:900913"
+            218 DEFAULT_MAP_CRS = "EPSG:3857"
             ------------------------------------------------------------------------
             219                                                                                                                      =
             ------------------------------------------------------------------------
