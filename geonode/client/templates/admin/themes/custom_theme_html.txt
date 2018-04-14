@@ -33,7 +33,7 @@
         {% if theme.contact_delivery_point %}<li style="text-align: left;">{{ theme.contact_delivery_point }}</li>{% endif %}
         {% if theme.contact_voice %}<li style="text-align: left;">Tel: {{ theme.contact_voice }}</li>{% endif %}
         {% if theme.contact_facsimile %}<li style="text-align: left;">Fax: {{ theme.contact_facsimile }}</li>{% endif %}
-        {% if theme.contact_email %}<li style="text-align: left;">Fax: {{ theme.contact_email }}</li>{% endif %}
+        {% if theme.contact_email %}<li style="text-align: left;">E-mail: {{ theme.contact_email }}</li>{% endif %}
     </ul>
  {% endif %}
 {{ contactus_footer|safe }}

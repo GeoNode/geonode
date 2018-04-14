@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from django.test.testcases import TransactionTestCase, LiveServerTestCase
+from django.test.testcases import SimpleTestCase, TransactionTestCase, LiveServerTestCase
 
 try:
     from django.utils.decorators import classproperty
@@ -35,6 +35,10 @@ except:
             return self
 
 from geonode.base.populate_test_data import create_models, remove_models
+
+
+class GeoNodeBaseSimpleTestSupport(SimpleTestCase):
+    pass
 
 
 class GeoNodeBaseTestSupport(TransactionTestCase):
