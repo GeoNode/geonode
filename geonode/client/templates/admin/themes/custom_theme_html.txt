@@ -28,7 +28,6 @@
         {% if theme.contact_city %}<li style="text-align: left;">{{ theme.contact_city }}</li>{% endif %}
         {% if theme.contact_street %}<li style="text-align: left;">{{ theme.contact_street }}</li>{% endif %}
         {% if theme.contact_postal_code %}<li style="text-align: left;">{{ theme.contact_postal_code }}</li>{% endif %}
-        {% if theme.contact_city %}<li style="text-align: left;">{{ theme.contact_city }}</li>{% endif %}
         {% if theme.contact_country %}<li style="text-align: left;">{{ theme.contact_country }}</li>{% endif %}
         {% if theme.contact_delivery_point %}<li style="text-align: left;">{{ theme.contact_delivery_point }}</li>{% endif %}
         {% if theme.contact_voice %}<li style="text-align: left;">Tel: {{ theme.contact_voice }}</li>{% endif %}
