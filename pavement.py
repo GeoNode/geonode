@@ -43,6 +43,7 @@ except ImportError:
     from paver.easy import pushd
 
 from geonode.settings import (on_travis,
+                              integration_tests,
                               INSTALLED_APPS,
                               GEONODE_CORE_APPS,
                               GEONODE_APPS,
@@ -835,16 +836,19 @@ def run_tests(options):
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
-    sh('%s manage.py test geonode.tests.smoke' % prefix)
-    call_task('test', options={'prefix': prefix})
-    call_task('test_integration')
-    call_task('test_integration', options={'name': 'geonode.tests.csw'})
 
-    # only start if using Geoserver backend
-    if not on_travis and 'geonode.geoserver' in INSTALLED_APPS:
-        call_task('test_integration',
-                  options={'name': 'geonode.upload.tests.integration',
-                           'settings': 'geonode.upload.tests.test_settings'})
+    if not integration_tests:
+        sh('%s manage.py test geonode.tests.smoke' % prefix)
+        call_task('test', options={'prefix': prefix})
+    else:
+        call_task('test_integration')
+        call_task('test_integration', options={'name': 'geonode.tests.csw'})
+
+        # only start if using Geoserver backend
+        if not on_travis and 'geonode.geoserver' in INSTALLED_APPS:
+            call_task('test_integration',
+                      options={'name': 'geonode.upload.tests.integration',
+                               'settings': 'geonode.upload.tests.test_settings'})
 
     call_task('test_bdd', options={'local': local})
     sh('flake8 geonode')

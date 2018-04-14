@@ -470,12 +470,15 @@ class RequestEvent(models.Model):
                 'client_country': country,
                 'client_region': region,
                 'client_city': city}
-        inst = cls.objects.create(**data)
-        resources = cls._get_geonode_resources(request)
-        if resources:
-            inst.resources.add(*resources)
-            inst.save()
-        return inst
+        try:
+            inst = cls.objects.create(**data)
+            resources = cls._get_geonode_resources(request)
+            if resources:
+                inst.resources.add(*resources)
+                inst.save()
+            return inst
+        except:
+            return None
 
     @classmethod
     def from_geoserver(cls, service, request_data, received=None):

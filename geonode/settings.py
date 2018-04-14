@@ -628,11 +628,12 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 #
 
 on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
+integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'False'))
 
 # Setting a custom test runner to avoid running the tests for
 # some problematic 3rd party apps
-# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
 TEST_RUNNER_WORKER_MAX = 3
 TEST_RUNNER_WORKER_COUNT = 'auto'
 TEST_RUNNER_NOT_THREAD_SAFE = None
@@ -1410,7 +1411,7 @@ RISKS = {'DEFAULT_LOCATION': None,
 ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
-MONITORING_ENABLED = True
+MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'True'))
 MONITORING_HOST_NAME = 'localhost'
 MONITORING_SERVICE_NAME = 'geonode'
 
