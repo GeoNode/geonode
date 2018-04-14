@@ -631,8 +631,8 @@ on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
 
 # Setting a custom test runner to avoid running the tests for
 # some problematic 3rd party apps
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-# TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
 TEST_RUNNER_WORKER_MAX = 3
 TEST_RUNNER_WORKER_COUNT = 'auto'
 TEST_RUNNER_NOT_THREAD_SAFE = None

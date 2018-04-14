@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from django.test.testcases import SimpleTestCase, TransactionTestCase, LiveServerTestCase
+from django.test.testcases import SimpleTestCase, TestCase, LiveServerTestCase
 
 try:
     from django.utils.decorators import classproperty
@@ -41,7 +41,7 @@ class GeoNodeBaseSimpleTestSupport(SimpleTestCase):
     pass
 
 
-class GeoNodeBaseTestSupport(TransactionTestCase):
+class GeoNodeBaseTestSupport(TestCase):
 
     type = None
     obj_ids = []
