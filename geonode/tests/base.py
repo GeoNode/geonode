@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#########################################################################
+# ##############################################################################
 #
 # Copyright (C) 2018 OSGeo
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this profgram. If not, see <http://www.gnu.org/licenses/>.
 #
-#########################################################################
+# ##############################################################################
 
 from django.test.testcases import SimpleTestCase, TestCase, LiveServerTestCase
 
@@ -24,6 +24,7 @@ try:
     from django.utils.decorators import classproperty
 except:
     class classproperty(object):
+
         def __init__(self, method=None):
             self.fget = method
 

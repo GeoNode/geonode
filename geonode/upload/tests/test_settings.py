@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2018 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 #########################################################################
 
 import os
+from urlparse import urlparse, urlunparse
 from geonode.settings import *
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -29,9 +30,21 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
                         os.path.join(PROJECT_ROOT, "static_root")
                         )
 
-SITEURL = "http://localhost:8000"
+# SECRET_KEY = '************************'
+
+SITEURL = "http://localhost:8000/"
+
+# we need hostname for deployed
+_surl = urlparse(SITEURL)
+HOSTNAME = _surl.hostname
+
+# add trailing slash to site url. geoserver url will be relative to this
+if not SITEURL.endswith('/'):
+    SITEURL = '{}/'.format(SITEURL)
 
 ALLOWED_HOSTS = ['localhost', 'geonode.example.com']
+
+# TIME_ZONE = 'Europe/Paris'
 
 DATABASES = {
     'default': {
@@ -41,6 +54,7 @@ DATABASES = {
         'PASSWORD': 'geonode',
         'HOST': 'localhost',
         'PORT': '5432',
+        'CONN_TOUT': 900,
     }
 }
 
@@ -49,8 +63,8 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    #    'GEOSERVER_PUBLIC_LOCATION', '{}/geoserver/'.format(SITEURL)
-    'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
+    #  'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)
+    'GEOSERVER_PUBLIC_LOCATION', GEOSERVER_LOCATION
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -90,6 +104,14 @@ OGC_SERVER = {
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }
+
+# WARNING: Map Editing is affected by this. GeoExt Configuration is cached for 5 minutes
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#         'LOCATION': '/var/tmp/django_cache',
+#     }
+# }
 
 # If you want to enable Mosaics use the following configuration
 UPLOADER = {

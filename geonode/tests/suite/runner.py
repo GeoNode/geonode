@@ -13,7 +13,7 @@ from django.conf import settings
 
 from django.test.runner import DiscoverRunner
 from django.db import connections, DEFAULT_DB_ALIAS
-from django.test.testcases import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured
 
 from .base import setup_test_db
 
@@ -29,6 +29,26 @@ WORKER_TIMEOUT = getattr(settings, 'TEST_RUNNER_WORKER_TIMEOUT', 10)
 logger = logging.getLogger(__name__)
 
 null_file = open('/dev/null', 'w')
+
+
+class GeoNodeBaseSuiteDiscoverRunner(DiscoverRunner):
+
+    def __init__(self, pattern=None, top_level=None, verbosity=1,
+                 interactive=True, failfast=True, keepdb=False,
+                 reverse=False, debug_mode=False, debug_sql=False, parallel=0,
+                 tags=None, exclude_tags=None, **kwargs):
+        self.pattern = pattern
+        self.top_level = top_level
+        self.verbosity = verbosity
+        self.interactive = interactive
+        self.failfast = failfast
+        self.keepdb = keepdb
+        self.reverse = reverse
+        self.debug_mode = debug_mode
+        self.debug_sql = debug_sql
+        self.parallel = parallel
+        self.tags = set(tags or [])
+        self.exclude_tags = set(exclude_tags or [])
 
 
 class BufferWritesDevice(object):

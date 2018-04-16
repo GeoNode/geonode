@@ -194,7 +194,10 @@ class ProfileAdmin(admin.ModelAdmin):
         # * The user has pressed the 'Save and add another' button
         # * We are adding a user in a popup
         if '_addanother' not in request.POST and IS_POPUP_VAR not in request.POST:
+            mutable = request.POST._mutable
+            request.POST._mutable = True
             request.POST['_continue'] = 1
+            request.POST._mutable = mutable
         return super(ProfileAdmin, self).response_add(request, obj,
                                                       post_url_continue)
 
