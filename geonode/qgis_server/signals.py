@@ -41,6 +41,7 @@ from geonode.qgis_server.models import QGISServerLayer, QGISServerMap
 from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
 from geonode.qgis_server.xml_utilities import update_xml
 from geonode.utils import check_ogc_backend
+from geonode.decorators import on_ogc_backend
 
 logger = logging.getLogger("geonode.qgis_server.signals")
 
@@ -50,12 +51,14 @@ if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
 qgis_map_with_layers = Signal(providing_args=[])
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_layer_post_delete(instance, sender, **kwargs):
     """Removes the layer from Local Storage."""
     logger.debug('QGIS Server Layer Post Delete')
     instance.delete_qgis_layer()
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_pre_delete(instance, sender, **kwargs):
     """Removes the layer from Local Storage."""
     # logger.debug('QGIS Server Pre Delete')
@@ -64,6 +67,7 @@ def qgis_server_pre_delete(instance, sender, **kwargs):
     # Delete file is included when deleting the object.
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_pre_save(instance, sender, **kwargs):
     """Send information to QGIS Server.
 
@@ -79,6 +83,7 @@ def qgis_server_pre_save(instance, sender, **kwargs):
     # logger.debug('QGIS Server Pre Save')
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_post_save(instance, sender, **kwargs):
     """Save keywords to QGIS Server.
 
@@ -409,6 +414,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
             pass
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
     logger.debug('QGIS Server Pre Save Map Layer %s' % instance.name)
     try:
@@ -419,6 +425,7 @@ def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
         pass
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_post_save_map(instance, sender, **kwargs):
     """Post Save Map Hook for QGIS Server
 
@@ -551,6 +558,7 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
         instance, overwrite=True)
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def register_qgis_server_signals():
     """Helper function to register model signals."""
     if check_ogc_backend(qgis_server.BACKEND_PACKAGE):

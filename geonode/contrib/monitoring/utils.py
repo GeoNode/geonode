@@ -205,7 +205,7 @@ def align_period_start(start, interval):
     utc = pytz.utc
     day_start = datetime(*start.date().timetuple()[:6]).replace(tzinfo=utc)
     # timedelta
-    diff = (start - day_start)
+    diff = (start.replace(tzinfo=utc) - day_start)
     # seconds
     diff_s = diff.total_seconds()
     int_s = interval.total_seconds()

@@ -20,6 +20,7 @@ addons:
 
 env:
   - BACKEND: 'geonode.geoserver'
+    ON_TRAVIS: 'True'
   - BACKEND: 'geonode.qgis_server'
     DOCKER_COMPOSE_VERSION: 1.11.2
     # This is qgis server address
@@ -52,7 +53,7 @@ install:
   - sudo apt-get update
   - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 --no-install-recommends
   - sudo update-java-alternatives --set java-8-oracle
-  - pip install -r requirements.txt --no-deps
+  - pip install -r requirements.txt
   - pip install -e .
   - pip install pygdal==`gdal-config --version`
   - pip install codecov

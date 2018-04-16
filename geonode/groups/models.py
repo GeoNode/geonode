@@ -18,8 +18,6 @@
 #
 #########################################################################
 
-import datetime
-
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
@@ -28,6 +26,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.db.models import signals
+from django.utils.timezone import now
 
 from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group
@@ -200,7 +199,7 @@ class GroupMember(models.Model):
         (MANAGER, _("Manager")),
         (MEMBER, _("Member")),
     ])
-    joined = models.DateTimeField(default=datetime.datetime.now)
+    joined = models.DateTimeField(default=now)
 
 
 def group_pre_delete(instance, sender, **kwargs):

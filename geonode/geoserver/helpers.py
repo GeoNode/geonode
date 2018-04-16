@@ -47,6 +47,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 from geoserver.catalog import Catalog, FailedRequestError
 from geoserver.resource import FeatureType, Coverage
@@ -242,11 +243,13 @@ def get_sld_for(gs_catalog, layer):
     # polygons, hope this doesn't happen for rasters  though)
     if layer.default_style is None:
         gs_catalog._cache.clear()
-        layer = gs_catalog.get_layer(layer.name)
-    name = layer.default_style.name if layer.default_style is not None else "raster"
+        gs_layer = gs_catalog.get_layer(layer.name)
+        name = gs_layer.default_style.name if gs_layer.default_style is not None else "raster"
+    else:
+        name = layer.default_style.name if layer.default_style is not None else "raster"
 
     # Detect geometry type if it is a FeatureType
-    if layer.resource.resource_type == 'featureType':
+    if layer.resource and layer.resource.resource_type == 'featureType':
         res = layer.resource
         res.fetch()
         ft = res.store.get_resources(res.name)
@@ -391,7 +394,7 @@ def cascading_delete(cat, layer_name):
                    'to save information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer_name)
                    )
-            logger.warn(msg, e)
+            logger.warn(msg)
             return None
         else:
             raise e
@@ -592,7 +595,7 @@ def gs_slurp(
         'layers': [],
         'deleted_layers': []
     }
-    start = datetime.datetime.now()
+    start = datetime.datetime.now(timezone.get_current_timezone())
     for i, resource in enumerate(resources):
         name = resource.name
         the_store = resource.store
@@ -611,7 +614,7 @@ def gs_slurp(
                 "bbox_x1": Decimal(resource.native_bbox[1]),
                 "bbox_y0": Decimal(resource.native_bbox[2]),
                 "bbox_y1": Decimal(resource.native_bbox[3]),
-                "srid": resource.srid
+                "srid": resource.projection
             })
 
             # sync permissions in GeoFence
@@ -767,7 +770,7 @@ def gs_slurp(
             if verbosity > 0:
                 print >> console, msg
 
-    finish = datetime.datetime.now()
+    finish = datetime.datetime.now(timezone.get_current_timezone())
     td = finish - start
     output['stats']['duration_sec'] = td.microseconds / \
         1000000 + td.seconds + td.days * 24 * 3600

@@ -38,17 +38,16 @@ from paver.easy import (BuildFailure, call_task, cmdopts, info, needs, options,
 from setuptools.command import easy_install
 
 try:
-    from geonode.settings import GEONODE_APPS
-except BaseException:
-    # probably trying to run install_win_deps.
-    pass
-
-try:
     from paver.path import pushd
 except ImportError:
     from paver.easy import pushd
 
-from geonode.settings import OGC_SERVER, INSTALLED_APPS
+from geonode.settings import (on_travis,
+                              INSTALLED_APPS,
+                              GEONODE_CORE_APPS,
+                              GEONODE_APPS,
+                              OGC_SERVER,
+                              ASYNC_SIGNALS,)
 
 assert sys.version_info >= (2, 6), \
     SystemError("GeoNode Build requires python 2.6 or better")
@@ -326,8 +325,8 @@ def upgradedb(options):
     """
     version = options.get('version')
     if version in ['1.1', '1.2']:
-        sh("python manage.py migrate maps 0001 --fake")
-        sh("python manage.py migrate avatar 0001 --fake")
+        sh("python -W ignore manage.py migrate maps 0001 --fake")
+        sh("python -W ignore manage.py migrate avatar 0001 --fake")
     elif version is None:
         print "Please specify your GeoNode version"
     else:
@@ -343,7 +342,7 @@ def updategeoip(options):
     if settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
-    sh("%s python manage.py updategeoip -o" % settings)
+    sh("%s python -W ignore manage.py updategeoip -o" % settings)
 
 
 @task
@@ -358,12 +357,12 @@ def sync(options):
     if settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
-    sh("%s python manage.py makemigrations --noinput" % settings)
-    sh("%s python manage.py migrate --noinput" % settings)
-    sh("%s python manage.py loaddata sample_admin.json" % settings)
-    sh("%s python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" % settings)
-    sh("%s python manage.py loaddata geonode/base/fixtures/initial_data.json" % settings)
-    sh("%s python manage.py set_all_layers_alternate" % settings)
+    sh("%s python -W ignore manage.py makemigrations --noinput" % settings)
+    sh("%s python -W ignore manage.py migrate --noinput" % settings)
+    sh("%s python -W ignore manage.py loaddata sample_admin.json" % settings)
+    sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" % settings)
+    sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" % settings)
+    sh("%s python -W ignore manage.py set_all_layers_alternate" % settings)
 
 
 @task
@@ -443,8 +442,6 @@ def start():
     """
     Start GeoNode (Django, GeoServer & Client)
     """
-    call_task('start_messaging')
-
     info("GeoNode is now available.")
 
 
@@ -453,6 +450,7 @@ def stop_django():
     """
     Stop the GeoNode Django application
     """
+    kill('python', 'celery')
     kill('python', 'runserver')
     kill('python', 'runmessaging')
 
@@ -540,7 +538,27 @@ def start_django():
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     bind = options.get('bind', '0.0.0.0:8000')
     foreground = '' if options.get('foreground', False) else '&'
-    sh('%s python manage.py runserver %s %s' % (settings, bind, foreground))
+    sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
+
+    if ASYNC_SIGNALS:
+        celery_queues = [
+            "default",
+            "geonode",
+            "cleanup",
+            "update",
+            "email",
+            # Those queues are directly managed by messages.consumer
+            # "broadcast",
+            # "email.events",
+            # "all.geoserver",
+            # "geoserver.events",
+            # "geoserver.data",
+            # "geoserver.catalog",
+            # "notifications.events",
+            # "geonode.layer.viewer"
+        ]
+        sh('%s celery -A geonode worker -Q %s -B -E -l INFO %s' % (settings, ",".join(celery_queues),foreground))
+        sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
 
 
 def start_messaging():
@@ -551,7 +569,7 @@ def start_messaging():
     if settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     foreground = '' if options.get('foreground', False) else '&'
-    sh('%s python manage.py runmessaging %s' % (settings, foreground))
+    sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
 
 
 @cmdopts([
@@ -696,8 +714,12 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
-                                                 '.tests '.join(GEONODE_APPS)))
+    if on_travis:
+        sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
+                                                     '.tests '.join(GEONODE_CORE_APPS)))
+    else:
+        sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
+                                                     '.tests '.join(GEONODE_APPS)))
 
 
 @task
@@ -764,24 +786,24 @@ def test_integration(options):
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings if settings else ''
 
         if name == 'geonode.upload.tests.integration':
-            sh("%s python manage.py makemigrations --noinput" % settings)
-            sh("%s python manage.py migrate --noinput" % settings)
-            sh("%s python manage.py loaddata sample_admin.json" % settings)
-            sh("%s python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" %
+            sh("%s python -W ignore manage.py makemigrations --noinput" % settings)
+            sh("%s python -W ignore manage.py migrate --noinput" % settings)
+            sh("%s python -W ignore manage.py loaddata sample_admin.json" % settings)
+            sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" %
                settings)
-            sh("%s python manage.py loaddata geonode/base/fixtures/initial_data.json" %
+            sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" %
                settings)
             call_task('start_geoserver')
             bind = options.get('bind', '0.0.0.0:8000')
             foreground = '' if options.get('foreground', False) else '&'
-            sh('%s python manage.py runmessaging %s' % (settings, foreground))
-            sh('%s python manage.py runserver %s %s' %
+            sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
+            sh('%s python -W ignore manage.py runserver %s %s' %
                (settings, bind, foreground))
             sh('sleep 30')
             settings = 'REUSE_DB=1 %s' % settings
 
-        sh(('%s python manage.py test %s'
-            ' --noinput --liveserver=0.0.0.0:8000' % (settings, name)))
+        sh(('%s python -W ignore manage.py test %s'
+            ' --noinput' % (settings, name)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -798,6 +820,8 @@ def test_integration(options):
 
 
 @task
+@needs(['start_geoserver',
+        'start_qgis_server'])
 @cmdopts([
     ('coverage', 'c', 'use this flag to generate coverage during test runs'),
     ('local=', 'l', 'Set to True if running bdd tests locally')
@@ -817,7 +841,7 @@ def run_tests(options):
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
 
     # only start if using Geoserver backend
-    if 'geonode.geoserver' in INSTALLED_APPS:
+    if not on_travis and 'geonode.geoserver' in INSTALLED_APPS:
         call_task('test_integration',
                   options={'name': 'geonode.upload.tests.integration',
                            'settings': 'geonode.upload.tests.test_settings'})
@@ -876,7 +900,7 @@ def setup_data():
     if settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
-    sh("%s python manage.py importlayers %s -v2" % (settings, data_dir))
+    sh("%s python -W ignore manage.py importlayers %s -v2" % (settings, data_dir))
 
 
 @needs(['package'])

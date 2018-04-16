@@ -20,7 +20,8 @@
 
 """unit tests for geonode.upload.upload_preprocessing module"""
 
-from django.test import TestCase
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import mock
 import os.path
 
@@ -29,7 +30,7 @@ from geonode.upload import upload_preprocessing
 from geonode.upload.utils import get_kml_doc
 
 
-class UploadPreprocessingTestCase(TestCase):
+class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
 
     MOCK_PREFIX = "geonode.upload.upload_preprocessing"
 
