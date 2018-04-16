@@ -25,7 +25,7 @@ from setuptools import find_packages
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
-    shapely_dep = "Shapely==1.5.17"
+    shapely_dep = "Shapely<1.5.13"
 else:
     shapely_dep = "Shapely>=1.5.17,<1.6.dev0"
 
@@ -53,7 +53,7 @@ setup(name='GeoNode',
             "Pillow<=3.3.1",  # python-imaging (3.1.2) - python-pillow (3.3.1 in our ppa)
             "lxml<=3.8.0",  # python-lxml (3.6.2 in our ppa) FIXME
             "psycopg2<=2.7.3.1",  # python-psycopg2 (2.7.3.1 in our ppa)
-            "Django<=1.8.19",  # python-django (1.8.19 in our ppa)
+            "Django==1.8.19",  # python-django (1.8.19 in our ppa) FIXME
 
             # Other
             "amqp==2.2.2",  # (python-amqp 2.2.2 in our ppa)
@@ -81,8 +81,9 @@ setup(name='GeoNode',
             "coreapi==2.3.3",  # python-coreapi (2.3.3 in our ppa)
             "coreschema==0.0.4",  # python-coreschema (0.0.4 in our ppa)
             "autoflake<=0.7",  # python-autoflake (0.7 in our ppa)
-            "flake8<=2.5.4",  # python-flake8 (2.5.4)
-            "pyflakes<=1.6.0",  # python-pyflakes (1.6.0 in our ppa)
+            "flake8<=2.6.2",  # python-flake8 (2.5.4) FIXME
+            "pycodestyle<=2.0.0",  # missing TODO
+            "pyflakes<=1.2.3",  # python-pyflakes (1.6.0 in our ppa) FIXME
             "pep8<=1.7.1",  # python-pep8 (1.7.1 in our ppa)
             "boto<=2.38.0",  # python-boto (2.38.0)
             "six<1.11.0",  # https://github.com/benjaminp/six/issues/210 (1.10.0 in ppa)
@@ -149,7 +150,7 @@ setup(name='GeoNode',
 
             # GeoNode org maintained apps.
             "django-geoexplorer>=4.0.0,<5.0",  # python-django-geoexplorer (4.0.39 in our ppa)
-            "geonode-user-messages<=0.1.13",  # python-geonode-user-messages (0.1.13 in our ppa)
+            "geonode-user-messages==0.1.14",  # python-geonode-user-messages (0.1.14 in our ppa) FIXME
             "geonode-avatar<=2.1.7",  # python-geonode-avatar (2.1.7 in our ppa)
             "geonode-announcements<=1.0.13",  # python-geonode-announcements (1.0.13 in our ppa)
             "geonode-agon-ratings<=0.3.8",  # python-geonode-agon-ratings (0.3.8 in our ppa)
@@ -188,7 +189,7 @@ setup(name='GeoNode',
             "ipaddress<=1.0.18",  # (1.0.18 in our ppa)
             "jdcal<=1.3",  # (1.3 in our ppa)
             "kombu==4.1.0",  # python-kombu (4.1.0 in our ppa)
-            "mccabe<=0.4.0",  # (0.4.0 in our ppa)
+            "mccabe<=0.5.3",  # (0.4.0 in our ppa) FIXME
             "mock<=2.0.0",  # (1.3.0 in ppa) FIXME
             "numpy<=1.13.1",  # (1.11.0 in ppa) FIXME
             "odfpy<=1.3.6",  # python-odfpy (1.3.6 in our ppa)

@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import os
 import datetime
 import dj_database_url
@@ -27,7 +29,6 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import TestCase
 
 from geonode.geoserver.signals import gs_catalog
 from geonode.layers.models import Layer
@@ -72,13 +73,13 @@ def mocked_get_today():
     return datetime.date(YEAR, MONTH, 1)
 
 
-class DatastoreShardsCoreTest(TestCase):
+class DatastoreShardsCoreTest(GeoNodeBaseTestSupport):
     """
     Test the datastore_shards application.
     """
-    fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
+        super(DatastoreShardsCoreTest, self).setUp()
         # set temporary settings to use a postgis datastore
         settings.DATASTORE_URL = 'postgis://geonode:geonode@localhost:5432/datastore'
         postgis_db = dj_database_url.parse(settings.DATASTORE_URL, conn_max_age=600)
@@ -89,6 +90,7 @@ class DatastoreShardsCoreTest(TestCase):
         settings.SHARD_PREFIX = SHARD_PREFIX
 
     def tearDown(self):
+        super(GeoNodeBaseTestSupport, self).tearDown()
         # move to original settings
         settings.OGC_SERVER['default']['DATASTORE'] = ''
         del settings.DATABASES['datastore']

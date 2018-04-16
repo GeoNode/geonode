@@ -20,6 +20,19 @@ body {
     opacity: 0.5;
 }
 
+{% if theme.partners %}
+/* **************** PARTNERS LOGOS *************** */
+{% for partner in theme.partners.all %}
+.{{ partner.logo_class }} {
+    background-image: url({{ partner.logo.url }});
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    height: 250px;
+}
+{% endfor %}
+{% endif %}
+
 {% if theme.logo %}
 /* **************** LOGO *************** */
 .home .navbar-brand {

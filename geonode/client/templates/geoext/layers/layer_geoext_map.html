@@ -227,7 +227,7 @@
                 for(var layer in layers){
                     l = layers[layer];
                     if(!l.background && l.name && l.name.indexOf(resource_name) != -1){
-                        l.dimensions = {
+                        l.capability.dimensions = {
                             time:{
                                 "name":"time",
                                 "units":"ISO8601",

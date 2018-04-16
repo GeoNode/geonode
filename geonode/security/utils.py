@@ -243,7 +243,8 @@ def set_geofence_all(instance):
               http://<host>:<port>/geoserver/geofence/rest/rules.json?layer=<layer_name>
         """
         headers = {'Content-type': 'application/json'}
-        r = requests.get(url + 'geofence/rest/rules.json?layer=' + resource.layer.name,
+        r = requests.get(url + 'geofence/rest/rules.json?layer=' + resource.layer.name +
+                         '&workspace=' + workspace,
                          headers=headers,
                          auth=HTTPBasicAuth(user, passwd))
 

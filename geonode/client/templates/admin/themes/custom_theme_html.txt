@@ -1,3 +1,23 @@
+{{ custom_base_header|safe }}
+
+{{ partners_header|safe }}
+{% if theme.partners %}
+<section id="partners">
+  <div class="container text-center">
+      <h2>{{ theme.partners_title }}</h2>
+      <div class="row">
+         {% for partner in theme.partners.all %}
+          <div class="col-md-6">
+              <div class="{{ partner.logo_class }}"></div>
+              <div><a href="{{ partner.partner_link }}" target="_blank">{{ partner.title }}</a></div>
+          </div>
+         {% endfor %}
+      </div>
+  </div>
+</section>
+{% endif %}
+{{ partners_footer|safe }}
+
 {{ contactus_header|safe }}
  {% if theme.contactus %}
     <ul class="list-unstyled">
@@ -8,12 +28,11 @@
         {% if theme.contact_city %}<li style="text-align: left;">{{ theme.contact_city }}</li>{% endif %}
         {% if theme.contact_street %}<li style="text-align: left;">{{ theme.contact_street }}</li>{% endif %}
         {% if theme.contact_postal_code %}<li style="text-align: left;">{{ theme.contact_postal_code }}</li>{% endif %}
-        {% if theme.contact_city %}<li style="text-align: left;">{{ theme.contact_city }}</li>{% endif %}
         {% if theme.contact_country %}<li style="text-align: left;">{{ theme.contact_country }}</li>{% endif %}
         {% if theme.contact_delivery_point %}<li style="text-align: left;">{{ theme.contact_delivery_point }}</li>{% endif %}
         {% if theme.contact_voice %}<li style="text-align: left;">Tel: {{ theme.contact_voice }}</li>{% endif %}
         {% if theme.contact_facsimile %}<li style="text-align: left;">Fax: {{ theme.contact_facsimile }}</li>{% endif %}
-        {% if theme.contact_email %}<li style="text-align: left;">Fax: {{ theme.contact_email }}</li>{% endif %}
+        {% if theme.contact_email %}<li style="text-align: left;">E-mail: {{ theme.contact_email }}</li>{% endif %}
     </ul>
  {% endif %}
 {{ contactus_footer|safe }}

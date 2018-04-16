@@ -39,7 +39,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.template.loader import get_template
-from django.template import Context
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 
@@ -808,11 +807,11 @@ def get_capabilities(request, layerid=None, user=None,
                     # Get the required info from layer model
                     # TODO: store time dimension on DB also
                     tpl = get_template("geoserver/layer.xml")
-                    ctx = Context({
+                    ctx = {
                         'layer': layer,
                         'geoserver_public_url': ogc_server_settings.public_url,
                         'catalogue_url': settings.CATALOGUE['default']['URL'],
-                    })
+                    }
                     gc_str = tpl.render(ctx)
                     gc_str = gc_str.encode("utf-8")
                     layerelem = etree.XML(gc_str)

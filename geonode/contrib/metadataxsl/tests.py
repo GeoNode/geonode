@@ -18,14 +18,15 @@
 #
 #########################################################################
 
-from django.test import TestCase
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 
-class MetadataXSLTest(TestCase):
+class MetadataXSLTest(GeoNodeBaseTestSupport):
+
     """
     Tests geonode.contrib.metadataxsl app/module
     """
     def setUp(self):
+        super(MetadataXSLTest, self).setUp()
         self.adm_un = "admin"
         self.adm_pw = "admin"
-        # create_models(type="layer")
