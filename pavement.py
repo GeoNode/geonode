@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import django
 import fileinput
 import glob
 import os
@@ -731,22 +732,20 @@ def test_bdd():
     """
     Run GeoNode's BDD Test Suite
     """
-    call_task('stop_geoserver')
-    sh('sleep 30')
     local = str2bool(options.get('local', 'false'))
     if local:
         call_task('reset_hard')
         call_task('setup')
+    else:
+        call_task('reset')
+    call_task('setup')
     call_task('sync')
-    # Start GeoServer
-    call_task('start_geoserver')
     sh('sleep 30')
     info("GeoNode is now available, running the bdd tests now.")
 
     sh('py.test')
 
     if local:
-        call_task('stop_geoserver')
         call_task('reset_hard')
 
 
@@ -765,10 +764,12 @@ def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
-    call_task('stop_geoserver')
-    _reset()
-    # Start GeoServer
-    call_task('start_geoserver')
+    if 'geonode.qgis_server' not in INSTALLED_APPS or OGC_SERVER['default']['BACKEND'] == 'geonode.geoserver':
+        call_task('stop_geoserver')
+        _reset()
+        # Start GeoServer
+        call_task('start_geoserver')
+
     info("GeoNode is now available, running the tests now.")
 
     name = options.get('name', 'geonode.tests.integration')
@@ -803,8 +804,12 @@ def test_integration(options):
             sh('sleep 30')
             settings = 'REUSE_DB=1 %s' % settings
 
+        live_server_option = ''
+        if django.VERSION[0] == 1 and django.VERSION[1] <= 11 and django.VERSION[2] < 2:
+            live_server_option = '--liveserver=localhost:8000'
+
         sh(('%s python -W ignore manage.py test %s'
-            ' --noinput --liveserver=localhost:8000' % (settings, name)))
+            ' --noinput %s' % (settings, name, live_server_option)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -845,7 +850,7 @@ def run_tests(options):
         call_task('test_integration', options={'name': 'geonode.tests.csw'})
 
         # only start if using Geoserver backend
-        if not on_travis and 'geonode.geoserver' in INSTALLED_APPS:
+        if 'geonode.geoserver' in INSTALLED_APPS and OGC_SERVER['default']['BACKEND'] == 'geonode.geoserver':
             call_task('test_integration',
                       options={'name': 'geonode.upload.tests.integration',
                                'settings': 'geonode.upload.tests.test_settings'})

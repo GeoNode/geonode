@@ -26,6 +26,7 @@ import sys
 from datetime import timedelta
 from distutils.util import strtobool
 
+import django
 import dj_database_url
 #
 # General Django development settings
@@ -68,7 +69,8 @@ else:
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
-DJANGO_LIVE_TEST_SERVER_ADDRESS = 'localhost:8000'
+if django.VERSION[0] == 1 and django.VERSION[1] <= 11 and django.VERSION[2] < 2:
+    DJANGO_LIVE_TEST_SERVER_ADDRESS = 'localhost:8000'
 
 try:
     # try to parse python notation, default in dockerized env
@@ -874,8 +876,11 @@ BING_API_KEY = os.environ.get('BING_API_KEY', None)
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 # handle timestamps like 2017-05-30 16:04:00.719 UTC
-DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS +\
-    ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
+if django.VERSION[0] == 1 and django.VERSION[1] >= 11:
+    _DATETIME_INPUT_FORMATS = ['%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z']
+else:
+    _DATETIME_INPUT_FORMATS = ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
+DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS + _DATETIME_INPUT_FORMATS
 
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
