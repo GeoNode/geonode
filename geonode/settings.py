@@ -728,6 +728,7 @@ OGC_SERVER = {
 USE_GEOSERVER = 'geonode.geoserver' in INSTALLED_APPS and OGC_SERVER['default']['BACKEND'] == 'geonode.geoserver'
 
 # Uploader Settings
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 UPLOADER = {
     'BACKEND': 'geonode.rest',
     # 'BACKEND': 'geonode.importer',
