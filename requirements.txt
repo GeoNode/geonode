@@ -1,4 +1,4 @@
-Django==1.8.19
+Django==1.11.11
 six==1.10.0
 amqp==2.2.2
 anyjson==0.3.3
@@ -45,7 +45,7 @@ django-forms-bootstrap==3.1.0
 django-geoexplorer==4.0.39
 django-geonode-client==1.0.0
 django-guardian==1.4.9
-django-haystack==2.7.0
+django-haystack==2.8.0
 django-import-export==1.0.0
 django-js-asset==1.0.0
 django-invitations==1.9.2
