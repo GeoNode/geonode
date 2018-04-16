@@ -188,6 +188,10 @@ def activate_theme(theme):
         t = loader.get_template('admin/themes/custom_theme_html.txt')
 
         custom_theme_base_header_template = find_all_templates(pattern="custom_theme_base_header.txt")
+        hero_header_template = find_all_templates(pattern="custom_theme_hero_header.txt")
+        hero_footer_template = find_all_templates(pattern="custom_theme_hero_footer.txt")
+        bigsearch_header_template = find_all_templates(pattern="custom_theme_bigsearch_header.txt")
+        bigsearch_footer_template = find_all_templates(pattern="custom_theme_bigsearch_footer.txt")
         partners_header_template = find_all_templates(pattern="custom_theme_partners_header.txt")
         partners_footer_template = find_all_templates(pattern="custom_theme_partners_footer.txt")
         contactus_header_template = find_all_templates(pattern="custom_theme_contactus_header.txt")
@@ -205,6 +209,10 @@ def activate_theme(theme):
                 return ''
 
         custom_theme_base_header = _read_template(custom_theme_base_header_template)
+        hero_header = _read_template(hero_header_template)
+        hero_footer = _read_template(hero_footer_template)
+        bigsearch_header = _read_template(bigsearch_header_template)
+        bigsearch_footer = _read_template(bigsearch_footer_template)
         partners_header = _read_template(partners_header_template)
         partners_footer = _read_template(partners_footer_template)
         contactus_header = _read_template(contactus_header_template)
@@ -216,6 +224,10 @@ def activate_theme(theme):
             {
                 'theme': theme,
                 'custom_base_header': custom_theme_base_header,
+                'hero_header': hero_header,
+                'hero_footer': hero_footer,
+                'bigsearch_header': bigsearch_header,
+                'bigsearch_footer': bigsearch_footer,
                 'partners_header': partners_header,
                 'partners_footer': partners_footer,
                 'contactus_header': contactus_header,
