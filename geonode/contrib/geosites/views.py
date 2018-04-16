@@ -30,6 +30,7 @@ from django.db.models import Q
 
 from guardian.shortcuts import get_objects_for_user
 from allauth.account.views import LoginView
+from allauth.exceptions import ImmediateHttpResponse
 
 from geonode.utils import _get_basic_auth_info
 from geonode.layers.views import _resolve_layer, layer_detail
@@ -44,7 +45,7 @@ from geonode.views import AjaxLoginForm
 from .models import SiteResources
 from .utils import resources_for_site, users_for_site, groups_for_site
 
-_PERMISSION_MSG_VIEW = ('You don\'t have permissions to view this document')
+_PERMISSION_MSG_VIEW = 'You don\'t have permissions to view this document'
 
 
 def site_layer_detail(request, layername, template='layers/layer_detail.html'):
@@ -58,7 +59,7 @@ def site_layer_detail(request, layername, template='layers/layer_detail.html'):
     if not SiteResources.objects.get(site=site).resources.filter(pk=layer.pk).exists():
         raise Http404
     else:
-        return layer_detail(request, layername, template='layers/layer_detail.html')
+        return layer_detail(request, layername, template=template)
 
 
 def site_document_detail(request, docid):
@@ -213,14 +214,11 @@ def ajax_lookup(request):
                          Q(organization__icontains=keyword)).exclude(username='AnonymousUser')
 
     groups = GroupProfile.objects.filter(id__in=groups_for_site())
-    groups =groups.filter(Q(title__istartswith=keyword) |
-                          Q(description__icontains=keyword))
-    json_dict = {
-        'users': [({'username': u.username}) for u in users],
-        'count': users.count(),
-    }
+    groups = groups.filter(Q(title__istartswith=keyword) |
+                           Q(description__icontains=keyword))
+    json_dict = {'users': [({'username': u.username}) for u in users], 'count': users.count(),
+                 'groups': [({'name': g.slug, 'title': g.title}) for g in groups]}
 
-    json_dict['groups'] = [({'name': g.slug, 'title': g.title}) for g in groups]
     return HttpResponse(
         content=json.dumps(json_dict),
         content_type='text/plain'

@@ -23,6 +23,7 @@ register(ResourceBaseAutocomplete,
          limit_choices=100,
          autocomplete_js_attributes={'placeholder': 'Resource name..', },)
 
+
 class DocumentAutocomplete(DocumentAutocomplete):
     def choices_for_request(self):
         self.choices = Document.objects.filter(id__in=resources_for_site)
@@ -37,6 +38,7 @@ register(DocumentAutocomplete,
              'placeholder': 'Document name..',
          },
          )
+
 
 class LayerAutocomplete(LayerAutocomplete):
     def choices_for_request(self):
@@ -68,5 +70,3 @@ register(MapAutocomplete,
          autocomplete_js_attributes={
              'placeholder': 'Map name..',
          })
-
-

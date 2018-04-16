@@ -32,6 +32,7 @@ class SitePeopleAdmin(admin.ModelAdmin):
     filter_horizontal = ('people',)
     readonly_fields = ('site',)
 
+
 class SiteGroupAdmin(admin.ModelAdmin):
     filter_horizontal = ('group',)
     readonly_fields = ('site',)
@@ -40,4 +41,3 @@ class SiteGroupAdmin(admin.ModelAdmin):
 admin.site.register(SiteResources, SiteResourceAdmin)
 admin.site.register(SitePeople, SitePeopleAdmin)
 admin.site.register(SiteGroups, SiteGroupAdmin)
-

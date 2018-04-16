@@ -171,4 +171,3 @@ api.register(SiteRegionResource())
 api.register(SiteProfileResource())
 api.register(SiteGroupResource())
 api.register(SiteOwnerResource())
-
