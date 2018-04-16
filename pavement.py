@@ -769,8 +769,13 @@ def test_integration(options):
         _reset()
         # Start GeoServer
         call_task('start_geoserver')
+    else:
+        call_task('stop_qgis_server')
+        _reset()
+        # Start QGis Server
+        call_task('start_qgis_server')
 
-    info("GeoNode is now available, running the tests now.")
+    sh('sleep 30')
 
     name = options.get('name', 'geonode.tests.integration')
     settings = options.get('settings', '')
@@ -782,7 +787,6 @@ def test_integration(options):
         if name == 'geonode.tests.csw':
             call_task('sync', options={'settings': settings})
             call_task('start', options={'settings': settings})
-            sh('sleep 30')
             call_task('setup_data', options={'settings': settings})
 
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings if settings else ''
@@ -808,6 +812,7 @@ def test_integration(options):
         if django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2:
             live_server_option = ''
 
+        info("GeoNode is now available, running the tests now.")
         sh(('%s python -W ignore manage.py test %s'
             ' --noinput %s' % (settings, name, live_server_option)))
 
