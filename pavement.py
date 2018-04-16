@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import django
 import fileinput
 import glob
 import os
@@ -43,6 +44,7 @@ except ImportError:
     from paver.easy import pushd
 
 from geonode.settings import (on_travis,
+                              integration_tests,
                               INSTALLED_APPS,
                               GEONODE_CORE_APPS,
                               GEONODE_APPS,
@@ -730,22 +732,20 @@ def test_bdd():
     """
     Run GeoNode's BDD Test Suite
     """
-    call_task('stop_geoserver')
-    sh('sleep 30')
     local = str2bool(options.get('local', 'false'))
     if local:
         call_task('reset_hard')
         call_task('setup')
+    else:
+        call_task('reset')
+    call_task('setup')
     call_task('sync')
-    # Start GeoServer
-    call_task('start_geoserver')
     sh('sleep 30')
     info("GeoNode is now available, running the bdd tests now.")
 
     sh('py.test')
 
     if local:
-        call_task('stop_geoserver')
         call_task('reset_hard')
 
 
@@ -764,11 +764,18 @@ def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
-    call_task('stop_geoserver')
-    _reset()
-    # Start GeoServer
-    call_task('start_geoserver')
-    info("GeoNode is now available, running the tests now.")
+    if 'geonode.qgis_server' not in INSTALLED_APPS or OGC_SERVER['default']['BACKEND'] == 'geonode.geoserver':
+        call_task('stop_geoserver')
+        _reset()
+        # Start GeoServer
+        call_task('start_geoserver')
+    else:
+        call_task('stop_qgis_server')
+        _reset()
+        # Start QGis Server
+        call_task('start_qgis_server')
+
+    sh('sleep 30')
 
     name = options.get('name', 'geonode.tests.integration')
     settings = options.get('settings', '')
@@ -780,7 +787,6 @@ def test_integration(options):
         if name == 'geonode.tests.csw':
             call_task('sync', options={'settings': settings})
             call_task('start', options={'settings': settings})
-            sh('sleep 30')
             call_task('setup_data', options={'settings': settings})
 
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings if settings else ''
@@ -802,8 +808,13 @@ def test_integration(options):
             sh('sleep 30')
             settings = 'REUSE_DB=1 %s' % settings
 
+        live_server_option = '--liveserver=localhost:8000'
+        if django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2:
+            live_server_option = ''
+
+        info("GeoNode is now available, running the tests now.")
         sh(('%s python -W ignore manage.py test %s'
-            ' --noinput' % (settings, name)))
+            ' --noinput %s' % (settings, name, live_server_option)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -835,16 +846,19 @@ def run_tests(options):
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
-    sh('%s manage.py test geonode.tests.smoke' % prefix)
-    call_task('test', options={'prefix': prefix})
-    call_task('test_integration')
-    call_task('test_integration', options={'name': 'geonode.tests.csw'})
 
-    # only start if using Geoserver backend
-    if not on_travis and 'geonode.geoserver' in INSTALLED_APPS:
-        call_task('test_integration',
-                  options={'name': 'geonode.upload.tests.integration',
-                           'settings': 'geonode.upload.tests.test_settings'})
+    if not integration_tests:
+        sh('%s manage.py test geonode.tests.smoke' % prefix)
+        call_task('test', options={'prefix': prefix})
+    else:
+        call_task('test_integration')
+        call_task('test_integration', options={'name': 'geonode.tests.csw'})
+
+        # only start if using Geoserver backend
+        if 'geonode.geoserver' in INSTALLED_APPS and OGC_SERVER['default']['BACKEND'] == 'geonode.geoserver':
+            call_task('test_integration',
+                      options={'name': 'geonode.upload.tests.integration',
+                               'settings': 'geonode.upload.tests.test_settings'})
 
     call_task('test_bdd', options={'local': local})
     sh('flake8 geonode')

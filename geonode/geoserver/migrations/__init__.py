@@ -17,19 +17,3 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.apps import AppConfig as BaseAppConfig
-
-
-def run_setup_hooks(*args, **kwargs):
-    from .signals import register_qgis_server_signals
-    register_qgis_server_signals()
-
-
-class AppConfig(BaseAppConfig):
-
-    name = "geonode.qgis_server"
-    label = "qgis_server"
-
-    def ready(self):
-        super(AppConfig, self).ready()
-        run_setup_hooks()

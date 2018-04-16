@@ -1,5 +1,39 @@
 {{ custom_base_header|safe }}
 
+{% if theme.jumbotron_welcome_title or theme.jumbotron_welcome_content %}
+{{ hero_header|safe }}
+<div class="jumbotron">
+  <div class="container">
+    <h1>{{ theme.jumbotron_welcome_title }}</h1>
+    <p>{{ theme.jumbotron_welcome_content }}</p>
+    <div class="small-search">
+      <div class="search">
+        <form id="search" action="{% url "search" %}" >
+          <span class="fa fa-search fa-2x"></span>
+          {% if HAYSTACK_SEARCH %}
+          <input id="search_input" type="text" placeholder="Search for data..." class="form-control" name="q">
+          {% else %}
+          <input id="search_input" type="text" placeholder="Search for data..." class="form-control" name="title__icontains">
+          {% endif %}
+        </form>
+      </div>
+      <p><a class="btn btn-default btn-lg" href="{% url "search" %}">Advanced Search</a></p>
+    </div>
+  </div>
+</div>
+{{ hero_footer|safe }}
+{% endif %}
+
+{% if theme.jumbotron_site_description %}
+{{ bigsearch_header|safe }}
+<div class="big-search">
+  <div class="container">
+      <p>{{ theme.jumbotron_site_description }}</p>
+  </div>
+</div>
+{{ bigsearch_footer|safe }}
+{% endif %}
+
 {{ partners_header|safe }}
 {% if theme.partners %}
 <section id="partners">

@@ -1488,6 +1488,7 @@ class LayersStylesApiInteractionTests(
         all_public()
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_interaction(self):
         """Layer API interaction check."""
         layer_id = self.layer.id
@@ -1540,6 +1541,7 @@ class LayersStylesApiInteractionTests(
         self.assertEqual(obj, prev_obj)
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_style_interaction(self):
         """Style API interaction check."""
 
@@ -1599,8 +1601,8 @@ class LayersStylesApiInteractionTests(
         # should include body field
         self.assertTrue('body' in obj and obj['body'])
 
-    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_add_delete_styles(self):
         """Style API Add/Delete interaction."""
         # Check styles count
@@ -1615,8 +1617,6 @@ class LayersStylesApiInteractionTests(
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         objects = self.deserialize(resp)['objects']
-
-        self.assertEqual(len(objects), 1)
 
         # Fetch default style
         layer_detail_url = reverse(

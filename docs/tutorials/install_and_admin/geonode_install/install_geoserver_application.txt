@@ -90,7 +90,7 @@ Test GeoServer
 
 Now start Tomcat to deploy GeoServer::
 
-    sudo service tomcat7 start
+    sudo service tomcat8 start
 
 Tomcat will extract GeoServer web archive and start GeoServer. This may take some time
 

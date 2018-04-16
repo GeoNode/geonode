@@ -47,6 +47,7 @@ from guardian.shortcuts import get_anonymous_user
 from guardian.shortcuts import assign_perm, remove_perm
 
 from geonode import GeoNodeException, geoserver, qgis_server
+from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer, Style
 from geonode.layers.utils import layer_type, get_files, get_valid_name, \
     get_valid_layer_name
@@ -986,6 +987,7 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
         paths = [os.path.join(base_path, 'vector', '{}.{}'.format(base_name, suffix)) for suffix in suffixes]
         return paths, suffixes,
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_moderated_upload(self):
         """
         Test if moderation flag works

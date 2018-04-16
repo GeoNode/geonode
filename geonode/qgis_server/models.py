@@ -382,8 +382,3 @@ class QGISServerMap(models.Model, PermissionLevelMixin):
 
     class Meta:
         app_label = "qgis_server"
-
-
-from geonode.qgis_server.signals import \
-    register_qgis_server_signals  # noqa: F402,F401
-register_qgis_server_signals()

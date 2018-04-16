@@ -11,6 +11,9 @@
   {{ block.super }}
 
   {% block hero %}
+  {% if block.super %}
+  {{ block.super }}
+  {% else %}
   <div class="jumbotron">
   	<div class="container">
   		<h1>{% trans "Welcome" %}</h1>
@@ -20,11 +23,15 @@
   		<a class="btn btn-default btn-lg" target="_blank" href="http://docs.geonode.org/en/master/tutorials/users/index.html" role="button">{% blocktrans %}Get Started &raquo;{% endblocktrans %}</a>
   	</div>
   </div>
+  {% endif %}
   {% endblock hero %}
 
   {% block mainbody %}
 
       {% block bigsearch %}
+      {% if block.super %}
+      {{ block.super }}
+      {% else %}
       <div class="big-search">
       	<div class="container">
       		<h1>{% trans "Search for Data." %}</h1>
@@ -41,6 +48,7 @@
       		<p><a class="btn btn-default btn-lg" href="{% url "search" %}">Advanced Search</a></p>
       	</div>
       </div>
+      {% endif %}
       {% endblock bigsearch %}
 
       {% block datasets %}
