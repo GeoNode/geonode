@@ -804,7 +804,7 @@ def test_integration(options):
             settings = 'REUSE_DB=1 %s' % settings
 
         sh(('%s python -W ignore manage.py test %s'
-            ' --noinput' % (settings, name)))
+            ' --noinput --liveserver=localhost:8000' % (settings, name)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
