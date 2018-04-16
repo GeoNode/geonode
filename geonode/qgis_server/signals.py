@@ -303,10 +303,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
         logger.debug('Result : %s' % response.content)
 
     # Generate style model cache
-    try:
-        style_list(instance, internal=False)
-    except:
-        print 'Failed to fetch styles'
+    style_list(instance, internal=False)
 
     # Remove QML file if necessary
     try:
@@ -561,30 +558,29 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
 @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def register_qgis_server_signals():
     """Helper function to register model signals."""
-    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-        # Do it only if qgis_server is being used
-        logger.debug('Register signals QGIS Server')
-        signals.pre_save.connect(
-            qgis_server_pre_save,
-            dispatch_uid='Layer-qgis_server_pre_save',
-            sender=Layer)
-        signals.pre_delete.connect(
-            qgis_server_pre_delete,
-            dispatch_uid='Layer-qgis_server_pre_delete',
-            sender=Layer)
-        signals.post_save.connect(
-            qgis_server_post_save,
-            dispatch_uid='Layer-qgis_server_post_save',
-            sender=Layer)
-        signals.pre_save.connect(
-            qgis_server_pre_save_maplayer,
-            dispatch_uid='MapLayer-qgis_server_pre_save_maplayer',
-            sender=MapLayer)
-        signals.post_save.connect(
-            qgis_server_post_save_map,
-            dispatch_uid='Map-qgis_server_post_save_map',
-            sender=Map)
-        signals.post_delete.connect(
-            qgis_server_layer_post_delete,
-            dispatch_uid='QGISServerLayer-qgis_server_layer_post_delete',
-            sender=QGISServerLayer)
+    # Do it only if qgis_server is being used
+    logger.debug('Registering signals QGIS Server')
+    signals.pre_save.connect(
+        qgis_server_pre_save,
+        dispatch_uid='Layer-qgis_server_pre_save',
+        sender=Layer)
+    signals.pre_delete.connect(
+        qgis_server_pre_delete,
+        dispatch_uid='Layer-qgis_server_pre_delete',
+        sender=Layer)
+    signals.post_save.connect(
+        qgis_server_post_save,
+        dispatch_uid='Layer-qgis_server_post_save',
+        sender=Layer)
+    signals.pre_save.connect(
+        qgis_server_pre_save_maplayer,
+        dispatch_uid='MapLayer-qgis_server_pre_save_maplayer',
+        sender=MapLayer)
+    signals.post_save.connect(
+        qgis_server_post_save_map,
+        dispatch_uid='Map-qgis_server_post_save_map',
+        sender=Map)
+    signals.post_delete.connect(
+        qgis_server_layer_post_delete,
+        dispatch_uid='QGISServerLayer-qgis_server_layer_post_delete',
+        sender=QGISServerLayer)

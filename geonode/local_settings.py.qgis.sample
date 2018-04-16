@@ -124,6 +124,7 @@ QGIS_SERVER_CONFIG = {
 
 import ast
 on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
+integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'False'))
 
 SKIP_GEOSERVER_TEST = on_travis
 

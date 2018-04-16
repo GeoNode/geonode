@@ -55,6 +55,10 @@ class GeoNodeThemeCustomization(models.Model):
     logo = models.ImageField(upload_to='img/%Y/%m', null=True, blank=True)
     jumbotron_bg = models.ImageField(
         upload_to='img/%Y/%m', null=True, blank=True)
+    jumbotron_welcome_hide = models.BooleanField(default=False)
+    jumbotron_welcome_title = models.CharField(max_length=255, null=True, blank=True)
+    jumbotron_welcome_content = models.TextField(null=True, blank=True)
+    jumbotron_site_description = models.TextField(null=True, blank=True)
     body_color = models.CharField(max_length=10, default="#333333")
     navbar_color = models.CharField(max_length=10, default="#333333")
     jumbotron_color = models.CharField(max_length=10, default="#2c689c")
