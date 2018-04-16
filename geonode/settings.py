@@ -69,7 +69,9 @@ else:
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
-if django.VERSION[0] == 1 and django.VERSION[1] <= 11 and django.VERSION[2] < 2:
+if django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2:
+    pass
+else:
     DJANGO_LIVE_TEST_SERVER_ADDRESS = 'localhost:8000'
 
 try:

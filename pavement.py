@@ -804,9 +804,9 @@ def test_integration(options):
             sh('sleep 30')
             settings = 'REUSE_DB=1 %s' % settings
 
-        live_server_option = ''
-        if django.VERSION[0] == 1 and django.VERSION[1] <= 11 and django.VERSION[2] < 2:
-            live_server_option = '--liveserver=localhost:8000'
+        live_server_option = '--liveserver=localhost:8000'
+        if django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2:
+            live_server_option = ''
 
         sh(('%s python -W ignore manage.py test %s'
             ' --noinput %s' % (settings, name, live_server_option)))
