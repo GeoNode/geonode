@@ -29,7 +29,6 @@ from django.core.urlresolvers import reverse
 from guardian.shortcuts import get_anonymous_user
 from guardian.shortcuts import remove_perm
 
-from geonode.base.populate_test_data import create_models
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
 from geonode.groups.models import Group
@@ -46,7 +45,7 @@ class SiteTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     """Tests the sites functionality
     """
 
-    type='layer'
+    type = 'layer'
 
     def setUp(self):
         super(SiteTests, self).setUp()
