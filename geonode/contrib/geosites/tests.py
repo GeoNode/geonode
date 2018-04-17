@@ -46,6 +46,7 @@ class SiteTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     """
 
     type = 'layer'
+    fixtures = ['initial_data.json', 'group_test_data.json', 'initial_sites_data.json']
 
     def setUp(self):
         super(SiteTests, self).setUp()
