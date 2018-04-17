@@ -727,7 +727,7 @@ def test(options):
         _apps = tuple(GEONODE_APPS)
 
     sh("%s manage.py test %s.tests --noinput %s --parallel=%s" % (options.get('prefix'),
-                                                                              '.tests '.join(tuple(_apps) + ('',)),
+                                                                              '.tests '.join(_apps),
                                                                               _keepdb,
                                                                               TEST_RUNNER_PARALLEL))
 
