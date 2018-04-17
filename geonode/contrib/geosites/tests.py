@@ -20,9 +20,9 @@
 
 import json
 
+from geonode.tests.base import GeoNodeBaseTestSupport
 from tastypie.test import ResourceTestCaseMixin
 from django.test.utils import override_settings
-from django.test import TestCase
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 
@@ -41,17 +41,16 @@ from .models import SiteResources, SitePeople
 @override_settings(SITE_NAME='Slave')
 @override_settings(SITE_ID=2)
 @override_settings(ROOT_URLCONF='geonode.contrib.geosites.urls')
-class SiteTests(ResourceTestCaseMixin, TestCase):
+class SiteTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     """Tests the sites functionality
     """
 
-    fixtures = ['initial_data.json', 'bobby']
+    type='layer'
 
     def setUp(self):
         super(SiteTests, self).setUp()
         create_sites()
-        create_models(type='layer')
 
         self.user = 'admin'
         self.passwd = 'admin'
