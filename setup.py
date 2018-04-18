@@ -154,7 +154,7 @@ setup(name='GeoNode',
             "geonode-avatar<=2.1.7",  # python-geonode-avatar (2.1.7 in our ppa)
             "geonode-announcements<=1.0.13",  # python-geonode-announcements (1.0.13 in our ppa)
             "geonode-agon-ratings<=0.3.8",  # python-geonode-agon-ratings (0.3.8 in our ppa)
-            "geonode-arcrest>=10.0",  # python-geonode-arcrest (10.2 in our ppa)
+            "arcrest>=10.0",  # TODO
             "geonode-dialogos<=0.9",  # python-geonode-dialogos (0.9 in our ppa)
             "gsconfig<2.0.0",  # python-gsconfig (1.0.8 in our ppa)
             "gn-gsimporter<2.0.0",  # python-gn-gsimporter (1.0.2 in our ppa)

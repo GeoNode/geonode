@@ -457,12 +457,14 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
             "handlers": ["console"], "level": "INFO", },
+        # "geonode.qgis_server": {
+        #     "handlers": ["console"], "level": "ERROR", },
         "gsconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
-        "owslib": {
-            "handlers": ["console"], "level": "ERROR", },
-        "pycsw": {
-            "handlers": ["console"], "level": "ERROR", },
+        # "owslib": {
+        #     "handlers": ["console"], "level": "ERROR", },
+        # "pycsw": {
+        #     "handlers": ["console"], "level": "ERROR", },
         "celery": {
             'handlers': ['celery', 'console'], 'level': 'ERROR', },
     },
@@ -640,8 +642,8 @@ integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'Fal
 
 # Django 1.11 ParallelTestSuite
 TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
-TEST_RUNNER_KEEPDB = 0
-TEST_RUNNER_PARALLEL = 4
+TEST_RUNNER_KEEPDB = 1
+TEST_RUNNER_PARALLEL = 1
 
 # GeoNode test suite
 # TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'

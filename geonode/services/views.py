@@ -146,7 +146,7 @@ def harvest_resources(request, service_id):
                 r for r in available_resources if str(r.id) not in already_harvested]
             not_yet_harvested.sort(key=lambda resource: resource.id)
         else:
-            not_yet_harvested = ['Cannot parse resources at this time!']
+            not_yet_harvested = ['Cannot parse any resource at this time!']
             errored_state = True
         paginator = Paginator(
             not_yet_harvested, getattr(settings, "CLIENT_RESULTS_LIMIT", 100))
