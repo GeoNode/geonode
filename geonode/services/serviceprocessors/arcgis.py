@@ -118,7 +118,6 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
     def get_resource(self, resource_id):
         ll = None
         try:
-            print(" ****************** %s " % resource_id)
             ll = self.parsed_service.layers[int(resource_id)]
         except BaseException:
             traceback.print_exc()
