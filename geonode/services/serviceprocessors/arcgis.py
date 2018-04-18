@@ -80,8 +80,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         # ])
 
         self.indexing_method = INDEXED
-        self.name = slugify(
-            _title if _title else urlsplit(self.url).netloc)[:40]
+        self.name = slugify(urlsplit(self.url).netloc)[:40]
 
     def create_cascaded_store(self):
         return None
@@ -130,7 +129,10 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         of metadata and do not return those.
 
         """
-        return self._parse_layers(self.parsed_service.layers)
+        try:
+            return self._parse_layers(self.parsed_service.layers)
+        except:
+            return None
 
     def _parse_layers(self, layers):
         map_layers = []

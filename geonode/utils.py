@@ -1237,7 +1237,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     http_client = httplib2.Http(
         cache=getattr(
             ogc_server_settings, 'CACHE', None), timeout=getattr(
-            ogc_server_settings, 'TIMEOUT', 10))
+            ogc_server_settings, 'TIMEOUT', 1))
 else:
     http_client = httplib2.Http(timeout=10)
 
