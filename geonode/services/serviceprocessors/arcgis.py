@@ -195,7 +195,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 "Resource {!r} cannot be harvested".format(resource_id))
 
     def has_resources(self):
-        return True if len(self.parsed_service.layers) > 1 else False
+        return True if len(self.parsed_service.layers) > 0 else False
 
     def _offers_geonode_projection(self, srs):
         geonode_projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")

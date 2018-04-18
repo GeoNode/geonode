@@ -212,7 +212,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         self._create_layer_thumbnail(geonode_layer)
 
     def has_resources(self):
-        return True if len(self.parsed_service.contents) > 1 else False
+        return True if len(self.parsed_service.contents) > 0 else False
 
     def _create_layer(self, geonode_service, **resource_fields):
         # bear in mind that in ``geonode.layers.models`` there is a
