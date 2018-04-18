@@ -71,8 +71,9 @@ def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
         valid_extensions = validate_kmz(
             cleaned["base_file"])
     elif base_ext.lower() == "shp":
-        file_paths = [cleaned["base_file"].name]
-        file_paths += [f.name for f in uploaded_files]
+        file_paths = [f.name for f in uploaded_files]
+        if cleaned["base_file"].name not in file_paths:
+            file_paths += [cleaned["base_file"].name]
         valid_extensions = validate_shapefile_components(
             file_paths)
     elif base_ext.lower() == "kml":

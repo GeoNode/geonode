@@ -874,6 +874,10 @@ def final_step(upload_session, user):
     signals.upload_complete.send(sender=final_step, layer=saved_layer)
 
     saved_layer.save()
+
+    cat._cache.clear()
+    cat.reload()
+
     return saved_layer
 
 

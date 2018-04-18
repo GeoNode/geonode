@@ -1552,10 +1552,15 @@ def set_time_info(layer, attribute, end_attribute, presentation,
         resolution = '%s %s' % (precision_value, precision_step)
     info = DimensionInfo("time", enabled, presentation, resolution, "ISO8601",
                          None, attribute=attribute, end_attribute=end_attribute)
-    metadata = dict(resource.metadata or {})
+    if resource and resource.metadata:
+        metadata = dict(resource.metadata or {})
+    else:
+        metadata = dict({})
     metadata['time'] = info
-    resource.metadata = metadata
-    gs_catalog.save(resource)
+    if resource and resource.metadata:
+        resource.metadata = metadata
+    if resource:
+        gs_catalog.save(resource)
 
 
 def get_time_info(layer):

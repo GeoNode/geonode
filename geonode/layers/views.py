@@ -412,18 +412,18 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     }
 
     if layer.storeType == "remoteStore":
-        # service = layer.remote_service
-        # source_params = {
-        #     "ptype": service.ptype,
-        #     "remote": True,
-        #     "url": service.service_url,
-        #     "name": service.name,
-        #     "title": "[R] %s" % service.title}
+        service = layer.remote_service
+        source_params = {
+            "ptype": service.ptype,
+            "remote": True,
+            "url": service.service_url,
+            "name": service.name,
+            "title": "[R] %s" % service.title}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
             layer_params=json.dumps(config),
-            # source_params=json.dumps(source_params)
+            source_params=json.dumps(source_params)
         )
     else:
         maplayer = GXPLayer(
@@ -531,7 +531,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "show_popup": show_popup,
         "filter": filter,
         "storeType": layer.storeType,
-        "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
+        # "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
     }
 
     if 'access_token' in request.session:
@@ -793,18 +793,18 @@ def layer_metadata(
     config["queryable"] = True
 
     if layer.storeType == "remoteStore":
-        # service = layer.remote_service
-        # source_params = {
-        #     "ptype": service.ptype,
-        #     "remote": True,
-        #     "url": service.service_url,
-        #     "name": service.name,
-        #     "title": "[R] %s" % service.title}
+        service = layer.remote_service
+        source_params = {
+            "ptype": service.ptype,
+            "remote": True,
+            "url": service.service_url,
+            "name": service.name,
+            "title": "[R] %s" % service.title}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
             layer_params=json.dumps(config),
-            # source_params=json.dumps(source_params)
+            source_params=json.dumps(source_params)
         )
     else:
         maplayer = GXPLayer(

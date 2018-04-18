@@ -80,8 +80,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         # ])
 
         self.indexing_method = INDEXED
-        self.name = slugify(
-            _title if _title else urlsplit(self.url).netloc)[:40]
+        self.name = slugify(urlsplit(self.url).netloc)[:40]
 
     def create_cascaded_store(self):
         return None
@@ -130,7 +129,10 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         of metadata and do not return those.
 
         """
-        return self._parse_layers(self.parsed_service.layers)
+        try:
+            return self._parse_layers(self.parsed_service.layers)
+        except:
+            return None
 
     def _parse_layers(self, layers):
         map_layers = []
@@ -193,7 +195,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 "Resource {!r} cannot be harvested".format(resource_id))
 
     def has_resources(self):
-        return True if len(self.parsed_service.layers) > 1 else False
+        return True if len(self.parsed_service.layers) > 0 else False
 
     def _offers_geonode_projection(self, srs):
         geonode_projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")

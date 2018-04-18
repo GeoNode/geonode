@@ -403,7 +403,7 @@ class ResourceBaseForm(TranslationModelForm):
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
-            _k = urllib.unquote(k.decode('utf-8')).decode('utf-8').split(",")
+            _k = urllib.unquote((u'%s' % k).encode('utf-8')).decode('utf-8').split(",")
             if not isinstance(_k, basestring):
                 for _kk in [x.strip() for x in _k]:
                     _unsescaped_kwds.append(_kk)
