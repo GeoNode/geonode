@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import os
 import shutil
 import tempfile
@@ -28,7 +30,7 @@ import json
 from datetime import datetime
 
 import gisdata
-from django.test import TestCase
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
@@ -38,18 +40,20 @@ from django.contrib.auth.models import Group
 from django.db.models import Count
 from django.contrib.auth import get_user_model
 from agon_ratings.models import OverallRating
-from django.test.testcases import LiveServerTestCase
+
+from django.test.utils import override_settings
 
 from guardian.shortcuts import get_anonymous_user
 from guardian.shortcuts import assign_perm, remove_perm
 
 from geonode import GeoNodeException, geoserver, qgis_server
+from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer, Style
 from geonode.layers.utils import layer_type, get_files, get_valid_name, \
     get_valid_layer_name
 from geonode.people.utils import get_valid_user
 from geonode.base.models import TopicCategory, License, Region
-from geonode.base.populate_test_data import create_models, all_public
+from geonode.base.populate_test_data import all_public
 from geonode.layers.forms import JSONField, LayerUploadForm
 from geonode.utils import check_ogc_backend
 from .populate_layers_data import create_layer_data
@@ -57,18 +61,18 @@ from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers import LayersAppConfig
 
 
-class LayersTest(TestCase):
+class LayersTest(GeoNodeBaseTestSupport):
 
     """Tests geonode.layers app/module
     """
-
-    fixtures = ['initial_data.json', 'bobby']
+    type = 'layer'
 
     def setUp(self):
+        super(LayersTest, self).setUp()
+
+        create_layer_data()
         self.user = 'admin'
         self.passwd = 'admin'
-        create_models(type='layer')
-        create_layer_data()
         self.anonymous_user = get_anonymous_user()
 
     # Data Tests
@@ -80,7 +84,7 @@ class LayersTest(TestCase):
 
     def test_describe_data_2(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
-        self.assertEqual(8, get_user_model().objects.all().count())
+        self.assertEqual(10, get_user_model().objects.all().count())
         response = self.client.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
@@ -126,7 +130,7 @@ class LayersTest(TestCase):
 
     def test_describe_data(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
-        self.assertEqual(8, get_user_model().objects.all().count())
+        self.assertEqual(10, get_user_model().objects.all().count())
         response = self.client.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
@@ -137,7 +141,7 @@ class LayersTest(TestCase):
         self.failUnlessEqual(response.status_code, 200)
 
     def test_layer_attributes(self):
-        lyr = Layer.objects.get(pk=1)
+        lyr = Layer.objects.all().first()
         # There should be a total of 3 attributes
         self.assertEqual(len(lyr.attribute_set.all()), 4)
         # 2 out of 3 attributes should be visible
@@ -167,23 +171,15 @@ class LayersTest(TestCase):
         response = self.client.get(url)
         self.assertEquals(response.status_code, 404)
 
-        # test a raster layer error (400)
         # Get the layer to work with
-        layer = Layer.objects.get(pk=3)
-        url = reverse('layer_feature_catalogue', args=(layer.alternate,))
-        response = self.client.get(url)
-        self.assertEquals(response.status_code, 400)
-        self.assertEquals(response['content-type'], 'application/json')
-
-        # test a vector layer (200)
-        layer = Layer.objects.get(pk=2)
+        layer = Layer.objects.all()[3]
         url = reverse('layer_feature_catalogue', args=(layer.alternate,))
         response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response['content-type'], 'application/xml')
 
     def test_layer_attribute_config(self):
-        lyr = Layer.objects.get(pk=1)
+        lyr = Layer.objects.all().first()
         custom_attributes = (lyr.attribute_config())["getFeatureInfo"]
         self.assertEqual(
             custom_attributes["fields"], [
@@ -196,7 +192,7 @@ class LayersTest(TestCase):
             "Place Name")
 
     def test_layer_styles(self):
-        lyr = Layer.objects.get(pk=1)
+        lyr = Layer.objects.all().first()
         # There should be a total of 3 styles
         self.assertEqual(len(lyr.styles.all()), 4)
         # One of the style is the default one
@@ -212,7 +208,7 @@ class LayersTest(TestCase):
                 "str of the Style model throws a UnicodeEncodeError with special characters.")
 
     def test_layer_save(self):
-        lyr = Layer.objects.get(pk=1)
+        lyr = Layer.objects.all().first()
         lyr.keywords.add(*["saving", "keywords"])
         lyr.save()
         self.assertEqual(
@@ -680,9 +676,7 @@ class LayersTest(TestCase):
         """ Test layer rating is removed on layer remove
         """
         # Get the layer to work with
-        layer = Layer.objects.get(pk=3)
-        layer.default_style = Style.objects.get(pk=layer.pk)
-        layer.save()
+        layer = Layer.objects.all()[3]
         url = reverse('layer_remove', args=(layer.alternate,))
         layer_id = layer.id
 
@@ -706,10 +700,8 @@ class LayersTest(TestCase):
     def test_layer_remove(self):
         """Test layer remove functionality
         """
-        layer = Layer.objects.get(pk=1)
+        layer = Layer.objects.all().first()
         url = reverse('layer_remove', args=(layer.alternate,))
-        layer.default_style = Style.objects.get(pk=layer.pk)
-        layer.save()
 
         # test unauthenticated
         response = self.client.get(url)
@@ -718,7 +710,7 @@ class LayersTest(TestCase):
         # test a user without layer removal permission
         self.client.login(username='norman', password='norman')
         response = self.client.post(url)
-        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.status_code, 401)
         self.client.logout()
 
         # Now test with a valid user
@@ -735,8 +727,7 @@ class LayersTest(TestCase):
         # test the post method that actually removes the layer and redirects
         response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
-        # self.assertEquals(response['Location'], '/layers/')
-        self.assertEquals(response['Location'], 'http://testserver/layers/')
+        self.assertTrue('/layers/' in response['Location'])
 
         # test that the layer is actually removed
         self.assertEquals(Layer.objects.filter(pk=layer.pk).count(), 0)
@@ -749,13 +740,11 @@ class LayersTest(TestCase):
         Tests that deleting a layer with a shared default style will not cascade and
         delete multiple layers.
         """
-        layer1 = Layer.objects.get(pk=1)
-        layer2 = Layer.objects.get(pk=2)
+        layer1 = Layer.objects.all().first()
+        layer2 = Layer.objects.all()[2]
         url = reverse('layer_remove', args=(layer1.alternate,))
 
-        layer1.default_style = Style.objects.get(pk=layer1.pk)
-        layer1.save()
-        layer2.default_style = Style.objects.get(pk=layer1.pk)
+        layer2.default_style = layer1.default_style
         layer2.save()
 
         self.assertEquals(layer1.default_style, layer2.default_style)
@@ -766,13 +755,12 @@ class LayersTest(TestCase):
         # test the post method that actually removes the layer and redirects
         response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
-        # self.assertEquals(response['Location'], '/layers/')
-        self.assertEquals(response['Location'], 'http://testserver/layers/')
+        self.assertTrue('/layers/' in response['Location'])
 
         # test that the layer is actually removed
 
         self.assertEquals(Layer.objects.filter(pk=layer1.pk).count(), 0)
-        self.assertEquals(Layer.objects.filter(pk=2).count(), 1)
+        self.assertEquals(Layer.objects.filter(pk=layer2.pk).count(), 1)
 
         # test that all styles associated to the layer are removed
         self.assertEquals(Style.objects.count(), 1)
@@ -801,7 +789,7 @@ class LayersTest(TestCase):
 
         # delete a layer and check the count update
         # use the first since it's the only one which has styles
-        layer = Layer.objects.get(pk=1)
+        layer = Layer.objects.all().first()
         elevation = topics.get(identifier='elevation')
         self.assertEquals(elevation.layer_count, 4)
         layer.delete()
@@ -872,22 +860,26 @@ class LayersTest(TestCase):
             if resource.regions.all():
                 self.assertTrue(region in resource.regions.all())
         # test date change
-        date = datetime.now()
+        from django.utils import timezone
+        date = datetime.now(timezone.get_current_timezone())
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'date': date},
         )
-        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.status_code, 200)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertEquals(resource.date, date)
+            today = date.today()
+            todoc = resource.date.today()
+            self.assertEquals((today.day, today.month, today.year),
+                              (todoc.day, todoc.month, todoc.year))
+
         # test language change
         language = 'eng'
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'language': language},
         )
-        self.assertEquals(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             self.assertEquals(resource.language, language)
@@ -897,18 +889,16 @@ class LayersTest(TestCase):
             reverse(view, args=(ids,)),
             data={'keywords': keywords},
         )
-        self.assertEquals(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             for word in resource.keywords.all():
                 self.assertTrue(word.name in keywords.split(','))
 
 
-class UnpublishedObjectTests(TestCase):
+class UnpublishedObjectTests(GeoNodeBaseTestSupport):
 
     """Test the is_published base attribute"""
-
-    fixtures = ['initial_data.json', 'bobby']
+    type = 'layer'
 
     def setUp(self):
         super(UnpublishedObjectTests, self).setUp()
@@ -918,13 +908,12 @@ class UnpublishedObjectTests(TestCase):
             kwargs={
                 'api_name': 'api',
                 'resource_name': 'layers'})
-        create_models(type='layer')
         all_public()
 
-    def test_unpublished_layer(self):
+    def test_published_layer(self):
         """Test unpublished layer behaviour"""
 
-        user = get_user_model().objects.get(username='bobby')
+        get_user_model().objects.get(username='bobby')
         self.client.login(username='bobby', password='bob')
 
         # default (RESOURCE_PUBLISHING=False)
@@ -938,45 +927,52 @@ class UnpublishedObjectTests(TestCase):
         response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
-        # with resource publishing
-        with self.settings(ADMIN_MODERATE_UPLOADS=True):
-            with self.settings(RESOURCE_PUBLISHING=True):
-                # 404 if layer is unpublished
-                response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
-                self.failUnlessEqual(response.status_code, 404)
+    @override_settings(ADMIN_MODERATE_UPLOADS=True)
+    @override_settings(RESOURCE_PUBLISHING=True)
+    def test_unpublished_layer(self):
+        """With resource publishing"""
+        layer = Layer.objects.filter(alternate='geonode:CA')[0]
+        layer.is_published = False
+        layer.save()
 
-                # 404 if layer is unpublished but user has permission but does not belong to the group
-                assign_perm('publish_resourcebase', user, layer.get_self_resource())
-                response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
-                self.failUnlessEqual(response.status_code, 404)
+        user = get_user_model().objects.get(username='foo')
+        self.client.login(username='foo', password='pass')
+        # 404 if layer is unpublished
+        response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+        self.failUnlessEqual(response.status_code, 404)
 
-                # 200 if layer is unpublished and user is owner
-                remove_perm('publish_resourcebase', user, layer.get_self_resource())
-                layer.owner = user
-                layer.save()
-                response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
-                self.failUnlessEqual(response.status_code, 200)
+        # 404 if layer is unpublished but user has permission but does not belong to the group
+        assign_perm('publish_resourcebase', user, layer.get_self_resource())
+        response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+        self.failUnlessEqual(response.status_code, 404)
 
-                # 200 if layer is published
-                layer.is_published = True
-                layer.save()
-                self.client.login(username='bobby', password='bob')
-                response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
-                self.failUnlessEqual(response.status_code, 200)
+        # 200 if layer is unpublished and user is owner
+        remove_perm('publish_resourcebase', user, layer.get_self_resource())
+        layer.owner = user
+        layer.save()
+        response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+        self.failUnlessEqual(response.status_code, 200)
+
+        # 200 if layer is published
+        layer.is_published = True
+        layer.save()
+
+        response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
+        self.failUnlessEqual(response.status_code, 200)
 
         layer.is_published = True
         layer.save()
 
 
-class LayerModerationTestCase(LiveServerTestCase):
+class LayerModerationTestCase(GeoNodeBaseTestSupport):
 
-    fixtures = ['initial_data.json', 'bobby']
+    type = 'layer'
 
     def setUp(self):
         super(LayerModerationTestCase, self).setUp()
+
         self.user = 'admin'
         self.passwd = 'admin'
-        create_models(type='layer')
         create_layer_data()
         self.anonymous_user = get_anonymous_user()
         self.u = get_user_model().objects.get(username=self.user)
@@ -991,6 +987,7 @@ class LayerModerationTestCase(LiveServerTestCase):
         paths = [os.path.join(base_path, 'vector', '{}.{}'.format(base_name, suffix)) for suffix in suffixes]
         return paths, suffixes,
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_moderated_upload(self):
         """
         Test if moderation flag works
@@ -1056,13 +1053,13 @@ class LayerModerationTestCase(LiveServerTestCase):
 
 class LayerNotificationsTestCase(NotificationsTestsHelper):
 
-    fixtures = ['initial_data.json', 'bobby']
+    type = 'layer'
 
     def setUp(self):
         super(LayerNotificationsTestCase, self).setUp()
+
         self.user = 'admin'
         self.passwd = 'admin'
-        create_models(type='layer')
         create_layer_data()
         self.anonymous_user = get_anonymous_user()
         self.u = get_user_model().objects.get(username=self.user)

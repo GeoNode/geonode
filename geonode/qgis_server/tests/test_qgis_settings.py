@@ -18,8 +18,10 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import requests
-from django.test import TestCase
+from django.test import LiveServerTestCase
 from django.conf import settings
 from geonode.decorators import on_ogc_backend
 from geonode import qgis_server
@@ -27,7 +29,7 @@ from geonode.qgis_server.helpers import validate_django_settings
 from geonode.qgis_server.helpers import ogc_server_settings
 
 
-class QGISSettingsTest(TestCase):
+class QGISSettingsTest(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_settings(self):

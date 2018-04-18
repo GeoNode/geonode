@@ -17,7 +17,7 @@
     },
     {
         "pk": 1,
-        "model": "auth.user",
+        "model": "people.Profile",
         "fields": {
             "username": "bobby",
             "first_name": "",
@@ -28,14 +28,14 @@
             "last_login": "2010-06-10 16:59:13",
             "groups": [],
             "user_permissions": [],
-            "password": "sha1$8d019$a84eea3f5093eed93bc68bf62fe400f14042ab06", 
+            "password": "sha1$8d019$a84eea3f5093eed93bc68bf62fe400f14042ab06",
             "email": "bobby@bob.com",
             "date_joined": "2010-06-10 16:58:18"
         }
     },
     {
         "pk": 11,
-        "model": "auth.user",
+        "model": "people.Profile",
         "fields": {
             "username": "robert",
             "first_name": "",

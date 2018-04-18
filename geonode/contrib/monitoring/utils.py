@@ -73,11 +73,14 @@ class MonitoringHandler(logging.Handler):
         req = record.request
         resp = record.response
         if not req._monitoring.get('processed'):
-            re = RequestEvent.from_geonode(self.service, req, resp)
-            req._monitoring['processed'] = re
+            try:
+                re = RequestEvent.from_geonode(self.service, req, resp)
+                req._monitoring['processed'] = re
+            except:
+                req._monitoring['processed'] = None
         re = req._monitoring.get('processed')
 
-        if exc_info:
+        if re and exc_info:
             tb = traceback.format_exception(*exc_info)
             ExceptionEvent.add_error(self.service, exc_info[1], tb, request=re)
 
@@ -205,7 +208,7 @@ def align_period_start(start, interval):
     utc = pytz.utc
     day_start = datetime(*start.date().timetuple()[:6]).replace(tzinfo=utc)
     # timedelta
-    diff = (start - day_start)
+    diff = (start.replace(tzinfo=utc) - day_start)
     # seconds
     diff_s = diff.total_seconds()
     int_s = interval.total_seconds()

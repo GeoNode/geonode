@@ -58,6 +58,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection, transaction
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.serializers.json import DjangoJSONEncoder
+from django.utils import timezone
 
 from geonode import geoserver, qgis_server  # noqa
 
@@ -1041,7 +1042,7 @@ def set_attributes(
                         la.stddev = result['StandardDeviation']
                         la.sum = result['Sum']
                         la.unique_values = result['unique_values']
-                        la.last_stats_updated = datetime.datetime.now()
+                        la.last_stats_updated = datetime.datetime.now(timezone.get_current_timezone())
                     la.visible = ftype.find("gml:") != 0
                     la.display_order = iter
                     la.save()

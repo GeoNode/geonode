@@ -21,11 +21,12 @@
 import re
 import json
 import datetime
+from django.utils import timezone
 
 class DefaultMangler(json.JSONDecoder):
    """ TODO """
    def __init__(self, *args, **kwargs):
-      
+
       self.basepk    = kwargs.get('basepk', -1)
       self.owner     = kwargs.get('owner', 'admin')
       self.datastore = kwargs.get('datastore', '')
@@ -66,7 +67,7 @@ class ResourceBaseMangler(DefaultMangler):
       upload_sessions = []
       for obj in default_obj:
          obj['pk'] = obj['pk'] + self.basepk
-         
+
          obj['fields']['featured'] = False
          obj['fields']['rating'] = 0
          obj['fields']['popular_count'] = 0
@@ -91,7 +92,7 @@ class ResourceBaseMangler(DefaultMangler):
 
             else:
                obj['fields']['polymorphic_ctype'] = ["maps", "map"]
-         
+
          try:
             obj['fields'].pop("distribution_description", None)
          except:
@@ -115,7 +116,7 @@ class ResourceBaseMangler(DefaultMangler):
 
    def add_upload_session(self, pk, owner):
       obj = dict()
-      
+
       obj['pk'] = pk
       obj['model'] = 'layers.uploadsession'
 
@@ -125,8 +126,8 @@ class ResourceBaseMangler(DefaultMangler):
       obj['fields']['context'] = None
       obj['fields']['error'] = None
       obj['fields']['processed'] = True
-      obj['fields']['date'] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
- 
+      obj['fields']['date'] = datetime.datetime.now(from django.utils import timezone).strftime("%Y-%m-%dT%H:%M:%S")
+
       return obj
 
 
@@ -203,7 +204,7 @@ class LayerAttributesMangler(DefaultMangler):
       # ....
       for obj in default_obj:
           obj['pk'] = obj['pk'] + self.basepk
-          
+
           obj['fields']['layer'] = obj['fields']['layer'] + self.basepk
 
       return default_obj
@@ -233,7 +234,7 @@ class MapMangler(DefaultMangler):
 
           obj['fields']['urlsuffix']   = ""
           obj['fields']['title_en']    = resource.title
-          obj['fields']['featuredurl'] = "" 
+          obj['fields']['featuredurl'] = ""
           obj['fields']['data_quality_statement_en']   = None
           obj['fields']['supplemental_information_en'] = "No information provided"
           obj['fields']['abstract_en'] = ""
@@ -278,6 +279,3 @@ class MapLayersMangler(DefaultMangler):
           obj['fields']['map'] = obj['fields']['map'] + self.basepk
 
       return default_obj
-
-
-

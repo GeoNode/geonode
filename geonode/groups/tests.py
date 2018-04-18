@@ -18,12 +18,13 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import json
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
-from django.test import TestCase
 from django.test import override_settings
 from django.conf import settings
 
@@ -33,21 +34,17 @@ from geonode.groups.models import GroupProfile, GroupCategory
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.base.populate_test_data import create_models
 from geonode.security.views import _perms_info_json
 
 
-class SmokeTest(TestCase):
+class SmokeTest(GeoNodeBaseTestSupport):
     """
     Basic checks to make sure pages load, etc.
     """
 
-    fixtures = ['initial_data.json', "group_test_data"]
-
     def setUp(self):
-        create_models(type='layer')
-        create_models(type='map')
-        create_models(type='document')
+        super(SmokeTest, self).setUp()
+
         self.norman = get_user_model().objects.get(username="norman")
         self.norman.groups.add(Group.objects.get(name='anonymous'))
         self.test_user = get_user_model().objects.get(username='test_user')
@@ -483,12 +480,10 @@ class SmokeTest(TestCase):
             layer.save()
 
 
-class MembershipTest(TestCase):
+class MembershipTest(GeoNodeBaseTestSupport):
     """
     Tests membership logic in the geonode.groups models
     """
-
-    fixtures = ["group_test_data"]
 
     def test_group_is_member(self):
         """
@@ -527,12 +522,10 @@ class MembershipTest(TestCase):
         self.assertTrue(normal.is_member_of_group(group.slug))
 
 
-# class InvitationTest(TestCase):
+# class InvitationTest(GeoNodeBaseTestSupport):
 #     """
 #     Tests invitation logic in geonode.groups models
 #     """
-#
-#     fixtures = ["group_test_data"]
 #
 #     def test_invite_user(self):
 #         """
@@ -602,12 +595,14 @@ class MembershipTest(TestCase):
 #         self.assert_(invitation.state == "declined")
 
 
-class GroupCategoriesTestCase(TestCase):
+class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
     """
     Group Categories tests
     """
 
     def setUp(self):
+        super(GroupCategoriesTestCase, self).setUp()
+
         c1 = GroupCategory.objects.create(name='test #1 category')
         g = GroupProfile.objects.create(title='test')
         g.categories.add(c1)
@@ -615,9 +610,6 @@ class GroupCategoriesTestCase(TestCase):
         User = get_user_model()
         u = User.objects.create(username='test')
         u.set_password('test')
-        u.save()
-        User = get_user_model()
-        u = User.objects.create_superuser('admin', 'admin@test.com', 'admin')
         u.save()
 
     def test_api(self):
@@ -673,7 +665,7 @@ class GroupCategoriesTestCase(TestCase):
         self.assertTrue(q.get().slug)
 
 
-class GroupProfileTest(TestCase):
+class GroupProfileTest(GeoNodeBaseTestSupport):
 
     @override_settings(MEDIA_ROOT="/tmp/geonode_tests")
     def test_group_logo_is_present_on_list_view(self):

@@ -20,15 +20,13 @@
 
 import json
 
-from django.test import TestCase
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 from geonode.base.populate_test_data import create_models
 from geonode.base.models import Link
 
 
-class OWSApiTestCase(TestCase):
-
-    fixtures = ['initial_data.json']
+class OWSApiTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(OWSApiTestCase, self).setUp()

@@ -18,7 +18,8 @@
 #
 #########################################################################
 
-from unittest import TestCase
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 from xml.etree import ElementTree
 import os
 import shutil
@@ -29,7 +30,9 @@ from geonode.qgis_server.xml_utilities import (
     insert_xml_element, update_xml)
 
 
-class XMLUtilitiesTest(TestCase):
+class XMLUtilitiesTest(GeoNodeBaseTestSupport):
+
+    fixtures = ['initial_data.json', 'people_data.json']
 
     """Test for xml utilities module."""
 

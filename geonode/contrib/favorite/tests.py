@@ -18,27 +18,30 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import json
 
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db.models import Max
-from django.test import TestCase
 
 from .models import Favorite
-from geonode.base.populate_test_data import create_models
 from geonode.documents.models import Document
 
 
-class FavoriteTest(TestCase):
+class FavoriteTest(GeoNodeBaseTestSupport):
+
+    type = 'document'
+
     """
     Tests geonode.contrib.favorite app/module
     """
     def setUp(self):
+        super(FavoriteTest, self).setUp()
         self.adm_un = "admin"
         self.adm_pw = "admin"
-        create_models(type="document")
 
     # tests of Favorite and FavoriteManager methods.
     def test_favorite(self):

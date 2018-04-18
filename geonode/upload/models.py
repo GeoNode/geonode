@@ -21,10 +21,11 @@
 import cPickle as pickle
 import logging
 import shutil
-from datetime import datetime
+
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.conf import settings
+from django.utils.timezone import now
 from geonode.layers.models import Layer
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 from gsimporter import NotFound
@@ -59,7 +60,7 @@ class Upload(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
     # hold importer state or internal state (STATE_)
     state = models.CharField(max_length=16)
-    date = models.DateTimeField('date', default=datetime.now)
+    date = models.DateTimeField('date', default=now)
     layer = models.ForeignKey(Layer, null=True)
     upload_dir = models.CharField(max_length=100, null=True)
     name = models.CharField(max_length=64, null=True)
@@ -90,7 +91,7 @@ class Upload(models.Model):
 
     def update_from_session(self, upload_session):
         self.state = upload_session.import_session.state
-        self.date = datetime.now()
+        self.date = now()
         if "COMPLETE" == self.state:
             self.complete = True
             self.session = None

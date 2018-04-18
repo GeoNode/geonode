@@ -177,18 +177,6 @@ Ext.onReady(function() {
                            extent = OpenLayers.Bounds.fromArray(bbox);
                        }
                    }
-
-                   var zoomToData = function()
-                   {
-                       map.zoomToExtent(extent, true);
-                       app.mapPanel.center = map.center;
-                       app.mapPanel.zoom = map.zoom;
-                       map.events.unregister('changebaselayer', null, zoomToData);
-                   };
-                   map.events.register('changebaselayer',null,zoomToData);
-                   if(map.baseLayer){
-                       map.zoomToExtent(extent, true);
-                   }
                 }
             },
            'save': function(obj_id) {

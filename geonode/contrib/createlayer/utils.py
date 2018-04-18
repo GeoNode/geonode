@@ -150,7 +150,8 @@ def get_or_create_datastore(cat, workspace=None, charset="UTF-8"):
         raise GeoNodeException(msg)
 
     try:
-        ds = cat.get_store(dsname, workspace)
+        ds = cat.get_store(dsname, workspace) or\
+            cat.create_datastore(dsname, workspace=workspace)
     except FailedRequestError:
         ds = cat.create_datastore(dsname, workspace=workspace)
 

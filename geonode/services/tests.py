@@ -18,11 +18,12 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 from unittest import TestCase as StandardTestCase
 
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
-from django.test import TestCase
 import mock
 from owslib.map.wms111 import ContentMetadata
 
@@ -105,9 +106,11 @@ class ModuleFunctionsTestCase(StandardTestCase):
         mock_wms_handler.assert_called_with(phony_url)
 
 
-class WmsServiceHandlerTestCase(TestCase):
+class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
+        super(WmsServiceHandlerTestCase, self).setUp()
+
         self.phony_url = ("http://a-really-long-and-fake-name-here-so-that-"
                           "we-use-it-in-tests")
         self.phony_title = "a generic title"

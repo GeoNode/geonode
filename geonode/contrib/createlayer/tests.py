@@ -18,11 +18,12 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import dj_database_url
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.test import LiveServerTestCase as TestCase
 
 from geonode.geoserver.signals import gs_catalog
 from geonode import GeoNodeException
@@ -53,29 +54,28 @@ Then, as usual, run "paver run_tests"
 """
 
 
-class CreateLayerCoreTest(TestCase):
+class CreateLayerCoreTest(GeoNodeBaseTestSupport):
 
     """
     Test createlayer application.
     """
-
     fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
+        super(CreateLayerCoreTest, self).setUp()
         # createlayer must use postgis as a datastore
         # set temporary settings to use a postgis datastore
         DATASTORE_URL = 'postgis://geonode:geonode@localhost:5432/datastore'
         postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=600)
         settings.DATABASES['datastore'] = postgis_db
         settings.OGC_SERVER['default']['DATASTORE'] = 'datastore'
-        pass
 
     def tearDown(self):
+        super(GeoNodeBaseTestSupport, self).tearDown()
         # move to original settings
         settings.OGC_SERVER['default']['DATASTORE'] = ''
         del settings.DATABASES['datastore']
         # TODO remove stuff from django and geoserver catalog
-        pass
 
     def test_layer_creation_without_postgis(self):
         # TODO implement this: must raise an error message

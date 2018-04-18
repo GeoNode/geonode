@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+from django.utils import timezone
 from datetime import datetime
 
 
@@ -43,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='groupprofile',
             name='created',
-            field=models.DateTimeField(default=datetime.now(), auto_now_add=True),
+            field=models.DateTimeField(default=datetime.now(timezone.get_current_timezone()), auto_now_add=True),
             preserve_default=False,
         ),
     ]

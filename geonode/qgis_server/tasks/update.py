@@ -33,6 +33,9 @@ from geonode.maps.models import Map
 from geonode.qgis_server.helpers import map_thumbnail_url, layer_thumbnail_url
 from geonode.qgis_server.models import QGISServerLayer
 
+from geonode import qgis_server
+from geonode.decorators import on_ogc_backend
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,6 +44,7 @@ logger = logging.getLogger(__name__)
     queue='update',
     autoretry_for=(QGISServerLayer.DoesNotExist, ),
     retry_kwargs={'max_retries': 5, 'countdown': 5})
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def create_qgis_server_thumbnail(instance, overwrite=False, bbox=None):
     """Task to update thumbnails.
 
@@ -108,6 +112,7 @@ def create_qgis_server_thumbnail(instance, overwrite=False, bbox=None):
 @task(
     name='geonode.qgis_server.tasks.update.cache_request',
     queue='update')
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def cache_request(url, cache_file):
     """Cache a given url request to a file.
 

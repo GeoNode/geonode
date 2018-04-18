@@ -82,7 +82,7 @@ class DocumentFormMixin(object):
 
         # delete remaining links
         DocumentResourceLink.objects\
-                .exclude(pk__in=[i.pk for i in instances]).delete()
+                .filter(document_id=self.instance.id).exclude(pk__in=[i.pk for i in instances]).delete()
 
 
 class DocumentForm(ResourceBaseForm, DocumentFormMixin):
