@@ -44,6 +44,8 @@ except ImportError:
     from paver.easy import pushd
 
 from geonode.settings import (on_travis,
+                              core_tests,
+                              internal_apps_tests,
                               integration_tests,
                               INSTALLED_APPS,
                               GEONODE_CORE_APPS,
