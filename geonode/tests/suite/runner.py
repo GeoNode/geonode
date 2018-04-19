@@ -78,10 +78,9 @@ sys.stdout = null_file
 class ParallelTestSuiteRunner(object):
 
     def __init__(self, pattern=None, top_level=None, verbosity=1,
-                 interactive=True, failfast=False, keepdb=True,
+                 interactive=True, failfast=True, keepdb=False,
                  reverse=False, debug_mode=False, debug_sql=False, parallel=0,
                  tags=None, exclude_tags=None, **kwargs):
-
         self.pattern = pattern
         self.top_level = top_level
         self.verbosity = verbosity
@@ -346,10 +345,9 @@ class DjangoParallelTestSuiteRunner(ParallelTestSuiteRunner,
                                     DiscoverRunner):
 
     def __init__(self, pattern=None, top_level=None, verbosity=1,
-                 interactive=True, failfast=False, keepdb=True,
+                 interactive=True, failfast=True, keepdb=False,
                  reverse=False, debug_mode=False, debug_sql=False, parallel=0,
                  tags=None, exclude_tags=None, **kwargs):
-
         self.pattern = pattern
         self.top_level = top_level
         self.verbosity = verbosity
@@ -362,8 +360,6 @@ class DjangoParallelTestSuiteRunner(ParallelTestSuiteRunner,
         self.parallel = parallel
         self.tags = set(tags or [])
         self.exclude_tags = set(exclude_tags or [])
-        super(DjangoParallelTestSuiteRunner, self).__init__(verbosity, interactive,
-                                                            failfast, **kwargs)
         self._keyboard_interrupt_intercepted = False
         self._worker_max = kwargs.get('worker_max', WORKER_MAX)
         self._worker_count = kwargs.get('worker_count', WORKER_COUNT)

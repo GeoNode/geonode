@@ -287,7 +287,7 @@ GEONODE_CORE_APPS = (
     'geonode.catalogue',
 )
 
-GEONODE_APPS = GEONODE_CORE_APPS + (
+GEONODE_INTERNAL_APPS = (
     # GeoNode internal apps
     'geonode.people',
     'geonode.client',
@@ -326,7 +326,7 @@ GEONODE_CONTRIB_APPS = (
 )
 
 # Uncomment the following line to enable contrib apps
-GEONODE_APPS = GEONODE_CONTRIB_APPS + GEONODE_APPS
+GEONODE_APPS = GEONODE_CORE_APPS + GEONODE_INTERNAL_APPS + GEONODE_CONTRIB_APPS
 
 INSTALLED_APPS = (
 
@@ -633,6 +633,8 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 #
 
 on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
+core_tests = ast.literal_eval(os.environ.get('TEST_RUN_CORE', 'False'))
+internal_apps_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTERNAL_APPS', 'False'))
 integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'False'))
 
 # Setting a custom test runner to avoid running the tests for
@@ -642,8 +644,8 @@ integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'Fal
 
 # Django 1.11 ParallelTestSuite
 TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
-TEST_RUNNER_KEEPDB = 1
-TEST_RUNNER_PARALLEL = 2
+TEST_RUNNER_KEEPDB = 0
+TEST_RUNNER_PARALLEL = 1
 
 # GeoNode test suite
 # TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
