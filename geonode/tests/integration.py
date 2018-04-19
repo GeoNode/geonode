@@ -38,7 +38,7 @@ from lxml import etree
 from urlparse import urljoin
 
 from django.conf import settings
-from django.test.utils import override_settings
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
@@ -140,13 +140,11 @@ $ geonode createsuperuser
 """
 
 
-@override_settings(SITEURL='http://localhost:8010/')
 class NormalUserTest(GeoNodeLiveTestSupport):
 
     """
     Tests GeoNode functionality for non-administrative users
     """
-    port = 8010
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_layer_upload(self):
@@ -177,12 +175,10 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             saved_layer.delete()
 
 
-@override_settings(SITEURL='http://localhost:8001/')
 class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
     """Tests geonode.maps app/module
     """
-    port = 8001
 
     # geonode.maps.utils
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -994,11 +990,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             lyr.delete()
 
 
-@override_settings(SITEURL='http://localhost:8002/')
 class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     """Tests GeoNode permissions and its integration with GeoServer
     """
-    port = 8002
 
     """
     AF: This test must be refactored. Opening an issue for that.
@@ -1180,12 +1174,10 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
                 layer.delete()
 
 
-@override_settings(SITEURL='http://localhost:8003/')
 class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
 
     """Tests thumbnails behavior for layers and maps.
     """
-    port = 8003
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_layer_thumbnail(self):
@@ -1242,12 +1234,10 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
             saved_layer.delete()
 
 
-@override_settings(SITEURL='http://localhost:8004/')
 class GeoNodeMapPrintTest(GeoNodeLiveTestSupport):
 
     """Tests geonode.maps print
     """
-    port = 8004
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def testPrintProxy(self):
@@ -1335,12 +1325,10 @@ class GeoNodeMapPrintTest(GeoNodeLiveTestSupport):
             pass
 
 
-@override_settings(SITEURL='http://localhost:8005/')
 class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
     """Tests GeoNode/GeoServer syncronization
     """
-    port = 8005
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -1378,12 +1366,10 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
             layer.delete()
 
 
-@override_settings(SITEURL='http://localhost:8006/')
 class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
 
     """Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
     """
-    port = 8006
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -1484,13 +1470,10 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             layer3.delete()
 
 
-@override_settings(SITEURL='http://localhost:8007/')
 class LayersStylesApiInteractionTests(
         ResourceTestCaseMixin, GeoNodeLiveTestSupport):
-
-    port = 8007
-
     """Test Layers"""
+
     def setUp(self):
         super(LayersStylesApiInteractionTests, self).setUp()
 
@@ -1741,10 +1724,8 @@ class LayersStylesApiInteractionTests(
         self.assertEqual(meta['total_count'], 0)
 
 
-@override_settings(SITEURL='http://localhost:8008/')
 class GeoTIFFIOTest(GeoNodeLiveTestSupport):
     """Tests integration of geotiff.io"""
-    port = 8008
 
     def testLink(self):
         thefile = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')

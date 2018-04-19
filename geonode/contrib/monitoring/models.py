@@ -28,8 +28,8 @@ from socket import gethostbyname
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from django.db import models
 from django import forms
+from django.db import models
 from django.conf import settings
 from django.http import Http404
 from jsonfield import JSONField
@@ -509,7 +509,10 @@ class RequestEvent(models.Model):
 
         from dateutil.tz import tzlocal
         utc = pytz.utc
-        local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
+        try:
+            local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
+        except:
+            local_tz = pytz.timezone(settings.TIME_ZONE)
 
         start_time = parse_datetime(rd['startTime'])
         # Assuming GeoServer stores dates @ UTC

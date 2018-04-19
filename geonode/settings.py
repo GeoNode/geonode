@@ -457,14 +457,14 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
             "handlers": ["console"], "level": "INFO", },
-        # "geonode.qgis_server": {
-        #     "handlers": ["console"], "level": "ERROR", },
+        "geonode.qgis_server": {
+            "handlers": ["console"], "level": "ERROR", },
         "gsconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
-        # "owslib": {
-        #     "handlers": ["console"], "level": "ERROR", },
-        # "pycsw": {
-        #     "handlers": ["console"], "level": "ERROR", },
+        "owslib": {
+            "handlers": ["console"], "level": "ERROR", },
+        "pycsw": {
+            "handlers": ["console"], "level": "ERROR", },
         "celery": {
             'handlers': ['celery', 'console'], 'level': 'ERROR', },
     },
