@@ -306,5 +306,4 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         # ])
 
         self.indexing_method = INDEXED
-        self.name = slugify(
-            _title if _title else urlsplit(self.url).netloc)[:40]
+        self.name = slugify(urlsplit(self.url).netloc)[:40]

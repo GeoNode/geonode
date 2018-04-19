@@ -165,9 +165,11 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         of metadata and do not return those.
 
         """
-
-        contents_gen = self.parsed_service.contents.itervalues()
-        return (r for r in contents_gen if not any(r.children))
+        try:
+            contents_gen = self.parsed_service.contents.itervalues()
+            return (r for r in contents_gen if not any(r.children))
+        except:
+            return None
 
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service

@@ -24,6 +24,7 @@ try:
     from django.utils.decorators import classproperty
 except:
     class classproperty(object):
+
         def __init__(self, method=None):
             self.fget = method
 
