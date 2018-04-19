@@ -130,9 +130,9 @@ Let's install the GeoNode dependencies and packages into the Python Virtual Envi
 
 .. code-block:: bash
 
-	$ cd my_geonode
+    $ cd my_geonode
 
-	# Find the closest pygdal version. 
+    # Find the closest pygdal version. 
     # Example: 2.2.1 ...  2.2.1.3, ...
     $ gdal-config --version && pip install pygdal==
 
