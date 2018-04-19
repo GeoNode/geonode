@@ -55,6 +55,7 @@ from geonode.settings import (on_travis,
 
 _django_11 = django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2
 _keepdb = '-k' if TEST_RUNNER_KEEPDB else ''
+_parallel = ('--parallel=%s' % TEST_RUNNER_PARALLEL) if TEST_RUNNER_PARALLEL else ''
 
 assert sys.version_info >= (2, 6), \
     SystemError("GeoNode Build requires python 2.6 or better")
@@ -726,10 +727,10 @@ def test(options):
     else:
         _apps = tuple(GEONODE_APPS)
 
-    sh("%s manage.py test %s.tests --noinput %s --parallel=%s" % (options.get('prefix'),
-                                                                              '.tests '.join(_apps),
-                                                                              _keepdb,
-                                                                              TEST_RUNNER_PARALLEL))
+    sh("%s manage.py test %s.tests --noinput %s %s" % (options.get('prefix'),
+                                                       '.tests '.join(_apps),
+                                                       _keepdb,
+                                                       _parallel))
 
 
 @task
@@ -860,7 +861,7 @@ def run_tests(options):
     local = options.get('local', 'false')  # travis uses default to false
 
     if not integration_tests:
-        sh('%s manage.py test geonode.tests.smoke %s --parallel=%s' % (prefix, _keepdb, TEST_RUNNER_PARALLEL))
+        sh('%s manage.py test geonode.tests.smoke %s %s' % (prefix, _keepdb, _parallel))
         call_task('test', options={'prefix': prefix})
     else:
         call_task('test_integration')
