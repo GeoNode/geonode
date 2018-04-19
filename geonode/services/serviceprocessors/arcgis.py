@@ -68,8 +68,6 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         self.proxy_base = None
         self.url = url
         self.parsed_service = ArcMapService(self.url)
-        print(self.parsed_service)
-        print(self.parsed_service.layers)
         extent, srs = utils.get_esri_extent(self.parsed_service)
         _title = self.parsed_service.mapName
         if len(_title) == 0:

@@ -643,7 +643,7 @@ integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'Fal
 # Django 1.11 ParallelTestSuite
 TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
 TEST_RUNNER_KEEPDB = 1
-TEST_RUNNER_PARALLEL = 1
+TEST_RUNNER_PARALLEL = 2
 
 # GeoNode test suite
 # TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
