@@ -502,7 +502,8 @@ def time_step_view(request, upload_session):
         upload_session.completed_step = 'check'
 
         def tx(type_name):
-            return None if type_name is None or type_name == 'Date' \
+            # return None if type_name is None or type_name == 'Date' \
+            return None if type_name is None \
                 else 'DateFormatTransform'
         end_attribute, end_type = cleaned.get('end_attribute', (None, None))
         time_step(
