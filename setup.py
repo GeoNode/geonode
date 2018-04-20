@@ -51,7 +51,7 @@ setup(name='GeoNode',
 
             # native dependencies
             "Pillow<=3.3.1",  # python-imaging (3.1.2) - python-pillow (3.3.1 in our ppa)
-            "lxml<=3.8.0",  # python-lxml (3.6.2 in our ppa) FIXME
+            "lxml==3.6.2",  # python-lxml (3.6.2 in our ppa) FIXME # <=3.8.0 throws pkg_resources.ContextualVersionConflict: (lxml 3.8.0 (/usr/local/lib/python2.7/site-packages), Requirement.parse('lxml==3.6.2'), set(['pycsw']))
             "psycopg2<=2.7.3.1",  # python-psycopg2 (2.7.3.1 in our ppa)
             "Django==1.8.19",  # python-django (1.8.19 in our ppa) FIXME
 
@@ -133,7 +133,7 @@ setup(name='GeoNode',
             "django-activity-stream<=0.6.5",  # python-django-activity-stream (0.6.5 in our ppa)
             "django-appconf<=1.0.2",  # (1.0.2 in ppa)
             "django-apptemplates==1.4",  # # python-django-apptemplates (1.4 in our ppa)
-            "django-autocomplete-light>=2.3.3,<3.0a0",  # (2.3.3.1 in ppa)
+            "django-autocomplete-light==2.3.3",  # (2.3.3.1 in ppa) # pinned because >=2.3.4 throw an exception on startup
             "django-autofixture<=0.12.1",  # python-django-autofixture (0.12.1 in our ppa)
             "django-autoslug<=1.9.3",  # python-django-autoslug (1.9.3 in our ppa)
             "django-braces<=1.12.0",  # pytnon-django-braces (1.12.0 in our ppa)
