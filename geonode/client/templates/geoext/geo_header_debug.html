@@ -1,12 +1,12 @@
 {% load api_basemaps_tags %}
 
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/GeoExt/resources/css/geoext-all.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/GeoExt/resources/css/gxtheme-gray.css">
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/ux/colorpicker/color-picker.ux.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/PrintPreview/resources/css/printpreview.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/style.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/gxp/src/theme/all.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/geoexplorer.css " />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/GeoExt/resources/css/geoext-all.css?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/GeoExt/resources/css/gxtheme-gray.css?v={{ VERSION }}">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/ux/colorpicker/color-picker.ux.css?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/PrintPreview/resources/css/printpreview.css?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/style.css?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/gxp/src/theme/all.css?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/geoexplorer.css?v={{ VERSION }}" />
 <!--[if IE]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/ie.css"/><![endif]-->
 <script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/SingleFile.js"></script>
 <script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/BaseTypes/Class.js"></script>
@@ -322,6 +322,18 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?key={% google_api_key %}" type="text/javascript"></script>
 
+<script src="{{STATIC_URL}}geoexplorer/script/GeoExplorer-debug.js.js?v={{ VERSION }}" type="text/javascript"></script>
+
+<style>
+    .olImageLoadError {
+        display: none !important;
+    }
+    .olImageLoadError {
+        background-image: url('{{ STATIC_URL }}geonode/img/light_gray.jpg');
+        background-repeat: no-repeat;
+    }
+</style>
+
 <script type="text/javascript">
 OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
 OpenLayers.Util.onImageLoadErrorColor = 'transparent';
@@ -366,11 +378,13 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
 
   // Do not include the layer styler on the map-detail view.
   {% if not map %}
-  config.viewerTools.splice(5, 0, {
-    id: "styler",
-    ptype: "gxp_styler",
-    checked: true
-  });
+    {% if user.is_authenticated %}
+      config.viewerTools.splice(5, 0, {
+        id: "styler",
+        ptype: "gxp_styler",
+        checked: true
+      });
+    {% endif %}
   {% endif %}
 
   GeoExplorer.Viewer.superclass.loadConfig.call(this, config);

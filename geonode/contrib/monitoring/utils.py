@@ -41,7 +41,10 @@ from django.db.models.fields.related import RelatedField
 
 from geonode.contrib.monitoring.models import RequestEvent, ExceptionEvent
 
+
 GS_FORMAT = '%Y-%m-%dT%H:%M:%S'  # 2010-06-20T2:00:00
+
+log = logging.getLogger(__name__)
 
 
 class MonitoringFilter(logging.Filter):
@@ -143,19 +146,22 @@ class GeoServerMonitorClient(object):
         doc = bs(resp.content)
         links = doc.find_all('a')
         for l in links:
-            if l.get('href').startswith(self.base_url):
-                href = self.get_href(l, format)
-                data = self.get_request(href, format=format)
-                if data:
-                    yield data
-                else:
-                    print("Skipping payload for {}".format(href))
+            # we're skipping this check, as gs can generate
+            # url with other base url
+            # if l.get('href').startswith(self.base_url):
+            href = self.get_href(l, format)
+            data = self.get_request(href, format=format)
+            if data:
+                yield data
+            else:
+                print("Skipping payload for {}".format(href))
 
     def get_request(self, href, format=format):
         username = settings.OGC_SERVER['default']['USER']
         password = settings.OGC_SERVER['default']['PASSWORD']
         r = requests.get(href, auth=HTTPBasicAuth(username, password))
         if r.status_code != 200:
+            log.warning('Invalid response for %s: %s', href, r)
             return
         data = None
         try:
@@ -164,8 +170,8 @@ class GeoServerMonitorClient(object):
             # traceback.print_exc()
             try:
                 data = etree.fromstring(r.content)
-            except Exception:
-                traceback.print_exc()
+            except Exception, err:
+                log.debug("Cannot parse xml contents for %s: %s", href, err, exc_info=err)
                 data = bs(r.content)
         if data and format != 'json':
             return self.to_json(data, format)
