@@ -169,7 +169,7 @@ def save_step_view(req, session):
             base_file,
             scan_hint=get_scan_hint(form.cleaned_data["valid_extensions"])
         )
-        logger.debug("spatial_files: {}".format(spatial_files))
+        logger.info("spatial_files: {}".format(spatial_files))
         import_session = save_step(
             req.user,
             name,

@@ -120,7 +120,7 @@ class Service(models.Model):
     host = models.ForeignKey(Host, null=False)
     check_interval = models.DurationField(
         null=False, blank=False, default=timedelta(seconds=60))
-    last_check = models.DateTimeField(null=True, blank=True)
+    last_check = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     service_type = models.ForeignKey(ServiceType, null=False)
     active = models.BooleanField(null=False, blank=False, default=True)
     notes = models.TextField(null=True, blank=True)
