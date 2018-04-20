@@ -278,7 +278,6 @@ LOGIN_REDIRECT_URL = '/'
 
 GEONODE_CORE_APPS = (
     # GeoNode internal apps
-    'geonode',
     'geonode.api',
     'geonode.base',
     'geonode.layers',
