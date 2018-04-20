@@ -112,7 +112,7 @@ setup(name='GeoNode',
             "OWSLib==0.16.0",  # python-owslib (0.15.0 in our ppa) FIXME
             "pycsw==2.2.0",  # python-pycsw (1.10.1, 2.0.0, 2.0.3 in our ppa) FIXME
             "SQLAlchemy==1.1.14",  # required by pycsw==2.2.0
-            "%s" % shapely_dep,  # python-shapely (1.5.13)
+            "Shapely==1.5.17",  # python-shapely (1.5.13) FIXME
 
             # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
