@@ -288,7 +288,7 @@ GEONODE_CORE_APPS = (
     'geonode.catalogue',
 )
 
-GEONODE_APPS = GEONODE_CORE_APPS + (
+GEONODE_INTERNAL_APPS = (
     # GeoNode internal apps
     'geonode.people',
     'geonode.client',
@@ -327,7 +327,7 @@ GEONODE_CONTRIB_APPS = (
 )
 
 # Uncomment the following line to enable contrib apps
-GEONODE_APPS = GEONODE_CONTRIB_APPS + GEONODE_APPS
+GEONODE_APPS = GEONODE_CORE_APPS + GEONODE_INTERNAL_APPS + GEONODE_CONTRIB_APPS
 
 INSTALLED_APPS = (
 
@@ -389,10 +389,14 @@ INSTALLED_APPS = (
     'corsheaders',
 
     'invitations',
+
     # login with external providers
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+
+    # GeoNode
+    'geonode',
 ) + GEONODE_APPS
 
 # Documents application
