@@ -1,4 +1,5 @@
 Django==1.8.19
+Celery==4.1.0
 six==1.10.0
 amqp==2.2.2
 anyjson==0.3.3
@@ -11,7 +12,6 @@ backports.functools-lru-cache==1.5
 beautifulsoup4==4.4.1
 billiard==3.5.0.3
 boto==2.38.0
-celery==4.1.0
 certifi==2018.1.18
 chardet==3.0.4
 click==6.7
@@ -145,7 +145,7 @@ pytz==2018.3
 PyYAML==3.12
 redis==2.10.5
 regex==2016.7.21
-requests==2.18.4
+requests==2.11.1
 requests-oauthlib==0.8.0
 selenium==3.9.0
 simplejson==3.13.2
