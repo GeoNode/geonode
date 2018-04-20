@@ -388,10 +388,14 @@ INSTALLED_APPS = (
     'corsheaders',
 
     'invitations',
+
     # login with external providers
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+
+    # GeoNode
+    'geonode',
 ) + GEONODE_APPS
 
 # Documents application

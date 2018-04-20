@@ -40,6 +40,10 @@ setup(name='GeoNode',
             # # The commented name next to the package
             # # is the Ubuntu 16.04 package that provides it
             # # with version in parenthesis
+            "Django==1.11.11",  # python-django (1.8.19 in our ppa) FIXME
+            "Celery==4.1.0",  # python-celery (4.1.0) FIXME
+            "Shapely==1.5.17",  # python-shapely (1.5.13)
+            "Pinax==0.9a2",  # python-pinax (0.9a2 in our ppa)
 
             # # Apps with official Ubuntu 16.04 packages
 
@@ -47,7 +51,6 @@ setup(name='GeoNode',
             "Pillow<=3.3.1",  # python-imaging (3.1.2) - python-pillow (3.3.1 in our ppa)
             "lxml==3.6.2",  # python-lxml (3.6.2 in our ppa) FIXME # <=3.8.0 throws pkg_resources.ContextualVersionConflict: (lxml 3.8.0 (/usr/local/lib/python2.7/site-packages), Requirement.parse('lxml==3.6.2'), set(['pycsw']))
             "psycopg2<=2.7.3.1",  # python-psycopg2 (2.7.3.1 in our ppa)
-            "Django==1.11.11",  # python-django (1.8.19 in our ppa) FIXME
 
             # Other
             "amqp==2.2.2",  # (python-amqp 2.2.2 in our ppa)
@@ -69,7 +72,6 @@ setup(name='GeoNode',
             "django-floppyforms<=1.7.0",  # python-django-floppyforms (1.7.0 in our ppa)
             "chardet<=3.0.4",  # python-chardet (3.0.4 in our ppa)
             "decorator<=4.1.2",  # python-decorator (4.1.2 in our ppa)
-            "celery>4.0a0c,<=4.1.0",  # python-celery (4.1.0)
             "certifi<=2018.1.18",  # depends on python-elasticsearch - python-certifi (2018.1.18 in our ppa)
             "click==6.7",  # python-click (6.7 in our ppa)
             "coreapi==2.3.3",  # python-coreapi (2.3.3 in our ppa)
@@ -105,20 +107,18 @@ setup(name='GeoNode',
             # "djangorestframework-gis<=0.12",  # TODO
             "drf-nested-routers==0.90.0",  # python-drf-nested-routers (0.90.0 in our ppa)
             "drf-openapi==1.3.0",  # python-drf-openapi (1.3.0 in our ppa)
-            "oauthlib<=2.0.6",  # python-oauthlib (2.0.6 in our ppa)
+            "oauthlib==2.0.1",  # python-oauthlib (2.0.6 in our ppa)
 
             # geopython dependencies
             "pyproj>=1.9.5,<=1.9.5.1",  # python-pyproj (1.9.5.1)
             "OWSLib==0.16.0",  # python-owslib (0.15.0 in our ppa) FIXME
             "pycsw==2.2.0",  # python-pycsw (1.10.1, 2.0.0, 2.0.3 in our ppa) FIXME
             "SQLAlchemy==1.1.14",  # required by pycsw==2.2.0
-            "Shapely==1.5.17",  # python-shapely (1.5.13) FIXME
 
             # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
             # Django Apps
             "dj-database-url<=0.4.2",  # , python-dj-database-url (0.4.1 in ppa)
-            "Pinax<=0.9a2",  # python-pinax (0.9a2 in our ppa)
             # pinax-comments==0.1.1
             "pinax-notifications==4.1.0",  # (4.1.0 in our ppa)
             "pinax-theme-bootstrap<=8.0.1",  # python-pinax-theme-bootstrap (8.0.1 in our ppa)
