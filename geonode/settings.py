@@ -25,6 +25,7 @@ import re
 import sys
 from datetime import timedelta
 from distutils.util import strtobool
+from urlparse import urlparse, urlunparse
 
 import django
 import dj_database_url
@@ -636,13 +637,18 @@ integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'Fal
 
 # Setting a custom test runner to avoid running the tests for
 # some problematic 3rd party apps
+# Default Nose Test Suite
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+TEST_RUNNER_KEEPDB = 0
+TEST_RUNNER_PARALLEL = 0
+
+# GeoNode test suite
 # TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
-TEST_RUNNER_WORKER_MAX = 3
-TEST_RUNNER_WORKER_COUNT = 'auto'
-TEST_RUNNER_NOT_THREAD_SAFE = None
-TEST_RUNNER_PARENT_TIMEOUT = 10
-TEST_RUNNER_WORKER_TIMEOUT = 10
+# TEST_RUNNER_WORKER_MAX = 3
+# TEST_RUNNER_WORKER_COUNT = 'auto'
+# TEST_RUNNER_NOT_THREAD_SAFE = None
+# TEST_RUNNER_PARENT_TIMEOUT = 10
+# TEST_RUNNER_WORKER_TIMEOUT = 10
 
 TEST = 'test' in sys.argv
 INTEGRATION = 'geonode.tests.integration' in sys.argv
@@ -657,6 +663,15 @@ NOSE_ARGS = [
 # GeoNode specific settings
 #
 SITEURL = os.getenv('SITEURL', "http://localhost:8000/")
+
+# we need hostname for deployed
+_surl = urlparse(SITEURL)
+HOSTNAME = _surl.hostname
+
+# add trailing slash to site url. geoserver url will be relative to this
+if not SITEURL.endswith('/'):
+    SITEURL = '{}/'.format(SITEURL)
+
 
 DEFAULT_WORKSPACE = os.getenv('DEFAULT_WORKSPACE', 'geonode')
 CASCADE_WORKSPACE = os.getenv('CASCADE_WORKSPACE', 'geonode')
@@ -679,7 +694,8 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+    #  'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)
+    'GEOSERVER_PUBLIC_LOCATION', GEOSERVER_LOCATION
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -1420,7 +1436,7 @@ ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
 MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'True'))
-MONITORING_HOST_NAME = 'localhost'
+MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
 MONITORING_SERVICE_NAME = 'geonode'
 
 # how long monitoring data should be stored

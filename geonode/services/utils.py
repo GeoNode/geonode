@@ -97,14 +97,21 @@ def get_esri_extent(esriobj):
     extent = None
     srs = None
 
-    if 'fullExtent' in esriobj._json_struct:
-        extent = esriobj._json_struct['fullExtent']
-    if 'extent' in esriobj._json_struct:
-        extent = esriobj._json_struct['extent']
+    try:
+        if 'fullExtent' in esriobj._json_struct:
+            extent = esriobj._json_struct['fullExtent']
+    except Exception, err:
+        logger.error(err, exc_info=True)
+
+    try:
+        if 'extent' in esriobj._json_struct:
+            extent = esriobj._json_struct['extent']
+    except Exception, err:
+        logger.error(err, exc_info=True)
 
     try:
         srs = extent['spatialReference']['wkid']
-    except KeyError, err:
+    except Exception, err:
         logger.error(err, exc_info=True)
 
     return [extent, srs]

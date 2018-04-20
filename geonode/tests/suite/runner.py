@@ -13,7 +13,7 @@ from django.conf import settings
 
 from django.test.runner import DiscoverRunner
 from django.db import connections, DEFAULT_DB_ALIAS
-from django.test.testcases import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured
 
 from .base import setup_test_db
 

@@ -399,13 +399,31 @@ class ResourceBaseForm(TranslationModelForm):
 
     def clean_keywords(self):
         import urllib
+        import HTMLParser
+
+        def unicode_escape(unistr):
+            """
+            Tidys up unicode entities into HTML friendly entities
+            Takes a unicode string as an argument
+            Returns a unicode string
+            """
+            import htmlentitydefs
+            escaped = ""
+            for char in unistr:
+                if ord(char) in htmlentitydefs.codepoint2name:
+                    name = htmlentitydefs.codepoint2name.get(ord(char))
+                    escaped += '&%s;' % name if 'nbsp' not in name else ' '
+                else:
+                    escaped += char
+            return escaped
 
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
-            _k = urllib.unquote(k.decode('utf-8')).decode('utf-8').split(",")
+            _k = urllib.unquote((u'%s' % k).encode('utf-8')).split(",")
             if not isinstance(_k, basestring):
                 for _kk in [x.strip() for x in _k]:
+                    _kk = HTMLParser.HTMLParser().unescape(unicode_escape(_kk))
                     _unsescaped_kwds.append(_kk)
             else:
                 _unsescaped_kwds.append(_k)

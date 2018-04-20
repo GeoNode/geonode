@@ -19,6 +19,7 @@
 #########################################################################
 
 import os
+from urlparse import urlparse, urlunparse
 from geonode.settings import *
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -31,7 +32,15 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
 
 # SECRET_KEY = '************************'
 
-SITEURL = "http://localhost:8000"
+SITEURL = "http://localhost:8000/"
+
+# we need hostname for deployed
+_surl = urlparse(SITEURL)
+HOSTNAME = _surl.hostname
+
+# add trailing slash to site url. geoserver url will be relative to this
+if not SITEURL.endswith('/'):
+    SITEURL = '{}/'.format(SITEURL)
 
 ALLOWED_HOSTS = ['localhost', 'geonode.example.com']
 
@@ -65,8 +74,8 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    #    'GEOSERVER_PUBLIC_LOCATION', '{}/geoserver/'.format(SITEURL)
-    'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
+    #  'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)
+    'GEOSERVER_PUBLIC_LOCATION', GEOSERVER_LOCATION
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -158,7 +167,7 @@ CATALOGUE = {
         # 'ENGINE': 'geonode.catalogue.backends.generic',
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        'URL': '%s/catalogue/csw' % SITEURL,
+        'URL': '%scatalogue/csw' % SITEURL,
         # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
         # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
 
@@ -440,7 +449,8 @@ if MONITORING_ENABLED:
         MIDDLEWARE_CLASSES += \
             ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
     MONITORING_CONFIG = None
-    MONITORING_SERVICE_NAME = 'local-geonode'
+    MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
+    MONITORING_SERVICE_NAME = 'geonode'
 
 #Define email service on GeoNode
 EMAIL_ENABLE = True
