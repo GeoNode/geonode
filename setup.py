@@ -23,12 +23,6 @@ from distutils.core import setup
 
 from setuptools import find_packages
 
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-if on_rtd:
-    shapely_dep = "Shapely<1.5.13"
-else:
-    shapely_dep = "Shapely>=1.5.17,<1.6.dev0"
-
 setup(name='GeoNode',
       version=__import__('geonode').get_version(),
       description="Application for serving and sharing geospatial data",
