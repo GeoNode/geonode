@@ -199,8 +199,8 @@ def geoserver_upload(
     # Step 7. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 7. Creating style for [%s]' % name)
-	cat.save(gs_resource)
-	cat.reload()
+    cat.save(gs_resource)
+    cat.reload()
     publishing = cat.get_layer(name) or gs_resource
 
     if 'sld' in files:
