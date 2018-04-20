@@ -806,12 +806,7 @@
                 single_value_input = '';
             }
 
-            if (attribute_data_schema == 'yes' && attribute_data_type == 'string' && !isNaN(single_value_input) ){
-              if($("#wrong-data-type").length !== 0) {
-                $('#wrong-data-type').empty();
-              }
-              $( "#query-filter-tools" ).after( "<p id='wrong-data-type'> You entered a number. Not a string.</p>" );
-            } else if (attribute_data_schema == 'yes' && attribute_data_type !== 'string' && isNaN(single_value_input)){
+            if (attribute_data_schema == 'yes' && attribute_data_type !== 'string' && isNaN(single_value_input)){
               if($("#wrong-data-type").length !== 0) {
                   $('#wrong-data-type').empty();
               }
