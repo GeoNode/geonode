@@ -136,7 +136,7 @@ types = [
     FileType("KML", "kml", vector),
     FileType(
         "KML Ground Overlay", "kml-overlay", raster,
-        aliases=("kmz",),
+        aliases=("kmz", "kml"),
         auxillary_file_exts=("png", "gif", "jpg") + _tif_extensions
     ),
     # requires geoserver gdal extension
@@ -265,7 +265,8 @@ def scan_file(file_name, scan_hint=None):
                        scan_hint in file_type.aliases)
             if file_type.matches(path_extension) and hint_ok:
                 _f = file_type.build_spatial_file(path, safe_paths)
-                if _f not in found:
+                found_paths = [f.base_file for f in found]
+                if path not in found_paths:
                     found.append(_f)
 
     # detect xmls and assign if a single upload is found
