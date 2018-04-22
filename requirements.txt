@@ -176,6 +176,7 @@ Faker<=0.8.4
 more-itertools==4.1.0
 parse==1.8.2
 parse-type==0.4.1
+poster~=0.8.1
 py==1.5.3
 pytest==3.5.0
 pytest-bdd==2.20.0
