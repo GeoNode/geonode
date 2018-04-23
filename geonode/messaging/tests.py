@@ -29,6 +29,8 @@ class MessagingTest(GeoNodeBaseTestSupport):
     Tests geonode.messaging
     """
 
+    type = 'layer'
+
     def setUp(self):
         super(MessagingTest, self).setUp()
 

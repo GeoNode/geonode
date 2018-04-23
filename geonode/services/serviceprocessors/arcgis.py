@@ -19,6 +19,7 @@
 
 """Utilities for enabling ESRI:ArcGIS:MapServer and ESRI:ArcGIS:ImageServer remote services in geonode."""
 
+import os
 import logging
 import traceback
 
@@ -26,7 +27,7 @@ from uuid import uuid4
 from urlparse import urlsplit
 
 from django.conf import settings
-from django.template.defaultfilters import slugify
+from django.template.defaultfilters import slugify, safe
 from django.utils.translation import ugettext as _
 
 from geonode.base.models import Link
@@ -69,7 +70,13 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         self.url = url
         self.parsed_service = ArcMapService(self.url)
         extent, srs = utils.get_esri_extent(self.parsed_service)
-        _title = self.parsed_service.mapName
+        try:
+            _sname = utils.get_esri_service_name(self.url)
+            _title_safe = safe(os.path.basename(os.path.normpath(_sname)))
+            _title = _title_safe.replace('_', ' ').strip()
+        except BaseException:
+            traceback.print_exc()
+            _title = self.parsed_service.mapName
         if len(_title) == 0:
             _title = utils.get_esri_service_name(self.url)
         # wkt_geometry = utils.bbox2wktpolygon([
@@ -80,8 +87,8 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         # ])
 
         self.indexing_method = INDEXED
-        self.name = slugify(
-            _title if _title else urlsplit(self.url).netloc)[:40]
+        self.name = slugify(urlsplit(self.url).netloc)[:40]
+        self.title = _title
 
     def create_cascaded_store(self):
         return None
@@ -104,7 +111,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             parent=parent,
             version=self.parsed_service._json_struct["currentVersion"],
             name=self.name,
-            title=self.parsed_service._json_struct["mapName"] or self.name,
+            title=self.title,
             abstract=self.parsed_service._json_struct["serviceDescription"] or _(
                 "Not provided"),
             online_resource=self.parsed_service.url,
@@ -130,7 +137,10 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         of metadata and do not return those.
 
         """
-        return self._parse_layers(self.parsed_service.layers)
+        try:
+            return self._parse_layers(self.parsed_service.layers)
+        except:
+            return None
 
     def _parse_layers(self, layers):
         map_layers = []
@@ -193,7 +203,11 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 "Resource {!r} cannot be harvested".format(resource_id))
 
     def has_resources(self):
-        return True if len(self.parsed_service.layers) > 1 else False
+        try:
+            return True if len(self.parsed_service.layers) > 0 else False
+        except BaseException:
+            traceback.print_exc()
+            return False
 
     def _offers_geonode_projection(self, srs):
         geonode_projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")
@@ -293,7 +307,13 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         self.url = url
         self.parsed_service = ArcImageService(self.url)
         extent, srs = utils.get_esri_extent(self.parsed_service)
-        _title = self.parsed_service.serviceDescription
+        try:
+            _sname = utils.get_esri_service_name(self.url)
+            _title_safe = safe(os.path.basename(os.path.normpath(_sname)))
+            _title = _title_safe.replace('_', ' ').strip()
+        except BaseException:
+            traceback.print_exc()
+            _title = self.parsed_service.mapName
         if len(_title) == 0:
             _title = utils.get_esri_service_name(self.url)
         # wkt_geometry = utils.bbox2wktpolygon([
@@ -304,5 +324,5 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         # ])
 
         self.indexing_method = INDEXED
-        self.name = slugify(
-            _title if _title else urlsplit(self.url).netloc)[:40]
+        self.name = slugify(urlsplit(self.url).netloc)[:40]
+        self.title = _title
