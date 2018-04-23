@@ -201,8 +201,8 @@ def bbox_to_projection(native_bbox, target_srid=4326):
     minx, maxx, miny, maxy = [float(a) for a in box]
     source_srid = int(proj.split(":")[1])
 
-    def _v(coord, x, target_srid=3857):
-        if target_srid != 4326:
+    def _v(coord, x, source_srid=4326, target_srid=3857):
+        if source_srid == 4326 and target_srid != 4326:
             if x and coord >= 180.0:
                 return 179.0
             elif x and coord <= -180.0:
@@ -216,10 +216,10 @@ def bbox_to_projection(native_bbox, target_srid=4326):
 
     if source_srid != target_srid:
         try:
-            wkt = bbox_to_wkt(_v(minx, x=True, target_srid=target_srid),
-                              _v(maxx, x=True, target_srid=target_srid),
-                              _v(miny, x=False, target_srid=target_srid),
-                              _v(maxy, x=False, target_srid=target_srid),
+            wkt = bbox_to_wkt(_v(minx, x=True, source_srid=source_srid, target_srid=target_srid),
+                              _v(maxx, x=True, source_srid=source_srid, target_srid=target_srid),
+                              _v(miny, x=False, source_srid=source_srid, target_srid=target_srid),
+                              _v(maxy, x=False, source_srid=source_srid, target_srid=target_srid),
                               srid=source_srid)
             poly = GEOSGeometry(wkt, srid=source_srid)
             poly.transform(target_srid)
