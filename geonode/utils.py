@@ -200,9 +200,27 @@ def bbox_to_projection(native_bbox, target_srid=4326):
     proj = native_bbox[-1]
     minx, maxx, miny, maxy = [float(a) for a in box]
     source_srid = int(proj.split(":")[1])
+
+    def _v(coord, x, target_srid=3857):
+        if target_srid != 4326:
+            if x and coord >= 180.0:
+                return 179.0
+            elif x and coord <= -180.0:
+                return -179.0
+
+            if not x and coord >= 90.0:
+                return 89.0
+            elif not x and coord <= -90.0:
+                return -89.0
+        return coord
+
     if source_srid != target_srid:
         try:
-            wkt = bbox_to_wkt(minx, maxx, miny, maxy, srid=source_srid)
+            wkt = bbox_to_wkt(_v(minx, x=True, target_srid=target_srid),
+                              _v(maxx, x=True, target_srid=target_srid),
+                              _v(miny, x=False, target_srid=target_srid),
+                              _v(maxy, x=False, target_srid=target_srid),
+                              srid=source_srid)
             poly = GEOSGeometry(wkt, srid=source_srid)
             poly.transform(target_srid)
             return tuple([str(x) for x in poly.extent]) + ("EPSG:%s" % poly.srid,)
@@ -1238,7 +1256,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     http_client = httplib2.Http(
         cache=getattr(
             ogc_server_settings, 'CACHE', None), timeout=getattr(
-            ogc_server_settings, 'TIMEOUT', 10))
+            ogc_server_settings, 'TIMEOUT', 1))
 else:
     http_client = httplib2.Http(timeout=10)
 

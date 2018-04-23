@@ -137,12 +137,17 @@ def harvest_resources(request, service_id):
         )
     available_resources = handler.get_resources()
     is_sync = getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False)
+    errored_state = False
     if request.method == "GET":
         already_harvested = HarvestJob.objects.values_list(
             "resource_id", flat=True).filter(service=service, status=enumerations.PROCESSED)
-        not_yet_harvested = [
-            r for r in available_resources if str(r.id) not in already_harvested]
-        not_yet_harvested.sort(key=lambda resource: resource.id)
+        if available_resources:
+            not_yet_harvested = [
+                r for r in available_resources if str(r.id) not in already_harvested]
+            not_yet_harvested.sort(key=lambda resource: resource.id)
+        else:
+            not_yet_harvested = ['Cannot parse any resource at this time!']
+            errored_state = True
         paginator = Paginator(
             not_yet_harvested, getattr(settings, "CLIENT_RESULTS_LIMIT", 100))
         page = request.GET.get('page')
@@ -161,6 +166,7 @@ def harvest_resources(request, service_id):
                 "importable": not_yet_harvested,
                 "resources": harvestable_resources,
                 "is_sync": is_sync,
+                "errored_state": errored_state,
             }
         )
     elif request.method == "POST":

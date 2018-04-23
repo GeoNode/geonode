@@ -948,19 +948,19 @@ def add_layers_to_map_config(
         }
 
         if layer.storeType == "remoteStore":
-            # service = layer.remote_service
-            # url = service.service_url
+            service = layer.remote_service
+            source_params = {
+                "ptype": service.ptype,
+                "remote": True,
+                "url": service.service_url,
+                "name": service.name,
+                "title": "[R] %s" % service.title}
             maplayer = MapLayer(map=map_obj,
                                 name=layer.alternate,
                                 ows_url=layer.ows_url,
                                 layer_params=json.dumps(config),
                                 visibility=True,
-                                # source_params=json.dumps({
-                                #     "ptype": service.ptype,
-                                #     "remote": True,
-                                #     "url": url,
-                                #     "name": service.name,
-                                #     "title": "[R] %s" % service.title})
+                                source_params=json.dumps(source_params)
             )
         else:
             ogc_server_url = urlparse.urlsplit(

@@ -81,7 +81,6 @@ funcsigs==1.0.2
 geolinks==0.2.0
 geonode-agon-ratings==0.3.8
 geonode-announcements==1.0.13
-geonode-arcrest==10.2
 geonode-avatar==2.1.7
 geonode-dialogos==0.9
 geonode-user-messages==0.1.14

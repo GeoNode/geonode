@@ -430,10 +430,14 @@ def time_step(upload_session, time_attribute, time_transform_type,
     '''
     transforms = []
 
-    def build_time_transform(att, type, format):
+    def build_time_transform(att, type, format, end_time_attribute, presentation_strategy):
         trans = {'type': type, 'field': att}
         if format:
             trans['format'] = format
+        if end_time_attribute:
+            trans['enddate'] = end_time_attribute
+        if presentation_strategy:
+            trans['presentation'] = presentation_strategy
         return trans
 
     def build_att_remap_transform(att):
@@ -452,15 +456,10 @@ def time_step(upload_session, time_attribute, time_transform_type,
             transforms.append(
                 build_time_transform(
                     time_attribute,
-                    time_transform_type, time_format
-                )
-            )
-
-        if end_time_attribute and end_time_transform_type:
-            transforms.append(
-                build_time_transform(
+                    time_transform_type,
+                    time_format,
                     end_time_attribute,
-                    end_time_transform_type, end_time_format
+                    presentation_strategy
                 )
             )
 
@@ -874,6 +873,10 @@ def final_step(upload_session, user):
     signals.upload_complete.send(sender=final_step, layer=saved_layer)
 
     saved_layer.save()
+
+    cat._cache.clear()
+    cat.reload()
+
     return saved_layer
 
 
