@@ -23,16 +23,6 @@
 
 {% block extra_script %}
 {{ block.super }}
-
-<script type="text/javascript">
-  // $window.scrollTo(0, 0);
-  $( document ).ready(function() {
-      $('body,html').animate({
-            scrollTop: 0
-        }, 600);
-  });
-</script>
-
   {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
   {% endif %}
