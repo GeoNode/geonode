@@ -24,13 +24,14 @@ import urllib
 
 from urlparse import urlparse, urljoin
 
-from django.utils.translation import ugettext
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext
 from django.forms.models import model_to_dict
 
 
 # use different name to avoid module clash
-from geonode import geoserver as geoserver_app
+from . import BACKEND_PACKAGE
 from geonode import GeoNodeException
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
@@ -76,7 +77,7 @@ def geoserver_pre_save(*args, **kwargs):
     pass
 
 
-@on_ogc_backend(geoserver_app.BACKEND_PACKAGE)
+@on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_post_save(instance, sender, **kwargs):
     from geonode.messaging import producer
     # this is attached to various models, (ResourceBase, Document)
@@ -311,10 +312,32 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     height = 550
     width = int(height * dataAspect)
 
+    # Parse Layer BBOX and SRID
+    srid = instance.srid if instance.srid else getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:4326')
+    if srid and instance.bbox_x0:
+        bbox = ','.join(str(x) for x in [instance.bbox_x0, instance.bbox_y0,
+                                         instance.bbox_x1, instance.bbox_y1])
+
+    # Create Raw Data download link
+    path = gs_resource.dom.findall('nativeName')
+    download_url = urljoin(settings.SITEURL,
+                           reverse('download', args=[instance.id]))
+    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                               url=download_url,
+                               defaults=dict(extension='zip',
+                                             name='Original Dataset',
+                                             mime='application/octet-stream',
+                                             link_type='original',
+                                             )
+                               )
+
     # Set download links for WMS, WCS or WFS and KML
     links = wms_links(ogc_server_settings.public_url + 'wms?',
-                      instance.alternate.encode('utf-8'), instance.bbox_string,
-                      instance.srid, height, width)
+                      instance.alternate.encode('utf-8'),
+                      bbox,
+                      srid,
+                      height,
+                      width)
 
     for ext, name, mime, wms_url in links:
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
@@ -328,10 +351,10 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                    )
 
     if instance.storeType == "dataStore":
-        links = wfs_links(
-            ogc_server_settings.public_url +
-            'wfs?',
-            instance.alternate.encode('utf-8'))
+        links = wfs_links(ogc_server_settings.public_url + 'wfs?',
+                          instance.alternate.encode('utf-8'),
+                          bbox=None,  # bbox filter should be set at runtime otherwise conflicting with CQL
+                          srid=srid)
         for ext, name, mime, wfs_url in links:
             if mime == 'SHAPE-ZIP':
                 name = 'Zipped Shapefile'
@@ -396,8 +419,8 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     elif instance.storeType == 'coverageStore':
         links = wcs_links(ogc_server_settings.public_url + 'wcs?',
                           instance.alternate.encode('utf-8'),
-                          ','.join(str(x) for x in instance.bbox[0:4]),
-                          instance.srid)
+                          bbox,
+                          srid)
 
     for ext, name, mime, wcs_url in links:
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,

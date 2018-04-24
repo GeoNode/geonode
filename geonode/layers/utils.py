@@ -570,9 +570,14 @@ def file_upload(filename,
     # process the layer again after that by
     # doing a layer.save()
     if not created and overwrite:
-        if layer.upload_session:
-            layer.upload_session.layerfile_set.all().delete()
         if upload_session:
+            if layer.upload_session:
+                layer.upload_session.layerfile_set.all().delete()
+                layer.upload_session.delete()
+
+            upload_session.resource = layer
+            upload_session.save()
+
             layer.upload_session = upload_session
 
         # update with new information
