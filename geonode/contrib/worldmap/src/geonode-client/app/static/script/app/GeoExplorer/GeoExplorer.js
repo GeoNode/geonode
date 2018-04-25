@@ -507,11 +507,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var oldInitComponent = gxp.plugins.FeatureEditorGrid.prototype.initComponent;
         gxp.plugins.FeatureEditorGrid.prototype.initComponent = function(){
             oldInitComponent.apply(this);
-            if (this.customEditors["Description"] != undefined && this.customEditors["Description"].field.maxLength == undefined) {
-                this.customEditors["Description"].addListener("startedit",
-                    function(el, value) {
-                        var htmlEditWindow = new Ext.Window({
-                                id: 'displayXHRTrouble',
+            for(var key in this.customEditors) {
+                if (this.customEditors.hasOwnProperty(key)) {
+                    if (key.match(/descripti/i) &&  this.customEditors[key].field.maxLength == undefined) {
+                        customEditField = this.customEditors[key];
+                        customEditField.addListener("startedit", function(el, value) {
+                            var htmlEditWindow = new Ext.Window({
                                 title: 'HTML Editor',
                                 renderTo: Ext.getBody(),
                                 width: 600,
@@ -534,7 +535,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                     "->",
                                     //saveAsButton,
                                     new Ext.Button({
-                                        id: 'saveAsButtonBbar',
                                         text: "Save",
                                         cls:'x-btn-text',
                                         handler: function() {
@@ -546,8 +546,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                         scope: this
                                     }),
                                     new Ext.Button({
-                                        id: 'cancelButtonBbar',
-                                        text: 'Cancel',
+                                        text: "Cancel",
                                         cls:'x-btn-text',
                                         handler: function() {
                                             htmlEditWindow.destroy();
@@ -555,17 +554,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                         scope: this
                                     })
                                 ]
-                            }
-                        );
-
-                        htmlEditWindow.show();
-                        var myNicEditor = new nicEditor({fullPanel : true,  maxHeight: 190, iconsPath: nicEditIconsPath}).panelInstance('html_textarea')
-                        return true;
+                                }
+                            );
+                            htmlEditWindow.show();
+                            var myNicEditor = new nicEditor({fullPanel : true,  maxHeight: 190, iconsPath: nicEditIconsPath}).panelInstance('html_textarea');
+                            return true;
+                        }
+                      );
                     }
-                );
+                }
             }
         }
-
     },
 
     //Check permissions for selected layer and enable/disable feature edit buttons accordingly
