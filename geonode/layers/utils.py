@@ -596,14 +596,17 @@ def file_upload(filename,
         defaults['category'] = defaults.get('category', None) or layer.category
 
         try:
-            db_layer = Layer.objects.get(id=layer.id)
-            db_layer = Layer.objects.filter(id=layer.id)
+            if created:
+                db_layer = Layer.objects.filter(id=layer.id)
+            else:
+                db_layer = Layer.objects.filter(alternate=title)
             db_layer.update(**defaults)
             layer.refresh_from_db()
         except Layer.DoesNotExist:
             import traceback
             tb = traceback.format_exc()
             logger.error(tb)
+            raise
 
         # Pass the parameter overwrite to tell whether the
         # geoserver_post_save_signal should upload the new file or not
