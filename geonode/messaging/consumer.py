@@ -100,7 +100,10 @@ class Consumer(ConsumerMixin):
         except Layer.DoesNotExist as err:
             logger.debug(err)
             return
-        geoserver_post_save_local(layer)
+        try:
+            geoserver_post_save_local(layer)
+        except Exception, err:
+            logger.error("Cannot handle geoserver message: %s", err, exc_info=err)
         # Not sure if we need to send ack on this fanout version.
         message.ack()
         logger.debug("on_geoserver_messages: finished")
