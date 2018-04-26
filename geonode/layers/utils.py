@@ -597,7 +597,8 @@ def file_upload(filename,
 
         try:
             db_layer = Layer.objects.get(id=layer.id)
-            Layer.objects.filter(id=layer.id).update(**defaults)
+            db_layer = Layer.objects.filter(id=layer.id)
+            db_layer.update(**defaults)
             layer.refresh_from_db()
         except Layer.DoesNotExist:
             import traceback
