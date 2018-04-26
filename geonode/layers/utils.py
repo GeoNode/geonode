@@ -569,7 +569,7 @@ def file_upload(filename,
     # and the layer was not just created
     # process the layer again after that by
     # doing a layer.save()
-    if overwrite:
+    if not created and overwrite:
         # update with new information
         defaults['upload_session'] = upload_session
         defaults['title'] = defaults.get('title', None) or layer.title
@@ -601,11 +601,11 @@ def file_upload(filename,
         # Blank out the store if overwrite is true.
         # geoserver_post_save_signal should upload the new file if needed
         layer.store = '' if overwrite else layer.store
-        if created:
-            layer.save()
+        layer.save()
 
         if upload_session:
             upload_session.resource = layer
+            upload_session.processed = True
             upload_session.save()
 
         # set SLD

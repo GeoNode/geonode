@@ -85,10 +85,9 @@ from geonode.utils import build_social_links
 from geonode.base.views import batch_modify
 from geonode.base.models import Thesaurus
 from geonode.maps.models import Map
-from geonode.geoserver.helpers import (cascading_delete,
-                                       gs_catalog,
+from geonode.geoserver.helpers import (gs_catalog,
                                        ogc_server_settings,
-                                       set_layer_style)
+                                       set_layer_style)  # cascading_delete,
 from .tasks import delete_layer
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -1197,13 +1196,12 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
     if request.method == 'GET':
         ctx = {
             'charsets': CHARSETS,
-            'layer': layer,
+            'resource': layer.resourcebase_ptr,
             'is_featuretype': layer.is_vector(),
             'is_layer': True,
         }
         return render(request, template, context=ctx)
     elif request.method == 'POST':
-
         form = LayerUploadForm(request.POST, request.FILES)
         tempdir = None
         out = {}
@@ -1220,24 +1218,37 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     out['errors'] = _(
                         "You are attempting to replace a raster layer with a vector.")
                 else:
-                    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                        # delete geoserver's store before upload
-                        cat = gs_catalog
-                        cascading_delete(cat, layer.typename)
-                        out['ogc_backend'] = geoserver.BACKEND_PACKAGE
-                    elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-                        try:
-                            qgis_layer = QGISServerLayer.objects.get(
-                                layer=layer)
-                            qgis_layer.delete()
-                        except QGISServerLayer.DoesNotExist:
-                            pass
-                        out['ogc_backend'] = qgis_server.BACKEND_PACKAGE
+                    try:
+                        # if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                        #     # delete geoserver's store before upload
+                        #     cat = gs_catalog
+                        #     cascading_delete(cat, layer.alternate)
+                        #     out['ogc_backend'] = geoserver.BACKEND_PACKAGE
+                        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+                            try:
+                                qgis_layer = QGISServerLayer.objects.get(
+                                    layer=layer)
+                                qgis_layer.delete()
+                            except QGISServerLayer.DoesNotExist:
+                                pass
+                            out['ogc_backend'] = qgis_server.BACKEND_PACKAGE
+                    except:
+                        pass
 
                     saved_layer = file_upload(
                         base_file,
+                        title=layer.title,
+                        abstract=layer.abstract,
+                        # is_approved=layer.is_approved,
+                        # is_published=layer.is_published,
                         name=layer.name,
-                        user=request.user,
+                        user=layer.owner,
+                        # user=request.user,
+                        license=layer.license.name if layer.license else None,
+                        category=layer.category,
+                        keywords=list(layer.keywords.all()),
+                        regions=list(layer.regions.values_list('name', flat=True)),
+                        # date=layer.date,
                         overwrite=True,
                         charset=form.cleaned_data["charset"],
                     )
