@@ -165,9 +165,11 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         of metadata and do not return those.
 
         """
-
-        contents_gen = self.parsed_service.contents.itervalues()
-        return (r for r in contents_gen if not any(r.children))
+        try:
+            contents_gen = self.parsed_service.contents.itervalues()
+            return (r for r in contents_gen if not any(r.children))
+        except:
+            return None
 
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
@@ -212,7 +214,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         self._create_layer_thumbnail(geonode_layer)
 
     def has_resources(self):
-        return True if len(self.parsed_service.contents) > 1 else False
+        return True if len(self.parsed_service.contents) > 0 else False
 
     def _create_layer(self, geonode_service, **resource_fields):
         # bear in mind that in ``geonode.layers.models`` there is a

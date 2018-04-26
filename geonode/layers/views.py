@@ -28,6 +28,7 @@ import uuid
 import decimal
 import re
 
+from django.db.models import Q
 from celery.exceptions import TimeoutError
 
 from django.contrib.gis.geos import GEOSGeometry
@@ -411,18 +412,18 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     }
 
     if layer.storeType == "remoteStore":
-        # service = layer.remote_service
-        # source_params = {
-        #     "ptype": service.ptype,
-        #     "remote": True,
-        #     "url": service.service_url,
-        #     "name": service.name,
-        #     "title": "[R] %s" % service.title}
+        service = layer.remote_service
+        source_params = {
+            "ptype": service.ptype,
+            "remote": True,
+            "url": service.service_url,
+            "name": service.name,
+            "title": "[R] %s" % service.title}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
             layer_params=json.dumps(config),
-            # source_params=json.dumps(source_params)
+            source_params=json.dumps(source_params)
         )
     else:
         maplayer = GXPLayer(
@@ -530,7 +531,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "show_popup": show_popup,
         "filter": filter,
         "storeType": layer.storeType,
-        "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
+        # "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
     }
 
     if 'access_token' in request.session:
@@ -560,10 +561,12 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
-            name__in=settings.DOWNLOAD_FORMATS_VECTOR)
+            Q(name__in=settings.DOWNLOAD_FORMATS_VECTOR) |
+            Q(link_type='original'))
     else:
         links = layer.link_set.download().filter(
-            name__in=settings.DOWNLOAD_FORMATS_RASTER)
+            Q(name__in=settings.DOWNLOAD_FORMATS_RASTER) |
+            Q(link_type='original'))
     links_view = [item for idx, item in enumerate(links) if
                   item.url and 'wms' in item.url or 'gwc' in item.url]
     links_download = [item for idx, item in enumerate(
@@ -662,8 +665,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     context_dict = {}
     data_dict = json.loads(request.POST.get('json_data'))
     layername = data_dict['layer_name']
-    filtered_attributes = [x for x in data_dict['filtered_attributes'].split(
-        ',') if '/load_layer_data' not in x]
+    filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
     workspace, name = layername.split(':')
     location = "{location}{service}".format(** {
         'location': settings.OGC_SERVER['default']['LOCATION'],
@@ -790,18 +792,18 @@ def layer_metadata(
     config["queryable"] = True
 
     if layer.storeType == "remoteStore":
-        # service = layer.remote_service
-        # source_params = {
-        #     "ptype": service.ptype,
-        #     "remote": True,
-        #     "url": service.service_url,
-        #     "name": service.name,
-        #     "title": "[R] %s" % service.title}
+        service = layer.remote_service
+        source_params = {
+            "ptype": service.ptype,
+            "remote": True,
+            "url": service.service_url,
+            "name": service.name,
+            "title": "[R] %s" % service.title}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
             layer_params=json.dumps(config),
-            # source_params=json.dumps(source_params)
+            source_params=json.dumps(source_params)
         )
     else:
         maplayer = GXPLayer(

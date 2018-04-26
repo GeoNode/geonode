@@ -142,35 +142,80 @@
     {% endblock middle %}
   </div>
 
-    {% block footer %}
-    <footer class="footer">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-8">
-            {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
-            <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
-            <a href="{% url "about" %}">{% trans "About" %}</a>
-          </div>
-          <div class="col-md-4">
-            <label class="hidden">{% trans "Language" %}</label>
-            {% if csrf_token != "NOTPROVIDED" %}
-            {% get_current_language as LANGUAGE %}
-            <form class="form-inline" action="/i18n/setlang/" method="post">
-            {% csrf_token %}
-              <select class="col-md-6 pull-right" name="language" onchange="javascript:form.submit()">
-                {% for lang in LANGUAGES %}
-                <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
-                  {{ lang.1 }}
-                </option>
-                {% endfor %}
-              </select>
-            </form>
+  {% block footer %}
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-2">
+          <ul class="list-unstyled">
+            <li>Data</li>
+            <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
+            <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
+            <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
+            {% if user.is_authenticated %}
+                <li role="separator" class="divider"></li>
+                <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
+                {% if 'geonode.contrib.createlayer' in INSTALLED_APPS %}
+                    <li><a href="{% url "layer_create" %}">{% trans "Create Layer" %}</a></li>
+                {% endif %}
+                <li><a href="{% url "document_upload" %}">Upload Document</a></li>
             {% endif %}
-          </div>
+            {% if user.is_superuser or user.is_staff %}
+                <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
+            {% endif %}
+          </ul>
+        </div>
+        <div class="col-md-2">
+          <ul class="list-unstyled">
+            <li>Maps</li>
+            <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
+            {% if user.is_authenticated %}
+            <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      <div class="col-md-2">
+          <ul class="list-unstyled">
+            <li>About</li>
+            <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
+            <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
+            {% if perms.announcements.can_manage %}
+            <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
+            {% if user.is_superuser %}
+            <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
+            <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <div class="col-md-6 text-right">
+          {% block contactus %}
+          {% endblock contactus %}
+          <ul class="list-unstyled">
+            <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em></li>
+            <li><a href="{% url "developer" %}">{% trans "Developers" %}</a> | <a href="{% url "about" %}">{% trans "About" %}</a><li>
+          </ul>
+          <label class="hidden">{% trans "Language" %}</label>
+          {% if csrf_token != "NOTPROVIDED" %}
+          {% get_current_language as LANGUAGE %}
+          <form class="form-inline" action="/i18n/setlang/" method="post">
+          {% csrf_token %}
+            <select class="col-md-6 pull-right" name="language" onchange="javascript:form.submit()">
+              {% for lang in LANGUAGES %}
+              <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                {{ lang.1 }}
+              </option>
+              {% endfor %}
+            </select>
+          </form>
+          {% endif %}
         </div>
       </div>
-    </footer>
-    {% endblock footer %}
+    </div>
+  </footer>
+  {% endblock footer %}
 
 
     <!-- Modal must stay outside the navbar -->
@@ -220,7 +265,7 @@
               <li><a href="{% url "recent-activity" %}"><i class="fa fa-fire"></i> {% trans "Recent Activity" %}</a></li>
               <li><a href="{% url "messages_inbox" %}"><i class="fa fa-inbox"></i> {% trans "Inbox" %}</a></li>
               {% if USE_NOTIFICATIONS %}
-                <li><a href="{% url "notice_settings" %}"><i class="fa fa-bell"></i> {% trans "Notifications" %}</a></li>
+                <li><a href="{% url "pinax_notifications:notice_settings" %}"><i class="fa fa-bell"></i> {% trans "Notifications" %}</a></li>
               {% endif %}
               {% if perms.announcements.can_manage %}
               <li><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>

@@ -38,6 +38,9 @@ urlpatterns = [
                 url(r'^api/metric_data/(?P<metric_name>[\w\.]+)/$',
                     views.api_metric_data,
                     name='api_metric_data'),
+                url(r'^api/metric_collect/(?P<authkey>.*?)/$',
+                    views.api_metric_collect,
+                    name='api_metric_collect'),
                 # serve raw check data to outside
                 url(r'^api/beacon/$', views.api_beacon, name='api_beacon'),
                 url(r'^api/beacon/(?P<exposed>.*?)/$', views.api_beacon, name='api_beacon_exposed'),

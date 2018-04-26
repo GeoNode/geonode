@@ -47,6 +47,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 from geoserver.catalog import Catalog, FailedRequestError
 from geoserver.resource import FeatureType, Coverage
@@ -594,7 +595,7 @@ def gs_slurp(
         'layers': [],
         'deleted_layers': []
     }
-    start = datetime.datetime.now()
+    start = datetime.datetime.now(timezone.get_current_timezone())
     for i, resource in enumerate(resources):
         name = resource.name
         the_store = resource.store
@@ -769,7 +770,7 @@ def gs_slurp(
             if verbosity > 0:
                 print >> console, msg
 
-    finish = datetime.datetime.now()
+    finish = datetime.datetime.now(timezone.get_current_timezone())
     td = finish - start
     output['stats']['duration_sec'] = td.microseconds / \
         1000000 + td.seconds + td.days * 24 * 3600
@@ -1551,10 +1552,15 @@ def set_time_info(layer, attribute, end_attribute, presentation,
         resolution = '%s %s' % (precision_value, precision_step)
     info = DimensionInfo("time", enabled, presentation, resolution, "ISO8601",
                          None, attribute=attribute, end_attribute=end_attribute)
-    metadata = dict(resource.metadata or {})
+    if resource and resource.metadata:
+        metadata = dict(resource.metadata or {})
+    else:
+        metadata = dict({})
     metadata['time'] = info
-    resource.metadata = metadata
-    gs_catalog.save(resource)
+    if resource and resource.metadata:
+        resource.metadata = metadata
+    if resource:
+        gs_catalog.save(resource)
 
 
 def get_time_info(layer):

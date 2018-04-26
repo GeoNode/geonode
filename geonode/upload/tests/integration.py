@@ -26,6 +26,9 @@ See the README.rst in this directory for details on running these tests.
       difficult for cleanup to track the layers created between runs
 @todo only test_time seems to work correctly with database backend test settings
 """
+
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import os.path
 from bs4 import BeautifulSoup
 from django.conf import settings
@@ -43,7 +46,6 @@ from geonode.geoserver.helpers import cascading_delete
 from geonode.geoserver.signals import gs_catalog
 from geoserver.catalog import Catalog
 # from geonode.upload.utils import make_geogig_rest_payload
-from django.test import LiveServerTestCase as TestCase
 from gisdata import BAD_DATA
 from gisdata import GOOD_DATA
 from owslib.wms import WebMapService
@@ -235,7 +237,7 @@ class Client(object):
         return csrf[0].value if csrf else None
 
 
-class UploaderBase(TestCase):
+class UploaderBase(GeoNodeBaseTestSupport):
 
     settings_overrides = []
 
@@ -337,7 +339,8 @@ class UploaderBase(TestCase):
             DB_PORT,
             DB_NAME
         )
-        postgis_db = dj_database_url.parse(settings.DATASTORE_URL, conn_max_age=600)
+        postgis_db = dj_database_url.parse(
+            settings.DATASTORE_URL, conn_max_age=600)
         settings.DATABASES['datastore'] = postgis_db
         settings.OGC_SERVER['default']['DATASTORE'] = 'datastore'
 
@@ -472,7 +475,7 @@ class UploaderBase(TestCase):
                 layer_name in url, 'expected %s in URL, got %s' %
                 (layer_name, url))
             return url
-        except:
+        except BaseException:
             return current_step
 
     def check_upload_model(self, original_name):
@@ -503,7 +506,7 @@ class UploaderBase(TestCase):
         layer_name = original_name
         try:
             layer_name = type_name.split(':')[1]
-        except:
+        except BaseException:
             pass
 
         # work around acl caching on geoserver side of things
@@ -519,7 +522,9 @@ class UploaderBase(TestCase):
             self.check_layer_geoserver_rest(layer_name)
             self.check_upload_model(layer_name)
         else:
-            logger.warning("Could not recognize Layer %s on GeoServer WMS" % original_name)
+            logger.warning(
+                "Could not recognize Layer %s on GeoServer WMS" %
+                original_name)
 
     def check_invalid_projection(self, layer_name, resp, data):
         """ Makes sure that we got the correct response from an layer
@@ -566,7 +571,8 @@ class UploaderBase(TestCase):
         if session_ids is not None:
             if not isinstance(data, basestring):
                 if data.get('url'):
-                    session_id = re.search(r'.*id=(\d+)', data.get('url')).group(1)
+                    session_id = re.search(
+                        r'.*id=(\d+)', data.get('url')).group(1)
                     if session_id:
                         session_ids += [session_id]
         if not isinstance(data, basestring):
@@ -694,7 +700,8 @@ class TestUpload(UploaderBase):
             self.assertTrue(data['redirect_to'], "/upload/csv")
 
 
-@unittest.skipUnless(ogc_server_settings.datastore_db, 'Vector datastore not enabled')
+@unittest.skipUnless(ogc_server_settings.datastore_db,
+                     'Vector datastore not enabled')
 class TestUploadDBDataStore(UploaderBase):
 
     settings_overrides = []
@@ -766,7 +773,8 @@ class TestUploadDBDataStore(UploaderBase):
                 self.assertEquals(100, len(layer_info.timepositions))
             else:
                 self.assertTrue('error_msg' in resp_js)
-                self.assertTrue('Source SRS is not valid' in resp_js['error_msg'])
+                self.assertTrue(
+                    'Source SRS is not valid' in resp_js['error_msg'])
 
     def test_configure_time(self):
         layer_name = 'boxes_with_end_date'
@@ -828,11 +836,12 @@ class TestUploadDBDataStore(UploaderBase):
                 self.assertEquals(100, len(layer_info.timepositions))
             else:
                 self.assertTrue('error_msg' in resp_js)
-                self.assertTrue('Source SRS is not valid' in resp_js['error_msg'])
+                self.assertTrue(
+                    'Source SRS is not valid' in resp_js['error_msg'])
 
 
-# class GeogigTest(TestCase):
-#
+# class GeogigTest(GeoNodeBaseTestSupport):
+#     port = 8000
 #     def test_payload_creation(self):
 #         '''Test formation of REST call to geoserver's geogig API'''
 #         author_name = "test"

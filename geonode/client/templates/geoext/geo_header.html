@@ -14,12 +14,27 @@
 <script src="{{ STATIC_URL }}geoexplorer/script/GeoExplorer.js?v={{ VERSION }}" type="text/javascript"></script>
 <!-- script type="text/javascript" src="{{ STATIC_URL }}geonode/js/extjs/GeoExplorer-debug.js"></script -->
 
+<style>
+    .olImageLoadError {
+        background-color: lightgray !important;
+        opacity: 0.2 !important;
+        filter: alpha(opacity=20) !important; /* IE */
+
+        /* background-image: url('{{ STATIC_URL }}geonode/img/light_gray.jpg') !important;
+        background-repeat: no-repeat !important; */
+
+        /*display: none !important;*/
+    }
+</style>
+
 <script type="text/javascript">
 OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
+OpenLayers.Util.onImageLoadErrorColor = 1;
 OpenLayers.Util.onImageLoadErrorColor = 'transparent';
 OpenLayers.Util.onImageLoadError = function() {
     this.src = '{{ STATIC_URL }}geonode/img/light_gray.jpg';
 };
+Ext.BLANK_IMAGE_URL = "{{ STATIC_URL }}geonode/img/light_gray.jpg";
 
 OpenLayers.Request.DEFAULT_CONFIG.headers = {
   'X-CSRFToken': '{{ csrf_token|escapejs }}'

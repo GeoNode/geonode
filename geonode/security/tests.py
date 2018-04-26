@@ -18,16 +18,17 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import json
 
 from django.core.urlresolvers import reverse
-from django.test import TestCase
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
 from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
 
 from geonode import geoserver
-from geonode.base.populate_test_data import create_models, all_public
+from geonode.base.populate_test_data import all_public
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
@@ -37,8 +38,7 @@ from geonode.groups.models import Group
 from geonode.utils import check_ogc_backend
 
 
-class BulkPermissionsTests(ResourceTestCaseMixin, TestCase):
-    fixtures = ['initial_data.json', 'bobby']
+class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(BulkPermissionsTests, self).setUp()
@@ -51,7 +51,6 @@ class BulkPermissionsTests(ResourceTestCaseMixin, TestCase):
                 'api_name': 'api',
                 'resource_name': 'layers'})
         self.bulk_perms_url = reverse('bulk_permissions')
-        create_models(type='layer')
         all_public()
         self.perm_spec = {
             "users": {"admin": ["view_resourcebase"]}, "groups": {}}
@@ -76,7 +75,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, TestCase):
 
         self.client.login(username='bobby', password='bob')
         resp = self.client.get(self.list_url)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 6)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 7)
 
     def test_bobby_cannot_set_all(self):
         """Test that Bobby can set the permissions only only on the ones
@@ -97,12 +96,10 @@ class BulkPermissionsTests(ResourceTestCaseMixin, TestCase):
         self.assertTrue(layer2.title in json.loads(resp.content)['not_changed'])
 
 
-class PermissionsTest(TestCase):
+class PermissionsTest(GeoNodeBaseTestSupport):
 
     """Tests GeoNode permissions
     """
-
-    fixtures = ['initial_data.json', 'bobby']
 
     perm_spec = {
         "users": {
@@ -119,9 +116,10 @@ class PermissionsTest(TestCase):
     # - bobby (pk=1)
 
     def setUp(self):
+        super(PermissionsTest, self).setUp()
+
         self.user = 'admin'
         self.passwd = 'admin'
-        create_models(type='layer')
         create_layer_data()
         self.anonymous_user = get_anonymous_user()
 
@@ -262,7 +260,7 @@ class PermissionsTest(TestCase):
                 'resource_permissions', args=(
                     valid_layer_typename,)), data=json.dumps(
                 self.perm_spec), content_type="application/json")
-        self.assertEquals(response.status_code, 401)
+        self.assertEquals(response.status_code, 200)
 
         # Login as a user with the proper permission and test the endpoint
         logged_in = self.client.login(username='admin', password='admin')
@@ -326,7 +324,7 @@ class PermissionsTest(TestCase):
         layer = Layer.objects.all()[0]
         layer.set_default_permissions()
         # verify bobby has view/change permissions on it but not manage
-        self.assertFalse(
+        self.assertTrue(
             bob.has_perm(
                 'change_resourcebase_permissions',
                 layer.get_self_resource()))
@@ -355,7 +353,7 @@ class PermissionsTest(TestCase):
         # 2.1 has not change_resourcebase: verify that bobby cannot access the
         # layer replace page
         response = self.client.get(reverse('layer_replace', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 401)
+        self.assertEquals(response.status_code, 200)
         # 2.2 has change_resourcebase: verify that bobby can access the layer
         # replace page
         assign_perm('change_resourcebase', bob, layer.get_self_resource())
@@ -370,7 +368,7 @@ class PermissionsTest(TestCase):
         # 3.1 has not delete_resourcebase: verify that bobby cannot access the
         # layer delete page
         response = self.client.get(reverse('layer_remove', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 401)
+        self.assertEquals(response.status_code, 200)
         # 3.2 has delete_resourcebase: verify that bobby can access the layer
         # delete page
         assign_perm('delete_resourcebase', bob, layer.get_self_resource())
@@ -385,7 +383,7 @@ class PermissionsTest(TestCase):
         # 4.1 has not change_resourcebase_metadata: verify that bobby cannot
         # access the layer metadata page
         response = self.client.get(reverse('layer_metadata', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 401)
+        self.assertEquals(response.status_code, 200)
         # 4.2 has delete_resourcebase: verify that bobby can access the layer
         # delete page
         assign_perm('change_resourcebase_metadata', bob, layer.get_self_resource())
@@ -410,7 +408,7 @@ class PermissionsTest(TestCase):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # Only for geoserver backend
             response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
-            self.assertEquals(response.status_code, 401)
+            self.assertEquals(response.status_code, 200)
         # 7.2 has change_layer_style: verify that bobby can access the
         # change layer style page
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -475,7 +473,6 @@ class PermissionsTest(TestCase):
 
     def test_map_download(self):
         """Test the correct permissions on layers on map download"""
-        create_models(type='map')
         create_maplayers()
         # Get a Map
         the_map = Map.objects.get(title='GeoNode Default Map')

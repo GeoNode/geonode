@@ -21,7 +21,7 @@
 import os
 import re
 
-from django.test import TestCase
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 from django.contrib.staticfiles import finders
 from django.contrib.auth import get_user_model
@@ -37,9 +37,10 @@ from .utils import (find_all_templates,
                     theme_html_template_regexp,)
 
 
-class ClientLibraryTest(TestCase):
+class ClientLibraryTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
+        super(GeoNodeBaseTestSupport, self).setUp()
         self.test_user = get_user_model().objects.create_user(
             "serviceowner", "usermail@fake.mail", "somepassword")
         self.geonode_base_css = finders.find('geonode/css/base.css')

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#
+#########################################################################
 #
 # Copyright (C) 2018 OSGeo
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-#
+#########################################################################
 
 import django
 from django.conf.urls import include, url
@@ -197,7 +197,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             get_capabilities, name='capabilities_layer'),
         url(r'^capabilities/map/(?P<mapid>\d+)/$',
             get_capabilities, name='capabilities_map'),
-        url(r'^capabilities/user/(?P<user>[\w.-]+)/$',
+        url(r'^capabilities/user/(?P<user>[\w.@+-]+)/$',
             get_capabilities, name='capabilities_user'),
         url(r'^capabilities/category/(?P<category>\w+)/$',
             get_capabilities, name='capabilities_category'),

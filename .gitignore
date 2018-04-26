@@ -8,6 +8,7 @@ MANIFEST
 dist
 .idea/
 .vscode/
+.pytest_cache/
 # supporting stuff pulled in by paver script
 geonode/development.db
 /geoserver/

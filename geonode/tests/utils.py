@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import contextlib
 import copy
 import urllib
@@ -25,7 +27,6 @@ import urllib2
 
 from django.core.management import call_command
 from django.db.models import signals
-from django.test import TestCase
 from django.core import mail
 from django.conf import settings
 
@@ -100,9 +101,10 @@ def check_layer(uploaded):
     assert len(uploaded.name) > 0, msg
 
 
-class TestSetAttributes(TestCase):
+class TestSetAttributes(GeoNodeBaseTestSupport):
 
     def setUp(self):
+        super(TestSetAttributes, self).setUp()
         # Load users to log in as
         call_command('loaddata', 'people_data', verbosity=0)
 
@@ -159,7 +161,8 @@ if has_notifications:
     from pinax.notifications.engine import send_all
     from pinax.notifications.models import NoticeQueueBatch
 
-    class NotificationsTestsHelper(TestCase):
+    class NotificationsTestsHelper(GeoNodeBaseTestSupport):
+
         """
         Helper class for notification tests
         This provides:

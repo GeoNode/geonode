@@ -25,7 +25,9 @@ import re
 import sys
 from datetime import timedelta
 from distutils.util import strtobool
+from urlparse import urlparse, urlunparse
 
+import django
 import dj_database_url
 #
 # General Django development settings
@@ -68,7 +70,10 @@ else:
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
-os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
+if django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2:
+    pass
+else:
+    DJANGO_LIVE_TEST_SERVER_ADDRESS = 'localhost:8000'
 
 try:
     # try to parse python notation, default in dockerized env
@@ -127,10 +132,11 @@ MANAGERS = ADMINS = os.getenv('ADMINS', [])
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = os.getenv('TIME_ZONE', "America/Chicago")
+TIME_ZONE = os.getenv('TIME_ZONE', "UTC")
 
 SITE_ID = int(os.getenv('SITE_ID', '1'))
 
+USE_TZ = True
 USE_I18N = strtobool(os.getenv('USE_I18N', 'True'))
 USE_L10N = strtobool(os.getenv('USE_I18N', 'True'))
 
@@ -270,19 +276,23 @@ LOGOUT_URL = os.getenv('LOGOUT_URL', '/account/logout/')
 
 LOGIN_REDIRECT_URL = '/'
 
-GEONODE_APPS = (
+GEONODE_CORE_APPS = (
     # GeoNode internal apps
-    'geonode.people',
+    'geonode.api',
     'geonode.base',
-    'geonode.client',
     'geonode.layers',
     'geonode.maps',
-    'geonode.proxy',
-    'geonode.security',
-    'geonode.social',
-    'geonode.catalogue',
     'geonode.documents',
-    'geonode.api',
+    'geonode.security',
+    'geonode.catalogue',
+)
+
+GEONODE_INTERNAL_APPS = (
+    # GeoNode internal apps
+    'geonode.people',
+    'geonode.client',
+    'geonode.proxy',
+    'geonode.social',
     'geonode.groups',
     'geonode.services',
 
@@ -316,7 +326,7 @@ GEONODE_CONTRIB_APPS = (
 )
 
 # Uncomment the following line to enable contrib apps
-GEONODE_APPS = GEONODE_CONTRIB_APPS + GEONODE_APPS
+GEONODE_APPS = GEONODE_CORE_APPS + GEONODE_INTERNAL_APPS + GEONODE_CONTRIB_APPS
 
 INSTALLED_APPS = (
 
@@ -378,10 +388,14 @@ INSTALLED_APPS = (
     'corsheaders',
 
     'invitations',
+
     # login with external providers
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+
+    # GeoNode
+    'geonode',
 ) + GEONODE_APPS
 
 # Documents application
@@ -405,15 +419,6 @@ UNOCONV_ENABLE = strtobool(os.getenv('UNOCONV_ENABLE', 'False'))
 if UNOCONV_ENABLE:
     UNOCONV_EXECUTABLE = os.getenv('UNOCONV_EXECUTABLE', '/usr/bin/unoconv')
     UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
-
-MONITORING_ENABLED = False
-
-# how long monitoring data should be stored
-MONITORING_DATA_TTL = timedelta(days=7)
-
-# this will disable csrf check for notification config views,
-# use with caution - for dev purpose only
-MONITORING_DISABLE_CSRF = False
 
 LOGGING = {
     'version': 1,
@@ -439,7 +444,7 @@ LOGGING = {
             'formatter': 'simple'
         },
         'celery': {
-            'level': 'INFO',
+            'level': 'ERROR',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': 'celery.log',
             'formatter': 'simple',
@@ -465,7 +470,7 @@ LOGGING = {
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
         "celery": {
-            'handlers': ['celery', 'console'], 'level': 'INFO', },
+            'handlers': ['celery', 'console'], 'level': 'ERROR', },
     },
 }
 
@@ -500,6 +505,11 @@ TEMPLATES = [
                 'geonode.context_processors.resource_urls',
                 'geonode.geoserver.context_processors.geoserver_urls',
             ],
+            # Either remove APP_DIRS or remove the 'loaders' option.
+            # 'loaders': [
+            #      'django.template.loaders.filesystem.Loader',
+            #      'django.template.loaders.app_directories.Loader',
+            # ],
             'debug': DEBUG,
         },
     },
@@ -626,12 +636,32 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 # Test Settings
 #
 
+on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
+core_tests = ast.literal_eval(os.environ.get('TEST_RUN_CORE', 'False'))
+internal_apps_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTERNAL_APPS', 'False'))
+integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'False'))
+
 # Setting a custom test runner to avoid running the tests for
 # some problematic 3rd party apps
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# Default Nose Test Suite
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Django 1.11 ParallelTestSuite
+TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
+TEST_RUNNER_KEEPDB = 0
+TEST_RUNNER_PARALLEL = 1
+
+# GeoNode test suite
+# TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
+# TEST_RUNNER_WORKER_MAX = 3
+# TEST_RUNNER_WORKER_COUNT = 'auto'
+# TEST_RUNNER_NOT_THREAD_SAFE = None
+# TEST_RUNNER_PARENT_TIMEOUT = 10
+# TEST_RUNNER_WORKER_TIMEOUT = 10
 
 TEST = 'test' in sys.argv
 INTEGRATION = 'geonode.tests.integration' in sys.argv
+
 # Arguments for the test runner
 NOSE_ARGS = [
     '--nocapture',
@@ -642,6 +672,15 @@ NOSE_ARGS = [
 # GeoNode specific settings
 #
 SITEURL = os.getenv('SITEURL', "http://localhost:8000/")
+
+# we need hostname for deployed
+_surl = urlparse(SITEURL)
+HOSTNAME = _surl.hostname
+
+# add trailing slash to site url. geoserver url will be relative to this
+if not SITEURL.endswith('/'):
+    SITEURL = '{}/'.format(SITEURL)
+
 
 DEFAULT_WORKSPACE = os.getenv('DEFAULT_WORKSPACE', 'geonode')
 CASCADE_WORKSPACE = os.getenv('CASCADE_WORKSPACE', 'geonode')
@@ -664,7 +703,8 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+    #  'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)
+    'GEOSERVER_PUBLIC_LOCATION', GEOSERVER_LOCATION
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -713,6 +753,7 @@ OGC_SERVER = {
 USE_GEOSERVER = 'geonode.geoserver' in INSTALLED_APPS and OGC_SERVER['default']['BACKEND'] == 'geonode.geoserver'
 
 # Uploader Settings
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 UPLOADER = {
     'BACKEND': 'geonode.rest',
     # 'BACKEND': 'geonode.importer',
@@ -863,8 +904,11 @@ BING_API_KEY = os.environ.get('BING_API_KEY', None)
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 # handle timestamps like 2017-05-30 16:04:00.719 UTC
-DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS +\
-    ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
+if django.VERSION[0] == 1 and django.VERSION[1] >= 11:
+    _DATETIME_INPUT_FORMATS = ['%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z']
+else:
+    _DATETIME_INPUT_FORMATS = ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
+DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS + _DATETIME_INPUT_FORMATS
 
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
@@ -1400,6 +1444,17 @@ RISKS = {'DEFAULT_LOCATION': None,
 ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
+MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'True'))
+MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
+MONITORING_SERVICE_NAME = 'geonode'
+
+# how long monitoring data should be stored
+MONITORING_DATA_TTL = timedelta(days=7)
+
+# this will disable csrf check for notification config views,
+# use with caution - for dev purpose only
+MONITORING_DISABLE_CSRF = False
+
 if MONITORING_ENABLED:
     if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
         INSTALLED_APPS += ('geonode.contrib.monitoring',)

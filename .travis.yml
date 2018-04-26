@@ -20,6 +20,17 @@ addons:
 
 env:
   - BACKEND: 'geonode.geoserver'
+    ON_TRAVIS: 'True'
+    TEST_RUN_CORE: 'True'
+    MONITORING_ENABLED: 'False'
+  - BACKEND: 'geonode.geoserver'
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTERNAL_APPS: 'True'
+    MONITORING_ENABLED: 'False'
+  - BACKEND: 'geonode.geoserver'
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTEGRATION: 'True'
+    MONITORING_ENABLED: 'False'
   - BACKEND: 'geonode.qgis_server'
     DOCKER_COMPOSE_VERSION: 1.11.2
     # This is qgis server address
@@ -29,6 +40,32 @@ env:
     SITEURL: http://localhost:8000/
     QGIS_SERVER_PORT: 9000
     ON_TRAVIS: 'True'
+    TEST_RUN_CORE: 'True'
+    MONITORING_ENABLED: 'False'
+    CELERY_ALWAYS_EAGER: 'True'
+  - BACKEND: 'geonode.qgis_server'
+    DOCKER_COMPOSE_VERSION: 1.11.2
+    # This is qgis server address
+    QGIS_SERVER_URL: http://localhost:9000/
+    # This is the location of docker network bridge
+    # So QGIS server can access this address
+    SITEURL: http://localhost:8000/
+    QGIS_SERVER_PORT: 9000
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTERNAL_APPS: 'True'
+    MONITORING_ENABLED: 'False'
+    CELERY_ALWAYS_EAGER: 'True'
+  - BACKEND: 'geonode.qgis_server'
+    DOCKER_COMPOSE_VERSION: 1.11.2
+    # This is qgis server address
+    QGIS_SERVER_URL: http://localhost:9000/
+    # This is the location of docker network bridge
+    # So QGIS server can access this address
+    SITEURL: http://localhost:8000/
+    QGIS_SERVER_PORT: 9000
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTEGRATION: 'True'
+    MONITORING_ENABLED: 'False'
     CELERY_ALWAYS_EAGER: 'True'
 
 branches:

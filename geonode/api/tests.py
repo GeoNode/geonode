@@ -20,20 +20,19 @@
 from datetime import datetime, timedelta
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.test import TestCase
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth.models import Group
 from geonode.groups.models import GroupProfile
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.base.populate_test_data import create_models, all_public
+from geonode.tests.base import GeoNodeBaseTestSupport
+
+from geonode.base.populate_test_data import all_public
 from geonode.layers.models import Layer
 
 
-class PermissionsApiTests(ResourceTestCaseMixin, TestCase):
-
-    fixtures = ['initial_data.json', 'bobby']
+class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(PermissionsApiTests, self).setUp()
@@ -45,7 +44,6 @@ class PermissionsApiTests(ResourceTestCaseMixin, TestCase):
             kwargs={
                 'api_name': 'api',
                 'resource_name': 'layers'})
-        create_models(type='layer')
         all_public()
         self.perm_spec = {"users": {}, "groups": {}}
 
@@ -97,7 +95,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, TestCase):
 
         self.api_client.client.login(username='bobby', password='bob')
         resp = self.api_client.get(self.list_url)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
 
         self.api_client.client.login(username=self.user, password=self.passwd)
         resp = self.api_client.get(self.list_url)
@@ -113,7 +111,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, TestCase):
 
             self.api_client.client.login(username='bobby', password='bob')
             resp = self.api_client.get(self.list_url)
-            self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
 
             self.api_client.client.login(username=self.user, password=self.passwd)
             resp = self.api_client.get(self.list_url)
@@ -144,11 +142,9 @@ class PermissionsApiTests(ResourceTestCaseMixin, TestCase):
         self.assertEquals(len(self.deserialize(resp)['objects']), 8)
 
 
-class SearchApiTests(ResourceTestCaseMixin, TestCase):
+class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     """Test the search"""
-
-    fixtures = ['initial_data.json', 'bobby', 'group_test_data']
 
     def setUp(self):
         super(SearchApiTests, self).setUp()
@@ -158,7 +154,6 @@ class SearchApiTests(ResourceTestCaseMixin, TestCase):
             kwargs={
                 'api_name': 'api',
                 'resource_name': 'layers'})
-        create_models(type='layer')
         all_public()
         self.norman = get_user_model().objects.get(username="norman")
         self.norman.groups.add(Group.objects.get(name='anonymous'))
@@ -184,7 +179,7 @@ class SearchApiTests(ResourceTestCaseMixin, TestCase):
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 9)
 
         filter_url = self.profiles_list_url + '?name__icontains=norm'
 
@@ -276,14 +271,14 @@ class SearchApiTests(ResourceTestCaseMixin, TestCase):
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 2)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
 
         filter_url = self.list_url + \
             '?owner__username__in=user1&owner__username__in=foo'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 3)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 2)
 
     def test_title_filter(self):
         """Test title filtering"""

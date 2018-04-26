@@ -32,7 +32,7 @@ from pytest_django.fixtures import live_server
 
 # We manually designate which settings we will be using in an environment variable
 # This is similar to what occurs in the `manage.py`
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', gn_settings)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'geonode.settings')
 # sys.path.append(os.path.dirname(__file__))
 
 
