@@ -569,7 +569,7 @@ def file_upload(filename,
     # and the layer was not just created
     # process the layer again after that by
     # doing a layer.save()
-    if not created and overwrite:
+    if overwrite:
         # update with new information
         defaults['upload_session'] = upload_session
         defaults['title'] = defaults.get('title', None) or layer.title
@@ -586,11 +586,7 @@ def file_upload(filename,
         defaults['category'] = defaults.get('category', None) or layer.category
 
         try:
-            if created:
-                db_layer = Layer.objects.filter(id=layer.id)
-            else:
-                db_layer = Layer.objects.filter(alternate=title)
-            db_layer.update(**defaults)
+            Layer.objects.filter(id=layer.id).update(**defaults)
             layer.refresh_from_db()
         except Layer.DoesNotExist:
             import traceback
@@ -604,8 +600,9 @@ def file_upload(filename,
 
         # Blank out the store if overwrite is true.
         # geoserver_post_save_signal should upload the new file if needed
-        layer.store = ''
-        layer.save()
+        layer.store = '' if overwrite else layer.store
+        if created:
+            layer.save()
 
         if upload_session:
             upload_session.resource = layer
