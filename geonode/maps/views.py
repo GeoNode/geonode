@@ -947,14 +947,54 @@ def add_layers_to_map_config(
                 [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4])
         }
 
+        all_times = None
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            from geonode.geoserver.views import get_capabilities
+            workspace, layername = layer.alternate.split(
+                ":") if ":" in layer.alternate else (None, layer.alternate)
+            # WARNING Please make sure to have enabled DJANGO CACHE as per
+            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+            wms_capabilities_resp = get_capabilities(
+                request, layer.id, tolerant=True)
+            if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
+                wms_capabilities = wms_capabilities_resp.getvalue()
+                if wms_capabilities:
+                    import xml.etree.ElementTree as ET
+                    e = ET.fromstring(wms_capabilities)
+                    for atype in e.findall(
+                            "./[Name='%s']/Extent[@name='time']" % (layername)):
+                        dim_name = atype.get('name')
+                        if dim_name:
+                            dim_name = str(dim_name).lower()
+                            if dim_name == 'time':
+                                dim_values = atype.text
+                                if dim_values:
+                                    all_times = dim_values.split(",")
+                                    break
+            if all_times:
+                config["capability"]["dimensions"] = {
+                    "time": {
+                        "name": "time",
+                        "units": "ISO8601",
+                        "unitsymbol": None,
+                        "nearestVal": False,
+                        "multipleVal": False,
+                        "current": False,
+                        "default": "current",
+                        "values": all_times
+                    }
+                }
+
         if layer.storeType == "remoteStore":
             service = layer.remote_service
-            source_params = {
-                "ptype": service.ptype,
-                "remote": True,
-                "url": service.service_url,
-                "name": service.name,
-                "title": "[R] %s" % service.title}
+            source_params = {}
+            if service.type in ('REST_MAP', 'REST_IMG'):
+                source_params = {
+                    "ptype": service.ptype,
+                    "remote": True,
+                    "url": service.service_url,
+                    "name": service.name,
+                    "title": "[R] %s" % service.title}
             maplayer = MapLayer(map=map_obj,
                                 name=layer.alternate,
                                 ows_url=layer.ows_url,
