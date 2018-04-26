@@ -1,4 +1,39 @@
-geonode (2.8.0+rc12) xenial; urgency=high 
+geonode (2.8.0+thefinal1) xenial; urgency=high 
+  * [514196] Update README
+  * [f6dd15] Constrain pip to 9.0.3
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Thu, 26 Apr 2018 12:44:14 +0200
+
+geonode (2.8.0+thefinal0) xenial; urgency=high
+  [ afabiani ]
+  * [ac8065] - Preparing for RELEASE RC13
+  * [cc48eb] - Preparing for RELEASE RC13
+
+  [ Alessio Fabiani ]
+  * [7b6ea8]  - preparing for release 2.8.0
+
+  [ afabiani ]
+  * [9f55c4] - Preparing for RELEASE RC13
+
+  [ Alessio Fabiani ]
+  * [e6dae3]  - geoserver debian package version update
+
+  [ afabiani ]
+  * [c1b350] - Preparing for RELEASE 2.8.0 : fixing tomcat dependency issues
+
+  [ Alessio Fabiani ]
+  * [1669a8] Bump GeoServer debian package version to 2.12.2-4
+
+  [ afabiani ]
+  * [055191] [Fixes #3684] Keep original projection and BBOX / general cleanup of resource models and logs
+  * [de4eaa]  - Adding minor fixes as identified by @capooti review of PR #3698
+
+  [ Alessio Fabiani ]
+  * [48eea1] Release 2.8.0
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Tue, 03 Apr 2018 10:40:23 +0200
+
+geonode (2.8.0+rc12) xenial; urgency=high
   [ Alessio Fabiani ]
   * [27db87]  - Fix GeoNode 2.6.3 to 2.7.x+ Migration (#3547)
   * [f3970d] Updated changelog for version 2.7.5.dev20180124154147
@@ -54,7 +89,7 @@ geonode (2.8.0+rc12) xenial; urgency=high
 
  -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 30 Mar 2018 11:55:49 +0200
 
-geonode (2.8.0+rc10) xenial; urgency=high 
+geonode (2.8.0+rc10) xenial; urgency=high
   * [c8abc4] GeoNode 2.7.5.dev20180123130714
 
  -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Wed, 24 Jan 2018 16:41:05 +0100
