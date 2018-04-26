@@ -211,7 +211,9 @@ class Layer(ResourceBase):
     @property
     def gtype(self):
         # return attribute type without 'gml:' and 'PropertyType'
-        return self.attribute_set.get(attribute='the_geom').attribute_type[4:-12]
+        if self.attribute_set.filter(attribute='the_geom').exists():
+            return self.attribute_set.get(attribute='the_geom').attribute_type[4:-12]
+        return None
 
     def get_base_file(self):
         """Get the shp or geotiff file for this layer.
