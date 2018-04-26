@@ -915,9 +915,13 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 self.assertEquals(response_dict['success'], True)
                 # Get a Layer object for the newly created layer.
                 new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
-                # FIXME(Ariel): Check the typename does not change.
 
-                # Test the replaced layer is indeed different from the original layer
+                # Test the replaced layer metadata is equal to the original layer
+                self.assertEqual(vector_layer.name, new_vector_layer.name)
+                self.assertEqual(vector_layer.title, new_vector_layer.title)
+                self.assertEqual(vector_layer.alternate, new_vector_layer.alternate)
+
+                # Test the replaced layer bbox is indeed different from the original layer
                 self.assertNotEqual(vector_layer.bbox_x0, new_vector_layer.bbox_x0)
                 self.assertNotEqual(vector_layer.bbox_x1, new_vector_layer.bbox_x1)
                 self.assertNotEqual(vector_layer.bbox_y0, new_vector_layer.bbox_y0)

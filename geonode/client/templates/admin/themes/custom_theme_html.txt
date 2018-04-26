@@ -35,7 +35,7 @@
 {% endif %}
 
 {{ partners_header|safe }}
-{% if theme.partners %}
+{% if theme.partners_title %}
 <section id="partners">
   <div class="container text-center">
       <h2>{{ theme.partners_title }}</h2>
