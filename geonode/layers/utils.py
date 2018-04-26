@@ -598,7 +598,8 @@ def file_upload(filename,
         defaults['category'] = defaults.get('category', None) or layer.category
 
         db_layer.update(**defaults)
-        layer.refresh_from_db()
+        db_layer.refresh_from_db()
+        layer = db_layer
 
         # Pass the parameter overwrite to tell whether the
         # geoserver_post_save_signal should upload the new file or not
