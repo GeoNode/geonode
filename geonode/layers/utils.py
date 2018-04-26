@@ -581,8 +581,6 @@ def file_upload(filename,
             layer.upload_session = upload_session
 
         # update with new information
-        db_layer = Layer.objects.get(id=layer.id)
-
         defaults['upload_session'] = upload_session
         defaults['title'] = defaults.get('title', None) or layer.title
         defaults['abstract'] = defaults.get('abstract', None) or layer.abstract
@@ -597,9 +595,15 @@ def file_upload(filename,
         defaults['license'] = defaults.get('license', None) or layer.license
         defaults['category'] = defaults.get('category', None) or layer.category
 
-        db_layer.update(**defaults)
-        db_layer.refresh_from_db()
-        layer = db_layer
+        try:
+            db_layer = Layer.objects.get(id=layer.id)
+            db_layer = Layer.objects.filter(id=layer.id)
+            db_layer.update(**defaults)
+            layer.refresh_from_db()
+        except Layer.DoesNotExist:
+            import traceback
+            tb = traceback.format_exc()
+            logger.error(tb)
 
         # Pass the parameter overwrite to tell whether the
         # geoserver_post_save_signal should upload the new file or not

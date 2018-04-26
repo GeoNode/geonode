@@ -41,7 +41,7 @@ from django.utils.encoding import (
 from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
 
-from geonode.base.models import TopicCategory, Region, License
+from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License
 from geonode.people.models import Profile
 from geonode.base.enumerations import ALL_LANGUAGES
 from django.contrib.auth.models import Group
@@ -424,9 +424,18 @@ class ResourceBaseForm(TranslationModelForm):
             if not isinstance(_k, basestring):
                 for _kk in [x.strip() for x in _k]:
                     _kk = HTMLParser.HTMLParser().unescape(unicode_escape(_kk))
-                    _unsescaped_kwds.append(_kk)
+                    # _hk = HierarchicalKeyword.objects.extra(where=["%s LIKE name||'%%'"], params=[_kk])
+                    _hk = HierarchicalKeyword.objects.filter(name__contains='%s' % _kk.strip())
+                    if _hk and len(_hk) > 0:
+                        _unsescaped_kwds.append(_hk[0])
+                    else:
+                        _unsescaped_kwds.append(_kk)
             else:
-                _unsescaped_kwds.append(_k)
+                _hk = HierarchicalKeyword.objects.filter(name__iexact=_k)
+                if _hk and len(_hk) > 0:
+                    _unsescaped_kwds.append(_hk[0])
+                else:
+                    _unsescaped_kwds.append(_k)
         return _unsescaped_kwds
 
     class Meta:
