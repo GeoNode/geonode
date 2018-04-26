@@ -581,7 +581,7 @@ def file_upload(filename,
             layer.upload_session = upload_session
 
         # update with new information
-        db_layer = Layer.objects.filter(id=layer.id)
+        db_layer = Layer.objects.get(id=layer.id)
 
         defaults['upload_session'] = upload_session
         defaults['title'] = defaults.get('title', None) or layer.title
