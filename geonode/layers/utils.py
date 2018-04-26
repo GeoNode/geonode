@@ -570,16 +570,6 @@ def file_upload(filename,
     # process the layer again after that by
     # doing a layer.save()
     if not created and overwrite:
-        if upload_session:
-            if layer.upload_session:
-                layer.upload_session.layerfile_set.all().delete()
-                layer.upload_session.delete()
-
-            upload_session.resource = layer
-            upload_session.save()
-
-            layer.upload_session = upload_session
-
         # update with new information
         defaults['upload_session'] = upload_session
         defaults['title'] = defaults.get('title', None) or layer.title
@@ -616,6 +606,10 @@ def file_upload(filename,
         # geoserver_post_save_signal should upload the new file if needed
         layer.store = ''
         layer.save()
+
+        if upload_session:
+            upload_session.resource = layer
+            upload_session.save()
 
         # set SLD
         # if 'sld' in files:
