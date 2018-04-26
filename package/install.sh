@@ -83,7 +83,7 @@ function setup_django_once() {
 }
 
 function setup_django_every_time() {
-    pip install --upgrade pip --quiet
+    pip install pip==9.0.3 --quiet
     pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies --quiet
 
     geonodedir=`python -c "import geonode;import os;print os.path.dirname(geonode.__file__)"`
