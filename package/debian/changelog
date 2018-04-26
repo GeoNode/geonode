@@ -1,3 +1,9 @@
+geonode (2.8.0+thefinal1) xenial; urgency=high 
+  * [514196] Update README
+  * [f6dd15] Constrain pip to 9.0.3
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Thu, 26 Apr 2018 12:44:14 +0200
+
 geonode (2.8.0+thefinal0) xenial; urgency=high 
   [ afabiani ]
   * [ac8065] - Preparing for RELEASE RC13
