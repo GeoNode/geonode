@@ -176,7 +176,7 @@ class ExtLayerAttribute(models.Model):
 class ExtMap(models.Model):
     map = models.OneToOneField(Map)
     content_map = models.TextField(_('Site Content'), blank=True, null=True, default=DEFAULT_CONTENT)
-
+    group_params = models.TextField(_('Layer Category Parameters'), blank=True)
 
 class MapStats(models.Model):
     map = models.OneToOneField(Map)

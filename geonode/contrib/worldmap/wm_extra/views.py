@@ -263,6 +263,8 @@ def update_ext_map(request, map_obj):
     map_obj.urlsuffix = conf['about']['urlsuffix']
     x = XssCleaner()
     map_obj.extmap.content_map = despam(x.strip(conf['about']['introtext']))
+    if 'groups' in conf['map']:
+        map_obj.extmap.group_params = json.dumps(conf['map']['groups'])
     map_obj.extmap.save()
     map_obj.save()
 
@@ -649,6 +651,19 @@ def map_detail_wm(request, mapid, snapshot=None, template='wm_extra/maps/map_det
     return render_to_response(template, RequestContext(request, context_dict))
 
 
+def uniqifydict(seq, item):
+    """
+    get a list of unique dictionary elements based on a certain  item (ie 'group').
+    """
+    results = []
+    items = []
+    for x in seq:
+        if x[item] not in items:
+            items.append(x[item])
+            results.append(x)
+    return results
+
+
 def gxp2wm(config, map_obj=None):
     """
     Convert a GeoNode map json or string config to the WorldMap client format.
@@ -760,10 +775,12 @@ def gxp2wm(config, map_obj=None):
         if group not in json.dumps(config['map']['groups']):
             config['map']['groups'].append({"expanded":"true", "group":group})
 
-    # about from existing map
+    # about and groups from existing map
     if map_obj:
         config['about']['introtext'] = map_obj.extmap.content_map
         config['about']['urlsuffix'] = map_obj.urlsuffix
+        if map_obj.extmap.group_params:
+            config["map"]["groups"] = uniqifydict(json.loads(map_obj.extmap.group_params), 'group')
     else:
         # TODO check if this works with different languages
         config['about']['introtext'] = unicode(DEFAULT_CONTENT)
