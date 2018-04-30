@@ -1266,4 +1266,4 @@ INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context.processors.request', )
 
 # Choose thumbnail generator -- this is the default generator
-THUMBNAIL_GENERATOR = "geonode.geoserver.helpers.create_gs_thumbnail_geonode"
+THUMBNAIL_GENERATOR = "geonode.layers.utils.create_gs_thumbnail_geonode"

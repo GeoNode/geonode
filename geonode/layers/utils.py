@@ -51,6 +51,7 @@ from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.layers.metadata import set_metadata
 from geonode.utils import (http_client, check_ogc_backend,
                            unzip_file, extract_tarfile)
+from ..geoserver.helpers import ogc_server_settings  # set_layer_style
 
 import tarfile
 
@@ -810,6 +811,57 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
         if image is not None:
             instance.save_thumbnail(thumbnail_name, image=image)
+
+
+# this is the original implementation of create_gs_thumbnail()
+def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
+    """
+    Create a thumbnail with a GeoServer request.
+    """
+    if isinstance(instance, Map):
+        local_layers = []
+        for layer in instance.layers:
+            if layer.local:
+                local_layers.append(layer.name)
+        layers = ",".join(local_layers).encode('utf-8')
+    else:
+        layers = instance.alternate.encode('utf-8')
+
+    wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'ows'
+    wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.1'
+    wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png8'
+
+    params = {
+        'service': 'WMS',
+        'version': wms_version,
+        'request': 'GetMap',
+        'layers': layers,
+        'format': wms_format,
+        'width': 200,
+        'height': 150
+        # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
+    }
+
+    # Add the bbox param only if the bbox is different to [None, None,
+    # None, None]
+    if None not in instance.bbox:
+        params['bbox'] = instance.bbox_string
+        params['crs'] = instance.srid
+
+    # Avoid using urllib.urlencode here because it breaks the url.
+    # commas and slashes in values get encoded and then cause trouble
+    # with the WMS parser.
+    _p = "&".join("%s=%s" % item for item in params.items())
+
+    import posixpath
+    thumbnail_remote_url = posixpath.join(
+        ogc_server_settings.PUBLIC_LOCATION,
+        wms_endpoint) + "?" + _p
+    thumbnail_create_url = posixpath.join(
+        ogc_server_settings.LOCATION,
+        wms_endpoint) + "?" + _p
+    create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
+                     ogc_client=http_client, overwrite=overwrite, check_bbox=check_bbox)
 
 
 def delete_orphaned_layers():

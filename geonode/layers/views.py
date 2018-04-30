@@ -68,9 +68,13 @@ from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
 from geonode.groups.models import GroupProfile
 
-from geonode.utils import default_map_config, check_ogc_backend
-from geonode.utils import GXPLayer
-from geonode.utils import GXPMap
+from geonode.utils import (resolve_object,
+                           default_map_config,
+                           check_ogc_backend,
+                           llbbox_to_mercator,
+                           bbox_to_projection,
+                           GXPLayer,
+                           GXPMap)
 from geonode.layers.utils import file_upload, is_raster, is_vector
 from geonode.utils import resolve_object, llbbox_to_mercator
 from geonode.people.forms import ProfileForm, PocForm
@@ -321,26 +325,115 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     config = layer.attribute_config()
 
     # Add required parameters for GXP lazy-loading
-    layer_bbox = layer.bbox
-    bbox = [float(coord) for coord in list(layer_bbox[0:4])]
+    layer_bbox = layer.bbox[0:4]
+    bbox = layer_bbox[:]
+    bbox[0] = float(layer_bbox[0])
+    bbox[1] = float(layer_bbox[2])
+    bbox[2] = float(layer_bbox[1])
+    bbox[3] = float(layer_bbox[3])
+
+    def decimal_encode(bbox):
+        import decimal
+        _bbox = []
+        for o in [float(coord) for coord in bbox]:
+            if isinstance(o, decimal.Decimal):
+                o = (str(o) for o in [o])
+            _bbox.append(o)
+        return _bbox
+
+    def sld_definition(style):
+        from urllib import quote
+        _sld = {
+            "title": style.sld_title or style.name,
+            "legend": {
+                "height": "40",
+                "width": "22",
+                "href": layer.ows_url +
+                "?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=" +
+                quote(layer.service_typename, safe=''),
+                "format": "image/png"
+            },
+            "name": style.name
+        }
+        return _sld
+
     if hasattr(layer, 'srid'):
         config['crs'] = {
             'type': 'name',
             'properties': layer.srid
         }
-    config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
-    config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
-        else llbbox_to_mercator([float(coord) for coord in bbox])
+    # Add required parameters for GXP lazy-loading
+    attribution = "%s %s" % (layer.owner.first_name,
+                             layer.owner.last_name) if layer.owner.first_name or layer.owner.last_name else str(
+        layer.owner)
+    srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
+    config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
+    config["format"] = getattr(
+        settings, 'DEFAULT_LAYER_FORMAT', 'image/png')
     config["title"] = layer.title
-    config["queryable"] = True
+    config["wrapDateLine"] = True
+    config["visibility"] = True
+    config["srs"] = srs
+    config["bbox"] = decimal_encode(
+        bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
+                           target_srid=int(srs.split(":")[1]))[:4])
+    config["capability"] = {
+        "abstract": layer.abstract,
+        "name": layer.alternate,
+        "title": layer.title,
+        "queryable": True,
+        "bbox": {
+            layer.srid: {
+                "srs": layer.srid,
+                "bbox": decimal_encode(bbox)
+            },
+            srs: {
+                "srs": srs,
+                "bbox": decimal_encode(
+                    bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
+                                       target_srid=int(srs.split(":")[1]))[:4])
+            },
+            "EPSG:4326": {
+                "srs": "EPSG:4326",
+                "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
+                decimal_encode(bbox_to_projection(
+                    [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4])
+            }
+        },
+        "srs": {
+            srs: True
+        },
+        "formats": ["image/png", "application/atom xml", "application/atom+xml", "application/json;type=utfgrid",
+                    "application/openlayers", "application/pdf", "application/rss xml", "application/rss+xml",
+                    "application/vnd.google-earth.kml", "application/vnd.google-earth.kml xml",
+                    "application/vnd.google-earth.kml+xml", "application/vnd.google-earth.kml+xml;mode=networklink",
+                    "application/vnd.google-earth.kmz", "application/vnd.google-earth.kmz xml",
+                    "application/vnd.google-earth.kmz+xml", "application/vnd.google-earth.kmz;mode=networklink",
+                    "atom", "image/geotiff", "image/geotiff8", "image/gif", "image/gif;subtype=animated",
+                    "image/jpeg", "image/png8", "image/png; mode=8bit", "image/svg", "image/svg xml",
+                    "image/svg+xml", "image/tiff", "image/tiff8", "image/vnd.jpeg-png",
+                    "kml", "kmz", "openlayers", "rss", "text/html; subtype=openlayers", "utfgrid"],
+        "attribution": {
+            "title": attribution
+        },
+        "infoFormats": ["text/plain", "application/vnd.ogc.gml", "text/xml", "application/vnd.ogc.gml/3.1.1",
+                        "text/xml; subtype=gml/3.1.1", "text/html", "application/json"],
+        "styles": [sld_definition(s) for s in layer.styles.all()],
+        "prefix": layer.alternate.split(":")[0] if ":" in layer.alternate else "",
+        "keywords": [k.name for k in layer.keywords.all()] if layer.keywords else [],
+        "llbbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
+        decimal_encode(bbox_to_projection(
+            [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4])
+    }
 
     if layer.storeType == "remoteStore":
-        service = layer.service
+        service = layer.remote_service
         source_params = {
             "ptype": service.ptype,
             "remote": True,
-            "url": service.base_url,
-            "name": service.name}
+            "url": service.service_url,
+            "name": service.name,
+            "title": "[R] %s" % service.title}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
@@ -400,19 +493,22 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             granules = {"features": []}
             all_granules = {"features": []}
 
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from geonode.geoserver.views import get_capabilities
         if layer.has_time:
-            workspace, layername = layer.alternate.split(":")
+            workspace, layername = layer.alternate.split(
+                ":") if ":" in layer.alternate else (None, layer.alternate)
             # WARNING Please make sure to have enabled DJANGO CACHE as per
             # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-            wms_capabilities_resp = get_capabilities(request, layer.id, tolerant=True)
+            wms_capabilities_resp = get_capabilities(
+                request, layer.id, tolerant=True)
             if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
                 wms_capabilities = wms_capabilities_resp.getvalue()
                 if wms_capabilities:
                     import xml.etree.ElementTree as ET
                     e = ET.fromstring(wms_capabilities)
-                    for atype in e.findall("Capability/Layer/Layer[Name='%s']/Extent" % (layername)):
+                    for atype in e.findall(
+                            "Capability/Layer/Layer[Name='%s']/Extent" % (layername)):
                         dim_name = atype.get('name')
                         if dim_name:
                             dim_name = str(dim_name).lower()
@@ -447,6 +543,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "all_times": all_times,
         "show_popup": show_popup,
         "filter": filter,
+        "storeType": layer.storeType,
+        "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
     }
 
     if 'access_token' in request.session:
@@ -514,8 +612,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             workspace, name = layers_names.split(':', 1)
         else:
             name = layers_names
-    except:
-        print "Can not identify workspace type and layername"
+    except BaseException:
+        logger.error("Can not identify workspace type and layername")
 
     context_dict["layer_name"] = json.dumps(layers_names)
 
@@ -536,7 +634,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             # get schema for specific layer
             username = settings.OGC_SERVER['default']['USER']
             password = settings.OGC_SERVER['default']['PASSWORD']
-            schema = get_schema(location, name, username=username, password=password)
+            schema = get_schema(
+                location,
+                name,
+                username=username,
+                password=password)
 
             # get the name of the column which holds the geometry
             if 'the_geom' in schema['properties']:
@@ -553,14 +655,16 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             context_dict["schema"] = schema
             context_dict["filtered_attributes"] = filtered_attributes
 
-    except:
-        print "Possible error with OWSLib. Turning all available properties to string"
+    except BaseException:
+        logger.error(
+            "Possible error with OWSLib. Turning all available properties to string")
 
-    # maps owned by user needed to fill the "add to existing map section" in template
+    # maps owned by user needed to fill the "add to existing map section" in
+    # template
     if request.user.is_authenticated():
         context_dict["maps"] = Map.objects.filter(owner=request.user)
     return TemplateResponse(
-        request, template, RequestContext(request, context_dict))
+        request, template, context=context_dict)
 
 
 # Loads the data using the OWS lib when the "Do you want to filter it" button is clicked.

@@ -1,4 +1,4 @@
-from geonode.geoserver.helpers import create_gs_thumbnail_geonode
+from geonode.layers.utils import create_gs_thumbnail_geonode
 from geonode.layers.models import Layer
 
 def create_wm_thumbnail(instance, overwrite=False):

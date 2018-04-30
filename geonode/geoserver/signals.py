@@ -31,13 +31,14 @@ from django.forms.models import model_to_dict
 
 # use different name to avoid module clash
 from geonode import geoserver as geoserver_app
+from geonode import GeoNodeException
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
 from geonode.geoserver.helpers import set_styles, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.geoserver.helpers import geoserver_upload
 from geonode.geoserver.helpers import create_gs_thumbnail
+from geonode.geoserver.upload import geoserver_upload
 from geonode.base.models import ResourceBase
 from geonode.base.models import Link
 from geonode.people.models import Profile
@@ -65,7 +66,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        if instance.service is None or instance.service.method == CASCADED:
+        if instance.remote_service is None or instance.remote_service.method == CASCADED:
             if instance.alternate:
                 cascading_delete(gs_catalog, instance.alternate)
 
@@ -99,7 +100,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         * Point of Contact name and url
     """
     # Don't run this signal if is a Layer from a remote service
-    if getattr(instance, "service", None) is not None:
+    if getattr(instance, "remote_service", None) is not None:
         return
 
     # Don't run this signal handler if it is a tile layer or a remote store (Service)
@@ -223,19 +224,20 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     instance.workspace = gs_resource.store.workspace.name
     instance.store = gs_resource.store.name
 
-    bbox = gs_resource.latlon_bbox
-
-    # FIXME(Ariel): Correct srid setting below
-    # self.srid = gs_resource.src
-
-    instance.srid_url = "http://www.spatialreference.org/ref/" + \
-        instance.srid.replace(':', '/').lower() + "/"
+    bbox = gs_resource.native_bbox
 
     # Set bounding box values
     instance.bbox_x0 = bbox[0]
     instance.bbox_x1 = bbox[1]
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
+    instance.srid = bbox[4]
+
+    if instance.srid:
+        instance.srid_url = "http://www.spatialreference.org/ref/" + \
+            instance.srid.replace(':', '/').lower() + "/"
+    else:
+        raise GeoNodeException("Invalid Projection. Layer is missing CRS!")
 
     # Iterate over values from geoserver.
     for key in ['alternate', 'store', 'storeType']:
@@ -252,13 +254,11 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if not settings.FREETEXT_KEYWORDS_READONLY:
         if gs_resource.keywords:
             for keyword in gs_resource.keywords:
-                instance.keywords.add(keyword)
+                if keyword not in instance.keyword_list():
+                    instance.keywords.add(keyword)
 
     if any(instance.keyword_list()):
         keywords = instance.keyword_list()
-        if settings.FREETEXT_KEYWORDS_READONLY:
-            if gs_resource.keywords:
-                keywords += gs_resource.keywords
         gs_resource.keywords = list(set(keywords))
 
         # gs_resource should only be called if
@@ -279,7 +279,8 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         'bbox_x0': instance.bbox_x0,
         'bbox_x1': instance.bbox_x1,
         'bbox_y0': instance.bbox_y0,
-        'bbox_y1': instance.bbox_y1
+        'bbox_y1': instance.bbox_y1,
+        'srid': instance.srid
     }
 
     # Update ResourceBase
@@ -301,7 +302,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # store the resource to avoid another geoserver call in the post_save
     instance.gs_resource = gs_resource
 
-    bbox = gs_resource.latlon_bbox
+    bbox = gs_resource.native_bbox
     dx = float(bbox[1]) - float(bbox[0])
     dy = float(bbox[3]) - float(bbox[2])
 
@@ -470,7 +471,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                )
                                )
 
-    ogc_wms_path = '%s/wms' % instance.workspace
+    ogc_wms_path = '%s/ows' % instance.workspace
     ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
     ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,

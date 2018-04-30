@@ -5,7 +5,6 @@
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load pagination_tags %}
-{% load url from future %}
 {% load base_tags %}
 {% load guardian_tags %}
 {% load client_lib_tags %}
@@ -38,6 +37,7 @@
     </style>
 
     <h2 class="page-title">{{ resource.title|default:resource.alternate }}</h2>
+    {% if storeType == 'remoteStore' %}<em><i class="fa fa-power-off {% if online %}text-success{% else %}text-danger{% endif %}"></i> {% trans "Service is" %} {% if online %}{% trans "online" %}{% else %}{% trans "offline" %}{% endif %} </em>{% endif %}
 </div>
 
 <div class="row">
@@ -445,10 +445,6 @@
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_metadata" resource.service_typename %}">{% trans "Wizard" %}</a>
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_metadata_advanced" resource.service_typename %}">{% trans "Advanced Edit" %}</a>
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_metadata_upload" resource.service_typename %}">{% trans "Upload Metadata" %}</a>
-                {% if USE_WORLDMAP %}
-                <a class="btn btn-default btn-block btn-xs" href="/layers/{{ resource.service_typename }}/searchable-fields">{% trans "Search" %}</a>
-                <a class="btn btn-default btn-block btn-xs" href="/gazetteer/edit/{{ resource.service_typename }}">{% trans "Gazetteer" %}</a>
-                {% endif %}
               </div>
               {% endif %}
               {% if GEOSERVER_BASE_URL and not resource.service %}
