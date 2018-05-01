@@ -13,7 +13,7 @@ Ext.onReady(function() {
        new GeoNode.WorldMapPermissionsEditor({
                 renderTo: "permissions_form",
                 submitTo: "{% url "geonode.services.views.ajax_service_permissions" service.id %}",
-                userLookup: "{% url "geonode.views.ajax_lookup" %}",
+                userLookup: "{% url "account_ajax_lookup" %}",
                 customGroup: "{{ customGroup }}",
                 permissions: {{ permissions_json }},
         levels: {

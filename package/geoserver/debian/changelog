@@ -1,3 +1,21 @@
+geoserver-geonode (2.12.2-4) xenial; urgency=high
+
+  * Fixed Tomcat 8 dependencies on Catalina properties
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 30 Mar 2018 15:50:42 +0200
+
+geoserver-geonode (2.12.2-3) xenial; urgency=high
+
+  * Updated GeoServer 12.x packages on testing
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 30 Mar 2018 15:07:42 +0200
+
+geoserver-geonode (2.12.2-2) xenial; urgency=high
+
+  * Updated GeoServer 12.x packages on testing
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 30 Mar 2018 13:10:42 +0200
+
 geoserver-geonode (2.12.1) xenial; urgency=high
 
   * Updated GeoServer 12.x packages on testing

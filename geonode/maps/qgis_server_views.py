@@ -29,9 +29,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse
+from django.shortcuts import render
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 
 from geonode.maps.views import _resolve_map, _PERMISSION_MSG_VIEW, \
     snapshot_config, _resolve_layer
@@ -153,7 +152,7 @@ class MapCreateView(CreateView):
                         [float(coord) for coord in bbox])
 
                     if layer.storeType == "remoteStore":
-                        service = layer.service
+                        service = layer.remote_service
                         # Probably not a good idea to send the access token to every remote service.
                         # This should never match, so no access token should be sent to remote services.
                         ogc_server_url = urlparse.urlsplit(
@@ -176,7 +175,8 @@ class MapCreateView(CreateView):
                                                 "ptype": service.ptype,
                                                 "remote": True,
                                                 "url": url,
-                                                "name": service.name}))
+                                                "name": service.name,
+                                                "title": "[R] %s" % service.title}))
                     else:
                         ogc_server_url = urlparse.urlsplit(
                             ogc_server_settings.PUBLIC_LOCATION).netloc
@@ -588,8 +588,7 @@ def map_download_leaflet(request, mapid,
         'for_download': True
     }
 
-    the_page = render_to_response(template,
-                                  RequestContext(request, context))
+    the_page = render(request, template, context=context)
 
     response = HttpResponse(
         the_page.content, content_type="html",

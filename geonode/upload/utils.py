@@ -32,8 +32,7 @@ from urlparse import urlparse
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from geoserver.catalog import FailedRequestError
 from geonode.utils import json_response as do_json_response, unzip_file
 from geonode.geoserver.helpers import gs_catalog, gs_uploader, ogc_server_settings
@@ -45,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.info(msg, *args)
+    logger.debug(msg, *args)
 
 
 iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012]))' +
@@ -57,6 +56,13 @@ _SUPPORTED_CRS = getattr(settings, 'UPLOADER', None)
 if _SUPPORTED_CRS:
     _SUPPORTED_CRS = _SUPPORTED_CRS.get('SUPPORTED_CRS',
                                         ['EPSG:4326', 'EPSG:3857', 'EPSG:900913'])
+
+_SUPPORTED_EXT = getattr(settings, 'UPLOADER', None)
+if _SUPPORTED_EXT:
+    _SUPPORTED_EXT = _SUPPORTED_EXT.get('SUPPORTED_EXT',
+                                        ['.shp', '.csv', '.kml', '.kmz', '.json',
+                                         '.geojson', '.tif', '.tiff', '.geotiff',
+                                         '.gml', '.xml'])
 
 _ALLOW_TIME_STEP = getattr(settings, 'UPLOADER', False)
 if _ALLOW_TIME_STEP:
@@ -132,13 +138,10 @@ def error_response(req, exception=None, errors=None, force_ajax=True):
     # not sure if any responses will (ideally) ever be non-ajax
     if errors:
         exception = "<br>".join(errors)
-    return render_to_response(
+    return render(
+        req,
         'upload/layer_upload_error.html',
-        RequestContext(
-            req,
-            {
-                'error_msg': 'Unexpected error : %s,' %
-                exception}))
+        context={'error_msg': 'Unexpected error : %s,' % exception})
 
 
 def json_load_byteified(file_handle):
@@ -440,8 +443,8 @@ def check_import_session_is_valid(request, upload_session, import_session):
                 upload_session.error_msg = msg
             return layer
         except Exception as e:
-            return render_to_response(
-                'upload/layer_upload_error.html', RequestContext(request, {'error_msg': str(e)}))
+            return render(request,
+                          'upload/layer_upload_error.html', context={'error_msg': str(e)})
     elif store_type == 'coverageStore':
         return True
 
@@ -576,9 +579,10 @@ def run_import(upload_session, async=_ASYNC_UPLOAD):
             target.name,
             target.workspace.name)
         task.set_target(target.name, target.workspace.name)
-
     elif ogc_server_settings.datastore_db and task.target.store_type != 'coverageStore':
-        target = create_geoserver_db_featurestore()
+        target = create_geoserver_db_featurestore(
+            store_name=ogc_server_settings.DATASTORE,
+        )
         _log(
             'setting target datastore %s %s',
             target.name,
@@ -629,7 +633,7 @@ def create_geoserver_db_featurestore(
         store_type=None, store_name=None,
         author_name='admin', author_email='admin@geonode.org'):
     cat = gs_catalog
-    dsname = ogc_server_settings.DATASTORE
+    dsname = store_name or ogc_server_settings.DATASTORE
     # get or create datastore
     try:
         if store_type == 'geogig' and ogc_server_settings.GEOGIG_ENABLED:
@@ -649,7 +653,7 @@ def create_geoserver_db_featurestore(
                     settings,
                     'GEOGIG_DATASTORE_NAME'):
                 store_name = settings.GEOGIG_DATASTORE_NAME
-            logger.info(
+            logger.debug(
                 'Creating target datastore %s' %
                 store_name)
 
@@ -673,8 +677,8 @@ def create_geoserver_db_featurestore(
         else:
             logging.info(
                 'Creating target datastore %s' % dsname)
-            ds = cat.create_datastore(dsname)
             db = ogc_server_settings.datastore_db
+            ds = cat.create_datastore(dsname)
             ds.connection_parameters.update(
                 host=db['HOST'],
                 port=db['PORT'] if isinstance(

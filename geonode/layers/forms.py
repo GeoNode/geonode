@@ -61,7 +61,7 @@ class LayerForm(ResourceBaseForm):
             'default_style',
             'styles',
             'upload_session',
-            'service',)
+            'remote_service',)
         # widgets = {
         #     'title': forms.TextInput({'placeholder': title_help_text})
         # }
@@ -157,7 +157,7 @@ class LayerUploadForm(forms.Form):
                     sld_file = cleaned["sld_file"].name
 
         if not cleaned["metadata_upload_form"] and not cleaned["style_upload_form"] and base_ext.lower() not in (
-                ".shp", ".tif", ".tiff", ".geotif", ".geotiff", ".asc"):
+                ".shp", ".tif", ".tiff", ".geotif", ".geotiff", ".asc", ".sld"):
             raise forms.ValidationError(
                 "Only Shapefiles, GeoTiffs, and ASCIIs are supported. You "
                 "uploaded a %s file" % base_ext)

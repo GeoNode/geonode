@@ -2,20 +2,19 @@ Source: geoserver-geonode
 Section: science
 Priority: extra
 Build-Depends: debhelper (>= 7.0.50~), unzip
-Maintainer: Ariel Nunez <ingenieroariel@gmail.com>
+Maintainer: Alessio Fabiani <alessio.fabiani@geo-solutions.it>
 Homepage: http://geonode.org
 Vcs-Browser: https://github.com/GeoNode/geonode
 Vcs-git: git://github.com/geonode/geonode.git
 
 Package: geoserver-geonode
 Architecture: all
-Depends: tomcat8
+Depends: tomcat8, tomcat8-admin
 Description:  High performance, standards-compliant map and geospatial data server.
- GeoServer is an open source software server written in Java that allows users to share 
+ GeoServer is an open source software server written in Java that allows users to share
  and edit geospatial data. Contains GeoNode extensions.
 
 Package: geoserver-geonode-suite
 Architecture: all
 Depends: opengeo-geoserver
 Description:  GeoNode extensions for The OpenGeo Suite.
-

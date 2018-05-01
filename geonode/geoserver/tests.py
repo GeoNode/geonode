@@ -35,6 +35,8 @@ from django.test.utils import override_settings
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
 
+from geonode import geoserver
+from geonode.decorators import on_ogc_backend
 from geonode.geoserver.helpers import OGC_Servers_Handler, extract_name_from_sld
 from geonode.base.populate_test_data import create_models
 from geonode.layers.populate_layers_data import create_layer_data
@@ -541,6 +543,7 @@ class LayerTests(TestCase):
         create_models(type='layer')
         create_layer_data()
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_style_manager(self):
         """
         Ensures the layer_style_manage route returns a 200.
@@ -555,6 +558,7 @@ class LayerTests(TestCase):
         response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200)
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_style_validity_and_name(self):
         # Check that including an SLD with a valid shapefile results in the SLD
         # getting picked up
@@ -604,6 +608,7 @@ class LayerTests(TestCase):
             if d is not None:
                 shutil.rmtree(d)
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_feature_edit_check(self):
         """Verify that the feature_edit_check view is behaving as expected
         """
@@ -676,6 +681,7 @@ class LayerTests(TestCase):
             response_json = json.loads(response.content)
             self.assertEquals(response_json['authorized'], True)
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_acls(self):
         """ Verify that the layer_acls view is behaving as expected
         """
@@ -738,6 +744,7 @@ class LayerTests(TestCase):
         # TODO Lots more to do here once jj0hns0n understands the ACL system
         # better
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_resolve_user(self):
         """Verify that the resolve_user view is behaving as expected
         """
@@ -814,6 +821,7 @@ class UtilsTests(TestCase):
                 'ENGINE': 'django.db.backends.sqlite3',
                 'NAME': 'development.db'}}
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_ogc_server_settings(self):
         """
         Tests the OGC Servers Handler class.
@@ -844,6 +852,7 @@ class UtilsTests(TestCase):
             self.assertTrue(ogc_settings.BACKEND_WRITE_ENABLED)
             self.assertFalse(ogc_settings.WPS_ENABLED)
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_ogc_server_defaults(self):
         """
         Tests that OGC_SERVER_SETTINGS are built if they do not exist in the settings.
@@ -860,6 +869,7 @@ class UtilsTests(TestCase):
         # Make sure we get None vs a KeyError when the key does not exist
         self.assertIsNone(ogc_settings.SFDSDFDSF)
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_importer_configuration(self):
         """
         Tests that the OGC_Servers_Handler throws an ImproperlyConfigured exception when using the importer
@@ -908,6 +918,7 @@ class SecurityTest(TestCase):
         self.admin, created = get_user_model().objects.get_or_create(
             username='admin', password='admin', is_superuser=True)
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_login_middleware(self):
         """
         Tests the Geonode login required authentication middleware.

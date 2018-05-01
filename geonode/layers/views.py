@@ -42,9 +42,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.conf import settings
-from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from geonode import geoserver, qgis_server
@@ -76,7 +75,6 @@ from geonode.utils import (resolve_object,
                            GXPLayer,
                            GXPMap)
 from geonode.layers.utils import file_upload, is_raster, is_vector
-from geonode.utils import resolve_object, llbbox_to_mercator
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
@@ -84,9 +82,10 @@ from geonode.utils import build_social_links
 from geonode.base.views import batch_modify
 from geonode.base.models import Thesaurus
 from geonode.maps.models import Map
-from geonode.geoserver.helpers import (cascading_delete, gs_catalog,
-                                       ogc_server_settings, save_style,
-                                       extract_name_from_sld, _invalidate_geowebcache_layer)
+from geonode.geoserver.helpers import (cascading_delete,
+                                       gs_catalog,
+                                       ogc_server_settings,
+                                       set_layer_style)
 from .tasks import delete_layer
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -114,7 +113,7 @@ _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 
 def log_snippet(log_file):
-    if not os.path.isfile(log_file):
+    if not log_file or not os.path.isfile(log_file):
         return "No log file at %s" % log_file
 
     with open(log_file, "r") as f:
@@ -162,8 +161,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
             'charsets': CHARSETS,
             'is_layer': True,
         }
-        return render_to_response(template, RequestContext(request, ctx))
+        return render(request, template, context=ctx)
     elif request.method == 'POST':
+        name = None
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
         saved_layer = None
@@ -183,7 +183,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 title = slugify(name_base.replace(".", "_"))
             name = slugify(name_base.replace(".", "_"))
 
-            if form.cleaned_data["abstract"] is not None and len(form.cleaned_data["abstract"]) > 0:
+            if form.cleaned_data["abstract"] is not None and len(
+                    form.cleaned_data["abstract"]) > 0:
                 abstract = form.cleaned_data["abstract"]
             else:
                 abstract = "No abstract provided."
@@ -211,53 +212,24 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         msg = 'Failed to process.  Could not find matching layer.'
                         raise Exception(msg)
                     sld = open(base_file).read()
-                    # Check SLD is valid
-                    extract_name_from_sld(gs_catalog, sld, sld_file=base_file)
-
-                    match = None
-                    styles = list(saved_layer.styles.all()) + [
-                        saved_layer.default_style]
-                    for style in styles:
-                        if style and style.name == saved_layer.name:
-                            match = style
-                            break
-                    cat = gs_catalog
-                    layer = cat.get_layer(title)
-                    if match is None:
-                        try:
-                            cat.create_style(saved_layer.name, sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
-                            style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
-                                cat.get_style(saved_layer.name)
-                            if layer and style:
-                                layer.default_style = style
-                                cat.save(layer)
-                                saved_layer.default_style = save_style(style)
-                        except Exception as e:
-                            logger.exception(e)
-                    else:
-                        style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
-                            cat.get_style(saved_layer.name)
-                        # style.update_body(sld)
-                        try:
-                            cat.create_style(saved_layer.name, sld, overwrite=True, raw=True,
-                                             workspace=settings.DEFAULT_WORKSPACE)
-                            style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
-                                cat.get_style(saved_layer.name)
-                            if layer and style:
-                                layer.default_style = style
-                                cat.save(layer)
-                                saved_layer.default_style = save_style(style)
-                        except Exception as e:
-                            logger.exception(e)
-
-                    # Invalidate GeoWebCache for the updated resource
-                    _invalidate_geowebcache_layer(saved_layer.alternate)
+                    set_layer_style(saved_layer, title, base_file, sld)
 
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
                 out['success'] = False
-                out['errors'] = str(error)
+                try:
+                    out['errors'] = u''.join(error).encode('utf-8')
+                except BaseException:
+                    try:
+                        out['errors'] = str(error)
+                    except BaseException:
+                        try:
+                            tb = traceback.format_exc()
+                            out['errors'] = tb
+                        except BaseException:
+                            pass
+
                 # Assign the error message to the latest UploadSession from
                 # that user.
                 latest_uploads = UploadSession.objects.filter(
@@ -307,7 +279,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
         else:
             status_code = 400
         if settings.MONITORING_ENABLED:
-            request.add_resource('layer', saved_layer.alternate if saved_layer else name)
+            if saved_layer or name:
+                layer_name = saved_layer.alternate if hasattr(
+                    saved_layer, 'alternate') else name
+                request.add_resource('layer', layer_name)
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',
@@ -667,12 +642,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         request, template, context=context_dict)
 
 
-# Loads the data using the OWS lib when the "Do you want to filter it" button is clicked.
+# Loads the data using the OWS lib when the "Do you want to filter it"
+# button is clicked.
 def load_layer_data(request, template='layers/layer_detail.html'):
     context_dict = {}
     data_dict = json.loads(request.POST.get('json_data'))
     layername = data_dict['layer_name']
-    filtered_attributes = [x for x in data_dict['filtered_attributes'].split(',') if '/load_layer_data' not in x]
+    filtered_attributes = [x for x in data_dict['filtered_attributes'].split(
+        ',') if '/load_layer_data' not in x]
     workspace, name = layername.split(':')
     location = "{location}{service}".format(** {
         'location': settings.OGC_SERVER['default']['LOCATION'],
@@ -680,11 +657,19 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     })
 
     try:
-        # TODO: should be improved by using OAuth2 token (or at least user related to it) instead of super-powers
+        # TODO: should be improved by using OAuth2 token (or at least user
+        # related to it) instead of super-powers
         username = settings.OGC_SERVER['default']['USER']
         password = settings.OGC_SERVER['default']['PASSWORD']
-        wfs = WebFeatureService(location, version='1.1.0', username=username, password=password)
-        response = wfs.getfeature(typename=name, propertyname=filtered_attributes, outputFormat='application/json')
+        wfs = WebFeatureService(
+            location,
+            version='1.1.0',
+            username=username,
+            password=password)
+        response = wfs.getfeature(
+            typename=name,
+            propertyname=filtered_attributes,
+            outputFormat='application/json')
         x = response.read()
         x = json.loads(x)
         features_response = json.dumps(x)
@@ -699,19 +684,20 @@ def load_layer_data(request, template='layers/layer_detail.html'):
         for i in range(len(decoded_features)):
             for key, value in decoded_features[i]['properties'].iteritems():
                 if value != '' and isinstance(value, (string_types, int, float)) and (
-                '/load_layer_data' not in value):
-                        properties[key].append(value)
+                        '/load_layer_data' not in value):
+                    properties[key].append(value)
 
         for key in properties:
             properties[key] = list(set(properties[key]))
             properties[key].sort()
 
         context_dict["feature_properties"] = properties
-    except:
+    except BaseException:
         import traceback
         traceback.print_exc()
-        print "Possible error with OWSLib."
-    return HttpResponse(json.dumps(context_dict), content_type="application/json")
+        logger.error("Possible error with OWSLib.")
+    return HttpResponse(json.dumps(context_dict),
+                        content_type="application/json")
 
 
 def layer_feature_catalogue(
@@ -743,9 +729,10 @@ def layer_feature_catalogue(
         'attributes': attributes,
         'metadata': settings.PYCSW['CONFIGURATION']['metadata:main']
     }
-    return render_to_response(
+    return render(
+        request,
         template,
-        context_dict,
+        context=context_dict,
         content_type='application/xml')
 
 
@@ -1084,7 +1071,7 @@ def layer_metadata(
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         "resource": layer,
         "layer": layer,
         "layer_form": layer_form,
@@ -1104,7 +1091,7 @@ def layer_metadata(
         "metadata_author_groups": metadata_author_groups,
         "GROUP_MANDATORY_RESOURCES":
             getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
-    }))
+    })
 
 
 @login_required
@@ -1121,7 +1108,8 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
 
     if settings.MONITORING_ENABLED:
         for l in layers:
-            request.add_resource('layer', l.altername)
+            if hasattr(l, 'alternate'):
+                request.add_resource('layer', l.alternate)
     if request.method == 'POST':
         form = PocForm(request.POST)
         if form.is_valid():
@@ -1134,10 +1122,8 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
             return HttpResponseRedirect('/admin/maps/layer')
     else:
         form = PocForm()  # An unbound form
-    return render_to_response(
-        template, RequestContext(
-            request, {
-                'layers': layers, 'form': form}))
+    return render(
+        request, template, context={'layers': layers, 'form': form})
 
 
 @login_required
@@ -1155,8 +1141,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             'is_featuretype': layer.is_vector(),
             'is_layer': True,
         }
-        return render_to_response(template,
-                                  RequestContext(request, ctx))
+        return render(request, template, context=ctx)
     elif request.method == 'POST':
 
         form = LayerUploadForm(request.POST, request.FILES)
@@ -1235,9 +1220,9 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         _PERMISSION_MSG_DELETE)
 
     if (request.method == 'GET'):
-        return render_to_response(template, RequestContext(request, {
+        return render(request, template, context={
             "layer": layer
-        }))
+        })
     if (request.method == 'POST'):
         try:
             with transaction.atomic():
@@ -1253,10 +1238,8 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
                     'before deleting.')
 
             messages.error(request, message)
-            return render_to_response(
-                template, RequestContext(
-                    request, {
-                        "layer": layer}))
+            return render(
+                request, template, context={"layer": layer})
         return HttpResponseRedirect(reverse("layer_browse"))
     else:
         return HttpResponse("Not allowed", status=403)
@@ -1275,10 +1258,10 @@ def layer_granule_remove(
         _PERMISSION_MSG_DELETE)
 
     if (request.method == 'GET'):
-        return render_to_response(template, RequestContext(request, {
+        return render(request, template, context={
             "granule_id": granule_id,
             "layer": layer
-        }))
+        })
     if (request.method == 'POST'):
         try:
             cat = gs_catalog
@@ -1298,10 +1281,8 @@ def layer_granule_remove(
                     'before deleting.')
 
             messages.error(request, message)
-            return render_to_response(
-                template, RequestContext(
-                    request, {
-                        "layer": layer}))
+            return render(
+                request, template, context={"layer": layer})
         return HttpResponseRedirect(
             reverse(
                 'layer_detail', args=(
@@ -1317,7 +1298,7 @@ def layer_thumbnail(request, layername):
         try:
             try:
                 preview = json.loads(request.body).get('preview', None)
-            except:
+            except BaseException:
                 preview = None
 
             if preview and preview == 'react':
@@ -1388,11 +1369,11 @@ def layer_metadata_detail(
             group = GroupProfile.objects.get(slug=layer.group.name)
         except GroupProfile.DoesNotExist:
             group = None
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         "resource": layer,
         "group": group,
         'SITEURL': settings.SITEURL[:-1]
-    }))
+    })
 
 
 def layer_metadata_upload(
@@ -1402,13 +1383,13 @@ def layer_metadata_upload(
     layer = _resolve_layer(
         request,
         layername,
-        'view_resourcebase',
+        'base.change_resourcebase',
         _PERMISSION_MSG_METADATA)
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         "resource": layer,
         "layer": layer,
         'SITEURL': settings.SITEURL[:-1]
-    }))
+    })
 
 
 def layer_sld_upload(
@@ -1420,11 +1401,11 @@ def layer_sld_upload(
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_METADATA)
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         "resource": layer,
         "layer": layer,
         'SITEURL': settings.SITEURL[:-1]
-    }))
+    })
 
 
 @login_required

@@ -22,12 +22,60 @@
 import logging
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from geoserver.catalog import Catalog
+from six.moves.urllib.parse import urlencode, urlparse, urljoin, parse_qs, urlunparse
+from urllib import quote
 
 from .. import enumerations
 from .. import models
 
 logger = logging.getLogger(__name__)
+
+
+def get_proxified_ows_url(url, version=None, proxy_base=None):
+    """
+    clean an OWS URL of basic service elements
+    source: https://stackoverflow.com/a/11640565
+    """
+
+    if url is None or not url.startswith('http'):
+        return url
+
+    filtered_kvp = {}
+    basic_service_elements = ('service', 'version', 'request')
+
+    parsed = urlparse(url)
+    qd = parse_qs(parsed.query, keep_blank_values=True)
+    version = qd['version'][0] if 'version' in qd else version
+    if not version:
+        version = '1.1.1'
+
+    for key, value in qd.items():
+        if key.lower() not in basic_service_elements:
+            filtered_kvp[key] = value
+
+    base_ows_url = urlunparse([
+        parsed.scheme,
+        parsed.netloc,
+        parsed.path,
+        parsed.params,
+        quote(urlencode(filtered_kvp, doseq=True), safe=''),
+        parsed.fragment
+    ])
+
+    ows_request = quote(
+        urlencode(
+            qd,
+            doseq=True),
+        safe='') if qd else 'version%3D' + version + '%26request%3DGetCapabilities%26service%3Dwms'
+    proxy_base = proxy_base if proxy_base else urljoin(
+        settings.SITEURL, reverse('proxy'))
+    proxified_url = "{proxy_base}?url={ows_url}%3F{ows_request}".format(proxy_base=proxy_base,
+                                                                        ows_url=quote(
+                                                                            base_ows_url, safe=''),
+                                                                        ows_request=ows_request)
+    return (version, proxified_url, base_ows_url)
 
 
 def get_geoserver_cascading_workspace(create=True):

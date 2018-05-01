@@ -21,7 +21,7 @@ This repository is used to track code changes and GeoNode issues, please DON'T o
 GeoNode Installation
 ====================
 
-If you just want to try GeoNode, it is recommended to use Ubuntu 14.04 and install the latest stable release of GeoNode.::
+If you just want to try GeoNode, it is recommended to use Ubuntu 16.04 and install the latest stable release of GeoNode.::
 
     sudo add-apt-repository ppa:geonode/stable
     sudo apt-get update
@@ -32,8 +32,12 @@ If instead, you are interested in doing development on the source code, here are
 Development Installations
 =========================
 
+.. warning:: Outdated instructuions. Please refer to http://docs.geonode.org/
+
 Docker Usage
 ------------
+
+.. warning:: Outdated instructuions. Please refer to http://docs.geonode.org/
 
 If you want to use Docker you can now::
 
@@ -82,13 +86,15 @@ For GeoServer: http://geonode/geoserver/web/
 Ubuntu
 ------
 
-Ubuntu development build instructions using an isolated virtual environment (tested on Ubuntu 14.04 LTS)::
+.. warning:: Outdated instructuions. Please refer to http://docs.geonode.org/
+
+Ubuntu development build instructions using an isolated virtual environment (tested on Ubuntu 16.04 LTS)::
 
     # Install Ubuntu dependencies
     sudo apt-get update
     sudo apt-get install python-virtualenv python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk
 
-    # Install Java 8 (needed by latest GeoServer 2.9)
+    # Install Java 8 (needed by latest GeoServer 2.12.2)
     sudo apt-add-repository ppa:webupd8team/java
     sudo apt-get update
     sudo apt-get install oracle-java8-installer
@@ -134,6 +140,8 @@ In case you want to be involved in static files development::
 openSUSE
 --------
 
+.. warning:: Outdated instructuions. Please refer to http://docs.geonode.org/
+
 openSUSE Development Build Instructions::
 
     # Add Application:Geo and Python repositories
@@ -177,6 +185,8 @@ openSUSE Development Build Instructions::
 
 Windows
 -------
+
+.. warning:: Outdated instructuions. Please refer to http://docs.geonode.org/
 
 Windows Development Build Instructions::
 
@@ -242,6 +252,8 @@ Windows Development Build Instructions::
 
 Mac OSX
 -------
+
+.. warning:: Outdated instructuions. Please refer to http://docs.geonode.org/
 
 Mac OSX Development Build Instructions::
 
@@ -331,7 +343,7 @@ a pull request should be submitted. This will then be reviewed by the community.
 GPL License
 ===========
 
-GeoNode is Copyright 2016 Open Source Geospatial Foundation (OSGeo).
+GeoNode is Copyright 2018 Open Source Geospatial Foundation (OSGeo).
 
 GeoNode is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

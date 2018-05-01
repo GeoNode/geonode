@@ -18,8 +18,9 @@
 #
 #########################################################################
 
+from geonode import geoserver, qgis_server  # noqa
+from geonode.utils import check_ogc_backend
 from geonode.maps.models import Map, MapLayer
-from django.conf import settings
 
 maplayers = [{"fixed": False,
               "group": "background",
@@ -82,8 +83,7 @@ maplayers = [{"fixed": False,
 
 
 def create_maplayers():
-
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from django.db.models import signals
         from geonode.geoserver.signals import geoserver_pre_save_maplayer
         from geonode.geoserver.signals import geoserver_post_save_map
@@ -102,6 +102,6 @@ def create_maplayers():
             source_params=ml['source_params'],
             stack_order=ml['stack_order'],
             opacity=ml['opacity'],
-            transparent=ml['stack_order'],
-            visibility=ml['stack_order'],
+            transparent=True,
+            visibility=True
         )

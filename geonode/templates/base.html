@@ -88,7 +88,7 @@
               {% endif %}
             </li>
             <li>
-	          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
+	      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
                 <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
                 <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
@@ -105,7 +105,7 @@
               </ul>
             </li>
 
-	        {% block extra_tab %}
+	    {% block extra_tab %}
             {% endblock %}
             {% endblock %}
           </ul>
@@ -128,7 +128,7 @@
             {% if user.is_authenticated %}
             <li>
               <a href="#" class="dropdown-toggle avatar" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                {% avatar user 42 %}
+                {% autoescape off %}{% avatar user 42 %}{% endautoescape %}
                 {% with full_name=user.first_name|add:' '|add:user.last_name %}
                   {% if full_name.strip %}
                     {{ full_name | truncatechars:20 }}
@@ -145,7 +145,7 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "admin:index" %}">Admin</a></li>
                 {% if 'geonode.geoserver' in INSTALLED_APPS %}
-                <li><a href="{{ GEOSERVER_BASE_URL }}index.html">GeoServer</a></li>
+                <li><a href="{% url "proxy" %}?url={{ GEOSERVER_LOCAL_URL }}web">GeoServer</a></li>
                 {% endif %}
                 {% if user.is_superuser and USE_MONITORING %}
                 <li role="separator" class="divider"></li>
@@ -326,7 +326,7 @@
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js?v={{ VERSION }}"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js?v={{ VERSION }}"></script>
     {% include 'autocomplete_light/static.html' %}
-    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+    <script type="text/javascript" src="{% url "javascript-catalog" %}"></script>
     {% block extra_script %}{% endblock extra_script %}
     <script type="text/javascript">
         var autocomplete = $('#search_input').yourlabsAutocomplete({

@@ -104,6 +104,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, TestCase):
         self.assertEquals(len(self.deserialize(resp)['objects']), 8)
 
         layer.is_published = False
+        layer.save()
 
         # with resource publishing
         with self.settings(RESOURCE_PUBLISHING=True):

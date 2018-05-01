@@ -138,9 +138,11 @@
               }
           };
 
-          $('#id_resource-date_picker').datetimepicker(pickerOptions);
-          $('#id_resource-temporal_extent_start_picker').datetimepicker(pickerOptions);
-          $('#id_resource-temporal_extent_end_picker').datetimepicker(pickerOptions);
+          /*
+            $('#id_resource-date_picker').datetimepicker(options=pickerOptions);
+            $('#id_resource-temporal_extent_start_picker').datetimepicker(pickerOptions);
+            $('#id_resource-temporal_extent_end_picker').datetimepicker(pickerOptions);
+          */
     });
 
     $(document).ready(function() {
@@ -522,14 +524,23 @@
                 $('#group_mandatoryDialog').modal();
             } else {
                 var formData = $(this).serializeArray();
-                // edit data here
-                    /* var date = $('#id_resource-date').val();
-                    var resource_date = $.grep(formData, function(e){ return e.name == 'resource-date'; });
-                    if (resource_date.length >= 1) {
-                        resource_date[0].value = date + ' AM';
-                    } */
-                $.post('metadata', /*$(this).serialize()*/ $.param(formData))
-                    .done(function(data){
+                formData.forEach(function(entry) {
+                    try{
+                        if(entry["name"].contains("keywords")) {
+                            entry["value"] = escape(entry["value"]);
+                        }
+                    }catch(err){
+                        console.log(err);
+                    }
+                });
+
+                // $.post('metadata', /*$(this).serialize()*/ $.param(formData))
+                $.ajax({
+                        url: "metadata",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: $.param(formData)
+                   }).done(function(data){
                         // Do something more fancy with your respone
                         // $('.message').html(data.message);
                         if (!is_advanced) {
@@ -542,18 +553,38 @@
                                 console.log(err);
                             }
                         }
-                        $('#preview_pleaseWaitDialog').modal('hide');
-                    })
-                    .fail(function(xhr, status, error) {
+                        metadata_update_done = true;
+                    }).fail(function(xhr, status, error) {
                         // error handling
-                        console.log(error);
-                        $('#preview_pleaseWaitDialog').modal('hide');
+                        // console.log(error);
+                        try {
+                            if(xhr.responseJSON && xhr.responseJSON['errors']) {
+                                var errors = "<ul>";
+                                for(error in xhr.responseJSON['errors']) {
+                                    errors += "<li>" + error + ": " + xhr.responseJSON['errors'][error][0] + "</li>";
+                                }
+                                errors += "</ul>";
+                                $("#preview_errorDialog .modal-body").html(errors);
+                            } else {
+                                $("#preview_errorDialog .modal-body").html(xhr.responseText);
+                            }
+                        } catch(err) {
+                            $("#preview_errorDialog .modal-body").html(xhr.responseText);
+                        }
+                        $('#preview_errorDialog').modal();
+                        metadata_update_done = false;
+                    }).always(function (a, textStatus, b) {
+                          $('#preview_pleaseWaitDialog').modal('hide');
+                          if(textStatus === 'success' && metadata_update_done) {
+                              if(new RegExp(".*/metadata$").test(e.target.action)) {
+                                  window.location.replace(e.target.action.replace('/metadata',''));
+                              } else if(new RegExp(".*/"+metadata_uri+"$").test(e.target.action)) {
+                                  window.location.replace(e.target.action.replace('/'+metadata_uri,''));
+                              }
+                          }
                     });
             }
             e.preventDefault();
-            if (metadata_update_done) {
-                window.location.replace(e.target.action.replace('/'+metadata_uri,''));
-            }
         });
 
         if(totalNum == prevNum) {

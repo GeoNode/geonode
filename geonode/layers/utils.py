@@ -22,14 +22,14 @@
 """
 
 # Standard Modules
-import logging
 import re
 import os
 import glob
 import sys
+import logging
 
 from geonode.maps.models import Map
-from osgeo import gdal
+from osgeo import gdal, osr
 
 # Django functionality
 from django.contrib.auth import get_user_model
@@ -80,7 +80,6 @@ def _clean_string(
 
 
 def resolve_regions(regions):
-
     regions_resolved = []
     regions_unresolved = []
     if regions:
@@ -109,6 +108,26 @@ def get_files(filename):
         msg = "Please use only characters from the english alphabet for the filename. '%s' is not yet supported." \
             % os.path.basename(filename).encode('UTF-8')
         raise GeoNodeException(msg)
+
+    # Let's unzip the filname in case it is a ZIP file
+    import tempfile
+    import zipfile
+    from geonode.utils import unzip_file
+    if zipfile.is_zipfile(filename):
+        tempdir = tempfile.mkdtemp()
+        filename = unzip_file(filename,
+                              '.shp', tempdir=tempdir)
+        if not filename:
+            # We need to iterate files as filename could be the zipfile
+            import ntpath
+            from geonode.upload.utils import _SUPPORTED_EXT
+            file_basename, file_ext = ntpath.splitext(filename)
+            for item in os.listdir(tempdir):
+                item_basename, item_ext = ntpath.splitext(item)
+                if ntpath.basename(item_basename) == ntpath.basename(file_basename) and (
+                        item_ext.lower() in _SUPPORTED_EXT):
+                    filename = os.path.join(tempdir, item)
+                    break
 
     # Make sure the file exists.
     if not os.path.exists(filename):
@@ -252,10 +271,10 @@ def get_valid_name(layer_name):
     while Layer.objects.filter(name=proposed_name).exists():
         proposed_name = "%s_%d" % (name, count)
         count = count + 1
-        logger.info('Requested name already used; adjusting name '
-                    '[%s] => [%s]', layer_name, proposed_name)
+        logger.warning('Requested name already used; adjusting name '
+                       '[%s] => [%s]', layer_name, proposed_name)
     else:
-        logger.info("Using name as requested")
+        logger.debug("Using name as requested")
 
     return proposed_name
 
@@ -321,16 +340,19 @@ def get_resolution(filename):
 def get_bbox(filename):
     """Return bbox in the format [xmin,xmax,ymin,ymax]."""
     from django.contrib.gis.gdal import DataSource
+    srid = None
     bbox_x0, bbox_y0, bbox_x1, bbox_y1 = None, None, None, None
 
     if is_vector(filename):
         datasource = DataSource(filename)
         layer = datasource[0]
         bbox_x0, bbox_y0, bbox_x1, bbox_y1 = layer.extent.tuple
-
+        srid = layer.srs.srid if layer.srs else 'EPSG:4326'
     elif is_raster(filename):
         gtif = gdal.Open(filename)
         gt = gtif.GetGeoTransform()
+        prj = gtif.GetProjection()
+        srs = osr.SpatialReference(wkt=prj)
         cols = gtif.RasterXSize
         rows = gtif.RasterYSize
 
@@ -353,15 +375,24 @@ def get_bbox(filename):
         bbox_y0 = min(ext[0][1], ext[2][1])
         bbox_x1 = max(ext[0][0], ext[2][0])
         bbox_y1 = max(ext[0][1], ext[2][1])
+        srid = srs.GetAuthorityCode(None) if srs else 'EPSG:4326'
 
-    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1]
+    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
 
 
-def file_upload(filename, name=None, user=None, title=None, abstract=None,
+def file_upload(filename,
+                name=None,
+                user=None,
+                title=None,
+                abstract=None,
                 license=None,
-                category=None, keywords=None, regions=None,
+                category=None,
+                keywords=None,
+                regions=None,
                 date=None,
-                skip=True, overwrite=False, charset='UTF-8',
+                skip=True,
+                overwrite=False,
+                charset='UTF-8',
                 metadata_uploaded_preserve=False,
                 metadata_upload_form=False):
     """Saves a layer in GeoNode asking as little information as possible.
@@ -382,10 +413,6 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     upload_session = UploadSession.objects.create(user=theuser)
 
     # Get all the files uploaded with the layer
-    tempdir = os.path.dirname(filename)
-    for item in os.listdir(tempdir):
-        if item.endswith('.shp'):
-            filename = os.path.join(tempdir, item)
     files = get_files(filename)
 
     # Set a default title that looks nice ...
@@ -436,12 +463,16 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
                 assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
     # Get a bounding box
-    bbox_x0, bbox_x1, bbox_y0, bbox_y1 = get_bbox(filename)
+    bbox_x0, bbox_x1, bbox_y0, bbox_y1, srid = get_bbox(filename)
+    if srid:
+        srid_url = "http://www.spatialreference.org/ref/" + srid.replace(':', '/').lower() + "/"  # noqa
 
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
     # must be set to False
+    is_approved = True
     is_published = True
-    if settings.RESOURCE_PUBLISHING:
+    if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
+        is_approved = False
         is_published = False
 
     defaults = {
@@ -454,6 +485,8 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         'bbox_x1': bbox_x1,
         'bbox_y0': bbox_y0,
         'bbox_y1': bbox_y1,
+        'srid': srid,
+        'is_approved': is_approved,
         'is_published': is_published,
         'license': license,
         'category': category
@@ -499,7 +532,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
                 regions_resolved.extend(nlp_metadata.get('regions', []))
                 keywords.extend(nlp_metadata.get('keywords', []))
         except BaseException:
-            print "NLP extraction failed."
+            logger.error("NLP extraction failed.")
 
     # If it is a vector file, create the layer in postgis.
     if is_vector(filename):
@@ -510,17 +543,26 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         defaults['storeType'] = 'coverageStore'
 
     # Create a Django object.
+    created = False
+    layer = None
     with transaction.atomic():
-        if not metadata_upload_form:
-            layer, created = Layer.objects.get_or_create(
-                name=valid_name,
-                defaults=defaults
-            )
-        elif identifier:
-            layer, created = Layer.objects.get_or_create(
-                uuid=identifier,
-                defaults=defaults
-            )
+        try:
+            if not metadata_upload_form:
+                layer, created = Layer.objects.get_or_create(
+                    name=valid_name,
+                    defaults=defaults
+                )
+            elif identifier:
+                layer, created = Layer.objects.get_or_create(
+                    uuid=identifier,
+                    defaults=defaults
+                )
+            else:
+                layer = Layer.objects.get(alternate=title)
+                created = False
+                overwrite = True
+        except:
+            raise
 
     # Delete the old layers if overwrite is true
     # and the layer was not just created
@@ -529,10 +571,27 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     if not created and overwrite:
         if layer.upload_session:
             layer.upload_session.layerfile_set.all().delete()
-        layer.upload_session = upload_session
+        if upload_session:
+            layer.upload_session = upload_session
 
         # update with new information
-        Layer.objects.filter(id=layer.id).update(**defaults)
+        db_layer = Layer.objects.filter(id=layer.id)
+
+        defaults['upload_session'] = upload_session
+        defaults['title'] = defaults.get('title', None) or layer.title
+        defaults['abstract'] = defaults.get('abstract', None) or layer.abstract
+        defaults['bbox_x0'] = defaults.get('bbox_x0', None) or layer.bbox_x0
+        defaults['bbox_x1'] = defaults.get('bbox_x1', None) or layer.bbox_x1
+        defaults['bbox_y0'] = defaults.get('bbox_y0', None) or layer.bbox_y0
+        defaults['bbox_y1'] = defaults.get('bbox_y1', None) or layer.bbox_y1
+        defaults['is_approved'] = defaults.get(
+            'is_approved', None) or layer.is_approved
+        defaults['is_published'] = defaults.get(
+            'is_published', None) or layer.is_published
+        defaults['license'] = defaults.get('license', None) or layer.license
+        defaults['category'] = defaults.get('category', None) or layer.category
+
+        db_layer.update(**defaults)
         layer.refresh_from_db()
 
         # Pass the parameter overwrite to tell whether the
@@ -544,18 +603,32 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         layer.store = ''
         layer.save()
 
+        # set SLD
+        # if 'sld' in files:
+        #     sld = None
+        #     with open(files['sld']) as f:
+        #         sld = f.read()
+        #     if sld:
+        #         set_layer_style(layer, layer.alternate, sld, base_file=files['sld'])
+
     # Assign the keywords (needs to be done after saving)
     keywords = list(set(keywords))
     if keywords:
         if len(keywords) > 0:
-            layer.keywords.add(*keywords)
+            if not layer.keywords:
+                layer.keywords = keywords
+            else:
+                layer.keywords.add(*keywords)
 
     # Assign the regions (needs to be done after saving)
     regions_resolved = list(set(regions_resolved))
     if regions_resolved:
         if len(regions_resolved) > 0:
-            layer.regions.clear()
-            layer.regions.add(*regions_resolved)
+            if not layer.regions:
+                layer.regions = regions_resolved
+            else:
+                layer.regions.clear()
+                layer.regions.add(*regions_resolved)
 
     # Assign and save the charset using the Layer class' object (layer)
     if charset != 'UTF-8':
@@ -563,30 +636,38 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         layer.save()
 
     to_update = {}
-    if title is not None:
-        to_update['title'] = title
+    if defaults.get('title', title) is not None:
+        to_update['title'] = defaults.get('title', title)
 
-    if abstract is not None:
-        to_update['abstract'] = abstract
+    if defaults.get('abstract', abstract) is not None:
+        to_update['abstract'] = defaults.get('abstract', abstract)
 
-    if date is not None:
-        to_update['date'] = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    if defaults.get('date', date) is not None:
+        to_update['date'] = defaults.get('date',
+                                         datetime.strptime(date, '%Y-%m-%d %H:%M:%S') if date else None)
 
-    if license is not None:
-        to_update['license'] = license
+    if defaults.get('license', license) is not None:
+        to_update['license'] = defaults.get('license', license)
 
-    if category is not None:
-        to_update['category'] = category
+    if defaults.get('category', category) is not None:
+        to_update['category'] = defaults.get('category', category)
 
     # Update ResourceBase
     if not to_update:
         pass
     else:
-        ResourceBase.objects.filter(id=layer.resourcebase_ptr.id).update(**to_update)
-        Layer.objects.filter(id=layer.id).update(**to_update)
+        try:
+            ResourceBase.objects.filter(
+                id=layer.resourcebase_ptr.id).update(
+                **to_update)
+            Layer.objects.filter(id=layer.id).update(**to_update)
 
-        # Refresh from DB
-        layer.refresh_from_db()
+            # Refresh from DB
+            layer.refresh_from_db()
+        except BaseException:
+            import traceback
+            tb = traceback.format_exc()
+            logger.error(tb)
 
     return layer
 
@@ -721,7 +802,7 @@ def upload(incoming, user=None, overwrite=False,
                             build_slack_message_layer(
                                 ("layer_new" if status == "created" else "layer_edit"), layer))
                     except BaseException:
-                        print "Could not send slack message."
+                        logger.error("Could not send slack message.")
 
             except Exception as e:
                 if ignore_errors:
@@ -752,15 +833,16 @@ def upload(incoming, user=None, overwrite=False,
 
 
 def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
-                     check_bbox=True, ogc_client=None, overwrite=False):
+                     check_bbox=False, ogc_client=None, overwrite=False):
     thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
+    if not os.path.exists(thumbnail_dir):
+        os.makedirs(thumbnail_dir)
     thumbnail_name = None
     if isinstance(instance, Layer):
         thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
     elif isinstance(instance, Map):
         thumbnail_name = 'map-%s-thumb.png' % instance.uuid
     thumbnail_path = os.path.join(thumbnail_dir, thumbnail_name)
-
     if overwrite is True or storage.exists(thumbnail_path) is False:
         if not ogc_client:
             ogc_client = http_client
@@ -801,11 +883,16 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 .update(thumbnail_url=thumbnail_remote_url)
 
             # Download thumbnail and save it locally.
-            resp, image = ogc_client.request(thumbnail_create_url)
-            if 'ServiceException' in image or \
-               resp.status < 200 or resp.status > 299:
-                msg = 'Unable to obtain thumbnail: %s' % image
-                logger.debug(msg)
+            try:
+                resp, image = ogc_client.request(thumbnail_create_url)
+                if 'ServiceException' in image or \
+                   resp.status < 200 or resp.status > 299:
+                    msg = 'Unable to obtain thumbnail: %s' % image
+                    raise Exception(msg)
+            except BaseException:
+                import traceback
+                logger.debug(traceback.format_exc())
+
                 # Replace error message with None.
                 image = None
 

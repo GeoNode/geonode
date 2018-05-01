@@ -30,9 +30,7 @@ from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
-from django.shortcuts import render_to_response
 from django.shortcuts import render
-from django.template import RequestContext
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
 from django.views.generic import CreateView
@@ -60,7 +58,6 @@ class GroupCategoryUpdateView(UpdateView):
     fields = ['name', 'description']
     template_name_suffix = '_update_form'
 
-
 group_category_create = GroupCategoryCreateView.as_view()
 group_category_detail = GroupCategoryDetailView.as_view()
 group_category_update = GroupCategoryUpdateView.as_view()
@@ -83,9 +80,7 @@ def group_create(request):
     else:
         form = forms.GroupForm()
 
-    return render_to_response("groups/group_create.html", {
-        "form": form,
-    }, context_instance=RequestContext(request))
+    return render(request, "groups/group_create.html", context={"form": form})
 
 
 @login_required
@@ -109,10 +104,10 @@ def group_update(request, slug):
     else:
         form = forms.GroupForm(instance=group)
 
-    return render_to_response("groups/group_update.html", {
+    return render(request, "groups/group_update.html", context={
         "form": form,
         "group": group,
-    }, context_instance=RequestContext(request))
+    })
 
 
 class GroupDetailView(ListView):
@@ -212,8 +207,9 @@ def group_join(request, slug):
 def group_remove(request, slug):
     group = get_object_or_404(models.GroupProfile, slug=slug)
     if request.method == 'GET':
-        return render_to_response(
-            "groups/group_remove.html", RequestContext(request, {"group": group}))
+        return render(
+            request,
+            "groups/group_remove.html", context={"group": group})
     if request.method == 'POST':
 
         if not group.user_is_role(request.user, role="manager"):

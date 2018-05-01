@@ -1,0 +1,13 @@
+.. _geonode_update:
+
+=================================================
+GeoNode (v\ |release|) update from older versions
+=================================================
+
+This part of the documentation describes the complete setup process for GeoNode
+update from older versions.
+
+.. toctree::
+    :maxdepth: 2
+
+    26_to_27/index.txt

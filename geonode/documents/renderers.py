@@ -65,9 +65,8 @@ def render_document(document_path, extension="png"):
         temp_path = temp.name
 
     # spawn subprocess and render the document
-    output = None
+    output = NamedTemporaryFile(suffix='.{}'.format(extension))
     if settings.UNOCONV_ENABLE:
-        output = NamedTemporaryFile(suffix='.{}'.format(extension))
         timeout = None
         try:
             def kill(process):
@@ -103,15 +102,18 @@ def generate_thumbnail_content(image_path, size=(200, 150)):
     except ImportError:
         raise MissingPILError()
 
-    image = Image.open(image_path)
-    source_width, source_height = image.size
-    target_width, target_height = size
+    try:
+        image = Image.open(image_path)
+        source_width, source_height = image.size
+        target_width, target_height = size
 
-    if source_width != target_width or source_width != target_height:
-        image = ImageOps.fit(image, size, Image.ANTIALIAS)
+        if source_width != target_width or source_width != target_height:
+            image = ImageOps.fit(image, size, Image.ANTIALIAS)
 
-    output = StringIO()
-    image.save(output, format='PNG')
-    content = output.getvalue()
-    output.close()
-    return content
+        output = StringIO()
+        image.save(output, format='PNG')
+        content = output.getvalue()
+        output.close()
+        return content
+    except:
+        return None

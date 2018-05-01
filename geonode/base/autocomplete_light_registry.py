@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+import logging
+
 from autocomplete_light.registry import register
 from autocomplete_light.autocomplete.shortcuts import AutocompleteModelBase, AutocompleteModelTemplate
 
@@ -27,6 +29,8 @@ from django.db.models import Q
 from geonode.security.utils import get_visible_resources
 
 from models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
+
+logger = logging.getLogger(__name__)
 
 
 class ResourceBaseAutocomplete(AutocompleteModelTemplate):
@@ -85,7 +89,7 @@ if hasattr(settings, 'THESAURI'):
         tname = thesaurus['name']
         ac_name = 'thesaurus_' + tname
 
-        # print('Registering thesaurus autocomplete for {}: {}'.format(tname, ac_name))
+        logger.debug('Registering thesaurus autocomplete for {}: {}'.format(tname, ac_name))
 
         register(
             ThesaurusKeywordLabelAutocomplete,
