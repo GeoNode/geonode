@@ -397,7 +397,6 @@ def file_upload(filename,
                 metadata_upload_form=False):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
-
     :return: Uploaded layer
     :rtype: Layer
     """
@@ -681,9 +680,7 @@ def upload(incoming, user=None, overwrite=False,
            private=False, metadata_uploaded_preserve=False,
            charset='UTF-8'):
     """Upload a directory of spatial data files to GeoNode
-
        This function also verifies that each layer is in GeoServer.
-
        Supported extensions are: .shp, .tif, .tar, .tar.gz, and .zip (of a shapefile).
        It catches GeoNodeExceptions and gives a report per file
     """
