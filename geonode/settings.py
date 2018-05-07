@@ -1485,6 +1485,61 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
 
+SOCIALACCOUNT_AUTO_SIGNUP = False
+
+# Uncomment this to enable Linkedin and Facebook login
+#INSTALLED_APPS += (
+#    'allauth.socialaccount.providers.linkedin_oauth2',
+#    'allauth.socialaccount.providers.facebook',
+#)
+
+SOCIALACCOUNT_PROVIDERS = {
+    'linkedin_oauth2': {
+        'SCOPE': [
+            'r_emailaddress',
+            'r_basicprofile',
+        ],
+        'PROFILE_FIELDS': [
+            'emailAddress',
+            'firstName',
+            'headline',
+            'id',
+            'industry',
+            'lastName',
+            'pictureUrl',
+            'positions',
+            'publicProfileUrl',
+            'location',
+            'specialties',
+            'summary',
+        ]
+    },
+    'facebook': {
+        'METHOD': 'oauth2',
+        'SCOPE': [
+            'email',
+            'public_profile',
+        ],
+        'FIELDS': [
+            'id',
+            'email',
+            'name',
+            'first_name',
+            'last_name',
+            'verified',
+            'locale',
+            'timezone',
+            'link',
+            'gender',
+        ]
+    },
+}
+
+SOCIALACCOUNT_PROFILE_EXTRACTORS = {
+    "facebook": "geonode.people.profileextractors.FacebookExtractor",
+    "linkedin_oauth2": "geonode.people.profileextractors.LinkedInExtractor",
+}
+
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 
 # Choose thumbnail generator -- this is the default generator

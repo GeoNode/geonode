@@ -561,6 +561,13 @@ class LayerTests(GeoNodeBaseTestSupport):
                     layer.alternate,)))
         self.assertEqual(response.status_code, 200)
 
+        form_data = {'default_style': 'polygon'}
+        response = self.client.post(
+            reverse(
+                'layer_style_manage', args=(
+                    layer.alternate,)), data=form_data)
+        self.assertEquals(response.status_code, 302)
+
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_style_validity_and_name(self):
         # Check that including an SLD with a valid shapefile results in the SLD
