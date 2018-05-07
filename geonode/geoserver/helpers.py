@@ -902,7 +902,7 @@ def set_styles(layer, gs_catalog):
     if not gs_layer:
         gs_layer = gs_catalog.get_layer(layer.alternate)
 
-    if gs_layer.default_style:
+    if gs_layer and gs_layer.default_style:
         default_style = gs_layer.default_style
     else:
         default_style = gs_catalog.get_style(layer.name, workspace=settings.DEFAULT_WORKSPACE) \
@@ -912,14 +912,16 @@ def set_styles(layer, gs_catalog):
             gs_catalog.save(gs_layer)
         except:
             logger.exception("GeoServer Layer Default Style issues!")
-    layer.default_style = save_style(default_style)
-    # FIXME: This should remove styles that are no longer valid
-    style_set.append(layer.default_style)
+    if default_style:
+        layer.default_style = save_style(default_style)
+        # FIXME: This should remove styles that are no longer valid
+        style_set.append(layer.default_style)
 
-    alt_styles = gs_layer.styles
+    if gs_layer and gs_layer.styles:
+        alt_styles = gs_layer.styles
 
-    for alt_style in alt_styles:
-        style_set.append(save_style(alt_style))
+        for alt_style in alt_styles:
+            style_set.append(save_style(alt_style))
 
     layer.styles = style_set
 
@@ -1102,7 +1104,8 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
     """
     cat = gs_catalog
     db = ogc_server_settings.datastore_db
-    dsname = ogc_server_settings.DATASTORE
+    # dsname = ogc_server_settings.DATASTORE
+    dsname = db['NAME']
 
     ds_exists = False
     try:
