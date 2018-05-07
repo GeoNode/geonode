@@ -56,7 +56,7 @@ django-treebeard<=4.2.1 # django-treebeard (4.2.1 in our ppa)
 django-guardian<=1.4.9 # django-guardian (1.4.9 in our ppa)
 django-downloadview<=1.9 # python-django-downloadview (1.9 in our ppa)
 django-polymorphic<2.0 # python-django-polymorphic (1.3)
-django-rest-swagger==2.1.2 # python-django-rest-swagger (2.1.2 in our ppa)
+# django-rest-swagger==2.1.2 # python-django-rest-swagger (2.1.2 in our ppa)
 django-reversion<=2.0.13 # python-django-reversion (2.0.13 in our ppa)
 django-suit<=0.2.26 # python-django-suit (0.2.26 in our ppa)
 django-tastypie<=0.14.0 # python-django-tastypie (0.14.0 in our ppa)
@@ -64,8 +64,8 @@ django-invitations<=1.9.2 # python-django-invitations (1.9.2 in our ppa)
 django-oauth-toolkit>=0.10.0,<1.0 # python-django-oauth-toolkit (0.12.0 in our ppa)
 # djangorestframework<=3.7.7 # TODO
 # djangorestframework-gis<=0.12 # TODO
-drf-nested-routers==0.90.0 # python-drf-nested-routers (0.90.0 in our ppa)
-drf-openapi==1.3.0 # python-drf-openapi (1.3.0 in our ppa)
+# drf-nested-routers==0.90.0 # python-drf-nested-routers (0.90.0 in our ppa)
+# drf-openapi==1.3.0 # python-drf-openapi (1.3.0 in our ppa)
 oauthlib==2.0.1 # python-oauthlib (2.0.6 in our ppa) FIXME
 
 # geopython dependencies
@@ -106,7 +106,7 @@ django-basic-authentication-decorator==0.9 # python-django-basic-authentication-
 # GeoNode org maintained apps.
 django-geoexplorer>=4.0.0,<5.0 # python-django-geoexplorer (4.0.39 in our ppa)
 geonode-user-messages==0.1.14 # python-geonode-user-messages (0.1.14 in our ppa)
-geonode-avatar==2.1.7 # python-geonode-avatar (2.1.7 in our ppa)
+geonode-avatar==2.1.8 # python-geonode-avatar (2.1.7 in our ppa) FIXME
 geonode-announcements==1.0.13 # python-geonode-announcements (1.0.13 in our ppa)
 geonode-agon-ratings==0.3.8 # python-geonode-agon-ratings (0.3.8 in our ppa)
 arcrest>=10.0 # TODO
@@ -168,6 +168,14 @@ django-multi-email-field<=0.5.1 # python-django-multi-email-field (0.5.1 in our 
 # WeasyPrint
 user-agents # python-user-agents (1.1.0 in our ppa)
 xmljson # python-xmljson (0.1.9 in our ppa)
+
+#production
+uWSGI==2.0.17
+gunicorn==19.7.1
+#debug
+ipython==5.5.0
+docker==3.1.1
+invoke==0.22.1
 
 # tests
 coverage<=4.5.1

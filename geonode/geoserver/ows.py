@@ -49,26 +49,29 @@ def _wcs_get_capabilities():
     })
 
 
-def _wcs_link(wcs_url, identifier, mime, srid, bbox):
-    return wcs_url + urllib.urlencode({
+def _wcs_link(wcs_url, identifier, mime, srid=None, bbox=None):
+    wcs_params = {
         'service': 'WCS',
         'request': 'GetCoverage',
         'coverageid': identifier,
         'format': mime,
         'version': '2.0.1',
-        'srs': srid,
-        'bbox': bbox,
-    })
+    }
+    if srid:
+        wcs_params['srs'] = srid
+    if bbox:
+        wcs_params['bbox'] = bbox
+    return wcs_url + urllib.urlencode(wcs_params)
 
 
-def wcs_links(wcs_url, identifier, bbox, srid):
+def wcs_links(wcs_url, identifier, bbox=None, srid=None):
     types = [
         ("x-gzip", _("GZIP"), "application/x-gzip"),
         ("geotiff", _("GeoTIFF"), "image/tiff"),
     ]
     output = []
     for ext, name, mime in types:
-        url = _wcs_link(wcs_url, identifier, mime, srid, bbox)
+        url = _wcs_link(wcs_url, identifier, mime, bbox=bbox, srid=srid)
         output.append((ext, name, mime, url))
     return output
 
@@ -87,30 +90,34 @@ def _wfs_get_capabilities():
     })
 
 
-def _wfs_link(wfs_url, identifier, mime, extra_params):
+def _wfs_link(wfs_url, identifier, mime, extra_params, bbox=None, srid=None):
     params = {
         'service': 'WFS',
         'version': '1.0.0',
         'request': 'GetFeature',
         'typename': identifier,
-        'outputFormat': mime
+        'outputFormat': mime,
     }
+    if srid:
+        params['srs'] = srid
+    if bbox:
+        params['bbox'] = bbox
     params.update(extra_params)
     return wfs_url + urllib.urlencode(params)
 
 
-def wfs_links(wfs_url, identifier):
+def wfs_links(wfs_url, identifier, bbox=None, srid=None):
     types = [
         ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
         ("gml", _("GML 2.0"), "gml2", {}),
         ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
         ("csv", _("CSV"), "csv", {}),
         ("excel", _("Excel"), "excel", {}),
-        ("json", _("GeoJSON"), "json", {'srsName': 'EPSG:4326'})
+        ("json", _("GeoJSON"), "json", {'srsName': srid or 'EPSG:4326'})
     ]
     output = []
     for ext, name, mime, extra_params in types:
-        url = _wfs_link(wfs_url, identifier, mime, extra_params)
+        url = _wfs_link(wfs_url, identifier, mime, extra_params, bbox=bbox, srid=srid)
         output.append((ext, name, mime, url))
     return output
 
@@ -129,17 +136,21 @@ def _wms_get_capabilities():
     })
 
 
-def _wms_link(wms_url, identifier, mime, height, width, srid, bbox):
-    return wms_url + urllib.urlencode({
+def _wms_link(wms_url, identifier, mime, height, width, srid=None, bbox=None):
+    wms_params = {
         'service': 'WMS',
         'request': 'GetMap',
         'layers': identifier,
         'format': mime,
         'height': height,
         'width': width,
-        'srs': srid,
-        'bbox': bbox,
-    })
+    }
+    if srid:
+        wms_params['srs'] = srid
+    if bbox:
+        wms_params['bbox'] = bbox
+
+    return wms_url + urllib.urlencode(wms_params)
 
 
 def wms_links(wms_url, identifier, bbox, srid, height, width):
