@@ -902,16 +902,18 @@ def set_styles(layer, gs_catalog):
     if not gs_layer:
         gs_layer = gs_catalog.get_layer(layer.alternate)
 
-    if gs_layer and gs_layer.default_style:
-        default_style = gs_layer.default_style
-    else:
-        default_style = gs_catalog.get_style(layer.name, workspace=settings.DEFAULT_WORKSPACE) \
-                        or gs_catalog.get_style(layer.name)
-        try:
-            gs_layer.default_style = default_style
-            gs_catalog.save(gs_layer)
-        except:
-            logger.exception("GeoServer Layer Default Style issues!")
+    if gs_layer:
+        if gs_layer.default_style:
+            default_style = gs_layer.default_style
+        else:
+            default_style = gs_catalog.get_style(layer.name, workspace=settings.DEFAULT_WORKSPACE) \
+                            or gs_catalog.get_style(layer.name)
+            try:
+                gs_layer.default_style = default_style
+                gs_catalog.save(gs_layer)
+            except:
+                logger.exception("GeoServer Layer Default Style issues!")
+
     if default_style:
         layer.default_style = save_style(default_style)
         # FIXME: This should remove styles that are no longer valid
@@ -929,7 +931,9 @@ def set_styles(layer, gs_catalog):
     to_update = {
         'default_style': layer.default_style
     }
+
     Layer.objects.filter(id=layer.id).update(**to_update)
+    layer.refresh_from_db()
     return layer
 
 
