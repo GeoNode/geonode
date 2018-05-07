@@ -925,7 +925,7 @@ def set_styles(layer, gs_catalog):
         for alt_style in alt_styles:
             style_set.append(save_style(alt_style))
 
-        layer.styles = style_set
+    layer.styles = style_set
 
     # Update default style to database
     to_update = {
