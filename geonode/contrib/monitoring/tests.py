@@ -78,9 +78,9 @@ class RequestsTestCase(GeoNodeBaseTestSupport):
                    "(KHTML, like Gecko) Chrome/59.0.3071.47 Safari/537.36")
         populate()
 
-        self.host = Host.objects.create(name='localhost', ip='127.0.0.1')
+        self.host, _ = Host.objects.get_or_create(name='localhost', ip='127.0.0.1')
         self.service_type = ServiceType.objects.get(name=ServiceType.TYPE_GEONODE)
-        self.service = Service.objects.create(name=settings.MONITORING_SERVICE_NAME,
+        self.service, _ = Service.objects.get_or_create(name=settings.MONITORING_SERVICE_NAME,
                                               host=self.host,
                                               service_type=self.service_type)
 
@@ -218,9 +218,9 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
         super(MonitoringChecksTestCase, self).setUp()
 
         populate()
-        self.host = Host.objects.create(name='localhost', ip='127.0.0.1')
+        self.host, _ = Host.objects.get_or_create(name='localhost', ip='127.0.0.1')
         self.service_type = ServiceType.objects.get(name=ServiceType.TYPE_GEONODE)
-        self.service = Service.objects.create(name=settings.MONITORING_SERVICE_NAME,
+        self.service, _ = Service.objects.get_or_create(name=settings.MONITORING_SERVICE_NAME,
                                               host=self.host,
                                               service_type=self.service_type)
         self.metric = Metric.objects.get(name='request.count')

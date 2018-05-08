@@ -192,3 +192,4 @@ pytest-splinter==1.8.5
 pytest-django==3.1.2
 setuptools==39.0.1
 geoip2==2.8.0
+django-ipware<2.2

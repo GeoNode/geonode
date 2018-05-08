@@ -44,6 +44,7 @@ except ImportError:
     from django.contrib.gis.geoip import GeoIP
 
 import user_agents
+from ipware import get_client_ip
 from multi_email_field.forms import MultiEmailField
 
 from geonode.utils import parse_datetime
@@ -434,23 +435,31 @@ class RequestEvent(models.Model):
         ua = request.META.get('HTTP_USER_AGENT') or ''
         ua_family = cls._get_ua_family(ua)
 
-        ip = request.get_host()
+        ip, is_routable = get_client_ip(request)
         lat = lon = None
         country = region = city = None
-        if ip:
+        if ip and is_routable:
             ip = ip.split(':')[0]
             if settings.TEST and ip == 'testserver':
                 ip = '127.0.0.1'
-            ip = gethostbyname(ip)
+            try:
+                ip = gethostbyname(ip)
+            except Exception, err:
+                pass
 
             geoip = get_geoip()
-            client_loc = geoip.city(ip)
+            try:
+                client_loc = geoip.city(ip)
+            except Exception, err:
+                log.warning("Cannot resolve %s: %s", ip,err)
+                client_loc = None
 
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc['country_code3']
+                country = client_loc['country_code']
                 region = client_loc['region']
                 city = client_loc['city']
+                
         data = {'received': received,
                 'created': created,
                 'host': request.get_host(),
@@ -500,10 +509,15 @@ class RequestEvent(models.Model):
         country = region = city = None
         if ip:
             geoip = get_geoip()
-            client_loc = geoip.city(ip)
+            try:
+                client_loc = geoip.city(ip)
+            except Exception, err:
+                log.warning("Cannot resolve %s: %s", ip,err)
+                client_loc = None
+
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc['country_code3']
+                country = client_loc['country_code']
                 region = client_loc['region']
                 city = client_loc['city']
 
