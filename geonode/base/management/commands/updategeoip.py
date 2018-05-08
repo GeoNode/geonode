@@ -33,7 +33,12 @@ from django.utils.translation import ugettext_noop as _
 
 logger = logging.getLogger(__name__)
 
-URL = 'http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz'
+try:
+    from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
+    URL = 'http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz'
+except ImportError:
+    from django.contrib.gis.geoip import GeoIP
+    URL = 'http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz'
 
 
 class Command(BaseCommand):
