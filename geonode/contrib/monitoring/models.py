@@ -45,6 +45,7 @@ except ImportError:
 
 import user_agents
 from ipware import get_client_ip
+import pycountry
 from multi_email_field.forms import MultiEmailField
 
 from geonode.utils import parse_datetime
@@ -457,6 +458,10 @@ class RequestEvent(models.Model):
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
                 country = client_loc.get('country_code3') or client_loc['country_code']
+                if len(country) == 2:
+                    _c = pycountry.countries.get(alpha_2=country)
+                    country = _c.alpha_3
+                        
                 region = client_loc['region']
                 city = client_loc['city']
                 
@@ -518,6 +523,9 @@ class RequestEvent(models.Model):
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
                 country = client_loc.get('country_code3') or client_loc['country_code']
+                if len(country) == 2:
+                    _c = pycountry.countries.get(alpha_2=country)
+                    country = _c.alpha_3
                 region = client_loc['region']
                 city = client_loc['city']
 
