@@ -500,10 +500,13 @@ class RequestEvent(models.Model):
         country = region = city = None
         if ip:
             geoip = get_geoip()
-            client_loc = geoip.city(ip)
+            try:
+                client_loc = geoip.city(ip)
+            except:
+                client_loc = None
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc['country_code3']
+                country = client_loc['country_code3'] if 'country_code3' in client_loc else None
                 region = client_loc['region']
                 city = client_loc['city']
 
