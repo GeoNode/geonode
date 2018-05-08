@@ -282,23 +282,27 @@ def layer_style_manage(request, layername):
         try:
             selected_styles = request.POST.getlist('style-select')
             default_style = request.POST['default_style']
+
             # Save to GeoServer
             cat = gs_catalog
             gs_layer = cat.get_layer(layer.name)
-            gs_layer.default_style = cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE) or \
-                cat.get_style(default_style)
-            styles = []
-            for style in selected_styles:
-                styles.append(
-                    cat.get_style(
-                        style,
-                        workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(style))
-            gs_layer.styles = styles
-            cat.save(gs_layer)
+            if not gs_layer:
+                gs_layer = cat.get_layer(layer.alternate)
+
+            if gs_layer:
+                gs_layer.default_style = cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE) or \
+                    cat.get_style(default_style)
+                styles = []
+                for style in selected_styles:
+                    styles.append(
+                        cat.get_style(
+                            style,
+                            workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(style))
+                gs_layer.styles = styles
+                cat.save(gs_layer)
 
             # Save to Django
             layer = set_styles(layer, cat)
-            layer.save()
 
             # Invalidate GeoWebCache for the updated resource
             _invalidate_geowebcache_layer(layer.alternate)

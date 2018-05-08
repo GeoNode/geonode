@@ -209,6 +209,14 @@ class Layer(ResourceBase):
     def attributes(self):
         return self.attribute_set.exclude(attribute='the_geom').order_by('display_order')
 
+    # layer geometry type.
+    @property
+    def gtype(self):
+        # return attribute type without 'gml:' and 'PropertyType'
+        if self.attribute_set.filter(attribute='the_geom').exists():
+            return self.attribute_set.get(attribute='the_geom').attribute_type[4:-12]
+        return None
+
     def get_base_file(self):
         """Get the shp or geotiff file for this layer.
         """
@@ -329,6 +337,7 @@ class UploadSession(models.Model):
 
     """Helper class to keep track of uploads.
     """
+    resource = models.ForeignKey(ResourceBase, blank=True, null=True)
     date = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     processed = models.BooleanField(default=False)
@@ -339,6 +348,9 @@ class UploadSession(models.Model):
     def successful(self):
         return self.processed and self.errors is None
 
+    def __str__(self):
+        return u'%s' % self.resource or self.date
+
 
 class LayerFile(models.Model):
 
@@ -348,7 +360,7 @@ class LayerFile(models.Model):
     name = models.CharField(max_length=255)
     base = models.BooleanField(default=False)
     file = models.FileField(
-        upload_to='layers',
+        upload_to='layers/%Y/%m/%d',
         storage=FileSystemStorage(
             base_url=settings.LOCAL_MEDIA_URL),
         max_length=255)
@@ -605,18 +617,14 @@ def post_delete_layer(instance, sender, **kwargs):
         return
 
     from geonode.maps.models import MapLayer
-    if instance.alternate:
-        logger.debug(
-            "Going to delete associated maplayers for [%s]",
-            instance.alternate.encode('utf-8'))
-        MapLayer.objects.filter(
-            name=instance.alternate,
-            ows_url=instance.ows_url).delete()
+    logger.debug(
+        "Going to delete associated maplayers for [%s]", instance.name)
+    MapLayer.objects.filter(
+        name=instance.alternate,
+        ows_url=instance.ows_url).delete()
 
-    if instance.alternate:
-        logger.debug(
-            "Going to delete the default style for [%s]",
-            instance.alternate.encode('utf-8'))
+    logger.debug(
+        "Going to delete the default style for [%s]", instance.name)
 
     if instance.default_style and Layer.objects.filter(
             default_style__id=instance.default_style.id).count() == 0:
@@ -626,6 +634,7 @@ def post_delete_layer(instance, sender, **kwargs):
         if instance.upload_session:
             for lf in instance.upload_session.layerfile_set.all():
                 lf.file.delete()
+            instance.upload_session.delete()
     except UploadSession.DoesNotExist:
         pass
 
