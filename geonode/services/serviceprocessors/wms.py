@@ -287,6 +287,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         Link.objects.get_or_create(
             resource=geonode_layer.resourcebase_ptr,
             url=legend_url,
+            name='Legend',
             defaults={
                 "extension": 'png',
                 "name": 'Legend',
@@ -300,6 +301,10 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         Link.objects.get_or_create(
             resource=geonode_layer.resourcebase_ptr,
             url=geonode_layer.ows_url,
+            name="OGC {}: {} Service".format(
+                geonode_layer.remote_service.type,
+                geonode_layer.store
+            ),
             defaults={
                 "extension": "html",
                 "name": "OGC {}: {} Service".format(
