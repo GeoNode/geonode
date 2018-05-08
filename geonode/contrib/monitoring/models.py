@@ -456,7 +456,7 @@ class RequestEvent(models.Model):
 
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc['country_code']
+                country = client_loc.get('country_code3') or client_loc['country_code']
                 region = client_loc['region']
                 city = client_loc['city']
                 
@@ -517,7 +517,7 @@ class RequestEvent(models.Model):
 
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc['country_code']
+                country = client_code.get('country_code3') or client_loc['country_code']
                 region = client_loc['region']
                 city = client_loc['city']
 
