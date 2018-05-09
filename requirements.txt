@@ -161,6 +161,7 @@ tablib<=0.12.1 # (0.12.1 in our ppa)
 timeout-decorator==0.4.0 # TODO
 typing<=3.6.4 # python-typing (3.6.4 in our ppa)
 
+# required by monitoring
 psutil # (3.4.2 in ppa)
 django-cors-headers<=2.2.0 # python-django-cors-headers (2.2.0 in our ppa)
 django-cuser==2017.3.16 # python-django-cuser (2017.3.16 in our ppa)
@@ -168,6 +169,11 @@ django-multi-email-field<=0.5.1 # python-django-multi-email-field (0.5.1 in our 
 # WeasyPrint
 user-agents # python-user-agents (1.1.0 in our ppa)
 xmljson # python-xmljson (0.1.9 in our ppa)
+geoip2==2.8.0
+django-ipware<2.2
+# no version here, use latest one with fresh data
+pycountry 
+
 
 #production
 uWSGI==2.0.17
@@ -191,4 +197,4 @@ pytest-bdd==2.20.0
 pytest-splinter==1.8.5
 pytest-django==3.1.2
 setuptools==39.0.1
-geoip2==2.8.0
+
