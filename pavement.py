@@ -865,7 +865,7 @@ def run_tests(options):
     Executes the entire test suite.
     """
     if options.get('coverage'):
-        prefix = 'coverage run --branch --source=geonode --omit="*/management/*,geonode/contrib/*,test*"'
+        prefix = 'coverage run --branch --source=geonode --omit="*/management/*,geonode/contrib/*,*/test*"'
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
