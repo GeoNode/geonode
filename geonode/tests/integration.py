@@ -1385,7 +1385,7 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
             links = Link.objects.filter(resource=layer.resourcebase_ptr)
             self.assertIsNotNone(links)
-            self.assertEquals(len(links), 25)
+            self.assertTrue(len(links) > 7)
 
             original_data_links = [ll for ll in links if 'original' == ll.link_type]
             self.assertEquals(len(original_data_links), 1)
