@@ -86,6 +86,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     solrUrl: "",
 
     /**
+     * api: config[copyrightUrl]
+     * ``String`` url of the site with copyright
+     */
+    copyrightUrl: "",
+
+    /**
+     * api: config[copyrightText]
+     * ``String`` text of the site with copyright
+     */
+    copyrightText: "",
+
+    /**
      * api: config[useMapOverlay]
      * ``Boolean`` Should we add a scale overlay to the map? Set to false
      * to not add a scale overlay.
@@ -1405,8 +1417,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * map-friendliness.
      */
     createMapOverlay: function() {
-        var cgaLink = new Ext.BoxComponent({
-            html:'<div class="cga-link" onclick="javascript:window.open(\'http://gis.harvard.edu\', \'_blank\');"><a href="http://gis.harvard.edu">Center for Geographic Analysis</a></div>'
+        var copyrightLink = new Ext.BoxComponent({
+            html:'<div class="cga-link" onclick="javascript:window.open(\'' + this.copyrightUrl + '\', \'_blank\');"><a href="' + this.copyrightUrl + '">' + this.copyrightText + '</a></div>'
         });
 
         var scaleLinePanel = new Ext.BoxComponent({
@@ -1493,7 +1505,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             items: [
                 scaleLinePanel,
                 zoomSelectorWrapper,
-                cgaLink
+                copyrightLink
             ]
         });
 
