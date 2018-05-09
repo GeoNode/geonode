@@ -288,7 +288,14 @@ class Command(BaseCommand):
                 static_folder = os.path.join(target_folder, helpers.STATIC_ROOT)
                 static_folders = settings.STATICFILES_DIRS
                 static_files_folders = os.path.join(target_folder, helpers.STATICFILES_DIRS)
-                template_folders = settings.TEMPLATE_DIRS
+                template_folders = []
+                try:
+                    template_folders = settings.TEMPLATE_DIRS
+                except:
+                    try:
+                        template_folders = settings.TEMPLATES[0]['DIRS']
+                    except:
+                        pass
                 template_files_folders = os.path.join(target_folder, helpers.TEMPLATE_DIRS)
                 locale_folders = settings.LOCALE_PATHS
                 locale_files_folders = os.path.join(target_folder, helpers.LOCALE_PATHS)
