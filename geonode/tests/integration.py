@@ -55,7 +55,7 @@ from geoserver.catalog import FailedRequestError
 # from geonode.security.models import *
 from geonode.contrib import geotiffio
 from geonode.decorators import on_ogc_backend
-from geonode.base.models import TopicCategory
+from geonode.base.models import TopicCategory, Link
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode import GeoNodeException, geoserver, qgis_server
@@ -1382,6 +1382,16 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
                     attribute.description,
                     '%s_description' % attribute.attribute
                 )
+
+            links = Link.objects.filter(resource=layer.resourcebase_ptr)
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 25)
+
+            original_data_links = [ll for ll in links if 'original' == ll.link_type]
+            self.assertEquals(len(original_data_links), 1)
+
+            resp = self.client.get(original_data_links[0].url)
+            self.assertEquals(resp.status_code, 200)
         finally:
             # Clean up and completely delete the layers
             layer.delete()
