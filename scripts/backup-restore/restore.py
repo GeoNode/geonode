@@ -114,7 +114,14 @@ def restore_full(archive):
          print "Static Files Restored into '"+static_files_folder+"'."
 
       # Restore Template Folders
-      template_folders = settings.TEMPLATE_DIRS
+      template_folders = []
+      try:
+          template_folders = settings.TEMPLATE_DIRS
+      except:
+          try:
+              template_folders = settings.TEMPLATES[0]['DIRS']
+          except:
+              pass
       template_files_folders = os.path.join(target_folder, helpers.TEMPLATE_DIRS)
 
       for template_files_folder in template_folders:
