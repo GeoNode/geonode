@@ -169,6 +169,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     heightLabel: 'UT: Height',
     helpLabel: 'UT: Help',
     infoButtonText: "UT:Info",
+    infoActionText: "UT:About",
+    infoBtnText: "UT:About us",
     largeSizeLabel: 'UT:Large',
     layerAdditionLabel: "UT: Add another server",
     layerLocalLabel: 'UT:Upload your own data',
@@ -1536,8 +1538,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // create an info control to show introductory text window
         var infoButton = new Ext.Button({
             id: 'infoButtonId',
-            tooltip: 'About',
-            text: '<span class="x-btn-text">About</span>',
+            tooltip: this.infoActionText,
+            text: '<span class="x-btn-text">' + this.infoBtnText + '</span>',
             handler: this.showInfoWindow,
             scope:this
         });
