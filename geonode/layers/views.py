@@ -187,7 +187,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     form.cleaned_data["abstract"]) > 0:
                 abstract = form.cleaned_data["abstract"]
             else:
-                abstract = "No abstract provided."
+                abstract = _('No abstract provided')
 
             try:
                 # Moved this inside the try/except block because it can raise
