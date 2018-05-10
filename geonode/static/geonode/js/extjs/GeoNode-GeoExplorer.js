@@ -261,10 +261,10 @@ GeoNode.plugins.XHRTrouble = Ext.extend(gxp.plugins.Tool, {
             "requestexception": function(conn, response, options) {
                 if(!options.failure) {
                     var url = options.url;
-                    if (response.status === 401 && url.indexOf("http" !== 0) &&
+                    if (response.status === 401 && url.indexOf("http") !== 0 &&
                                             url.indexOf(this.proxy) === -1) {
                         this.authenticate(options);
-                    } else if (response.status != 405 && url != "/geoserver/rest/styles") {
+                    } else if (response.status != 405 && url.indexOf("/rest/styles")  !== 0) {
                         // 405 from /rest/styles is ok because we use it to
                         // test whether we're authenticated or not
                         this.displayXHRTrouble(response);

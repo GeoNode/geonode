@@ -1,10 +1,14 @@
 import json
 import math
+import re
 import urlparse
 from httplib import HTTPConnection, HTTPSConnection
 from urlparse import urlsplit
 
+from guardian.shortcuts import get_perms
+
 from django.conf import settings
+from django.db.models import F
 from django.utils.http import is_safe_url
 from django.http.request import validate_host
 from django.contrib.auth.decorators import login_required
@@ -16,6 +20,7 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 
 from geonode.base.models import TopicCategory
+from geonode.documents.models import get_related_documents
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
@@ -23,15 +28,19 @@ from geonode.utils import forward_mercator, default_map_config
 from geonode.utils import llbbox_to_mercator
 from geonode.layers.views import _resolve_layer
 from geonode.maps.views import _resolve_map, _PERMISSION_MSG_VIEW, clean_config
-from geonode.maps.views import snapshot_config
+# from geonode.maps.views import snapshot_config
 from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
+from geonode.utils import build_social_links
+from geonode.security.views import _perms_info_json
 
-from .models import LayerStats
+from .models import LayerStats, ExtLayerAttribute
 from .models import DEFAULT_CONTENT
 from .forms import EndpointForm
 from .encode import despam, XssCleaner
 
+
+ows_sub = re.compile(r"[&\?]+SERVICE=WMS|[&\?]+REQUEST=GetCapabilities", re.IGNORECASE)
 
 @csrf_exempt
 def proxy(request):
@@ -100,18 +109,39 @@ def proxy(request):
     return response
 
 
+def ajax_snapshot_history(request, mapid):
+    map_obj = Map.objects.get(pk=mapid)
+    history = [snapshot.json() for snapshot in map_obj.snapshots]
+    return HttpResponse(json.dumps(history), content_type="text/plain")
+
+
 def ajax_layer_edit_check(request, layername):
     """
     Check if the the layer style is editable.
     """
-    # TODO implement this
-    #layer = get_object_or_404(Layer, typename=layername);
-    #editable = request.user.has_perm("maps.change_layer", obj=layer)
-    editable = True
+
+    layer = get_object_or_404(Layer, typename=layername);
+    can_edit_data = request.user.has_perm('change_layer_data', layer)
+
     return HttpResponse(
-        str(editable),
-        status=200 if editable else 403
+        str(can_edit_data),
+        status=200 if can_edit_data else 403
     )
+
+
+def ajax_layer_edit_style_check(request, layername):
+    """
+    Check if the the layer style is editable.
+    """
+
+    layer = get_object_or_404(Layer, typename=layername);
+    can_edit_style = request.user.has_perm('change_layer_style', layer)
+
+    return HttpResponse(
+        str(can_edit_style),
+        status=200 if can_edit_style else 403
+    )
+
 
 @login_required
 def ajax_layer_update(request, layername):
@@ -139,7 +169,6 @@ def ajax_increment_layer_stats(request):
     if request.method != 'POST':
         return HttpResponseNotAllowed('Only POST is supported')
 
-    print request.POST
     if request.POST['layername'] != '':
         layer_match = Layer.objects.filter(typename=request.POST['layername'])[:1]
         for l in layer_match:
@@ -159,21 +188,21 @@ def ajax_increment_layer_stats(request):
     )
 
 
-# def add_layer_wm(request):
-#     """
-#     The view that returns the map composer opened to
-#     a given map and adds a layer on top of it.
-#     """
-#     map_id = request.GET.get('map_id')
-#     layer_name = request.GET.get('layer_name')
-#
-#     map_obj = _resolve_map(
-#         request,
-#         map_id,
-#         'base.view_resourcebase',
-#         _PERMISSION_MSG_VIEW)
-#
-#     return map_view_wm(request, str(map_obj.id), layer_name=layer_name)
+def add_layer_wm(request):
+    """
+    The view that returns the map composer opened to
+    a given map and adds a layer on top of it.
+    """
+    map_id = request.GET.get('map_id')
+    layer_name = request.GET.get('layer_name')
+
+    map_obj = _resolve_map(
+        request,
+        map_id,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
+
+    return map_view_wm(request, str(map_obj.id), layer_name=layer_name)
 
 
 def map_view_wm(request, mapid, snapshot=None, layer_name=None, template='wm_extra/maps/map_view.html'):
@@ -234,6 +263,8 @@ def update_ext_map(request, map_obj):
     map_obj.urlsuffix = conf['about']['urlsuffix']
     x = XssCleaner()
     map_obj.extmap.content_map = despam(x.strip(conf['about']['introtext']))
+    if 'groups' in conf['map']:
+        map_obj.extmap.group_params = json.dumps(conf['map']['groups'])
     map_obj.extmap.save()
     map_obj.save()
 
@@ -459,6 +490,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
 
         config["srs"] = getattr(
             settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
+
         config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
             else llbbox_to_mercator([float(coord) for coord in bbox])
 
@@ -505,7 +537,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         layers.append(maplayer)
 
     if bbox is not None:
-        minx, miny, maxx, maxy = [float(coord) for coord in bbox]
+        minx, maxx, miny, maxy = [float(coord) for coord in bbox]
         x = (minx + maxx) / 2
         y = (miny + maxy) / 2
 
@@ -554,6 +586,84 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
     return config
 
 
+def map_detail_wm(request, mapid, snapshot=None, template='wm_extra/maps/map_detail.html'):
+    '''
+    The view that show details of each map
+    '''
+    map_obj = _resolve_map(
+        request,
+        mapid,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
+    # Update count for popularity ranking,
+    # but do not includes admins or resource owners
+    if request.user != map_obj.owner and not request.user.is_superuser:
+        Map.objects.filter(
+            id=map_obj.id).update(
+            popular_count=F('popular_count') + 1)
+
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']
+    else:
+        access_token = None
+
+    if snapshot is None:
+        config = map_obj.viewer_json(request.user, access_token)
+    else:
+        config = snapshot_config(snapshot, map_obj, request.user, access_token)
+
+    config = json.dumps(config)
+    layers = MapLayer.objects.filter(map=map_obj.id)
+    links = map_obj.link_set.download()
+
+    group = None
+    if map_obj.group:
+        try:
+            group = GroupProfile.objects.get(slug=map_obj.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
+
+    config = gxp2wm(config)
+
+    context_dict = {
+        'config': config,
+        'resource': map_obj,
+        'group': group,
+        'layers': layers,
+        'perms_list': get_perms(request.user, map_obj.get_self_resource()),
+        'permissions_json': _perms_info_json(map_obj),
+        "documents": get_related_documents(map_obj),
+        'links': links,
+    }
+
+    context_dict["preview"] = getattr(
+        settings,
+        'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
+        'geoext')
+    context_dict["crs"] = getattr(
+        settings,
+        'DEFAULT_MAP_CRS',
+        'EPSG:900913')
+
+    if settings.SOCIAL_ORIGINS:
+        context_dict["social_links"] = build_social_links(request, map_obj)
+
+    return render_to_response(template, RequestContext(request, context_dict))
+
+
+def uniqifydict(seq, item):
+    """
+    get a list of unique dictionary elements based on a certain  item (ie 'group').
+    """
+    results = []
+    items = []
+    for x in seq:
+        if x[item] not in items:
+            items.append(x[item])
+            results.append(x)
+    return results
+
+
 def gxp2wm(config, map_obj=None):
     """
     Convert a GeoNode map json or string config to the WorldMap client format.
@@ -593,6 +703,7 @@ def gxp2wm(config, map_obj=None):
     #    layer_params = {"title": "market", "selected": true, "detail_url": "http://192.168.33.15:8002/registry/hypermap/layer/13ff2fea-d479-4fc7-87a6-3eab7d349def/", "local": false}
 
     # let's detect WM or HH layers and alter configuration as needed
+    bbox = [-180, -90, 180, 90]
     for layer_config in config['map']['layers']:
         is_wm = False
         is_hh = False
@@ -615,6 +726,7 @@ def gxp2wm(config, map_obj=None):
             layer_config['queryable'] = True
             alternate = layer_config['name']
             layer = Layer.objects.get(alternate=alternate)
+            layer_config['attributes'] = (get_layer_attributes(layer))
             # layer_config['url'] = layer.ows_url
             layer_config['url'] = layer.ows_url.replace('ows', 'wms')
             if 'styles' not in layer_config:
@@ -628,22 +740,34 @@ def gxp2wm(config, map_obj=None):
             layer_config["srs"] = getattr(
                 settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
             bbox = layer.bbox[:-1]
-            #layer_config["bbox"] = bbox if layer_config["srs"] != 'EPSG:900913' \
-            #    else llbbox_to_mercator([float(coord) for coord in bbox])
+            # WorldMap GXP use a different bbox representation than GeoNode
+            bbox = [bbox[0], bbox[2], bbox[1], bbox[3]]
+            layer_config["bbox"] = [float(coord) for coord in bbox] if layer_config["srs"] != 'EPSG:900913' \
+                else llbbox_to_mercator([float(coord) for coord in bbox])
         if is_hh:
             layer_config['local'] = False
             layer_config['styles'] = ''
             hh_url = '%smap/wmts/%s/default_grid/${z}/${x}/${y}.png' % (layer_config['detail_url'], layer_config['name'])
             layer_config['url'] = hh_url
         if is_wm or is_hh:
+            # bbox
+            layer_config['llbbox'] = [float(coord) for coord in bbox]
+            # group
             if 'group' not in layer_config:
                 layer_config['group'] = group
+            else:
+                group = layer_config['group']
             if group not in groups:
                 groups.add(group)
-            # TODO fix this accordingly to layer extent
-            layer_config['llbbox'] = [-180,-90,180,90]
+            # let's make sure the group exists in topicArray (it could be a custom group create from user in GXP)
+            is_in_topicarray = False
+            for cat in topicArray:
+                if group == cat[1]:
+                    is_in_topicarray = True
+            if not is_in_topicarray:
+                topicArray.append([group, group])
 
-	        # ml = layers.filter(name=layer_config['name'])
+            # ml = layers.filter(name=layer_config['name'])
             #     layer_config['url'] = ml[0].ows_url
 
     config['map']['groups'] = []
@@ -651,18 +775,208 @@ def gxp2wm(config, map_obj=None):
         if group not in json.dumps(config['map']['groups']):
             config['map']['groups'].append({"expanded":"true", "group":group})
 
-    # about from existing map
+    # about and groups from existing map
     if map_obj:
         config['about']['introtext'] = map_obj.extmap.content_map
         config['about']['urlsuffix'] = map_obj.urlsuffix
+        if map_obj.extmap.group_params:
+            config["map"]["groups"] = uniqifydict(json.loads(map_obj.extmap.group_params), 'group')
     else:
         # TODO check if this works with different languages
         config['about']['introtext'] = unicode(DEFAULT_CONTENT)
 
+    # make sure if gnsource is in sources
+    add_gnsource = True
+    for source in config['sources']:
+        if config['sources'][source]['ptype'] == 'gxp_gnsource':
+            add_gnsource = False
+    if add_gnsource:
+        config['sources']['wm'] = {
+                                    'url': settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+                                    'restUrl': '/gs/rest', 'ptype': 'gxp_gnsource'
+                                  }
+
     if config_is_string:
         config = json.dumps(config)
-    print config
+
     return config
+
+
+def get_layer_attributes(layer):
+    """
+    Return a dictionary of attributes for a layer.
+    """
+    attribute_fields = []
+    attributes = layer.attribute_set.filter(visible=True).order_by('display_order')
+    for la in attributes:
+        searchable = False
+        if hasattr(la, 'extlayerattribute'):
+            searchable = la.extlayerattribute.searchable
+        attribute_fields.append({"id": la.attribute,
+                                 "header": la.attribute,
+                                 "searchable" : searchable
+                                })
+    return attribute_fields
+
+
+def snapshot_config(snapshot, map_obj, user, access_token):
+    """
+    Get the snapshot map configuration - look up WMS parameters (bunding box)
+    for local GeoNode layers
+    """
+
+    def source_config(maplayer):
+        """
+        Generate a dict that can be serialized to a GXP layer source
+        configuration suitable for loading this layer.
+        """
+        try:
+            cfg = json.loads(maplayer.source_params)
+        except Exception:
+            cfg = dict(ptype = "gxp_gnsource", restUrl="/gs/rest")
+
+        if maplayer.ows_url:
+            cfg["url"] = ows_sub.sub('', maplayer.ows_url)
+            if "ptype" not in cfg:
+                cfg["ptype"] = "gxp_wmscsource"
+
+        if "ptype" in cfg and cfg["ptype"] == "gxp_gnsource":
+            cfg["restUrl"] = "/gs/rest"
+        return cfg
+
+    def layer_config(maplayer, user):
+        """
+        Generate a dict that can be serialized to a GXP layer configuration
+        suitable for loading this layer.
+
+        The "source" property will be left unset; the layer is not aware of the
+        name assigned to its source plugin.  See
+        :method:`geonode.maps.models.Map.viewer_json` for an example of
+        generating a full map configuration.
+        """
+        #       Caching of  maplayer config, per user (due to permissions)
+        if maplayer.id is not None:
+            cfg = cache.get("maplayer_config_" + str(maplayer.id) + "_" + str(0 if user is None else user.id))
+            if cfg is not None:
+                print "Cached cfg: %s" % str(cfg)
+                return cfg
+
+        try:
+            cfg = json.loads(maplayer.layer_params)
+        except Exception:
+            cfg = dict()
+
+        if maplayer.format: cfg['format'] = maplayer.format
+        if maplayer.name: cfg["name"] = maplayer.name
+        if maplayer.opacity: cfg['opacity'] = maplayer.opacity
+        if maplayer.styles: cfg['styles'] = maplayer.styles
+        if maplayer.transparent: cfg['transparent'] = True
+
+        cfg["fixed"] = maplayer.fixed
+        if 'url' not in cfg:
+            cfg['url'] = maplayer.ows_url
+        if cfg['url']:
+            cfg['url'] = ows_sub.sub('', cfg['url'])
+        if maplayer.group: cfg["group"] = maplayer.group
+        cfg["visibility"] = maplayer.visibility
+
+        if maplayer.name is not None and maplayer.source_params.find( "gxp_gnsource") > -1:
+            #Get parameters from GeoNode instead of WMS GetCapabilities
+            try:
+                gnLayer = Layer.objects.get(typename=maplayer.name)
+                if gnLayer.srs: cfg['srs'] = gnLayer.srs
+                if gnLayer.bbox: cfg['bbox'] = json.loads(gnLayer.bbox)
+                if gnLayer.llbbox: cfg['llbbox'] = json.loads(gnLayer.llbbox)
+                cfg['attributes'] = (get_layer_attributes(gnLayer))
+                attribute_cfg = gnLayer.attribute_config()
+                if "getFeatureInfo" in attribute_cfg:
+                    cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
+                cfg['queryable'] = (gnLayer.storeType == 'dataStore'),
+                cfg['disabled'] =  user is not None and not user.has_perm('maps.view_layer', obj=gnLayer)
+                #cfg["displayOutsideMaxExtent"] = user is not None and  user.has_perm('maps.change_layer', obj=gnLayer)
+                cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
+                cfg['abstract'] = gnLayer.abstract
+                cfg['styles'] = maplayer.styles
+                cfg['local'] = True
+            except Exception, e:
+                # Give it some default values so it will still show up on the map, but disable it in the layer tree
+                cfg['srs'] = 'EPSG:900913'
+                cfg['llbbox'] = [-180,-90,180,90]
+                cfg['attributes'] = []
+                cfg['queryable'] =False,
+                cfg['disabled'] = False
+                cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
+                cfg['abstract'] = ''
+                cfg['styles'] =''
+                print "Could not retrieve Layer with typename of %s : %s" % (maplayer.name, str(e))
+        elif maplayer.source_params.find( "gxp_hglsource") > -1:
+            # call HGL ServiceStarter asynchronously to load the layer into HGL geoserver
+            from geonode.queue.tasks import loadHGL
+            loadHGL.delay(maplayer.name)
+
+
+        #Create cache of maplayer config that will last for 60 seconds (in case permissions or maplayer properties are changed)
+        if maplayer.id is not None:
+            cache.set("maplayer_config_" + str(maplayer.id) + "_" + str(0 if user is None else user.id), cfg, 60)
+        return cfg
+
+    # Match up the layer with it's source
+    def snapsource_lookup(source, sources):
+        for k, v in sources.iteritems():
+            if v.get("id") == source.get("id"):
+                return k
+        return None
+
+    # Set up the proper layer configuration
+    # def snaplayer_config(layer, sources, user):
+    def snaplayer_config(layer, sources, user, access_token):
+        cfg = layer_config(layer, user)
+        src_cfg = source_config(layer)
+        source = snapsource_lookup(src_cfg, sources)
+        if source:
+            cfg["source"] = source
+        if src_cfg.get(
+                "ptype",
+                "gxp_wmscsource") == "gxp_wmscsource" or src_cfg.get(
+                "ptype",
+                "gxp_gnsource") == "gxp_gnsource":
+            cfg["buffer"] = 0
+        return cfg
+
+    from geonode.utils import num_encode, num_decode
+    from geonode.utils import layer_from_viewer_config
+    decodedid = num_decode(snapshot)
+    snapshot = get_object_or_404(MapSnapshot, pk=decodedid)
+    if snapshot.map == map_obj.map:
+        config = json.loads(clean_config(snapshot.config))
+        layers = [l for l in config["map"]["layers"]]
+        sources = config["sources"]
+        maplayers = []
+        for ordering, layer in enumerate(layers):
+            maplayers.append(
+                layer_from_viewer_config(
+                    MapLayer,
+                    layer,
+                    config["sources"][
+                        layer["source"]],
+                    ordering))
+#             map_obj.map.layer_set.from_viewer_config(
+# map_obj, layer, config["sources"][layer["source"]], ordering))
+        config['map']['layers'] = [
+            snaplayer_config(
+                l,
+                sources,
+                user,
+                access_token) for l in maplayers]
+    else:
+        config = map_obj.viewer_json(user, access_token)
+
+    return config
+
+
+def printmap(request, mapid=None, snapshot=None):
+
+    return render_to_response('wm_extra/maps/map_print.html', RequestContext(request, {}))
 
 
 @login_required
@@ -702,3 +1016,47 @@ def official_site(request, site):
     """
     map_obj = get_object_or_404(Map,urlsuffix=site)
     return map_view_wm(request, str(map_obj.id))
+
+
+@login_required
+def layer_searchable_fields(
+        request,
+        layername):
+    """
+    Manage the layer in the gazetteer.
+    """
+
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.change_resourcebase_metadata',
+        'permissions message from searchable layers')
+
+    status_message = None
+    if request.method == 'POST':
+        attributes_list = request.POST.getlist('attributes')
+        status_message = ''
+        for attribute in layer.attributes:
+            ext_att, created = ExtLayerAttribute.objects.get_or_create(attribute=attribute)
+            if attribute.attribute in attributes_list:
+                ext_att.searchable = True
+                status_message += ' %s' % attribute.attribute
+            else:
+                ext_att.searchable = False
+            ext_att.save()
+
+    searchable_attributes = []
+    for attribute in layer.attributes:
+        if hasattr(attribute, 'extlayerattribute'):
+            attribute.searchable = attribute.extlayerattribute.searchable
+        else:
+            attribute.searchable = False
+        searchable_attributes.append(attribute)
+
+    template='wm_extra/layers/edit_searchable_fields.html'
+
+    return render_to_response(template, RequestContext(request, {
+        "layer": layer,
+        "searchable_attributes": searchable_attributes,
+        "status_message": status_message,
+    }))

@@ -401,7 +401,8 @@ class DocumentsTest(TestCase):
         self.assertEquals(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertTrue(region in resource.regions.all())
+            if resource.regions.all():
+                self.assertTrue(region in resource.regions.all())
         # test date change
         date = datetime.now()
         response = self.client.post(

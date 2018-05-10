@@ -21,7 +21,7 @@
                     <div class="media">
                         {% ifnotequal request.user user %}
                             <div class="media-left">
-                                {% avatar user 30 %}
+                                {% autoescape off %}{% avatar user 30 %}{% endautoescape %}
                             </div>
                             <div class="media-body">
                                 <a href="{{  user.get_absolute_url }}">{{ user }}</a>

@@ -5,7 +5,6 @@
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load pagination_tags %}
-{% load url from future %}
 {% load base_tags %}
 {% load guardian_tags %}
 
@@ -131,7 +130,7 @@
       geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
       time_enabled = false,
       mosaic_enabled = false,
-      userLookup = "{% url "geonode.views.ajax_lookup" %}"
+      userLookup = "{% url "account_ajax_lookup" %}"
 
     {% endautoescape %}
 

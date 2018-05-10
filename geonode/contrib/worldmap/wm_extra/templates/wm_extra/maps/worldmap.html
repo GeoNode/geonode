@@ -14,6 +14,7 @@
 {% include "wm_extra/maps/app_header.html" %}
 {% include "wm_extra/maps/geo_header.html" %}
 
+<script type="text/javascript" src="{{ STATIC_URL }}geonode/js/utils/thumbnail.js"></script>
 <script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
 <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
 
@@ -77,14 +78,8 @@
                         actionTarget:  {target: "paneltbar", index: 6}
                     },
                     {
-                        ptype: "gxp_googleearth",
-                        text: '<span class="x-btn-text">{% trans 'Google Earth' %}</span>',
-                        iconCls: null,
-                        actionTarget: {target: "paneltbar", index: 7}
-                    },
-                    {
                     	ptype: "gxp_streetviewtool",
-                    	actionTarget:   {target: "paneltbar", index: 8},
+                    	actionTarget:   {target: "paneltbar", index: 7},
                         toggleGroup: 'featureGroup'
                     },
                     {
@@ -92,7 +87,7 @@
                         toggleGroup: 'featureGroup',
                         text: '<span class="x-btn-text">{% trans 'Measure' %}</span>',
                         iconCls: null,
-                    	  actionTarget:   {target: "paneltbar", index: 9}
+                    	  actionTarget:   {target: "paneltbar", index: 8}
                     },
                     {
                     	ptype: 'gxp_mapshare',
@@ -139,7 +134,7 @@
                         toggleGroup: 'featureGroup'
                     }
                     {% endif %}
-                    {% if editmap %},
+                    {% if user.is_authenticated %},
                     {
                     	ptype: "gxp_maprevisiontool",
                     	actionTarget:   {target: "paneltbar", index: 20}
@@ -183,6 +178,8 @@
             hypermapRegistryUrl: "{{ HYPERMAP_REGISTRY_URL }}",
             mapProxyUrl: "{{ MAPPROXY_URL }}",
             solrUrl: "{{ SOLR_URL }}",
+            copyrightUrl: "{{ WM_COPYRIGHT_URL }}",
+            copyrightText: "{{ WM_COPYRIGHT_TEXT }}",
             username: "{{ user.username }}",
             csrfToken: "{{ csrf_token }}",
 
@@ -191,101 +188,6 @@
             {% endif %}
 
             authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
-
-            /*
-            listeners: {
-                "ready": function() {
-                    l = app.selectedLayer.getLayer();
-                    l.addOptions({wrapDateLine:true, displayOutsideMaxExtent: true});
-                    if(app.selectedLayer.data.queryable) {
-                        app.mapPanel.map.getMaxExtent = function() {
-                            return new OpenLayers.Bounds(-80150033.36/2,-80150033.36/2,80150033.36/2,80150033.36/2);
-                        }
-                        app.mapPanel.map.getMaxResolution = function() {
-                            return 626172.135625/2;
-                        }
-                        l.addOptions({maxExtent:app.mapPanel.map.getMaxExtent(), restrictedExtent:app.mapPanel.map.getMaxExtent()});
-                    }
-                    {% if 'access_token' in request.session %}
-                        try {
-                            if(l.url != undefined && (typeof l.url) == "string") {
-                                l.url += ( !l.url.match(/\b\?/gi) || l.url.match(/\b\?/gi).length == 0 ? '?' : '&');
-                                if((!l.url.match(/\baccess_token/gi))) {
-                                    l.url += "access_token={{request.session.access_token}}";
-                                } else {
-                                    l.url =
-                                        l.url.replace(/(access_token)(.+?)(?=\&)/, "$1={{request.session.access_token}}");
-                                }
-                            }
-                        } catch(err) {
-                            console.log(err);
-                        }
-                    {% endif %}
-
-                    for (var ll in app.mapPanel.map.layers) {
-                        l = app.mapPanel.map.layers[ll];
-                        if (l.url != undefined && (typeof l.url) == "string" && l.url.indexOf('{{GEOSERVER_BASE_URL}}') !== -1) {
-                            l.addOptions({wrapDateLine:true, displayOutsideMaxExtent: true});
-                            l.addOptions({maxExtent:app.mapPanel.map.getMaxExtent(), restrictedExtent:app.mapPanel.map.getMaxExtent()});
-                            {% if 'access_token' in request.session %}
-                                try {
-                                    l.url += ( !l.url.match(/\b\?/gi) || l.url.match(/\b\?/gi).length == 0 ? '?' : '&');
-                                    if((!l.url.match(/\baccess_token/gi))) {
-                                        l.url += "access_token={{request.session.access_token}}";
-                                    } else {
-                                        l.url =
-                                            l.url.replace(/(access_token)(.+?)(?=\&)/, "$1={{request.session.access_token}}");
-                                    }
-                                } catch(err) {
-                                    console.log(err);
-                                }
-                            {% endif %}
-                        }
-                    }
-
-                    var map = app.mapPanel.map;
-                    var layer = app.map.layers.slice(-1)[0];
-                    var bbox = layer.bbox;
-                    var crs = layer.crs
-                    if (bbox != undefined)
-                    {
-                       if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
-                           bbox = bbox[Object.keys(layer.srs)].bbox;
-                       }
-
-                       var extent = new OpenLayers.Bounds();
-
-                       if(map.projection != 'EPSG:900913' && crs && crs.properties) {
-                           extent.left = bbox[0];
-                           extent.right = bbox[1];
-                           extent.bottom = bbox[2];
-                           extent.top = bbox[3];
-
-                           if (crs.properties != map.projection) {
-                               extent = extent.clone().transform(crs.properties, map.projection);
-                           }
-                       } else {
-                           extent = OpenLayers.Bounds.fromArray(bbox);
-                       }
-
-                       var zoomToData = function()
-                       {
-                           map.zoomToExtent(extent, false);
-                           app.mapPanel.center = map.center;
-                           app.mapPanel.zoom = map.zoom;
-                           map.events.unregister('changebaselayer', null, zoomToData);
-                       };
-                       map.events.register('changebaselayer',null, zoomToData);
-                       if(map.baseLayer){
-                           map.zoomToExtent(extent, false);
-                       }
-                    }
-                },
-               'save': function(obj_id) {
-                   createMapThumbnail(obj_id);
-               }
-             }
-             */
         }, {{ config }});
 
         app = new GeoExplorer(config, true);
@@ -366,9 +268,9 @@
 
                 <div style="position:relative;float:left;">
                     <h3>{%trans "Rectify Images"  %}</h3>
-                    <p style="font-size: 14px">{% trans "Use <a target='_blank' href='http://warp.worldmap.harvard.edu'>WorldMap WARP</a> to upload and rectify scanned maps for use in WorldMap." %} <br/><br/> {% trans "Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 4.5 in <a href='{{ STATIC_URL }}docs/WorldMap_Help.pdf'>WorldMap Help</a>." %}</p>
+                    <p style="font-size: 14px">{% trans "Use <a target='_blank' href='https://mapwarper.net/'>Map Warper</a> to upload and rectify scanned maps for use in WorldMap." %} <br/><br/> {% trans "Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 4.5 in <a href='{{ STATIC_URL }}docs/WorldMap_Help.pdf'>WorldMap Help</a>." %}</p>
                     <br/><br/>
-                    <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{{ STATIC_URL }}theme/img/warper-sample.jpg" border="0" /></a></div>
+                    <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{{ STATIC_URL }}worldmap/theme/img/warper-sample.jpg" border="0" /></a></div>
                 </div>
             </div>
         </div>

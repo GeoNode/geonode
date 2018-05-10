@@ -208,7 +208,6 @@ def set_geofence_invalidate_cache():
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
-            raise
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -262,7 +261,6 @@ def set_geofence_all(instance):
                             rules_already_present = True
             except Exception:
                 logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                raise
 
         # Create GeoFence Rules for ANONYMOUS to the Layer
         """
@@ -293,7 +291,6 @@ def set_geofence_all(instance):
     except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
-        raise
     finally:
         set_geofence_invalidate_cache()
 
@@ -324,7 +321,7 @@ def set_geofence_owner(instance, username=None, view_perms=False, download_perms
         pass
     else:
         services = (
-            (["WMS", "GWC"] if view_perms else []) +
+            (["*", "WMS", "GWC"] if view_perms else []) +
             (["WFS", "WCS", "WPS"] if download_perms else [])
         )
         try:
@@ -338,7 +335,6 @@ def set_geofence_owner(instance, username=None, view_perms=False, download_perms
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
-            raise
         finally:
             set_geofence_invalidate_cache()
 
@@ -372,7 +368,6 @@ def set_geofence_group(instance, groupname, view_perms=False,
             except Exception:
                 tb = traceback.format_exc()
                 logger.debug(tb)
-                raise
             finally:
                 set_geofence_invalidate_cache()
 
@@ -432,7 +427,7 @@ def remove_object_permissions(instance):
                     headers=headers,
                     auth=HTTPBasicAuth(user, passwd)
                 )
-                if (r.status_code >= 200):
+                if (r.status_code >= 200 and r.status_code < 300):
                     gs_rules = r.json()
                     r_ids = []
                     if gs_rules and gs_rules['rules']:
@@ -457,7 +452,6 @@ def remove_object_permissions(instance):
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
-            raise
         finally:
             set_geofence_invalidate_cache()
 
@@ -484,15 +478,17 @@ def remove_object_permissions(instance):
 
 def _get_layer_workspace(layer):
     """Get the workspace where the input layer belongs"""
-    default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
-    try:
-        if layer.service.method == CASCADED:
-            workspace = getattr(
-                settings, "CASCADE_WORKSPACE", default_workspace)
-        else:
-            raise RuntimeError("Layer is not cascaded")
-    except AttributeError:  # layer does not have a service
-        workspace = default_workspace
+    workspace = layer.workspace
+    if not workspace:
+        default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
+        try:
+            if layer.remote_service.method == CASCADED:
+                workspace = getattr(
+                    settings, "CASCADE_WORKSPACE", default_workspace)
+            else:
+                raise RuntimeError("Layer is not cascaded")
+        except AttributeError:  # layer does not have a service
+            workspace = default_workspace
     return workspace
 
 
@@ -514,7 +510,7 @@ def _get_geofence_payload(layer, workspace, access, user=None, group=None,
     layer_el.text = layer
     access_el = etree.SubElement(root_el, "access")
     access_el.text = access
-    if service is not None:
+    if service is not None and service is not "*":
         service_el = etree.SubElement(root_el, "service")
         service_el.text = service
     return etree.tostring(root_el)

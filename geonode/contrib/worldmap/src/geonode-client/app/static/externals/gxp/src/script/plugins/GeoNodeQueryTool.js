@@ -162,7 +162,10 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                             vendorParams['buffer'] = 25;
 
                             /* Use OpenLayers.Control.GetFeature for local layers only */
-                            if (layer.url.indexOf(localUrl) > -1) {
+                            var url_parser = document.createElement('a');
+                            url_parser.href = layer.url;
+                            // if (layer.url.indexOf(localUrl) > -1) {
+                            if (localUrl.indexOf(url_parser.host)) {
                                 //console.log(layer.name + 'IS LOCAL?' );
                                 var control = new OpenLayers.Control.GetFeature({
                                     protocol:OpenLayers.Protocol.WFS.fromWMSLayer(layer),

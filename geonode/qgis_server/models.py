@@ -167,7 +167,7 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
 
         # Removing the cache.
         path = self.cache_path
-        logger.info('Removing the cache from a qgis layer : %s' % path)
+        logger.debug('Removing the cache from a qgis layer : %s' % path)
         try:
             rmtree(path)
         except OSError:
@@ -188,7 +188,6 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
 
 class QGISServerStyle(models.Model, PermissionLevelMixin):
     """Model wrapper for QGIS Server styles."""
-
     name = models.CharField(_('style name'), max_length=255)
     title = models.CharField(max_length=255, null=True, blank=True)
     body = models.TextField(_('style xml'), null=True, blank=True)

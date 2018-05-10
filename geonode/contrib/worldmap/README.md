@@ -63,8 +63,9 @@ Set the following variables as needed (change SITE_NAME and SERVER_IP s needed. 
     export ALLOWED_HOSTS="localhost, $SERVER_IP, "
     export GEOSERVER_LOCATION=http://localhost:8080/geoserver/
     export GEOSERVER_PUBLIC_LOCATION=http://$SERVER_IP/geoserver/
-    export HYPERMAP_REGISTRY_URL =http://localhost:8001/
     export SOLR_URL =http://localhost:8983/solr/hypermap/select/
+    export HYPERMAP_REGISTRY_URL =http://localhost:8001
+    export MAPPROXY_URL=http://localhost:8001
 
 Create your geonode project by using the WorldMap geonode-project as a template  (https://github.com/cga-harvard/geonode-project). Rename it to something meaningful (for example your web site name):
 
@@ -125,17 +126,16 @@ Login in GeoNode (admin/admin) and upload a shapefile from this page: http://loc
 
 Make sure the shapefile is correctly displayed in GeoNode by going to the layer page.
 
-Now login in Hypermap (admin/admin) and go to the admin services page: http://localhost:8001/admin/aggregator/service/
+Now login in Hypermap (admin/admin) and go to the admin services page: http://localhost:8001/admin/aggregator/service/ Add a service like this:
 
-Add a new WMS service pointing to the GeoServer WMS endpoint:
-
-url: http://localhost:8080/geoserver/ows?
-Type: Web Map Service (WMS)
+    * Title: My GeoNode WorldMap SDI
+    * Url: http://localhost:8000/
+    * Type: GeoNode WorldMap
 
 Go to the Hypermap service page and check it the service and the layer is there:
 http://localhost:8001/registry/
 
-In order to have layer in the search engine (Solr) there are two options:
+In order to have layers in the search engine (Solr) there are two options:
 
 1) from task runner press the "Index cached layers" button
 2) schedule a task in celery
@@ -163,6 +163,19 @@ This task will do a check of all of WorldMap service:
     * Name: Check WorldMap Service
     * Task (registered): hypermap.aggregator.tasks.check_service
     * Interval: every 1 minute (or as needed)
-    * Arguments: [1] # 1 is the id of the service. Change as is needed
+    * Arguments: [1] # 1 is the id of the service. Change it as is needed
 
-Now upload a new layer in GeoNode/WorldMap and check if it happears in Hypermap and in Solr (you may need to wait for the tasks to be executed)
+Now upload a new layer in GeoNode/WorldMap and check if it appears in Hypermap and in Solr (you may need to wait for the tasks to be executed)
+
+### Update Last GeoNode WorldMap Layers
+
+If your GeoNode/WorldMap instance has many layers, it is preferable to runt the check_service not so often, as it can be time consuming, and rather use the update_last_wm_layers.
+
+As a first thing, change the interval for the check_service task you created for GeoNode/WorldMap to a value such as "one day" or "one week".
+
+Then create the following periodic task:
+
+    * Name: Sync last layers in WorldMap Service
+    * Task (registered): hypermap.aggregator.update_last_wm_layers
+    * Interval: every 1 minute
+    * Arguments: [1] # 1 is the id of the service. Change it as is needed

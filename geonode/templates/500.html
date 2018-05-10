@@ -92,7 +92,7 @@
             {% if user.is_authenticated %}
             <li>
               <a href="#" data-toggle="modal" data-target="#UserModal" role="button" aria-expanded="false">
-                {% avatar user 30 %} {{ user.username }}
+                {% autoescape off %}{% avatar user 30 %} {{ user.username }}{% endautoescape %}
               </a>
             </li>
             {% else %}
@@ -229,7 +229,7 @@
               {% if user.is_superuser %}
               <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
               <li class="modal-divider"></li>
-              <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
+              <li><a href="{% url "proxy" %}?url={{ GEOSERVER_LOCAL_URL }}web"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
               {% endif %}
               {% if user.is_staff %}
               <li><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
@@ -270,7 +270,7 @@
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
     {% include 'autocomplete_light/static.html' %}
-    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+    <script type="text/javascript" src="{% url "javascript-catalog" %}"></script>
     {% block extra_script %}{% endblock extra_script %}
     <script type="text/javascript">
         var autocomplete = $('#search_input').yourlabsAutocomplete({

@@ -83,7 +83,7 @@ function setup_django_once() {
 }
 
 function setup_django_every_time() {
-    pip install --upgrade pip --quiet
+    pip install pip==9.0.3 --quiet
     pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies --quiet
 
     geonodedir=`python -c "import geonode;import os;print os.path.dirname(geonode.__file__)"`
@@ -110,7 +110,12 @@ function setup_django_every_time() {
 
     # Create an empty uploads dir
     mkdir -p $GEONODE_WWW/uploaded
+    mkdir -p $GEONODE_WWW/uploaded/documents/
+    mkdir -p $GEONODE_WWW/uploaded/layers/
     mkdir -p $GEONODE_WWW/uploaded/thumbs/
+    mkdir -p $GEONODE_WWW/uploaded/avatars/
+    mkdir -p $GEONODE_WWW/uploaded/people_group/
+    mkdir -p $GEONODE_WWW/uploaded/group/
     # Apply the permissions to the newly created folders.
     chown www-data -R $GEONODE_WWW
     # Open up the permissions of the media folders so the python
@@ -127,7 +132,13 @@ function setup_apache_once() {
     sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2" $APACHE_SITES/geonode.conf
 
     #FIXME: This could be removed if setup_apache_every_time is called after setup_apache_once
+    $TOMCAT_SERVICE restart
+    sleep 30
+
     $APACHE_SERVICE restart
+    sleep 15
+
+    $GEONODE_BIN/geonode-updateip localhost
 }
 
 function setup_apache_every_time() {
@@ -162,10 +173,6 @@ function postinstall() {
     setup_postgres_every_time
     setup_django_every_time
     setup_apache_every_time
-    $TOMCAT_SERVICE restart
-    $APACHE_SERVICE restart
-
-    $GEONODE_BIN/geonode-updateip localhost
 }
 
 function once() {

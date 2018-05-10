@@ -5,13 +5,30 @@ import urlparse
 from django.db import models
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import signals
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, Attribute
 from geonode.maps.models import Map
 from geonode.people.models import Profile
 
 from .encode import despam, XssCleaner
 from .signals import save_profile, add_ext_layer, add_ext_map
+
+try:
+    from django.utils import timezone
+    now = timezone.now
+except ImportError:
+    from datetime import datetime
+    now = datetime.now
+
+
+ACTION_TYPES = [
+    ['layer_delete', 'Layer Deleted'],
+    ['layer_create', 'Layer Created'],
+    ['layer_upload', 'Layer Uploaded'],
+    ['map_delete', 'Map Deleted'],
+    ['map_create', 'Map Created'],
+]
 
 
 ows_sub = re.compile(r"[&\?]+SERVICE=WMS|[&\?]+REQUEST=GetCapabilities", re.IGNORECASE)
@@ -100,31 +117,44 @@ class ExtLayer(models.Model):
     #     else:
     #         return service_layers[0].service
     #
+
     # def queue_gazetteer_update(self):
     #     from geonode.queue.models import GazetteerUpdateJob
     #     if GazetteerUpdateJob.objects.filter(layer=self.id).exists() == 0:
     #         newJob = GazetteerUpdateJob(layer=self)
     #         newJob.save()
-    #
-    # def update_gazetteer(self):
-    #     from geonode.gazetteer.utils import add_to_gazetteer, delete_from_gazetteer
-    #     if not self.in_gazetteer:
-    #         delete_from_gazetteer(self.name)
-    #     else:
-    #         includedAttributes = []
-    #         gazetteerAttributes = self.attribute_set.filter(in_gazetteer=True)
-    #         for attribute in gazetteerAttributes:
-    #             includedAttributes.append(attribute.attribute)
-    #
-    #         startAttribute = self.attribute_set.filter(is_gaz_start_date=True)[0].attribute if self.attribute_set.filter(is_gaz_start_date=True).exists() > 0 else None
-    #         endAttribute = self.attribute_set.filter(is_gaz_end_date=True)[0].attribute if self.attribute_set.filter(is_gaz_end_date=True).exists() > 0 else None
-    #
-    #         add_to_gazetteer(self.name,
-    #                          includedAttributes,
-    #                          start_attribute=startAttribute,
-    #                          end_attribute=endAttribute,
-    #                          project=self.gazetteer_project,
-    #                          user=self.owner.username)
+
+    def update_gazetteer(self):
+        from geonode.contrib.worldmap.gazetteer.utils import add_to_gazetteer, delete_from_gazetteer
+        if not self.in_gazetteer:
+            delete_from_gazetteer(self.name)
+        else:
+            includedAttributes = []
+            #from geonode.contrib.worldmap.gazetteer.models import GazetteerAttribute
+            for attribute in self.layer.attribute_set.all():
+                if hasattr(attribute, 'gazetteerattribute'):
+                    if attribute.gazetteerattribute.in_gazetteer:
+                        includedAttributes.append(attribute.attribute)
+
+            print includedAttributes
+
+            #includedAttributes = []
+            #gazetteerAttributes = self.attribute_set.filter(in_gazetteer=True)
+            #for attribute in gazetteerAttributes:
+            #    includedAttributes.append(attribute.attribute)
+
+            # TODO implement this
+            startAttribute = None
+            endAttribute = None
+            #startAttribute = self.attribute_set.filter(is_gaz_start_date=True)[0].attribute if self.attribute_set.filter(is_gaz_start_date=True).exists() > 0 else None
+            #endAttribute = self.attribute_set.filter(is_gaz_end_date=True)[0].attribute if self.attribute_set.filter(is_gaz_end_date=True).exists() > 0 else None
+
+            add_to_gazetteer(self.layer.name,
+                             includedAttributes,
+                             start_attribute=startAttribute,
+                             end_attribute=endAttribute,
+                             project=self.gazetteer_project,
+                             user=self.layer.owner.username)
 
     # this must be added in a pre-delete signal
     # if settings.USE_GAZETTEER and instance.in_gazetteer:
@@ -132,10 +162,21 @@ class ExtLayer(models.Model):
     #     instance.update_gazetteer()
 
 
+class ExtLayerAttribute(models.Model):
+    attribute = models.OneToOneField(
+        Attribute,
+        blank=False,
+        null=False)
+    searchable = models.BooleanField(default=False)
+
+    def layer_name(self):
+        return self.attribute.layer.name
+
+
 class ExtMap(models.Model):
     map = models.OneToOneField(Map)
     content_map = models.TextField(_('Site Content'), blank=True, null=True, default=DEFAULT_CONTENT)
-
+    group_params = models.TextField(_('Layer Category Parameters'), blank=True)
 
 class MapStats(models.Model):
     map = models.OneToOneField(Map)
@@ -165,3 +206,59 @@ class Endpoint(models.Model):
     description = models.TextField(_('Describe Map Service'))
     url = models.URLField(_('Map service URL'))
     owner = models.ForeignKey(Profile, blank=True, null=True)
+
+
+class Action(models.Model):
+    """
+    Model to store user actions, such a layer creation or deletion.
+    """
+    action_type = models.CharField(max_length=25, choices=ACTION_TYPES)
+    description = models.CharField(max_length=255, db_index=True)
+    args = models.CharField(max_length=255, db_index=True)
+    timestamp = models.DateTimeField(default=now, db_index=True)
+
+
+# signals for adding actions
+
+def action_add_layer(instance, sender, created, **kwargs):
+    if created:
+        username = instance.owner.username
+        action = Action(
+                        action_type='layer_create',
+                        description='User %s created layer with id %s' % (username, instance.id),
+                        args=instance.uuid,
+                        )
+        action.save()
+
+def action_delete_layer(instance, sender, **kwargs):
+    username = instance.owner.username
+    action = Action(
+                    action_type='layer_delete',
+                    description='User %s deleted layer with id %s' % (username, instance.id),
+                    args=instance.uuid,
+                    )
+    action.save()
+
+def action_add_map(instance, sender, created, **kwargs):
+    if created:
+        username = instance.owner.username
+        action = Action(
+                        action_type='map_create',
+                        description='User %s created map with id %s' % (username, instance.id),
+                        args=instance.uuid,
+                        )
+        action.save()
+
+def action_delete_map(instance, sender, **kwargs):
+    username = instance.owner.username
+    action = Action(
+                    action_type='map_delete',
+                    description='User %s deleted map with id %s' % (username, instance.id),
+                    args=instance.uuid,
+                    )
+    action.save()
+
+signals.post_save.connect(action_add_layer, sender=Layer)
+signals.post_delete.connect(action_delete_layer, sender=Layer)
+signals.post_save.connect(action_add_map, sender=Map)
+signals.post_delete.connect(action_delete_map, sender=Map)

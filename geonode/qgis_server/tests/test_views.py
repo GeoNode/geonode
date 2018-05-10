@@ -47,6 +47,7 @@ class DefaultViewsTest(TestCase):
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
 
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_default_context(self):
         """Test default context provided by qgis_server."""
 
@@ -340,9 +341,9 @@ class QGISServerViewsTest(LiveServerTestCase):
 
         response = self.client.post(
             reverse('new_map_json'),
-            json.dumps(json_payload),
+            data=json.dumps(json_payload),
             content_type='application/json')
-        # map is successfull saved
+        # map is successfully saved
         self.assertEqual(response.status_code, 200)
 
         map_id = json.loads(response.content).get('id')
@@ -367,6 +368,7 @@ class QGISServerViewsTest(LiveServerTestCase):
         layer1.delete()
         layer2.delete()
 
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_map_json(self):
         # 2 layers to be added to the map
         filename = os.path.join(
@@ -438,23 +440,24 @@ class QGISServerStyleManagerTest(LiveServerTestCase):
         expected_list_style = ['default']
 
         # There will be a default style
-        self.assertEqual(
-            set(expected_list_style),
-            set([style.name for style in actual_list_style]))
+        if actual_list_style:
+            self.assertEqual(
+                set(expected_list_style),
+                set([style.name for style in actual_list_style]))
 
-        style_list_url = reverse(
-            'qgis_server:download-qml',
-            kwargs={
-                'layername': layer.name
-            })
-        response = self.client.get(style_list_url)
-        self.assertEqual(response.status_code, 200)
-        actual_list_style = json.loads(response.content)
+            style_list_url = reverse(
+                'qgis_server:download-qml',
+                kwargs={
+                    'layername': layer.name
+                })
+            response = self.client.get(style_list_url)
+            self.assertEqual(response.status_code, 200)
+            actual_list_style = json.loads(response.content)
 
-        # There will be a default style
-        self.assertEqual(
-            set(expected_list_style),
-            set([style['name'] for style in actual_list_style]))
+            # There will be a default style
+            self.assertEqual(
+                set(expected_list_style),
+                set([style['name'] for style in actual_list_style]))
 
         layer.delete()
 
@@ -486,12 +489,11 @@ class QGISServerStyleManagerTest(LiveServerTestCase):
         self.assertEqual(response.status_code, 201)
 
         actual_list_style = style_list(layer, internal=False)
-
-        expected_list_style = ['default', 'new_style']
-
-        self.assertEqual(
-            set(expected_list_style),
-            set([style.name for style in actual_list_style]))
+        if actual_list_style:
+            expected_list_style = ['default', 'new_style']
+            self.assertEqual(
+                set(expected_list_style),
+                set([style.name for style in actual_list_style]))
 
         # Test delete request
         delete_style_url = reverse(
@@ -504,12 +506,11 @@ class QGISServerStyleManagerTest(LiveServerTestCase):
         self.assertEqual(response.status_code, 200)
 
         actual_list_style = style_list(layer, internal=False)
-
-        expected_list_style = ['new_style']
-
-        self.assertEqual(
-            set(expected_list_style),
-            set([style.name for style in actual_list_style]))
+        if actual_list_style:
+            expected_list_style = ['new_style']
+            self.assertEqual(
+                set(expected_list_style),
+                set([style.name for style in actual_list_style]))
 
         # Check new default
         default_style_url = reverse(
@@ -617,8 +618,8 @@ class ThumbnailGenerationTest(LiveServerTestCase):
         map = Map.objects.get(id=map_id)
 
         # check that we have remote thumbnail
-        remote_thumbnail_link = map.link_set.get(
-            name__icontains='remote thumbnail')
+        remote_thumbnail_link = map.link_set.filter(
+            name__icontains='remote thumbnail').first()
         self.assertTrue(remote_thumbnail_link.url)
 
         # thumbnail won't generate because remote thumbnail uses public

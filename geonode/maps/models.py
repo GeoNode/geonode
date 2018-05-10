@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-
 import logging
 import uuid
 
@@ -46,9 +45,13 @@ from geonode.utils import default_map_config
 from geonode.utils import num_encode
 from geonode.security.utils import remove_object_permissions
 
+from geonode import geoserver, qgis_server  # noqa
+from geonode.utils import check_ogc_backend
+
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
+
 
 class Map(ResourceBase, GXPMapBase):
 
@@ -169,9 +172,7 @@ class Map(ResourceBase, GXPMapBase):
 
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
-	# self.urlsuffix = conf['about']['urlsuffix']
-	# x = XssCleaner()
-    #     self.content_map = despam(x.strip(conf['about']['introtext']))
+
         self.set_bounds_from_center_and_zoom(
             conf['map']['center'][0],
             conf['map']['center'][1],
@@ -196,7 +197,7 @@ class Map(ResourceBase, GXPMapBase):
         for ordering, layer in enumerate(layers):
             self.layer_set.add(
                 layer_from_viewer_config(
-                    MapLayer, layer, source_for(layer), ordering
+                    self.id, MapLayer, layer, source_for(layer), ordering
                 ))
 
         self.save()
@@ -212,7 +213,7 @@ class Map(ResourceBase, GXPMapBase):
             return []
 
     def get_absolute_url(self):
-        return reverse('geonode.maps.views.map_detail', None, [str(self.id)])
+        return reverse('map_detail', None, [str(self.id)])
 
     def get_bbox_from_layers(self, layers):
         """
@@ -283,7 +284,7 @@ class Map(ResourceBase, GXPMapBase):
         # bbox format: [xmin, xmax, ymin, ymax]
         bbox = self.get_bbox_from_layers(self.local_layers)
 
-        self.set_bounds_from_bbox(bbox)
+        self.set_bounds_from_bbox(bbox, self.projection)
 
         self.set_missing_info()
 
@@ -318,7 +319,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         Returns layer group name from local OWS for this map instance.
         """
-        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import gs_catalog, ogc_server_settings
             lg_name = '%s_%d' % (slugify(self.title), self.id)
             try:
@@ -338,7 +339,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         Publishes local map layers as WMS layer group on local OWS.
         """
-        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import gs_catalog
             from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
         else:
@@ -459,52 +460,6 @@ class MapLayer(models.Model, GXPLayerBase):
 
     local = models.BooleanField(default=False)
     # True if this layer is served by the local geoserver
-    # def source_config(self,access_token=None):
-    #     """
-    #     Generate a dict that can be serialized to a GXP layer source
-    #     configuration suitable for loading this layer.
-    #     """
-    #     try:
-    #         cfg = json.loads(self.source_params)
-    #     except Exception:
-    #         cfg = dict(ptype = "gxp_gnsource", restUrl="/gs/rest")
-    #
-    #     if self.ows_url:
-    #         cfg["url"] = ows_sub.sub('',self.ows_url)
-    #         if "ptype" not in cfg:
-    #             cfg["ptype"] = "gxp_wmscsource"
-    #
-    #     if "ptype" in cfg and cfg["ptype"] == "gxp_gnsource":
-    #         cfg["restUrl"] = "/gs/rest"
-    #
-	# if self.ows_url:
-    #         '''
-    #         This limits the access token we add to only the OGC servers decalred in OGC_SERVER.
-    #         Will also override any access_token in the request and replace it with an existing one.
-    #         '''
-    #         urls = []
-    #         for name, server in settings.OGC_SERVER.iteritems():
-    #             url = urlparse.urlsplit(server['PUBLIC_LOCATION'])
-    #             urls.append(url.netloc)
-    #
-    #         my_url = urlparse.urlsplit(self.ows_url)
-    #
-    #         if access_token and my_url.netloc in urls:
-    #             request_params = urlparse.parse_qs(my_url.query)
-    #             if 'access_token' in request_params:
-    #                 del request_params['access_token']
-    #             request_params['access_token'] = [access_token]
-    #             encoded_params = urllib.urlencode(request_params, doseq=True)
-    #
-    #             parsed_url = urlparse.SplitResult(my_url.scheme, my_url.netloc, my_url.path,
-    #                                               encoded_params, my_url.fragment)
-    #             cfg["url"] = parsed_url.geturl()
-    #         else:
-    #             cfg["url"] = self.ows_url
-    #
-    #
-    #
-	# return cfg
 
     def layer_config(self, user=None):
         # Try to use existing user-specific cache of layer config

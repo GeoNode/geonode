@@ -26,8 +26,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
@@ -80,10 +79,8 @@ def get_favorites(req):
     """
     Display the request user's favorites.
     """
-    return render_to_response(
+    return render(
+        req,
         "favorite/favorite_list.html",
-        RequestContext(
-            req,
-            {'favorites': models.Favorite.objects.favorites_for_user(req.user), }
-        )
+        context={'favorites': models.Favorite.objects.favorites_for_user(req.user), }
     )

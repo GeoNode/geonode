@@ -87,7 +87,7 @@ define(function (require, exports) {
             // file
             if (results) {
                 // Avoid assuming the metadata file as main one
-                if (results.type.main == 'xml' && self.main != undefined) {
+                if ((results.type.main == 'xml' || results.type.main == 'sld') && self.main != undefined) {
                    self.type = self.type;
                    self.main = self.main;
                 } else {
@@ -273,6 +273,7 @@ define(function (require, exports) {
         form_data.append('charset', $('#charset').val());
         if ($('#id_metadata_upload_form').prop('checked')) {
              form_data.append('metadata_upload_form', true);
+             form_data.append('layer_title', $('#id_layer_title').val());
         }
         if ($('#id_metadata_uploaded_preserve').prop('checked')) {
              form_data.append('metadata_uploaded_preserve', true);

@@ -19,10 +19,13 @@
 #########################################################################
 
 import json
+import logging
 
 from django.conf import settings
 
 from .models import Map, MapLayer
+
+logger = logging.getLogger(__name__)
 
 
 def _layer_json(layers, sources):
@@ -79,11 +82,11 @@ def fix_baselayers(map_id):
     try:
         id = int(map_id)
     except ValueError:
-        print 'map_id must be an integer'
+        logger.error('map_id must be an integer')
         return
 
     if not Map.objects.filter(pk=id).exists():
-        print 'There is not a map with id %s' % id
+        logger.error('There is not a map with id %s' % id)
         return
 
     map = Map.objects.get(pk=id)

@@ -47,15 +47,16 @@ gxp.plugins.MapShare = Ext.extend(gxp.plugins.Tool, {
     toolTip: "Map info and download links",
 
     linkPrefix: "/maps/",
-    
+
     linkSuffix: "/view",
 
     iconCls: "gxp-icon-link",
-    
+
     /** api: method[addActions]
      */
     addActions: function() {
-    	var link = this.linkPrefix + this.target.mapID + this.linkSuffix;
+      // var link = this.linkPrefix + this.target.mapID + this.linkSuffix;
+      var link = this.linkPrefix + this.target.mapID;
         var actions = gxp.plugins.MapShare.superclass.addActions.call(this, [{
             iconCls: this.iconCls,
             text: this.text,

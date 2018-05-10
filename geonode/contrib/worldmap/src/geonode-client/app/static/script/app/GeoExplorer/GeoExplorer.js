@@ -86,6 +86,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     solrUrl: "",
 
     /**
+     * api: config[copyrightUrl]
+     * ``String`` url of the site with copyright
+     */
+    copyrightUrl: "",
+
+    /**
+     * api: config[copyrightText]
+     * ``String`` text of the site with copyright
+     */
+    copyrightText: "",
+
+    /**
      * api: config[useMapOverlay]
      * ``Boolean`` Should we add a scale overlay to the map? Set to false
      * to not add a scale overlay.
@@ -507,11 +519,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var oldInitComponent = gxp.plugins.FeatureEditorGrid.prototype.initComponent;
         gxp.plugins.FeatureEditorGrid.prototype.initComponent = function(){
             oldInitComponent.apply(this);
-            if (this.customEditors["Description"] != undefined && this.customEditors["Description"].field.maxLength == undefined) {
-                this.customEditors["Description"].addListener("startedit",
-                    function(el, value) {
-                        var htmlEditWindow = new Ext.Window({
-                                id: 'displayXHRTrouble',
+            for(var key in this.customEditors) {
+                if (this.customEditors.hasOwnProperty(key)) {
+                    if (key.match(/descripti/i) &&  this.customEditors[key].field.maxLength == undefined) {
+                        customEditField = this.customEditors[key];
+                        customEditField.addListener("startedit", function(el, value) {
+                            var htmlEditWindow = new Ext.Window({
                                 title: 'HTML Editor',
                                 renderTo: Ext.getBody(),
                                 width: 600,
@@ -534,7 +547,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                     "->",
                                     //saveAsButton,
                                     new Ext.Button({
-                                        id: 'saveAsButtonBbar',
                                         text: "Save",
                                         cls:'x-btn-text',
                                         handler: function() {
@@ -546,8 +558,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                         scope: this
                                     }),
                                     new Ext.Button({
-                                        id: 'cancelButtonBbar',
-                                        text: 'Cancel',
+                                        text: "Cancel",
                                         cls:'x-btn-text',
                                         handler: function() {
                                             htmlEditWindow.destroy();
@@ -555,17 +566,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                         scope: this
                                     })
                                 ]
-                            }
-                        );
-
-                        htmlEditWindow.show();
-                        var myNicEditor = new nicEditor({fullPanel : true,  maxHeight: 190, iconsPath: nicEditIconsPath}).panelInstance('html_textarea')
-                        return true;
+                                }
+                            );
+                            htmlEditWindow.show();
+                            var myNicEditor = new nicEditor({fullPanel : true,  maxHeight: 190, iconsPath: nicEditIconsPath}).panelInstance('html_textarea');
+                            return true;
+                        }
+                      );
                     }
-                );
+                }
             }
         }
-
     },
 
     //Check permissions for selected layer and enable/disable feature edit buttons accordingly
@@ -1061,8 +1072,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             // if (isIninstanceofGeoNodeSource && source.url.replace(this.urlPortRegEx, "$1/").indexOf(
             //     this.localGeoServerBaseUrl.replace(this.urlPortRegEx, "$1/")) === 0) {
             //     this.worldMapSourceKey = id;
-            // }
-            this.worldMapSourceKey = id;
+            //}
+            if (isIninstanceofGeoNodeSource){
+                this.worldMapSourceKey = id;
+            }
         }
     },
 
@@ -1157,12 +1170,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         };
 
         if (thisRecord.get('service_type') === 'Hypermap:WorldMap'){
-            layer_detail_url = 'http://worldmap.harvard.edu/data/' + thisRecord.get('name');
+            layer_detail_url = '/data/' + thisRecord.get('name');
         };
 
         if(layer.local){
             // url is always the generic GeoServer endpoint for WM layers
-            layer.url = this.localGeoServerBaseUrl + 'wms';
+            // layer.url = this.localGeoServerBaseUrl + 'wms';
+            layer.url = this.localGeoServerBaseUrl.replace("/geoserver/", "/geoserver/wms");
         };
 
         if(thisRecord.get('ServiceType') === 'ESRI:ArcGIS:ImageServer' || thisRecord.get('ServiceType') === 'ESRI:ArcGIS:MapServer'){
@@ -1216,7 +1230,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
       var source = this.layerSources[this.worldMapSourceKey];
       var name = thisRecord.get('name');
       var tiled = thisRecord.get('tiled');
-      var layer_detail_url = 'http://worldmap.harvard.edu/data/' + name;
+      var layer_detail_url = '/data/' + name;
       var layer = null;
 
       $.ajax({
@@ -1403,8 +1417,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * map-friendliness.
      */
     createMapOverlay: function() {
-        var cgaLink = new Ext.BoxComponent({
-            html:'<div class="cga-link" onclick="javascript:window.open(\'http://gis.harvard.edu\', \'_blank\');"><a href="http://gis.harvard.edu">Center for Geographic Analysis</a></div>'
+        var copyrightLink = new Ext.BoxComponent({
+            html:'<div class="cga-link" onclick="javascript:window.open(\'' + this.copyrightUrl + '\', \'_blank\');"><a href="' + this.copyrightUrl + '">' + this.copyrightText + '</a></div>'
         });
 
         var scaleLinePanel = new Ext.BoxComponent({
@@ -1491,7 +1505,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             items: [
                 scaleLinePanel,
                 zoomSelectorWrapper,
-                cgaLink
+                copyrightLink
             ]
         });
 
@@ -2316,6 +2330,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     Ext.getCmp('gx_saveButton').enable();
                     if (!saveAsButton.hidden)
                         saveAsButton.enable();
+                    // create thumb
+                    // createMapThumbnail(this.mapid);
                 },
                 failure: function(response, options) {
                     if (response.status === 401)

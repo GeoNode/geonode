@@ -30,7 +30,11 @@ import os.path
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.urlresolvers import reverse
+
 from geonode.layers.models import Layer
+from geonode.maps.models import Map
+from geonode.documents.models import Document
+
 from geonode.people.models import Profile
 from geonode.upload.models import Upload
 from geonode.upload.utils import _ALLOW_TIME_STEP
@@ -149,9 +153,9 @@ class Client(object):
         except urllib2.HTTPError as ex:
             if not debug:
                 raise
-            logger.info('error in request to %s' % path)
-            logger.info(ex.reason)
-            logger.info(ex.read())
+            logger.error('error in request to %s' % path)
+            logger.error(ex.reason)
+            logger.error(ex.read())
             raise
 
     def get(self, path, debug=True):
@@ -343,6 +347,10 @@ class UploaderBase(TestCase):
         # move to original settings
         settings.OGC_SERVER['default']['DATASTORE'] = ''
         del settings.DATABASES['datastore']
+        # Cleanup
+        Layer.objects.all().delete()
+        Map.objects.all().delete()
+        Document.objects.all().delete()
 
     def check_layer_geonode_page(self, path):
         """ Check that the final layer page render's correctly after
