@@ -21,7 +21,7 @@
       {% endif %}
     </div>
     <div class="row">
-      <p>Create a new local account</p>
+      <p>{% trans "Create a new local account" %}</p>
       <form id="signup_form" method="post" action="{% url "account_signup" %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
           <fieldset>
               {% csrf_token %}
