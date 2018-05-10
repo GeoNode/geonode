@@ -78,6 +78,7 @@ class PocForm(forms.Form):
 
 class ProfileForm(forms.ModelForm):
     keywords = taggit.forms.TagField(
+        label=_("Keywords"),
         required=False,
         help_text=_("A space or comma-separated list of keywords"))
 
