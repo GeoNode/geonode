@@ -141,12 +141,12 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1>Processing...</h1>
+                <h1>{% trans "Processing..." %}</h1>
             </div>
             <div class="modal-body">
                 <div class="progress">
                   <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                    Updating Metadata...
+                    {% trans "Updating Metadata..." %}
                   </div>
                 </div>
             </div>
@@ -159,13 +159,13 @@
     <div class="modal-content panel-warning">
       <div class="modal-header panel-heading">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">ERROR</h4>
+        <h4 class="modal-title">{% trans "ERROR" %}</h4>
       </div>
       <div class="modal-body">
-        Topic Category is mandatory and cannot be empty!
+        {% trans "Topic Category is mandatory and cannot be empty!" %}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
       </div>
     </div>
   </div>
@@ -176,13 +176,13 @@
     <div class="modal-content panel-warning">
       <div class="modal-header panel-heading">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">ERROR</h4>
+        <h4 class="modal-title">{% trans "ERROR" %}</h4>
       </div>
       <div class="modal-body">
-        Group is mandatory and cannot be empty!
+        {% trans "Group is mandatory and cannot be empty!" %}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
       </div>
     </div>
   </div>

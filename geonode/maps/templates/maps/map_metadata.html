@@ -19,10 +19,10 @@
 <div class="container-fluid page-header" style="position: relative;">
   <h2 class="page-title">{% trans "Metadata" %}&nbsp;{% blocktrans with map.title as map_title %}for {{ map_title }}{% endblocktrans %}</h2>
       <div id="profileCompleteness" class="alert alert-info" style="position: absolute; right: 0; top: 0; padding: 4px;">
-        <strong>Completeness</strong>
+        <strong>{% trans "Completeness" %}/strong>
         <div style="padding: 2px;">
-          <small class="completed text-success" style="display: none; "><i class="fa fa-check"></i>Metadata Schema mandatory fields completed</small>
-          <small class="not-completed text-danger" style="display: none; "><i class="fa fa-remove"></i>Check Schema mandatory fields</small>
+          <small class="completed text-success" style="display: none; "><i class="fa fa-check"></i>{% trans "Metadata Schema mandatory fields completed" %}</small>
+          <small class="not-completed text-danger" style="display: none; "><i class="fa fa-remove"></i>{% trans "Check Schema mandatory fields" %}</small>
         </div>
         <div class="progress" style="margin-bottom:2px;">
         <div class="progress-bar progress-bar-striped" role="progress-bar" >

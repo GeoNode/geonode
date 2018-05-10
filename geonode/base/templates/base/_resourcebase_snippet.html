@@ -2,7 +2,9 @@
 {% verbatim %}
 <div class="row resourcebase-snippet">
   <div ng-if="results.length == 0" ng-cloak>
-    <div><h3>No content created yet.</h3></div>
+    {% endverbatim %}
+    <div><h3>{% trans "No content created yet." %}</h3></div>
+    {% verbatim %}
   </div>
   <article ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
     <div class="col-lg-12 item-container">
@@ -18,7 +20,11 @@
               <p class="item-meta">
                   <span class="item-category">{{ item.category__gn_description }}</span><br>
                   <span class="item-category" ng-if="item.group"><a href="/groups/group/{{ item.group }}/activity/"><i class="fa fa-group" aria-hidden="true" style="margin-right: 8px;"></i>{{ item.group_name }}</a><br></span>
-                  <span class="item-category" ng-if="item.has_time"><i class="fa fa-clock-o" aria-hidden="true" style="margin-right: 8px;"></i>Temporal Serie<br></span>
+                  <span class="item-category" ng-if="item.has_time">
+                    {% endverbatim %}
+                    <i class="fa fa-clock-o" aria-hidden="true" style="margin-right: 8px;"></i>{% trans "Temporal Serie" %}<br>
+                    {% verbatim %}
+                  </span>
               </p>
               <h4>
                   <i ng-if="item.store_type == 'remoteStore'" title="Remote Service" class="fa fa-external-link fa-1" style="vertical-align:  middle;padding-right: 10px;"></i>
@@ -47,8 +53,9 @@
             <span ng-if="item.online == false"><i class="fa fa-power-off text-danger"></i> {% trans "Service is" %} {% trans "offline" %}</span>
             {% verbatim %}
           </em>
-          <div class="alert alert-warning" ng-if="item.is_approved == false">PENDING APPROVAL</div>
-          <div class="alert alert-danger" ng-if="item.is_approved == true && item.is_published == false">UNPUBLISHED</div>
+          <div class="alert alert-warning" ng-if="item.is_approved == false">{% trans "PENDING APPROVAL" %}</div>
+          <div class="alert alert-danger" ng-if="item.is_approved == true && item.is_published == false">{% trans "UNPUBLISHED" %}</div>
+        
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
           <div class="row">
             <div class="col-lg-12 item-items">
@@ -63,7 +70,11 @@
                   <i class="fa fa-map-marker"></i>{% trans "Create a Map" %}</a>
                   {% verbatim %}
                 </li>
-                <li><a ng-if="item.detail_url.indexOf('/maps/') > -1" href="/maps/{{item.id}}/view"><i class="fa fa-map-marker"></i>View Map</a></li>
+                <li><a ng-if="item.detail_url.indexOf('/maps/') > -1" href="/maps/{{item.id}}/view">
+                  {% endverbatim %}
+                  <i class="fa fa-map-marker"></i>{% trans "View Map" %}</a>
+                  {% verbatim %}
+                </li>
               </ul>
             </div>
           </div>

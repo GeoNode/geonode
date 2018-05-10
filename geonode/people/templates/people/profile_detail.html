@@ -90,7 +90,7 @@
         {% if profile.voice %}
             <td><a href="tel:{{ profile.voice }}">{{ profile.voice }}</a></td>
         {% else %}
-            <td>Not provided.</td>
+            <td>{% trans 'Not provided.' %}</td>
         {% endif %}
       </tr>
       <tr>
