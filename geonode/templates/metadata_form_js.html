@@ -70,12 +70,12 @@
       $('#completeness-hints .mandatory-hint')
         .toggleClass('progress-bar-danger', mandatoryMissing)
         .toggleClass('progress-bar-success', !mandatoryMissing)
-        .attr('title', mandatoryMissing ? "some schema mandatory fields are missing" : "Metadata Schema mandatory fields completed" )
+        .attr('title', mandatoryMissing ? gettext("some schema mandatory fields are missing") : gettext("Metadata Schema mandatory fields completed") )
         .tooltip('fixTitle');
       $('#completeness-hints .advanced-hint')
         .toggleClass('progress-bar-danger', advancedMissing)
         .toggleClass('progress-bar-success', !advancedMissing)
-        .attr('title', advancedMissing ? "some schema mandatory fields are missing" : "Metadata Schema mandatory fields completed" )
+        .attr('title', advancedMissing ? gettext("some schema mandatory fields are missing") : gettext("Metadata Schema mandatory fields completed") )
         .tooltip('fixTitle');
 
         //done button tooltip
@@ -263,7 +263,7 @@
               if(otherRestrictionsSelected() && ee.value !== undefined && ee.value.trim() === '') {
                 if(!$(ee).hasClass("input-empty")) {
                     setInputEmpty(ee, true);
-                    $(ee).parent().append("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>");
+                    $(ee).parent().append(gettext("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>"));
                     empty++;
                 } else {
                     setInputEmpty(ee, false);
@@ -303,7 +303,7 @@
                     if(isMandatoryField(this)) {
                         setInputEmpty(e.target, true);
                         if(!!$(this).closest('#mdinfo').length) {
-                            $(e.target).parent().append("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>");
+                            $(e.target).parent().append(gettext("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>"));
                         }
                         empty++;
                     }
