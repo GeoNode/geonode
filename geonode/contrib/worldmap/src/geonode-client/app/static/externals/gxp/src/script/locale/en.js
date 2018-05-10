@@ -2,7 +2,7 @@
  * @requires GeoExt/Lang.js
  */
 
-GeoExt.Lang.add("zh", {
+GeoExt.Lang.add("en", {
 
     "gxp.menu.LayerMenu.prototype": {
         layerText: "Layer"
