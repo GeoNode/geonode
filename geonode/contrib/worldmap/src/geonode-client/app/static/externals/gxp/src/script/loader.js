@@ -61,6 +61,7 @@
         "plugins/WMSCSource.js",
         "plugins/OSMSource.js",
         "plugins/GoogleSource.js",
+        "plugins/TiandituSource.js",
         "plugins/OLSource.js",
         "plugins/MapBoxSource.js",
         "plugins/MapQuestSource.js",
