@@ -91,6 +91,9 @@ gxp.menu.LayerMenu = Ext.extend(Ext.menu.Menu, {
                         }
                     }
                 });
+                if(record.getLayer().mapType=="TIANDITUANNOTATION"){
+                    item.group = null;
+                }
                 if (this.items.getCount() > 2) {
                     this.insert(2, item);
                 } else {

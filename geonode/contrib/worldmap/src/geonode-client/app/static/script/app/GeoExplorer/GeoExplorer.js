@@ -280,6 +280,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         Ext.preg("gx_olsource", gxp.plugins.OLSource);
         Ext.preg("gx_googlesource", gxp.plugins.GoogleSource);
         Ext.preg("gx_gnsource", gxp.plugins.GeoNodeSource);
+        Ext.preg("gx_tianditusource", gxp.plugins.TiandituSource);
 
         // global request proxy and error handling
         Ext.util.Observable.observeClass(Ext.data.Connection);

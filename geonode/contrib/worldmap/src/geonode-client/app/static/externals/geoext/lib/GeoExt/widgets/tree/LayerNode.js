@@ -42,7 +42,7 @@ GeoExt.tree.LayerNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
         }
         GeoExt.tree.LayerNodeUI.superclass.render.apply(this, arguments);
         var cb = this.checkbox;
-        if(a.checkedGroup) {
+        if(a.checkedGroup && (a.layer.name!==undefined && a.layer.name!=="Tianditu Annotation")) {
             // replace the checkbox with a radio button
             var radio = Ext.DomHelper.insertAfter(cb,
                 ['<input type="radio" name="', a.checkedGroup,
@@ -93,7 +93,7 @@ GeoExt.tree.LayerNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
             // enforce "not more than one visible"
             Ext.each(checkedNodes, function(n){
                 var l = n.layer;
-                if(!n.hidden && n.attributes.checkedGroup === group) {
+                if(!n.hidden && n.attributes.checkedGroup === group&&n.attributes.layer.name!=="Tianditu Annotation") {
                     checkedCount++;
                     if(l != layer && attributes.checked) {
                         l.setVisibility(false);
