@@ -62,7 +62,17 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
     searchingText: 'Searching...',
 
     firstLoad: true,
-
+    fromText: 'From: YYYY-MM-DD',
+    toText: 'To: YYYY-MM-DD',
+    datesText: 'Dates',
+    geocodersText: 'Geocoders',
+    advancedText: 'Advanced',
+    sourceText: 'Source',
+    startDateText: 'Start Date',
+    endDateText: 'End Date',
+    placenameText: 'Place name',
+    coordinatesText: 'CoTEXTordinates',
+    searchText: 'Search',
     /** api: method[addActions]
      *  Creates the gazetteer interface, functionality, etc.
      */
@@ -72,7 +82,7 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
         this.searchTB = new Ext.form.TextField({
             id:'search-tb',
             width:150,
-            emptyText:'Place name:',
+            emptyText:this.placenameText + ':',
             handleMouseEvents: true,
             enableKeyEvents: true,
             listeners: {
@@ -91,7 +101,7 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
 
         // Button to initiate search
         this.searchBtn = new Ext.Button({
-            text:'<span class="x-btn-text">Search</span>',
+            text:'<span class="x-btn-text">'+ this.searchText + '</span>',
             handler: function() {
                 this.performSearch();
             },
@@ -117,17 +127,17 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
 
         //Optional start date filter
         this.startDateField = new Ext.form.TextField({
-            emptyText: 'From: YYYY-MM-DD'
+            emptyText: this.fromText
         });
 
         //Optional end date filter
         this.endDateField = new Ext.form.TextField({
-            emptyText: 'To: YYYY-MM-DD'
+            emptyText: this.toText
         });
 
         //menu for date filters
         this.dateOptions = {
-            text: "Dates",
+            text: this.datesText,
             menu: {
                 xtype: 'menu',
                 hideOnClick: false,
@@ -140,7 +150,7 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
 
         //menu for service options
         this.geocoderOptions = {
-            text: "Geocoders",
+            text: this.geocodersText,
             menu: {
                 xtype: 'menu',
                 hideOnClick: false,
@@ -155,7 +165,7 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
 
         //menu for filter options
         this.advancedOptions = new Ext.Button({
-            text:"Advanced",
+            text:this.advancedText,
             menu: {
                 items: [
                     this.geocoderOptions,
@@ -219,11 +229,11 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
                 lonlat,
                 new OpenLayers.Size(100,100),
                 "<h2>"+ record.get("placename") + "</h2>" +
-                    "Source: " + record.get("source") + '<br/>' +
+                    this.sourceText + ": " + record.get("source") + '<br/>' +
                     (startDate != "N/A" ?
-                        "Start Date: " + startDate + "<br/>" : "") +
+                         this.startDateText + ": " + startDate + "<br/>" : "") +
                     (endDate != "N/A" ?
-                        "End Date: " + endDate + "<br/>" : ""),
+                         this.endDateText + ": " + endDate + "<br/>" : ""),
                 null, true, onPopupClose);
             map.addPopup(this.popup, true);
         };
@@ -258,8 +268,8 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
             store: this.gazetteerDataStore,
             width: 700,
             columns: [
-                {header: 'Place Name', width:200, dataIndex: 'placename', sortable: true},
-                {header: 'Coordinates', width:100, dataIndex: 'coordinates', sortable: false,
+                {header: this.placenameText, width:200, dataIndex: 'placename', sortable: true},
+                {header: this.coordinatesText, width:100, dataIndex: 'coordinates', sortable: false,
                     renderer: function(value) {
                         if (value.lat)
                             return value.lat.toFixed(2) + ', ' + value.lon.toFixed(2);
@@ -267,9 +277,9 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
                             return value[0].toFixed(2) + ', ' + value[1].toFixed(2);
                     }
                 },
-                {header: 'Source', width:200, dataIndex: 'source', sortable: true},
-                {header: 'Start Date', width:100, dataIndex: 'start_date', sortable: true},
-                {header: 'End Date', width:100, dataIndex: 'end_date', sortable: true}
+                {header: this.sourceText, width:200, dataIndex: 'source', sortable: true},
+                {header: this.startDateText, width:100, dataIndex: 'start_date', sortable: true},
+                {header: this.endDateText, width:100, dataIndex: 'end_date', sortable: true}
                 //{header: 'ID', width:100, dataIndex: 'gazetteer_id', sortable: true}
             ],
             listeners:

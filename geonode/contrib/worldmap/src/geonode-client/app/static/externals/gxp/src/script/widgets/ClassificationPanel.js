@@ -36,7 +36,10 @@ gxp.ClassificationPanel = Ext.extend(Ext.Panel, {
     endColor: "#A50F15",
     generateRulesText: "Apply",
     reverseColorsText: "Reverse colors",
-
+    methodText: "Color Ramp",
+    classesText: "Classes",
+    colorrampText: "Color Ramp",
+    selectMethodText: "Select method",
 
     initComponent: function() {
         var colorFieldPlugins;
@@ -95,7 +98,7 @@ gxp.ClassificationPanel = Ext.extend(Ext.Panel, {
 
 
         var classNumSelector = new Ext.ux.form.SpinnerField({
-            fieldLabel: 'Classes',
+            fieldLabel: this.classesText,
             id: "choropleth_classes",
             minValue: 2,
             name: 'intervals',
@@ -115,7 +118,7 @@ gxp.ClassificationPanel = Ext.extend(Ext.Panel, {
         var colorDropdown = new Ext.form.ComboBox({
             id: 'choropleth_colorramp',
             name: 'ramp',
-            fieldLabel: 'Color Ramp',
+            fieldLabel: this.colorrampText,
             store:  new Ext.data.ArrayStore({
                 id: 0,
                 fields: [
@@ -183,7 +186,7 @@ gxp.ClassificationPanel = Ext.extend(Ext.Panel, {
         var methodDropdown = new Ext.form.ComboBox({
             id: 'choropleth_method',
             name: 'method',
-            fieldLabel: 'Method',
+            fieldLabel: this.methodText,
             store:  new Ext.data.ArrayStore({
                 id: 0,
                 mode: 'local',
@@ -204,7 +207,7 @@ gxp.ClassificationPanel = Ext.extend(Ext.Panel, {
             mode: 'local',
             width: 110,
             editable: false,
-            emptyText: 'Select method',
+            emptyText: this.selectMethodText,
             triggerAction: 'all',
             disabled: false,
             listeners: {
