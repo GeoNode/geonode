@@ -895,10 +895,10 @@ DEFAULT_MAP_CENTER = (0, 0)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 0
 
-ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)
-CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
-STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
-THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
+ALT_OSM_BASEMAPS = ast.literal_eval(os.environ.get('ALT_OSM_BASEMAPS', 'False'))
+CARTODB_BASEMAPS = ast.literal_eval(os.environ.get('CARTODB_BASEMAPS', 'False'))
+STAMEN_BASEMAPS = ast.literal_eval(os.environ.get('STAMEN_BASEMAPS', 'False'))
+THUNDERFOREST_BASEMAPS = ast.literal_eval(os.environ.get('THUNDERFOREST_BASEMAPS', 'False'))
 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
 BING_API_KEY = os.environ.get('BING_API_KEY', None)
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
@@ -1256,7 +1256,7 @@ BROKER_TRANSPORT_OPTIONS = {
     'visibility_timeout': 86400
 }
 
-ASYNC_SIGNALS = os.environ.get('ASYNC_SIGNALS', False)
+ASYNC_SIGNALS = ast.literal_eval(os.environ.get('ASYNC_SIGNALS', 'False'))
 RABBITMQ_SIGNALS_BROKER_URL = 'amqp://localhost:5672'
 REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
 LOCAL_SIGNALS_BROKER_URL = 'memory://'
@@ -1277,7 +1277,8 @@ CELERY_RESULT_PERSISTENT = False
 CELERY_ACKS_LATE = True
 
 # Set this to False in order to run async
-CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
+# CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
+CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_IGNORE_RESULT = True
 
 # I use these to debug kombu crashes; we get a more informative message.
@@ -1342,8 +1343,8 @@ CELERY_SEND_TASK_SENT_EVENT = True
 
 # AWS S3 Settings
 
-S3_STATIC_ENABLED = os.environ.get('S3_STATIC_ENABLED', False)
-S3_MEDIA_ENABLED = os.environ.get('S3_MEDIA_ENABLED', False)
+S3_STATIC_ENABLED = ast.literal_eval(os.environ.get('S3_STATIC_ENABLED', 'False'))
+S3_MEDIA_ENABLED = ast.literal_eval(os.environ.get('S3_MEDIA_ENABLED', 'False'))
 
 # Required to run Sync Media to S3
 AWS_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
