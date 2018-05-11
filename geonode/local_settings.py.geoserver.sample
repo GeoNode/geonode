@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import ast
 import os
 from urlparse import urlparse, urlunparse
 from geonode.settings import *
@@ -304,10 +305,10 @@ GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
 #    'RESET_VIEW': False
 #}
 
-ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)
-CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
-STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
-THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
+ALT_OSM_BASEMAPS = ast.literal_eval(os.environ.get('ALT_OSM_BASEMAPS', 'False'))
+CARTODB_BASEMAPS = ast.literal_eval(os.environ.get('CARTODB_BASEMAPS', 'False'))
+STAMEN_BASEMAPS = ast.literal_eval(os.environ.get('STAMEN_BASEMAPS', 'False'))
+THUNDERFOREST_BASEMAPS = ast.literal_eval(os.environ.get('THUNDERFOREST_BASEMAPS', 'False'))
 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
 BING_API_KEY = os.environ.get('BING_API_KEY', None)
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
