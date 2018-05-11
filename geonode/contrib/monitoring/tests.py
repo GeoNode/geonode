@@ -36,11 +36,12 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 
-from geonode.contrib.monitoring.models import (RequestEvent, Host, Service, ServiceType,
-                                               populate, ExceptionEvent, MetricNotificationCheck,
-                                               MetricValue, NotificationCheck, Metric, OWSService,
-                                               MonitoredResource, MetricLabel,
-                                               NotificationMetricDefinition,)
+from geonode.contrib.monitoring.models import (
+    RequestEvent, Host, Service, ServiceType,
+    populate, ExceptionEvent, MetricNotificationCheck,
+    MetricValue, NotificationCheck, Metric, OWSService,
+    MonitoredResource, MetricLabel,
+    NotificationMetricDefinition,)
 from geonode.contrib.monitoring.models import do_autoconfigure
 
 from geonode.contrib.monitoring.collector import CollectorAPI
@@ -78,11 +79,14 @@ class RequestsTestCase(GeoNodeBaseTestSupport):
                    "(KHTML, like Gecko) Chrome/59.0.3071.47 Safari/537.36")
         populate()
 
-        self.host = Host.objects.create(name='localhost', ip='127.0.0.1')
-        self.service_type = ServiceType.objects.get(name=ServiceType.TYPE_GEONODE)
-        self.service = Service.objects.create(name=settings.MONITORING_SERVICE_NAME,
-                                              host=self.host,
-                                              service_type=self.service_type)
+        self.host, _ = Host.objects.get_or_create(
+            name='localhost', ip='127.0.0.1')
+        self.service_type = ServiceType.objects.get(
+            name=ServiceType.TYPE_GEONODE)
+        self.service, _ = Service.objects.get_or_create(
+            name=settings.MONITORING_SERVICE_NAME,
+            host=self.host,
+            service_type=self.service_type)
 
     def test_gs_req(self):
         """
@@ -99,7 +103,9 @@ class RequestsTestCase(GeoNodeBaseTestSupport):
         self.assertTrue(rq)
         q = ExceptionEvent.objects.filter(request=rq)
         self.assertEqual(q.count(), 1)
-        self.assertEqual(q[0].error_type, 'org.geoserver.platform.ServiceException')
+        self.assertEqual(
+            q[0].error_type,
+            'org.geoserver.platform.ServiceException')
 
     def test_gn_request(self):
         """
@@ -107,12 +113,17 @@ class RequestsTestCase(GeoNodeBaseTestSupport):
         """
         l = Layer.objects.all().first()
         self.client.login(username=self.user, password=self.passwd)
-        self.client.get(reverse('layer_detail', args=(l.alternate,)), **{"HTTP_USER_AGENT": self.ua})
+        self.client.get(
+            reverse('layer_detail',
+                    args=(l.alternate,
+                          )),
+            **{"HTTP_USER_AGENT": self.ua})
 
         self.assertEqual(RequestEvent.objects.all().count(), 1)
         rq = RequestEvent.objects.get()
         self.assertTrue(rq.response_time > 0)
-        self.assertEqual(list(rq.resources.all().values_list('name', 'type')), [(l.alternate, u'layer',)])
+        self.assertEqual(
+            list(rq.resources.all().values_list('name', 'type')), [(l.alternate, u'layer',)])
         self.assertEqual(rq.request_method, 'GET')
 
     def test_gn_error(self):
@@ -121,7 +132,8 @@ class RequestsTestCase(GeoNodeBaseTestSupport):
         """
         Layer.objects.all().first()
         self.client.login(username=self.user, password=self.passwd)
-        self.client.get(reverse('layer_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
+        self.client.get(
+            reverse('layer_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
 
         RequestEvent.objects.get()
         self.assertEqual(RequestEvent.objects.all().count(), 1)
@@ -136,17 +148,25 @@ class RequestsTestCase(GeoNodeBaseTestSupport):
         """
         self.client.login(username=self.user, password=self.passwd)
         for idx, l in enumerate(Layer.objects.all()):
-            for inum in range(0, idx+1):
-                self.client.get(reverse('layer_detail', args=(l.alternate,)), **{"HTTP_USER_AGENT": self.ua})
+            for inum in range(0, idx + 1):
+                self.client.get(
+                    reverse('layer_detail',
+                            args=(l.alternate,
+                                  )),
+                    **{"HTTP_USER_AGENT": self.ua})
         requests = RequestEvent.objects.all()
 
         c = CollectorAPI()
         q = requests.order_by('created')
-        c.process_requests(self.service, requests, q.last().created, q.first().created)
+        c.process_requests(
+            self.service,
+            requests,
+            q.last().created,
+            q.first().created)
         interval = self.service.check_interval
         now = datetime.utcnow().replace(tzinfo=pytz.utc)
 
-        valid_from = now - (2*interval)
+        valid_from = now - (2 * interval)
         valid_to = now
 
         self.assertTrue(isinstance(valid_from, datetime))
@@ -173,9 +193,21 @@ class MonitoringUtilsTestCase(GeoNodeBaseTestSupport):
         utc = pytz.utc
 
         # 2017-06-20 12:22:50
-        start = datetime(year=2017, month=06, day=20, hour=12, minute=22, second=50)
+        start = datetime(
+            year=2017,
+            month=0o6,
+            day=20,
+            hour=12,
+            minute=22,
+            second=50)
         # 2017-06-20 12:20:00
-        start_aligned = datetime(year=2017, month=06, day=20, hour=12, minute=20, second=0)
+        start_aligned = datetime(
+            year=2017,
+            month=0o6,
+            day=20,
+            hour=12,
+            minute=20,
+            second=0)
         interval = timedelta(minutes=5)
         # 12:22:50+ 0:05:20 = 12:27:02
         end = start + timedelta(minutes=5, seconds=22)
@@ -183,11 +215,14 @@ class MonitoringUtilsTestCase(GeoNodeBaseTestSupport):
         expected_periods = [(start_aligned.replace(tzinfo=utc),
                              start_aligned.replace(tzinfo=utc) + interval,),
                             (start_aligned.replace(tzinfo=utc) + interval,
-                             start_aligned.replace(tzinfo=utc) + (2*interval),),
+                             start_aligned.replace(
+                                 tzinfo=utc) + (2 * interval),),
                             ]
 
         aligned = align_period_start(start, interval)
-        self.assertEqual(start_aligned.replace(tzinfo=utc), aligned.replace(tzinfo=utc))
+        self.assertEqual(
+            start_aligned.replace(tzinfo=utc),
+            aligned.replace(tzinfo=utc))
 
         periods = list(generate_periods(start, interval, end))
         self.assertEqual(expected_periods, periods)
@@ -204,8 +239,13 @@ class MonitoringUtilsTestCase(GeoNodeBaseTestSupport):
         periods = list(generate_periods(start_for_three, interval, pnow))
         self.assertEqual(len(periods), 3)
 
-        start_for_two_and_half = pnow - timedelta(seconds=(2.5 * interval.total_seconds()))
-        periods = list(generate_periods(start_for_two_and_half, interval, pnow))
+        start_for_two_and_half = pnow - \
+            timedelta(seconds=(2.5 * interval.total_seconds()))
+        periods = list(
+            generate_periods(
+                start_for_two_and_half,
+                interval,
+                pnow))
         self.assertEqual(len(periods), 3)
 
 
@@ -218,11 +258,14 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
         super(MonitoringChecksTestCase, self).setUp()
 
         populate()
-        self.host = Host.objects.create(name='localhost', ip='127.0.0.1')
-        self.service_type = ServiceType.objects.get(name=ServiceType.TYPE_GEONODE)
-        self.service = Service.objects.create(name=settings.MONITORING_SERVICE_NAME,
-                                              host=self.host,
-                                              service_type=self.service_type)
+        self.host, _ = Host.objects.get_or_create(
+            name='localhost', ip='127.0.0.1')
+        self.service_type = ServiceType.objects.get(
+            name=ServiceType.TYPE_GEONODE)
+        self.service, _ = Service.objects.get_or_create(
+            name=settings.MONITORING_SERVICE_NAME,
+            host=self.host,
+            service_type=self.service_type)
         self.metric = Metric.objects.get(name='request.count')
         self.user = 'admin'
         self.passwd = 'admin'
@@ -233,7 +276,8 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
         self.u.save()
         self.user2 = 'test'
         self.passwd2 = 'test'
-        self.u2, _ = get_user_model().objects.get_or_create(username=self.user2)
+        self.u2, _ = get_user_model().objects.get_or_create(
+            username=self.user2)
         self.u2.is_active = True
         self.u2.email = 'test2@email.com'
         self.u2.set_password(self.passwd2)
@@ -247,8 +291,10 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
         self.assertTrue(start_aligned < start < end_aligned)
 
         ows_service = OWSService.objects.get(name='WFS')
-        resource, _ = MonitoredResource.objects.get_or_create(type='layer', name='test:test')
-        resource2, _ = MonitoredResource.objects.get_or_create(type='layer', name='test:test2')
+        resource, _ = MonitoredResource.objects.get_or_create(
+            type='layer', name='test:test')
+        resource2, _ = MonitoredResource.objects.get_or_create(
+            type='layer', name='test:test2')
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
         MetricValue.add(self.metric, start_aligned,
@@ -257,11 +303,10 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
                         value_raw=10,
                         value_num=10,
                         value=10)
-        uthreshold = [(self.metric.name, 'min_value', False, False, False, False,
-                       0, 100, None, "Min number of request"),
+        uthreshold = [(
+            self.metric.name, 'min_value', False, False, False, False, 0, 100, None, "Min number of request"),
                       (self.metric.name, 'max_value', False, False, False, False,
-                       1000, None, None, "Max number of request"),
-                      ]
+                       1000, None, None, "Max number of request"), ]
         notification_data = {'name': 'check requests name',
                              'description': 'check requests description',
                              'severity': 'warning',
@@ -271,7 +316,8 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=None,
-                                                    definition=nc.definitions.first(),
+                                                    definition=nc.definitions.first(
+                                                    ),
                                                     max_value=None,
                                                     max_timeout=None)
         with self.assertRaises(ValueError):
@@ -339,8 +385,10 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
         # sanity check
         self.assertTrue(start_aligned < start < end_aligned)
 
-        resource, _ = MonitoredResource.objects.get_or_create(type='layer', name='test:test')
-        resource2, _ = MonitoredResource.objects.get_or_create(type='layer', name='test:test2')
+        resource, _ = MonitoredResource.objects.get_or_create(
+            type='layer', name='test:test')
+        resource2, _ = MonitoredResource.objects.get_or_create(
+            type='layer', name='test:test2')
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
         MetricValue.add(self.metric, start_aligned, end_aligned, self.service,
@@ -348,7 +396,9 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
                         value_raw=10,
                         value_num=10,
                         value=10)
-        nc = NotificationCheck.objects.create(name='check requests', description='check requests')
+        nc = NotificationCheck.objects.create(
+            name='check requests',
+            description='check requests')
 
         MetricNotificationCheck.objects.create(notification_check=nc,
                                                service=self.service,
@@ -365,7 +415,9 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
         data = json.loads(nresp.content)
         self.assertTrue(data['data'][0]['id'] == nc.id)
 
-        nresp = c.get(reverse('monitoring:api_user_notification_config', kwargs={'pk': nc.id}))
+        nresp = c.get(
+            reverse('monitoring:api_user_notification_config',
+                    kwargs={'pk': nc.id}))
         self.assertEqual(nresp.status_code, 200)
         data = json.loads(nresp.content)
         self.assertTrue(data['data']['notification']['id'] == nc.id)
@@ -390,18 +442,18 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
         # sanity check
         self.assertTrue(start_aligned < start < end_aligned)
 
-        resource, _ = MonitoredResource.objects.get_or_create(type='layer', name='test:test')
+        resource, _ = MonitoredResource.objects.get_or_create(
+            type='layer', name='test:test')
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
 
         c = self.client
         c.login(username=self.user, password=self.passwd)
         notification_url = reverse('monitoring:api_user_notifications')
-        uthreshold = [('request.count', 'min_value', False, False, False, False,
-                       0, 100, None, "Min number of request"),
+        uthreshold = [(
+            'request.count', 'min_value', False, False, False, False, 0, 100, None, "Min number of request"),
                       ('request.count', 'max_value', False, False, False, False,
-                       1000, None, None, "Max number of request"),
-                      ]
+                       1000, None, None, "Max number of request"), ]
         notification_data = {'name': 'test',
                              'description': 'more test',
                              'severity': 'warning',
@@ -412,10 +464,13 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
 
         jout = json.loads(out.content)
         nid = jout['data']['id']
-        ndef = NotificationMetricDefinition.objects.filter(notification_check__id=nid)
+        ndef = NotificationMetricDefinition.objects.filter(
+            notification_check__id=nid)
         self.assertEqual(ndef.count(), 2)
 
-        notification_url = reverse('monitoring:api_user_notification_config', kwargs={'pk': nid})
+        notification_url = reverse(
+            'monitoring:api_user_notification_config',
+            kwargs={'pk': nid})
         notification = NotificationCheck.objects.get(pk=nid)
         notification_data = {'name': 'testttt',
                              'emails': [self.u.email, 'testother@test.com', ],
@@ -445,7 +500,10 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
                         nval = Decimal(nval)
                     self.assertEqual(compare_to, nval)
 
-        out = c.post(notification_url, json.dumps(notification_data), content_type='application/json')
+        out = c.post(
+            notification_url,
+            json.dumps(notification_data),
+            content_type='application/json')
         self.assertEqual(out.status_code, 200)
         jout = json.loads(out.content)
         n = NotificationCheck.objects.get()
@@ -486,7 +544,8 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
 
         self.client.login(username=user.username, password=pwd)
         for nc in NotificationCheck.objects.all():
-            notifications_config_url = reverse('monitoring:api_user_notification_config', args=(nc.id,))
+            notifications_config_url = reverse(
+                'monitoring:api_user_notification_config', args=(nc.id,))
             nc_form = nc.get_user_form()
             self.assertTrue(nc_form)
             self.assertTrue(nc_form.fields.keys())
@@ -504,7 +563,10 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
             self.assertEqual(resp.status_code, 400)
 
             vals = [7, 600]
-            data = {'emails': '\n'.join([self.u.email, self.u2.email, 'testsome@test.com'])}
+            data = {'emails': '\n'.join(
+                    [self.u.email,
+                     self.u2.email,
+                     'testsome@test.com'])}
             idx = 0
             for fname, field in nc_form.fields.items():
                 if fname in self.reserved_fields:
@@ -518,8 +580,12 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
 
             _emails = data['emails'].split('\n')[-1:]
             _users = data['emails'].split('\n')[:-1]
-            self.assertEqual(set([u.email for u in nc.get_users()]), set(_users))
-            self.assertEqual(set([email for email in nc.get_emails()]), set(_emails))
+            self.assertEqual(
+                set([u.email for u in nc.get_users()]),
+                set(_users))
+            self.assertEqual(
+                set([email for email in nc.get_emails()]),
+                set(_emails))
 
         metric_rq_count = Metric.objects.get(name='request.count')
         metric_rq_time = Metric.objects.get(name='response.time')
@@ -594,7 +660,8 @@ class AutoConfigTestCase(GeoNodeBaseTestSupport):
     OGC_GS_2 = 'http://google.com/test/'
 
     OGC_SERVER = {'default': {'BACKEND': 'nongeoserver'},
-                  'geoserver1': {'BACKEND': 'geonode.geoserver', 'LOCATION': OGC_GS_1},
+                  'geoserver1':
+                      {'BACKEND': 'geonode.geoserver', 'LOCATION': OGC_GS_1},
                   'external1': {'BACKEND': 'geonode.geoserver', 'LOCATION': OGC_GS_2}
                   }
 
@@ -611,7 +678,8 @@ class AutoConfigTestCase(GeoNodeBaseTestSupport):
         self.u.save()
         self.user2 = 'test'
         self.passwd2 = 'test'
-        self.u2, _ = get_user_model().objects.get_or_create(username=self.user2)
+        self.u2, _ = get_user_model().objects.get_or_create(
+            username=self.user2)
         self.u2.is_active = True
         self.u2.email = 'test2@email.com'
         self.u2.set_password(self.passwd2)

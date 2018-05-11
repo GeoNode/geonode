@@ -178,12 +178,14 @@ class Service(ResourceBase):
 
     @cached_property
     def probe(self):
-        from geonode.utils import http_client
-        try:
-            resp, content = http_client.request(self.service_url)
-            return resp.status
-        except:
-            return 404
+        # AF: this must be handled asynchronously
+        # from geonode.utils import http_client
+        # try:
+        #     resp, content = http_client.request(self.service_url)
+        #     return resp.status
+        # except:
+        #     return 404
+        return 200
 
 
 class ServiceProfileRole(models.Model):

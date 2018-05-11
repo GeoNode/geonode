@@ -1365,6 +1365,16 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
                     attribute.description,
                     '%s_description' % attribute.attribute
                 )
+
+            links = Link.objects.filter(resource=layer.resourcebase_ptr)
+            self.assertIsNotNone(links)
+            self.assertTrue(len(links) > 7)
+
+            original_data_links = [ll for ll in links if 'original' == ll.link_type]
+            self.assertEquals(len(original_data_links), 1)
+
+            resp = self.client.get(original_data_links[0].url)
+            self.assertEquals(resp.status_code, 200)
         finally:
             # Clean up and completely delete the layers
             layer.delete()

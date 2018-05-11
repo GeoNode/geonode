@@ -70,6 +70,7 @@ def sync_if_local_memory(func, *args, **kwargs):
                 tb = traceback.format_exc()
                 msg = "Exception while publishing message: {}".format(tb)
                 logger.error(msg)
+                raise
 
 
 @sync_if_local_memory
