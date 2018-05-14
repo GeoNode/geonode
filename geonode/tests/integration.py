@@ -55,7 +55,7 @@ from geoserver.catalog import FailedRequestError
 # from geonode.security.models import *
 from geonode.contrib import geotiffio
 from geonode.decorators import on_ogc_backend
-from geonode.base.models import TopicCategory
+from geonode.base.models import TopicCategory, Link
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode import GeoNodeException, geoserver, qgis_server
