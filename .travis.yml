@@ -2,12 +2,13 @@ sudo: required
 
 language: python
 
-cache:
-  directories:
-    - $HOME/.cache/pip
-
-before_cache:
-  - rm -f $HOME/.cache/pip/log/debug.log
+# AF: seems like causing stall on Travis build
+# cache:
+#   directories:
+#     - $HOME/.cache/pip
+#
+# before_cache:
+#   - rm -f $HOME/.cache/pip/log/debug.log
 
 python:
   - "2.7"
