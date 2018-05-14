@@ -345,7 +345,14 @@ class Command(BaseCommand):
                     print "Saved Static Files from '"+static_files_folder+"'."
 
                 # Store Template Folders
-                template_folders = settings.TEMPLATE_DIRS
+                template_folders = []
+                try:
+                    template_folders = settings.TEMPLATE_DIRS
+                except:
+                    try:
+                        template_folders = settings.TEMPLATES[0]['DIRS']
+                    except:
+                        pass
                 template_files_folders = os.path.join(target_folder, helpers.TEMPLATE_DIRS)
                 if not os.path.exists(template_files_folders):
                     os.makedirs(template_files_folders)

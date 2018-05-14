@@ -94,16 +94,19 @@ address {0}".format(ip_list[0]))
 
 def _container_exposed_port(component, instname):
     client = docker.from_env()
-    ports_dict = json.dumps(
-        [c.attrs['Config']['ExposedPorts'] for c in client.containers.list(
-            filters={
-                'label': 'org.geonode.component={0}'.format(component),
-                'status': 'running'
-            }
-        ) if '{0}'.format(instname) in c.name][0]
-    )
-    for key in json.loads(ports_dict):
-        port = re.split('/tcp', key)[0]
+    try:
+        ports_dict = json.dumps(
+            [c.attrs['Config']['ExposedPorts'] for c in client.containers.list(
+                filters={
+                    'label': 'org.geonode.component={0}'.format(component),
+                    'status': 'running'
+                }
+            ) if '{0}'.format(instname) in c.name][0]
+        )
+        for key in json.loads(ports_dict):
+            port = re.split('/tcp', key)[0]
+    except:
+        port = 80
     return port
 
 

@@ -284,6 +284,10 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         Link.objects.get_or_create(
             resource=geonode_layer.resourcebase_ptr,
             url=geonode_layer.ows_url,
+            name="ESRI {}: {} Service".format(
+                geonode_layer.remote_service.type,
+                geonode_layer.store
+            ),
             defaults={
                 "extension": "html",
                 "name": "ESRI {}: {} Service".format(
