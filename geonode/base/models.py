@@ -1388,7 +1388,7 @@ def do_login(sender, user, request, **kwargs):
             token = u.hex
 
         # Do GeoServer Login
-        url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
+        url = "%s%s&access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
                                         'ows?service=wms&version=1.3.0&request=GetCapabilities',
                                         token)
 
@@ -1437,14 +1437,14 @@ def do_logout(sender, user, request, **kwargs):
             access_token = None
 
         if access_token:
-            url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
+            url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
                                             settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'],
                                             access_token)
             header_params = {
                 "Authorization": ("Bearer %s" % access_token)
             }
         else:
-            url = "%s%s" % (settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
+            url = "%s%s" % (settings.OGC_SERVER['default']['LOCATION'],
                             settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'])
 
         param = {}

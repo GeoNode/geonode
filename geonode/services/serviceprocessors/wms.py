@@ -165,9 +165,11 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         of metadata and do not return those.
 
         """
-
-        contents_gen = self.parsed_service.contents.itervalues()
-        return (r for r in contents_gen if not any(r.children))
+        try:
+            contents_gen = self.parsed_service.contents.itervalues()
+            return (r for r in contents_gen if not any(r.children))
+        except:
+            return None
 
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
@@ -212,7 +214,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         self._create_layer_thumbnail(geonode_layer)
 
     def has_resources(self):
-        return True if len(self.parsed_service.contents) > 1 else False
+        return True if len(self.parsed_service.contents) > 0 else False
 
     def _create_layer(self, geonode_service, **resource_fields):
         # bear in mind that in ``geonode.layers.models`` there is a
@@ -285,6 +287,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         Link.objects.get_or_create(
             resource=geonode_layer.resourcebase_ptr,
             url=legend_url,
+            name='Legend',
             defaults={
                 "extension": 'png',
                 "name": 'Legend',
@@ -298,6 +301,11 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         Link.objects.get_or_create(
             resource=geonode_layer.resourcebase_ptr,
             url=geonode_layer.ows_url,
+            name="OGC {}: {} Service".format(
+                geonode_layer.remote_service.type,
+                geonode_layer.store
+            ),
+            link_type="OGC:WMS",
             defaults={
                 "extension": "html",
                 "name": "OGC {}: {} Service".format(
@@ -306,7 +314,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 ),
                 "url": geonode_layer.ows_url,
                 "mime": "text/html",
-                "link_type": "OGC:{}".format(geonode_layer.remote_service.type),
+                "link_type": "OGC:WMS",
             }
         )
 

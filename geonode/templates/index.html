@@ -37,7 +37,7 @@
       		<h1>{% trans "Search for Data." %}</h1>
       		<div class="search">
       			<form id="search" action="{% url "search" %}" >
-      				<span class="fa fa-search fa-2x"></span>
+      				<span class="fa fa-search fa-3x"></span>
       				{% if HAYSTACK_SEARCH %}
       				<input id="search_input" type="text" placeholder="Search" class="form-control" name="q">
       				{% else %}
@@ -58,185 +58,183 @@
       			<div class="container text-center">
       				<h1>Discover the available datasets.</h1>
                     <div class="row">
-          				<div class="col-xs-1 col-sm-1">
-          					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=boundaries&category__identifier__in=biota" data-toggle="tooltip" data-placement="auto"
+          				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
+          					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=biota" data-toggle="tooltip" data-placement="auto"
           						title="Flora and/or fauna in natural environment. Examples: wildlife, vegetation, biological sciences, ecology, wilderness, sealife, wetlands, habitat.">
           						<div class="category">
-          							<i class="fa fa-leaf fa-2x"></i>
+          							<i class="fa fa-leaf fa-3x"></i>
           							<h4>Biota</h4>
           						</div>
           					</a>
           				</div>
-          				<div class="col-xs-1 col-sm-1">
+          				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=boundaries" data-toggle="tooltip" data-placement="auto"
           						title="Legal land descriptions. Examples: political and administrative boundaries." >
           						<div class="category">
-          							<i class="fa fa-ellipsis-h fa-2x"></i>
+          							<i class="fa fa-ellipsis-h fa-3x"></i>
           							<h4>Boundaries</h4>
           						</div>
           					</a>
           				</div>
-          				<div class="col-xs-1 col-sm-1">
+          				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=climatologyMeteorologyAtmosphere" data-toggle="tooltip" data-placement="auto"
           						title="Processes and phenomena of the atmosphere. Examples: cloud cover, weather, climate, atmospheric conditions, climate change, precipitation." >
           						<div class="category">
-          							<i class="fa fa-cloud fa-2x"></i>
+          							<i class="fa fa-cloud fa-3x"></i>
           							<h4>Climate</h4>
           						</div>
           					</a>
           				</div>
-          				<div class="col-xs-1 col-sm-1">
+          				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=economy" data-toggle="tooltip" data-placement="auto"
           						title="Economic activities, conditions and employment. Examples: production, labour, revenue, commerce, industry, tourism and ecotourism, forestry, fisheries, commercial or subsistence hunting, exploration and exploitation of resources such as minerals, oil and gas." >
           						<div class="category">
-          							<i class="fa fa-shopping-cart fa-2x"></i>
+          							<i class="fa fa-shopping-cart fa-3x"></i>
           							<h4>Economy</h4>
           						</div>
           					</a>
           				</div>
-          				<div class="col-xs-1 col-sm-1">
+          				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=elevation" data-toggle="tooltip" data-placement="auto"
           						title="Height above or below sea level. Examples: altitude, bathymetry, digital elevation models, slope, derived products." >
           						<div class="category">
-          							<i class="fa fa-flag fa-2x"></i>
+          							<i class="fa fa-flag fa-3x"></i>
           							<h4>Elevation</h4>
           						</div>
           					</a>
           				</div>
-          				<div class="col-xs-1 col-sm-1">
+          				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=environment" data-toggle="tooltip" data-placement="auto"
           						title="Environmental resources, protection and conservation. Examples: environmental pollution, waste storage and treatment, environmental impact assessment, monitoring environmental risk, nature reserves, landscape." >
           						<div class="category">
-          							<i class="fa fa-tree fa-2x"></i>
+          							<i class="fa fa-tree fa-3x"></i>
           							<h4>Environment</h4>
           						</div>
           					</a>
           				</div>
-          				<div class="col-xs-1 col-sm-1">
+          				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=farming" data-toggle="tooltip" data-placement="auto"
           						title="Rearing of animals and/or cultivation of plants. Examples: agriculture, irrigation, aquaculture, plantations, herding, pests and diseases affecting crops and livestock." >
           						<div class="category">
-          							<i class="fa fa-lemon-o fa-2x"></i>
+          							<i class="fa fa-lemon-o fa-3x"></i>
           							<h4>Farming</h4>
           						</div>
           					</a>
           				</div>
-          				<div class="col-xs-1 col-sm-1">
+          				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=farming&category__identifier__in=geoscientificInformation" data-toggle="tooltip" data-placement="auto"
           						title="Information pertaining to earth sciences. Examples: geophysical features and processes, geology, minerals, sciences dealing with the composition, structure and origin of the earth s rocks, risks of earthquakes, volcanic activity, landslides, gravity information, soils, permafrost, hydrogeology, erosion." >
           						<div class="category">
-          							<i class="fa fa-bullseye fa-2x"></i>
-          							<h4>Geoscientific Information</h4>
+          							<i class="fa fa-bullseye fa-3x"></i>
+          							<h4>Geoscience</h4>
           						</div>
           					</a>
           				</div>
-          				<div class="col-xs-1 col-sm-1">
+          				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=health" data-toggle="tooltip" data-placement="auto"
           						title="Health, health services, human ecology, and safety. Examples: disease and illness, factors affecting health, hygiene, substance abuse, mental and physical health, health services." >
           						<div class="category">
-          							<i class="fa fa-stethoscope fa-2x"></i>
+          							<i class="fa fa-stethoscope fa-3x"></i>
           							<h4>Health</h4>
           						</div>
           					</a>
           				</div>
-          				<div class="col-xs-1 col-sm-1">
+          				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=imageryBaseMapsEarthCover" data-toggle="tooltip" data-placement="auto"
           						title="Base maps. Examples: land cover, topographic maps, imagery, unclassified images, annotations." >
           						<div class="category">
-          							<i class="fa fa-globe fa-2x"></i>
-          							<h4>Imagery Base Maps Earth Cover</h4>
+          							<i class="fa fa-globe fa-3x"></i>
+          							<h4>Base Maps</h4>
           						</div>
           					</a>
           				</div>
-          				<div class="col-xs-1 col-sm-1">
+          				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=inlandWaters" data-toggle="tooltip" data-placement="auto"
           						title="Inland water features, drainage systems and their characteristics. Examples: rivers and glaciers, salt lakes, water utilization plans, dams, currents, floods, water quality, hydrographic charts." >
           						<div class="category">
-          							<i class="fa fa-tint fa-2x"></i>
+          							<i class="fa fa-tint fa-3x"></i>
           							<h4>Inland Waters</h4>
           						</div>
           					</a>
           				</div>
-          				<div class="col-xs-1 col-sm-1">
+          				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=intelligenceMilitary" data-toggle="tooltip" data-placement="auto"
           						title="Military bases, structures, activities. Examples: barracks, training grounds, military transportation, information collection." >
           						<div class="category">
-          							<i class="fa fa-fighter-jet fa-2x"></i>
-          							<h4>Intelligence Military</h4>
+          							<i class="fa fa-fighter-jet fa-3x"></i>
+          							<h4>Intelligence</h4>
           						</div>
           					</a>
           				</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-1 col-sm-1">
+                        <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=location" data-toggle="tooltip" data-placement="auto"
           						title="Positional information and services. Examples: addresses, geodetic networks, control points, postal zones and services, place names." >
           						<div class="category">
-          							<i class="fa fa-map-marker fa-2x"></i>
+          							<i class="fa fa-map-marker fa-3x"></i>
           							<h4>Location</h4>
           						</div>
           					</a>
           				</div>
-                        <div class="col-xs-1 col-sm-1">
+                        <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=oceans" data-toggle="tooltip" data-placement="auto"
           						title="Features and characteristics of salt water bodies (excluding inland waters). Examples: tides, tidal waves, coastal information, reefs." >
           						<div class="category">
-          							<i class="fa fa-anchor fa-2x"></i>
+          							<i class="fa fa-anchor fa-3x"></i>
           							<h4>Oceans</h4>
           						</div>
           					</a>
           				</div>
-                        <div class="col-xs-1 col-sm-1">
+                        <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=planningCadastre" data-toggle="tooltip" data-placement="auto"
           						title="Information used for appropriate actions for future use of the land. Examples: land use maps, zoning maps, cadastral surveys, land ownership." >
           						<div class="category">
-          							<i class="fa fa-home fa-2x"></i>
-          							<h4>Planning Cadastre</h4>
+          							<i class="fa fa-home fa-3x"></i>
+          							<h4>Planning</h4>
           						</div>
           					</a>
           				</div>
-                        <div class="col-xs-1 col-sm-1">
+                        <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=population" data-toggle="tooltip" data-placement="auto"
           						title="Settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information. Economic activities, conditions and employment." >
           						<div class="category">
-          							<i class="fa fa-male fa-2x"></i>
+          							<i class="fa fa-male fa-3x"></i>
           							<h4>Population</h4>
           						</div>
           					</a>
           				</div>
-                        <div class="col-xs-1 col-sm-1">
+                        <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=society" data-toggle="tooltip" data-placement="auto"
           						title="Characteristics of society and cultures. Examples: settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information." >
           						<div class="category">
-          							<i class="fa fa-comments fa-2x"></i>
+          							<i class="fa fa-comments fa-3x"></i>
           							<h4>Society</h4>
           						</div>
           					</a>
           				</div>
-                        <div class="col-xs-1 col-sm-1">
+                        <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=structure" data-toggle="tooltip" data-placement="auto"
           						title="Man-made construction. Examples: buildings, museums, churches, factories, housing, monuments, shops, towers." >
           						<div class="category">
-          							<i class="fa fa-building fa-2x"></i>
+          							<i class="fa fa-building fa-3x"></i>
           							<h4>Structure</h4>
           						</div>
           					</a>
           				</div>
-                        <div class="col-xs-1 col-sm-1">
+                        <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=transportation" data-toggle="tooltip" data-placement="auto"
           						title="Means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways." >
           						<div class="category">
-          							<i class="fa fa-truck fa-2x"></i>
+          							<i class="fa fa-truck fa-3x"></i>
           							<h4>Transportation</h4>
           						</div>
           					</a>
           				</div>
-                        <div class="col-xs-1 col-sm-1">
+                        <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=utilitiesCommunication" data-toggle="tooltip" data-placement="auto"
           						title="Energy, water and waste systems and communications infrastructure and services. Examples: hydroelectricity, geothermal, solar and nuclear sources of energy, water purification and distribution, sewage collection and disposal, electricity and gas distribution, data communication, telecommunication, radio, communication networks." >
           						<div class="category">
-          							<i class="fa fa-phone fa-2x"></i>
-          							<h4>Utilities Communication</h4>
+          							<i class="fa fa-phone fa-3x"></i>
+          							<h4>Utilities</h4>
           						</div>
           					</a>
           				</div>
@@ -335,6 +333,6 @@
     })();
 </script>
 <script>
-	$('[data-toggle="tooltip"]').tooltip();
+	$('[data-toggle="tooltip"]').tooltip({container: 'body'});
 </script>
 {% endblock extra_script %}

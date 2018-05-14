@@ -52,7 +52,7 @@ from geonode.layers.models import Layer, Style
 from geonode.layers.utils import layer_type, get_files, get_valid_name, \
     get_valid_layer_name
 from geonode.people.utils import get_valid_user
-from geonode.base.models import TopicCategory, License, Region
+from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.base.populate_test_data import all_public
 from geonode.layers.forms import JSONField, LayerUploadForm
 from geonode.utils import check_ogc_backend
@@ -214,6 +214,25 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(
             lyr.keyword_list(), [
                 u'here', u'keywords', u'populartag', u'saving'])
+
+    def test_layer_links(self):
+        lyr = Layer.objects.filter(storeType="dataStore").first()
+        self.assertEquals(lyr.storeType, "dataStore")
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="metadata")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 7)
+            for ll in links:
+                self.assertEquals(ll.link_type, "metadata")
+
+        lyr = Layer.objects.filter(storeType="coverageStore").first()
+        self.assertEquals(lyr.storeType, "coverageStore")
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="metadata")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 7)
+            for ll in links:
+                self.assertEquals(ll.link_type, "metadata")
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user

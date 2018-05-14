@@ -38,6 +38,7 @@ from lxml import etree
 from urlparse import urljoin
 
 from django.conf import settings
+from django.test.utils import override_settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
@@ -54,7 +55,7 @@ from geoserver.catalog import FailedRequestError
 # from geonode.security.models import *
 from geonode.contrib import geotiffio
 from geonode.decorators import on_ogc_backend
-from geonode.base.models import TopicCategory
+from geonode.base.models import TopicCategory, Link
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode import GeoNodeException, geoserver, qgis_server
@@ -139,11 +140,13 @@ $ geonode createsuperuser
 """
 
 
+@override_settings(SITEURL='http://localhost:8010/')
 class NormalUserTest(GeoNodeLiveTestSupport):
 
     """
     Tests GeoNode functionality for non-administrative users
     """
+    port = 8010
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_layer_upload(self):
@@ -174,10 +177,13 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             saved_layer.delete()
 
 
+@override_settings(SITEURL='http://localhost:8001/')
 class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
-    """Tests geonode.maps app/module
     """
+    Tests geonode.maps app/module
+    """
+    port = 8001
 
     # geonode.maps.utils
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -914,9 +920,13 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 self.assertEquals(response_dict['success'], True)
                 # Get a Layer object for the newly created layer.
                 new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
-                # FIXME(Ariel): Check the typename does not change.
 
-                # Test the replaced layer is indeed different from the original layer
+                # Test the replaced layer metadata is equal to the original layer
+                self.assertEqual(vector_layer.name, new_vector_layer.name)
+                self.assertEqual(vector_layer.title, new_vector_layer.title)
+                self.assertEqual(vector_layer.alternate, new_vector_layer.alternate)
+
+                # Test the replaced layer bbox is indeed different from the original layer
                 self.assertNotEqual(vector_layer.bbox_x0, new_vector_layer.bbox_x0)
                 self.assertNotEqual(vector_layer.bbox_x1, new_vector_layer.bbox_x1)
                 self.assertNotEqual(vector_layer.bbox_y0, new_vector_layer.bbox_y0)
@@ -989,9 +999,12 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             lyr.delete()
 
 
+@override_settings(SITEURL='http://localhost:8002/')
 class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
-    """Tests GeoNode permissions and its integration with GeoServer
     """
+    Tests GeoNode permissions and its integration with GeoServer
+    """
+    port = 8002
 
     """
     AF: This test must be refactored. Opening an issue for that.
@@ -1173,10 +1186,13 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
                 layer.delete()
 
 
+@override_settings(SITEURL='http://localhost:8003/')
 class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
 
-    """Tests thumbnails behavior for layers and maps.
     """
+    Tests thumbnails behavior for layers and maps.
+    """
+    port = 8003
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_layer_thumbnail(self):
@@ -1233,10 +1249,14 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
             saved_layer.delete()
 
 
+@override_settings(SITEURL='http://localhost:8004/')
 class GeoNodeMapPrintTest(GeoNodeLiveTestSupport):
 
-    """Tests geonode.maps print
     """
+    Tests geonode.maps print
+    """
+    port = 8004
+
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def testPrintProxy(self):
         """ Test the PrintProxyMiddleware if activated.
@@ -1323,10 +1343,14 @@ class GeoNodeMapPrintTest(GeoNodeLiveTestSupport):
             pass
 
 
+@override_settings(SITEURL='http://localhost:8005/')
 class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
-    """Tests GeoNode/GeoServer syncronization
     """
+    Tests GeoNode/GeoServer syncronization
+    """
+    port = 8005
+
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_set_attributes_from_geoserver(self):
@@ -1358,15 +1382,29 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
                     attribute.description,
                     '%s_description' % attribute.attribute
                 )
+
+            links = Link.objects.filter(resource=layer.resourcebase_ptr)
+            self.assertIsNotNone(links)
+            self.assertTrue(len(links) > 7)
+
+            original_data_links = [ll for ll in links if 'original' == ll.link_type]
+            self.assertEquals(len(original_data_links), 1)
+
+            resp = self.client.get(original_data_links[0].url)
+            self.assertEquals(resp.status_code, 200)
         finally:
             # Clean up and completely delete the layers
             layer.delete()
 
 
+@override_settings(SITEURL='http://localhost:8006/')
 class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
 
-    """Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
     """
+    Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
+    """
+    port = 8006
+
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_capabilities(self):
@@ -1466,10 +1504,12 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             layer3.delete()
 
 
+@override_settings(SITEURL='http://localhost:8007/')
 class LayersStylesApiInteractionTests(
         ResourceTestCaseMixin, GeoNodeLiveTestSupport):
-
     """Test Layers"""
+    port = 8007
+
     def setUp(self):
         super(LayersStylesApiInteractionTests, self).setUp()
 
@@ -1720,9 +1760,13 @@ class LayersStylesApiInteractionTests(
         self.assertEqual(meta['total_count'], 0)
 
 
+@override_settings(SITEURL='http://localhost:8008/')
 class GeoTIFFIOTest(GeoNodeLiveTestSupport):
+    """
+    Tests integration of geotiff.io
+    """
+    port = 8008
 
-    "Tests integration of geotiff.io"
     def testLink(self):
         thefile = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
         uploaded = file_upload(thefile, overwrite=True)

@@ -44,12 +44,25 @@ except ImportError:
     from paver.easy import pushd
 
 from geonode.settings import (on_travis,
+                              core_tests,
+                              internal_apps_tests,
                               integration_tests,
                               INSTALLED_APPS,
                               GEONODE_CORE_APPS,
+                              GEONODE_INTERNAL_APPS,
                               GEONODE_APPS,
                               OGC_SERVER,
-                              ASYNC_SIGNALS,)
+                              ASYNC_SIGNALS)
+
+_django_11 = django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2
+
+try:
+    from geonode.settings import TEST_RUNNER_KEEPDB, TEST_RUNNER_PARALLEL
+    _keepdb = '-k' if TEST_RUNNER_KEEPDB else ''
+    _parallel = ('--parallel=%s' % TEST_RUNNER_PARALLEL) if TEST_RUNNER_PARALLEL else ''
+except:
+    _keepdb = ''
+    _parallel = ''
 
 assert sys.version_info >= (2, 6), \
     SystemError("GeoNode Build requires python 2.6 or better")
@@ -717,11 +730,17 @@ def test(options):
     Run GeoNode's Unit Test Suite
     """
     if on_travis:
-        sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
-                                                     '.tests '.join(GEONODE_CORE_APPS)))
+        if core_tests:
+            _apps = tuple(GEONODE_CORE_APPS)
+        if internal_apps_tests:
+            _apps = tuple(GEONODE_INTERNAL_APPS)
     else:
-        sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
-                                                     '.tests '.join(GEONODE_APPS)))
+        _apps = tuple(GEONODE_APPS)
+
+    sh("%s manage.py test %s.tests --noinput %s %s" % (options.get('prefix'),
+                                                       '.tests '.join(_apps),
+                                                       _keepdb,
+                                                       _parallel))
 
 
 @task
@@ -780,7 +799,11 @@ def test_integration(options):
     name = options.get('name', 'geonode.tests.integration')
     settings = options.get('settings', '')
     if not settings and name == 'geonode.upload.tests.integration':
-        settings = 'geonode.upload.tests.test_settings'
+        if _django_11:
+            sh("cp geonode/upload/tests/test_settings.py geonode/")
+            settings = 'geonode.test_settings'
+        else:
+            settings = 'geonode.upload.tests.test_settings'
 
     success = False
     try:
@@ -809,12 +832,12 @@ def test_integration(options):
             settings = 'REUSE_DB=1 %s' % settings
 
         live_server_option = '--liveserver=localhost:8000'
-        if django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2:
+        if _django_11:
             live_server_option = ''
 
         info("GeoNode is now available, running the tests now.")
         sh(('%s python -W ignore manage.py test %s'
-            ' --noinput %s' % (settings, name, live_server_option)))
+            ' %s --noinput %s' % (settings, name, _keepdb, live_server_option)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -842,13 +865,13 @@ def run_tests(options):
     Executes the entire test suite.
     """
     if options.get('coverage'):
-        prefix = 'coverage run --branch --source=geonode'
+        prefix = 'coverage run --branch --source=geonode --omit="*/management/*,geonode/contrib/*,*/test*"'
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
 
     if not integration_tests:
-        sh('%s manage.py test geonode.tests.smoke' % prefix)
+        sh('%s manage.py test geonode.tests.smoke %s %s' % (prefix, _keepdb, _parallel))
         call_task('test', options={'prefix': prefix})
     else:
         call_task('test_integration')
@@ -860,7 +883,8 @@ def run_tests(options):
                       options={'name': 'geonode.upload.tests.integration',
                                'settings': 'geonode.upload.tests.test_settings'})
 
-    call_task('test_bdd', options={'local': local})
+        call_task('test_bdd', options={'local': local})
+
     sh('flake8 geonode')
 
 

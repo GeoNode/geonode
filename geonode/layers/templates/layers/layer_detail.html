@@ -37,7 +37,7 @@
     </style>
 
     <h2 class="page-title">{{ resource.title|default:resource.alternate }}</h2>
-    {% if storeType == 'remoteStore' %}<em><i class="fa fa-power-off {% if online %}text-success{% else %}text-danger{% endif %}"></i> {% trans "Service is" %} {% if online %}{% trans "online" %}{% else %}{% trans "offline" %}{% endif %} </em>{% endif %}
+    {% if online and storeType == 'remoteStore' %}<em><i class="fa fa-power-off {% if online %}text-success{% else %}text-danger{% endif %}"></i> {% trans "Service is" %} {% if online %}{% trans "online" %}{% else %}{% trans "offline" %}{% endif %} </em>{% endif %}
 </div>
 
 <div class="row">
@@ -460,8 +460,10 @@
                   {% if preview == 'geoext' %}
                   <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
                   {% endif %}
+                  {% if resource.storeType != "remoteStore" %}
                   <a class="btn btn-default btn-block btn-xs" href="{% url "layer_sld_upload" resource.service_typename %}">{% trans "Upload" %}</a>
                   <a class="btn btn-default btn-block btn-xs" href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
+                  {% endif %}
                 </div>
                 {% endif %}
               {% elif OGC_SERVER.default.BACKEND == 'geonode.qgis_server' and not resource.service %}
@@ -485,7 +487,7 @@
               <div class="col-sm-3">
                 <i class="fa fa-square-o fa-3x rotate-45"></i>
                 <h4>{% trans "Layer" %}</h4>
-                {% if "change_resourcebase" in perms_list and not resource.service %}
+                {% if "change_resourcebase" in perms_list and resource.storeType != "remoteStore" %}
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                 {% endif %}
                 {% if resource.storeType == 'dataStore' and "change_layer_data" in layer_perms and OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
@@ -804,12 +806,7 @@
                 single_value_input = '';
             }
 
-            if (attribute_data_schema == 'yes' && attribute_data_type == 'string' && !isNaN(single_value_input) ){
-              if($("#wrong-data-type").length !== 0) {
-                $('#wrong-data-type').empty();
-              }
-              $( "#query-filter-tools" ).after( "<p id='wrong-data-type'> You entered a number. Not a string.</p>" );
-            } else if (attribute_data_schema == 'yes' && attribute_data_type !== 'string' && isNaN(single_value_input)){
+            if (attribute_data_schema == 'yes' && attribute_data_type !== 'string' && isNaN(single_value_input)){
               if($("#wrong-data-type").length !== 0) {
                   $('#wrong-data-type').empty();
               }

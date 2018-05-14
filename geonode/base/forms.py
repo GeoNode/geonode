@@ -41,7 +41,7 @@ from django.utils.encoding import (
 from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
 
-from geonode.base.models import TopicCategory, Region, License
+from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License
 from geonode.people.models import Profile
 from geonode.base.enumerations import ALL_LANGUAGES
 from django.contrib.auth.models import Group
@@ -399,16 +399,43 @@ class ResourceBaseForm(TranslationModelForm):
 
     def clean_keywords(self):
         import urllib
+        import HTMLParser
+
+        def unicode_escape(unistr):
+            """
+            Tidys up unicode entities into HTML friendly entities
+            Takes a unicode string as an argument
+            Returns a unicode string
+            """
+            import htmlentitydefs
+            escaped = ""
+            for char in unistr:
+                if ord(char) in htmlentitydefs.codepoint2name:
+                    name = htmlentitydefs.codepoint2name.get(ord(char))
+                    escaped += '&%s;' % name if 'nbsp' not in name else ' '
+                else:
+                    escaped += char
+            return escaped
 
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
-            _k = urllib.unquote(k.decode('utf-8')).decode('utf-8').split(",")
+            _k = urllib.unquote((u'%s' % k).encode('utf-8')).split(",")
             if not isinstance(_k, basestring):
                 for _kk in [x.strip() for x in _k]:
-                    _unsescaped_kwds.append(_kk)
+                    _kk = HTMLParser.HTMLParser().unescape(unicode_escape(_kk))
+                    # _hk = HierarchicalKeyword.objects.extra(where=["%s LIKE name||'%%'"], params=[_kk])
+                    _hk = HierarchicalKeyword.objects.filter(name__contains='%s' % _kk.strip())
+                    if _hk and len(_hk) > 0:
+                        _unsescaped_kwds.append(_hk[0])
+                    else:
+                        _unsescaped_kwds.append(_kk)
             else:
-                _unsescaped_kwds.append(_k)
+                _hk = HierarchicalKeyword.objects.filter(name__iexact=_k)
+                if _hk and len(_hk) > 0:
+                    _unsescaped_kwds.append(_hk[0])
+                else:
+                    _unsescaped_kwds.append(_k)
         return _unsescaped_kwds
 
     class Meta:
