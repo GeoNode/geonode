@@ -1098,7 +1098,10 @@ def designals():
 
     for signalname in signalnames:
         if signalname in signals_store:
-            signaltype = getattr(models.signals, signalname)
+            try:
+                signaltype = getattr(models.signals, signalname)
+            except:
+                continue
             logger.debug("RETRIEVE: %s: %d" %
                          (signalname, len(signaltype.receivers)))
             signals_store[signalname] = []

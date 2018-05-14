@@ -199,7 +199,7 @@ class MapCreateView(CreateView):
                             visibility=True
                         )
 
-                if bbox is not None:
+                if bbox and len(bbox) >= 4:
                     minx, miny, maxx, maxy = [float(coord) for coord in bbox]
                     x = (minx + maxx) / 2
                     y = (miny + maxy) / 2

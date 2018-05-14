@@ -191,7 +191,6 @@ def proxy(request, url=None, response_callback=None,
         conn = HTTPSConnection(url.hostname, url.port)
     else:
         conn = HTTPConnection(url.hostname, url.port)
-
     conn.request(request.method, locator.encode('utf8'), request.body, headers)
     response = conn.getresponse()
     content = response.read()

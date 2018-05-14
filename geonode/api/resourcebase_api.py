@@ -746,7 +746,10 @@ class LayerResource(CommonModelApi):
             if hasattr(obj, 'storeType'):
                 formatted_obj['store_type'] = obj.storeType
                 if obj.storeType == 'remoteStore' and hasattr(obj, 'remote_service'):
-                    formatted_obj['online'] = (obj.remote_service.probe == 200)
+                    if obj.remote_service:
+                        formatted_obj['online'] = (obj.remote_service.probe == 200)
+                    else:
+                        formatted_obj['online'] = False
 
             formatted_obj['gtype'] = self.dehydrate_gtype(bundle)
 
