@@ -124,7 +124,8 @@ before_script:
   - scripts/misc/bdd_setup.sh before_script
 
   # Start NGINX server
-  - nginx -c `pwd`/scripts/misc/nginx_integration.conf
+  - sudo nginx -s stop
+  - sudo nginx -c `pwd`/scripts/misc/nginx_integration.conf
 
   # Setup GeoNode
   - paver setup
@@ -139,7 +140,7 @@ after_script:
   - scripts/misc/qgis_server_setup.sh after_script
 
   # Stop NGINX server
-  - nginx -c `pwd`/scripts/misc/nginx_integration.conf -s stop
+  - sudo nginx -c `pwd`/scripts/misc/nginx_integration.conf -s stop
 
   # Cleanup
   - paver reset_hard

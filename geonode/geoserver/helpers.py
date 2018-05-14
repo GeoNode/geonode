@@ -428,12 +428,13 @@ def cascading_delete(cat, layer_name):
             gs_styles = gs_styles + [x for x in cat.get_styles(workspace=settings.DEFAULT_WORKSPACE)]
             ws_styles = []
             for s in styles:
-                m = re.search(r'\d+$', s.name)
-                _name = s.name[:-len(m.group())] if m else s.name
-                _s = "%s_%s" % (settings.DEFAULT_WORKSPACE, _name)
-                for _gs in gs_styles:
-                    if _s in _gs.name and _gs not in styles:
-                            ws_styles.append(_gs)
+                if s is not None and s.name not in _default_style_names:
+                    m = re.search(r'\d+$', s.name)
+                    _name = s.name[:-len(m.group())] if m else s.name
+                    _s = "%s_%s" % (settings.DEFAULT_WORKSPACE, _name)
+                    for _gs in gs_styles:
+                        if _s in _gs.name and _gs not in styles:
+                                ws_styles.append(_gs)
             styles = styles + ws_styles
         cat.delete(lyr)
         for s in styles:
