@@ -917,12 +917,15 @@ def set_styles(layer, gs_catalog):
 
     if gs_layer:
         default_style = None
-        if gs_layer.default_style:
-            default_style = gs_layer.default_style
-        else:
-            default_style = gs_catalog.get_style(layer.name, workspace=settings.DEFAULT_WORKSPACE) \
-                            or gs_catalog.get_style(layer.name)
+        try:
+            default_style = gs_layer.default_style or None
+        except:
+            pass
+
+        if not default_style:
             try:
+                default_style = gs_catalog.get_style(layer.name, workspace=settings.DEFAULT_WORKSPACE) \
+                                or gs_catalog.get_style(layer.name)
                 gs_layer.default_style = default_style
                 gs_catalog.save(gs_layer)
             except:
@@ -933,11 +936,15 @@ def set_styles(layer, gs_catalog):
             # FIXME: This should remove styles that are no longer valid
             style_set.append(layer.default_style)
 
-        if gs_layer.styles:
-            alt_styles = gs_layer.styles
+        try:
+            if gs_layer.styles:
+                alt_styles = gs_layer.styles
 
-            for alt_style in alt_styles:
-                style_set.append(save_style(alt_style))
+                for alt_style in alt_styles:
+                    if alt_style:
+                        style_set.append(save_style(alt_style))
+        except:
+            pass
 
     layer.styles = style_set
 
