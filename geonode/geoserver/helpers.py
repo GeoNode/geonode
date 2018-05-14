@@ -241,12 +241,20 @@ def get_sld_for(gs_catalog, layer):
     # GeoServer sometimes fails to associate a style with the data, so
     # for now we default to using a point style.(it works for lines and
     # polygons, hope this doesn't happen for rasters  though)
-    if layer.default_style is None:
+    _default_style = None
+    try:
+        _default_style = layer.default_style
+    except:
+        pass
+    if _default_style is None:
         gs_catalog._cache.clear()
-        gs_layer = gs_catalog.get_layer(layer.name)
-        name = gs_layer.default_style.name if gs_layer.default_style is not None else "raster"
+        try:
+            gs_layer = gs_catalog.get_layer(layer.name)
+            name = gs_layer.default_style.name if gs_layer.default_style is not None else "raster"
+        except:
+            name = "raster"
     else:
-        name = layer.default_style.name if layer.default_style is not None else "raster"
+        name = _default_style.name
 
     # Detect geometry type if it is a FeatureType
     if layer.resource and layer.resource.resource_type == 'featureType':
@@ -410,7 +418,11 @@ def cascading_delete(cat, layer_name):
     lyr = cat.get_layer(resource_name)
     if(lyr is not None):  # Already deleted
         store = resource.store
-        styles = lyr.styles + [lyr.default_style]
+        styles = lyr.styles
+        try:
+            styles = styles + [lyr.default_style]
+        except:
+            pass
         gs_styles = [x for x in cat.get_styles()]
         if settings.DEFAULT_WORKSPACE:
             gs_styles = gs_styles + [x for x in cat.get_styles(workspace=settings.DEFAULT_WORKSPACE)]
