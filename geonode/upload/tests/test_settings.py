@@ -42,7 +42,7 @@ HOSTNAME = _surl.hostname
 if not SITEURL.endswith('/'):
     SITEURL = '{}/'.format(SITEURL)
 
-ALLOWED_HOSTS = ['localhost', 'geonode.example.com']
+ALLOWED_HOSTS = ['localhost', 'geonode', 'django', 'geonode.example.com']
 
 # TIME_ZONE = 'Europe/Paris'
 
