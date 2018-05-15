@@ -1187,25 +1187,31 @@ def get_store(cat, name, workspace=None):
 
     if workspace is None:
         workspace = cat.get_default_workspace()
-    try:
-        store = cat.get_xml('%s/%s.xml' % (workspace.datastore_url[:-4], name))
-    except FailedRequestError:
+
+    if workspace:
         try:
-            store = cat.get_xml('%s/%s.xml' % (workspace.coveragestore_url[:-4], name))
+            store = cat.get_xml('%s/%s.xml' % (workspace.datastore_url[:-4], name))
         except FailedRequestError:
             try:
-                store = cat.get_xml('%s/%s.xml' % (workspace.wmsstore_url[:-4], name))
+                store = cat.get_xml('%s/%s.xml' % (workspace.coveragestore_url[:-4], name))
             except FailedRequestError:
-                raise FailedRequestError("No store found named: " + name)
+                try:
+                    store = cat.get_xml('%s/%s.xml' % (workspace.wmsstore_url[:-4], name))
+                except FailedRequestError:
+                    raise FailedRequestError("No store found named: " + name)
+        if store:
+            if store.tag == 'dataStore':
+                store = datastore_from_index(cat, workspace, store)
+            elif store.tag == 'coverageStore':
+                store = coveragestore_from_index(cat, workspace, store)
+            elif store.tag == 'wmsStore':
+                store = wmsstore_from_index(cat, workspace, store)
 
-    if store.tag == 'dataStore':
-        store = datastore_from_index(cat, workspace, store)
-    elif store.tag == 'coverageStore':
-        store = coveragestore_from_index(cat, workspace, store)
-    elif store.tag == 'wmsStore':
-        store = wmsstore_from_index(cat, workspace, store)
-
-    return store
+            return store
+        else:
+            raise FailedRequestError("No store found named: " + name)
+    else:
+        raise FailedRequestError("No store found named: " + name)
 
 
 class ServerDoesNotExist(Exception):

@@ -34,7 +34,6 @@ OpenLayers.Util.onImageLoadErrorColor = 'transparent';
 OpenLayers.Util.onImageLoadError = function() {
     this.src = '{{ STATIC_URL }}geonode/img/light_gray.jpg';
 };
-Ext.BLANK_IMAGE_URL = "{{ STATIC_URL }}geonode/img/light_gray.jpg";
 
 OpenLayers.Request.DEFAULT_CONFIG.headers = {
   'X-CSRFToken': '{{ csrf_token|escapejs }}'
