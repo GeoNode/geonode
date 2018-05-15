@@ -196,9 +196,10 @@ body {
 
 .home .jumbotron:after {
   content: "";
-  background: url({{ theme.jumbotron_bg.url }}) no-repeat !important;
-  background-size: 100%;
-  background-position-y: center;
+  background-image: url({{ theme.jumbotron_bg.url }}) !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: cover !important;
   {% if not theme.jumbotron_welcome_hide %}
   opacity: 0.5;
   {% endif %}

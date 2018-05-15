@@ -17,7 +17,7 @@ SITENAME = 'GeoNode'
 SITEURL = 'http://localhost:8000/'
 
 DATABASE_ENGINE = 'postgresql_psycopg2'
-DATABASE_NAME = 'geonode_afg'
+DATABASE_NAME = 'geonode'
 DATABASE_USER = 'geonode'
 DATABASE_PASSWORD = 'geonode'
 DATABASE_HOST = 'localhost'

@@ -264,29 +264,29 @@ def remove_models(obj_ids, type=None):
         remove_models(None, type='document')
 
     if type == 'map':
-        m_ids = obj_ids or [m.id for m in Map.objects.all()]
-        for id in m_ids:
-            try:
+        try:
+            m_ids = obj_ids or [m.id for m in Map.objects.all()]
+            for id in m_ids:
                 m = Map.objects.get(pk=id)
                 m.delete()
-            except:
-                pass
+        except:
+            pass
     elif type == 'layer':
-        l_ids = obj_ids or [l.id for l in Layer.objects.all()]
-        for id in l_ids:
-            try:
+        try:
+            l_ids = obj_ids or [l.id for l in Layer.objects.all()]
+            for id in l_ids:
                 l = Layer.objects.get(pk=id)
                 l.delete()
-            except:
-                pass
+        except:
+            pass
     elif type == 'document':
-        d_ids = obj_ids or [d.id for d in Document.objects.all()]
-        for id in d_ids:
-            try:
+        try:
+            d_ids = obj_ids or [d.id for d in Document.objects.all()]
+            for id in d_ids:
                 d = Document.objects.get(pk=id)
                 d.delete()
-            except:
-                pass
+        except:
+            pass
 
 
 def dump_models(path=None):

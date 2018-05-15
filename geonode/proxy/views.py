@@ -191,7 +191,7 @@ def proxy(request, url=None, response_callback=None,
         conn = HTTPSConnection(url.hostname, url.port)
     else:
         conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator, request.body, headers)
+    conn.request(request.method, locator.encode('utf8'), request.body, headers)
     response = conn.getresponse()
     content = response.read()
     status = response.status
@@ -261,23 +261,24 @@ def download(request, resourceid, sender=Layer):
             # Let's check for associated SLD files (if any)
             try:
                 for s in instance.styles.all():
-                    sld_file = os.path.join(target_folder, "".join([s.name, ".sld"]))
-                    sld_file = open(sld_file, "w")
+                    sld_file_path = os.path.join(target_folder, "".join([s.name, ".sld"]))
+                    sld_file = open(sld_file_path, "w")
                     sld_file.write(s.sld_body.strip())
                     sld_file.close()
 
-                    sld_file = open(sld_file, "w")
                     try:
+                        sld_file = open(sld_file_path, "r")
                         response = requests.get(s.sld_url, timeout=TIMEOUT)
                         sld_remote_content = response.text
-                        sld_file = os.path.join(target_folder, "".join([s.name, "_remote.sld"]))
+                        sld_file_path = os.path.join(target_folder, "".join([s.name, "_remote.sld"]))
+                        sld_file = open(sld_file_path, "w")
                         sld_file.write(sld_remote_content.strip())
+                        sld_file.close()
                     except:
                         traceback.print_exc()
                         tb = traceback.format_exc()
                         logger.debug(tb)
-                    finally:
-                        sld_file.close()
+
             except:
                 traceback.print_exc()
                 tb = traceback.format_exc()
@@ -293,7 +294,11 @@ def download(request, resourceid, sender=Layer):
                 for link in links:
                     link_name = custom_slugify(link.name)
                     link_file = os.path.join(target_md_folder, "".join([link_name, ".%s" % link.extension]))
-                    if link.link_type in ('metadata', 'data', 'image'):
+                    if link.link_type in ('data'):
+                        # Skipping 'data' download links
+                        continue
+                    elif link.link_type in ('metadata', 'image'):
+                        # Dumping metadata files and images
                         link_file = open(link_file, "wb")
                         try:
                             response = requests.get(link.url, stream=True, timeout=TIMEOUT)
@@ -306,6 +311,7 @@ def download(request, resourceid, sender=Layer):
                         finally:
                             link_file.close()
                     elif link.link_type.startswith('OGC'):
+                        # Dumping OGC/OWS links
                         link_file = open(link_file, "w")
                         link_file.write(link.url.strip())
                         link_file.close()

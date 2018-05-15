@@ -25,6 +25,7 @@ import re
 import sys
 from datetime import timedelta
 from distutils.util import strtobool
+from urlparse import urlparse, urlunparse
 
 import django
 import dj_database_url
@@ -79,7 +80,7 @@ try:
     ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
 except ValueError:
     # fallback to regular list of values separated with misc chars
-    ALLOWED_HOSTS = ['localhost', ] if os.getenv('ALLOWED_HOSTS') is None \
+    ALLOWED_HOSTS = ['localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
@@ -286,7 +287,7 @@ GEONODE_CORE_APPS = (
     'geonode.catalogue',
 )
 
-GEONODE_APPS = GEONODE_CORE_APPS + (
+GEONODE_INTERNAL_APPS = (
     # GeoNode internal apps
     'geonode.people',
     'geonode.client',
@@ -325,7 +326,7 @@ GEONODE_CONTRIB_APPS = (
 )
 
 # Uncomment the following line to enable contrib apps
-GEONODE_APPS = GEONODE_CONTRIB_APPS + GEONODE_APPS
+GEONODE_APPS = GEONODE_CORE_APPS + GEONODE_INTERNAL_APPS + GEONODE_CONTRIB_APPS
 
 INSTALLED_APPS = (
 
@@ -387,10 +388,14 @@ INSTALLED_APPS = (
     'corsheaders',
 
     'invitations',
+
     # login with external providers
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+
+    # GeoNode
+    'geonode',
 ) + GEONODE_APPS
 
 # Documents application
@@ -632,17 +637,27 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 #
 
 on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
+core_tests = ast.literal_eval(os.environ.get('TEST_RUN_CORE', 'False'))
+internal_apps_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTERNAL_APPS', 'False'))
 integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'False'))
 
 # Setting a custom test runner to avoid running the tests for
 # some problematic 3rd party apps
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# Default Nose Test Suite
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Django 1.11 ParallelTestSuite
+TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
+TEST_RUNNER_KEEPDB = 0
+TEST_RUNNER_PARALLEL = 1
+
+# GeoNode test suite
 # TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
-TEST_RUNNER_WORKER_MAX = 3
-TEST_RUNNER_WORKER_COUNT = 'auto'
-TEST_RUNNER_NOT_THREAD_SAFE = None
-TEST_RUNNER_PARENT_TIMEOUT = 10
-TEST_RUNNER_WORKER_TIMEOUT = 10
+# TEST_RUNNER_WORKER_MAX = 3
+# TEST_RUNNER_WORKER_COUNT = 'auto'
+# TEST_RUNNER_NOT_THREAD_SAFE = None
+# TEST_RUNNER_PARENT_TIMEOUT = 10
+# TEST_RUNNER_WORKER_TIMEOUT = 10
 
 TEST = 'test' in sys.argv
 INTEGRATION = 'geonode.tests.integration' in sys.argv
@@ -657,6 +672,15 @@ NOSE_ARGS = [
 # GeoNode specific settings
 #
 SITEURL = os.getenv('SITEURL', "http://localhost:8000/")
+
+# we need hostname for deployed
+_surl = urlparse(SITEURL)
+HOSTNAME = _surl.hostname
+
+# add trailing slash to site url. geoserver url will be relative to this
+if not SITEURL.endswith('/'):
+    SITEURL = '{}/'.format(SITEURL)
+
 
 DEFAULT_WORKSPACE = os.getenv('DEFAULT_WORKSPACE', 'geonode')
 CASCADE_WORKSPACE = os.getenv('CASCADE_WORKSPACE', 'geonode')
@@ -679,7 +703,8 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+    #  'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)
+    'GEOSERVER_PUBLIC_LOCATION', GEOSERVER_LOCATION
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -870,10 +895,10 @@ DEFAULT_MAP_CENTER = (0, 0)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 0
 
-ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)
-CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
-STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
-THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
+ALT_OSM_BASEMAPS = ast.literal_eval(os.environ.get('ALT_OSM_BASEMAPS', 'False'))
+CARTODB_BASEMAPS = ast.literal_eval(os.environ.get('CARTODB_BASEMAPS', 'False'))
+STAMEN_BASEMAPS = ast.literal_eval(os.environ.get('STAMEN_BASEMAPS', 'False'))
+THUNDERFOREST_BASEMAPS = ast.literal_eval(os.environ.get('THUNDERFOREST_BASEMAPS', 'False'))
 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
 BING_API_KEY = os.environ.get('BING_API_KEY', None)
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
@@ -1231,17 +1256,20 @@ BROKER_TRANSPORT_OPTIONS = {
     'visibility_timeout': 86400
 }
 
-ASYNC_SIGNALS = False
+ASYNC_SIGNALS = ast.literal_eval(os.environ.get('ASYNC_SIGNALS', 'False'))
 RABBITMQ_SIGNALS_BROKER_URL = 'amqp://localhost:5672'
 REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
 LOCAL_SIGNALS_BROKER_URL = 'memory://'
+
 if ASYNC_SIGNALS:
-    _BROKER_URL = RABBITMQ_SIGNALS_BROKER_URL
-    # _BROKER_URL = REDIS_SIGNALS_BROKER_URL
+    _BROKER_URL = os.environ.get('BROKER_URL', RABBITMQ_SIGNALS_BROKER_URL)
+    # _BROKER_URL =  = os.environ.get('BROKER_URL', REDIS_SIGNALS_BROKER_URL)
+
     CELERY_RESULT_BACKEND = _BROKER_URL
 else:
     _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
-BROKER_URL = os.environ.get('BROKER_URL', _BROKER_URL)
+
+BROKER_URL = _BROKER_URL
 
 CELERY_RESULT_PERSISTENT = False
 
@@ -1249,7 +1277,8 @@ CELERY_RESULT_PERSISTENT = False
 CELERY_ACKS_LATE = True
 
 # Set this to False in order to run async
-CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
+# CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
+CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_IGNORE_RESULT = True
 
 # I use these to debug kombu crashes; we get a more informative message.
@@ -1314,8 +1343,8 @@ CELERY_SEND_TASK_SENT_EVENT = True
 
 # AWS S3 Settings
 
-S3_STATIC_ENABLED = os.environ.get('S3_STATIC_ENABLED', False)
-S3_MEDIA_ENABLED = os.environ.get('S3_MEDIA_ENABLED', False)
+S3_STATIC_ENABLED = ast.literal_eval(os.environ.get('S3_STATIC_ENABLED', 'False'))
+S3_MEDIA_ENABLED = ast.literal_eval(os.environ.get('S3_MEDIA_ENABLED', 'False'))
 
 # Required to run Sync Media to S3
 AWS_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
@@ -1420,7 +1449,7 @@ ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
 MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'True'))
-MONITORING_HOST_NAME = 'localhost'
+MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
 MONITORING_SERVICE_NAME = 'geonode'
 
 # how long monitoring data should be stored
@@ -1464,6 +1493,61 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
+
+SOCIALACCOUNT_AUTO_SIGNUP = False
+
+# Uncomment this to enable Linkedin and Facebook login
+#INSTALLED_APPS += (
+#    'allauth.socialaccount.providers.linkedin_oauth2',
+#    'allauth.socialaccount.providers.facebook',
+#)
+
+SOCIALACCOUNT_PROVIDERS = {
+    'linkedin_oauth2': {
+        'SCOPE': [
+            'r_emailaddress',
+            'r_basicprofile',
+        ],
+        'PROFILE_FIELDS': [
+            'emailAddress',
+            'firstName',
+            'headline',
+            'id',
+            'industry',
+            'lastName',
+            'pictureUrl',
+            'positions',
+            'publicProfileUrl',
+            'location',
+            'specialties',
+            'summary',
+        ]
+    },
+    'facebook': {
+        'METHOD': 'oauth2',
+        'SCOPE': [
+            'email',
+            'public_profile',
+        ],
+        'FIELDS': [
+            'id',
+            'email',
+            'name',
+            'first_name',
+            'last_name',
+            'verified',
+            'locale',
+            'timezone',
+            'link',
+            'gender',
+        ]
+    },
+}
+
+SOCIALACCOUNT_PROFILE_EXTRACTORS = {
+    "facebook": "geonode.people.profileextractors.FacebookExtractor",
+    "linkedin_oauth2": "geonode.people.profileextractors.LinkedInExtractor",
+}
 
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 

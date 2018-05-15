@@ -26,6 +26,9 @@ See the README.rst in this directory for details on running these tests.
       difficult for cleanup to track the layers created between runs
 @todo only test_time seems to work correctly with database backend test settings
 """
+
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import os.path
 from bs4 import BeautifulSoup
 from django.conf import settings
@@ -43,7 +46,6 @@ from geonode.geoserver.helpers import cascading_delete
 from geonode.geoserver.signals import gs_catalog
 from geoserver.catalog import Catalog
 # from geonode.upload.utils import make_geogig_rest_payload
-from django.test.testcases import LiveServerTestCase
 from gisdata import BAD_DATA
 from gisdata import GOOD_DATA
 from owslib.wms import WebMapService
@@ -235,9 +237,8 @@ class Client(object):
         return csrf[0].value if csrf else None
 
 
-class UploaderBase(LiveServerTestCase):
+class UploaderBase(GeoNodeBaseTestSupport):
 
-    port = 8000
     settings_overrides = []
 
     @classmethod
@@ -839,7 +840,7 @@ class TestUploadDBDataStore(UploaderBase):
                     'Source SRS is not valid' in resp_js['error_msg'])
 
 
-# class GeogigTest(LiveServerTestCase):
+# class GeogigTest(GeoNodeBaseTestSupport):
 #     port = 8000
 #     def test_payload_creation(self):
 #         '''Test formation of REST call to geoserver's geogig API'''

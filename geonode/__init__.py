@@ -20,15 +20,9 @@
 
 import os
 
-from .celery_app import app as celery_app
-
 __version__ = (2, 9, 0, 'unstable', 0)
-__all__ = ['celery_app']
 
-
-class GeoNodeException(Exception):
-    """Base class for exceptions in this module."""
-    pass
+default_app_config = "geonode.apps.AppConfig"
 
 
 def get_version():
@@ -41,3 +35,8 @@ def main(global_settings, **settings):
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings.get('django_settings'))
     app = get_wsgi_application()
     return app
+
+
+class GeoNodeException(Exception):
+    """Base class for exceptions in this module."""
+    pass

@@ -28,8 +28,8 @@ from socket import gethostbyname
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from django.db import models
 from django import forms
+from django.db import models
 from django.conf import settings
 from django.http import Http404
 from jsonfield import JSONField
@@ -44,6 +44,8 @@ except ImportError:
     from django.contrib.gis.geoip import GeoIP
 
 import user_agents
+from ipware import get_client_ip
+import pycountry
 from multi_email_field.forms import MultiEmailField
 
 from geonode.utils import parse_datetime
@@ -64,6 +66,7 @@ def get_geoip():
 
 
 class Host(models.Model):
+
     """
     Describes one physical instance
     """
@@ -80,6 +83,7 @@ class Host(models.Model):
 
 
 class ServiceType(models.Model):
+
     """
     Service Type list
     """
@@ -109,6 +113,7 @@ class ServiceType(models.Model):
 
 
 class Service(models.Model):
+
     """
     Service is a entity describing deployed processes.
     """
@@ -120,7 +125,7 @@ class Service(models.Model):
     host = models.ForeignKey(Host, null=False)
     check_interval = models.DurationField(
         null=False, blank=False, default=timedelta(seconds=60))
-    last_check = models.DateTimeField(null=True, blank=True)
+    last_check = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     service_type = models.ForeignKey(ServiceType, null=False)
     active = models.BooleanField(null=False, blank=False, default=True)
     notes = models.TextField(null=True, blank=True)
@@ -341,7 +346,8 @@ class RequestEvent(models.Model):
     #  map=some map
     #
     # list is separated with newline
-    # resources = models.TextField(blank=True, default='', help_text=_("Resources name (style, layer, document, map)"))
+    # resources = models.TextField(blank=True, default='',
+    # help_text=_("Resources name (style, layer, document, map)"))
     resources = models.ManyToManyField(MonitoredResource, blank=True,
                                        help_text=_(
                                            "List of resources affected"),
@@ -434,23 +440,36 @@ class RequestEvent(models.Model):
         ua = request.META.get('HTTP_USER_AGENT') or ''
         ua_family = cls._get_ua_family(ua)
 
-        ip = request.get_host()
+        ip, is_routable = get_client_ip(request)
         lat = lon = None
         country = region = city = None
-        if ip:
+        if ip and is_routable:
             ip = ip.split(':')[0]
             if settings.TEST and ip == 'testserver':
                 ip = '127.0.0.1'
-            ip = gethostbyname(ip)
+            try:
+                ip = gethostbyname(ip)
+            except Exception as err:
+                pass
 
             geoip = get_geoip()
-            client_loc = geoip.city(ip)
+            try:
+                client_loc = geoip.city(ip)
+            except Exception as err:
+                log.warning("Cannot resolve %s: %s", ip, err)
+                client_loc = None
 
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc['country_code3']
+                country = client_loc.get(
+                    'country_code3') or client_loc['country_code']
+                if len(country) == 2:
+                    _c = pycountry.countries.get(alpha_2=country)
+                    country = _c.alpha_3
+
                 region = client_loc['region']
                 city = client_loc['city']
+
         data = {'received': received,
                 'created': created,
                 'host': request.get_host(),
@@ -459,7 +478,8 @@ class RequestEvent(models.Model):
                 'request_path': request.get_full_path(),
                 'request_method': request.method,
                 'response_status': response.status_code,
-                'response_size': response.get('Content-length') or len(response.getvalue()),
+                'response_size':
+                    response.get('Content-length') or len(response.getvalue()),
                 'response_type': response.get('Content-type'),
                 'response_time': duration,
                 'user_agent': ua,
@@ -500,16 +520,28 @@ class RequestEvent(models.Model):
         country = region = city = None
         if ip:
             geoip = get_geoip()
-            client_loc = geoip.city(ip)
+            try:
+                client_loc = geoip.city(ip)
+            except Exception as err:
+                log.warning("Cannot resolve %s: %s", ip, err)
+                client_loc = None
+
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc['country_code3']
+                country = client_loc.get(
+                    'country_code3') or client_loc['country_code']
+                if len(country) == 2:
+                    _c = pycountry.countries.get(alpha_2=country)
+                    country = _c.alpha_3
                 region = client_loc['region']
                 city = client_loc['city']
 
         from dateutil.tz import tzlocal
         utc = pytz.utc
-        local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
+        try:
+            local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
+        except:
+            local_tz = pytz.timezone(settings.TIME_ZONE)
 
         start_time = parse_datetime(rd['startTime'])
         # Assuming GeoServer stores dates @ UTC
@@ -521,7 +553,9 @@ class RequestEvent(models.Model):
                 'host': rd['host'],
                 'ows_service': OWSService.get(rd.get('service')),
                 'service': service,
-                'request_path': '{}?{}'.format(rd['path'], rd['queryString']) if rd.get('queryString') else rd['path'],
+                'request_path':
+                    '{}?{}'.format(rd['path'], rd['queryString']) if rd.get(
+                        'queryString') else rd['path'],
                 'request_method': rd['httpMethod'],
                 'response_status': rd['responseStatus'],
                 'response_size': rl[0] if isinstance(rl, list) else rl,
@@ -543,7 +577,12 @@ class RequestEvent(models.Model):
         resources = cls._get_resources('layer', resource_names)
         if rd.get('error'):
             try:
-                etype = rd['error']['@class'] if '@class' in rd['error'] else rd['error']['class']
+                etype = rd[
+                    'error'][
+                        '@class'] if '@class' in rd[
+                            'error'] else rd[
+                                'error'][
+                    'class']
                 edata = '\n'.join(rd['error']['stackTrace']['trace'])
                 emessage = rd['error']['detailMessage']
                 ExceptionEvent.add_error(
@@ -572,7 +611,7 @@ class ExceptionEvent(models.Model):
     def add_error(cls, from_service, error_type, stack_trace,
                   request=None, created=None, message=None):
         received = datetime.utcnow().replace(tzinfo=pytz.utc)
-        if not isinstance(error_type, types.StringTypes):
+        if not isinstance(error_type, (str,)):
             _cls = error_type.__class__
             error_type = '{}.{}'.format(_cls.__module__, _cls.__name__)
         if not message:
@@ -830,8 +869,9 @@ class NotificationCheck(models.Model):
         null=True,
         blank=True,
         help_text=_("Marker of last delivery"))
-    grace_period = models.DurationField(null=False, default=GRACE_PERIOD_10M, choices=GRACE_PERIODS,
-                                        help_text=_("Minimum time between subsequent notifications"))
+    grace_period = models.DurationField(
+        null=False, default=GRACE_PERIOD_10M, choices=GRACE_PERIODS,
+        help_text=_("Minimum time between subsequent notifications"))
     severity = models.CharField(max_length=32,
                                 null=False,
                                 default=SEVERITY_ERROR,
@@ -921,8 +961,8 @@ class NotificationCheck(models.Model):
 
     @classmethod
     def get_steps(cls, min_, max_, thresholds):
-        if isinstance(thresholds, (types.IntType, types.LongType,
-                                   types.FloatType, Decimal,)):
+        if isinstance(thresholds, (int, int,
+                                   float, Decimal,)):
             if min_ is None or max_ is None:
                 raise ValueError(
                     "Cannot use numeric threshold if one of min/max is None")
@@ -971,14 +1011,14 @@ class NotificationCheck(models.Model):
 
             metric = Metric.objects.get(name=metric_name)
             steps = cls.get_steps(minimum, maximum, thresholds)
-            nm = NotificationMetricDefinition.objects.create(notification_check=inst,
-                                                             metric=metric,
-                                                             description=_description,
-                                                             min_value=minimum,
-                                                             max_value=maximum,
-                                                             steps=len(
-                                                                 steps) if steps else None,
-                                                             field_option=field_opt)
+            nm = NotificationMetricDefinition.objects.create(
+                notification_check=inst,
+                metric=metric,
+                description=_description,
+                min_value=minimum,
+                max_value=maximum,
+                steps=len(steps) if steps else None,
+                field_option=field_opt)
             user_thresholds[nm.field_name] = {'min': minimum,
                                               'max': maximum,
                                               'metric': metric_name,
@@ -1009,10 +1049,11 @@ class NotificationCheck(models.Model):
             grace_period = forms.DurationField(required=False)
 
             def __init__(self, *args, **kwargs):
-                initial = {'emails': list(this.get_emails()) + [u.email for u in this.get_users()],
-                           'severity': this.severity,
-                           'active': this.active,
-                           'grace_period': this.grace_period}
+                initial = {
+                    'emails': list(this.get_emails()) + [u.email for u in this.get_users()],
+                    'severity': this.severity,
+                    'active': this.active,
+                    'grace_period': this.grace_period}
                 kwargs['initial'] = initial
                 super(F, self).__init__(*args, **kwargs)
                 fields = self.fields
@@ -1070,10 +1111,11 @@ class NotificationCheck(models.Model):
             if field == 'max_timeout':
                 val = timedelta(seconds=int(val))
             ndef = self.get_definition_for(key)
-            ncheck = MetricNotificationCheck.objects.create(notification_check=inst,
-                                                            metric=metric,
-                                                            definition=ndef,
-                                                            **{field: val})
+            ncheck = MetricNotificationCheck.objects.create(
+                notification_check=inst,
+                metric=metric,
+                definition=ndef,
+                **{field: val})
             out.append(ncheck)
         U = get_user_model()
         self.receivers.all().delete()
@@ -1111,11 +1153,10 @@ class NotificationMetricDefinition(models.Model):
     FIELD_OPTION_MIN_VALUE = 'min_value'
     FIELD_OPTION_MAX_VALUE = 'max_value'
     FIELD_OPTION_MAX_TIMEOUT = 'max_timeout'
-    FIELD_OPTION_CHOICES = ((FIELD_OPTION_MIN_VALUE, _("Value must be above"),),
-                            (FIELD_OPTION_MAX_VALUE, _("Value must be below"),),
-                            (FIELD_OPTION_MAX_TIMEOUT, _(
-                                "Last update must not be older than"),)
-                            )
+    FIELD_OPTION_CHOICES = (
+        (FIELD_OPTION_MIN_VALUE, _("Value must be above"),),
+        (FIELD_OPTION_MAX_VALUE, _("Value must be below"),),
+        (FIELD_OPTION_MAX_TIMEOUT, _("Last update must not be older than"),))
 
     notification_check = models.ForeignKey(
         NotificationCheck, related_name='definitions')
@@ -1179,7 +1220,11 @@ class NotificationMetricDefinition(models.Model):
                 val_ = val.total_seconds()
             else:
                 val_ = val
-            return {'class': '{}.{}'.format(val.__class__.__module__, val.__class__.__name__),
+            return {
+                'class':
+                    '{}.{}'.format(
+                        val.__class__.__module__,
+                        val.__class__.__name__),
                     'value': val_}
         except MetricNotificationCheck.DoesNotExist:
             return
@@ -1221,9 +1266,10 @@ class NotificationMetricDefinition(models.Model):
         except MetricNotificationCheck.DoesNotExist:
             try:
                 mcheck = MetricNotificationCheck.objects\
-                                                .filter(notification_check=self.notification_check,
-                                                        metric=self.metric,
-                                                        **{'{}__isnull'.format(self.field_option): False})\
+                                                .filter(
+                                                    notification_check=self.notification_check,
+                                                    metric=self.metric,
+                                                    **{'{}__isnull'.format(self.field_option): False})\
                                                 .get()
                 if mcheck:
                     self.metric_check = mcheck
@@ -1431,27 +1477,31 @@ class BuiltIns(object):
     metrics_rate = ('response.time', 'response.size',)
     # metrics_count = ('request.count', 'request.method', 'request.
 
-    geonode_metrics = ('request', 'request.count', 'request.ip', 'request.ua', 'request.path',
-                       'request.ua.family', 'request.method', 'response.error.count',
-                       'request.country', 'request.region', 'request.city',
-                       'response.time', 'response.status', 'response.size',
-                       'response.error.types',)
+    geonode_metrics = (
+        'request', 'request.count', 'request.ip', 'request.ua', 'request.path',
+        'request.ua.family', 'request.method', 'response.error.count',
+        'request.country', 'request.region', 'request.city',
+        'response.time', 'response.status', 'response.size',
+        'response.error.types',)
     host_metrics = ('load.1m', 'load.5m', 'load.15m',
                     'mem.free', 'mem.usage', 'mem.usage.percent', 'mem.buffers', 'mem.all',
                     'uptime', 'cpu.usage', 'cpu.usage.rate', 'cpu.usage.percent',
-                    'storage.free', 'storage.total', 'storage.used',  # mountpoint is the label
+                    'storage.free', 'storage.total', 'storage.used',
+                    # mountpoint is the label
                     'network.in', 'network.out', 'network.in.rate', 'network.out.rate',)
 
-    rates = ('response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m',
-             'load.15m', 'cpu.usage.rate', 'cpu.usage.percent', 'cpu.usage', 'mem.usage.percent',
-             'storage.free', 'storage.total', 'storage.used',)
+    rates = (
+        'response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m',
+        'load.15m', 'cpu.usage.rate', 'cpu.usage.percent', 'cpu.usage', 'mem.usage.percent',
+        'storage.free', 'storage.total', 'storage.used',)
 
     values = ('request.ip', 'request.ua', 'request.ua.family', 'request.path',
               'request.method', 'request.country', 'request.region',
               'request.city', 'response.status', 'response.ereror.types',)
 
-    values_numeric = ('storage.total', 'storage.used', 'storage.free', 'mem.free', 'mem.usage',
-                      'mem.buffers', 'mem.all',)
+    values_numeric = (
+        'storage.total', 'storage.used', 'storage.free', 'mem.free', 'mem.usage',
+        'mem.buffers', 'mem.all',)
     counters = (
         'request.count',
         'network.in',

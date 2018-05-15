@@ -241,12 +241,20 @@ def get_sld_for(gs_catalog, layer):
     # GeoServer sometimes fails to associate a style with the data, so
     # for now we default to using a point style.(it works for lines and
     # polygons, hope this doesn't happen for rasters  though)
-    if layer.default_style is None:
+    _default_style = None
+    try:
+        _default_style = layer.default_style
+    except:
+        pass
+    if _default_style is None:
         gs_catalog._cache.clear()
-        gs_layer = gs_catalog.get_layer(layer.name)
-        name = gs_layer.default_style.name if gs_layer.default_style is not None else "raster"
+        try:
+            gs_layer = gs_catalog.get_layer(layer.name)
+            name = gs_layer.default_style.name if gs_layer.default_style is not None else "raster"
+        except:
+            name = "raster"
     else:
-        name = layer.default_style.name if layer.default_style is not None else "raster"
+        name = _default_style.name
 
     # Detect geometry type if it is a FeatureType
     if layer.resource and layer.resource.resource_type == 'featureType':
@@ -410,18 +418,23 @@ def cascading_delete(cat, layer_name):
     lyr = cat.get_layer(resource_name)
     if(lyr is not None):  # Already deleted
         store = resource.store
-        styles = lyr.styles + [lyr.default_style]
+        styles = lyr.styles
+        try:
+            styles = styles + [lyr.default_style]
+        except:
+            pass
         gs_styles = [x for x in cat.get_styles()]
         if settings.DEFAULT_WORKSPACE:
             gs_styles = gs_styles + [x for x in cat.get_styles(workspace=settings.DEFAULT_WORKSPACE)]
             ws_styles = []
             for s in styles:
-                m = re.search(r'\d+$', s.name)
-                _name = s.name[:-len(m.group())] if m else s.name
-                _s = "%s_%s" % (settings.DEFAULT_WORKSPACE, _name)
-                for _gs in gs_styles:
-                    if _s in _gs.name and _gs not in styles:
-                            ws_styles.append(_gs)
+                if s is not None and s.name not in _default_style_names:
+                    m = re.search(r'\d+$', s.name)
+                    _name = s.name[:-len(m.group())] if m else s.name
+                    _s = "%s_%s" % (settings.DEFAULT_WORKSPACE, _name)
+                    for _gs in gs_styles:
+                        if _s in _gs.name and _gs not in styles:
+                                ws_styles.append(_gs)
             styles = styles + ws_styles
         cat.delete(lyr)
         for s in styles:
@@ -902,24 +915,36 @@ def set_styles(layer, gs_catalog):
     if not gs_layer:
         gs_layer = gs_catalog.get_layer(layer.alternate)
 
-    if gs_layer.default_style:
-        default_style = gs_layer.default_style
-    else:
-        default_style = gs_catalog.get_style(layer.name, workspace=settings.DEFAULT_WORKSPACE) \
-                        or gs_catalog.get_style(layer.name)
+    if gs_layer:
+        default_style = None
         try:
-            gs_layer.default_style = default_style
-            gs_catalog.save(gs_layer)
+            default_style = gs_layer.default_style or None
         except:
-            logger.exception("GeoServer Layer Default Style issues!")
-    layer.default_style = save_style(default_style)
-    # FIXME: This should remove styles that are no longer valid
-    style_set.append(layer.default_style)
+            pass
 
-    alt_styles = gs_layer.styles
+        if not default_style:
+            try:
+                default_style = gs_catalog.get_style(layer.name, workspace=settings.DEFAULT_WORKSPACE) \
+                                or gs_catalog.get_style(layer.name)
+                gs_layer.default_style = default_style
+                gs_catalog.save(gs_layer)
+            except:
+                logger.exception("GeoServer Layer Default Style issues!")
 
-    for alt_style in alt_styles:
-        style_set.append(save_style(alt_style))
+        if default_style:
+            layer.default_style = save_style(default_style)
+            # FIXME: This should remove styles that are no longer valid
+            style_set.append(layer.default_style)
+
+        try:
+            if gs_layer.styles:
+                alt_styles = gs_layer.styles
+
+                for alt_style in alt_styles:
+                    if alt_style:
+                        style_set.append(save_style(alt_style))
+        except:
+            pass
 
     layer.styles = style_set
 
@@ -927,7 +952,9 @@ def set_styles(layer, gs_catalog):
     to_update = {
         'default_style': layer.default_style
     }
+
     Layer.objects.filter(id=layer.id).update(**to_update)
+    layer.refresh_from_db()
     return layer
 
 
@@ -1102,7 +1129,8 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
     """
     cat = gs_catalog
     db = ogc_server_settings.datastore_db
-    dsname = ogc_server_settings.DATASTORE
+    # dsname = ogc_server_settings.DATASTORE
+    dsname = db['NAME']
 
     ds_exists = False
     try:
@@ -1159,25 +1187,31 @@ def get_store(cat, name, workspace=None):
 
     if workspace is None:
         workspace = cat.get_default_workspace()
-    try:
-        store = cat.get_xml('%s/%s.xml' % (workspace.datastore_url[:-4], name))
-    except FailedRequestError:
+
+    if workspace:
         try:
-            store = cat.get_xml('%s/%s.xml' % (workspace.coveragestore_url[:-4], name))
+            store = cat.get_xml('%s/%s.xml' % (workspace.datastore_url[:-4], name))
         except FailedRequestError:
             try:
-                store = cat.get_xml('%s/%s.xml' % (workspace.wmsstore_url[:-4], name))
+                store = cat.get_xml('%s/%s.xml' % (workspace.coveragestore_url[:-4], name))
             except FailedRequestError:
-                raise FailedRequestError("No store found named: " + name)
+                try:
+                    store = cat.get_xml('%s/%s.xml' % (workspace.wmsstore_url[:-4], name))
+                except FailedRequestError:
+                    raise FailedRequestError("No store found named: " + name)
+        if store:
+            if store.tag == 'dataStore':
+                store = datastore_from_index(cat, workspace, store)
+            elif store.tag == 'coverageStore':
+                store = coveragestore_from_index(cat, workspace, store)
+            elif store.tag == 'wmsStore':
+                store = wmsstore_from_index(cat, workspace, store)
 
-    if store.tag == 'dataStore':
-        store = datastore_from_index(cat, workspace, store)
-    elif store.tag == 'coverageStore':
-        store = coveragestore_from_index(cat, workspace, store)
-    elif store.tag == 'wmsStore':
-        store = wmsstore_from_index(cat, workspace, store)
-
-    return store
+            return store
+        else:
+            raise FailedRequestError("No store found named: " + name)
+    else:
+        raise FailedRequestError("No store found named: " + name)
 
 
 class ServerDoesNotExist(Exception):
@@ -1552,10 +1586,15 @@ def set_time_info(layer, attribute, end_attribute, presentation,
         resolution = '%s %s' % (precision_value, precision_step)
     info = DimensionInfo("time", enabled, presentation, resolution, "ISO8601",
                          None, attribute=attribute, end_attribute=end_attribute)
-    metadata = dict(resource.metadata or {})
+    if resource and resource.metadata:
+        metadata = dict(resource.metadata or {})
+    else:
+        metadata = dict({})
     metadata['time'] = info
-    resource.metadata = metadata
-    gs_catalog.save(resource)
+    if resource and resource.metadata:
+        resource.metadata = metadata
+    if resource:
+        gs_catalog.save(resource)
 
 
 def get_time_info(layer):
