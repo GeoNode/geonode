@@ -475,6 +475,10 @@ def stop_geoserver():
     """
     Stop GeoServer
     """
+    # we use docker-compose for integration tests
+    if integration_tests:
+        return
+
     # only start if using Geoserver backend
     if 'geonode.geoserver' not in INSTALLED_APPS or OGC_SERVER['default']['BACKEND'] == 'geonode.qgis_server':
         return
@@ -595,6 +599,10 @@ def start_geoserver(options):
     """
     Start GeoServer with GeoNode extensions
     """
+    # we use docker-compose for integration tests
+    if integration_tests:
+        return
+
     # only start if using Geoserver backend
     if 'geonode.geoserver' not in INSTALLED_APPS or OGC_SERVER['default']['BACKEND'] == 'geonode.qgis_server':
         return
@@ -865,7 +873,7 @@ def run_tests(options):
     Executes the entire test suite.
     """
     if options.get('coverage'):
-        prefix = 'coverage run --branch --source=geonode --omit="*/management/*,geonode/contrib/*,*/test*"'
+        prefix = 'coverage run --branch --source=geonode --omit="*/management/*,geonode/contrib/*,*/test*,*/wsgi*,*/middleware*"'
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
