@@ -123,6 +123,13 @@ def layer_style(request, layername):
         s for s in layer.styles if s.name != style_name] + [old_default]
     layer.save()
 
+    # Invalidate GeoWebCache for the updated resource
+    try:
+        _stylefilterparams_geowebcache_layer(layer.alternate)
+        _invalidate_geowebcache_layer(layer.alternate)
+    except:
+        pass
+
     return HttpResponse(
         "Default style for %s changed to %s" %
         (layer.name, style_name), status=200)
@@ -188,12 +195,14 @@ def layer_style_upload(request, layername):
         except ConflictingDataError:
             return respond(errors="""A layer with this name exists. Select
                                      the update option if you want to update.""")
+
     # Invalidate GeoWebCache for the updated resource
     try:
         _stylefilterparams_geowebcache_layer(layer.alternate)
         _invalidate_geowebcache_layer(layer.alternate)
     except:
         pass
+
     return respond(
         body={
             'success': True,
@@ -314,6 +323,7 @@ def layer_style_manage(request, layername):
                 _invalidate_geowebcache_layer(layer.alternate)
             except:
                 pass
+
             return HttpResponseRedirect(
                 reverse(
                     'layer_detail',
