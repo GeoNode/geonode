@@ -36,14 +36,15 @@ define(['./FileType'], function (FileType) {
             main: 'kml'
         });
     file_types['KML_GROUND_OVERLAY'] = new FileType({
-        name: gettext('Google Earth KML with a GroundOverlay'),
-        format: 'raster',
-        main: 'kml'
+            name: gettext('Google Earth KML with a GroundOverlay'),
+            format: 'raster',
+            main: 'kml',
+            aux: ['png', 'gif', 'tiff', 'tif', 'jpg']
     });
     file_types['KMZ'] = new FileType({
-        name: gettext('Google Earth KMZ'),
-        format: 'archive',
-        main: 'kmz'
+            name: gettext('Google Earth KMZ'),
+            format: 'archive',
+            main: 'kmz'
     });
     file_types['GEOJSON'] = new FileType({
             name: gettext('GeoJSON'),

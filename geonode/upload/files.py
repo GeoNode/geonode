@@ -233,9 +233,11 @@ def get_scan_hint(valid_extensions):
     either vector or raster formats, like the KML type.
 
     """
-
-    if "kml" in valid_extensions and len(valid_extensions) > 1:
-        result = "kml-overlay"
+    if "kml" in valid_extensions:
+        if len(valid_extensions) == 2 and valid_extensions[1] == 'sld':
+            result = "kml"
+        else:
+            result = "kml-overlay"
     elif "kmz" in valid_extensions:
         result = "kmz"
     else:
@@ -257,6 +259,7 @@ def scan_file(file_name, scan_hint=None):
         safe_paths = _rename_files(paths)
     else:
         safe_paths = []
+
     found = []
     for file_type in types:
         for path in safe_paths:

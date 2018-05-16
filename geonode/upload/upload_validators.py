@@ -47,6 +47,7 @@ def _supported_type(ext, supported_types):
 
 
 def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
+    logger.info("uploaded_files: {}".format(uploaded_files))
     requires_datastore = () if ogc_server_settings.DATASTORE else (
         'csv',
         'kml')
@@ -145,7 +146,6 @@ def validate_kml(possible_files):
     uploaded together with a raster file.
 
     """
-
     kml_file = [
         f for f in possible_files if f.name.lower().endswith(".kml")][0]
     other = [
@@ -199,7 +199,7 @@ def _validate_kml_bytes(kml_bytes, other_files):
         if image_path not in other_files:
             raise forms.ValidationError(
                 _("Ground overlay image declared in kml file cannot be found"))
-        result = ("kml", os.path.splitext(image_path)[-1][1:])
+        result = ("kml", "sld", os.path.splitext(image_path)[-1][1:])
     else:
-        result = ("kml", )
+        result = ("kml", "sld", )
     return result
