@@ -65,10 +65,11 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.findFileType = function (file) {
         var i, type, res;
+        var extensions = this.getExtensions();
         $.each(fileTypes, function (name, type) {
-            if (type.isType(file)) {
+            if (type.isType(file, extensions)) {
                 res = {type: type, file: file};
-                return false;
+                // return false;
             }
         });
         return res;
@@ -83,14 +84,19 @@ define(function (require, exports) {
         var self = this;
         $.each(this.files, function (idx, file) {
             var results = self.findFileType(file);
-            // if we find the type of the file, we also find the "main"
-            // file
+
+            // if we find the type of the file, we also find the "main" file
             if (results) {
-                // Avoid assuming the metadata file as main one
-                if ((results.type.main == 'xml' || results.type.main == 'sld') && self.main != undefined) {
+                if (results.type.main == 'kml') {
+                   // Assume the kml file always as main one
+                   self.type = results.type;
+                   self.main = results.file;
+                } else if ((results.type.main == 'xml' || results.type.main == 'sld') &&
+                        self.main != undefined) {
+                   // Do not assume the metadata or sld file as main one
                    self.type = self.type;
                    self.main = self.main;
-                } else {
+               } else if ((self.type == undefined) || (self.type != undefined && self.type.main != 'kml')) {
                    self.type = results.type;
                    self.main = results.file;
                 }

@@ -131,7 +131,6 @@ def _select_relevant_files(allowed_extensions, files):
     :param files: list of django files with the files to be filtered
 
     """
-
     result = []
     for django_file in files:
         extension = os.path.splitext(django_file.name)[-1].lower()[1:]
@@ -156,10 +155,12 @@ def save_step_view(req, session):
     form = LayerUploadForm(req.POST, req.FILES)
     if form.is_valid():
         tempdir = tempfile.mkdtemp(dir=settings.FILE_UPLOAD_TEMP_DIR)
+        logger.info("valid_extensions: {}".format(form.cleaned_data["valid_extensions"]))
         relevant_files = _select_relevant_files(
             form.cleaned_data["valid_extensions"],
             req.FILES.itervalues()
         )
+        logger.info("relevant_files: {}".format(relevant_files))
         _write_uploaded_files_to_disk(tempdir, relevant_files)
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
         name, ext = os.path.splitext(os.path.basename(base_file))
