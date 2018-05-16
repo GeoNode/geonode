@@ -35,13 +35,17 @@ from . import BACKEND_PACKAGE
 from geonode import GeoNodeException
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
-from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
-from geonode.geoserver.helpers import set_styles, gs_catalog
-from geonode.geoserver.helpers import ogc_server_settings
-from geonode.geoserver.helpers import create_gs_thumbnail
 from geonode.geoserver.upload import geoserver_upload
-from geonode.base.models import ResourceBase
-from geonode.base.models import Link
+from geonode.geoserver.helpers import (cascading_delete,
+                                       set_attributes_from_geoserver,
+                                       set_styles,
+                                       set_layer_style,
+                                       gs_catalog,
+                                       ogc_server_settings,
+                                       create_gs_thumbnail,
+                                       _stylefilterparams_geowebcache_layer,
+                                       _invalidate_geowebcache_layer)
+from geonode.base.models import ResourceBase, Link
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
 from geonode.social.signals import json_serializer_producer
@@ -172,30 +176,26 @@ def geoserver_post_save_local(instance, *args, **kwargs):
             e.args = (msg,)
             logger.exception(e)
 
-    gs_layer = gs_catalog.get_layer(instance.name)
-
-    if not gs_layer:
-        gs_layer = gs_catalog.get_layer(instance.alternate)
-
-    if gs_layer and instance.poc:
+    # Update Attribution link
+    if instance.poc:
         # gsconfig now utilizes an attribution dictionary
-        gs_layer.attribution = {'title': str(instance.poc),
-                                'width': None,
-                                'height': None,
-                                'href': None,
-                                'url': None,
-                                'type': None}
+        gs_resource.attribution = {'title': str(instance.poc),
+                                   'width': None,
+                                   'height': None,
+                                   'href': None,
+                                   'url': None,
+                                   'type': None}
         profile = Profile.objects.get(username=instance.poc.username)
-        gs_layer.attribution_link = settings.SITEURL[
+        gs_resource.attribution_link = settings.SITEURL[
             :-1] + profile.get_absolute_url()
-        # gs_layer should only be called if
+        # gs_resource should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
             try:
-                gs_catalog.save(gs_layer)
+                gs_catalog.save(gs_resource)
             except geoserver.catalog.FailedRequestError as e:
                 msg = ('Error while trying to save layer named %s in GeoServer, '
-                       'try to use: "%s"' % (gs_layer, str(e)))
+                       'try to use: "%s"' % (gs_resource, str(e)))
                 e.args = (msg,)
                 logger.exception(e)
 
@@ -204,6 +204,24 @@ def geoserver_post_save_local(instance, *args, **kwargs):
             instance = instance.layer
         else:
             return
+
+    # Save layer attributes
+    set_attributes_from_geoserver(instance)
+
+    # Save layer styles
+    set_styles(instance, gs_catalog)
+
+    # set SLD
+    sld = instance.default_style.sld_body
+    if sld:
+        set_layer_style(instance, instance.alternate, sld)
+
+    # Invalidate GeoWebCache for the updated resource
+    try:
+        _stylefilterparams_geowebcache_layer(instance.alternate)
+        _invalidate_geowebcache_layer(instance.alternate)
+    except:
+        pass
 
     if instance.storeType == "remoteStore":
         # Save layer attributes
@@ -219,7 +237,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
        * Download links (WMS, WCS or WFS and KML)
        * Styles (SLD)
     """
-    # instance.name = instance.name or gs_layer.name
+    # instance.name = instance.name or gs_resource.name
     # instance.title = instance.title or gs_resource.title
     instance.abstract = gs_resource.abstract or ''
     instance.workspace = gs_resource.store.workspace.name
@@ -563,12 +581,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                                )
     if created:
         Link.objects.filter(pk=link.pk).update(url=tile_url)
-
-    # Save layer attributes
-    set_attributes_from_geoserver(instance)
-
-    # Save layer styles
-    set_styles(instance, gs_catalog)
 
     # NOTTODO by simod: we should not do this!
     # need to be removed when fixing #2015

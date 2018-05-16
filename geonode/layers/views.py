@@ -737,10 +737,11 @@ def load_layer_data(request, template='layers/layer_detail.html'):
 
         # loop the dictionary based on the values on the list and add the properties
         # in the dictionary (if doesn't exist) together with the value
+        from collections import Iterable
         for i in range(len(decoded_features)):
             for key, value in decoded_features[i]['properties'].iteritems():
                 if value != '' and isinstance(value, (string_types, int, float)) and (
-                        '/load_layer_data' not in value):
+                        (isinstance(value, Iterable) and '/load_layer_data' not in value) or value):
                     properties[key].append(value)
 
         for key in properties:

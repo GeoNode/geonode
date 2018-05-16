@@ -172,7 +172,7 @@ xmljson # python-xmljson (0.1.9 in our ppa)
 geoip2==2.8.0
 django-ipware<2.2
 # no version here, use latest one with fresh data
-pycountry 
+pycountry
 
 
 #production
@@ -197,4 +197,4 @@ pytest-bdd==2.20.0
 pytest-splinter==1.8.5
 pytest-django==3.1.2
 setuptools==39.0.1
-
+Twisted

@@ -827,10 +827,6 @@ def add_layers_to_map_config(
             # bad layer, skip
             continue
 
-        if not layer.is_published:
-            # invisible layer, skip inclusion
-            continue
-
         if not request.user.has_perm(
                 'view_resourcebase',
                 obj=layer.get_self_resource()):

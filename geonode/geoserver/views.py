@@ -302,7 +302,7 @@ def layer_style_manage(request, layername):
                 cat.save(gs_layer)
 
             # Save to Django
-            layer = set_styles(layer, cat)
+            set_styles(layer, cat)
 
             # Invalidate GeoWebCache for the updated resource
             _invalidate_geowebcache_layer(layer.alternate)
