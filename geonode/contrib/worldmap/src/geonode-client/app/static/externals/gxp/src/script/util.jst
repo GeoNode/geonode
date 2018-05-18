@@ -1,0 +1,22 @@
+.. module:: gxp.util
+    :synopsis: A collection of utility functions.
+
+:mod:`gxp.util`
+===============
+
+The :mod:`gxp.util` module contains general utility functions for use in GXP
+applications.
+
+{% if function is defined %}
+Functions
+---------
+
+Public functions.
+
+{% for (name, desc) in function|dictsort %}
+.. function:: gxp.util.{{ name }}
+
+    {{ desc|indent(4) }}
+{% endfor %}
+{% endif %}
+

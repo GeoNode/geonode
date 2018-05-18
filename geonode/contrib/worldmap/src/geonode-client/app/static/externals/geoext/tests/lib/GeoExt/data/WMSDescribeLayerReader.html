@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+    <script type="text/javascript" src="WMSDescribeLayerReader.js"></script>
+
+    <script type="text/javascript">
+      
+        function test_constructor(t) {
+            t.plan(2);
+            var reader = new GeoExt.data.WMSDescribeLayerReader();
+
+            var fields = reader.recordType.prototype.fields;
+
+            // 1 test
+            t.eq(fields.items.length, 3, 'number of default items is correct');
+
+
+            var reader = new GeoExt.data.WMSDescribeLayerReader({},[
+                {name: "foo"},
+                {name: "bar"}
+            ]);
+
+            var fields = reader.recordType.prototype.fields;
+
+            //1 test
+            t.ok(fields.items[0].name == 'foo' &&
+                 fields.items[1].name == 'bar',
+                 'field values set from configuration are correct');
+        }
+        function test_read(t) {
+            t.plan(4);
+
+            var reader = new GeoExt.data.WMSDescribeLayerReader();
+
+            var records = reader.read({responseXML : doc});
+
+            //1 test
+            t.eq(records.totalRecords, 2, 'readRecords returns correct number of records');
+            
+            var record = records.records[0];
+
+            //3 tests -- testing the fields of a record
+            t.eq(record.get("owsType"), "WFS", "[0] correct owsType");
+            t.eq(record.get("owsURL"), "http://demo.opengeo.org/geoserver/wfs/WfsDispatcher?", "[0] correct owsURL");
+            t.eq(record.get("typeName"),"topp:states", "[0] correct typeName");
+        }
+
+        function test_read_exception(t) {
+            t.plan(1);
+            var reader = new GeoExt.data.WMSDescribeLayerReader({}, []);
+            try {
+                var records = reader.read({responseXML: doc2});
+            } catch(e) {
+                t.ok(true, "Exception thrown when getting a service exception");
+            }
+        }
+
+    </script>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <title>GeoExt Popup Example With Dynamic Position</title>
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/ext-all.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/examples/shared/examples.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/geoext-all.css" />
+        <script src="http://www.openlayers.org/api/2.11/OpenLayers.js"></script>
+        <script type="text/javascript" src="../lib/GeoExt.js"></script>
+        <script type="text/javascript" src="popup-auto-position.js"></script>
+        <style type="text/css">
+            div#map {
+                width: 650px;
+                height: 400px;
+                position: relative;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Popup Example With Dynamic Position</h1>
+        <p>
+            Click on the points in the map panel to open a popup.
+            See that the popup will be positioned automatically top or below and right and left of its location. 
+            The js is not minified so it is readable. See <a href="popup-auto-position.js">popup-auto-position.js</a>.
+        </p>
+        <div id="container"></div>
+    </body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+       
+        function test_featurerecord(t) {
+            t.plan(15);
+
+            var c, feature, record;
+            
+            c = GeoExt.data.FeatureRecord.create();
+            t.ok(c instanceof Function, "create returns a func");
+            t.eq(c.prototype.fields.items[0].name, "feature",
+                 "\"create\" returns a func with a \"feature\" field in its prototype"); 
+            t.eq(c.prototype.fields.items[1].name, "state",
+                 "\"create\" returns a func with a \"state\" field in its prototype"); 
+            t.eq(c.prototype.fields.items[2].name, "fid",
+                 "\"create\" returns a func with a \"fid\" field in its prototype"); 
+
+            c = GeoExt.data.FeatureRecord.create([
+                {name: "extra1"}, {name: "extra2"}
+            ]);
+            t.eq(c.prototype.fields.items[0].name, "feature",
+                 "\"create(o)\" returns a func with a \"feature\" field in its prototype"); 
+            t.eq(c.prototype.fields.items[1].name, "state",
+                 "\"create(o)\" returns a func with a \"state\" field in its prototype"); 
+            t.eq(c.prototype.fields.items[2].name, "fid",
+                 "\"create(o)\" returns a func with a \"fid\" field in its prototype"); 
+            t.eq(c.prototype.fields.items[3].name, "extra1",
+                 "\"create(o)\" returns a func with a \"extra1\" field in its prototype"); 
+            t.eq(c.prototype.fields.items[4].name, "extra2",
+                 "\"create(o)\" returns a func with a \"extra2\" field in its prototype"); 
+            t.eq(GeoExt.data.FeatureRecord.prototype.fields.items.length, 3,
+                 "\"create(o)\" method does not modify class prototype's fields");
+        
+
+            feature = new OpenLayers.Feature();
+            record = new c({feature: feature, state: feature.state, fid: feature.fid}, feature.id);
+            t.ok(record instanceof GeoExt.data.FeatureRecord, "create returns a constructor (FeatureRecord)");
+            t.ok(record instanceof c, "create returns a constructor (c)");
+            t.eq(record.getFeature().id, feature.id, "feature stored correctly");
+            t.eq(record.id, feature.id, "id set correctly");
+            record = new c({feature: feature, state: feature.name, fid: feature.fid, foo: "bar"}, feature.id);
+            t.eq(record.get("foo"), "bar", "foo data row set correctly");
+        }
+
+    </script>
+  <body>
+    <div id="mappanel"></div>
+  </body>
+</html>

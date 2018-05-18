@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <title>Layer Properties Panel and Styles Dialog</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">       
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/examples/shared/examples.css" />
+        <link rel="stylesheet" type="text/css" href="../src/theme/all.css"/>
+        <link rel="stylesheet" type="text/css" href="../externals/openlayers/theme/default/style.css" />
+        <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+        <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+        <script src="../externals/openlayers/lib/OpenLayers.js"></script>
+        <script src="../externals/geoext/lib/GeoExt.js"></script>
+        <script src="../src/script/loader.js"></script>
+
+        <script type="text/javascript" src="layer-properties.js"></script>        
+        <style>
+        #capgrid {
+            position: absolute;
+            left: 20px;
+        }
+        #tree {
+            position: absolute;
+            left: 340px;
+        }
+        #mappanel {
+            position: absolute;
+            left: 600px;
+        }
+        </style>
+    </head>
+    <body>
+        <h1>Layer Properties Panel and Styles Dialog</h1>
+        <p>This example shows the use of a WMSLayerPanel in an Ext.Window.  Add
+        layers to the map using the grid on the left.  Select a layer node in the
+        layer tree and click the "Show Properties" button to launch the layer
+        properties dialog.  Change the layer title and display options and see
+        the result in the map and layer tree.</p>
+        <p>The WMSLayerPanel in this example has an extra tab, the WMSStylesDialog.
+        This dialog is used to manage and edit the style of the layer.</p>
+        <p>The js is not minified so it is readable. See <a href="layer-properties.js">layer-properties.js</a>.</p>
+        <div id="capgrid"></div>
+        <div id="tree"></div>
+        <div id="mappanel"></div>
+    </body>
+</html>

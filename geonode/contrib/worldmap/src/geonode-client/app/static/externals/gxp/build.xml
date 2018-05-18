@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="gxp" default="dist">
+
+    <description>
+        GXP Build File
+    </description>
+
+    <property name="src" location="src"/>
+    <property name="build" location="build"/>
+
+    <condition property="git" value="git.cmd" else="git">
+        <os family="windows"/>
+    </condition>
+
+    <target name="init">
+        <mkdir dir="${build}"/>
+
+        <echo message="pulling in submodules"/>
+        <exec executable="${git}" failonerror="true">
+            <arg line="submodule init"/>
+        </exec>
+        <exec executable="${git}" failonerror="true">
+            <arg line="submodule sync"/>
+        </exec>
+        <exec executable="${git}" failonerror="true">
+            <arg line="submodule update"/>
+        </exec>
+
+        <echo message="building ringo jars"/>
+        <ant dir="externals/ringo" target="jar" inheritAll="false"/>
+    </target>
+
+    <target name="parsedocs" description="parse docs source from scripts">
+        <echo>Parsing doc sources.</echo>
+        <exec executable="jst" failonerror="true">
+            <arg value="jst.cfg"/>
+        </exec>
+    </target>
+    
+    <target name="doc" depends="parsedocs" description="build documentation">
+        <echo>Building docs.</echo>
+        <exec executable="sphinx-build" failonerror="true">
+            <arg line="-b html"/>
+            <arg value="-d"/>
+            <arg path="${build}/doctrees"/>
+            <arg path="${src}/doc"/>
+            <arg path="${build}/doc"/>
+        </exec>
+        <delete dir="${build}/doc/_sources"/>
+    </target>
+
+    <target name="buildjs">
+        <echo>Building JavaScript.</echo>
+        <mkdir dir="${build}/script"/>
+        <java jar="externals/ringo/run.jar" fork="true" failonerror="true">
+            <sysproperty key="ringo.home" path="externals/ringo"/>
+            <arg path="externals/buildkit/lib/buildkit/build.js"/>
+            <arg line="-o ${build}/script buildjs.cfg"/>
+        </java>
+    </target>
+    
+    <target name="examples">
+        <echo>Publishing examples with updated paths to scripts.</echo>
+        <mkdir dir="${build}/theme"/>
+        <copy todir="${build}/theme/openlayers">
+            <fileset dir="externals/openlayers/theme"/>
+        </copy>
+        <copy todir="${build}/theme/geoext">
+            <fileset dir="externals/geoext/resources"/>
+        </copy>
+        <copy todir="${build}/theme/gxp">
+            <fileset dir="${src}/theme"/>
+        </copy>
+        <copy todir="${build}/examples" overwrite="true">
+            <fileset dir="examples"/>
+        </copy>
+        <replace dir="${build}/examples" 
+            token="../externals/openlayers/lib/OpenLayers.js" 
+            value="../script/OpenLayers.js" 
+            includes="**/*.html"/>
+        <replace dir="${build}/examples" 
+            token="../externals/geoext/lib/GeoExt.js" 
+            value="../script/GeoExt.js" 
+            includes="**/*.html"/>
+        <replace dir="${build}/examples" 
+            token="../src/script/loader.js" 
+            value="../script/gxp.js" 
+            includes="**/*.html"/>
+        <replace dir="${build}/examples" 
+            token="../src/theme/all.css" 
+            value="../theme/gxp/all.css" 
+            includes="**/*.html"/>
+        <replace dir="${build}/examples" 
+            token="../externals/openlayers/theme" 
+            value="../theme/openlayers" 
+            includes="**/*.html"/>
+        <replace dir="${build}/examples" 
+            token="../externals/geoext/resources" 
+            value="../theme/geoext" 
+            includes="**/*.html"/>
+
+        <!-- special handling for OL controls that use this img dir -->
+        <copy todir="${build}/script/img">
+            <fileset dir="externals/openlayers/img"/>
+        </copy>
+    </target>
+    
+    <target name="dist" depends="clean, init, doc, buildjs, examples" description="prepare lib for distribution">
+        <echo>Preparing for distribution.</echo>
+    </target>
+
+    <target name="clean" description="remove previous build">
+        <delete dir="${build}"/>
+    </target>
+
+</project>
+    

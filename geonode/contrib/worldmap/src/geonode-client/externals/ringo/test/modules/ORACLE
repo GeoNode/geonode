@@ -1,0 +1,54 @@
+ORACLE
+
+absolute
+PASS require works with absolute identifiers pass
+DONE info
+
+cyclic
+PASS a exists pass
+PASS b exists pass
+PASS a gets b pass
+PASS b gets a pass
+DONE info
+
+determinism
+PASS require does not fall back to relative modules when absolutes are not available. pass
+DONE info
+
+exactExports
+PASS exact exports pass
+DONE info
+
+hasOwnProperty
+DONE info
+
+method
+PASS calling a module member pass
+PASS members not implicitly bound pass
+PASS get and set pass
+DONE info
+
+missing
+PASS require throws error when module missing pass
+DONE info
+
+monkeys
+PASS monkeys permitted pass
+DONE info
+
+nested
+PASS nested module identifier pass
+DONE info
+
+reflexive
+PASS reflexive import pass
+DONE info
+
+relative
+PASS a and b share foo through a relative require pass
+DONE info
+
+transitive
+PASS transitive pass
+DONE info
+

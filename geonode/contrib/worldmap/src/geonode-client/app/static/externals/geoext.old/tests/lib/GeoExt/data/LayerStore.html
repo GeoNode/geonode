@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+       
+        function createMap() {
+            var map = new OpenLayers.Map();
+            return map;
+        }
+
+        function loadMapPanel() {
+            var map = createMap();
+
+            var mapPanel = new GeoExt.MapPanel({
+                // panel options
+                id: "map-panel",
+                title: "GeoExt MapPanel",
+                renderTo: "mappanel",
+                height: 400,
+                width: 600,
+                // map panel-specific options
+                map: map,
+                center: new OpenLayers.LonLat(5, 45),
+                zoom: 4
+            });
+
+            return mapPanel;
+        }
+
+        function test_constructor(t) {
+            t.plan(5);
+
+            var store, reader, map, fields;
+
+            store = new GeoExt.data.LayerStore();
+            t.ok(store.reader instanceof GeoExt.data.LayerReader,
+                 "ctor creates a layer reader if none is provided");
+
+            reader = new Ext.data.ArrayReader();
+            store = new GeoExt.data.LayerStore({reader: reader});
+            t.ok(store.reader == reader,
+                 "ctor sets the passed reader in the instance");
+
+            map = new OpenLayers.Map();
+            store = new GeoExt.data.LayerStore({map: map});
+            t.ok(store.map == map,
+                 "ctor sets the passed map in the instance");
+
+            fields = [{name: "foo"}];
+            store = new GeoExt.data.LayerStore({fields: fields});
+            t.eq(store.reader.recordType.prototype.fields.items[2].name, "foo",
+                 "ctor creates a reader from array of field definitions with expected field in recordType prototype");
+
+            fields = GeoExt.data.LayerRecord.create([{name: "foo"}]);
+            store = new GeoExt.data.LayerStore({fields: fields});
+            t.eq(store.reader.recordType.prototype.fields.items[2].name, "foo",
+                 "ctor creates a reader from layer record constructor with expected field in recordType prototype");
+        }
+
+        function test_layerstore(t) {
+            t.plan(6);
+
+            var mapPanel = loadMapPanel();
+            var map = mapPanel.map;
+
+            var layer = new OpenLayers.Layer.Vector("Foo Layer", {isBaseLayer: true});
+
+            map.addLayer(layer);
+            t.eq(map.layers.length, 1, "Adding layer to map does not create duplicate layers on map");
+            t.eq(mapPanel.layers.getCount(), 1, "Adding layer to map does not create duplicate records in LayerStore");
+
+            mapPanel.layers.remove(mapPanel.layers.getById(layer.id));
+            t.eq(map.layers.length,0,"removeLayer on MapPanel's LayerStore removes layer from map");
+            t.eq(mapPanel.layers.getCount(),0,"removeLayer on MapPanel's LayerStore removes layer from map");
+
+            var reader = new GeoExt.data.LayerReader();
+            mapPanel.layers.add((reader.readRecords([layer])).records);
+            t.eq(map.layers.length,1,"Adding layer to MapPanel's LayerStore adds only one layer to map");
+            t.eq(mapPanel.layers.getCount(),1,"Adding layers to MapPanel's LayerStore does not create duplicate layers"); 
+        }
+
+        function test_store_to_map(t) {
+
+            t.plan(8);
+            
+            var map = new OpenLayers.Map("mappanel");
+            var layers = [new OpenLayers.Layer.Vector("a"),
+                          new OpenLayers.Layer.Vector("b"),
+                          new OpenLayers.Layer.Vector("c")];
+
+            var store = new GeoExt.data.LayerStore({
+                map: map,
+                layers: layers
+            });
+
+            t.eq(store.getCount(), 3, "three layers in store");
+            t.eq(map.layers.length, 3, "three layers on map");
+
+            t.eq(store.getAt(0).getLayer().name, "a", "first layer correct in store");
+            t.eq(map.layers[0].name, "a", "first layer correct on map");
+
+            t.eq(store.getAt(1).getLayer().name, "b", "second layer correct in store");
+            t.eq(map.layers[1].name, "b", "second layer correct on map");
+
+            t.eq(store.getAt(2).getLayer().name, "c", "third layer correct in store");
+            t.eq(map.layers[2].name, "c", "third layer correct on map");
+
+            map.destroy();
+        }
+
+        function test_load_clear(t) {
+            t.plan(2);
+            
+            var map = new OpenLayers.Map("mappanel");
+            var store = new GeoExt.data.LayerStore({
+                map: map
+            });
+
+            store.loadData([
+                new OpenLayers.Layer.Vector(),
+                new OpenLayers.Layer.Vector()
+            ]);
+            t.eq(map.layers.length, 2, "loading the store with two records adds two layers to the map");
+
+            store.removeAll();
+            t.eq(map.layers.length, 0, "clearing the store removes all layers from map");
+        }
+        
+        function test_bind_unbind(t) {
+            t.plan(29);
+            
+            var map = new OpenLayers.Map("mappanel");
+            var store = new GeoExt.data.LayerStore();
+            var layers = [new OpenLayers.Layer.Vector("Foo layer"),
+                          new OpenLayers.Layer.Vector("Bar layer")];
+            var records = [
+                new GeoExt.data.LayerRecord({
+                    layer: new OpenLayers.Layer.Vector("Foo record")}),
+                new GeoExt.data.LayerRecord({
+                    layer: new OpenLayers.Layer.Vector("Bar record")})
+            ];
+
+            var reinit_test_data = function () {
+                // unbind store
+                store.unbind();
+
+                // remove all existing records and layers
+                store.removeAll();
+                for (var i=map.layers.length - 1; i>=0; i--) {
+                    map.removeLayer(map.layers[i]);
+                }
+                t.eq(map.layers.length, 0, "there is no more layers in the map");
+                t.eq(store.getCount(), 0, "there is no more records in the store");
+
+                // add testing data to store and map
+                store.add(records);
+                map.addLayers(layers);
+                t.eq(map.layers.length, 2, "initial layers are loaded in the map");
+                t.eq(store.getCount(), 2, "initial records are loaded in the store");
+            };
+            
+            // test store to map synchronization
+            reinit_test_data();
+            store.on("bind", function(s, m) {
+                // test if the bind event works
+                t.eq(m.id, map.id, "bind event triggered with the correct map.");
+            }, null, {single: true});
+            store.bind(map, {initDir: GeoExt.data.LayerStore.STORE_TO_MAP});
+            t.eq(map.layers.length, 4, "initial records are synchronized to map");
+            t.eq(store.getCount(), 2, "initial layers are not synchronized to store");
+            map.removeLayer(layers[0]);
+            t.eq(map.layers.length, 3, "removing layer not present in store has been well removed");
+            t.eq(store.getCount(), 2, "nothing to remove in store when removing layer not present in store");
+
+            // test map to store synchronization
+            reinit_test_data();
+            store.bind(map, {initDir: GeoExt.data.LayerStore.MAP_TO_STORE});
+            t.eq(map.layers.length, 2, "initial records are not synchronized to map");
+            t.eq(store.getCount(), 4, "initial layers are synchronized to store");
+            store.remove(records[0]);
+            t.eq(store.getCount(), 3, "removing record not present in map has been well removed");
+            t.eq(map.layers.length, 2, "nothing to remove in map when removing record not present in map");
+
+            // test both synchronization
+            reinit_test_data();
+            store.bind(map, {initDir: GeoExt.data.LayerStore.MAP_TO_STORE |
+                                      GeoExt.data.LayerStore.STORE_TO_MAP});
+            t.eq(map.layers.length, 4, "initial records are synchronized to map");
+            t.eq(store.getCount(), 4, "initial layers are synchronized to store");
+
+            // test no synchronization
+            reinit_test_data();
+            store.bind(map, {initDir: 0});
+            t.eq(map.layers.length, 2, "initial records are not synchronized to map");
+            t.eq(store.getCount(), 2, "initial layers are not synchronized to store");
+        }
+
+        function test_add_remove(t) {
+            
+            t.plan(6);
+            
+            var map = new OpenLayers.Map("mappanel");
+            var store = new GeoExt.data.LayerStore({
+                map: map
+            });
+            var record = new GeoExt.data.LayerRecord({
+                layer: new OpenLayers.Layer.Vector()
+            });
+
+            store.add([record]);
+            t.eq(store.getCount(), 1, "adding a single record to the store adds one record");
+            
+            store.remove(record);
+            t.eq(store.getCount(), 0, "removing a single record from the store removes one record");
+
+            // add back the original and prepare to add copy
+            store.add([record]);            
+            t.eq(store.getCount(), 1, "store has a single record before adding copy");
+            t.eq(map.layers.length, 1, "map has a single layer before adding copy");
+            
+            // create a copy of the record with the same layer
+            var copy = record.copy(); // record with same id will replace original
+            copy.setLayer(record.getLayer()); // force records to have same layer            
+            store.add(copy);
+            t.eq(store.getCount(), 1, "store has a single record after adding copy");
+            t.eq(map.layers.length, 1, "map has a single layer after adding copy");
+            
+        }
+        
+        function test_reorder(t) {
+            
+            t.plan(24);
+            
+            var map = new OpenLayers.Map("mappanel");
+            var a = new OpenLayers.Layer.Vector("a");
+            var b = new OpenLayers.Layer.Vector("b");
+            var c = new OpenLayers.Layer.Vector("c");
+
+            var store = new GeoExt.data.LayerStore({
+                map: map
+            });
+            
+            store.add(store.reader.readRecords([a, b, c]).records);
+
+            t.eq(store.getCount(), 3, "[a, b, c] three layers in store");
+            t.eq(store.getAt(0).getLayer().name, "a", "[a, b, c] first layer correct in store");
+            t.eq(store.getAt(1).getLayer().name, "b", "[a, b, c] second layer correct in store");
+            t.eq(store.getAt(2).getLayer().name, "c", "[a, b, c] third layer correct in store");
+            t.eq(map.layers.length, 3, "[a, b, c] three layers on map");
+            t.eq(map.layers[0].name, "a", "[a, b, c] first layer correct on map");
+            t.eq(map.layers[1].name, "b", "[a, b, c] second layer correct on map");
+            t.eq(map.layers[2].name, "c", "[a, b, c] third layer correct on map");
+            
+            // move "a" to second position
+            map.setLayerIndex(a, 1);
+
+            t.eq(store.getCount(), 3, "[b, a, c] three layers in store");
+            t.eq(store.getAt(0).getLayer().name, "b", "[b, c, a] first layer correct in store");
+            t.eq(store.getAt(1).getLayer().name, "a", "[b, c, a] second layer correct in store");
+            t.eq(store.getAt(2).getLayer().name, "c", "[b, c, a] third layer correct in store");
+            t.eq(map.layers.length, 3, "[a, b, c] three layers on map");
+            t.eq(map.layers[0].name, "b", "[b, c, a] first layer correct on map");
+            t.eq(map.layers[1].name, "a", "[b, c, a] second layer correct on map");
+            t.eq(map.layers[2].name, "c", "[b, c, a] third layer correct on map");
+            
+            // move "c" to first position
+            map.setLayerIndex(c, 0);
+
+            t.eq(store.getCount(), 3, "[c, b, a] three layers in store");
+            t.eq(store.getAt(0).getLayer().name, "c", "[c, b, a] first layer correct in store");
+            t.eq(store.getAt(1).getLayer().name, "b", "[c, b, a] second layer correct in store");
+            t.eq(store.getAt(2).getLayer().name, "a", "[c, b, a] third layer correct in store");
+            t.eq(map.layers.length, 3, "[c, b, a] three layers on map");
+            t.eq(map.layers[0].name, "c", "[c, b, a] first layer correct on map");
+            t.eq(map.layers[1].name, "b", "[c, b, a] second layer correct on map");
+            t.eq(map.layers[2].name, "a", "[c, b, a] third layer correct on map");
+            
+            map.destroy();
+            
+        }
+        
+        function test_insert(t) {
+            
+            t.plan(10);
+            
+            var map = new OpenLayers.Map("mappanel");
+            var a = new OpenLayers.Layer.Vector("a");
+            var b = new OpenLayers.Layer.Vector("b");
+            var c = new OpenLayers.Layer.Vector("c");
+            var d = new OpenLayers.Layer.Vector("d");
+
+            var store = new GeoExt.data.LayerStore({
+                map: map
+            });
+            
+            store.add(store.reader.readRecords([a, b, c]).records);
+            
+            // insert d into second position
+            store.insert(1, store.reader.readRecords([d]).records);
+            
+            t.eq(store.getCount(), 4, "[a, d, b, c] four layers in store");
+            t.eq(store.getAt(0).getLayer().name, "a", "[a, d, b, c] first layer correct in store");
+            t.eq(store.getAt(1).getLayer().name, "d", "[a, d, b, c] second layer correct in store");
+            t.eq(store.getAt(2).getLayer().name, "b", "[a, d, b, c] third layer correct in store");
+            t.eq(store.getAt(3).getLayer().name, "c", "[a, d, b, c] fourth layer correct in store");
+            t.eq(map.layers.length, 4, "[a, d, b, c] four layers on map");
+            t.eq(map.layers[0].name, "a", "[a, d, b, c] first layer correct on map");
+            t.eq(map.layers[1].name, "d", "[a, d, b, c] second layer correct on map");
+            t.eq(map.layers[2].name, "b", "[a, d, b, c] third layer correct on map");
+            t.eq(map.layers[3].name, "c", "[a, d, b, c] fourth layer correct on map");
+            
+            map.destroy();
+
+        }
+        
+        function test_update(t) {
+            t.plan(2);
+            
+            var map = new OpenLayers.Map("mappanel");
+            var layer = new OpenLayers.Layer("foo");
+            map.addLayer(layer);
+
+            var store = new GeoExt.data.LayerStore({
+                map: map
+            });
+
+            layer.setName("newName");
+            t.eq(store.getAt(0).get("title"), "newName", "record title synced from layer name");
+            
+            store.getAt(0).set("title", "newTitle");
+            t.eq(layer.name, "newTitle", "layer name synced from record title");
+                                    
+            map.destroy();
+        }
+        
+        function test_getByLayer(t) {
+            t.plan(2);
+            
+            var layers = [
+                new OpenLayers.Layer("layer1"),
+                new OpenLayers.Layer("layer2")
+            ];
+            
+            var store = new GeoExt.data.LayerStore({
+                layers: layers
+            });
+            
+            var record = store.getByLayer(layers[1]);
+            t.ok(record.getLayer() === layers[1], "correct layer record returned");
+            
+            record = store.getByLayer(new OpenLayers.Layer("other layer"));
+            t.eq(record, undefined, "getByLayer returns undefined if layer is not in store");
+        }
+        
+        function test_events(t) {
+            t.plan(21);
+            
+            var map = new OpenLayers.Map({div: "mappanel", allOverlays: true});
+            var a = new OpenLayers.Layer("a");
+            var b = new OpenLayers.Layer("b");
+            var c = new OpenLayers.Layer("c");
+            var d = new OpenLayers.Layer("d");
+
+            var store = new GeoExt.data.LayerStore({
+                map: map
+            });
+            
+            store.add(store.reader.readRecords([a, b, c]).records);
+            
+            var events = [];
+            function logEvent(type, args) {
+                events.push({type: type, args: args});
+            }
+            store.on({
+                add: function() {logEvent("add", arguments)},
+                remove: function() {logEvent("remove", arguments)},
+                update: function() {logEvent("update", arguments)}
+            });
+            
+            var batch, event, record;
+            
+            // confirm that we get an "add" on map.addLayer
+            batch = "map.addLayer";
+            map.addLayer(d);
+            t.eq(events.length, 1, "[" + batch + "] one event");
+            event = events[0];
+            t.eq(event.type, "add", "[" + batch + "] 'add' event");
+            t.eq(event.args[1].length, 1, "[" + batch + "] correct number of records");
+            record = event.args[1][0];
+            t.ok(record.getLayer() === d, "[" + batch + "] correct layer on record");
+            
+            // confirm that we get a "remove" on map.removeLayer
+            events = [];
+            batch = "map.removeLayer";
+            map.removeLayer(d);
+            t.eq(events.length, 1, "[" + batch + "] one event");
+            event = events[0];
+            t.eq(event.type, "remove", "[" + batch + "] 'remove' event");
+            t.ok(event.args[1].getLayer() === d, "[" + batch + "] correct layer on record");
+
+            // confirm that we get an "add" and "remove" on map.setLayerIndex
+            events = [];
+            batch = "map.setLayerIndex";
+            map.setLayerIndex(b, 0);
+            t.eq(events.length, 2, "[" + batch + "] two events");
+            event = events[0];
+            t.eq(event.type, "remove", "[" + batch + "] 'remove' event first");
+            t.ok(event.args[1].getLayer() === b, "[" + batch + "] correct layer on record");
+            event = events[1];
+            t.eq(event.type, "add", "[" + batch + "] 'add' event second");
+            t.eq(event.args[1].length, 1, "[" + batch + "] correct number of records");
+            record = event.args[1][0];
+            t.ok(record.getLayer() === b, "[" + batch + "] correct layer on record");
+
+            // confirm that we get an "update" on layer.setName
+            events = [];
+            batch = "layer.setName";
+            c.setName("c layer");
+            t.eq(events.length, 1, "[" + batch + "] one event");
+            event = events[0];
+            t.eq(event.type, "update", "[" + batch + "] 'update' event");
+            t.ok(event.args[1].getLayer() === c, "[" + batch + "] correct layer on record");
+            t.eq(event.args[2], Ext.data.Record.EDIT, "[" + batch + "] correct operation");
+            
+            // confirm that we get an "update" on layer.setVisibility
+            events = [];
+            batch = "layer.setVisibility";
+            a.setVisibility(false);
+            t.eq(events.length, 1, "[" + batch + "] one event");
+            event = events[0];
+            t.eq(event.type, "update", "[" + batch + "] 'update' event");
+            t.ok(event.args[1].getLayer() === a, "[" + batch + "] correct layer on record");
+            t.eq(event.args[2], Ext.data.Record.EDIT, "[" + batch + "] correct operation");
+
+
+            map.destroy();
+            
+        }
+        
+        function test_map_destroy(t) {
+            t.plan(1);
+            
+            var map = new OpenLayers.Map({div: "mappanel", allOverlays: true});
+            var a = new OpenLayers.Layer("a");
+            var b = new OpenLayers.Layer("b");
+            map.addLayers([a, b]);
+
+            var store = new GeoExt.data.LayerStore({
+                map: map
+            });
+            
+            var count = 0;
+            store.on("remove", function() {
+                count++;
+            });
+            
+            map.removeLayer(a);
+            map.destroy();
+            
+            t.eq(count, 1, "store's remove handler called once");
+        }
+        
+
+    </script>
+  </head>  
+  <body>
+    <div id="mappanel" style="width:400px; height:300px"></div>
+  </body>
+</html>

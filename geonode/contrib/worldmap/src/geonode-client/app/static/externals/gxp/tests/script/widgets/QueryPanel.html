@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../externals/openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../externals/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../src/script/loader.js"></script>
+
+    <script type="text/javascript">
+       
+        var map, layerStore;
+        
+        function createQueryPanel() {
+            map = new OpenLayers.Map();
+            layerStore = new Ext.data.JsonStore({
+                data: {
+                    layers: [{
+                        title: "US States",
+                        name: "states",
+                        namespace: "http://usa.opengeo.org",
+                        url: "/geoserver/wfs",
+                        schema: "/geoserver/wfs?version=1.1.0&request=DescribeFeatureType&typeName=usa:states"
+                    }]
+                },
+                root: "layers",
+                fields: ["title", "name", "namespace", "url", "schema"]
+            });
+            return new gxp.QueryPanel({map: map, layerStore: layerStore});
+        }
+        
+        function destroy() {
+            map.destroy();
+            layerStore.destroy();
+        }
+        
+        function test_QueryPanel(t) {
+            t.plan(1);
+            
+            var instance = createQueryPanel();
+            
+            t.ok(instance instanceof gxp.QueryPanel, "Instance created successfully");
+            
+            instance.destroy();
+            destroy();
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

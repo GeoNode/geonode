@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../externals/openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../externals/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../src/script/loader.js"></script>
+
+    <script type="text/javascript">
+       
+        var rule;
+        
+        function createRulePanel() {
+            rule = new OpenLayers.Rule({
+                symbolizers: {"Point": {}}
+            });
+            return new gxp.RulePanel({rule: rule});
+        }
+        
+        function destroy() {
+            rule.destroy();
+        }
+        
+        function test_RulePanel(t) {
+            t.plan(1);
+            
+            var instance = createRulePanel();
+            
+            t.ok(instance instanceof gxp.RulePanel, "Instance created successfully");
+            
+            instance.destroy();
+            destroy();
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

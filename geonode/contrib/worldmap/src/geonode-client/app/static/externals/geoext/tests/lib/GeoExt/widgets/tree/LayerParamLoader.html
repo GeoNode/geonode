@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <script src="../../../../../../openlayers/lib/OpenLayers.js"></script>
+        <script src="../../../../../../ext/adapter/ext/ext-base.js"></script>
+        <script src="../../../../../../ext/ext-all-debug.js"></script>
+        <script src="../../../../../lib/GeoExt.js"></script>
+    
+        <script>
+            
+        function setupTree() {
+            var layer = new OpenLayers.Layer.WMS("Group", "http://localhost/wms", {
+                 "LAYERS": ["layer1", "layer2"]
+            });
+           
+            return new Ext.tree.TreePanel({
+                renderTo: "tree",
+                loader: {
+                    applyLoader: false
+                },
+                root: {
+                    text: "Layers",
+                    expanded: true,
+                    children: [{
+                        nodeType: "gx_layer",
+                        expanded: true,
+                        layer: layer,
+                        loader: {
+                            param: "LAYERS"
+                        }
+                    }]
+                }
+            });
+        }
+        
+        function test_constructor(t) {
+            t.plan(4);
+            
+            var loader = new GeoExt.tree.LayerParamLoader({
+                param: "bar"
+            });
+            
+            t.ok(loader instanceof GeoExt.tree.LayerParamLoader, "instance created.");
+            t.eq(loader.param, "bar", "param set.");
+            t.eq(loader.delimiter, ",", "default delimiter set.");
+            
+            loader = new GeoExt.tree.LayerParamLoader({
+                param: "bar",
+                delimiter: ";"
+            });
+
+            t.eq(loader.delimiter, ";", "custom delimiter set.");
+        }
+        
+        function test_load(t) {
+            t.plan(5);
+
+            var panel = setupTree();
+            var nodes = panel.getRootNode().childNodes[0].childNodes;
+            var layer = nodes[0].layer;
+            
+            t.eq(nodes.length, 2, "2 child nodes created.");
+            t.eq(nodes[0].param, "LAYERS", "param for 1st node set.");
+            t.eq(nodes[0].item, "layer2", "item for 1st node set.");
+            t.eq(nodes[0].allItems, ["layer1", "layer2"], "allItems for 1st node set.");
+            t.eq(nodes[1].item, "layer1", "item for 2nd node set.");
+            
+            panel.destroy();
+            layer.destroy();
+        }
+
+        </script>
+    </head>
+    <body>
+        <div id="tree" style="width: 100px; height: 100px;"></div>
+    </body>
+</html>

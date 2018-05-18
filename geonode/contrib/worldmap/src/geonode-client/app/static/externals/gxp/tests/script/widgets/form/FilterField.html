@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../externals/openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../externals/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../../src/script/loader.js"></script>
+
+    <script type="text/javascript">
+       
+        function test_FilterField(t) {
+            t.plan(1);
+            
+            var instance = new gxp.form.FilterField();
+            
+            t.ok(instance instanceof gxp.form.FilterField, "Instance created successfully");
+            
+            instance.destroy();
+        }
+
+        function test_setFilter(t) {
+            t.plan(7);
+            var filter = new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                property: "STATE_NAME",
+                value: "Montana"
+            });
+
+            var filter2 = new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.BETWEEN,
+                property: "PERSONS",
+                lowerBoundary: 10,
+                upperBoundary: 50
+            });
+
+            var fb = new gxp.form.FilterField({
+                filter: filter,
+                attributes: new GeoExt.data.AttributeStore({
+                    url: "../../../../examples/data/describe_feature_type.xml",
+                    ignore: {name: "the_geom"}
+                })
+            });
+            t.eq(fb['property'].getValue(), filter.property, "Combo with property name set correctly");
+            t.eq(fb['type'].getValue(), filter.type, "Combo with filter type set correctly");
+            t.eq(fb['value'].getValue(), filter.value, "Field with filter value set correctly");
+            fb.setFilter(filter2);
+            t.eq(fb['property'].getValue(), filter2.property, "Combo with property name set correctly");
+            t.eq(fb['type'].getValue(), filter2.type, "Combo with filter type set correctly");
+            t.eq(fb['lowerBoundary'].getValue(), filter2.lowerBoundary, "Field with lower boundary set correctly");
+            t.eq(fb['upperBoundary'].getValue(), filter2.upperBoundary, "Field with upper boundary set correctly");
+            fb.destroy();
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

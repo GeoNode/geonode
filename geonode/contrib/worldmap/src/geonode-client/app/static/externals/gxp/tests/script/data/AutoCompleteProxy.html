@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../externals/openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../externals/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../src/script/loader.js"></script>
+
+    <script type="text/javascript">
+       
+        function test_AutoCompleteProxy(t) {
+            t.plan(6);
+            
+            var field = 'field1';
+
+            var instance = new gxp.data.AutoCompleteProxy({protocol: new OpenLayers.Protocol.WFS({
+                version: "1.1.0",
+                url: "/local/wfs?",
+                featureType: "foo",
+                propertyNames: [field]
+            }), setParamsAsOptions: true});
+
+            t.ok(instance instanceof gxp.data.AutoCompleteProxy, "Instance created successfully");
+
+            var searchValue = "water";
+            var params = {query: searchValue};
+            instance.doRequest("read", null, params);
+
+            t.ok(params.filter instanceof OpenLayers.Filter.Comparison, "comparison filter created");
+            t.eq(params.filter.type, OpenLayers.Filter.Comparison.LIKE, "like filter created");
+            t.eq(params.filter.property, field, "Property set correctly on filter");
+            t.eq(params.filter.value, "*"+searchValue+"*", "Value set correctly on filter");
+            t.eq(params.query, undefined, "query is reset"); 
+            instance.destroy();
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

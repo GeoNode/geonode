@@ -1,0 +1,38 @@
+Source: ringojs
+Section: web
+Priority: optional
+Maintainer: Hannes Wallnoefer <hannes@helma.at>
+Build-Depends: debhelper (>= 7), cdbs, default-jdk | java5-sdk | java6-sdk
+Build-Depends-Indep: ant
+Standards-Version: 3.8.0
+Homepage: http://ringojs.org/
+
+Package: ringojs
+Architecture: all
+Depends: default-jre-headless | system-java (>= 1.5) |
+  java5-runtime-headless | java6-runtime-headless,
+  jsvc, adduser, lsb-base (>= 3)
+Description: JavaScript runtime and shell written in Java.
+ .
+ RingoJS is a cross-platform, general purpose JavaScript platform. It is
+ written in Java and based on the Mozilla Rhino JavaScript engine.
+ .
+ RingoJS comes with a standard library that is compatible with the CommonJS
+ standard. It also includes a JSGI based web framework that can be used with
+ the bundled Jetty web server or any server implementing the Java Servlet API.
+ .
+ RingoJS is licensed under the Apache 2 license.
+
+Package: ringojs-daemon
+Architecture: all
+Depends: ringojs (>= ${source:Version})
+Description: Daemon script for RingoJS JavaScript runtime.
+ .
+ RingoJS is a cross-platform, general purpose JavaScript platform. It is
+ written in Java and based on the Mozilla Rhino JavaScript engine.
+ .
+ RingoJS comes with a standard library that is compatible with the CommonJS
+ standard. It also includes a JSGI based web framework that can be used with
+ the bundled Jetty web server or any server implementing the Java Servlet API.
+ .
+ RingoJS is licensed under the Apache 2 license.

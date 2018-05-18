@@ -1,0 +1,224 @@
+<html>
+    <head>
+        <script src="../../../../../../openlayers/lib/OpenLayers.js"></script>
+        <script src="../../../../../../ext/adapter/ext/ext-base.js"></script>
+        <script src="../../../../../../ext/ext-all-debug.js"></script>
+        <script src="../../../../../lib/GeoExt.js"></script>
+    
+        <script>
+        
+        function test_constructor(t) {
+            
+            t.plan(2);
+            
+            var store = new GeoExt.data.LayerStore();
+            var defaults = {foo: "bar"};
+            
+            var node = new GeoExt.tree.LayerContainer({
+                layerStore: store,
+                loader: {
+                    baseAttrs: defaults
+                }
+            });
+            
+            t.ok(node.loader.store === store, "layerStore set");
+            t.eq(node.loader.baseAttrs.foo, "bar", "baseAttrs set");
+            
+            node.destroy();
+            
+        }
+        
+        function test_render(t) {
+            
+            t.plan(3);
+            
+            var map = new OpenLayers.Map({
+                div: "map",
+                allOverlays: true
+            });
+            var layer = new OpenLayers.Layer();
+            map.addLayer(layer);
+            
+            var store = new GeoExt.data.LayerStore({
+                map: map
+            });
+            
+            var node = new GeoExt.tree.LayerContainer({
+                layerStore: store,
+                expanded: true
+            });
+            
+            var panel = new Ext.tree.TreePanel({
+                renderTo: document.body,
+                root: node
+            });
+            
+            t.eq(node.childNodes && node.childNodes.length, 1, "container has one child");
+            t.ok(node.firstChild.layer === layer, "child layer is correct");
+            t.eq(node.firstChild.attributes.iconCls, "gx-tree-layer-icon", "iconClass for child set correctly");
+
+            node.destroy();
+            map.destroy();
+            
+        }
+        
+        function test_order(t) {
+            
+            t.plan(16);
+            
+            var map = new OpenLayers.Map({
+                div: "map",
+                allOverlays: true
+            });
+            
+            var store = new GeoExt.data.LayerStore({
+                map: map
+            });
+            
+            var root = new GeoExt.tree.LayerContainer({
+                layerStore: store,
+                expanded: true
+            });
+            
+            var panel = new Ext.tree.TreePanel({
+                renderTo: document.body,
+                root: root
+            });
+            
+            var a = new OpenLayers.Layer("a");
+            var b = new OpenLayers.Layer("b");
+            var c = new OpenLayers.Layer("c");
+            var d = new OpenLayers.Layer("d");
+            
+            var reader = new GeoExt.data.LayerReader();
+            
+            // add two records to empty root
+            store.add(reader.readRecords([a, b]).records);
+            t.eq(root.childNodes.length, 2, "[a, b] two records added");
+            t.eq(root.childNodes[0].layer.name, "b", "[a, b] last layer drawn at top of root");
+            t.eq(root.childNodes[1].layer.name, "a", "[a, b] first layer drawn at bottom of root");
+            
+            // add two records to root with two existing child nodes
+            store.add(reader.readRecords([c, d]).records);
+            t.eq(root.childNodes.length, 4, "[a, b, c, d] four records total");
+            t.eq(root.childNodes[0].layer.name, "d", "[a, b, c, d] last layer drawn at top of root");
+            t.eq(root.childNodes[1].layer.name, "c", "[a, b, c, d] third layer drawn at correct index");
+            t.eq(root.childNodes[2].layer.name, "b", "[a, b, c, d] second layer drawn at correct index");
+            t.eq(root.childNodes[3].layer.name, "a", "[a, b, c, d] first layer drawn at bottom of root");
+            
+            // remove the first two layers in draw order
+            store.remove(store.getAt(0));
+            store.remove(store.getAt(0));
+            t.eq(root.childNodes.length, 2, "[c, d] two records total");
+            t.eq(root.childNodes[0].layer.name, "d", "[c, d] last layer drawn at top of root");
+            t.eq(root.childNodes[1].layer.name, "c", "[c, d] first layer drawn at bottom of root");
+            
+            // insert two records in the middle
+            store.insert(1, reader.readRecords([a, b]).records);
+            t.eq(root.childNodes.length, 4, "[c, a, b, d] four records total");
+            t.eq(root.childNodes[0].layer.name, "d", "[c, a, b, d] last layer drawn at top of root");
+            t.eq(root.childNodes[1].layer.name, "b", "[c, a, b, d] third layer drawn at correct index");
+            t.eq(root.childNodes[2].layer.name, "a", "[c, a, b, d] second layer drawn at correct index");
+            t.eq(root.childNodes[3].layer.name, "c", "[c, a, b, d] first layer drawn at bottom of root");
+            
+            root.destroy();
+            map.destroy();
+            
+        }
+        
+        function test_group_move(t) {
+            t.plan(8);
+            
+            var map = new OpenLayers.Map({
+                div: "map",
+                allOverlays: true
+            });
+            
+            map.addLayers([
+                new OpenLayers.Layer("a"),
+                new OpenLayers.Layer("b"),
+                new OpenLayers.Layer("c", {displayInLayerSwitcher: false}),
+                new OpenLayers.Layer("d", {displayInLayerSwitcher: false})
+            ]);
+
+            var store = new GeoExt.data.LayerStore({
+                map: map
+            });
+
+            var root = new Ext.tree.TreeNode({
+                expanded: true
+            });
+            
+            var panel = new Ext.tree.TreePanel({
+                renderTo: document.body,
+                root: root,
+                listeners: {
+                    beforemovenode: function(tree, node, oldParent, newParent, index){
+                        // change the group when moving to a new container
+                        if (oldParent !== newParent) {
+                            var index = store.findBy(function(r){
+                                return r.getLayer() === node.layer;
+                            });
+                            var layer = store.getAt(index).getLayer();
+                            layer.displayInLayerSwitcher = !layer.displayInLayerSwitcher;
+                        }
+                    },
+                    scope: this
+                }
+            });
+
+            var container1 = new GeoExt.tree.LayerContainer({
+                loader: {
+                    store: store,
+                    filter: function(record) {
+                        return !record.getLayer().displayInLayerSwitcher
+                    }
+                },
+                expanded: true
+            });
+            root.appendChild(container1);
+            var container2 = new GeoExt.tree.LayerContainer({
+                loader: {
+                    store: store,
+                    filter: function(record) {
+                        return record.getLayer().displayInLayerSwitcher
+                    }
+                },
+                expanded: true
+            });
+            root.appendChild(container2);
+            
+            // testing if layers get grouped by filter properly
+            t.eq(container1.childNodes[0].text, "d", "d is 1st node on container1");
+            t.eq(container1.childNodes[1].text, "c", "c is 2nd node on container1");
+            t.eq(container2.childNodes[0].text, "b", "b is 1st node on container2");
+            t.eq(container2.childNodes[1].text, "a", "a is 2nd node on container2");
+            
+            // testing if indices are determined correctly from previous node in container
+            container2.appendChild(container1.childNodes[0]);
+            t.eq(map.getLayerIndex(container2.childNodes[2].layer), 0, "[c, b, a, d] d moved to the bottom");
+            
+            // testing if indices are determined correctly from next layer in container
+            container2.insertBefore(container1.childNodes[0], container2.childNodes[1]);
+            t.eq(map.getLayerIndex(container2.childNodes[0].layer), 3, "[b, a, d, c] c is now the 4th layer on the map");
+            
+            // testing if indices are determined correctly from container below
+            container1.appendChild(container2.childNodes[0]);
+            t.eq(map.getLayerIndex(container1.childNodes[0].layer), 3, "[b, a, d, c] c is still the 4th layer on the map");
+
+            for(var i=0; i<3; ++i) {
+                container1.appendChild(container2.childNodes[0]);
+            }
+            
+            // testing if indices are determined correctly from container above
+            container2.appendChild(container1.childNodes[0]);
+            t.eq(map.getLayerIndex(container2.childNodes[0].layer), 0, "[a,d,c,b] b moved to the bottom");
+            
+        }
+        
+        </script>
+    </head>
+    <body>
+        <div id="map" style="width: 100px; height: 100px;"></div>
+    </body>
+</html>

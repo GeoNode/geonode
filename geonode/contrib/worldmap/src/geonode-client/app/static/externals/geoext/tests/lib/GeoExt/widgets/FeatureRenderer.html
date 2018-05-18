@@ -1,0 +1,123 @@
+<html><head>
+<script src="../../../../../openlayers/lib/OpenLayers.js"></script>
+<script src="../../../../../ext/adapter/ext/ext-base.js"></script>
+<script src="../../../../../ext/ext-all-debug.js"></script>
+<script src="../../../../lib/GeoExt.js"></script>
+<script>
+
+function test_initialize(t) {
+
+    t.plan(3);
+
+    var renderer = new GeoExt.FeatureRenderer();
+    
+    t.ok(renderer instanceof Ext.BoxComponent, "instanceof BoxComponent");
+    
+    var feature = renderer.feature;
+    t.ok(feature, "renderer feature set by default");
+    t.ok(feature.geometry instanceof OpenLayers.Geometry.Polygon, "polygon feature by default");
+    
+    renderer.destroy();
+    
+}
+
+function test_drawFeature(t) {
+    t.plan(13);
+    
+
+    var renderer = new GeoExt.FeatureRenderer({
+        renderTo: document.body
+    });
+    
+    t.ok(renderer.rendered, "rendered");
+    t.ok(renderer.renderer instanceof OpenLayers.Renderer, "has an OL renderer");
+    
+    var log = [];
+    renderer.renderer.drawFeature = function() {
+        log.push(arguments);
+        OpenLayers.Renderer.prototype.drawFeature.apply(this, arguments);
+    };
+    
+    renderer.update({
+        symbolizers: [{pointRadius: 3}, {pointRadius: 2, fillColor: "white"}]
+    });
+    t.eq(log.length, 2, "drawFeature called twice for two symbolizers");
+    t.ok(log[0][0] !== log[1][0], "drawFeature called with unique features");
+    
+    // confirm we don't render text symbolizers
+    log = [];
+    var poly = new OpenLayers.Symbolizer.Polygon({
+        fillColor: "red"
+    });
+    var line = new OpenLayers.Symbolizer.Line({
+        strokeColor: "red"
+    });
+    renderer.update({
+        symbolizers: [
+            new OpenLayers.Symbolizer.Text({
+                fontFamily: "Times"
+            }),
+            poly, line, {fillColor: "red"}
+        ]
+    });
+    t.eq(log.length, 4, "drawFeature called four times given text, polygon, line and object symbolizers");
+    t.ok(log[0][1] instanceof OpenLayers.Symbolizer.Text, "drawFeature called with text symbolizer");
+    t.ok(log[0][1].fill === false && log[0][1].stroke === false, "Point geometry not rendered for label");
+    t.ok(log[1][1] instanceof OpenLayers.Symbolizer.Polygon, "drawFeature called with polygon symbolizer only");
+    t.ok(log[1][1] !== poly, "drawFeature called with clone of original symbolizer");
+    
+    // confirm that we use the correct features for rendering
+    t.ok(log[0][0].geometry instanceof OpenLayers.Geometry.Point, "text symbolizer applied to a point feature");
+    t.ok(log[1][0].geometry instanceof OpenLayers.Geometry.Polygon, "polygon symbolizer applied to a polygon feature");
+    t.ok(log[2][0].geometry instanceof OpenLayers.Geometry.LineString, "line symbolizer applied to a line feature");
+    t.ok(log[3][0].geometry instanceof OpenLayers.Geometry.Polygon, "symbolizer object applied to a symbolType feature");
+    
+    renderer.destroy();
+    
+}
+
+function test_update(t) {
+
+    t.plan(6);
+    
+    var renderer = new GeoExt.FeatureRenderer({
+        renderTo: document.body
+    });
+    
+    var count = 0;
+    renderer.drawFeature = function() {
+        ++count;
+        GeoExt.FeatureRenderer.prototype.drawFeature.apply(this, arguments);
+    };
+    
+    // update with new symbol type
+    renderer.update({symbolType: "Polygon"});
+    t.eq(count, 1, "drawFeature called when updating symbolType");
+    t.ok(renderer.feature.geometry instanceof OpenLayers.Geometry.Polygon, "polygon feature created when setting symbolType");
+    
+    // update with a new feature
+    count = 0;
+    var feature = new OpenLayers.Feature.Vector(
+        OpenLayers.Geometry.fromWKT("LINESTRING(0 0, 1 1)")
+    );
+    renderer.update({feature: feature});
+    t.eq(count, 1, "drawFeature called when updating feature");
+    t.ok(renderer.feature === feature, "feature set when updating");
+    
+    // update with new symbolizers
+    count = 0;
+    var symbolizers = [{
+        strokeWidth: 3, strokeColor: "red"
+    }, {
+        strokeWidth: 1, strokeColor: "blue"
+    }];
+    renderer.update({symbolizers: symbolizers});
+    t.eq(count, 1, "drawFeature called when updating symbolizers");
+    t.ok(renderer.symbolizers === symbolizers, "symbolizers set when updating");
+    
+    renderer.destroy();
+    
+}
+
+</script>
+</head><body></body></html>

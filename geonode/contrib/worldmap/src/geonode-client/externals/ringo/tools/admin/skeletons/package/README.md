@@ -1,0 +1,3 @@
+# namespace-skeleton
+
+Change me.

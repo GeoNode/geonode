@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <script src="../../../../../../openlayers/lib/OpenLayers.js"></script>
+        <script src="../../../../../../ext/adapter/ext/ext-base.js"></script>
+        <script src="../../../../../../ext/ext-all-debug.js"></script>
+        <script src="../../../../../lib/GeoExt.js"></script>
+    
+        <script>
+        
+        function test_render(t) {
+            
+            t.plan(2);
+            
+            var map = new OpenLayers.Map({
+                div: "map"
+            });
+            // add a base layer
+            var layer = new OpenLayers.Layer("foo", {isBaseLayer: true});
+            map.addLayer(layer);
+            // add an overlay
+            map.addLayer(new OpenLayers.Layer());
+            
+            var store = new GeoExt.data.LayerStore({
+                map: map
+            });
+            
+            var node = new GeoExt.tree.BaseLayerContainer({
+                layerStore: store,
+                expanded: true
+            });
+            
+            var panel = new Ext.tree.TreePanel({
+                renderTo: document.body,
+                root: node
+            });
+            
+            t.eq(node.childNodes.length, 1, "only base layers get added to the container");
+            t.eq(node.firstChild.attributes.iconCls, "gx-tree-baselayer-icon", "iconClass for child set correctly");
+
+            node.destroy();
+            map.destroy();
+            
+        }
+        
+        function test_addLayerNode(t) {
+            
+            t.plan(2);
+            
+            // setup
+            var original = GeoExt.tree.LayerContainer.prototype.addLayerNode;
+            var container = new GeoExt.tree.BaseLayerContainer({});
+            var args;
+            GeoExt.tree.LayerContainer.prototype.addLayerNode = function() {
+                args = arguments;
+            };
+            var Rec = Ext.data.Record.create([{name: "layer"}]);
+            var record = new Rec({
+                layer: new OpenLayers.Layer(null, {isBaseLayer: true})
+            });
+            
+            // call addLayerNode with two args and confirm the super got both
+            container.addLayerNode(record, 4);
+            t.eq(args.length, 2, "method called with two arguments");
+            t.eq(args[1], 4, "method called with correct second argument");
+            
+            // clean up
+            GeoExt.tree.LayerContainer.prototype.addLayerNode = original;
+            
+        }
+        
+        </script>
+    </head>
+    <body>
+        <div id="map" style="width: 100px; height: 100px;"></div>
+    </body>
+</html>

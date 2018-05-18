@@ -1,0 +1,324 @@
+<!DOCTYPE html >
+
+<html lang="de" dir="ltr">
+<head>
+    <title>stick/middleware/session - Stick API</title>
+    <link rel="shortcut icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="../../static/style.css" />
+    <link rel="stylesheet" href="../../static/jsdoc.css" />
+<script type="text/javascript" src="../../static/jquery.js"></script>
+<script type="text/javascript" src="../../static/jsdoc.js"></script>
+<script>
+$(document).ready(jsdocSetup);
+</script>
+
+</head>
+
+<body>
+<div class="wrap">
+
+    <div class="main">
+        <div class="content">
+                    <h1 class="modulename">Module stick/middleware/session</h1>
+            <div class="fileoverview">
+                <p>This module provides middleware for HTTP sessions.</p>
+
+<p>It adds a <code>session</code> property to the request object that allows to store
+arbitrary data on on a per-visitor basis.</p>
+
+<p>The default session implementation is based on Java Servlet sessions.
+This can be overridden by setting the <code>app.session.impl</code> property to an
+alternative session constructor.</p>
+
+<pre><code>app.session.impl = MySession;</code></pre>
+
+<p>The session constructor will be called
+with the request object as only argument when the session is first accessed.</p>
+
+
+            </div>
+
+            <div class="classoverview">
+
+                                <div>
+                    <h3>Functions</h3>
+                    <ul class="propertyoverview">
+                                                <li>
+                            <a href="#middleware" class="jsdoc-title"> middleware</a>(next, app)
+                        </li>
+                        </ul>
+                </div>
+                <div class="classes">
+                                        <h2>Class <a href="#ServletSession" class="jsdoc-title">ServletSession</a></h2>
+                                        <div>
+                        <h3>Instance Methods</h3>
+                        <ul class="propertyoverview">
+                                                        <li>
+                                <a href="#ServletSession.prototype.invalidate" class="jsdoc-title"> invalidate</a>()
+                            </li>
+                            </ul>
+                    </div>
+                                        <div>
+                        <h3>Instance Properties</h3>
+                        <ul class="propertyoverview">
+                                                        <li>
+                                <a href="#ServletSession.prototype.creationTime" class="jsdoc-title"> creationTime</a>
+                            </li>
+                                                        <li>
+                                <a href="#ServletSession.prototype.data" class="jsdoc-title"> data</a>
+                            </li>
+                                                        <li>
+                                <a href="#ServletSession.prototype.isNew" class="jsdoc-title"> isNew</a>
+                            </li>
+                                                        <li>
+                                <a href="#ServletSession.prototype.lastAccessedTime" class="jsdoc-title"> lastAccessedTime</a>
+                            </li>
+                                                        <li>
+                                <a href="#ServletSession.prototype.maxInactiveInterval" class="jsdoc-title"> maxInactiveInterval</a>
+                            </li>
+                                                        <li>
+                                <a href="#ServletSession.prototype.volatile" class="jsdoc-title"> volatile</a>
+                            </li>
+                            </ul>
+                    </div>
+                    </div>
+            </div>
+                <hr/>
+                <div class="details">
+                                        <!-- tpl-docitem -->
+                    <div>
+                        <div class="docitem" docitem="ServletSession">
+                            <h3>
+                                <span class="itemtitle"><a id="ServletSession" href="#ServletSession" class="itemtitle itemname">ServletSession</a></span>
+                                <span class="itemtitle light">(request)</span></h3>
+                            <div>
+                                <p>An HTTP session object based on top of servlet sessions.
+Properties of the session's data object are persisted
+between requests of the same client.</p>
+
+
+                            </div>
+                                                        <div>
+                                <h4>Parameters</h4>
+                                <table>
+                                                                        <tr>
+                                        <td></td>
+                                        <td class="paramname">request</td>
+                                        <td>a JSGI or servlet request object</td>
+                                    </tr>
+                                    </table>
+                            </div>
+                            </div>
+                        <hr/>
+                    </div>
+
+                                        <!-- tpl-docitem -->
+                    <div>
+                        <div class="docitem" docitem="ServletSession.prototype.creationTime">
+                            <h3>
+                                <span class="itemtitle">ServletSession.prototype.<a id="ServletSession.prototype.creationTime" href="#ServletSession.prototype.creationTime" class="itemtitle itemname">creationTime</a></span>
+                                </h3>
+                            <div>
+                                <p>Createtime of the current session.</p>
+
+
+                            </div>
+                            </div>
+                        <hr/>
+                    </div>
+
+                                        <!-- tpl-docitem -->
+                    <div>
+                        <div class="docitem" docitem="ServletSession.prototype.data">
+                            <h3>
+                                <span class="itemtitle">ServletSession.prototype.<a id="ServletSession.prototype.data" href="#ServletSession.prototype.data" class="itemtitle itemname">data</a></span>
+                                </h3>
+                            <div>
+                                <p>A container for things to store in this session between requests.</p>
+
+
+                            </div>
+                            </div>
+                        <hr/>
+                    </div>
+
+                                        <!-- tpl-docitem -->
+                    <div>
+                        <div class="docitem" docitem="ServletSession.prototype.invalidate">
+                            <h3>
+                                <span class="itemtitle">ServletSession.prototype.<a id="ServletSession.prototype.invalidate" href="#ServletSession.prototype.invalidate" class="itemtitle itemname">invalidate</a></span>
+                                <span class="itemtitle light">()</span></h3>
+                            <div>
+                                <p>Destroys the current session and any data bound to it.</p>
+
+
+                            </div>
+                            </div>
+                        <hr/>
+                    </div>
+
+                                        <!-- tpl-docitem -->
+                    <div>
+                        <div class="docitem" docitem="ServletSession.prototype.isNew">
+                            <h3>
+                                <span class="itemtitle">ServletSession.prototype.<a id="ServletSession.prototype.isNew" href="#ServletSession.prototype.isNew" class="itemtitle itemname">isNew</a></span>
+                                </h3>
+                            <div>
+                                <p>True if this session was created in the current request.
+This can be useful to find out if the client has cookies disabled
+for cookie-based sessions.</p>
+
+
+                            </div>
+                            </div>
+                        <hr/>
+                    </div>
+
+                                        <!-- tpl-docitem -->
+                    <div>
+                        <div class="docitem" docitem="ServletSession.prototype.lastAccessedTime">
+                            <h3>
+                                <span class="itemtitle">ServletSession.prototype.<a id="ServletSession.prototype.lastAccessedTime" href="#ServletSession.prototype.lastAccessedTime" class="itemtitle itemname">lastAccessedTime</a></span>
+                                </h3>
+                            <div>
+                                <p>Time in Unix epoch milliseconds since the last client access.</p>
+
+
+                            </div>
+                            </div>
+                        <hr/>
+                    </div>
+
+                                        <!-- tpl-docitem -->
+                    <div>
+                        <div class="docitem" docitem="ServletSession.prototype.maxInactiveInterval">
+                            <h3>
+                                <span class="itemtitle">ServletSession.prototype.<a id="ServletSession.prototype.maxInactiveInterval" href="#ServletSession.prototype.maxInactiveInterval" class="itemtitle itemname">maxInactiveInterval</a></span>
+                                </h3>
+                            <div>
+                                <p>A time interval in seconds, which the session will be open.
+If the interval is exceeded, the session gets invalidated.</p>
+
+
+                            </div>
+                            </div>
+                        <hr/>
+                    </div>
+
+                                        <!-- tpl-docitem -->
+                    <div>
+                        <div class="docitem" docitem="ServletSession.prototype.volatile">
+                            <h3>
+                                <span class="itemtitle">ServletSession.prototype.<a id="ServletSession.prototype.volatile" href="#ServletSession.prototype.volatile" class="itemtitle itemname">volatile</a></span>
+                                </h3>
+                            <div>
+                                <p>A volatile property which survives a HTTP redirect and can be used
+for warnings or error messages in forms. After a requests was handled,
+the property is reset to null.</p>
+
+
+                            </div>
+                            </div>
+                        <hr/>
+                    </div>
+
+                                        <!-- tpl-docitem -->
+                    <div>
+                        <div class="docitem" docitem="middleware">
+                            <h3>
+                                <span class="itemtitle"><a id="middleware" href="#middleware" class="itemtitle itemname">middleware</a></span>
+                                <span class="itemtitle light">(next, app)</span></h3>
+                            <div>
+                                <p>This middleware provides support for anonymous user sessions.</p>
+
+
+                            </div>
+                                                        <div>
+                                <h4>Parameters</h4>
+                                <table>
+                                                                        <tr>
+                                        <td>Function</td>
+                                        <td class="paramname">next</td>
+                                        <td>the wrapped middleware chain</td>
+                                    </tr>
+                                                                        <tr>
+                                        <td>Object</td>
+                                        <td class="paramname">app</td>
+                                        <td>the Stick Application object</td>
+                                    </tr>
+                                    </table>
+                            </div>
+                                                        <div>
+                                <h4>Returns</h4>
+                                <table>
+                                    <tr>
+                                        <td>Function</td>
+                                        <td> a JSGI middleware function</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            </div>
+                        <hr/>
+                    </div>
+
+                                        <!-- tpl-docitem -->
+                    <div>
+                        <div class="docitem" docitem="request.session">
+                            <h3>
+                                <span class="itemtitle">request.<a id="request.session" href="#request.session" class="itemtitle itemname">session</a></span>
+                                </h3>
+                            <div>
+                                <p>A session object for the current request. If no session exists
+a new one will be created.</p>
+
+
+                            </div>
+                                                        <div>
+                                <h4>See</h4>
+                                <div class="extrainfo">
+                                    <a href="../../ServletSession/index.html">ServletSession</a>
+                                </div>
+                            </div>
+                            </div>
+                        <hr/>
+                    </div>
+
+                    </div>
+            </div>
+        </div>
+
+
+
+    <div class="menu" style="margin-top: 1em; font-size: 13px;">
+    Stick API<br/>
+        <a href="../../index.html">Module list</a>
+    <a href="../../index_all.html">Full index</a><br/>
+    <input id="jsdoc-leftnavsearch" type="search" placeholder="Filter module list" size="14">
+    <ul class="jsdoc-leftnav leftnav">
+                <li><a href="../../stick/index.html"> stick </a></li>
+                <li><a href="../../helpers/index.html"> stick/helpers </a></li>
+                <li><a href="../../middleware/index.html"> stick/middleware </a></li>
+                <li><a href="../../middleware/basicauth/index.html"> stick/middleware/basicauth </a></li>
+                <li><a href="../../middleware/continuation/index.html"> stick/middleware/continuation </a></li>
+                <li><a href="../../middleware/cookies/index.html"> stick/middleware/cookies </a></li>
+                <li><a href="../../middleware/error/index.html"> stick/middleware/error </a></li>
+                <li><a href="../../middleware/etag/index.html"> stick/middleware/etag </a></li>
+                <li><a href="../../middleware/gzip/index.html"> stick/middleware/gzip </a></li>
+                <li><a href="../../middleware/method/index.html"> stick/middleware/method </a></li>
+                <li><a href="../../middleware/mount/index.html"> stick/middleware/mount </a></li>
+                <li><a href="../../middleware/notfound/index.html"> stick/middleware/notfound </a></li>
+                <li><a href="../../middleware/params/index.html"> stick/middleware/params </a></li>
+                <li><a href="../../middleware/profiler/index.html"> stick/middleware/profiler </a></li>
+                <li><a href="../../middleware/render/index.html"> stick/middleware/render </a></li>
+                <li><a href="../../middleware/requestlog/index.html"> stick/middleware/requestlog </a></li>
+                <li><a href="../../middleware/route/index.html"> stick/middleware/route </a></li>
+                <li><a href="../../middleware/session/index.html"> stick/middleware/session </a></li>
+                <li><a href="../../middleware/static/index.html"> stick/middleware/static </a></li>
+                <li><a href="../../middleware/upload/index.html"> stick/middleware/upload </a></li>
+        </ul>
+
+</div>
+</div>
+</body>
+</html>

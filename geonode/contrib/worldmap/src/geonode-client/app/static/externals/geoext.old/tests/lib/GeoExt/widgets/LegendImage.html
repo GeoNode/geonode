@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+
+        function test_constructor(t) {
+            t.plan(2);
+            
+            var legend;
+            
+            // create a legend with the default config
+            legend = new GeoExt.LegendImage();
+            t.eq(legend.defaultImgSrc, Ext.BLANK_IMAGE_URL, "defaultImgSrc defaults to Ext.BLANK_IMAGE_URL");
+            legend.destroy();
+            
+            // create a legend with a custom defaultImgSrc
+            legend = new GeoExt.LegendImage({defaultImgSrc: "foo"});
+            t.eq(legend.defaultImgSrc, "foo", "defaultImgSrc can be set in config");
+            legend.destroy();
+            
+        }
+        
+        function test_onImageLoadError(t) {
+            t.plan(3);
+            
+            var legend, calls = 0;
+
+            // create a legend with a bogus image url (one call to error handler)
+            legend = new GeoExt.LegendImage({
+                url: "bogus",
+                defaultImgSrc: "also-bogus",
+                renderTo: "legend",
+                onImageLoadError: function() {
+                    ++calls;
+                    GeoExt.LegendImage.prototype.onImageLoadError.apply(this, arguments);
+                }
+            });
+            t.delay_call(1, function() {
+                t.eq(calls, 1, "onImageLoadError called once for bogus image src");
+                var el = legend.getEl();
+                t.eq(el && el.dom.src.split("/").pop(), "also-bogus", "defaultImgSrc set as image src");
+                t.ok(el.dom.className.indexOf(legend.noImgCls) !== -1, "noImgCls set");
+                legend.destroy();
+            });            
+            
+        }
+        
+        function test_onImageLoad(t) {
+            t.plan(2);
+            
+            var calls = 0;
+            var legend = new GeoExt.LegendImage({
+                url: Ext.BLANK_IMAGE_URL,
+                defaultImgSrc: "bogus",
+                renderTo: "legend",
+                onImageLoad: function() {
+                    ++calls;
+                    GeoExt.LegendImage.prototype.onImageLoad.apply(this, arguments);
+                }
+            });
+            t.delay_call(1, function() {
+                t.eq(calls, 1, "onImageLoad called once for valid image src");
+                var el = legend.getEl();
+                t.ok(el.dom.className.indexOf(legend.noImgCls) === -1, "noImgCls not set");
+                legend.destroy();
+            });            
+        }
+
+
+    </script>
+  <body>
+    <div id="legend"></div>
+  </body>
+</html>

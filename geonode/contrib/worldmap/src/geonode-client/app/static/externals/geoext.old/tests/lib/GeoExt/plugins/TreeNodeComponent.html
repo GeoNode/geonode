@@ -1,0 +1,249 @@
+<html>
+    <head>
+        <script src="../../../../../openlayers/lib/OpenLayers.js"></script>
+        <script src="../../../../../ext/adapter/ext/ext-base.js"></script>
+        <script src="../../../../../ext/ext-all-debug.js"></script>
+        <script src="../../../../lib/GeoExt.js"></script>
+    
+        <script>
+
+        var UI = Ext.extend(
+            GeoExt.tree.LayerNodeUI,
+            new GeoExt.tree.TreeNodeUIEventMixin()
+        );
+
+        function test_ui_component_instance(t) {
+            t.plan(4);
+
+            // setup
+
+            var component, node, tree, ui, elNode;
+
+            component = new Ext.Panel({
+                id: "foo-id",
+                cls: "foo-cls",
+                ctCls: "foo-ct-cls"
+            });
+            node = new GeoExt.tree.LayerNode({
+                uiProvider: UI,
+                layer: new OpenLayers.Layer(),
+                component: component
+            });
+            tree  = new Ext.tree.TreePanel({
+                renderTo: "tree",
+                root: node,
+                plugins: [new GeoExt.plugins.TreeNodeComponent()]
+            });
+            ui = node.ui;
+            elNode = Ext.fly(ui.elNode);
+
+            // test
+            t.ok(elNode.last().hasClass("foo-ct-cls"),
+                 "the container div is at correct location and " +
+                 "has a correct class");
+            t.ok(elNode.last().child("#foo-id"),
+                 "the container div contains the panel div");
+            t.ok(elNode.last().child("#foo-id") &&
+                 elNode.last().child("#foo-id").hasClass("foo-cls"),
+                 "the panel div has a correct class");
+            t.ok(node.component === component,
+                 "the component is set in the node");
+
+            // teardown
+
+            tree.destroy();
+        }
+
+        function test_ui_component_config(t) {
+            t.plan(3);
+
+            // setup
+
+            var component, node, tree, ui, elNode;
+
+            component = {
+                xtype: "panel",
+                cls: "foo-cls",
+                ctCls: "foo-ct-cls"
+            };
+            node = new GeoExt.tree.LayerNode({
+                uiProvider: UI,
+                layer: new OpenLayers.Layer(),
+                component: component
+            });
+            tree  = new Ext.tree.TreePanel({
+                renderTo: "tree",
+                root: node,
+                plugins: [new GeoExt.plugins.TreeNodeComponent()]
+            });
+            ui = node.ui;
+            elNode = Ext.fly(ui.elNode);
+
+            // test
+            t.ok(elNode.last().hasClass("foo-ct-cls"),
+                 "the container div is at correct location and " +
+                 "has a correct class");
+            t.ok(elNode.last().child(".foo-cls") ,
+                 "the container div contains the panel div, " +
+                 "which has a correct class");
+            t.ok(node.component instanceof Ext.Panel,
+                 "the component is set in the node");
+
+            // teardown
+
+            tree.destroy();
+        }
+
+        function test_ui_component_function(t) {
+            t.plan(16);
+
+            var component, node, tree, ui, elNode, log;
+
+            // test with a function returning a config object
+            log = [];
+            component = function(n, e) {
+                log.push({n: n, e: e});
+                return {
+                    xtype: "panel",
+                    cls: "foo-cls",
+                    ctCls: "foo-ct-cls"
+                };
+            };
+            node = new GeoExt.tree.LayerNode({
+                uiProvider: UI,
+                layer: new OpenLayers.Layer(),
+                component: component
+            });
+            tree  = new Ext.tree.TreePanel({
+                renderTo: "tree",
+                root: node,
+                plugins: [new GeoExt.plugins.TreeNodeComponent()]
+            });
+            ui = node.ui;
+            elNode = Ext.fly(ui.elNode);
+            t.eq(log.length, 1,
+                 "[1] factory function called once");
+            t.ok(log.length > 0 && log[0].n === node,
+                 "[1] factory function called with node");
+            t.ok(elNode.last().hasClass("foo-ct-cls"),
+                 "[1] the container div is at correct location and " +
+                 "has a correct class");
+            t.ok(elNode.last().child(".foo-cls") ,
+                 "[1] the container div contains the panel div, " +
+                 "which has a correct class");
+            t.ok(node.component instanceof Ext.Panel,
+                 "[1] the component is set in the node");
+            tree.destroy();
+
+            // test with a function returning a panel instance
+            log = [];
+            component = function(n, e) {
+                log.push({n: n, e: e});
+                return new Ext.Panel({
+                    cls: "foo-cls",
+                    ctCls: "foo-ct-cls"
+                });
+            };
+            node = new GeoExt.tree.LayerNode({
+                uiProvider: UI,
+                layer: new OpenLayers.Layer(),
+                component: component
+            });
+            tree  = new Ext.tree.TreePanel({
+                renderTo: "tree",
+                root: node,
+                plugins: [new GeoExt.plugins.TreeNodeComponent()]
+            });
+            ui = node.ui;
+            elNode = Ext.fly(ui.elNode);
+            t.eq(log.length, 1,
+                 "[2] factory function called once");
+            t.ok(log.length > 0 && log[0].n === node,
+                 "[2] factory function called with node");
+            t.ok(elNode.last().hasClass("foo-ct-cls"),
+                 "[2] the container div is at correct location and " +
+                 "has a correct class");
+            t.ok(elNode.last().child(".foo-cls") ,
+                 "[2] the container div contains the panel div, " +
+                 "which has a correct class");
+            t.ok(node.component instanceof Ext.Panel,
+                 "[2] the component is set in the node");
+            tree.destroy();
+
+            // with an object with fn and scope properties
+            log = [];
+            var scope = {"some": "scope"};
+            component = {
+                fn: function(n, e) {
+                    log.push({n: n, e: e, s: this});
+                    return new Ext.Panel({
+                        cls: "foo-cls",
+                        ctCls: "foo-ct-cls"
+                    });
+                },
+                scope: scope
+            };
+            node = new GeoExt.tree.LayerNode({
+                uiProvider: UI,
+                layer: new OpenLayers.Layer(),
+                component: component
+            });
+            tree  = new Ext.tree.TreePanel({
+                renderTo: "tree",
+                root: node,
+                plugins: [new GeoExt.plugins.TreeNodeComponent()]
+            });
+            ui = node.ui;
+            elNode = Ext.fly(ui.elNode);
+            t.eq(log.length, 1,
+                 "[3] factory function called once");
+            t.ok(log.length > 0 && log[0].n === node,
+                 "[3] factory function called with node");
+            t.ok(log.length > 0 && log[0].s === scope,
+                 "[3] factory function called with correct scope");
+            t.ok(elNode.last().hasClass("foo-ct-cls"),
+                 "[3] the container div is at correct location and " +
+                 "has a correct class");
+            t.ok(elNode.last().child(".foo-cls") ,
+                 "[3] the container div contains the panel div, " +
+                 "which has a correct class");
+            t.ok(node.component instanceof Ext.Panel,
+                 "[3] the component is set in the node");
+            tree.destroy();
+
+            // teardown
+        }
+
+        function test_destroy(t) {
+            t.plan(2);
+            var component, node, tree;
+
+            component = new Ext.Panel({
+                id: "foo-id",
+                cls: "foo-cls",
+                ctCls: "foo-ct-cls"
+            });
+            node = new GeoExt.tree.LayerNode({
+                uiProvider: UI,
+                layer: new OpenLayers.Layer(),
+                component: component
+            });
+            tree = new Ext.tree.TreePanel({
+                renderTo: "tree",
+                root: node,
+                plugins: [new GeoExt.plugins.TreeNodeComponent()]
+            });
+
+            t.ok(tree.hasListener("rendernode"), 
+                 "plugin listen the 'rendernode' event from the tree");
+            tree.destroy();
+            t.ok(!tree.hasListener("rendernode"), 
+                 "destroy unbinds plugin from tree");
+        }
+
+         </script>
+    </head>
+    <body>
+        <div id="tree" style="width: 100px; height: 100px;"></div>
+    </body>
+</html>

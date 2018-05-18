@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="../../../../ext/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="../../../../ext/ext-all.js"></script>
+        <script type="text/javascript" src="../../../lib/GeoExt/Lang.js"></script>
+        <script type="text/javascript">
+
+            var Test, original = GeoExt.Lang.locale;
+            function setup() {
+                GeoExt.Lang.dict = {};
+                Test = {
+                    things: {
+                        more: {
+                            Class: Ext.extend(Ext.util.Observable, {
+                                prop1: "chicken",
+                                prop2: "beer"
+                            })
+                        },
+                        Class: Ext.extend(Ext.util.Observable, {
+                            prop1: "burger",
+                            prop2: "milk"
+                        })
+                    },
+                    data: {
+                        foo: "bar"
+                    }
+                };
+            }
+            function teardown() {
+                GeoExt.Lang.dict = {};
+                if (original) {
+                    GeoExt.Lang.set(original);
+                }
+                Test = undefined;
+            }
+            
+            function test_add(t) {
+                t.plan(4);
+                setup();
+                
+                GeoExt.Lang.add("en", {
+                    "Test.things.more.Class.prototype": {
+                        prop1: "potato"
+                    },
+                    "Test.things.Class.prototype": {
+                        prop1: "pizza",
+                        prop2: "soda"
+                    },
+                    "Test.data": {
+                        foo: "baz"
+                    }
+                });
+                
+                t.ok("en" in GeoExt.Lang.dict, "en lookup added");
+                t.eq(GeoExt.Lang.dict.en["Test.data"].foo, "baz", "foo set");
+                
+                GeoExt.Lang.add("en", {
+                    "Test.data": {
+                        bar: "foo"
+                    }
+                });
+                t.eq(GeoExt.Lang.dict.en["Test.data"].bar, "foo", "bar set");
+                t.eq(GeoExt.Lang.dict.en["Test.data"].foo, "baz", "foo unchanged");
+                
+                teardown();
+            }
+            
+            function test_add_more(t) {
+                t.plan(3);
+                setup();
+                
+                // assume browser language is regional variation
+                GeoExt.Lang.locale = "xx-YY";
+                
+                GeoExt.Lang.add("xx-YY", {
+                    "Test.things.Class.prototype": {
+                        prop1: "xx-YY"
+                    }
+                });
+                
+                t.eq(Test.things.Class.prototype.prop1, "xx-YY", "Calling add immediately sets strings when locale matches browser language.");
+                
+                GeoExt.Lang.add("xx", {
+                    "Test.things.Class.prototype": {
+                        prop1: "xx",
+                        prop2: "xx"
+                    }
+                });
+                
+                t.eq(Test.things.Class.prototype.prop1, "xx-YY", "Calling add with more general locale doesn't override regional specific strings.");
+                t.eq(Test.things.Class.prototype.prop2, "xx", "Calling add with more general locale than browser language sets strings not previously set.");
+                
+                teardown();
+            }
+            
+            function test_set(t) {
+                t.plan(12);
+                setup();
+
+                GeoExt.Lang.add("en", {
+                    "Test.things.more.Class.prototype": {
+                        prop1: "potato"
+                    },
+                    "Test.things.Class.prototype": {
+                        prop1: "pizza",
+                        prop2: "soda"
+                    },
+                    "Test.data": {
+                        foo: "baz"
+                    }
+                });
+                
+                GeoExt.Lang.add("xx-YY", {
+                    "Test.data": {
+                        foo: "bar xx-YY"
+                    }
+                })
+
+                GeoExt.Lang.add("xx", {
+                    "Test.things.more.Class.prototype": {
+                        prop1: "steak"
+                    },
+                    "Test.things.Class.prototype": {
+                        prop1: "pasta",
+                        prop2: "water"
+                    },
+                    "Test.data": {
+                        foo: "bar xx"
+                    }
+                });
+                
+                GeoExt.Lang.set("en");
+                t.eq(GeoExt.Lang.locale, "en", "locale set to en");
+                
+                t.eq(Test.things.more.Class.prototype.prop1, "potato", "[en] potato set");
+                t.eq(Test.things.more.Class.prototype.prop2, "beer", "[en] beer unmolested");
+                t.eq(Test.things.Class.prototype.prop1, "pizza", "[en] pizza set");
+                t.eq(Test.things.Class.prototype.prop2, "soda", "[en] soda set");
+                t.eq(Test.data.foo, "baz", "[en] baz set");
+                
+                GeoExt.Lang.set("xx-YY");
+                t.eq(GeoExt.Lang.locale, "xx-YY", "locale set to xx-YY");
+                
+                t.eq(Test.things.more.Class.prototype.prop1, "steak", "[xx-YY] steak set");
+                t.eq(Test.things.more.Class.prototype.prop2, "beer", "[xx-YY] beer unmolested");
+                t.eq(Test.things.Class.prototype.prop1, "pasta", "[xx-YY] pasta set");
+                t.eq(Test.things.Class.prototype.prop2, "water", "[xx-YY] water set");
+                t.eq(Test.data.foo, "bar xx-YY", "[xx-YY] baz xx-YY set");
+
+                teardown();                
+            }
+            
+            function test_browser_language(t) {
+                setup();
+
+                var locale = navigator.language || navigator.userLanguage;
+                if (locale) {
+                    
+                    t.plan(5)
+                    t.eq(GeoExt.Lang.locale, locale, "Locale set to browser language when available.");
+
+                    GeoExt.Lang.add("boguslang", {
+                        "Test.data": {
+                            foo: "bogus"
+                        }
+                    });
+
+                    t.ok(GeoExt.Lang.locale !== "boguslang", "Adding localized strings doesn't change locale if browser language is detected");
+                    t.ok(Test.data.foo !== "bogus", "Default values not changed when localized strings are added for non-browser language");
+                    
+                    GeoExt.Lang.add(locale, {
+                        "Test.data": {
+                            foo: "localized"
+                        }
+                    });
+                    
+                    t.eq(Test.data.foo, "localized", "Adding localized strings for browser language sets values on target objects");
+                    
+                    GeoExt.Lang.set("boguslang");
+                    t.eq(Test.data.foo, "bogus", "Call GeoExt.Lang.set to override browser default language");
+
+                } else {
+                    t.plan(1);
+                    t.debug("No browser language detected.")
+                    t.ok(true, "No browser language detected, nothing to test");
+                }
+                
+                teardown();                
+            }
+
+        </script>
+    </head>
+    <body></body>
+</html>

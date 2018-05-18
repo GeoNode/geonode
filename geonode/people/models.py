@@ -92,6 +92,7 @@ class Profile(AbstractUser):
         null=True,
         help_text=_('ZIP or other postal code'))
     country = models.CharField(
+        _('Country'),
         choices=COUNTRIES,
         max_length=3,
         blank=True,
@@ -107,6 +108,7 @@ class Profile(AbstractUser):
         default=settings.LANGUAGE_CODE
     )
     timezone = models.CharField(
+        _('Timezone'),
         max_length=100,
         default="",
         choices=TIMEZONES,

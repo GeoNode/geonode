@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <script src="../../../../../../openlayers/lib/OpenLayers.js"></script>
+        <script src="../../../../../../ext/adapter/ext/ext-base.js"></script>
+        <script src="../../../../../../ext/ext-all-debug.js"></script>
+        <script src="../../../../../lib/GeoExt.js"></script>
+    
+        <script>
+        
+        function test_constructor(t) {
+            
+            t.plan(2);
+            
+            var loader = new GeoExt.tree.LayerLoader({
+                store: "foo",
+                filter: "bar"
+            });
+            
+            t.eq(loader.store, "foo", "store set");
+            t.eq(loader.filter, "bar", "filter set");
+        }
+        
+        function test_load(t) {
+            
+            t.plan(3);
+            
+            var args;
+            
+            var loader = new GeoExt.tree.LayerLoader({
+                store: new GeoExt.data.LayerStore(),
+                listeners: {
+                    "beforeload": function(loader, node) {
+                        return node.attributes.load;
+                    },
+                    "load": function(loader, node) {
+                        args = {
+                            loader: loader,
+                            node: node
+                        };
+                    }
+                }
+            });
+            
+            var node = new Ext.tree.AsyncTreeNode({
+                loader: loader,
+                load: false,
+                expanded: true
+            });
+            var tree = new Ext.tree.TreePanel({root: node});
+            tree.render("tree");
+            t.ok(!args, "loading aborted by beforeload event");
+            
+            tree.destroy();
+            node.destroy();
+            
+            node = new Ext.tree.AsyncTreeNode({
+                loader: loader,
+                load: true,
+                expanded: true
+            });
+            tree = new Ext.tree.TreePanel({root: node});
+            tree.render("tree");
+            t.ok(args.loader == loader, "loader passed correctly to 'load' handler");
+            t.ok(args.node == node, "node passed correctly to 'node' handler");
+            
+            tree.destroy();
+            node.destroy();
+            loader.destroy();
+        }
+        
+        </script>
+    </head>
+    <body>
+        <div id="tree" style="width: 100px; height: 100px;"></div>
+    </body>
+</html>

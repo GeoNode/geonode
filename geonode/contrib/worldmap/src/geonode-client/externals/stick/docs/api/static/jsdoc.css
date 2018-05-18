@@ -1,0 +1,107 @@
+pre.code {
+    background-color: #abc;
+    border-width: 1px;
+    border-color: #9ab;
+    border-style: solid;
+    padding: 0.8em;
+    line-height: 145%;
+}
+
+table td {
+    vertical-align: top;
+    padding: 0 10px;
+}
+
+h4 {
+    margin: 5px 0;
+    color: green;
+    font-weight: bold;
+}
+
+.dimmed {
+    color: #333;
+    font-weight: 500;
+}
+
+.paramname {
+    font-weight:bold;
+}
+
+.extrainfo {
+    padding:0 12px;
+}
+
+.leftnav, .repositorylist, .propertyoverview {
+    list-style-type: none;
+    padding: 2px;
+}
+
+.docitem {
+}
+
+.docitem .itemtitle {
+    font-size:large;
+    text-decoration:none;
+}
+
+.light {
+    font-weight: normal;
+}
+
+.docitem.highlight {
+    border-left: 4px solid green;
+    padding: 0 0 0 6px;
+}
+
+ul.modulelist {
+    list-style-type:none;
+    margin: 0;
+    padding-left: 10px;
+}
+
+.repositoryname {
+    font-weight:bold;
+}
+
+.moduleheader {
+    padding: 8px;
+}
+
+h2, h3 {
+    margin-bottom: 5px;
+}
+
+h3 {
+    font-size: small;
+}
+
+ul {
+    margin: 5px;
+}
+
+hr {
+    border: 0;
+    color: #999;
+    background-color: #999;
+    height: 1px;
+}
+
+.classoverview {
+    border-left: 10px solid #6a6;
+    padding: 5px 10px;
+    margin: 15px 0;
+}
+
+.modulename {
+    /* background-color: #f1ffcc; */
+}
+
+.showmore {
+    color: blue;
+    cursor: pointer;
+}
+
+.modulecontainer {
+    border-left: 10px solid #6a6;
+    padding: 0 0 0 5px;
+}

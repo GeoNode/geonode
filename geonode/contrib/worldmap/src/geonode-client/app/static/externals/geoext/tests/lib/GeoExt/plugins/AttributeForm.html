@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+    <script type="text/javascript" src="AttributeForm.js"></script>
+
+    <script type="text/javascript">
+    function test_constructor(t) {
+        t.plan(2);
+
+        var plugin = new GeoExt.plugins.AttributeForm({
+            attributeStore: new GeoExt.data.AttributeStore({
+               fields: [
+                   {name: "name"},
+                   {name: "type"},
+                   {name: "nillable"},
+                   {name: "restriction"}
+               ]
+            })
+        });
+
+        t.ok(plugin instanceof GeoExt.plugins.AttributeForm,
+             "constructor creates an attribute form plugin");
+        t.ok(plugin.attributeStore instanceof GeoExt.data.AttributeStore,
+             "constructor sets attribute store in instance");
+    }
+
+    function test_init(t) {
+        t.plan(6);
+
+        // Set up
+
+        var store, plugin, form;
+        var NUM_ATTR = 24;
+
+        // Test
+
+        // provide the plugin with a loaded store
+        store = new GeoExt.data.AttributeStore({
+           fields: [
+               {name: "name"},
+               {name: "type"},
+               {name: "nillable"},
+               {name: "restriction"}
+           ]
+        });
+        store.loadData(doc);
+        plugin = new GeoExt.plugins.AttributeForm({
+            attributeStore: store
+        });
+        form = new Ext.form.FormPanel({
+            renderTo: "form",
+            width: 200,
+            plugins: [plugin]
+        });
+        t.ok(plugin.formPanel == form,
+             "plugin correctly sets formPanel property when initialized");
+        t.eq(form.items.getCount(), NUM_ATTR,
+             "plugin auto-fills form when given a loaded store");
+        t.eq(store.hasListener("load"), true,
+             "plugin binds itself to store when given a loaded store");
+        form.destroy();
+
+        // provide the plugin with a non-loaded form
+        store = new GeoExt.data.AttributeStore({
+           fields: [
+               {name: "name"},
+               {name: "type"},
+               {name: "nillable"},
+               {name: "restriction"}
+           ]
+        });
+        plugin = new GeoExt.plugins.AttributeForm({
+            attributeStore: store
+        });
+        form = new Ext.form.FormPanel({
+            renderTo: "form",
+            width: 200,
+            plugins: [plugin]
+        });
+        t.eq(form.items.getCount(), 0,
+             "plugin adds no item when given a non-loaded store");
+        t.eq(store.hasListener("load"), true,
+             "plugin binds itself to store when given a non-loaded store");
+
+        // load the store
+        store.loadData(doc);
+        t.eq(form.items.getCount(), NUM_ATTR,
+             "fields are added when store is loaded");
+        form.destroy();
+    }
+
+    function test_destroy(t) {
+        t.plan(1);
+
+        // Set up
+
+        var store, plugin, form;
+
+        store = new GeoExt.data.AttributeStore({
+           fields: [
+               {name: "name"},
+               {name: "type"},
+               {name: "nillable"},
+               {name: "restriction"}
+           ]
+        });
+        plugin = new GeoExt.plugins.AttributeForm({
+            attributeStore: store
+        });
+        form = new Ext.form.FormPanel({
+            renderTo: "form",
+            width: 200,
+            plugins: [plugin]
+        });
+
+        // Test
+
+        form.destroy();
+        t.eq(store.hasListener("load"), false,
+             "destroy unbinds plugin from store");
+     }
+    </script>
+  <body>
+    <div id="form"></div>
+  </body>
+</html>

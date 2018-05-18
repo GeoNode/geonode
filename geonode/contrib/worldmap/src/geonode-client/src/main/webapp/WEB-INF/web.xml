@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app 
+   xmlns="http://java.sun.com/xml/ns/javaee" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+   version="2.5"> 
+    <display-name>GeoNode Client</display-name>
+
+    <servlet>
+        <servlet-name>ringo</servlet-name>
+        <servlet-class>org.ringojs.jsgi.JsgiServlet</servlet-class>
+        <init-param>
+            <param-name>ringo-home</param-name>
+            <param-value>/WEB-INF</param-value>
+        </init-param>
+        <init-param>
+            <param-name>module-path</param-name>
+            <param-value>app</param-value>
+        </init-param>
+        <init-param>
+            <param-name>config</param-name>
+            <param-value>config</param-value>
+        </init-param>
+        <init-param>
+            <param-name>app</param-name>
+            <param-value>app</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ringo</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+    
+
+</web-app>

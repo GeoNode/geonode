@@ -1,0 +1,42 @@
+.x-btn .icon-print { 
+    background-image: url(../images/silk/printer.png);
+}
+
+.gx-printpreview {
+    padding: 5px;
+}
+
+/* fixes textarea scrollbar issue in FF on OSX */
+.gx-printpreview  textarea.x-form-field {
+    padding: 1px 1px 1px 3px;
+}
+
+.gx-map-overlay {
+    z-index: 1000; 
+    position: absolute; 
+    right: 10px; 
+    bottom: 10px;
+    text-align: left;
+}
+
+.gx-map-overlay .x-panel-body {
+    background-color: #D0DEF0;
+}
+
+.gx-map-overlay .olControlScaleLine {
+    bottom: 0;
+    left: 0;
+    position: relative !important;
+}
+
+.gx-northarrow {
+    background: transparent url(../images/north_arrow.png) no-repeat;
+    *-background: none;
+    *-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../resources/images/north_arrow.png',sizingMethod='crop');
+    height: 24px;
+    width: 24px;
+}
+
+.gx-item-nowrap .x-box-item {
+    white-space: nowrap;
+}

@@ -143,6 +143,7 @@ def resource_urls(request):
         USE_GEOSERVER=settings.USE_GEOSERVER,
         USE_NOTIFICATIONS=has_notifications,
         USE_MONITORING='geonode.contrib.monitoring' in settings.INSTALLED_APPS and settings.MONITORING_ENABLED,
+        USE_WORLDMAP=settings.USE_WORLDMAP,
         DEFAULT_ANONYMOUS_VIEW_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_VIEW_PERMISSION', False),
         DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', False),
         EXIF_ENABLED=getattr(
@@ -169,4 +170,26 @@ def resource_urls(request):
         ),
         OGC_SERVER=getattr(settings, 'OGC_SERVER', None),
     )
+    if settings.USE_WORLDMAP:
+        defaults['GEONODE_CLIENT_LOCATION'] = settings.GEONODE_CLIENT_LOCATION
+        # TODO disable DB_DATASTORE setting
+        defaults['DB_DATASTORE'] = True
+        defaults['HYPERMAP_REGISTRY_URL'] = settings.HYPERMAP_REGISTRY_URL
+        defaults['MAPPROXY_URL'] = settings.HYPERMAP_REGISTRY_URL
+        defaults['SOLR_URL'] = settings.SOLR_URL
+        defaults['USE_GAZETTEER'] = settings.USE_GAZETTEER
+        defaults['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY,
+        defaults['GOOGLE_MAPS_API_KEY'] = settings.GOOGLE_MAPS_API_KEY
+        defaults['WM_COPYRIGHT_URL'] = getattr(
+                                        settings,
+                                        'WM_COPYRIGHT_URL',
+                                        'http://gis.harvard.edu/'
+                                        )
+        defaults['WM_COPYRIGHT_TEXT'] = getattr(
+                                        settings,
+                                        'WM_COPYRIGHT_TEXT',
+                                        'Center for Geographic Analysis'
+                                        )
+        defaults['HYPERMAP_REGISTRY_URL'] = settings.HYPERMAP_REGISTRY_URL
+
     return defaults

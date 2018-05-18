@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+    function test_constructor(t) {
+        t.plan(3);
+
+        /*
+         * Set up
+         */
+
+        var protocol, form;
+
+        protocol = new OpenLayers.Protocol();
+
+        form = new GeoExt.form.FormPanel({
+           renderTo: "form",
+           width: 200,
+           protocol: protocol
+        });
+
+        /*
+         * Test
+         */
+
+        t.ok(form.protocol == protocol,
+             "FormPanel constructor sets protocol in the instance");
+        t.ok(form.getForm() instanceof GeoExt.form.BasicForm,
+             ["FormPanel constructor creates a GeoExt.form.BasicForm as",
+              "its internal form"].join(" "));
+        t.ok(form.getForm().protocol == protocol,
+             "FormPanel constructor sets protocol in internal form");
+    }
+
+    function test_actioncomplete(t) {
+        t.plan(2);
+
+        /*
+         * Set up
+         */
+
+        var response, protocol, field, form;
+        var success = 0;
+
+        response = new OpenLayers.Protocol.Response({
+            code: OpenLayers.Protocol.Response.SUCCESS
+        });
+
+        protocol = new OpenLayers.Protocol({
+            read: function(o) {
+                o.callback.call(o.scope, response);
+                return response;
+            }
+        });
+
+        field = new Ext.form.TextField({
+            name: "foo0",
+            value: "bar0"
+        });
+
+        form = new GeoExt.form.FormPanel({
+           renderTo: "form",
+           width: 200,
+           protocol: protocol,
+           items: [field],
+           listeners: {
+               actioncomplete: function(form, action) {
+                   t.ok(action.response == response,
+                        "actioncomplete passed expected response");
+                   success++;
+               }
+           }
+        });
+
+        /*
+         * Test
+         */
+
+        form.search();
+        t.delay_call(1, function() {
+            t.eq(success, 1,
+                 "actioncomplete called when search request succeeds");
+        });
+    }
+
+    function test_actionfailed(t) {
+        t.plan(2);
+
+        /*
+         * Set up
+         */
+
+        var response, protocol, field, form;
+        var failure = 0;
+
+        response = new OpenLayers.Protocol.Response({
+            code: OpenLayers.Protocol.Response.FAILURE
+        });
+
+        protocol = new OpenLayers.Protocol({
+            read: function(o) {
+                o.callback.call(o.scope, response);
+                return response;
+            }
+        });
+
+        field = new Ext.form.TextField({
+            name: "foo0",
+            value: "bar0"
+        });
+
+        form = new GeoExt.form.FormPanel({
+           renderTo: "form",
+           width: 200,
+           protocol: protocol,
+           items: [field],
+           listeners: {
+               actionfailed: function(form, action) {
+                   t.ok(action.response == response,
+                        "actionfailed passed expected response");
+                   failure++;
+               }
+           }
+        });
+
+        /*
+         * Test
+         */
+
+        form.search();
+        t.delay_call(1, function() {
+            t.eq(failure, 1,
+                 "actionfailed called when search request fails");
+        });
+    }
+    </script>
+  <body>
+    <div id="form"></div>
+  </body>
+</html>

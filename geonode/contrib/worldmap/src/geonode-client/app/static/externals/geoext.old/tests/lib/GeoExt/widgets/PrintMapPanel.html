@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+        var printCapabilities = {"scales":[{"name":"1:25,000","value":"25000"},{"name":"1:50,000","value":"50000"},{"name":"1:100,000","value":"100000"},{"name":"1:200,000","value":"200000"},{"name":"1:500,000","value":"500000"},{"name":"1:1,000,000","value":"1000000"},{"name":"1:2,000,000","value":"2000000"},{"name":"1:4,000,000","value":"4000000"}],"dpis":[{"name":"75","value":"75"},{"name":"150","value":"150"},{"name":"300","value":"300"}],"layouts":[{"name":"A4 portrait","map":{"width":440,"height":483},"rotation":true},{"name":"Legal","map":{"width":440,"height":483},"rotation":false}],"printURL":"http://demo.opengeo.org/geoserver/pdf/print.pdf","createURL":"http://demo.opengeo.org/geoserver/pdf/create.json"};
+       
+        function test_initComponent(t) {
+            t.plan(8);
+            
+            var mapPanel = new GeoExt.MapPanel({
+                renderTo: "mappanel",
+                width: 256,
+                height: 256,
+                layers: [new OpenLayers.Layer("Empty",
+                    {isBaseLayer: true}
+                )],
+                center: [146.56, -41.56],
+                zoom: 7
+            });
+            
+            var log = {};
+            var printMapPanel = new GeoExt.PrintMapPanel({
+                renderTo: "printmappanel",
+                height: 256,
+                map: {
+                    controls: [new OpenLayers.Control.PanPanel()],
+                    eventListeners: {
+                        preaddlayer: function(e) {
+                            log.preaddlayer = e.layer;
+                        }
+                    }
+                },
+                printProvider: {
+                    capabilities: printCapabilities
+                },
+                sourceMap: mapPanel
+            });
+            
+            var printSize = printMapPanel.printProvider.layout.get("size");
+            var size = printMapPanel.map.getSize();
+            var center = mapPanel.map.getCenter();
+            var pageCenter = printMapPanel.printPage.center;
+            
+            t.eq(printMapPanel.map.controls.length, printMapPanel.map.controls[0].controls.length+1, "Preview map has only the control we added,");
+            t.ok(printMapPanel.map.controls[0] instanceof OpenLayers.Control.PanPanel, "which is a PanPanel.");
+            t.eq(printMapPanel.map.layers[0].name, mapPanel.map.layers[0].name, "Preview map has the same visible layer as the source map.");
+            t.eq(log.preaddlayer.name, printMapPanel.map.layers[0].name, "preaddlayer listener noticed addition of the layer.");
+            t.eq((size.w/size.h).toPrecision(2), (printSize.width/printSize.height).toPrecision(2), "Aspect ratio of the preview map is the same as of the print layout.");
+            t.ok(Math.abs(center.lon - pageCenter.lon) < 0.0000001 && Math.abs(center.lat - pageCenter.lat) < 0.0000001, "Print page has the same center as the source map.");
+
+            var printExtent = printMapPanel.printPage.getPrintExtent(mapPanel.map);
+            t.ok(printMapPanel.map.getExtent().containsBounds(printExtent), "Preview contains the extent of the source map.");
+            
+            var page = printMapPanel.printPage;
+            var scale = page.scale;
+            var scales = printMapPanel.previewScales;
+            page.setScale(scales.getAt(scales.indexOf(scale)+1));
+            t.ok(!printMapPanel.map.getExtent().containsBounds(printExtent), "After zooming in, preview does not contain the extent of the source map any more.");
+
+            printMapPanel.destroy();
+            mapPanel.destroy();
+        }
+
+    </script>
+  <body>
+    <div id="mappanel"></div>
+    <div id="printmappanel"></div>
+  </body>
+</html>

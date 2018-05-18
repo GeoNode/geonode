@@ -1,0 +1,251 @@
+<html>
+    <head>
+        <script src="../../../../../../openlayers/lib/OpenLayers.js"></script>
+        <script src="../../../../../../ext/adapter/ext/ext-base.js"></script>
+        <script src="../../../../../../ext/ext-all-debug.js"></script>
+        <script src="../../../../../lib/GeoExt.js"></script>
+    
+        <script>
+        
+        function test_constructor(t) {
+            
+            t.plan(2);
+            
+            var store = new GeoExt.data.LayerStore();
+            
+            var node = new GeoExt.tree.LayerNode({
+                layer: "foo",
+                layerStore: store,
+                loader: {
+                    param: "foo"
+                }
+            });
+            
+            t.ok(node.layerStore === store, "layerStore set");
+            t.ok(node.attributes.loader instanceof GeoExt.tree.LayerParamLoader, "LayerParamLoader created from object.");
+            
+            node.destroy();
+            
+        }
+        
+        function test_render(t) {
+            
+            t.plan(6);
+            
+            var layer = new OpenLayers.Layer("foo");
+            
+            var mapPanel = new GeoExt.MapPanel({
+                layers: [layer],
+                allOverlays: true
+            });
+            
+            var node = new GeoExt.tree.LayerNode({
+                layer: "foo",
+                checkedGroup: "check"
+            });
+
+           var panel = new Ext.tree.TreePanel({
+                renderTo: "tree",
+                root: node
+            });
+            
+            mapPanel.on("render", function() {
+                t.ok(node.layer === layer, "layer found on detected map panel");
+
+                t.ok(node.ui.checkbox, "node has a checkbox");
+
+                t.eq(node.ui.checkbox.type, "radio", "checkbox rendered as radio button when checkedGroup is configured");
+                t.eq(node.ui.checkbox.name, "check_checkbox", "option group name set correctly according to checkedGroup");
+                
+                layer.setVisibility(false);
+                t.eq(layer.visibility, true, "unchecking a layer with checkedGroup has no effect");
+                
+                delete node.attributes.checkedGroup;
+                node.ui.toggleCheck();
+                t.eq(layer.visibility, false, "unchecking a layer without checkedGroup hides the layer");
+            });
+
+            mapPanel.render("map");
+            
+            mapPanel.destroy();
+        }
+        
+        function test_enforceOneVisible(t) {
+            t.plan(8);
+
+            var layers = [
+                new OpenLayers.Layer("foo"),
+                new OpenLayers.Layer("bar")
+            ];
+            var mapPanel = new GeoExt.MapPanel({
+                layers: layers,
+                allOverlays: true
+            });
+            var root = new GeoExt.tree.LayerContainer({
+                loader: {
+                    baseAttrs: {checkedGroup: "group"}
+                },
+                expanded: true
+            });
+            var panel = new Ext.tree.TreePanel({
+                renderTo: "tree",
+                root: root
+            });
+            mapPanel.render("map");
+
+            // two overlay layers in the same checkedGroup: only one can be visible
+            var nodes = panel.getRootNode().childNodes;
+            t.eq(nodes[0].layer.getVisibility(), false, "Layer on top is hidden");
+            t.eq(nodes[1].layer.getVisibility(), true, "Layer on bottom is visible");
+            
+            delete root.loader.baseAttrs.checkedGroup;
+            mapPanel.map.allOverlays = false;
+            
+            // without a custom checkedGroup, base layers get the gx_baselayer group assigned
+            mapPanel.layers.on("add", function(){
+                t.eq(nodes[0].attributes.checkedGroup, "gx_baselayer", "gx_baselayer checkedGroup set for base layer");
+            }, this, {single: true});
+            mapPanel.map.addLayer(new OpenLayers.Layer("foo1", {isBaseLayer: true}));
+                        
+            root.loader.baseAttrs.checkedGroup = "another_group";
+            
+            // a custom checkedGroup will override the gx_baselayer default
+            mapPanel.layers.on("add", function() {
+                t.eq(nodes[0].attributes.checkedGroup, "another_group", "custom checkedGroup set for base layer");
+            }, this, {single: true});
+            mapPanel.map.addLayer(new OpenLayers.Layer("bar", {isBaseLayer: true}));
+            
+            // overlays also get the custom checkedGroup assigned
+            mapPanel.layers.on("add", function() {
+                t.eq(nodes[0].attributes.checkedGroup, "another_group", "custom checkedGroup set for overlay");
+                // the another_group baselayer from above is invisible (the gx_baselayer one is visible)
+                t.eq(nodes[0].layer.getVisibility(), true, "overlay in checkedGroup visible because no other layer in group is visible");
+                // now making it visible
+                nodes[1].layer.setVisibility(true);
+                // and the overlay in the same checkedGroup gets hidden
+                t.eq(nodes[0].layer.getVisibility(), false, "overlay in checkedGroup now hidden because base layer in group is visible");
+            }, this, {single: true});
+            mapPanel.map.addLayer(new OpenLayers.Layer("foo2", {isBaseLayer: false}));
+            
+            // remove all layers except one visible and one invisible layer
+            mapPanel.map.removeLayer(nodes[0].layer);
+            mapPanel.map.removeLayer(nodes[0].layer);
+            mapPanel.map.removeLayer(nodes[0].layer);
+            // now there is only one layer in the another_group
+            // "bar" (invisible) is now in the group at position [0], "foo" (visible) at [1]
+            mapPanel.layers.on("remove", function() {
+                t.eq(nodes[0].layer.getVisibility(), true, "Previously invisible layer was made visible because the visible layer has been removed")
+            }, this, {single: true});
+            // removing "foo", so "bar" will have to be made visible
+            mapPanel.map.removeLayer(nodes[1].layer);
+            
+            mapPanel.destroy();
+        }
+
+        function test_changelayername(t) {
+            t.plan(3);
+
+            var layer = new OpenLayers.Layer("test");
+
+            var mapPanel = new GeoExt.MapPanel({
+                renderTo: document.body,
+                layers: [layer],
+                allOverlays: true
+            });
+
+            var node = new GeoExt.tree.LayerNode({
+                layer: "test",
+                layerStore: mapPanel.layers
+            });
+
+            var panel = new Ext.tree.TreePanel({
+                root: node
+            });
+            panel.render(document.body);
+
+            layer.setName("My new name");
+            t.eq(node.text, "My new name", "Node is named 'My new name' after layer setName is called");
+            
+            layer.setName("Second Name");
+            t.eq(node.text, "Second Name", "Layer name (title) can be set multiple times and the node respects it.");
+            
+            node = new GeoExt.tree.LayerNode({
+                layer: "My new name",
+                layerStore: mapPanel.layers,
+                text: "My custom text"
+            });
+            
+            layer.setName("test");
+            t.eq(node.text, "My custom text", "Node text does not change with layer name if custom text was provided");
+
+            node.destroy();
+            mapPanel.destroy();
+        }
+        function test_autodisable(t){
+            t.plan(8);
+
+            var layer1 = new OpenLayers.Layer("test1", {
+                maxResolution: 0.1,
+                alwaysInRange: false,
+                isBaseLayer:false
+            });
+            var layer2 = new OpenLayers.Layer("test2",{alwaysInRange:true,isBaseLayer:false});
+            var layer3 = new OpenLayers.Layer("test3", {
+                minResolution: 0.1,
+                alwaysInRange: false,
+                isBaseLayer:false
+            })
+
+            var mapPanel = new GeoExt.MapPanel({
+                renderTo: document.body,
+                allOverlays: true,
+                map:{maxResolution:1.40625,numZoomLevels:10,layers: [layer2,layer1,layer3]}
+            });
+
+            //should be intially disabled & autoDisable should default to true
+            var node1 = new GeoExt.tree.LayerNode({
+                layer: layer1
+            });
+            //should never be disabled & autoDisable should default to false
+            var node2 = new GeoExt.tree.LayerNode({
+                layer: layer2
+            });
+            //should be inially enabled
+            var node3 = new GeoExt.tree.LayerNode({
+                layer: layer3,
+                autoDisable:true
+            });
+            //should never be disabled
+            var node4 = new GeoExt.tree.LayerNode({
+                layer: layer1,
+                autoDisable:false
+            });
+            
+            var panel = new Ext.tree.TreePanel({
+                root:new Ext.tree.TreeNode(),
+                renderTo: "tree"
+            });
+            panel.getRootNode().appendChild([node1,node2,node3,node4]);
+            panel.getRootNode().expand(true);
+            
+            t.eq(node1.disabled,true,"Node1 layer with maxResolution of 0.1 should be intially disabled");
+            t.eq(node2.disabled,false,"Node2 layer with alwaysInRange should never be disabled");
+            t.eq(node3.disabled,false,"Node3 layer with minResolution of 0.1 should be intially enabled");
+            t.eq(node4.disabled,false,"Node4 with autoDisabled==false should never be disabled");
+            
+            //move map to new resolution
+            mapPanel.map.zoomTo(mapPanel.map.getZoomForResolution(0.075))
+            
+            t.eq(node1.disabled,false,"Node1 layer with maxResolution of 0.1 should be enabled below resolution 0.1");
+            t.eq(node2.disabled,false,"Node2 layer with alwaysInRange should never be disabled");
+            t.eq(node3.disabled,true,"Node3 layer with minResolution of 0.1 should be disabled below resolution 0.1");
+            t.eq(node4.disabled,false,"Node4 with autoDisabled==false should never be disabled");
+        }
+        
+        </script>
+    </head>
+    <body>
+        <div id="map" style="width: 100px; height: 100px;"></div>
+        <div id="tree" style="width: 100px; height: 100px;"></div>
+    </body>
+</html>

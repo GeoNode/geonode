@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../externals/openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../externals/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../src/script/loader.js"></script>
+
+    <script type="text/javascript">
+       
+        function test_Tool(t) {
+            t.plan(2);
+            
+            var instance = new gxp.plugins.Tool({id: "foo"});
+            
+            t.ok(instance instanceof gxp.plugins.Tool, "Instance created successfully");
+            t.eq(instance.id, "foo", "Instance has id from config");
+        }
+        
+        function test_init(t) {
+            t.plan(3);
+            
+            var tool = new gxp.plugins.Tool({
+                listeners: {
+                    activate: function() {  
+                        t.ok(true, "Activate event is fired");
+                    } 
+                }
+            });
+            var target = {tools: {}, on: function(){}};
+            tool.init(target);
+            t.ok(target.tools[tool.id] === tool, "tool registered on target");
+            t.ok(tool.active === true, "tool is automatically activated");
+        }
+
+        function test_autoActivate(t) {
+            t.plan(1);
+            var tool = new gxp.plugins.Tool({autoActivate: false});
+            var target = {tools: {}, on: function(){}};
+            tool.init(target);
+            t.ok(tool.active === false, "tool is not automatically activated when autoActivate is false");
+        }
+        
+        function test_addActions(t) {
+            t.plan(6);
+            var ct = new Ext.Panel({
+                id: "foo",
+                renderTo: document.body,
+                width: 100,
+                height: 100,
+                bbar: []
+            });
+
+            var target = {tools: {}, on: function(){}};
+
+            var tool = new gxp.plugins.Tool({
+                defaultAction: 0,
+                actions: [{text: "activeAction"}, {text: "otherAction"}],
+                actionTarget: "foo.bbar"
+            });
+            tool.init(target);
+            tool.addActions();
+
+            t.eq(tool.actions[0].items[0].pressed, true, "activeAction initially active");
+            t.ok(!tool.actions[1].items[0].pressed, "otherAction initially not active");
+            
+            tool = new gxp.plugins.Tool({
+                defaultAction: 1,
+                actions: [new GeoExt.Action({
+                    control: new OpenLayers.Control(),
+                    text: "otherAction"
+                }), new GeoExt.Action({
+                    control: new OpenLayers.Control(),
+                    text: "activeAction"
+                })],
+                actionTarget: "foo"
+            });
+            tool.init(target);
+            tool.addActions();
+
+            t.ok(!tool.actions[0].control.active, "control of otherAction initially inactive");
+            t.eq(tool.actions[1].control.active, true, "control of activeAction initially active");
+
+            tool = new gxp.plugins.Tool({
+                defaultAction: 0,
+                actions: [new GeoExt.Action({
+                    control: new OpenLayers.Control(),
+                    text: "activeAction",
+                    disabled: true
+                })],
+                actionTarget: "foo"
+            });
+            tool.init(target);
+            tool.addActions();
+
+            t.ok(!tool.actions[0].control.active, "action disabled, control not yet active");
+            tool.actions[0].enable();
+            t.eq(tool.actions[0].control.active, true, "action enabled, control active");
+
+            ct.destroy();
+        }
+        
+        function test_addRemoveOutput(t) {
+            t.plan(15);
+            var ct = new Ext.Panel({
+                id: "foo",
+                renderTo: document.body,
+                width: 100,
+                height: 100,
+                bbar: []
+            });
+
+            // Adding and removing output for a tool without actions
+            var tool = new gxp.plugins.Tool({
+                outputTarget: "foo"
+            });
+            tool.addOutput({id: "bar"});
+            t.eq(ct.items.get(0).id, "bar", "output added to container");
+            tool.removeOutput();
+            t.eq(ct.items.getCount(), 0, "output removed from container");
+            
+            // Adding and removing output for a tool with outputTarget
+            tool = new gxp.plugins.Tool({
+                actions: [new Ext.Button()],
+                actionTarget: "foo.bbar",
+                outputAction: 0,
+                outputTarget: "foo",
+                outputConfig: {id: "bar", title: "output"}
+            });
+            tool.addActions();
+            var button = tool.actions[0];
+            // If configured with outputAction, a click on that action will
+            // trigger the tool's output.
+            button.fireEvent("click");
+            var output = tool.output[0];
+            t.eq(ct.items.get(0).id, "bar", "output added to container");
+            t.eq(output.title, "output", "title goes on the output component");
+            output.hide();
+            // If the output was hidden, triggering the outputAction will show
+            // it again.
+            button.fireEvent("click");
+            t.eq(output.hidden, false, "output visible again after triggering the action");
+            tool.removeOutput();
+            
+            // Adding and removing output for a tool without outputTarget. This
+            // will cause the output to be placed in an empty panel inside a
+            // fresh window.
+            tool = new gxp.plugins.Tool({
+                actions: [new Ext.Button()],
+                actionTarget: "foo.bbar",
+                outputAction: 0,
+                outputConfig: {title: "output"}
+            });
+            tool.addActions();
+            button = tool.actions[0];
+            button.fireEvent("click");
+            output = tool.output[0];
+            t.eq(output.ownerCt.getXType(), "panel", "output without outputTarget wrapped in a panel");
+            t.eq(output.ownerCt.ownerCt.getXType(), "window", "wrapping panel is owned by a window");
+            t.eq(output.ownerCt.ownerCt.autoHeight, true, "if configured without a height, 'autoHeight' will be set to true");
+            t.eq(output.ownerCt.ownerCt.initialConfig.layout, undefined, "if configured without a height, the window won't have a layout");
+            t.eq(output.ownerCt.ownerCt.title, "output", "title from outputConfig goes on the window");
+            t.eq(output.ownerCt.ownerCt.closeAction, "hide", "window is configured with closeAction: 'hide");
+            // Simulate a click on the window's close button
+            output.ownerCt.ownerCt.hide();
+            // Clicking the outputAction will show the window again
+            button.fireEvent("click");
+            t.eq(output.ownerCt.ownerCt.hidden, false, "output visible again after triggering the action");
+            tool.removeOutput();
+            t.ok(!Ext.ComponentMgr.all.find(function(c) {return c instanceof Ext.Window;}), "window removed after removeOutput");
+
+            // Adding and removing output in a window with custom height.
+            tool = new gxp.plugins.Tool({
+                outputConfig: {height: 100}
+            });
+            output = tool.addOutput();
+            t.eq(output.ownerCt.ownerCt.autoHeight, false, "no autoHeight when a height is provided");
+            t.eq(output.ownerCt.ownerCt.initialConfig.layout, "fit", "'fit' layout used when height is configured");
+
+            ct.destroy();
+        }
+        
+        function test_getState(t) {
+            t.plan(2);
+            var initialConfig = {foo: "bar"};
+            var tool = new gxp.plugins.Tool(initialConfig);
+            var state = tool.getState();
+            t.eq(state, initialConfig, "getState returns the same config as initialConfig,");
+            t.ok(state !== initialConfig, "but is a clone initialConfig");            
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

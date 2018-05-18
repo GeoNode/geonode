@@ -1,0 +1,43 @@
+#!/usr/bin/make -f
+# debian/rules for ringojs (uses CDBS)
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+#include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/ant.mk
+#include /usr/share/cdbs/1/rules/dpatch.mk
+#include /usr/share/cdbs/1/rules/simple-patchsys.mk
+
+JAVA_HOME_DIRS       := /usr/lib/jvm/default-java \
+                        /usr/lib/jvm/java-5-openjdk \
+                        /usr/lib/jvm/java-5-sun \
+                        /usr/lib/jvm/java-6-openjdk \
+                        /usr/lib/jvm/java-6-sun \
+                        /usr/lib/jvm/java-gcj
+DEB_ANT_BUILD_TARGET := jar
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean
+	dh_installdirs
+
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_installinit --name=ringojs
+	dh_install
+	dh_installdebconf
+	dh_link
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary-arch: build install
+
+binary: binary-indep binary-arch
+

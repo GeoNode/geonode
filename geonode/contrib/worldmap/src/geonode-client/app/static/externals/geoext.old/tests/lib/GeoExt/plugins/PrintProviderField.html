@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+        var printCapabilities = {"scales":[{"name":"1:25,000","value":"25000"},{"name":"1:50,000","value":"50000"},{"name":"1:100,000","value":"100000"},{"name":"1:200,000","value":"200000"},{"name":"1:500,000","value":"500000"},{"name":"1:1,000,000","value":"1000000"},{"name":"1:2,000,000","value":"2000000"},{"name":"1:4,000,000","value":"4000000"}],"dpis":[{"name":"75","value":"75"},{"name":"150","value":"150"},{"name":"300","value":"300"}],"layouts":[{"name":"A4 portrait","map":{"width":440,"height":483},"rotation":true},{"name":"Legal","map":{"width":440,"height":483},"rotation":false}],"printURL":"http://demo.opengeo.org/geoserver/pdf/print.pdf","createURL":"http://demo.opengeo.org/geoserver/pdf/create.json"};
+        
+        function test_init(t){
+            t.plan(2);
+            
+            var log = {};
+            var printProvider = new GeoExt.data.PrintProvider({
+                capabilities: printCapabilities
+            });
+            var plugin = new GeoExt.plugins.PrintProviderField({
+                printProvider: printProvider,
+                onProviderChange: function(arg) {
+                    log.onProviderChange = arg;
+                }
+            });
+            
+            var field = {
+                on: function(cfg) {
+                    log.on = cfg;
+                }
+            };
+            plugin.init(field);
+            
+            t.ok(log.on["valid"] === plugin.onFieldChange, "onFieldChange handler set correctly.");
+            t.ok(log.on["render"] === plugin.onRender, "onRender handler set correctly.");
+        }
+
+        function test_destroy(t){
+            t.plan(2);
+            
+            var log = {};
+            var printProvider = new GeoExt.data.PrintProvider({
+                capabilities: printCapabilities
+            });
+            var plugin = new GeoExt.plugins.PrintProviderField({
+                printProvider: printProvider,
+                onProviderChange: function(arg) {
+                    log.onProviderChange = arg;
+                }
+            });
+            var field = new Ext.form.Field({
+                store: printProvider.layouts,
+                plugins: plugin,
+                renderTo: document.body
+            });
+
+            printProvider.fireEvent("layoutchange", "foo");
+            t.eq(log.onProviderChange, "foo",
+                 "[destroy] onProviderChange called on layoutchange.");
+
+            delete log.onProviderChange;
+            field.destroy();
+            printProvider.fireEvent("layoutchange", "bar");
+            t.eq(log.onProviderChange, undefined,
+                 "[destroy] onProviderChange not called after field is destroyed.");
+        }
+
+        function test_destroy2(t){
+            t.plan(2);
+            
+            var log = {};
+
+            var printProvider = new GeoExt.data.PrintProvider({
+                capabilities: printCapabilities
+            });
+            var plugin = new GeoExt.plugins.PrintProviderField({
+                onProviderChange: function(arg) {
+                    log.onProviderChange = arg;
+                }
+            });
+            var field = new Ext.form.Field({
+                store: printProvider.layouts,
+                plugins: plugin,
+                renderTo: document.body,
+                // add a fake ownerCt to the field
+                ownerCt: {printProvider: printProvider}
+            });
+
+            plugin.init(field);
+
+            printProvider.fireEvent("layoutchange", "foo");
+            t.eq(log.onProviderChange, "foo",
+                 "[destroy2] onProviderChange called on layoutchange.");
+
+            delete log.onProviderChange;
+            field.destroy();
+            printProvider.fireEvent("layoutchange", "bar");
+            t.eq(log.onProviderChange, undefined,
+                 "[destroy2] onProviderChange not called after field is destroyed.");
+        }
+
+        function test_render(t) {
+            t.plan(2);
+
+            var log = {};
+            var printProvider = new GeoExt.data.PrintProvider({
+                capabilities: printCapabilities,
+                customParams: {foo: "bar"}
+            });
+            var plugin = new GeoExt.plugins.PrintProviderField({
+                printProvider: printProvider
+            });
+
+            var field = {
+                name: "foo",
+                initialConfig: {},
+                setValue: function(value) {
+                    log.setValue = value;
+                }
+            };
+            plugin.onRender(field);
+            
+            t.eq(log.setValue, "bar", "Initial custom value set correctly on printProvider.");
+            
+            delete field.name;
+            field.store = printProvider.layouts;
+            field.displayField = "name";
+            plugin.onRender(field);
+            
+            t.eq(log.setValue, printProvider.layout.get(field.displayField), "Initial layout value set correctly on printProvider.");
+        }
+        
+        function test_onFieldChange(t) {
+            t.plan(2);
+
+            var printProvider = new GeoExt.data.PrintProvider({
+                capabilities: printCapabilities,
+                customParams: {foo: "bar"}
+            });
+            var plugin = new GeoExt.plugins.PrintProviderField({
+                printProvider: printProvider
+            });
+            var field = {
+                name: "foo",
+                initialConfig: {},
+                getValue: function() {
+                    return "foobar";
+                }
+            };
+            plugin.onFieldChange(field);
+
+            t.eq(printProvider.customParams.foo, "foobar", "Custom field value updated in printProvider.");
+
+            delete field.name;
+            field.store = printProvider.layouts;
+            field.displayField = "name";
+            plugin.onFieldChange(field, printProvider.layouts.getAt(1));
+            
+            t.eq(printProvider.layout.get("name"), printProvider.layouts.getAt(1).get("name"), "Layout value updated in printProvider.");
+        }
+        
+        function test_onProviderChange(t) {
+            t.plan(3);
+            
+            var log = {};
+            var printProvider = new GeoExt.data.PrintProvider({
+                capabilities: printCapabilities,
+                customParams: {foo: "bar"}
+            });
+            var plugin = new GeoExt.plugins.PrintProviderField({
+                printProvider: printProvider
+            });
+            var field = {
+                displayField: "name",
+                store: printProvider.layouts,
+                initialConfig: {},
+                on: function(cfg) {
+                    log.on = cfg;
+                },
+                getValue: function() {
+                    return "foobar";
+                },
+                setValue: function(value) {
+                    log.setValue = value;
+                }
+            };
+            plugin.init(field);
+            plugin.onRender(field);
+            
+            printProvider.setLayout(printProvider.layouts.getAt(1));
+            t.eq(log.setValue, printProvider.layouts.getAt(1).get("name"), "Plugin updated layout name on printProvider change.");
+            
+            delete log.setValue;
+            plugin.onFieldChange(field, printProvider.layouts.getAt(0));
+            
+            t.ok(printProvider.layout === printProvider.layouts.getAt(0), "Layout set on field change.");
+            t.eq(log.setValue, undefined, "setValue not called while updating.");
+        }
+
+    </script>
+  </head>  
+  <body>
+    <div id="form" style="width:400px; height:300px"></div>
+  </body>
+</html>

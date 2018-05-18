@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WMS_Capabilities version="1.3.0" updateSequence="57" xmlns="http://www.opengis.net/wms" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wms http://localhost:8080/geoserver/schemas/wms/1.3.0/capabilities_1_3_0.xsd">
+  <Service>
+    <Name>WMS</Name>
+    <Title>GeoServer Web Map Service</Title>
+    <Abstract>A compliant implementation of WMS 1.1.1 plus most of the SLD 1.0 extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</Abstract>
+    <KeywordList>
+      <Keyword>WFS</Keyword>
+      <Keyword>WMS</Keyword>
+      <Keyword>GEOSERVER</Keyword>
+    </KeywordList>
+    <OnlineResource xlink:type="simple" xlink:href="http://geoserver.sourceforge.net/html/index.php"/>
+    <ContactInformation>
+      <ContactPersonPrimary>
+        <ContactPerson>OpenGeo</ContactPerson>
+        <ContactOrganization>OpenGeo</ContactOrganization>
+      </ContactPersonPrimary>
+      <ContactPosition>Outreach</ContactPosition>
+      <ContactAddress>
+        <AddressType>Work</AddressType>
+        <Address/>
+        <City>New York</City>
+        <StateOrProvince/>
+        <PostCode/>
+        <Country>USA</Country>
+      </ContactAddress>
+      <ContactVoiceTelephone/>
+      <ContactFacsimileTelephone/>
+      <ContactElectronicMailAddress>inquiry@opengeo.org</ContactElectronicMailAddress>
+    </ContactInformation>
+    <Fees>NONE</Fees>
+    <AccessConstraints>NONE</AccessConstraints>
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <Format>text/xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?SERVICE=WMS&amp;"/>
+            </Get>
+            <Post>
+              <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?SERVICE=WMS&amp;"/>
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <GetMap>
+        <Format>image/png</Format>
+        <Format>application/atom+xml</Format>
+        <Format>application/pdf</Format>
+        <Format>application/vnd.google-earth.kml+xml</Format>
+        <Format>application/vnd.google-earth.kml+xml;mode=networklink</Format>
+        <Format>application/vnd.google-earth.kmz</Format>
+        <Format>image/geotiff</Format>
+        <Format>image/geotiff8</Format>
+        <Format>image/gif</Format>
+        <Format>image/jpeg</Format>
+        <Format>image/png; mode=8bit</Format>
+        <Format>image/svg+xml</Format>
+        <Format>image/tiff</Format>
+        <Format>image/tiff8</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?SERVICE=WMS&amp;"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetMap>
+      <GetFeatureInfo>
+        <Format>text/plain</Format>
+        <Format>application/vnd.ogc.gml</Format>
+        <Format>application/vnd.ogc.gml/3.1.1</Format>
+        <Format>text/html</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?SERVICE=WMS&amp;"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetFeatureInfo>
+    </Request>
+    <Exception>
+      <Format>XML</Format>
+      <Format>INIMAGE</Format>
+      <Format>BLANK</Format>
+    </Exception>
+    <Layer>
+      <Title>GeoServer Web Map Service</Title>
+      <Abstract>A compliant implementation of WMS 1.1.1 plus most of the SLD 1.0 extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</Abstract>
+      <!--All supported EPSG projections:-->
+      <!-- Edited for brevity -->
+      <CRS>EPSG:4326</CRS>
+      <CRS>CRS:84</CRS>
+      <CRS>EPSG:900913</CRS>
+      <CRS>EPSG:3857</CRS>
+      <CRS>EPSG:102113</CRS>
+      <CRS>EPSG:102100</CRS>
+      <EX_GeographicBoundingBox>
+        <westBoundLongitude>-180.0</westBoundLongitude>
+        <eastBoundLongitude>180.0</eastBoundLongitude>
+        <southBoundLatitude>-90.0</southBoundLatitude>
+        <northBoundLatitude>83.624</northBoundLatitude>
+      </EX_GeographicBoundingBox>
+      <BoundingBox CRS="CRS:84" minx="-180.0" miny="-90.0" maxx="180.0" maxy="83.624"/>
+      <Layer queryable="1">
+        <Name>medford:bikelanes</Name>
+        <Title>Medford, OR - Bike Lanes</Title>
+        <Abstract>Bike lanes in Jackson County, Oregon as of December 2008.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.946</westBoundLongitude>
+          <eastBoundLongitude>-122.762</eastBoundLongitude>
+          <southBoundLatitude>42.256</southBoundLatitude>
+          <northBoundLatitude>42.415</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.946" miny="42.256" maxx="-122.762" maxy="42.415"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.256" miny="-122.946" maxx="42.415" maxy="-122.762"/>
+        <Style>
+          <Name>medford_bikelanes</Name>
+          <Title>Medford, OR - Bike Lanes</Title>
+          <Abstract/>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=bikelanes"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>world:borders</Name>
+        <Title>World - Borders</Title>
+        <Abstract>Borders of world continents.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-180.0</westBoundLongitude>
+          <eastBoundLongitude>180.0</eastBoundLongitude>
+          <southBoundLatitude>-90.0</southBoundLatitude>
+          <northBoundLatitude>83.624</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-180.0" miny="-90.0" maxx="180.0" maxy="83.624"/>
+        <BoundingBox CRS="EPSG:4326" minx="-90.0" miny="-180.0" maxx="83.624" maxy="180.0"/>
+        <Style>
+          <Name>world_borders</Name>
+          <Title>GeoServer SLD Cook Book: Simple point</Title>
+          <Abstract/>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=borders"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:buildings</Name>
+        <Title>Medford, OR - Buildings</Title>
+        <Abstract>The building outlines for Medford, Oregon as of March 2009.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.915</westBoundLongitude>
+          <eastBoundLongitude>-122.777</eastBoundLongitude>
+          <southBoundLatitude>42.287</southBoundLatitude>
+          <northBoundLatitude>42.404</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.915" miny="42.287" maxx="-122.777" maxy="42.404"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.287" miny="-122.915" maxx="42.404" maxy="-122.777"/>
+        <Style>
+          <Name>medford_buildings</Name>
+          <Title>Medford, OR - Buildings</Title>
+          <Abstract/>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=buildings"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>world:cities</Name>
+        <Title>World - Cities</Title>
+        <Abstract>Location of some major international cities.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.42</westBoundLongitude>
+          <eastBoundLongitude>151.207</eastBoundLongitude>
+          <southBoundLatitude>-37.818</southBoundLatitude>
+          <northBoundLatitude>52.516</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.42" miny="-37.818" maxx="151.207" maxy="52.516"/>
+        <BoundingBox CRS="EPSG:4326" minx="-37.818" miny="-122.42" maxx="52.516" maxy="151.207"/>
+        <Style>
+          <Name>world_cities</Name>
+          <Title>World Cities </Title>
+          <Abstract/>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=cities"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:citylimits</Name>
+        <Title>Medford, OR - City Limits</Title>
+        <Abstract>Local Jurisdiction of Medford, Oregon as of July 2009.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.911</westBoundLongitude>
+          <eastBoundLongitude>-122.777</eastBoundLongitude>
+          <southBoundLatitude>42.289</southBoundLatitude>
+          <northBoundLatitude>42.398</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.911" miny="42.289" maxx="-122.777" maxy="42.398"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.289" miny="-122.911" maxx="42.398" maxy="-122.777"/>
+        <Style>
+          <Name>medford_citylimits</Name>
+          <Title>City Limits Style</Title>
+          <Abstract>Basic polygon fill in gray with opacity.  Border increases with zoom level.</Abstract>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=citylimits"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:elevation</Name>
+        <Title>Medford, OR - Digital Elevation</Title>
+        <Abstract>50 Meters USGS 30 Meter Digital Elevation Model Color Shaded Relief of Medford, Oregon taken as of 01/23/2001.</Abstract>
+        <KeywordList>
+          <Keyword>WCS</Keyword>
+          <Keyword>GeoTIFF</Keyword>
+          <Keyword>medford_dem</Keyword>
+        </KeywordList>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-123.047</westBoundLongitude>
+          <eastBoundLongitude>-122.499</eastBoundLongitude>
+          <southBoundLatitude>42.231</southBoundLatitude>
+          <northBoundLatitude>42.755</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-123.047" miny="42.231" maxx="-122.499" maxy="42.755"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.231" miny="-123.047" maxx="42.755" maxy="-122.499"/>
+        <Style>
+          <Name>raster</Name>
+          <Title>A boring default style</Title>
+          <Abstract>A sample style for rasters</Abstract>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=elevation"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:firestations</Name>
+        <Title>Medford, OR - Firestations</Title>
+        <Abstract>Location of Fire Stations in Jackson County as April 2009.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-123.042</westBoundLongitude>
+          <eastBoundLongitude>-122.772</eastBoundLongitude>
+          <southBoundLatitude>42.251</southBoundLatitude>
+          <northBoundLatitude>42.438</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-123.042" miny="42.251" maxx="-122.772" maxy="42.438"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.251" miny="-123.042" maxx="42.438" maxy="-122.772"/>
+        <Style>
+          <Name>medford_firestations</Name>
+          <Title>Medford, OR - Fire Stations</Title>
+          <Abstract>Point style with external graphic for Jackson county fire stations</Abstract>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=firestations"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:hospitals</Name>
+        <Title>Medford, OR - Hospitals</Title>
+        <Abstract>Location of Hospitals in Jackson County, Oregon as of October 2006.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.863</westBoundLongitude>
+          <eastBoundLongitude>-122.831</eastBoundLongitude>
+          <southBoundLatitude>42.317</southBoundLatitude>
+          <northBoundLatitude>42.34</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.863" miny="42.317" maxx="-122.831" maxy="42.34"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.317" miny="-122.863" maxx="42.34" maxy="-122.831"/>
+        <Style>
+          <Name>medford_hospitals</Name>
+          <Title>Medford, OR - Hospitals</Title>
+          <Abstract>External graphic for Jackson County, OR Hospitals</Abstract>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=hospitals"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:hydro</Name>
+        <Title>Medford, OR - Hydro</Title>
+        <Abstract>US Fish &amp; Wildlife National Wetlands Inventory of wetland linear features as of October 2000.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.904</westBoundLongitude>
+          <eastBoundLongitude>-122.777</eastBoundLongitude>
+          <southBoundLatitude>42.29</southBoundLatitude>
+          <northBoundLatitude>42.397</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.904" miny="42.29" maxx="-122.777" maxy="42.397"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.29" miny="-122.904" maxx="42.397" maxy="-122.777"/>
+        <Style>
+          <Name>medford_hydro</Name>
+          <Title>Medford, OR - Hydro</Title>
+          <Abstract/>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=hydro"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:libraries</Name>
+        <Title>Medford, OR - Libraries</Title>
+        <Abstract>Location of Libraries in Jackson County, Oregon as of August 2006.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.969</westBoundLongitude>
+          <eastBoundLongitude>-122.789</eastBoundLongitude>
+          <southBoundLatitude>42.245</southBoundLatitude>
+          <northBoundLatitude>42.431</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.969" miny="42.245" maxx="-122.789" maxy="42.431"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.245" miny="-122.969" maxx="42.431" maxy="-122.789"/>
+        <Style>
+          <Name>medford_library</Name>
+          <Title>Medford, OR - Library</Title>
+          <Abstract>Point style with external graphic for Medford city libraries</Abstract>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=libraries"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:parks</Name>
+        <Title>Medford, OR - Parks</Title>
+        <Abstract>Open parks within Medford, Oregon.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.91</westBoundLongitude>
+          <eastBoundLongitude>-122.758</eastBoundLongitude>
+          <southBoundLatitude>42.289</southBoundLatitude>
+          <northBoundLatitude>42.404</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.91" miny="42.289" maxx="-122.758" maxy="42.404"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.289" miny="-122.91" maxx="42.404" maxy="-122.758"/>
+        <Style>
+          <Name>medford_parks</Name>
+          <Title>Medford, OR - Parks</Title>
+          <Abstract/>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=parks"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:police</Name>
+        <Title>Medford, OR - Police</Title>
+        <Abstract>Location of Police Stations in Jackson County, OR as April 2009.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.967</westBoundLongitude>
+          <eastBoundLongitude>-122.778</eastBoundLongitude>
+          <southBoundLatitude>42.239</southBoundLatitude>
+          <northBoundLatitude>42.43</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.967" miny="42.239" maxx="-122.778" maxy="42.43"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.239" miny="-122.967" maxx="42.43" maxy="-122.778"/>
+        <Style>
+          <Name>medford_police</Name>
+          <Title>Medford, OR - Police</Title>
+          <Abstract>Point style for Medford city schools</Abstract>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=police"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:schools</Name>
+        <Title>Medford, OR - Schools</Title>
+        <Abstract>Location of Jackson County, Oregon schools as of March 2009.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.962</westBoundLongitude>
+          <eastBoundLongitude>-122.792</eastBoundLongitude>
+          <southBoundLatitude>42.24</southBoundLatitude>
+          <northBoundLatitude>42.438</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.962" miny="42.24" maxx="-122.792" maxy="42.438"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.24" miny="-122.962" maxx="42.438" maxy="-122.792"/>
+        <Style>
+          <Name>medford_schools</Name>
+          <Title>Medford, OR - Schools</Title>
+          <Abstract>External graphic for Medford Elementary, Middle, and High Schools.</Abstract>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=schools"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>usa:states</Name>
+        <Title>States, USA - Population</Title>
+        <Abstract/>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-124.731</westBoundLongitude>
+          <eastBoundLongitude>-66.97</eastBoundLongitude>
+          <southBoundLatitude>24.956</southBoundLatitude>
+          <northBoundLatitude>49.372</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-124.731" miny="24.956" maxx="-66.97" maxy="49.372"/>
+        <BoundingBox CRS="EPSG:4326" minx="24.956" miny="-124.731" maxx="49.372" maxy="-66.97"/>
+        <Style>
+          <Name>usa_states</Name>
+          <Title>Population in the United States</Title>
+          <Abstract>A sample filter that filters the United States into three
+        categories of population, drawn in different colors</Abstract>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=states"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:stormdrains</Name>
+        <Title>Medford, OR - Storm Drains</Title>
+        <Abstract>Storm drains within Medford, Oregon.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.91</westBoundLongitude>
+          <eastBoundLongitude>-122.783</eastBoundLongitude>
+          <southBoundLatitude>42.295</southBoundLatitude>
+          <northBoundLatitude>42.397</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.91" miny="42.295" maxx="-122.783" maxy="42.397"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.295" miny="-122.91" maxx="42.397" maxy="-122.783"/>
+        <Style>
+          <Name>medford_stormdrains</Name>
+          <Title>Medford, OR - StormDrains</Title>
+          <Abstract/>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=stormdrains"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:streets</Name>
+        <Title>Medford, OR - Streets</Title>
+        <Abstract>All public streets within Jackson County, Oregon as of September 2009.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-123.039</westBoundLongitude>
+          <eastBoundLongitude>-122.718</eastBoundLongitude>
+          <southBoundLatitude>42.253</southBoundLatitude>
+          <northBoundLatitude>42.425</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-123.039" miny="42.253" maxx="-122.718" maxy="42.425"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.253" miny="-123.039" maxx="42.425" maxy="-122.718"/>
+        <Style>
+          <Name>medford_streets</Name>
+          <Title>Medford, OR - Streets</Title>
+          <Abstract>Attribute zoom, label and larger, darker lines for more more developed street types</Abstract>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=streets"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:wetlands</Name>
+        <Title>Medford, OR - Wetlands</Title>
+        <Abstract>US Fish &amp; Wildlife National Wetlands Inventory of Jackson County, Oregon wetland areas as of October 2000.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.906</westBoundLongitude>
+          <eastBoundLongitude>-122.791</eastBoundLongitude>
+          <southBoundLatitude>42.294</southBoundLatitude>
+          <northBoundLatitude>42.396</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.906" miny="42.294" maxx="-122.791" maxy="42.396"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.294" miny="-122.906" maxx="42.396" maxy="-122.791"/>
+        <Style>
+          <Name>medford_wetlands</Name>
+          <Title>Medford, OR - Wetlands</Title>
+          <Abstract/>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=wetlands"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford:zoning</Name>
+        <Title>Medford, OR - Zoning</Title>
+        <Abstract>City Zones from the Jackson County City Planning as of April 2008.</Abstract>
+        <KeywordList/>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.911</westBoundLongitude>
+          <eastBoundLongitude>-122.787</eastBoundLongitude>
+          <southBoundLatitude>42.291</southBoundLatitude>
+          <northBoundLatitude>42.398</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-122.911" miny="42.291" maxx="-122.787" maxy="42.398"/>
+        <BoundingBox CRS="EPSG:4326" minx="42.291" miny="-122.911" maxx="42.398" maxy="-122.787"/>
+        <Style>
+          <Name>medford_zoning</Name>
+          <Title>Medford, OR - Zoning</Title>
+          <Abstract>Zones styled by residential, commercial, industrial, resource, list.</Abstract>
+          <LegendURL width="20" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=zoning"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>medford</Name>
+        <Title>medford</Title>
+        <Abstract>Layer-Group type layer: medford</Abstract>
+        <CRS>EPSG:4326</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-122.911</westBoundLongitude>
+          <eastBoundLongitude>-122.787</eastBoundLongitude>
+          <southBoundLatitude>42.291</southBoundLatitude>
+          <northBoundLatitude>42.398</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="EPSG:4326" minx="42.291" miny="-122.911" maxx="42.398" maxy="-122.787"/>
+      </Layer>
+      <Layer queryable="1">
+        <Name>world</Name>
+        <Title>world</Title>
+        <Abstract>Layer-Group type layer: world</Abstract>
+        <CRS>EPSG:4326</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-180.0</westBoundLongitude>
+          <eastBoundLongitude>180.0</eastBoundLongitude>
+          <southBoundLatitude>-90.0</southBoundLatitude>
+          <northBoundLatitude>83.624</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="EPSG:4326" minx="-90.0" miny="-180.0" maxx="83.624" maxy="180.0"/>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMS_Capabilities>

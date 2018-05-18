@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title>WMSCapabilitiesLoader Example</title>
+
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/ext-all.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/examples/shared/examples.css" />
+
+        <script src="http://www.openlayers.org/api/2.11/OpenLayers.js"></script>
+        <script type="text/javascript" src="../lib/GeoExt.js"></script>
+        
+        <script type="text/javascript" src="wms-tree.js"></script>
+        
+    </head>
+    <body>
+        <h1>Tree using a GeoExt.tree.WMSCapabilitiesLoader</h1>
+       <div id="desc"> 
+            <p>This example shows how to use GeoExt.tree.WMSCapabilitiesLoader to populate a tree
+            with the hierarchical structure of a WMS GetCapabilities response. The example
+            also shows how to customize the loader's <tt>createNode</tt> method to add a checkbox
+            with a <tt>checkchange</tt> listener that adds and removes layers to and from the map.
+            </p>
+            <p>See <a href="wms-tree.js">wms-tree.js</a> for the source code.</p>
+        </div>
+    </body>
+</html>

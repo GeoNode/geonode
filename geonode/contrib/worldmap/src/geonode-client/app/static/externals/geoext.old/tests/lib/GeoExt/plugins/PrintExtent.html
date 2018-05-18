@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+        var printCapabilities = {"scales":[{"name":"1:25,000","value":"25000"},{"name":"1:50,000","value":"50000"},{"name":"1:100,000","value":"100000"},{"name":"1:200,000","value":"200000"},{"name":"1:500,000","value":"500000"},{"name":"1:1,000,000","value":"1000000"},{"name":"1:2,000,000","value":"2000000"},{"name":"1:4,000,000","value":"4000000"}],"dpis":[{"name":"75","value":"75"},{"name":"150","value":"150"},{"name":"300","value":"300"}],"layouts":[{"name":"A4 portrait","map":{"width":440,"height":483},"rotation":true},{"name":"Legal","map":{"width":440,"height":483},"rotation":false}],"printURL":"http://demo.opengeo.org/geoserver/pdf/print.pdf","createURL":"http://demo.opengeo.org/geoserver/pdf/create.json"};
+       
+        function test_ctor(t) {
+            t.plan(1);
+
+            var printProvider = new GeoExt.data.PrintProvider({
+                capabilities: printCapabilities
+            })
+            
+            var printExtent = new GeoExt.plugins.PrintExtent({
+                printProvider: printProvider
+            });
+            
+            t.ok(printExtent.printProvider === printProvider,
+                 "ctor sets printProvider in the instance");
+        }
+        
+        function test_init(t) {
+            t.plan(2);
+
+            var printExtent = new GeoExt.plugins.PrintExtent({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })
+            });
+
+            var mapPanel = new GeoExt.MapPanel({
+                renderTo: "mappanel",
+                width: 256,
+                height: 256,
+                map: {controls: []},
+                layers: [new OpenLayers.Layer("layer", {isBaseLayer: true})],
+                center: [146.56, -41.56],
+                zoom: 7,
+                plugins: [printExtent]
+            });
+            
+            t.ok(printExtent.map === mapPanel.map,
+                 "init sets mapPanel");
+            t.ok(mapPanel.hasListener("destroy"),
+                 "plugin listens to the panel destroy event");
+
+            mapPanel.destroy();
+         }
+
+         function test_transformFeatureOptions(t) {
+             t.plan(2);
+
+             var printExtent = new GeoExt.plugins.PrintExtent({
+                 transformFeatureOptions: {
+                     rotate: false,
+                     renderIntent: "foobar"
+                 },
+                 printProvider: new GeoExt.data.PrintProvider({
+                     capabilities: printCapabilities
+                 })
+             });
+
+             var mapPanel = new GeoExt.MapPanel({
+                 renderTo: "mappanel",
+                 width: 256,
+                 height: 256,
+                 map: {controls: []},
+                 layers: [new OpenLayers.Layer("layer", {isBaseLayer: true})],
+                 center: [146.56, -41.56],
+                 zoom: 7,
+                 plugins: [printExtent]
+             });
+
+             t.ok(printExtent.control.rotate === false,
+                  "transformFeatureOptions.rotate option passed to the control");
+             t.ok(printExtent.control.renderIntent === "foobar",
+                  "transformFeatureOptions.renderIntent option passed to the control");
+
+             mapPanel.destroy();
+        }
+
+        function test_destroy(t) {
+            t.plan(3);
+
+            var printExtent = new GeoExt.plugins.PrintExtent({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })
+            });
+
+            var mapPanel = new GeoExt.MapPanel({
+                renderTo: "mappanel",
+                width: 256,
+                height: 256,
+                map: {controls: []},
+                layers: [new OpenLayers.Layer("layer", {isBaseLayer: true})],
+                center: [146.56, -41.56],
+                zoom: 7,
+                plugins: [printExtent]
+            });
+
+            mapPanel.destroy();
+            
+            t.eq(printExtent.layer, undefined,
+                 "layer destroyed");
+            t.eq(printExtent.control, undefined,
+                 "control destroyed.");
+            t.eq(printExtent.mapPanel, null,
+                 "mapPanel set to null");
+        }
+
+         function test_setUp(t) {
+            t.plan(4);
+
+            var printExtent = new GeoExt.plugins.PrintExtent({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })
+            });
+
+            var mapPanel = new GeoExt.MapPanel({
+                renderTo: "mappanel",
+                width: 256,
+                height: 256,
+                map: {controls: []},
+                layers: [new OpenLayers.Layer("layer", {isBaseLayer: true})],
+                center: [146.56, -41.56],
+                zoom: 7,
+                plugins: [printExtent]
+            });
+            printExtent.addPage();
+
+            t.ok(printExtent.pages[0].center.equals(mapPanel.map.getCenter()),
+                 "print page centered to map center");
+            t.ok(printExtent.layer.map == mapPanel.map,
+                 "auto-generated layer added to map.");
+            t.ok(printExtent.pages[0].feature.layer == printExtent.layer,
+                 "extent feature was added to the layer.");
+            t.ok(printExtent.control.map == mapPanel.map,
+                 "control created and added to map.");
+
+            mapPanel.destroy();
+        }
+
+        function test_hide(t) {
+            t.plan(2);
+ 
+            var printExtent = new GeoExt.plugins.PrintExtent({
+                layer: new OpenLayers.Layer.Vector("hello world"),
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })
+            });
+
+            var mapPanel = new GeoExt.MapPanel({
+                renderTo: "mappanel",
+                width: 256,
+                height: 256,
+                map: {controls: []},
+                layers: [
+                    new OpenLayers.Layer("layer", {isBaseLayer: true})
+                ],
+                center: [146.56, -41.56],
+                zoom: 7,
+                plugins: [printExtent]
+            });
+
+            printExtent.hide();
+            
+            t.eq(mapPanel.map.layers.length, 1,
+                 "layer was removed.");
+            t.eq(mapPanel.map.controls.length, 0,
+                 "control was removed.");
+
+            mapPanel.destroy();
+        }
+
+        function test_addPage(t) {
+
+            t.plan(2);
+
+            var printExtent = new GeoExt.plugins.PrintExtent({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })
+            });
+
+            var mapPanel = new GeoExt.MapPanel({
+                renderTo: "mappanel",
+                width: 256,
+                height: 256,
+                map: {controls: []},
+                layers: [
+                    new OpenLayers.Layer("layer", {isBaseLayer: true})
+                ],
+                center: [146.56, -41.56],
+                zoom: 7,
+                plugins: [printExtent]
+            });
+
+            var page = printExtent.addPage();
+
+            t.ok(printExtent.pages[printExtent.pages.length - 1] == page,
+                "addPage correctly creates and add a new page when none given ");
+
+            var p = {
+                feature: new OpenLayers.Feature(),
+                on: function() {},
+                un: function() {},
+                fit: function() {}
+            };
+            var page2 = printExtent.addPage(p);
+            t.ok(printExtent.pages[printExtent.pages.length - 1] == page2,
+                "addPage corectly add a page");
+
+            mapPanel.destroy();
+        }
+
+        function test_removePage(t) {
+
+            t.plan(1);
+
+            var page = {
+                 feature: new OpenLayers.Feature(),
+                 on: function() {},
+                 un: function() {},
+                 fit: function() {}
+            };
+
+            var printExtent = new GeoExt.plugins.PrintExtent({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                }),
+                pages: [page] 
+            });
+
+            var mapPanel = new GeoExt.MapPanel({
+                renderTo: "mappanel",
+                width: 256,
+                height: 256,
+                map: {controls: []},
+                layers: [
+                    new OpenLayers.Layer("layer", {isBaseLayer: true})
+                ],
+                center: [146.56, -41.56],
+                zoom: 7,
+                plugins: [printExtent]
+            });
+
+            printExtent.removePage(page);
+
+            t.eq(printExtent.pages.length, 0,
+                "page is correctly removed");
+            mapPanel.destroy();
+        }
+
+        function test_addPage_after_hide(t) {
+
+            //
+            // We want to test this sequence: hide, addPage, show.
+            // See http://trac.geoext.org/ticket/319
+            //
+
+            t.plan(1);
+
+            // set up
+
+            var map, printExtent, log;
+
+            map = new OpenLayers.Map({
+                div: "map",
+                layers: [
+                    new OpenLayers.Layer("layer", {isBaseLayer: true})
+                ],
+                center: new OpenLayers.LonLat(0, 0),
+                zoom: 5
+            });
+
+            printExtent = new GeoExt.plugins.PrintExtent({
+                printProvider: new GeoExt.data.PrintProvider({
+                    capabilities: printCapabilities
+                })
+            });
+
+            printExtent.init({map: map, on: function() {}});
+
+            // test
+
+            printExtent.hide();
+            printExtent.addPage();
+            printExtent.show();
+
+            var boxGeom = printExtent.control.box.geometry;
+            t.ok(!boxGeom.components[0].equals(new OpenLayers.Geometry.Point(-1, -1)),
+                 "TransformFeature box is ok after show");
+
+            // tear down
+
+            map.destroy();
+        }
+
+    </script>
+  <body>
+    <div id="mappanel"></div>
+    <div id="map" style="width:600px;height:400px"></div>
+  </body>
+</html>

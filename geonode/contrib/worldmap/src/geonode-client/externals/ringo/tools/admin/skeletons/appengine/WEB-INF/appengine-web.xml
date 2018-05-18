@@ -1,0 +1,13 @@
+<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+	<!-- Replace this with your application id from http://appengine.google.com -->
+	<application>app-id</application>
+	<version>1</version>
+
+	<!-- Configure java.util.logging -->
+	<system-properties>
+		<property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
+	</system-properties>
+	<precompilation-enabled>true</precompilation-enabled>
+	<sessions-enabled>true</sessions-enabled>
+	<threadsafe>true</threadsafe>
+</appengine-web-app>

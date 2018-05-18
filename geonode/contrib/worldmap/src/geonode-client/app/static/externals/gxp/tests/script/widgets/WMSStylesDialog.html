@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../externals/openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../externals/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../src/script/loader.js"></script>
+
+    <script type="text/javascript">
+       
+        var mapPanels = [], log = {};
+        function createWMSStylesDialog(editable) {
+            var mapPanel = new GeoExt.MapPanel({
+                renderTo: document.body,
+                width: 300,
+                height: 200,
+                layers: [new OpenLayers.Layer.WMS("states", "/geoserver/wms", {
+                    layers: "usa:states"
+                })]
+            });
+            mapPanels.push(mapPanel);
+            var record = mapPanel.layers.getAt(0);
+            record.set("styles", [{
+                name: "foo"
+            }]);
+            return new gxp.WMSStylesDialog({
+                renderTo: document.body,
+                editable: editable,
+                layerRecord: record,
+                setRulesFieldSetVisible: function(visible) {
+                    log[this.id] = {visible: visible, editable: this.editable}
+                    gxp.WMSStylesDialog.prototype.setRulesFieldSetVisible.apply(this, arguments);
+                }
+            });
+        }
+        
+        function destroy() {
+            var mapPanel;
+            while(mapPanel = mapPanels.pop()) {
+                mapPanel.destroy();
+            }
+        }
+        
+        function test_WMSStylesDialog(t) {
+            t.plan(7);
+            
+            var editable = createWMSStylesDialog(true);
+            var readonly = createWMSStylesDialog(false);
+            var invalid = createWMSStylesDialog(false);
+            invalid.layerRecord.set("styles", [{name: "foo", legend: {href: "invalidurl"}}]);
+            
+            t.ok(editable instanceof gxp.WMSStylesDialog, "Instance created successfully");
+            
+            t.delay_call(5, function() {
+                t.ok(editable.items.get(2).items.get(0) instanceof GeoExt.VectorLegend, "Vector legend for editable styles (needs a usa:states layer on /geoserver/wms to pass)");
+                t.ok(readonly.items.get(2).items.get(0) instanceof GeoExt.WMSLegend, "WMS legend for readonly styles");
+                t.eq(log[editable.id].visible, true, "valid vector legend visible (needs a usa:states layer on /geoserver/wms to pass)");
+                t.eq(log[editable.id].editable, true, "vector legend is editable (needs a usa:states layer on /geoserver/wms to pass)");
+                t.eq(log[readonly.id].visible, true, "valid image legend visible (needs a usa:states layer on /geoserver/wms to pass)");
+                t.eq(log[invalid.id].visible, false, "invalid image legend invisible");
+                editable.destroy();
+                readonly.destroy();
+                invalid.destroy();
+                destroy();
+            });
+        }
+        
+        function test_createGeoServerStylerConfig(t) {
+            t.plan(5);
+            
+            var Record = GeoExt.data.LayerRecord.create();
+            
+            var record = new Record({
+                layer: new OpenLayers.Layer(null, {url: "/test_geoserver/wms"}), 
+                title: "Test Layer"
+            }, "layer.1");
+
+            var config,
+                method = gxp.WMSStylesDialog.createGeoServerStylerConfig;
+            
+            // defaults
+            config = method(record);
+            t.ok(config.layerRecord === record, "a) layer record");
+            t.eq(config.plugins[0].baseUrl, "/test_geoserver/rest", "a) baseUrl");
+            
+            // url provided
+            config = method(record, "foo");
+            t.eq(config.plugins[0].baseUrl, "foo", "b) baseUrl");
+
+            // custom restUrl
+            record = new Record({
+                layer: new OpenLayers.Layer(null, {url: "/test_geoserver/wms"}), 
+                title: "Test Layer",
+                restUrl: "/custom_rest_url"
+            }, "layer.1");
+            config = method(record);
+            t.eq(config.plugins[0].baseUrl, "/custom_rest_url", "c) baseUrl");
+
+            // custom restUrl overridden
+            record = new Record({
+                layer: new OpenLayers.Layer(null, {url: "/test_geoserver/wms"}), 
+                title: "Test Layer",
+                restUrl: "/custom_rest_url"
+            }, "layer.1");
+            config = method(record, "/override");
+            t.eq(config.plugins[0].baseUrl, "/override", "d) baseUrl");
+
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

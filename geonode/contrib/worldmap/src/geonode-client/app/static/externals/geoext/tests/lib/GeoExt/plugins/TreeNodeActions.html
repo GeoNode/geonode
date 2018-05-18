@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <script src="../../../../../openlayers/lib/OpenLayers.js"></script>
+        <script src="../../../../../ext/adapter/ext/ext-base.js"></script>
+        <script src="../../../../../ext/ext-all-debug.js"></script>
+        <script src="../../../../lib/GeoExt.js"></script>
+    
+        <script>
+        function test_ui_node_action(t) {
+            t.plan(6);
+
+            // setup
+
+            var UI, node, tree, ui, elNode;
+
+            UI = Ext.extend(
+                GeoExt.tree.LayerNodeUI,
+                new GeoExt.tree.TreeNodeUIEventMixin()
+            );
+
+            node = new GeoExt.tree.LayerNode({
+                uiProvider: UI,
+                layer: new OpenLayers.Layer(),
+                actions: [{
+                    action: "foo-action",
+                    qtip: "foo-qtip"
+                }]
+            });
+            tree  = new Ext.tree.TreePanel({
+                renderTo: "tree",
+                root: node,
+                plugins: [new GeoExt.plugins.TreeNodeActions({
+                    listeners: {
+                        action: function(n, a, e) {
+                            log.push({n: n, a: a, e: e});
+                        }
+                    }
+                })]
+            });
+            ui = node.ui;
+            elNode = Ext.fly(ui.elNode);
+
+            // 2 tests
+            t.ok(elNode.first().hasClass("gx-tree-layer-actions"),
+                 "the actions div is at correct location and " +
+                 "has a correct class");
+            t.ok(elNode.first().first() &&
+                 elNode.first().first().hasClass("gx-tree-layer-action") &&
+                 elNode.first().first().hasClass("foo-action"),
+                 "the action div is at correct location and " +
+                 "has correct classes");
+
+            // simulate click
+            var log = [];
+            var e = {
+                getTarget: function(selector) {
+                    if (selector == "." + "gx-tree-layer-action") {
+                        return {
+                            className: "gx-tree-layer-action" + " foo-action"
+                        };
+                    }
+                }
+            };
+            
+            ui.onClick(e);
+            t.eq(log.length, 1,
+                 "click on action img triggers \"action\" event");
+            t.ok(log[0].n == node,
+                 "\"action\" listener given expected node");
+            t.eq(log[0].a, "foo-action",
+                 "\"action\" listener given expected action");
+            t.ok(log[0].e == e,
+                 "\"action\" listener given expected event");
+
+            // teardown
+
+            tree.destroy();
+        }
+        </script>
+    </head>
+    <body>
+        <div id="tree" style="width: 100px; height: 100px;"></div>
+    </body>
+</html>

@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <title>GeoExt Modified Popup Example</title>
+
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/ext-all.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/resources/css/xtheme-gray.css" />
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/examples/shared/examples.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/geoext-all.css" />
+        <link rel="stylesheet" type="text/css" href="../resources/css/gxtheme-gray.css" />
+        <script src="http://www.openlayers.org/api/2.11/OpenLayers.js"></script>
+        <script type="text/javascript" src="../lib/GeoExt.js"></script>
+        
+        <script type="text/javascript" src="popup-more.js"></script>
+    
+        <style type="text/css">
+            #container {
+                margin: 1em;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Modified Popup Example</h1>
+        <p>
+            This example demonstrates the use of a single popup to display 
+            content from multiple locations.
+        <p>
+        <div id="container"></div>
+        <p>
+            Clicking on the map will open a popup displaying the click location.
+            Subsequent clicks will update the content and the position.  Close
+            the popup to start over.
+        <p>
+            See the <a href="popup-more.js">popup-more.js</a> source for more
+            detail.
+        </p>
+    </body>
+</html>

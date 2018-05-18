@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script type="text/javascript" src="../../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../../../../../ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../../lib/GeoExt.js"></script>
+
+    <script type="text/javascript">
+        function test_constructor(t) {
+            t.plan(12);
+
+            var ctrl, scope, handler, toggleHandler, checkHandler, cfg, action;
+
+            ctrl = new OpenLayers.Control();
+            
+            var map = new OpenLayers.Map();
+
+            scope = {}, handler = function() {};
+            toggleHandler = function() {}, checkHandler = function() {};
+
+            cfg = {
+                control: ctrl,
+                map: map,
+                scope: scope,
+                handler: handler,
+                toggleHandler: toggleHandler,
+                checkHandler: checkHandler
+            };
+
+            action = new GeoExt.Action(cfg);
+
+            t.ok(action.control == ctrl,
+                 "constructor sets control in the instance");
+            t.ok(action.control.map === map,
+                 "constructor adds control to map if provided");
+            t.ok(!action.initialConfig.map,
+                 "action does not have a reference to the map");
+            t.ok(action.uScope == scope,
+                 "constructor sets this.uScope to user-provided scope");
+            t.ok(action.uHandler == handler,
+                 "constructor sets this.uHandler to user-provided handler");
+            t.ok(action.uToggleHandler == toggleHandler,
+                 "constructor sets this.uToggleHandler to user-provided toggleHandler");
+            t.ok(action.uCheckHandler == checkHandler,
+                 "constructor sets this.uCheckHandler to user-provided checkHandler");
+
+            t.eq(action.initialConfig.control, undefined,
+                 "constructor does not set control in the initial config");
+            t.ok(action.initialConfig.scope == action,
+                 "constructor sets scope to this in the initial config");
+            t.ok(action.initialConfig.handler == action.pHandler,
+                 "constructor sets handler to this.pHandler in the initial config");
+            t.ok(action.initialConfig.toggleHandler == action.pToggleHandler,
+                 "constructor sets toggleHandler to this.ptoggleHandler in the initial config");
+            t.ok(action.initialConfig.checkHandler == action.pCheckHandler,
+                 "constructor sets checkHandler to this.pCheckHandler in the initial config");
+            
+            map.destroy();
+        }
+
+        function test_button(t) {
+            t.plan(6);
+
+            var menu, menuBtn, tb, ctrl, triggerCnt, handlerCnt;
+            var action, btn, item;
+
+            var evt = {
+                preventDefault: function() {},
+                stopEvent: function() {},
+                button: 0
+            };
+
+            menu = new Ext.menu.Menu({
+                // with shadow set to its default value ("sides")
+                // IE throws "object: Invalid argument" exceptions
+                shadow: false
+            });
+            menuBtn = new Ext.Button({menu: menu});
+
+            tb = new Ext.Toolbar({
+                renderTo: "toolbar",
+                buttons: [menuBtn]
+            });
+
+            // the "button" control
+            ctrl = new OpenLayers.Control({
+                type: OpenLayers.Control.TYPE_BUTTON,
+                trigger: function() {
+                    triggerCnt++;
+                }
+            });
+            ctrl.activate();
+
+            action = new GeoExt.Action({
+                control: ctrl,
+                handler: function() {
+                    handlerCnt++;
+                }
+            });
+            
+            // create button from action and it to toolbar
+            btn = new Ext.Button(action);
+            tb.add(btn);
+            
+            // simulate click on button
+            // 2 tests
+            // test that the control's trigger is called exactly once
+            // test that the action handler is called exactly once
+            triggerCnt = 0;
+            handlerCnt = 0;
+            btn.onClick(evt);
+            t.eq(triggerCnt, 1, "click on button calls control trigger once");
+            t.eq(handlerCnt, 1, "click on button calls action handler once");
+
+            // create menu item from action and it to menu
+            item = new Ext.menu.Item(action);
+            menu.add(item);
+
+            // simulate click on menu item
+            // 2 tests
+            // test that the control's trigger is called exactly once
+            // test that the action handler is called exactly once
+            triggerCnt = 0;
+            handlerCnt = 0;
+            menuBtn.showMenu();
+            item.onClick(evt);
+            menuBtn.hideMenu();
+            t.eq(triggerCnt, 1, "click on menu item calls control trigger once");
+            t.eq(handlerCnt, 1, "click on menu item calls action handler once");
+
+            // deactivate control
+            // 2 tests
+            // test that button is disabled
+            // test that menu item is disabled
+            ctrl.deactivate();
+            t.eq(btn.disabled, true, "deactivating control disables button");
+            t.eq(item.disabled, true, "deactivating control disables menu item");
+        }
+
+        function test_toggle(t) {
+            t.plan(13);
+
+            var menu, menuBtn, tb, ctrl;
+            var activateCnt, deactivateCnt, toggleHandlerCnt, checkHandlerCnt;
+            var action, btn, item;
+
+            var evt = {
+                preventDefault: function() {},
+                stopEvent: function() {},
+                button: 0
+            };
+
+            menu = new Ext.menu.Menu({
+                // with shadow set to its default value ("sides")
+                // IE throws "object: Invalid argument" exceptions
+                shadow: false
+            });
+            menuBtn = new Ext.Button({menu: menu});
+
+            tb = new Ext.Toolbar({
+                renderTo: "toolbar",
+                buttons: [menuBtn]
+            });
+
+            // the control
+            ctrl = new OpenLayers.Control({
+                activate: function() {
+                    activateCnt++;
+                    return OpenLayers.Control.prototype.activate.call(this, arguments);
+                },
+                deactivate: function() {
+                    deactivateCnt++;
+                    return OpenLayers.Control.prototype.deactivate.call(this, arguments);
+                }
+            });
+            ctrl.activate();
+
+            action = new GeoExt.Action({
+                control: ctrl,
+                enableToggle: true,
+                toggleHandler: function() {
+                    toggleHandlerCnt++;
+                },
+                checkHandler: function() {
+                    checkHandlerCnt++;
+                }
+            });
+            
+            // create button from action and it to toolbar
+            btn = new Ext.Button(action);
+            tb.add(btn);
+            
+            t.eq(btn.pressed, true, "Button initially pressed for active control");
+
+            // simulate click on button
+            // 2 tests
+            // test that the control gets activated once
+            // test that the toggle handler is called exactly once
+            activateCnt = 0;
+            deactivateCnt = 0;
+            toggleHandlerCnt = 0;
+            btn.onClick(evt);
+            t.eq(deactivateCnt, 1, "click on button deactivates control once");
+            t.eq(activateCnt, 0, "click on button does not activate control");
+            t.eq(toggleHandlerCnt, 1, "click on button calls toggle handler once");
+
+            // simulate click on button
+            // 2 tests
+            // test that the control gets deactivated once
+            // test that the toggle handler is called exactly once
+            activateCnt = 0;
+            deactivateCnt = 0;
+            toggleHandlerCnt = 0;
+            btn.onClick(evt);
+            t.eq(deactivateCnt, 0, "click again on button does not deactivate control");
+            t.eq(activateCnt, 1, "click again on button activates control once");
+            t.eq(toggleHandlerCnt, 1, "click again on button calls toggle handler once");
+
+            // create menu item from action and it to menu
+            item = new Ext.menu.CheckItem(action);
+            menu.add(item);
+
+            // simulate click on menu item
+            // 2 tests
+            // test that the control gets activated once
+            // test that the toggle handler is called exactly once
+            activateCnt = 0;
+            deactivateCnt = 0;
+            checkHandlerCnt = 0;
+            menuBtn.showMenu();
+            item.onClick(evt);
+            menuBtn.hideMenu();
+            t.eq(deactivateCnt, 1, "click on menu item deactivates control once");
+            t.eq(activateCnt, 0, "click on menu item does not activate control");
+            t.eq(checkHandlerCnt, 1, "click on menu item calls check handler once");
+
+            // simulate click on menu item
+            // 2 tests
+            // test that the control gets deactivated once
+            // test that the toggle handler is called exactly once
+            activateCnt = 0;
+            deactivateCnt = 0;
+            checkHandlerCnt = 0;
+            menuBtn.showMenu();
+            item.onClick(evt);
+            menuBtn.hideMenu();
+            t.eq(deactivateCnt, 0, "click again on menu item does not deactivate control");
+            t.eq(activateCnt, 1, "click again on menu item activates control once");
+            t.eq(checkHandlerCnt, 1, "click again on menu item calls check handler once");
+        }
+
+        function test_toggle_group(t) {
+            t.plan(12);
+
+            var menu, menuBtn, tb, ctrl1, ctrl2;
+
+            var activateCtrl1Cnt, deactivateCtrl1Cnt;
+            var activateCtrl2Cnt, deactivateCtrl2Cnt;
+            
+            var action1, action2, btn1, btn2, item1, item2;
+
+            var evt = {
+                preventDefault: function() {},
+                stopEvent: function() {},
+                button: 0
+            };
+
+            menu = new Ext.menu.Menu({
+                // with shadow set to its default value ("sides")
+                // IE throws "object: Invalid argument" exceptions
+                shadow: false
+            });
+            menuBtn = new Ext.Button({menu: menu});
+
+            tb = new Ext.Toolbar({
+                renderTo: "toolbar",
+                buttons: [menuBtn]
+            });
+
+            // the controls
+            ctrl1 = new OpenLayers.Control({
+                activate: function() {
+                    activateCtrl1Cnt++;
+                    return OpenLayers.Control.prototype.activate.call(this, arguments);
+                },
+                deactivate: function() {
+                    deactivateCtrl1Cnt++;
+                    return OpenLayers.Control.prototype.deactivate.call(this, arguments);
+                }
+            });
+            ctrl1.activate();
+            ctrl2 = new OpenLayers.Control({
+                activate: function() {
+                    activateCtrl2Cnt++;
+                    return OpenLayers.Control.prototype.activate.call(this, arguments);
+                },
+                deactivate: function() {
+                    deactivateCtrl2Cnt++;
+                    return OpenLayers.Control.prototype.deactivate.call(this, arguments);
+                }
+            });
+            ctrl2.activate();
+
+            // the actions
+            action1 = new GeoExt.Action({
+                control: ctrl1,
+                toggleGroup: "ctrl",
+                pressed: false
+            });
+            action2 = new GeoExt.Action({
+                control: ctrl2,
+                toggleGroup: "ctrl",
+                pressed: true
+            });
+            
+            // create buttons from actions and add them to toolbar
+            btn1 = new Ext.Button(action1);
+            tb.add(btn1);
+            
+            t.eq(btn1.pressed, true, "btn1 is pressed because ctrl1 is active");
+            
+            btn2 = new Ext.Button(action2);
+            tb.add(btn2);
+            tb.doLayout();
+            // Ext.ButtonToggleMgr is registered too late, so we need to fire
+            // the toggle event to enforce only one button active.
+            btn2.fireEvent("toggle", btn2, btn2.pressed);
+            
+            t.eq(btn2.pressed, true, "btn2 is pressed because ctrl2 is active");
+            t.eq(btn1.pressed, false, "btn1 no longer pressed because only one cannot be active per group");
+            t.eq(ctrl1.active, false, "ctrl1 no longer active because depressing btn1 deactivated it");
+
+            // simulate click on btn1
+            // 2 tests
+            // test that ctrl1 gets activated once
+            // test that ctrl2 gets deactivated once
+            activateCtrl1Cnt = 0;
+            deactivateCtrl2Cnt = 0;
+            btn1.onClick(evt);
+            t.eq(activateCtrl1Cnt, 1, "click on btn1 activates ctrl1 once");
+            t.eq(deactivateCtrl2Cnt, 1, "click on btn1 deactivates ctrl2 once");
+
+            // simulate click on btn2
+            // 2 tests
+            // test that ctrl1 gets deactivated once
+            // test that ctrl2 gets activated once
+            deactivateCtrl1Cnt = 0;
+            activateCtrl2Cnt = 0;
+            btn2.onClick(evt);
+            t.eq(deactivateCtrl1Cnt, 1, "click on btn2 deactivates ctrl1 once");
+            t.eq(activateCtrl2Cnt, 1, "click on btn2 activates ctrl2 once");
+
+            // create menu items from actions and them to menu
+            item1 = new Ext.menu.CheckItem(action1);
+            menu.add(item1);
+            item2 = new Ext.menu.CheckItem(action2);
+            menu.add(item2);
+
+            // simulate click on item1
+            // 2 tests
+            // test that ctrl1 gets activated once
+            // test that ctrl2 gets deactivated once
+            activateCtrl1Cnt = 0;
+            deactivateCtrl2Cnt = 0;
+            menuBtn.showMenu();
+            item1.onClick(evt);
+            menuBtn.hideMenu();
+            t.eq(activateCtrl1Cnt, 1, "click on item1 activates ctrl1 once");
+            t.eq(deactivateCtrl2Cnt, 1, "click on item1 deactivates ctrl2 once");
+
+            // simulate click on item2
+            // 2 tests
+            // test that ctrl1 gets deactivated once
+            // test that ctrl2 gets activated once
+            deactivateCtrl1Cnt = 0;
+            activateCtrl2Cnt = 0;
+            menuBtn.showMenu();
+            item2.onClick(evt);
+            menuBtn.hideMenu();
+            t.eq(deactivateCtrl1Cnt, 1, "click on item2 deactivates ctrl1 once");
+            t.eq(activateCtrl2Cnt, 1, "click on item2 activates ctrl2 once");
+        }
+        
+        function test_pressed(t) {
+            
+            t.plan(2);
+            
+            var map = new OpenLayers.Map();
+            var ctrl1 = new OpenLayers.Control();
+            var ctrl2 = new OpenLayers.Control();
+            
+            // confirm that control is activated with pressed true
+            var act1 = new GeoExt.Action({
+                control: ctrl1,
+                map: map,
+                pressed: true,
+                enableToggle: true,
+                toggleGroup: "group"
+            });
+            t.eq(ctrl1.active, true, "ctrl1 activated with pressed true");
+            
+            // confirm that a control is not activated with pressed false
+            var act2 = new GeoExt.Action({
+                control: ctrl2,
+                map: map,
+                pressed: false,
+                enableToggle: true,
+                toggleGroup: "group"
+            });
+            t.ok(!ctrl2.active, "ctrl2 not activated with pressed false");
+            
+            map.destroy();
+            
+        }
+        
+        function test_checked(t) {
+            
+            t.plan(2);
+            
+            var map = new OpenLayers.Map();
+            var ctrl1 = new OpenLayers.Control();
+            var ctrl2 = new OpenLayers.Control();
+            
+            // confirm that control is activated with checked true
+            var act1 = new GeoExt.Action({
+                control: ctrl1,
+                map: map,
+                checked: true,
+                enableToggle: true,
+                toggleGroup: "group"
+            });
+            t.eq(ctrl1.active, true, "ctrl1 activated with checked true");
+            
+            // confirm that a control is not activated with checked false
+            var act2 = new GeoExt.Action({
+                control: ctrl2,
+                map: map,
+                checked: false,
+                enableToggle: true,
+                toggleGroup: "group"
+            });
+            t.ok(!ctrl2.active, "ctrl2 not activated with checked false");
+            
+            map.destroy();
+            
+        }
+        
+        function test_deactivateOnDisable(t) {
+            t.plan(7);
+
+            var act1 = new GeoExt.Action({
+                control: new OpenLayers.Control(),
+                map: new OpenLayers.Map()
+            });
+            t.eq(act1.deactivateOnDisable, false, "false by default");            
+
+            var act2 = new GeoExt.Action({
+                control: new OpenLayers.Control({active: true}),
+                map: new OpenLayers.Map(),
+                deactivateOnDisable: true
+            });
+            t.eq(act2.deactivateOnDisable, true, "set to true");
+            t.eq(act2.control.active, true, "control active");
+            t.ok(!act2.isDisabled(), "action not yet disabled");
+            
+            act2.disable();
+            t.ok(act2.isDisabled(), "action disabled");
+            t.eq(act2.control.active, false, "control deactivated on disable");
+            act2.enable();
+            t.eq(act2.control.active, false, "enabling action does not activate control");
+        }
+        
+        function test_activateOnEnable(t) {
+            t.plan(7);
+
+            var act1 = new GeoExt.Action({
+                control: new OpenLayers.Control(),
+                map: new OpenLayers.Map()
+            });
+            t.eq(act1.activateOnEnable, false, "false by default");            
+
+            var act2 = new GeoExt.Action({
+                control: new OpenLayers.Control({active: false}),
+                map: new OpenLayers.Map(),
+                disabled: true,
+                activateOnEnable: true
+            });
+            t.eq(act2.activateOnEnable, true, "set to true");
+            t.eq(act2.control.active, false, "control not active");
+            t.ok(act2.isDisabled(), "action not yet enabled");
+            
+            act2.enable();
+            t.ok(!act2.isDisabled(), "action enabled");
+            t.eq(act2.control.active, true, "control activated on enable");
+            act2.disable();
+            t.eq(act2.control.active, true, "disabling action does not deactivate control");
+        }
+    </script>
+  <body>
+    <div id="toolbar"></div>
+  </body>
+</html>

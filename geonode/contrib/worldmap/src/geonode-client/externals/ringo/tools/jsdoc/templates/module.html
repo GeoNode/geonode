@@ -1,0 +1,182 @@
+
+    <div class="main">
+        <div class="content">
+        {{#item}}
+            <h1 class="modulename">Module {{name}}</h1>
+            <div class="fileoverview">
+                {{{markdown fileoverview}}}
+            </div>
+
+            {{#example}}
+            <div>
+                <h4> Example </h4>
+                <pre class="sh_javascript sh_sourceCode">{{{example}}}</pre>
+            </div>
+            {{/example}}
+
+            {{#iterate sees}}
+            <div>
+                <h4>See</h4>
+                <div>
+                    {{{newlineList each}}}
+                </div>
+            </div>
+            {{/iterate sees}}
+
+            <div class="classoverview">
+
+                {{#iterate functions}}
+                <div>
+                    <h3>Functions</h3>
+                    <ul class="propertyoverview">
+                        {{#each}}
+                        <li>
+                            <a href="#{{name}}" class="jsdoc-title"> {{shortName}}</a>({{paramList}})
+                        </li>
+                        {{/each}}
+                    </ul>
+                </div>
+                {{/iterate functions}}
+
+                {{#iterate properties}}
+                <div>
+                    <h3>Properties</h3>
+                    <ul class="propertyoverview">
+                        {{#each}}
+                        <li>
+                            <a href="#{{name}}" class="jsdoc-title"> {{shortName}}</a>
+                        </li>
+                        {{/each}}
+                    </ul>
+                </div>
+                {{/iterate properties}}
+
+                <div class="classes">
+                    {{#classes}}
+                    <h2>Class <a href="#{{name}}" class="jsdoc-title">{{name}}</a></h2>
+                    {{#iterate methods}}
+                    <div>
+                        <h3>Instance Methods</h3>
+                        <ul class="propertyoverview">
+                            {{#each}}
+                            <li>
+                                <a href="#{{name}}" class="jsdoc-title"> {{shortName}}</a>({{paramList}})
+                            </li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                    {{/iterate methods}}
+                    {{#iterate properties}}
+                    <div>
+                        <h3>Instance Properties</h3>
+                        <ul class="propertyoverview">
+                            {{#each}}
+                            <li>
+                                <a href="#{{name}}" class="jsdoc-title"> {{shortName}}</a>
+                            </li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                    {{/iterate properties}}
+                    {{#iterate staticMethods}}
+                    <div>
+                        <h3>Static Methods</h3>
+                        <ul class="propertyoverview">
+                            {{#each}}
+                            <li>
+                                <a href="#{{name}}" class="jsdoc-title"> {{shortName}}</a>({{paramList}})
+                            </li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                    {{/iterate staticMethods}}
+                    {{#iterate staticProperties}}
+                    <div>
+                        <h3>Static Properties</h3>
+                        <ul class="propertyoverview">
+                            {{#each}}
+                            <li>
+                                <a href="#{{name}}" class="jsdoc-title"> {{shortName}}</a>
+                            </li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                    {{/iterate staticProperties}}
+                    {{/classes}}
+                </div>
+            </div>
+                <hr/>
+                <div class="details">
+                    {{#items}}
+                    <!-- tpl-docitem -->
+                    <div>
+                        <div class="docitem" docitem="{{name}}">
+                            <h3>
+                                <span class="itemtitle">{{namePrefix}}<a id="{{name}}" href="#{{name}}" class="itemtitle itemname">{{shortName}}</a></span>
+                                {{#isFunction}}<span class="itemtitle light">({{paramList}})</span>{{/isFunction}}
+                            </h3>
+                            <div>
+                                {{{markdown desc}}}
+                            </div>
+                            {{#example}}
+                            <div>
+                                <h4> Example </h4>
+                                <pre class="sh_javascript sh_sourceCode">{{{example}}}</pre>
+                            </div>
+                            {{/example}}
+
+                            {{#iterate parameters}}
+                            <div>
+                                <h4>Parameters</h4>
+                                <table>
+                                    {{#each}}
+                                    <tr>
+                                        <td>{{type}}</td>
+                                        <td class="paramname">{{name}}</td>
+                                        <td>{{{desc}}}</td>
+                                    </tr>
+                                    {{/each}}
+                                </table>
+                            </div>
+                            {{/iterate parameters}}
+
+                            {{#returns}}
+                            <div>
+                                <h4>Returns</h4>
+                                <table>
+                                    <tr>
+                                        <td>{{type}}</td>
+                                        <td>{{{name}}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            {{/returns}}
+
+                            {{#iterate throws}}
+                            <div>
+                                <h4>Throws</h4>
+                                <div class="extrainfo">
+                                    {{commaList each}}
+                                </div>
+                            </div>
+                            {{/iterate throws}}
+
+                            {{#iterate sees}}
+                            <div>
+                                <h4>See</h4>
+                                <div class="extrainfo">
+                                    {{{newlineList each}}}
+                                </div>
+                            </div>
+                            {{/iterate sees}}
+                        </div>
+                        <hr/>
+                    </div>
+
+                    {{/items}}
+                </div>
+            </div>
+        {{/item}}
+        </div>
+
+

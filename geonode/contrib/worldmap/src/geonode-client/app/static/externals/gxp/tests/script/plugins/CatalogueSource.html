@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../../externals/openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../externals/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../src/script/loader.js"></script>
+
+    <script type="text/javascript">
+       
+        function test_CatalogueSource(t) {
+            t.plan(1);
+            
+            var instance = new gxp.plugins.CatalogueSource();
+            
+            t.ok(instance instanceof gxp.plugins.CatalogueSource, "Instance created successfully");
+        }
+        
+        function createViewer() {
+            return new gxp.Viewer({
+                sources: {
+                    catalog: {
+                        ptype: "gxp_cataloguesource",
+                        url: "http://demo.geonode.org/geonetwork/srv/en/csw?"
+                    }
+                },
+                map: {
+                    projection: "EPSG:4326",
+                    center: [0, 0],
+                    zoom: 1
+                }
+            });
+        }
+        
+        function test_createStore(t) {
+            t.plan(1);
+
+            var viewer = createViewer();
+            
+            t.delay_call(1, function() {
+                var source = viewer.layerSources.catalog;
+                t.ok(source.store, "When ready fires, the store is there");
+                viewer.destroy();
+            });
+        }
+
+        function test_createLayerRecord(t) {
+            t.plan(1);
+
+            var viewer = createViewer();
+            
+            t.delay_call(1, function() {
+                var source = viewer.layerSources.catalog;
+                
+                var record = source.createLayerRecord({
+                    url: "http://demo.geonode.org/geoserver/wms?",
+                    name: "geonode:unitedstates",
+                    bbox: [-66.969849, 24.955967, -124.731422, 49.371735],
+                    srs: "EPSG:4326",
+                    title: "unitedstates"
+                });
+                var layer = record.getLayer();
+                t.eq(layer.url, "http://demo.geonode.org/geoserver/wms?", "URL used from layer config instead");
+                // TODO add testcase for getSchema
+                viewer.destroy();
+            });
+        }
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
