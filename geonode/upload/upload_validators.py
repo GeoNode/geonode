@@ -72,6 +72,8 @@ def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
             cleaned["base_file"])
     elif base_ext.lower() == "shp":
         file_paths = [f.name for f in uploaded_files]
+        if cleaned["base_file"].name not in file_paths:
+            file_paths += [cleaned["base_file"].name]
         valid_extensions = validate_shapefile_components(
             file_paths)
     elif base_ext.lower() == "kml":
@@ -98,15 +100,19 @@ def validate_shapefile_components(possible_filenames):
     """
 
     shp_files = [f for f in possible_filenames if f.lower().endswith(".shp")]
+    aux_mandatory = True
     if len(shp_files) > 1:
         raise forms.ValidationError(_("Only one shapefile per zip is allowed"))
+    elif len(shp_files) == 0:
+        shp_files = [f for f in possible_filenames if not f.lower().endswith(".sld")]
+        aux_mandatory = False
     shape_component = shp_files[0]
     base_name, base_extension = os.path.splitext(
         os.path.basename(shape_component))
     components = [base_extension[1:]]
     shapefile_additional = [
-        ShapefileAux(extension="dbf", mandatory=True),
-        ShapefileAux(extension="shx", mandatory=True),
+        ShapefileAux(extension="dbf", mandatory=aux_mandatory),
+        ShapefileAux(extension="shx", mandatory=aux_mandatory),
         ShapefileAux(extension="prj", mandatory=False),
         ShapefileAux(extension="xml", mandatory=False),
         ShapefileAux(extension="sld", mandatory=False),

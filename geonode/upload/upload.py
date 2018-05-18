@@ -42,7 +42,9 @@ import zipfile
 
 from django.conf import settings
 from django.db.models import Max
+from django.core.files import File
 from django.contrib.auth import get_user_model
+
 import geoserver
 from geoserver.resource import Coverage
 from geoserver.resource import FeatureType
@@ -51,7 +53,7 @@ from gsimporter import BadRequest
 from geonode import GeoNodeException
 from geonode.base.models import SpatialRepresentationType, TopicCategory
 from ..people.utils import get_default_user
-from ..layers.models import Layer
+from ..layers.models import Layer, UploadSession
 from ..layers.metadata import set_metadata
 from ..layers.utils import get_valid_layer_name, resolve_regions
 from ..geoserver.helpers import (mosaic_delete_first_granule,
@@ -430,10 +432,14 @@ def time_step(upload_session, time_attribute, time_transform_type,
     '''
     transforms = []
 
-    def build_time_transform(att, type, format):
+    def build_time_transform(att, type, format, end_time_attribute, presentation_strategy):
         trans = {'type': type, 'field': att}
         if format:
             trans['format'] = format
+        if end_time_attribute:
+            trans['enddate'] = end_time_attribute
+        if presentation_strategy:
+            trans['presentation'] = presentation_strategy
         return trans
 
     def build_att_remap_transform(att):
@@ -452,15 +458,10 @@ def time_step(upload_session, time_attribute, time_transform_type,
             transforms.append(
                 build_time_transform(
                     time_attribute,
-                    time_transform_type, time_format
-                )
-            )
-
-        if end_time_attribute and end_time_transform_type:
-            transforms.append(
-                build_time_transform(
+                    time_transform_type,
+                    time_format,
                     end_time_attribute,
-                    end_time_transform_type, end_time_format
+                    presentation_strategy
                 )
             )
 
@@ -746,6 +747,63 @@ def final_step(upload_session, user):
     # Should we throw a clearer error here?
     assert saved_layer is not None
 
+    # Create a new upload session
+    geonode_upload_session = UploadSession.objects.create(resource=saved_layer, user=user)
+
+    # Add them to the upload session (new file fields are created).
+    assigned_name = None
+
+    def _store_file(saved_layer,
+                    geonode_upload_session,
+                    base_file,
+                    assigned_name,
+                    base=False):
+        with open(base_file, 'rb') as f:
+            file_name, type_name = os.path.splitext(os.path.basename(base_file))
+            geonode_upload_session.layerfile_set.create(
+                name=file_name,
+                base=base,
+                file=File(
+                    f, name='%s%s' %
+                    (assigned_name or saved_layer.name, type_name)))
+            # save the system assigned name for the remaining files
+            if not assigned_name:
+                the_file = geonode_upload_session.layerfile_set.all()[0].file.name
+                assigned_name = os.path.splitext(os.path.basename(the_file))[0]
+
+            return assigned_name
+
+    if upload_session.base_file:
+        uploaded_files = upload_session.base_file[0]
+        base_file = uploaded_files.base_file
+        aux_files = uploaded_files.auxillary_files
+        sld_files = uploaded_files.sld_files
+        xml_files = uploaded_files.xml_files
+
+        assigned_name = _store_file(saved_layer,
+                                    geonode_upload_session,
+                                    base_file,
+                                    assigned_name,
+                                    base=True)
+
+        for _f in aux_files:
+            _store_file(saved_layer,
+                        geonode_upload_session,
+                        _f,
+                        assigned_name)
+
+        for _f in sld_files:
+            _store_file(saved_layer,
+                        geonode_upload_session,
+                        _f,
+                        assigned_name)
+
+        for _f in xml_files:
+            _store_file(saved_layer,
+                        geonode_upload_session,
+                        _f,
+                        assigned_name)
+
     # @todo if layer was not created, need to ensure upload target is
     # same as existing target
 
@@ -871,9 +929,18 @@ def final_step(upload_session, user):
     if upload_session.time_info:
         set_time_info(saved_layer, **upload_session.time_info)
 
+    if geonode_upload_session:
+        geonode_upload_session.processed = True
+        saved_layer.upload_session = geonode_upload_session
+
     signals.upload_complete.send(sender=final_step, layer=saved_layer)
 
+    geonode_upload_session.save()
     saved_layer.save()
+
+    cat._cache.clear()
+    cat.reload()
+
     return saved_layer
 
 

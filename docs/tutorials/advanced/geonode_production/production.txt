@@ -48,22 +48,22 @@ Bing
 ====
 
 Get an API key from Microsoft at http://www.bingmapsportal.com/ and place it in ``local_settings.py``.::
-    
+
     BING_API_KEY="zxcxzcXAWdsdfkjsdfWWsdfjpowxcxz"
 
 Copy the ``MAP_BASELAYERS`` dictionary from ``settings.py`` into ``local_settings.py`` and add the following snippet::
 
     },{
     "source": {
-               "ptype":"gxp_bingsource",    
-               "apiKey": BING_API_KEY 
+               "ptype":"gxp_bingsource",
+               "apiKey": BING_API_KEY
               },
     "group":"background",
     "name":"Aerial",
     "visibility": False,
     "fixed": True,
 
-
+.. note:: The approach described above only works with versions of django-geoexplorer up to 4.0.34. If you have a newer version installed, you can revert to this older version using pip (``pip install django-geoexplor==4.0.34``).
 
 Google
 ======
@@ -76,8 +76,8 @@ Copy the ``MAP_BASELAYERS`` dictionary from ``settings.py`` into ``local_setting
 
     },{
     "source": {
-         "ptype":"gxp_googlesource",	
-         "apiKey": GOOGLE_API_KEY
+         "ptype":"gxp_googlesource",
+         "otherParams": "sensor=false&key={0}".format(GOOGLE_API_KEY)
         },
     "group":"background",
     "name":"SATELLITE",
@@ -89,7 +89,7 @@ Sitemaps Configuration
 ----------------------
 
 GeoNode can automatically generate a sitemap suitable for submission to search
-engines which can help them to index your GeoNode site more efficiently and 
+engines which can help them to index your GeoNode site more efficiently and
 effectively.
 
 In order to generate the sitemap properly, the sites domain name must be set
@@ -123,10 +123,10 @@ To allow new user registration:
        EMAIL_HOST_PASSWORD = 'bar'
        EMAIL_PORT = 587
        EMAIL_USE_TLS = True
-       
+
 2. In the same settings file set::
 
-       REGISTRATION_OPEN=True   
+       REGISTRATION_OPEN=True
 
 3. With the Django application running, set the domain name of the service properly through the admin interface as specified above in the Sitemaps section.  (This domain name is used in the account activation emails.).
 
@@ -138,7 +138,7 @@ To allow new user registration:
 
        ACCOUNT_APPROVAL_REQUIRED = True
 
-       
+
 To register as a new user, click the ''Register'' link in the GeoNode index header.
 
 Additional Configuration
@@ -185,7 +185,7 @@ On Linux and Mac OS X hosts, you can check the available RAM with the following 
 
 The "total" column lists the available physical memory and swap space in megabytes; adding them together yields the amount of virtual memory available to the system.
 
-In this example, there is no Swap space so that field is 0 and the available RAM on the system is 6096MB (6 GB). 
+In this example, there is no Swap space so that field is 0 and the available RAM on the system is 6096MB (6 GB).
 
 Security Integration Optimization
 ---------------------------------
@@ -256,14 +256,14 @@ If GeoServer receives many concurrent requests, it may increase the memory usage
 
 For Tomcat, you can edit ``conf/server.xml``.  By default, this file contains an entry defining a ContextHandler::
 
-    <Connector port="8080" protocol="HTTP/1.1" 
-        connectionTimeout="20000" 
+    <Connector port="8080" protocol="HTTP/1.1"
+        connectionTimeout="20000"
         redirectPort="8443"/>
 
 Add a ``maxThreads`` attribute to limit the number of threads (concurrent requests) to 50 (the default in Tomcat is 200)::
 
-    <Connector port="8080" protocol="HTTP/1.1" 
-        connectionTimeout="20000" 
+    <Connector port="8080" protocol="HTTP/1.1"
+        connectionTimeout="20000"
         redirectPort="8443" maxThreads="50"/>
 
 .. note:: This configuration is possible in Jetty as well but not yet documented in this manual.
@@ -289,7 +289,7 @@ On the JAI Settings page
 .. figure:: img/GeoServer-JAI-Settings.png
 
    There are two considerations for the JAI settings.
-   
+
       * Enable JPEG and PNG Native Acceleration to speed up the performance of WMS requests
 
       * Disable Tile Recycling as this optimization is less relevant on recent JVM implementations and has some overhead itself.
@@ -339,8 +339,8 @@ configuration should contain an entry like so::
 
 You can add host/port entries to this list to allow other servers.
 
-.. seealso:: 
-  
+.. seealso::
+
    The `Mapfish documentation
    <http://www.mapfish.org/doc/print/configuration.html>`_ on configuring the
    print module.

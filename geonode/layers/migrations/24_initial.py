@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import datetime
 from django.conf import settings
+from django.utils.timezone import now
 import django.core.files.storage
 
 
@@ -33,7 +34,7 @@ class Migration(migrations.Migration):
                 ('stddev', models.CharField(default=b'NA', max_length=255, null=True, verbose_name='standard deviation', help_text='standard deviation for this field')),
                 ('sum', models.CharField(default=b'NA', max_length=255, null=True, verbose_name='sum', help_text='sum value for this field')),
                 ('unique_values', models.TextField(default=b'NA', null=True, verbose_name='unique values for this field', blank=True)),
-                ('last_stats_updated', models.DateTimeField(default=datetime.datetime.now, help_text='date when attribute statistics were last updated', verbose_name='last modified')),
+                ('last_stats_updated', models.DateTimeField(default=now, help_text='date when attribute statistics were last updated', verbose_name='last modified')),
             ],
         ),
         migrations.CreateModel(

@@ -47,6 +47,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 from geoserver.catalog import Catalog, FailedRequestError
 from geoserver.resource import FeatureType, Coverage
@@ -242,11 +243,13 @@ def get_sld_for(gs_catalog, layer):
     # polygons, hope this doesn't happen for rasters  though)
     if layer.default_style is None:
         gs_catalog._cache.clear()
-        layer = gs_catalog.get_layer(layer.name)
-    name = layer.default_style.name if layer.default_style is not None else "raster"
+        gs_layer = gs_catalog.get_layer(layer.name)
+        name = gs_layer.default_style.name if gs_layer.default_style is not None else "raster"
+    else:
+        name = layer.default_style.name if layer.default_style is not None else "raster"
 
     # Detect geometry type if it is a FeatureType
-    if layer.resource.resource_type == 'featureType':
+    if layer.resource and layer.resource.resource_type == 'featureType':
         res = layer.resource
         res.fetch()
         ft = res.store.get_resources(res.name)
@@ -391,7 +394,7 @@ def cascading_delete(cat, layer_name):
                    'to save information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer_name)
                    )
-            logger.warn(msg, e)
+            logger.warn(msg)
             return None
         else:
             raise e
@@ -592,14 +595,14 @@ def gs_slurp(
         'layers': [],
         'deleted_layers': []
     }
-    start = datetime.datetime.now()
+    start = datetime.datetime.now(timezone.get_current_timezone())
     for i, resource in enumerate(resources):
         name = resource.name
         the_store = resource.store
         workspace = the_store.workspace
         try:
-            layer, created = Layer.objects.get_or_create(name=name, defaults={
-                "workspace": workspace.name,
+            layer, created = Layer.objects.get_or_create(name=name, workspace=workspace.name, defaults={
+                # "workspace": workspace.name,
                 "store": the_store.name,
                 "storeType": the_store.resource_type,
                 "alternate": "%s:%s" % (workspace.name.encode('utf-8'), resource.name.encode('utf-8')),
@@ -611,7 +614,7 @@ def gs_slurp(
                 "bbox_x1": Decimal(resource.native_bbox[1]),
                 "bbox_y0": Decimal(resource.native_bbox[2]),
                 "bbox_y1": Decimal(resource.native_bbox[3]),
-                "srid": resource.projection,
+                "srid": resource.projection
             })
 
             # sync permissions in GeoFence
@@ -767,7 +770,7 @@ def gs_slurp(
             if verbosity > 0:
                 print >> console, msg
 
-    finish = datetime.datetime.now()
+    finish = datetime.datetime.now(timezone.get_current_timezone())
     td = finish - start
     output['stats']['duration_sec'] = td.microseconds / \
         1000000 + td.seconds + td.days * 24 * 3600
@@ -899,24 +902,29 @@ def set_styles(layer, gs_catalog):
     if not gs_layer:
         gs_layer = gs_catalog.get_layer(layer.alternate)
 
-    if gs_layer.default_style:
-        default_style = gs_layer.default_style
-    else:
-        default_style = gs_catalog.get_style(layer.name, workspace=settings.DEFAULT_WORKSPACE) \
-                        or gs_catalog.get_style(layer.name)
-        try:
-            gs_layer.default_style = default_style
-            gs_catalog.save(gs_layer)
-        except:
-            logger.exception("GeoServer Layer Default Style issues!")
-    layer.default_style = save_style(default_style)
-    # FIXME: This should remove styles that are no longer valid
-    style_set.append(layer.default_style)
+    if gs_layer:
+        default_style = None
+        if gs_layer.default_style:
+            default_style = gs_layer.default_style
+        else:
+            default_style = gs_catalog.get_style(layer.name, workspace=settings.DEFAULT_WORKSPACE) \
+                            or gs_catalog.get_style(layer.name)
+            try:
+                gs_layer.default_style = default_style
+                gs_catalog.save(gs_layer)
+            except:
+                logger.exception("GeoServer Layer Default Style issues!")
 
-    alt_styles = gs_layer.styles
+        if default_style:
+            layer.default_style = save_style(default_style)
+            # FIXME: This should remove styles that are no longer valid
+            style_set.append(layer.default_style)
 
-    for alt_style in alt_styles:
-        style_set.append(save_style(alt_style))
+        if gs_layer.styles:
+            alt_styles = gs_layer.styles
+
+            for alt_style in alt_styles:
+                style_set.append(save_style(alt_style))
 
     layer.styles = style_set
 
@@ -924,7 +932,9 @@ def set_styles(layer, gs_catalog):
     to_update = {
         'default_style': layer.default_style
     }
+
     Layer.objects.filter(id=layer.id).update(**to_update)
+    layer.refresh_from_db()
     return layer
 
 
@@ -1099,6 +1109,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
     """
     cat = gs_catalog
     db = ogc_server_settings.datastore_db
+    # dsname = ogc_server_settings.DATASTORE
     dsname = db['NAME']
 
     ds_exists = False
@@ -1549,10 +1560,15 @@ def set_time_info(layer, attribute, end_attribute, presentation,
         resolution = '%s %s' % (precision_value, precision_step)
     info = DimensionInfo("time", enabled, presentation, resolution, "ISO8601",
                          None, attribute=attribute, end_attribute=end_attribute)
-    metadata = dict(resource.metadata or {})
+    if resource and resource.metadata:
+        metadata = dict(resource.metadata or {})
+    else:
+        metadata = dict({})
     metadata['time'] = info
-    resource.metadata = metadata
-    gs_catalog.save(resource)
+    if resource and resource.metadata:
+        resource.metadata = metadata
+    if resource:
+        gs_catalog.save(resource)
 
 
 def get_time_info(layer):

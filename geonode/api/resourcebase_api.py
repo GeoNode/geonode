@@ -746,7 +746,12 @@ class LayerResource(CommonModelApi):
             if hasattr(obj, 'storeType'):
                 formatted_obj['store_type'] = obj.storeType
                 if obj.storeType == 'remoteStore' and hasattr(obj, 'remote_service'):
-                    formatted_obj['online'] = (obj.remote_service.probe == 200)
+                    if obj.remote_service:
+                        formatted_obj['online'] = (obj.remote_service.probe == 200)
+                    else:
+                        formatted_obj['online'] = False
+
+            formatted_obj['gtype'] = self.dehydrate_gtype(bundle)
 
             # put the object on the response stack
             formatted_objects.append(formatted_obj)
@@ -769,6 +774,9 @@ class LayerResource(CommonModelApi):
             dehydrated.append(formatted_link)
 
         return dehydrated
+
+    def dehydrate_gtype(self, bundle):
+        return bundle.obj.gtype
 
     def populate_object(self, obj):
         """Populate results with necessary fields

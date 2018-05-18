@@ -169,7 +169,7 @@ def save_step_view(req, session):
             base_file,
             scan_hint=get_scan_hint(form.cleaned_data["valid_extensions"])
         )
-        logger.debug("spatial_files: {}".format(spatial_files))
+        logger.info("spatial_files: {}".format(spatial_files))
         import_session = save_step(
             req.user,
             name,
@@ -502,7 +502,8 @@ def time_step_view(request, upload_session):
         upload_session.completed_step = 'check'
 
         def tx(type_name):
-            return None if type_name is None or type_name == 'Date' \
+            # return None if type_name is None or type_name == 'Date' \
+            return None if type_name is None \
                 else 'DateFormatTransform'
         end_attribute, end_type = cleaned.get('end_attribute', (None, None))
         time_step(

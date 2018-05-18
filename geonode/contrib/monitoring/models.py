@@ -28,8 +28,8 @@ from socket import gethostbyname
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from django.db import models
 from django import forms
+from django.db import models
 from django.conf import settings
 from django.http import Http404
 from jsonfield import JSONField
@@ -44,6 +44,8 @@ except ImportError:
     from django.contrib.gis.geoip import GeoIP
 
 import user_agents
+from ipware import get_client_ip
+import pycountry
 from multi_email_field.forms import MultiEmailField
 
 from geonode.utils import parse_datetime
@@ -64,10 +66,15 @@ def get_geoip():
 
 
 class Host(models.Model):
+
     """
     Describes one physical instance
     """
-    name = models.CharField(max_length=255, unique=True, blank=False, null=False)
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        blank=False,
+        null=False)
     ip = models.GenericIPAddressField(null=False, blank=False)
     active = models.BooleanField(null=False, blank=False, default=True)
 
@@ -76,6 +83,7 @@ class Host(models.Model):
 
 
 class ServiceType(models.Model):
+
     """
     Service Type list
     """
@@ -89,7 +97,12 @@ class ServiceType(models.Model):
              (TYPE_HOST_GS, _("Host (GeoServer)",),),
              (TYPE_HOST_GN, _("Host (GeoNode)",),),
              )
-    name = models.CharField(max_length=255, unique=True, blank=False, null=False, choices=TYPES)
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        blank=False,
+        null=False,
+        choices=TYPES)
 
     def __str__(self):
         return 'Service Type: {}'.format(self.name)
@@ -100,13 +113,19 @@ class ServiceType(models.Model):
 
 
 class Service(models.Model):
+
     """
     Service is a entity describing deployed processes.
     """
-    name = models.CharField(max_length=255, unique=True, blank=False, null=False)
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        blank=False,
+        null=False)
     host = models.ForeignKey(Host, null=False)
-    check_interval = models.DurationField(null=False, blank=False, default=timedelta(seconds=60))
-    last_check = models.DateTimeField(null=True, blank=True)
+    check_interval = models.DurationField(
+        null=False, blank=False, default=timedelta(seconds=60))
+    last_check = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     service_type = models.ForeignKey(ServiceType, null=False)
     active = models.BooleanField(null=False, blank=False, default=True)
     notes = models.TextField(null=True, blank=True)
@@ -152,7 +171,12 @@ class MonitoredResource(models.Model):
              (TYPE_OTHER, _("Other"),))
 
     name = models.CharField(max_length=255, null=False, blank=True, default='')
-    type = models.CharField(max_length=255, null=False, blank=False, choices=TYPES, default=TYPE_EMPTY)
+    type = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        choices=TYPES,
+        default=TYPE_EMPTY)
 
     class Meta:
         unique_together = (('name', 'type',),)
@@ -208,8 +232,17 @@ class Metric(models.Model):
 
     name = models.CharField(max_length=255, db_index=True)
     description = models.CharField(max_length=255, null=True)
-    type = models.CharField(max_length=255, null=False, blank=False, default=TYPE_RATE, choices=TYPES)
-    unit = models.CharField(max_length=255, null=True, blank=True, choices=UNITS)
+    type = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        default=TYPE_RATE,
+        choices=TYPES)
+    unit = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        choices=UNITS)
 
     def get_aggregate_name(self):
         return self.AGGREGATE_MAP[self.type]
@@ -238,7 +271,8 @@ class Metric(models.Model):
         metric = None
         if service:
             try:
-                stype = ServiceTypeMetric.objects.get(service_type=service.service_type, metric__name=name)
+                stype = ServiceTypeMetric.objects.get(
+                    service_type=service.service_type, metric__name=name)
                 metric = stype.metric
             except ServiceTypeMetric.DoesNotExist:
                 raise Http404()
@@ -259,7 +293,8 @@ class OWSService(models.Model):
     _ows_types = 'tms wms-c wmts wcs wfs wms wps'.upper().split(' ')
     OWS_OTHER = 'other'
     OWS_ALL = 'all'
-    OWS_TYPES = zip(_ows_types, _ows_types) + [(OWS_ALL, _("All"))] + [(OWS_OTHER, _("Other"))]
+    OWS_TYPES = zip(_ows_types, _ows_types) + \
+        [(OWS_ALL, _("All"))] + [(OWS_OTHER, _("Other"))]
     name = models.CharField(max_length=16, unique=True,
                             choices=OWS_TYPES,
                             null=False,
@@ -311,26 +346,56 @@ class RequestEvent(models.Model):
     #  map=some map
     #
     # list is separated with newline
-    # resources = models.TextField(blank=True, default='', help_text=_("Resources name (style, layer, document, map)"))
+    # resources = models.TextField(blank=True, default='',
+    # help_text=_("Resources name (style, layer, document, map)"))
     resources = models.ManyToManyField(MonitoredResource, blank=True,
-                                       help_text=_("List of resources affected"),
+                                       help_text=_(
+                                           "List of resources affected"),
                                        related_name='requests')
 
     request_method = models.CharField(max_length=16, choices=METHODS)
     response_status = models.PositiveIntegerField(null=False, blank=False)
     response_size = models.PositiveIntegerField(null=False, default=0)
-    response_time = models.PositiveIntegerField(null=False, default=0, help_text=_("Response processing time in ms"))
-    response_type = models.CharField(max_length=255, null=True, blank=True, default='')
-    user_agent = models.CharField(max_length=255, null=True, blank=True, default=None)
-    user_agent_family = models.CharField(max_length=255, null=True, default=None, blank=True)
+    response_time = models.PositiveIntegerField(
+        null=False, default=0, help_text=_("Response processing time in ms"))
+    response_type = models.CharField(
+        max_length=255, null=True, blank=True, default='')
+    user_agent = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        default=None)
+    user_agent_family = models.CharField(
+        max_length=255, null=True, default=None, blank=True)
     client_ip = models.GenericIPAddressField(null=False)
-    client_lat = models.DecimalField(max_digits=8, decimal_places=5, null=True, default=None, blank=True)
-    client_lon = models.DecimalField(max_digits=8, decimal_places=5, null=True, default=None, blank=True)
-    client_country = models.CharField(max_length=255, null=True, default=None, blank=True)
-    client_region = models.CharField(max_length=255, null=True, default=None, blank=True)
-    client_city = models.CharField(max_length=255, null=True, default=None, blank=True)
+    client_lat = models.DecimalField(
+        max_digits=8,
+        decimal_places=5,
+        null=True,
+        default=None,
+        blank=True)
+    client_lon = models.DecimalField(
+        max_digits=8,
+        decimal_places=5,
+        null=True,
+        default=None,
+        blank=True)
+    client_country = models.CharField(
+        max_length=255, null=True, default=None, blank=True)
+    client_region = models.CharField(
+        max_length=255, null=True, default=None, blank=True)
+    client_city = models.CharField(
+        max_length=255,
+        null=True,
+        default=None,
+        blank=True)
 
-    custom_id = models.CharField(max_length=255, null=True, default=None, blank=True, db_index=True)
+    custom_id = models.CharField(
+        max_length=255,
+        null=True,
+        default=None,
+        blank=True,
+        db_index=True)
 
     @classmethod
     def _get_resources(cls, type_name, resources_list):
@@ -338,7 +403,8 @@ class RequestEvent(models.Model):
         for r in resources_list:
             if r is None:
                 continue
-            rinst, _ = MonitoredResource.objects.get_or_create(name=r, type=type_name)
+            rinst, _ = MonitoredResource.objects.get_or_create(
+                name=r, type=type_name)
             out.append(rinst)
         return out
 
@@ -365,29 +431,45 @@ class RequestEvent(models.Model):
         created = rqmeta.get('started', received)
         if not isinstance(created, datetime):
             created = parse_datetime(created)
-        _ended = rqmeta.get('finished', datetime.utcnow().replace(tzinfo=pytz.utc))
-        duration = ((_ended - created).microseconds)/1000.0
+        _ended = rqmeta.get(
+            'finished',
+            datetime.utcnow().replace(
+                tzinfo=pytz.utc))
+        duration = ((_ended - created).microseconds) / 1000.0
 
         ua = request.META.get('HTTP_USER_AGENT') or ''
         ua_family = cls._get_ua_family(ua)
 
-        ip = request.get_host()
+        ip, is_routable = get_client_ip(request)
         lat = lon = None
         country = region = city = None
-        if ip:
+        if ip and is_routable:
             ip = ip.split(':')[0]
             if settings.TEST and ip == 'testserver':
                 ip = '127.0.0.1'
-            ip = gethostbyname(ip)
+            try:
+                ip = gethostbyname(ip)
+            except Exception as err:
+                pass
 
             geoip = get_geoip()
-            client_loc = geoip.city(ip)
+            try:
+                client_loc = geoip.city(ip)
+            except Exception as err:
+                log.warning("Cannot resolve %s: %s", ip, err)
+                client_loc = None
 
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc['country_code3']
+                country = client_loc.get(
+                    'country_code3') or client_loc['country_code']
+                if len(country) == 2:
+                    _c = pycountry.countries.get(alpha_2=country)
+                    country = _c.alpha_3
+
                 region = client_loc['region']
                 city = client_loc['city']
+
         data = {'received': received,
                 'created': created,
                 'host': request.get_host(),
@@ -396,7 +478,8 @@ class RequestEvent(models.Model):
                 'request_path': request.get_full_path(),
                 'request_method': request.method,
                 'response_status': response.status_code,
-                'response_size': response.get('Content-length') or len(response.getvalue()),
+                'response_size':
+                    response.get('Content-length') or len(response.getvalue()),
                 'response_type': response.get('Content-type'),
                 'response_time': duration,
                 'user_agent': ua,
@@ -407,12 +490,15 @@ class RequestEvent(models.Model):
                 'client_country': country,
                 'client_region': region,
                 'client_city': city}
-        inst = cls.objects.create(**data)
-        resources = cls._get_geonode_resources(request)
-        if resources:
-            inst.resources.add(*resources)
-            inst.save()
-        return inst
+        try:
+            inst = cls.objects.create(**data)
+            resources = cls._get_geonode_resources(request)
+            if resources:
+                inst.resources.add(*resources)
+                inst.save()
+            return inst
+        except:
+            return None
 
     @classmethod
     def from_geoserver(cls, service, request_data, received=None):
@@ -434,16 +520,28 @@ class RequestEvent(models.Model):
         country = region = city = None
         if ip:
             geoip = get_geoip()
-            client_loc = geoip.city(ip)
+            try:
+                client_loc = geoip.city(ip)
+            except Exception as err:
+                log.warning("Cannot resolve %s: %s", ip, err)
+                client_loc = None
+
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc['country_code3']
+                country = client_loc.get(
+                    'country_code3') or client_loc['country_code']
+                if len(country) == 2:
+                    _c = pycountry.countries.get(alpha_2=country)
+                    country = _c.alpha_3
                 region = client_loc['region']
                 city = client_loc['city']
 
         from dateutil.tz import tzlocal
         utc = pytz.utc
-        local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
+        try:
+            local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
+        except:
+            local_tz = pytz.timezone(settings.TIME_ZONE)
 
         start_time = parse_datetime(rd['startTime'])
         # Assuming GeoServer stores dates @ UTC
@@ -455,7 +553,9 @@ class RequestEvent(models.Model):
                 'host': rd['host'],
                 'ows_service': OWSService.get(rd.get('service')),
                 'service': service,
-                'request_path': '{}?{}'.format(rd['path'], rd['queryString']) if rd.get('queryString') else rd['path'],
+                'request_path':
+                    '{}?{}'.format(rd['path'], rd['queryString']) if rd.get(
+                        'queryString') else rd['path'],
                 'request_method': rd['httpMethod'],
                 'response_status': rd['responseStatus'],
                 'response_size': rl[0] if isinstance(rl, list) else rl,
@@ -477,13 +577,20 @@ class RequestEvent(models.Model):
         resources = cls._get_resources('layer', resource_names)
         if rd.get('error'):
             try:
-                etype = rd['error']['@class'] if '@class' in rd['error'] else rd['error']['class']
+                etype = rd[
+                    'error'][
+                        '@class'] if '@class' in rd[
+                            'error'] else rd[
+                                'error'][
+                    'class']
                 edata = '\n'.join(rd['error']['stackTrace']['trace'])
                 emessage = rd['error']['detailMessage']
-                ExceptionEvent.add_error(service, etype, edata, message=emessage, request=inst)
-            except:
+                ExceptionEvent.add_error(
+                    service, etype, edata, message=emessage, request=inst)
+            except BaseException:
                 ExceptionEvent.add_error(service, 'undefined',
-                                         '\n'.join(rd['error']['stackTrace']['trace']),
+                                         '\n'.join(
+                                             rd['error']['stackTrace']['trace']),
                                          message=rd['error']['detailMessage'], request=inst)
         if resources:
             inst.resources.add(*resources)
@@ -501,9 +608,10 @@ class ExceptionEvent(models.Model):
     request = models.ForeignKey(RequestEvent, related_name='exceptions')
 
     @classmethod
-    def add_error(cls, from_service, error_type, stack_trace, request=None, created=None, message=None):
+    def add_error(cls, from_service, error_type, stack_trace,
+                  request=None, created=None, message=None):
         received = datetime.utcnow().replace(tzinfo=pytz.utc)
-        if not isinstance(error_type, types.StringTypes):
+        if not isinstance(error_type, (str,)):
             _cls = error_type.__class__
             error_type = '{}.{}'.format(_cls.__module__, _cls.__name__)
         if not message:
@@ -575,17 +683,37 @@ class MetricValue(models.Model):
     valid_to = models.DateTimeField(db_index=True, null=False)
     service_metric = models.ForeignKey(ServiceTypeMetric)
     service = models.ForeignKey(Service)
-    ows_service = models.ForeignKey(OWSService, null=True, blank=True, related_name='metric_values')
-    resource = models.ForeignKey(MonitoredResource, related_name='metric_values')
+    ows_service = models.ForeignKey(
+        OWSService,
+        null=True,
+        blank=True,
+        related_name='metric_values')
+    resource = models.ForeignKey(
+        MonitoredResource,
+        related_name='metric_values')
     label = models.ForeignKey(MetricLabel, related_name='metric_values')
     value = models.CharField(max_length=255, null=False, blank=False)
-    value_num = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
+    value_num = models.DecimalField(
+        max_digits=16,
+        decimal_places=4,
+        null=True,
+        default=None,
+        blank=True)
     value_raw = models.TextField(null=True, default=None, blank=True)
-    samples_count = models.PositiveIntegerField(null=False, default=0, blank=False)
+    samples_count = models.PositiveIntegerField(
+        null=False, default=0, blank=False)
     data = JSONField(null=False, default={})
 
     class Meta:
-        unique_together = (('valid_from', 'valid_to', 'service', 'service_metric', 'resource', 'label', 'ows_service',))
+        unique_together = (
+            ('valid_from',
+             'valid_to',
+             'service',
+             'service_metric',
+             'resource',
+             'label',
+             'ows_service',
+             ))
 
     def __str__(self):
         metric = self.service_metric.metric.name
@@ -595,8 +723,11 @@ class MetricValue(models.Model):
                 l = l.encode('utf-8')
             metric = '{} [{}]'.format(metric, l)
         if self.resource and self.resource.type:
-            metric = '{} for {}'.format(metric, '{}={}'.format(self.resource.type, self.resource.name))
-        return 'Metric Value: {}: [{}] (since {} until {})'.format(metric, self.value, self.valid_from, self.valid_to)
+            metric = '{} for {}'.format(
+                metric, '{}={}'.format(
+                    self.resource.type, self.resource.name))
+        return 'Metric Value: {}: [{}] (since {} until {})'.format(
+            metric, self.value, self.valid_from, self.valid_to)
 
     @classmethod
     def add(cls, metric, valid_from, valid_to, service, label,
@@ -608,16 +739,19 @@ class MetricValue(models.Model):
         """
 
         if isinstance(metric, Metric):
-            service_metric = ServiceTypeMetric.objects.get(service_type=service.service_type, metric=metric)
+            service_metric = ServiceTypeMetric.objects.get(
+                service_type=service.service_type, metric=metric)
         else:
-            service_metric = ServiceTypeMetric.objects.get(service_type=service.service_type, metric__name=metric)
+            service_metric = ServiceTypeMetric.objects.get(
+                service_type=service.service_type, metric__name=metric)
 
         label, _ = MetricLabel.objects.get_or_create(name=label or 'count')
         if ows_service:
             if not isinstance(ows_service, OWSService):
                 ows_service = OWSService.get(ows_service)
         if not resource:
-            resource, _ = MonitoredResource.objects.get_or_create(type=MonitoredResource.TYPE_EMPTY, name='')
+            resource, _ = MonitoredResource.objects.get_or_create(
+                type=MonitoredResource.TYPE_EMPTY, name='')
         try:
             inst = cls.objects.get(valid_from=valid_from,
                                    valid_to=valid_to,
@@ -648,7 +782,8 @@ class MetricValue(models.Model):
                                   data=data or {})
 
     @classmethod
-    def get_for(cls, metric, service=None, valid_on=None, resource=None, label=None, ows_service=None):
+    def get_for(cls, metric, service=None, valid_on=None,
+                resource=None, label=None, ows_service=None):
         qparams = models.Q()
         if isinstance(metric, Metric):
             qparams = qparams & models.Q(service_metric__metric=metric)
@@ -656,13 +791,18 @@ class MetricValue(models.Model):
             qparams = qparams & models.Q(service_metric__metric__name=metric)
         if service:
             if isinstance(service, Service):
-                qparams = qparams & models.Q(service_metric__service_type=service.service_type)
+                qparams = qparams & models.Q(
+                    service_metric__service_type=service.service_type)
             elif isinstance(service, ServiceType):
-                qparams = qparams & models.Q(service_metric__service_type=service)
+                qparams = qparams & models.Q(
+                    service_metric__service_type=service)
             else:
-                qparams = qparams & models.Q(service_metric__service_type__name=service)
+                qparams = qparams & models.Q(
+                    service_metric__service_type__name=service)
         if valid_on:
-            qwhen = models.Q(valid_from__lte=valid_on) & models.Q(valid_to__gte=valid_on)
+            qwhen = models.Q(
+                valid_from__lte=valid_on) & models.Q(
+                valid_to__gte=valid_on)
             qparams = qparams & qwhen
         if label:
             if isinstance(label, MetricLabel):
@@ -674,7 +814,8 @@ class MetricValue(models.Model):
                 qparams = qparams & models.Q(resource=resource)
             else:
                 rtype, rname = resource.split('=')
-                qparams = qparams & models.Q(resource__type=rtype, resource__name=rname)
+                qparams = qparams & models.Q(
+                    resource__type=rtype, resource__name=rname)
         if ows_service:
             if isinstance(ows_service, OWSService):
                 qparams = qparams & models.Q(ows_service=ows_service)
@@ -688,10 +829,10 @@ class MetricValue(models.Model):
 class NotificationCheck(models.Model):
 
     GRACE_PERIOD_1M = timedelta(seconds=60)
-    GRACE_PERIOD_5M = timedelta(seconds=5*60)
-    GRACE_PERIOD_10M = timedelta(seconds=10*60)
-    GRACE_PERIOD_30M = timedelta(seconds=30*60)
-    GRACE_PERIOD_1H = timedelta(seconds=60*60)
+    GRACE_PERIOD_5M = timedelta(seconds=5 * 60)
+    GRACE_PERIOD_10M = timedelta(seconds=10 * 60)
+    GRACE_PERIOD_30M = timedelta(seconds=30 * 60)
+    GRACE_PERIOD_1H = timedelta(seconds=60 * 60)
     GRACE_PERIODS = ((GRACE_PERIOD_1M, _("1 minute"),),
                      (GRACE_PERIOD_5M, _("5 minutes"),),
                      (GRACE_PERIOD_10M, _("10 minutes"),),
@@ -708,20 +849,39 @@ class NotificationCheck(models.Model):
                   (SEVERITY_FATAL, _("Fatal"),),
                   )
 
-    name = models.CharField(max_length=255, null=False, blank=False, unique=True)
-    description = models.CharField(max_length=255, null=False, blank=False, help_text="Description of the alert")
+    name = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        unique=True)
+    description = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        help_text="Description of the alert")
     user_threshold = JSONField(default={}, null=False, blank=False,
                                help_text=_("Expected min/max values for user configuration"))
-    metrics = models.ManyToManyField(Metric, through='NotificationMetricDefinition', related_name='+')
-    last_send = models.DateTimeField(null=True, blank=True, help_text=_("Marker of last delivery"))
-    grace_period = models.DurationField(null=False, default=GRACE_PERIOD_10M, choices=GRACE_PERIODS,
-                                        help_text=_("Minimum time between subsequent notifications"))
+    metrics = models.ManyToManyField(
+        Metric,
+        through='NotificationMetricDefinition',
+        related_name='+')
+    last_send = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text=_("Marker of last delivery"))
+    grace_period = models.DurationField(
+        null=False, default=GRACE_PERIOD_10M, choices=GRACE_PERIODS,
+        help_text=_("Minimum time between subsequent notifications"))
     severity = models.CharField(max_length=32,
                                 null=False,
                                 default=SEVERITY_ERROR,
                                 choices=SEVERITIES,
                                 help_text=_("How severe would be error from this notification"))
-    active = models.BooleanField(default=True, null=False, blank=False, help_text=_("Is it active"))
+    active = models.BooleanField(
+        default=True,
+        null=False,
+        blank=False,
+        help_text=_("Is it active"))
 
     def __str__(self):
         return "Notification Check #{}: {}".format(self.id, self.name)
@@ -758,24 +918,27 @@ class NotificationCheck(models.Model):
 
     @property
     def url(self):
-        return reverse('monitoring:api_user_notification_config', args=(self.id,))
+        return reverse(
+            'monitoring:api_user_notification_config', args=(self.id,))
 
     def get_users(self):
-        return [r.user for r in self.receivers.exclude(user__isnull=True).select_related('user')]
+        return [r.user for r in self.receivers.exclude(
+            user__isnull=True).select_related('user')]
 
     def get_emails(self):
         return [r.email for r in self.receivers.exclude(email__isnull=True)]
 
     @property
     def emails(self):
-        return [u for u in self.get_emails() if u] + [u.email for u in self.get_users() if u.email]
+        return [u for u in self.get_emails() if u] + \
+            [u.email for u in self.get_users() if u.email]
 
     def check_notifications(self, for_timestamp=None):
         checks = []
         for ch in self.checks.all():
             try:
                 ch.check_metric(for_timestamp=for_timestamp)
-            except MetricNotificationCheck.MetricValueError, err:
+            except MetricNotificationCheck.MetricValueError as err:
                 checks.append(err)
             # no value available, ignoring
             except ValueError:
@@ -791,15 +954,19 @@ class NotificationCheck(models.Model):
         elif active is not None:
             q['active'] = active
         for n in cls.objects.filter(**q):
-            checked.append((n, n.check_notifications(for_timestamp=for_timestamp),))
+            checked.append(
+                (n, n.check_notifications(
+                    for_timestamp=for_timestamp),))
         return checked
 
     @classmethod
     def get_steps(cls, min_, max_, thresholds):
-        if isinstance(thresholds, (types.IntType, types.LongType, types.FloatType, Decimal,)):
+        if isinstance(thresholds, (int, int,
+                                   float, Decimal,)):
             if min_ is None or max_ is None:
-                raise ValueError("Cannot use numeric threshold if one of min/max is None")
-            step = (max_ - min_)/thresholds
+                raise ValueError(
+                    "Cannot use numeric threshold if one of min/max is None")
+            step = (max_ - min_) / thresholds
             current = min_
             thresholds = []
             while current < max_:
@@ -811,7 +978,9 @@ class NotificationCheck(models.Model):
         elif isinstance(thresholds, list) or thresholds is None:
             pass
         else:
-            raise TypeError("Unsupported threshold type: %s (%s)".format(thresholds, type(thresholds)))
+            raise TypeError(
+                "Unsupported threshold type: %s (%s)".format(
+                    thresholds, type(thresholds)))
         return thresholds
 
     @classmethod
@@ -842,13 +1011,14 @@ class NotificationCheck(models.Model):
 
             metric = Metric.objects.get(name=metric_name)
             steps = cls.get_steps(minimum, maximum, thresholds)
-            nm = NotificationMetricDefinition.objects.create(notification_check=inst,
-                                                             metric=metric,
-                                                             description=_description,
-                                                             min_value=minimum,
-                                                             max_value=maximum,
-                                                             steps=len(steps) if steps else None,
-                                                             field_option=field_opt)
+            nm = NotificationMetricDefinition.objects.create(
+                notification_check=inst,
+                metric=metric,
+                description=_description,
+                min_value=minimum,
+                max_value=maximum,
+                steps=len(steps) if steps else None,
+                field_option=field_opt)
             user_thresholds[nm.field_name] = {'min': minimum,
                                               'max': maximum,
                                               'metric': metric_name,
@@ -873,15 +1043,17 @@ class NotificationCheck(models.Model):
 
         class F(forms.Form):
             emails = MultiEmailField(required=False)
-            severity = forms.ChoiceField(choices=self.SEVERITIES, required=False)
+            severity = forms.ChoiceField(
+                choices=self.SEVERITIES, required=False)
             active = forms.BooleanField(required=False)
             grace_period = forms.DurationField(required=False)
 
             def __init__(self, *args, **kwargs):
-                initial = {'emails': list(this.get_emails()) + [u.email for u in this.get_users()],
-                           'severity': this.severity,
-                           'active': this.active,
-                           'grace_period': this.grace_period}
+                initial = {
+                    'emails': list(this.get_emails()) + [u.email for u in this.get_users()],
+                    'severity': this.severity,
+                    'active': this.active,
+                    'grace_period': this.grace_period}
                 kwargs['initial'] = initial
                 super(F, self).__init__(*args, **kwargs)
                 fields = self.fields
@@ -939,10 +1111,11 @@ class NotificationCheck(models.Model):
             if field == 'max_timeout':
                 val = timedelta(seconds=int(val))
             ndef = self.get_definition_for(key)
-            ncheck = MetricNotificationCheck.objects.create(notification_check=inst,
-                                                            metric=metric,
-                                                            definition=ndef,
-                                                            **{field: val})
+            ncheck = MetricNotificationCheck.objects.create(
+                notification_check=inst,
+                metric=metric,
+                definition=ndef,
+                **{field: val})
             out.append(ncheck)
         U = get_user_model()
         self.receivers.all().delete()
@@ -965,7 +1138,8 @@ class NotificationCheck(models.Model):
 
 
 class NotificationReceiver(models.Model):
-    notification_check = models.ForeignKey(NotificationCheck, related_name='receivers')
+    notification_check = models.ForeignKey(
+        NotificationCheck, related_name='receivers')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
 
@@ -979,12 +1153,13 @@ class NotificationMetricDefinition(models.Model):
     FIELD_OPTION_MIN_VALUE = 'min_value'
     FIELD_OPTION_MAX_VALUE = 'max_value'
     FIELD_OPTION_MAX_TIMEOUT = 'max_timeout'
-    FIELD_OPTION_CHOICES = ((FIELD_OPTION_MIN_VALUE, _("Value must be above"),),
-                            (FIELD_OPTION_MAX_VALUE, _("Value must be below"),),
-                            (FIELD_OPTION_MAX_TIMEOUT, _("Last update must not be older than"),)
-                            )
+    FIELD_OPTION_CHOICES = (
+        (FIELD_OPTION_MIN_VALUE, _("Value must be above"),),
+        (FIELD_OPTION_MAX_VALUE, _("Value must be below"),),
+        (FIELD_OPTION_MAX_TIMEOUT, _("Last update must not be older than"),))
 
-    notification_check = models.ForeignKey(NotificationCheck, related_name='definitions')
+    notification_check = models.ForeignKey(
+        NotificationCheck, related_name='definitions')
     metric = models.ForeignKey(Metric, related_name='notification_checks')
     use_service = models.BooleanField(null=False, default=False)
     use_resource = models.BooleanField(null=False, default=False)
@@ -995,8 +1170,18 @@ class NotificationMetricDefinition(models.Model):
                                     null=False,
                                     default=FIELD_OPTION_MIN_VALUE)
     description = models.TextField(null=True)
-    min_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
-    max_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
+    min_value = models.DecimalField(
+        max_digits=16,
+        decimal_places=4,
+        null=True,
+        default=None,
+        blank=True)
+    max_value = models.DecimalField(
+        max_digits=16,
+        decimal_places=4,
+        null=True,
+        default=None,
+        blank=True)
     steps = models.PositiveIntegerField(null=True, blank=True, default=None)
 
     @property
@@ -1017,7 +1202,8 @@ class NotificationMetricDefinition(models.Model):
         min_, max_, steps = self.min_value, self.max_value, self.steps
         format = '{0:.3g}'
         if steps is not None and min_ is not None and max_ is not None:
-            return [format.format(v) for v in NotificationCheck.get_steps(min_, max_, steps)]
+            return [format.format(v) for v in NotificationCheck.get_steps(
+                min_, max_, steps)]
 
     @property
     def is_enabled(self):
@@ -1034,7 +1220,11 @@ class NotificationMetricDefinition(models.Model):
                 val_ = val.total_seconds()
             else:
                 val_ = val
-            return {'class': '{}.{}'.format(val.__class__.__module__, val.__class__.__name__),
+            return {
+                'class':
+                    '{}.{}'.format(
+                        val.__class__.__module__,
+                        val.__class__.__name__),
                     'value': val_}
         except MetricNotificationCheck.DoesNotExist:
             return
@@ -1045,7 +1235,8 @@ class NotificationMetricDefinition(models.Model):
         min_, max_, steps = self.min_value, self.max_value, self.steps_calculated
 
         if steps is not None and min_ is not None and max_ is not None:
-            field = forms.ChoiceField(choices=[(v, v,) for v in steps], required=False)
+            field = forms.ChoiceField(
+                choices=[(v, v,) for v in steps], required=False)
         else:
             fargs = {}
             if max_ is not None:
@@ -1075,9 +1266,10 @@ class NotificationMetricDefinition(models.Model):
         except MetricNotificationCheck.DoesNotExist:
             try:
                 mcheck = MetricNotificationCheck.objects\
-                                                .filter(notification_check=self.notification_check,
-                                                        metric=self.metric,
-                                                        **{'{}__isnull'.format(self.field_option): False})\
+                                                .filter(
+                                                    notification_check=self.notification_check,
+                                                    metric=self.metric,
+                                                    **{'{}__isnull'.format(self.field_option): False})\
                                                 .get()
                 if mcheck:
                     self.metric_check = mcheck
@@ -1088,19 +1280,38 @@ class NotificationMetricDefinition(models.Model):
 
 
 class MetricNotificationCheck(models.Model):
-    notification_check = models.ForeignKey(NotificationCheck, related_name="checks")
+    notification_check = models.ForeignKey(
+        NotificationCheck, related_name="checks")
     metric = models.ForeignKey(Metric, related_name="checks")
-    service = models.ForeignKey(Service, related_name="checks", null=True, blank=True)
+    service = models.ForeignKey(
+        Service,
+        related_name="checks",
+        null=True,
+        blank=True)
     resource = models.ForeignKey(MonitoredResource, null=True, blank=True)
     label = models.ForeignKey(MetricLabel, null=True, blank=True)
     ows_service = models.ForeignKey(OWSService, null=True, blank=True)
-    min_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
-    max_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
+    min_value = models.DecimalField(
+        max_digits=16,
+        decimal_places=4,
+        null=True,
+        default=None,
+        blank=True)
+    max_value = models.DecimalField(
+        max_digits=16,
+        decimal_places=4,
+        null=True,
+        default=None,
+        blank=True)
     max_timeout = models.DurationField(null=True, blank=True,
-                                       help_text=_("Max timeout for given metric before error should be raised")
+                                       help_text=_(
+                                           "Max timeout for given metric before error should be raised")
                                        )
     active = models.BooleanField(default=True, null=False, blank=False)
-    definition = models.OneToOneField(NotificationMetricDefinition, null=True, related_name='metric_check')
+    definition = models.OneToOneField(
+        NotificationMetricDefinition,
+        null=True,
+        related_name='metric_check')
 
     def __str__(self):
         indicator = []
@@ -1109,9 +1320,12 @@ class MetricNotificationCheck(models.Model):
         if self.max_value is not None:
             indicator.append("value below {}".format(self.max_value))
         if self.max_timeout is not None:
-            indicator.append("value must be collected within {}".format(self.max_timeout))
+            indicator.append(
+                "value must be collected within {}".format(
+                    self.max_timeout))
         indicator = ' and '.join(indicator)
-        return "MetricCheck({}@{}: {})".format(self.metric.name, self.service.name if self.service else '', indicator)
+        return "MetricCheck({}@{}: {})".format(
+            self.metric.name, self.service.name if self.service else '', indicator)
 
     @property
     def field_option(self):
@@ -1129,7 +1343,8 @@ class MetricNotificationCheck(models.Model):
 
     class MetricValueError(ValueError):
 
-        def __init__(self, metric, check, message, offending_value, threshold_value, description):
+        def __init__(self, metric, check, message,
+                     offending_value, threshold_value, description):
             self.metric = metric
             self.check = check
             self.message = message
@@ -1170,7 +1385,10 @@ class MetricNotificationCheck(models.Model):
         if self.service:
             msg_prefix.append("for {} service".format(self.service.name))
         if self.resource:
-            msg_prefix.append("for {}[{}] resource".format(self.resource.name, self.resource.type))
+            msg_prefix.append(
+                "for {}[{}] resource".format(
+                    self.resource.name,
+                    self.resource.type))
 
         msg_prefix = ' '.join(msg_prefix)
         description_tmpl = ("{} {} should be {{}} "
@@ -1178,20 +1396,26 @@ class MetricNotificationCheck(models.Model):
                                                                            metric_name,
                                                                            unit_name,
                                                                            unit_name)\
-                                                                   .strip()
+            .strip()
 
         if self.min_value is not None:
             had_check = True
             if v < self.min_value:
-                msg = "{} {} {}".format(def_msg, int(self.min_value), unit_name)
-                description = description_tmpl.format('at least', self.min_value, v)
-                raise self.MetricValueError(metric, self, msg, v, self.min_value, description)
+                msg = "{} {} {}".format(
+                    def_msg, int(self.min_value), unit_name)
+                description = description_tmpl.format(
+                    'at least', self.min_value, v)
+                raise self.MetricValueError(
+                    metric, self, msg, v, self.min_value, description)
         if self.max_value is not None:
             had_check = True
             if v > self.max_value:
-                msg = "{} {} {}".format(def_msg, int(self.max_value), unit_name)
-                description = description_tmpl.format('at most', self.min_value, v)
-                raise self.MetricValueError(metric, self, msg, v, self.max_value, description)
+                msg = "{} {} {}".format(
+                    def_msg, int(self.max_value), unit_name)
+                description = description_tmpl.format(
+                    'at most', self.min_value, v)
+                raise self.MetricValueError(
+                    metric, self, msg, v, self.max_value, description)
 
         if self.max_timeout is not None:
             had_check = True
@@ -1205,7 +1429,8 @@ class MetricNotificationCheck(models.Model):
                 actual_seconds = (valid_on - metric.valid_to).total_seconds()
                 msg = "{} {} seconds".format(def_msg, int(total_seconds))
                 description = description_tmpl.format('recored at most ',
-                                                      '{} seconds ago'.format(total_seconds),
+                                                      '{} seconds ago'.format(
+                                                          total_seconds),
                                                       '{} seconds'.format(actual_seconds))
                 raise self.MetricValueError(metric, self,
                                             msg,
@@ -1214,7 +1439,8 @@ class MetricNotificationCheck(models.Model):
                                             description
                                             )
         if not had_check:
-            raise ValueError("Metric check {} is not checking anything".format(self))
+            raise ValueError(
+                "Metric check {} is not checking anything".format(self))
 
     def check_metric(self, for_timestamp=None):
         """
@@ -1236,7 +1462,9 @@ class MetricNotificationCheck(models.Model):
         else:
             metrics = MetricValue.get_for(**qfilter)
         if not metrics:
-            raise ValueError("Cannot find metric values for {} on {}".format(self.metric, for_timestamp))
+            raise ValueError(
+                "Cannot find metric values for {} on {}".format(
+                    self.metric, for_timestamp))
         for m in metrics:
             self.check_value(m, for_timestamp)
         return True
@@ -1249,28 +1477,38 @@ class BuiltIns(object):
     metrics_rate = ('response.time', 'response.size',)
     # metrics_count = ('request.count', 'request.method', 'request.
 
-    geonode_metrics = ('request', 'request.count', 'request.ip', 'request.ua', 'request.path',
-                       'request.ua.family', 'request.method', 'response.error.count',
-                       'request.country', 'request.region', 'request.city',
-                       'response.time', 'response.status', 'response.size',
-                       'response.error.types',)
+    geonode_metrics = (
+        'request', 'request.count', 'request.ip', 'request.ua', 'request.path',
+        'request.ua.family', 'request.method', 'response.error.count',
+        'request.country', 'request.region', 'request.city',
+        'response.time', 'response.status', 'response.size',
+        'response.error.types',)
     host_metrics = ('load.1m', 'load.5m', 'load.15m',
                     'mem.free', 'mem.usage', 'mem.usage.percent', 'mem.buffers', 'mem.all',
                     'uptime', 'cpu.usage', 'cpu.usage.rate', 'cpu.usage.percent',
-                    'storage.free', 'storage.total', 'storage.used',  # mountpoint is the label
+                    'storage.free', 'storage.total', 'storage.used',
+                    # mountpoint is the label
                     'network.in', 'network.out', 'network.in.rate', 'network.out.rate',)
 
-    rates = ('response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m',
-             'load.15m', 'cpu.usage.rate', 'cpu.usage.percent', 'cpu.usage', 'mem.usage.percent',
-             'storage.free', 'storage.total', 'storage.used',)
+    rates = (
+        'response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m',
+        'load.15m', 'cpu.usage.rate', 'cpu.usage.percent', 'cpu.usage', 'mem.usage.percent',
+        'storage.free', 'storage.total', 'storage.used',)
 
     values = ('request.ip', 'request.ua', 'request.ua.family', 'request.path',
               'request.method', 'request.country', 'request.region',
               'request.city', 'response.status', 'response.ereror.types',)
 
-    values_numeric = ('storage.total', 'storage.used', 'storage.free', 'mem.free', 'mem.usage',
-                      'mem.buffers', 'mem.all',)
-    counters = ('request.count', 'network.in', 'network.out', 'response.error.count', 'uptime',)
+    values_numeric = (
+        'storage.total', 'storage.used', 'storage.free', 'mem.free', 'mem.usage',
+        'mem.buffers', 'mem.all',)
+    counters = (
+        'request.count',
+        'network.in',
+        'network.out',
+        'response.error.count',
+        'uptime',
+    )
 
     unit_seconds = ('response.time', 'uptime', 'cpu.usage',)
     unit_bytes = ('response.size', 'network.in', 'network.out',
@@ -1302,16 +1540,26 @@ def populate():
         for m in BuiltIns.geonode_metrics:
             _st = ServiceType.objects.get(name=st)
             _m = Metric.objects.get(name=m)
-            ServiceTypeMetric.objects.get_or_create(service_type=_st, metric=_m)
+            ServiceTypeMetric.objects.get_or_create(
+                service_type=_st, metric=_m)
     for st in BuiltIns.host_service_types:
         for m in BuiltIns.host_metrics:
             _st = ServiceType.objects.get(name=st)
             _m = Metric.objects.get(name=m)
-            ServiceTypeMetric.objects.get_or_create(service_type=_st, metric=_m)
-    Metric.objects.filter(name__in=BuiltIns.counters).update(type=Metric.TYPE_COUNT)
-    Metric.objects.filter(name__in=BuiltIns.rates).update(type=Metric.TYPE_RATE)
-    Metric.objects.filter(name__in=BuiltIns.values).update(type=Metric.TYPE_VALUE)
-    Metric.objects.filter(name__in=BuiltIns.values_numeric).update(type=Metric.TYPE_VALUE_NUMERIC)
+            ServiceTypeMetric.objects.get_or_create(
+                service_type=_st, metric=_m)
+    Metric.objects.filter(
+        name__in=BuiltIns.counters).update(
+        type=Metric.TYPE_COUNT)
+    Metric.objects.filter(
+        name__in=BuiltIns.rates).update(
+        type=Metric.TYPE_RATE)
+    Metric.objects.filter(
+        name__in=BuiltIns.values).update(
+        type=Metric.TYPE_VALUE)
+    Metric.objects.filter(
+        name__in=BuiltIns.values_numeric).update(
+        type=Metric.TYPE_VALUE_NUMERIC)
 
     for otype, otype_name in OWSService.OWS_TYPES:
         OWSService.objects.get_or_create(name=otype)
@@ -1331,6 +1579,9 @@ def populate():
         metric.description = d
         metric.save()
 
+    if not Service.objects.all():
+        do_autoconfigure()
+
 
 def do_autoconfigure():
     """
@@ -1347,7 +1598,8 @@ def do_autoconfigure():
     # default host
     hosts = [(wsite.hostname, gethostbyname(wsite.hostname),)]
     # default geonode
-    geonode_name = settings.MONITORING_SERVICE_NAME or '{}-geonode'.format(wsite.hostname)
+    geonode_name = settings.MONITORING_SERVICE_NAME or '{}-geonode'.format(
+        wsite.hostname)
     geonodes = [(geonode_name, settings.SITEURL, hosts[0])]
 
     geoservers = []
@@ -1379,32 +1631,58 @@ def do_autoconfigure():
     for geonode in geonodes:
         host_name = geonode[2][0]
         host_ip = geonode[2][1]
-        host = hosts_map.get(host_name) or Host.objects.create(name=host_name, ip=host_ip)
+        host = hosts_map.get(host_name) or Host.objects.create(
+            name=host_name, ip=host_ip)
+        host.save()
 
         try:
-            Service.objects.get(name=geonode[0])
+            service = Service.objects.get(name=geonode[0])
         except Service.DoesNotExist:
-            Service.objects.create(name=geonode[0], url=geonode[1], host=host, service_type=geonode_type)
+            service = Service.objects.create(
+                name=geonode[0],
+                url=geonode[1],
+                host=host,
+                service_type=geonode_type)
+        service.save()
 
         shost_name = '{}-hostgeonode'.format(host.name)
         try:
-            Service.objects.get(name=shost_name)
+            service = Service.objects.get(name=shost_name)
         except Service.DoesNotExist:
-            Service.objects.create(host=host, service_type=hostgeonode_type, url=geonode[1], name=shost_name)
+            service = Service.objects.create(
+                host=host,
+                service_type=hostgeonode_type,
+                url=geonode[1],
+                name=shost_name)
+        service.save()
 
     for geoserver in geoservers:
         host_name = geoserver[2][0]
         host_ip = geoserver[2][1]
-        host = hosts_map.get(host_name) or Host.objects.create(name=host_name, ip=host_ip)
+        host = hosts_map.get(host_name) or Host.objects.create(
+            name=host_name, ip=host_ip)
+        host.save()
+
         try:
-            Service.objects.get(name=geoserver[0])
+            service = Service.objects.get(name=geoserver[0])
         except Service.DoesNotExist:
-            Service.objects.create(name=geoserver[0], url=geoserver[1], host=host, service_type=geoserver_type)
+            service = Service.objects.create(
+                name=geoserver[0],
+                url=geoserver[1],
+                host=host,
+                service_type=geoserver_type)
+        service.save()
+
         shost_name = '{}-hostgeoserver'.format(host.name)
         try:
-            Service.objects.get(name=shost_name)
+            service = Service.objects.get(name=shost_name)
         except Service.DoesNotExist:
-            Service.objects.create(host=host, service_type=hostgeoserver_type, url=geoserver[1], name=shost_name)
+            service = Service.objects.create(
+                host=host,
+                service_type=hostgeoserver_type,
+                url=geoserver[1],
+                name=shost_name)
+        service.save()
 
     do_reload()
 

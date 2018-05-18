@@ -171,7 +171,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     context_dict["crs"] = getattr(
         settings,
         'DEFAULT_MAP_CRS',
-        'EPSG:900913')
+        'EPSG:3857')
 
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, map_obj)
@@ -347,7 +347,7 @@ def map_metadata(
         "category_form": category_form,
         "layers": layers,
         "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'geoext'),
-        "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
+        "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
         "metadata_author_groups": metadata_author_groups,
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
     })
@@ -462,7 +462,7 @@ def map_embed_widget(request, mapid,
     else:
         map_bbox = llbbox_to_mercator([float(coord) for coord in map_bbox])
 
-    if map_bbox is not None:
+    if map_bbox and len(map_bbox) >= 4:
         minx, miny, maxx, maxy = [float(coord) for coord in map_bbox]
         x = (minx + maxx) / 2
         y = (miny + maxy) / 2
@@ -802,7 +802,7 @@ def new_map_config(request):
 
         if 'layer' in params:
             map_obj = Map(projection=getattr(settings, 'DEFAULT_MAP_CRS',
-                                             'EPSG:900913'))
+                                             'EPSG:3857'))
             config = add_layers_to_map_config(
                 request, map_obj, params.getlist('layer'))
         else:
@@ -881,6 +881,7 @@ def add_layers_to_map_config(
                                  layer.owner.last_name) if layer.owner.first_name or layer.owner.last_name else str(
             layer.owner)
         srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
+        srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
         config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
         config["format"] = getattr(
             settings, 'DEFAULT_LAYER_FORMAT', 'image/png')
@@ -905,13 +906,19 @@ def add_layers_to_map_config(
                     "srs": srs,
                     "bbox": decimal_encode(
                         bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
-                                           target_srid=int(srs.split(":")[1]))[:4])
+                                           target_srid=srs_srid)[:4])
                 },
                 "EPSG:4326": {
                     "srs": "EPSG:4326",
                     "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
                     decimal_encode(bbox_to_projection(
                         [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4])
+                },
+                "EPSG:900913": {
+                    "srs": "EPSG:900913",
+                    "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:900913' else
+                    decimal_encode(bbox_to_projection(
+                        [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=3857)[:4])
                 }
             },
             "srs": {
@@ -940,30 +947,61 @@ def add_layers_to_map_config(
                 [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4])
         }
 
+        all_times = None
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            from geonode.geoserver.views import get_capabilities
+            workspace, layername = layer.alternate.split(
+                ":") if ":" in layer.alternate else (None, layer.alternate)
+            # WARNING Please make sure to have enabled DJANGO CACHE as per
+            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+            wms_capabilities_resp = get_capabilities(
+                request, layer.id, tolerant=True)
+            if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
+                wms_capabilities = wms_capabilities_resp.getvalue()
+                if wms_capabilities:
+                    import xml.etree.ElementTree as ET
+                    e = ET.fromstring(wms_capabilities)
+                    for atype in e.findall(
+                            "./[Name='%s']/Extent[@name='time']" % (layername)):
+                        dim_name = atype.get('name')
+                        if dim_name:
+                            dim_name = str(dim_name).lower()
+                            if dim_name == 'time':
+                                dim_values = atype.text
+                                if dim_values:
+                                    all_times = dim_values.split(",")
+                                    break
+            if all_times:
+                config["capability"]["dimensions"] = {
+                    "time": {
+                        "name": "time",
+                        "units": "ISO8601",
+                        "unitsymbol": None,
+                        "nearestVal": False,
+                        "multipleVal": False,
+                        "current": False,
+                        "default": "current",
+                        "values": all_times
+                    }
+                }
+
         if layer.storeType == "remoteStore":
             service = layer.remote_service
-            # Probably not a good idea to send the access token to every remote service.
-            # This should never match, so no access token should be
-            # sent to remote services.
-            ogc_server_url = urlparse.urlsplit(
-                ogc_server_settings.PUBLIC_LOCATION).netloc
-            service_url = urlparse.urlsplit(service.service_url).netloc
-
-            if access_token and ogc_server_url == service_url and 'access_token' not in service.service_url:
-                url = service.service_url + '?access_token=' + access_token
-            else:
-                url = service.service_url
+            source_params = {}
+            if service.type in ('REST_MAP', 'REST_IMG'):
+                source_params = {
+                    "ptype": service.ptype,
+                    "remote": True,
+                    "url": service.service_url,
+                    "name": service.name,
+                    "title": "[R] %s" % service.title}
             maplayer = MapLayer(map=map_obj,
                                 name=layer.alternate,
                                 ows_url=layer.ows_url,
                                 layer_params=json.dumps(config),
                                 visibility=True,
-                                source_params=json.dumps({
-                                    "ptype": service.ptype,
-                                    "remote": True,
-                                    "url": url,
-                                    "name": service.name,
-                                    "title": "[R] %s" % service.title}))
+                                source_params=json.dumps(source_params)
+            )
         else:
             ogc_server_url = urlparse.urlsplit(
                 ogc_server_settings.PUBLIC_LOCATION).netloc
@@ -984,7 +1022,7 @@ def add_layers_to_map_config(
 
         layers.append(maplayer)
 
-    if bbox is not None:
+    if bbox and len(bbox) >= 4:
         minx, maxx, miny, maxy = [float(coord) for coord in bbox]
         x = (minx + maxx) / 2
         y = (miny + maxy) / 2
@@ -992,7 +1030,7 @@ def add_layers_to_map_config(
         if getattr(
             settings,
             'DEFAULT_MAP_CRS',
-                'EPSG:900913') == "EPSG:4326":
+                'EPSG:3857') == "EPSG:4326":
             center = list((x, y))
         else:
             center = list(forward_mercator((x, y)))

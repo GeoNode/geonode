@@ -20,6 +20,8 @@
 
 import logging
 import time
+import json
+from datetime import datetime
 
 # from django.conf import settings
 from kombu.mixins import ConsumerMixin
@@ -28,6 +30,7 @@ from geonode.security.views import send_email_consumer  # , send_email_owner_on_
 # from geonode.social.signals import notification_post_save_resource2
 from geonode.layers.views import layer_view_counter
 from geonode.layers.models import Layer
+from geonode.geoserver.helpers import gs_slurp
 
 from queues import queue_email_events, queue_geoserver_events,\
                    queue_notifications_events, queue_all_events,\
@@ -39,6 +42,7 @@ logger = logging.getLogger(__package__)
 
 class Consumer(ConsumerMixin):
     def __init__(self, connection, messages_limit=None):
+        self.last_message = None
         self.connection = connection
         self.messages_limit = messages_limit
 
@@ -74,12 +78,12 @@ class Consumer(ConsumerMixin):
         logger.debug("finished.")
 
     def on_message(self, body, message):
-        # logger.debug("broadcast: RECEIVED MSG - body: %r" % (body,))
+        logger.debug("broadcast: RECEIVED MSG - body: %r" % (body,))
         message.ack()
         self._check_message_limit()
 
     def on_email_messages(self, body, message):
-        # logger.debug("on_email_messages: RECEIVED MSG - body: %r" % (body,))
+        logger.debug("on_email_messages: RECEIVED MSG - body: %r" % (body,))
         layer_uuid = body.get("layer_uuid")
         user_id = body.get("user_id")
         send_email_consumer(layer_uuid, user_id)
@@ -89,21 +93,24 @@ class Consumer(ConsumerMixin):
         self._check_message_limit()
 
     def on_geoserver_messages(self, body, message):
-        # logger.debug("on_geoserver_messages: RECEIVED MSG - body: %r" % (body,))
+        logger.debug("on_geoserver_messages: RECEIVED MSG - body: %r" % (body,))
         layer_id = body.get("id")
         try:
             layer = _wait_for_layer(layer_id)
         except Layer.DoesNotExist as err:
-            logger.exception(err)
+            logger.debug(err)
             return
+        # try:
         geoserver_post_save_local(layer)
+        # except Exception, err:
+        #     logger.error("Cannot handle geoserver message: %s", err, exc_info=err)
         # Not sure if we need to send ack on this fanout version.
         message.ack()
         logger.debug("on_geoserver_messages: finished")
         self._check_message_limit()
 
     def on_notifications_messages(self, body, message):
-        # logger.debug("on_notifications_message: RECEIVED MSG - body: %r" % (body,))
+        logger.debug("on_notifications_message: RECEIVED MSG - body: %r" % (body,))
         body.get("id")
         body.get("app_label")
         body.get("model")
@@ -114,35 +121,45 @@ class Consumer(ConsumerMixin):
         self._check_message_limit()
 
     def on_geoserver_all(self, body, message):
-        # logger.debug("on_geoserver_all: RECEIVED MSG - body: %r" % (body,))
+        logger.debug("on_geoserver_all: RECEIVED MSG - body: %r" % (body,))
         message.ack()
         logger.debug("on_geoserver_all: finished")
         # TODO:Adding consurmer's producers.
         self._check_message_limit()
 
     def on_geoserver_catalog(self, body, message):
-        # logger.debug("on_geoserver_catalog: RECEIVED MSG - body: %r" % (body,))
+        logger.debug("on_geoserver_catalog: RECEIVED MSG - body: %r" % (body,))
+        try:
+            _update_layer_data(body, self.last_message)
+            self.last_message = json.loads(body)
+        except:
+            logger.info("Could not encode message {!r}".format(body))
         message.ack()
         logger.debug("on_geoserver_catalog: finished")
         self._check_message_limit()
 
     def on_geoserver_data(self, body, message):
-        # logger.debug("on_geoserver_data: RECEIVED MSG - body: %r" % (body,))
+        logger.debug("on_geoserver_data: RECEIVED MSG - body: %r" % (body,))
+        try:
+            _update_layer_data(body, self.last_message)
+            self.last_message = json.loads(body)
+        except:
+            logger.info("Could not encode message {!r}".format(body))
         message.ack()
         logger.debug("on_geoserver_data: finished")
         self._check_message_limit()
 
     def on_consume_ready(self, connection, channel, consumers, **kwargs):
-        # logger.debug(">>> Ready:")
-        # logger.debug(connection)
-        # logger.debug("{} consumers:".format(len(consumers)))
-        # for i, consumer in enumerate(consumers, start=1):
-        #     logger.debug("{0} {1}".format(i, consumer))
+        logger.debug(">>> Ready:")
+        logger.debug(connection)
+        logger.debug("{} consumers:".format(len(consumers)))
+        for i, consumer in enumerate(consumers, start=1):
+            logger.debug("{0} {1}".format(i, consumer))
         super(Consumer, self).on_consume_ready(connection, channel, consumers,
                                                **kwargs)
 
     def on_layer_viewer(self, body, message):
-        # logger.debug("on_layer_viewer: RECEIVED MSG - body: %r" % (body,))
+        logger.debug("on_layer_viewer: RECEIVED MSG - body: %r" % (body,))
         viewer = body.get("viewer")
         # owner_layer = body.get("owner_layer")
         layer_id = body.get("layer_id")
@@ -154,6 +171,33 @@ class Consumer(ConsumerMixin):
         message.ack()
         logger.debug("on_layer_viewer: finished")
         self._check_message_limit()
+
+
+def _update_layer_data(body, last_message):
+    message = json.loads(body)
+    workspace = message["source"]["workspace"] if "workspace" in message["source"] else None
+    store = message["source"]["store"] if "store" in message["source"] else None
+    filter = message["source"]["name"]
+
+    update_layer = False
+    if not last_message:
+        last_message = message
+        update_layer = True
+    else:
+        last_workspace = message["source"]["workspace"] if "workspace" in message["source"] else None
+        last_store = message["source"]["store"] if "store" in message["source"] else None
+        last_filter = last_message["source"]["name"]
+        if (last_workspace, last_store, last_filter) != (workspace, store, filter):
+            update_layer = True
+        else:
+            timestamp_t1 = datetime.strptime(last_message["timestamp"], '%Y-%m-%dT%H:%MZ')
+            timestamp_t2 = datetime.strptime(message["timestamp"], '%Y-%m-%dT%H:%MZ')
+            timestamp_delta = timestamp_t2 - timestamp_t1
+            if timestamp_t2 > timestamp_t1 and timestamp_delta.seconds > 60:
+                update_layer = True
+
+    if update_layer:
+        gs_slurp(False, workspace=workspace, store=store, filter=filter, remove_deleted=True, execute_signals=True)
 
 
 def _wait_for_layer(layer_id, num_attempts=5, wait_seconds=1):

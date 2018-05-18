@@ -867,7 +867,7 @@ def style_list(layer, internal=True, generating_qgis_capabilities=False):
     except BaseException:
         msg = 'No QGIS Style for existing layer {0}'.format(layer.name)
         logger.debug(msg)
-        return None
+        raise
 
 
 def create_qgis_project(

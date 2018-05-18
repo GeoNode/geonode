@@ -41,7 +41,7 @@ from django.utils.encoding import (
 from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
 
-from geonode.base.models import TopicCategory, Region, License
+from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License
 from geonode.people.models import Profile
 from geonode.base.enumerations import ALL_LANGUAGES
 from django.contrib.auth.models import Group
@@ -108,11 +108,11 @@ class CategoryChoiceField(forms.ModelChoiceField):
 class TreeWidget(TaggitWidget):
     input_type = 'text'
 
-    def render(self, name, values, attrs=None):
-        if isinstance(values, basestring):
-            vals = values
-        elif values:
-            vals = ','.join([str(i.tag.name) for i in values])
+    def render(self, name, value, attrs=None):
+        if isinstance(value, basestring):
+            vals = value
+        elif value:
+            vals = ','.join([str(i.tag.name) for i in value])
         else:
             vals = ""
         output = ["""<div class="keywords-container"><span class="input-group">
@@ -146,7 +146,8 @@ class RegionsSelect(forms.Select):
     def render(self, name, value, attrs=None):
         if value is None:
             value = []
-        final_attrs = self.build_attrs(attrs, name=name)
+        final_attrs = self.build_attrs(attrs)
+        final_attrs["name"] = name
         output = [
             format_html(
                 '<select multiple="multiple"{}>',
@@ -201,7 +202,13 @@ class RegionsSelect(forms.Select):
 
     def render_options(self, selected_choices):
         # Normalize to strings.
-        selected_choices = set(force_text(v) for v in selected_choices)
+        def _region_id_from_choice(choice):
+            if isinstance(choice, int):
+                return choice
+            else:
+                return choice.id
+
+        selected_choices = set(force_text(_region_id_from_choice(v)) for v in selected_choices)
         output = []
 
         output.append(format_html('<optgroup label="{}">', 'Global'))
@@ -303,7 +310,7 @@ class ResourceBaseDateTimePicker(DateTimePicker):
         if extra_attrs:
             base_attrs.update(extra_attrs)
         base_attrs.update(kwargs)
-        return super(ResourceBaseDateTimePicker, self).build_attrs(**base_attrs)
+        return super(ResourceBaseDateTimePicker, self).build_attrs(base_attrs)
         # return base_attrs
 
 
@@ -392,16 +399,43 @@ class ResourceBaseForm(TranslationModelForm):
 
     def clean_keywords(self):
         import urllib
+        import HTMLParser
+
+        def unicode_escape(unistr):
+            """
+            Tidys up unicode entities into HTML friendly entities
+            Takes a unicode string as an argument
+            Returns a unicode string
+            """
+            import htmlentitydefs
+            escaped = ""
+            for char in unistr:
+                if ord(char) in htmlentitydefs.codepoint2name:
+                    name = htmlentitydefs.codepoint2name.get(ord(char))
+                    escaped += '&%s;' % name if 'nbsp' not in name else ' '
+                else:
+                    escaped += char
+            return escaped
 
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
-            _k = urllib.unquote(k.decode('utf-8')).decode('utf-8').split(",")
+            _k = urllib.unquote((u'%s' % k).encode('utf-8')).split(",")
             if not isinstance(_k, basestring):
                 for _kk in [x.strip() for x in _k]:
-                    _unsescaped_kwds.append(_kk)
+                    _kk = HTMLParser.HTMLParser().unescape(unicode_escape(_kk))
+                    # _hk = HierarchicalKeyword.objects.extra(where=["%s LIKE name||'%%'"], params=[_kk])
+                    _hk = HierarchicalKeyword.objects.filter(name__contains='%s' % _kk.strip())
+                    if _hk and len(_hk) > 0:
+                        _unsescaped_kwds.append(_hk[0])
+                    else:
+                        _unsescaped_kwds.append(_kk)
             else:
-                _unsescaped_kwds.append(_k)
+                _hk = HierarchicalKeyword.objects.filter(name__iexact=_k)
+                if _hk and len(_hk) > 0:
+                    _unsescaped_kwds.append(_hk[0])
+                else:
+                    _unsescaped_kwds.append(_k)
         return _unsescaped_kwds
 
     class Meta:

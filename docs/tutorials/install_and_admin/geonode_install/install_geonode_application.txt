@@ -38,7 +38,7 @@ packages
 
     $ sudo apt-get update
         
-    $ sudo apt-get install python-virtualenv python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk
+    $ sudo apt-get install python-virtualenv python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev git default-jdk
     $ sudo apt-get install build-essential openssh-server gettext nano vim unzip zip patch git-core postfix
 
     $ sudo apt-add-repository ppa:webupd8team/java
@@ -124,20 +124,26 @@ We are going to install GeoNode as a dependency of a **Customized DJango Project
 .. code-block:: bash
 
     $ pip install Django==1.8.18
-    $ django-admin.py startproject --template=https://github.com/GeoNode/geonode-project/archive/2.9.x-rev.zip -e py,rst,json,yml my_geonode
+    $ django-admin.py startproject --template=https://github.com/GeoNode/geonode-project/archive/2.8.0.zip -e py,rst,json,yml my_geonode
 
 Let's install the GeoNode dependencies and packages into the Python Virtual Environment:
 
 .. code-block:: bash
 
     $ cd my_geonode
+
+    # Find the closest pygdal version. 
+    # Example: 2.2.1 ...  2.2.1.3, ...
+    $ gdal-config --version && pip install pygdal==
+
     $ vim requirements.txt
-    # Make sure requirements contains reference to geonode master branch
-    -e git://github.com/GeoNode/geonode.git@master#egg=geonode
+    # Make sure requirements contains reference to geonode 2.8 branch
+    # and correct gdal version (see above)
+    -e git://github.com/GeoNode/geonode.git@2.8.0#egg=geonode
+    pygdal==2.2.1.3
 
     $ pip install -r requirements.txt
     $ pip install -e .
-    $ pip install pygdal==2.2.1.3
-    # The closest to your `gdal-config --version`
+
 
 In the next section we are going to setup PostgreSQL Databases for GeoNode and finalize the setup

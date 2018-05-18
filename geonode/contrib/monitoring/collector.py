@@ -29,7 +29,6 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 from django.utils.html import strip_tags
 from django.template.loader import get_template
-from django.template import Context
 from django.core.mail import EmailMultiAlternatives as EmailMessage
 from django.utils.translation import ugettext_noop as _
 from django.db.models import Max
@@ -548,10 +547,6 @@ class CollectorAPI(object):
         """
         Processes requests information into metric values
         """
-
-        utc = pytz.utc
-        valid_from = valid_from.replace(tzinfo=utc)
-        valid_to = valid_to.replace(tzinfo=utc)
         if not requests.count():
             return
         log.info("Processing batch of %s requests from %s to %s",
@@ -999,7 +994,7 @@ class CollectorAPI(object):
             ctx = {'recipient': {'username': email}}
             ctx.update(base_ctx)
             body_html = get_template(
-                'pinax/notifications/monitoring_alert/full.txt').render(Context(ctx))
+                'pinax/notifications/monitoring_alert/full.txt').render(ctx)
             body_plain = strip_tags(body_html)
 
             msg = EmailMessage(subject, body_plain, to=(email,))

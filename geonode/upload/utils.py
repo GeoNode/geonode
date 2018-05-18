@@ -55,7 +55,7 @@ iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012])
 _SUPPORTED_CRS = getattr(settings, 'UPLOADER', None)
 if _SUPPORTED_CRS:
     _SUPPORTED_CRS = _SUPPORTED_CRS.get('SUPPORTED_CRS',
-                                        ['EPSG:4326', 'EPSG:3857', 'EPSG:900913'])
+                                        ['EPSG:4326', 'EPSG:3857'])
 
 _SUPPORTED_EXT = getattr(settings, 'UPLOADER', None)
 if _SUPPORTED_EXT:
@@ -581,7 +581,8 @@ def run_import(upload_session, async=_ASYNC_UPLOAD):
         task.set_target(target.name, target.workspace.name)
     elif ogc_server_settings.datastore_db and task.target.store_type != 'coverageStore':
         target = create_geoserver_db_featurestore(
-            store_name=ogc_server_settings.DATASTORE,
+            # store_name=ogc_server_settings.DATASTORE,
+            store_name=ogc_server_settings.datastore_db['NAME']
         )
         _log(
             'setting target datastore %s %s',

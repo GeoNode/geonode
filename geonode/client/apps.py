@@ -26,3 +26,8 @@ class AppConfig(BaseAppConfig):
     name = "geonode.client"
     label = "geonode_client"
     verbose_name = _("GeoNode Client Library")
+
+    def ready(self):
+        """Connect relevant signals to their corresponding handlers"""
+        from .signals import (deactivate_theme_signal)  # noqa
+        super(AppConfig, self).ready()

@@ -2,6 +2,13 @@ sudo: required
 
 language: python
 
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
+
 python:
   - "2.7"
 
@@ -20,6 +27,13 @@ addons:
 
 env:
   - BACKEND: 'geonode.geoserver'
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTEGRATION: 'False'
+    MONITORING_ENABLED: 'False'
+  - BACKEND: 'geonode.geoserver'
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTEGRATION: 'True'
+    MONITORING_ENABLED: 'False'
   - BACKEND: 'geonode.qgis_server'
     DOCKER_COMPOSE_VERSION: 1.11.2
     # This is qgis server address
@@ -28,8 +42,22 @@ env:
     # So QGIS server can access this address
     SITEURL: http://localhost:8000/
     QGIS_SERVER_PORT: 9000
-    ON_TRAVIS: True
-    CELERY_ALWAYS_EAGER: True
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTEGRATION: 'False'
+    MONITORING_ENABLED: 'False'
+    CELERY_ALWAYS_EAGER: 'True'
+  - BACKEND: 'geonode.qgis_server'
+    DOCKER_COMPOSE_VERSION: 1.11.2
+    # This is qgis server address
+    QGIS_SERVER_URL: http://localhost:9000/
+    # This is the location of docker network bridge
+    # So QGIS server can access this address
+    SITEURL: http://localhost:8000/
+    QGIS_SERVER_PORT: 9000
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTEGRATION: 'True'
+    MONITORING_ENABLED: 'False'
+    CELERY_ALWAYS_EAGER: 'True'
 
 branches:
   only:
@@ -52,7 +80,7 @@ install:
   - sudo apt-get update
   - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 --no-install-recommends
   - sudo update-java-alternatives --set java-8-oracle
-  - pip install -r requirements.txt --no-deps
+  - pip install -r requirements.txt
   - pip install -e .
   - pip install pygdal==`gdal-config --version`
   - pip install codecov

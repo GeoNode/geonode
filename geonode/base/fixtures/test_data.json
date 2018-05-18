@@ -17,7 +17,7 @@
     },
     {
         "pk": 1,
-        "model": "auth.user",
+        "model": "people.Profile",
         "fields": {
             "username": "bobby",
             "first_name": "",
@@ -35,7 +35,7 @@
     },
     {
         "pk": 11,
-        "model": "auth.user",
+        "model": "people.Profile",
         "fields": {
             "username": "robert",
             "first_name": "",

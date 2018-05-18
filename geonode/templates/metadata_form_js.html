@@ -526,7 +526,12 @@
                 var formData = $(this).serializeArray();
                 formData.forEach(function(entry) {
                     try{
-                        if(entry["name"].contains("keywords")) {
+                        if((typeof entry["name"]) === "string" && 
+                            entry["name"].includes("keywords")) {
+                            entry["value"] = escape(entry["value"]);
+                        }
+                        else if((typeof entry["name"]) !== "string" && 
+                            entry["name"].contains("keywords")) {
                             entry["value"] = escape(entry["value"]);
                         }
                     }catch(err){
