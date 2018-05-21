@@ -1,6 +1,0 @@
-run.jar /usr/share/ringojs/
-lib/ /usr/share/ringojs/
-modules/ /usr/share/ringojs/
-tools/ /usr/share/ringojs/
-test/ /usr/share/ringojs/
-debian/usr/bin/ringo* /usr/bin/
