@@ -76,7 +76,7 @@ def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
             valid_extensions = validate_kml_zip(cleaned["base_file"])
         if not valid_extensions:
             # Let's check if the zip file contains any valid Raster Image
-            valid_extensions = validate_raster(cleaned["base_file"])
+            valid_extensions = validate_raster_zip(cleaned["base_file"])
         if not valid_extensions:
             # No suitable data have been found on the ZIP file; raise a ValidationError
             raise forms.ValidationError(
@@ -96,6 +96,8 @@ def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
             file_paths)
     elif base_ext.lower() == "kml":
         valid_extensions = validate_kml(uploaded_files)
+    elif base_ext.lower() in files._tif_extensions:
+        valid_extensions = validate_raster(uploaded_files)
     else:  # default behavior just assumes files are valid
         valid_extensions = []
         for field_name in field_spatial_types:
@@ -252,7 +254,10 @@ def validate_shapefile(zip_django_file):
     return valid_extensions
 
 
-def validate_raster(zip_django_file):
+def validate_raster(contents, allow_multiple=False):
+    def dupes(_a):
+        return set([x for x in _a if _a.count(x) > 1])
+
     valid_extensions = None
     raster_types = [t for t in files.types if t.layer_type == files.raster]
     raster_exts = [".%s" % t.code for t in raster_types]
@@ -260,11 +265,52 @@ def validate_raster(zip_django_file):
     for alias in [aliases for aliases in [t.aliases for t in raster_types] if aliases]:
         raster_aliases.extend([".%s" % a for a in alias])
     raster_exts.extend(raster_aliases)
+
+    raster_files = [
+        f for f in contents if os.path.splitext(str(f).lower())[1] in raster_exts]
+    other_files = [
+        f for f in contents if os.path.splitext(str(f).lower())[1] not in raster_exts]
+
+    all_extensions = [os.path.splitext(str(f))[1][1:] for f in raster_files]
+    other_extensions = tuple(set([os.path.splitext(str(f))[1][1:] for f in other_files]))
+    valid_extensions = tuple(set(all_extensions))
+    dup_extensions = tuple(dupes(all_extensions))
+    if dup_extensions:
+        geotiff_extensions = [
+            x for x in dup_extensions if x in files._tif_extensions]
+        mosaics_extensions = [
+            x for x in other_extensions if x in files._mosaics_extensions]
+        if mosaics_extensions:
+            return ("zip-mosaic",)
+        elif geotiff_extensions:
+            if not allow_multiple:
+                raise forms.ValidationError(
+                    _("You are trying to upload multiple GeoTIFFs without a valid 'indexer.properties' file."))
+            else:
+                return ("zip-mosaic",)
+        else:
+            raise forms.ValidationError(
+                _("Only one raster file per ZIP is allowed"))
+    else:
+        if valid_extensions:
+            if len(valid_extensions) > 1 and not allow_multiple:
+                raise forms.ValidationError(
+                    _("No multiple rasters allowed"))
+            else:
+                if not allow_multiple or 'sld' in other_extensions or 'xml' in other_extensions:
+                    return valid_extensions
+                else:
+                    return ("zip-mosaic",)
+        else:
+            return None
+
+
+def validate_raster_zip(zip_django_file):
+    valid_extensions = None
     with zipfile.ZipFile(zip_django_file) as zip_handler:
         contents = zip_handler.namelist()
-        raster_files = [
-            f for f in contents if os.path.splitext(f.lower())[1] in raster_exts]
-        if raster_files:
-            valid_extensions = tuple(set([os.path.splitext(f)[1][1:] for f in raster_files]))
-    if valid_extensions:
+        valid_extensions = validate_raster(contents, allow_multiple=True)
+    if valid_extensions and "zip-mosaic" not in valid_extensions:
         return ("zip",)
+    else:
+        return ("zip-mosaic",)

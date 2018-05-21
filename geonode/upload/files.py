@@ -118,12 +118,18 @@ class FileType(object):
 TYPE_UNKNOWN = FileType("unknown", None, None)
 
 _tif_extensions = ("tif", "tiff", "geotif", "geotiff")
+_mosaics_extensions = ("properties", "shp")
 
 types = [
     FileType("Shapefile", "shp", vector,
              auxillary_file_exts=('dbf', 'shx', 'prj')),
     FileType("GeoTIFF", _tif_extensions[0], raster,
              aliases=_tif_extensions[1:]),
+    FileType(
+        "ImageMosaic", "zip-mosaic", raster,
+        aliases=_tif_extensions[1:],
+        auxillary_file_exts=("properties", "aux") + _tif_extensions[1:]
+    ),
     FileType("ASCII Text File", "asc", raster,
              auxillary_file_exts=('prj')),
     # requires geoserver importer extension
