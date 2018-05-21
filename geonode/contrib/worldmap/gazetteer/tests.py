@@ -2,16 +2,16 @@ import json
 from lxml import etree
 from django.conf import settings
 from django.test import TestCase, Client
-from geonode.gazetteer.utils import getGazetteerEntry
+from .utils import getGazetteerEntry
 
 
 class GazetteerTest(TestCase):
 
-    fixtures = ['gazetteer_data.json'] if settings.USE_GAZETTEER else []
+    fixtures = ['gazetteer_data.json'] if settings.USE_WORLDMAP else []
 
 
     def test_get_gazetteer_entry(self):
-        if settings.USE_GAZETTEER:
+        if settings.USE_WORLDMAP:
             results = getGazetteerEntry(5)
             self.assertEquals(1, len(results))
             entry = results[0]
@@ -19,7 +19,7 @@ class GazetteerTest(TestCase):
             self.assertEquals("Paradise5", entry["placename"])
 
     def test_gazetteer_placename(self):
-        if settings.USE_GAZETTEER:
+        if settings.USE_WORLDMAP:
             c = Client()
             response = c.get("/gazetteer/Paradise2")
             placenames = json.loads(response.content)
@@ -27,7 +27,7 @@ class GazetteerTest(TestCase):
             self.assertEquals("Paradise2", placenames[0]["placename"])
 
     def test_gazetteer_placename_xml(self):
-        if settings.USE_GAZETTEER:
+        if settings.USE_WORLDMAP:
             c = Client()
             response = c.get("/gazetteer/Paradise2/xml")
             result_xml = etree.fromstring(response.content)
@@ -37,7 +37,7 @@ class GazetteerTest(TestCase):
             self.assertEquals("Paradise2", placenames[0].find("placename").text)
 
     def test_gazetteer_layer(self):
-        if settings.USE_GAZETTEER:
+        if settings.USE_WORLDMAP:
             c = Client()
             response = c.get("/gazetteer/Paradise/Layer/CA1")
             placenames = json.loads(response.content)
@@ -46,7 +46,7 @@ class GazetteerTest(TestCase):
             self.assertNotContains(response, text="base:CA2", html=False, status_code=200)
 
     def test_gazetteer_map(self):
-        if settings.USE_GAZETTEER:
+        if settings.USE_WORLDMAP:
             c = Client()
             response = c.get("/gazetteer/Paradise/Map/1")
             placenames = json.loads(response.content)
@@ -55,7 +55,7 @@ class GazetteerTest(TestCase):
             self.assertContains(response, text="base:CA2", html=False, status_code=200)
 
     def test_gazetteer_project(self):
-        if settings.USE_GAZETTEER:
+        if settings.USE_WORLDMAP:
             c = Client()
             response = c.get("/gazetteer/Paradise/Project/test")
             placenames = json.loads(response.content)
@@ -66,7 +66,7 @@ class GazetteerTest(TestCase):
         """
         Verify that only placenames that existed on or after the input date are returned
         """
-        if settings.USE_GAZETTEER:
+        if settings.USE_WORLDMAP:
             c = Client()
             response = c.get("/gazetteer/Paradise/StartDate/2011-07-21")
             placenames = json.loads(response.content)
@@ -78,7 +78,7 @@ class GazetteerTest(TestCase):
         """
         Verify that only placenames that existed on or after the input BC date are returned
         """
-        if settings.USE_GAZETTEER:
+        if settings.USE_WORLDMAP:
             c = Client()
             response = c.get("/gazetteer/Paradise/StartDate/2011-07-21 BC")
             placenames = json.loads(response.content)
@@ -90,7 +90,7 @@ class GazetteerTest(TestCase):
         """
         Verify that only placenames that existed on or before the input date are returned
         """
-        if settings.USE_GAZETTEER:
+        if settings.USE_WORLDMAP:
             c = Client()
             response = c.get("/gazetteer/Paradise/EndDate/2009-07-21")
             placenames = json.loads(response.content)
@@ -102,7 +102,7 @@ class GazetteerTest(TestCase):
         """
         Verify that only placenames that existed on or before the input BC date are returned
         """
-        if settings.USE_GAZETTEER:
+        if settings.USE_WORLDMAP:
             c = Client()
             response = c.get("/gazetteer/Paradise/EndDate/2013-08-20 BC")
             placenames = json.loads(response.content)

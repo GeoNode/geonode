@@ -2,6 +2,7 @@ import re
 import urllib
 import urlparse
 
+from django.conf import settings
 from django.db import models
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
@@ -32,53 +33,6 @@ ACTION_TYPES = [
 
 
 ows_sub = re.compile(r"[&\?]+SERVICE=WMS|[&\?]+REQUEST=GetCapabilities", re.IGNORECASE)
-DEFAULT_CONTENT=_(
-    '<h3>The Harvard WorldMap Project</h3>\
-  <p>WorldMap is an open source web mapping system that is currently\
-  under construction. It is built to assist academic research and\
-  teaching as well as the general public and supports discovery,\
-  investigation, analysis, visualization, communication and archiving\
-  of multi-disciplinary, multi-source and multi-format data,\
-  organized spatially and temporally.</p>\
-  <p>The first instance of WorldMap, focused on the continent of\
-  Africa, is called AfricaMap. Since its beta release in November of\
-  2008, the framework has been implemented in several geographic\
-  locations with different research foci, including metro Boston,\
-  East Asia, Vermont, Harvard Forest and the city of Paris. These web\
-  mapping applications are used in courses as well as by individual\
-  researchers.</p>\
-  <h3>Introduction to the WorldMap Project</h3>\
-  <p>WorldMap solves the problem of discovering where things happen.\
-  It draws together an array of public maps and scholarly data to\
-  create a common source where users can:</p>\
-  <ol>\
-  <li>Interact with the best available public data for a\
-  city/region/continent</li>\
-  <li>See the whole of that area yet also zoom in to particular\
-  places</li>\
-  <li>Accumulate both contemporary and historical data supplied by\
-  researchers and make it permanently accessible online</li>\
-  <li>Work collaboratively across disciplines and organizations with\
-  spatial information in an online environment</li>\
-  </ol>\
-  <p>The WorldMap project aims to accomplish these goals in stages,\
-  with public and private support. It draws on the basic insight of\
-  geographic information systems that spatiotemporal data becomes\
-  more meaningful as more "layers" are added, and makes use of tiling\
-  and indexing approaches to facilitate rapid search and\
-  visualization of large volumes of disparate data.</p>\
-  <p>WorldMap aims to augment existing initiatives for globally\
-  sharing spatial data and technology such as <a target="_blank" href="http://www.gsdi.org/">GSDI</a> (Global Spatial Data\
-  Infrastructure).WorldMap makes use of <a target="_blank" href="http://www.opengeospatial.org/">OGC</a> (Open Geospatial\
-  Consortium) compliant web services such as <a target="_blank" href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS</a> (Web\
-  Map Service), emerging open standards such as <a target="_blank" href="http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">WMS-C</a>\
-  (cached WMS), and standards-based metadata formats, to enable\
-  WorldMap data layers to be inserted into existing data\
-  infrastructures.&nbsp;<br>\
-  <br>\
-  All WorldMap source code will be made available as <a target="_blank" href="http://www.opensource.org/">Open Source</a> for others to use\
-  and improve upon.</p>'
-)
 
 class ExtLayer(models.Model):
     layer = models.OneToOneField(Layer)
@@ -91,38 +45,6 @@ class ExtLayer(models.Model):
     in_gazetteer = models.BooleanField(_('In Gazetteer?'), default=False)
     is_gaz_start_date = models.BooleanField(_('Gazetteer Start Date'), default=False)
     is_gaz_end_date = models.BooleanField(_('Gazetteer End Date'), default=False)
-
-    # join target: available only for layers within the DATAVERSE_DB
-    # def add_as_join_target(self):
-    #     if not self.id:
-    #         return 'n/a'
-    #     if self.store != settings.DB_DATAVERSE_NAME:
-    #         return 'n/a'
-    #     admin_url = reverse('admin:datatables_jointarget_add', args=())
-    #     add_as_target_link = '%s?layer=%s' % (admin_url, self.id)
-    #     return '<a href="%s">Add as Join Target</a>' % (add_as_target_link)
-    # add_as_join_target.allow_tags = True
-    #
-    # @property
-    # def is_remote(self):
-    #     return self.storeType == "remoteStore"
-    #
-    # @property
-    # def service(self):
-    #     """Get the related service object dynamically
-    #     """
-    #     service_layers = self.servicelayer_set.all()
-    #     if len(service_layers) == 0:
-    #         return None
-    #     else:
-    #         return service_layers[0].service
-    #
-
-    # def queue_gazetteer_update(self):
-    #     from geonode.queue.models import GazetteerUpdateJob
-    #     if GazetteerUpdateJob.objects.filter(layer=self.id).exists() == 0:
-    #         newJob = GazetteerUpdateJob(layer=self)
-    #         newJob.save()
 
     def update_gazetteer(self):
         from geonode.contrib.worldmap.gazetteer.utils import add_to_gazetteer, delete_from_gazetteer
@@ -156,11 +78,6 @@ class ExtLayer(models.Model):
                              project=self.gazetteer_project,
                              user=self.layer.owner.username)
 
-    # this must be added in a pre-delete signal
-    # if settings.USE_GAZETTEER and instance.in_gazetteer:
-    #     instance.in_gazetteer = False
-    #     instance.update_gazetteer()
-
 
 class ExtLayerAttribute(models.Model):
     attribute = models.OneToOneField(
@@ -175,7 +92,7 @@ class ExtLayerAttribute(models.Model):
 
 class ExtMap(models.Model):
     map = models.OneToOneField(Map)
-    content_map = models.TextField(_('Site Content'), blank=True, null=True, default=DEFAULT_CONTENT)
+    content_map = models.TextField(_('Site Content'), blank=True, null=True, default=settings.DEFAULT_MAP_ABSTRACT)
     group_params = models.TextField(_('Layer Category Parameters'), blank=True)
 
 class MapStats(models.Model):

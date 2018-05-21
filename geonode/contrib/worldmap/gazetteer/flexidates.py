@@ -76,10 +76,13 @@ class FlexiDateField(models.Field):
         return super(FlexiDateField, self).formfield(**defaults)
 
 def parse_flex_date(dateString):
-    from datautil.date import DateutilDateParser
-    parser = DateutilDateParser()
+    # from datautil.date import DateutilDateParser
+    from dateutil.parser import parse
+    # parser = DateutilDateParser()
+    # TODO fix this, fails with this error "AttributeError: 'tuple' object has no attribute 'year'"
     if dateString is not None and len(dateString) > 0:
-        return parser.parse(dateString)
+        #return parser.parse(dateString)
+        return parse(dateString)
     return None
 
 def parse_julian_date(dateString):

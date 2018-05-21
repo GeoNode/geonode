@@ -171,7 +171,10 @@ def resource_urls(request):
         OGC_SERVER=getattr(settings, 'OGC_SERVER', None),
     )
     if settings.USE_WORLDMAP:
-        defaults['GEONODE_CLIENT_LOCATION'] = settings.GEONODE_CLIENT_LOCATION
+        defaults['GEONODE_CLIENT_LOCATION'] = getattr(
+            settings,
+            'GEONODE_CLIENT_LOCATION',
+            '/static/worldmap/worldmap_client/')
         # TODO disable DB_DATASTORE setting
         defaults['DB_DATASTORE'] = True
         defaults['HYPERMAP_REGISTRY_URL'] = settings.HYPERMAP_REGISTRY_URL

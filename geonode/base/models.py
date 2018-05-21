@@ -1382,7 +1382,7 @@ def do_login(sender, user, request, **kwargs):
                 application=app,
                 expires=datetime.datetime.now(timezone.get_current_timezone()) +
                 datetime.timedelta(
-                    days=30),
+                    days=1),
                 token=token)
         except BaseException:
             u = uuid.uuid1()

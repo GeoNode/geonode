@@ -35,7 +35,6 @@ from geonode.utils import build_social_links
 from geonode.security.views import _perms_info_json
 
 from .models import LayerStats, ExtLayerAttribute
-from .models import DEFAULT_CONTENT
 from .forms import EndpointForm
 from .encode import despam, XssCleaner
 
@@ -783,7 +782,7 @@ def gxp2wm(config, map_obj=None):
             config["map"]["groups"] = uniqifydict(json.loads(map_obj.extmap.group_params), 'group')
     else:
         # TODO check if this works with different languages
-        config['about']['introtext'] = unicode(DEFAULT_CONTENT)
+        config['about']['introtext'] = unicode(settings.DEFAULT_MAP_ABSTRACT)
 
     # make sure if gnsource is in sources
     add_gnsource = True
