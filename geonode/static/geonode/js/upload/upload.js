@@ -91,19 +91,19 @@ define(['underscore',
                     $.merge(info.files, files[name]);
                     info.displayFiles();
                 } else {
-                    if (Object.keys(layers).length == 0) {
+                    // if (Object.keys(layers).length == 0) {
                         info = new LayerInfo({
                             name: name,
                             files: files[name]
                         });
                         info.collectErrors();
                         layers[name] = info;
-                    } else {
+                    /* } else {
                         log_error({
                             title: 'Wrong selection',
                             message: gettext('Only one File at a time can be uploaded!')
                         });
-                    }
+                    } */
                 }
             }
         }

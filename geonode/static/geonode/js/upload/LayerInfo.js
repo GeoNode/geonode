@@ -328,6 +328,10 @@ define(function (require, exports) {
     };
 
     LayerInfo.prototype.doResume = function (event) {
+        $(this).text('Done').attr('disabled','disabled');
+        var id = (new Date()).getTime();
+	    var newWin = window.open(window.location.href,
+                id, "toolbar=1,scrollbars=1,location=0,statusbar=0,menubar=1,resizable=1,width=800,height=600,left = 240,top = 212");
         common.make_request({
             url: event.data.url,
             async: true,
@@ -340,9 +344,13 @@ define(function (require, exports) {
             },
             success: function (resp, status) {
                 if(resp.url && resp.input_required){
-                    window.location = resp.url;
+                    // window.location = resp.url;
+                    newWin.location = resp.url;
+                    newWin.focus();
                 }else {
-                    window.location = resp.redirect_to;
+                    // window.location = resp.redirect_to;
+                    newWin.location = resp.redirect_to;
+                    newWin.focus();
                 }
             },
         });
@@ -447,7 +455,7 @@ define(function (require, exports) {
         } else if (resp.status === "incomplete") {
             var id = common.parseQueryString(resp.url).id;
             var element = 'next_step_' + id
-            var a = '<a id="' + element + '" class="btn btn-primary" target="_new">Continue</a>';
+            var a = '<a id="' + element + '" class="btn btn-primary" target="_blank">Continue</a>';
             var msg = '<p>' + gettext('Files are ready to be ingested!')
 
             if (resp.redirect_to.indexOf('time') !== -1 || resp.url.indexOf('time') !== -1) {
