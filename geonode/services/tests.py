@@ -303,7 +303,6 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             'url': url,
             'type': service_type
         }
-
         form = forms.CreateServiceForm(form_data)
         self.assertTrue(form.is_valid())
 
@@ -315,11 +314,27 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(s.owner, self.test_user)
 
         self.client.login(username='serviceuser', password='somepassword')
+        response = self.client.post(reverse('edit_service', args=(s.id,)))
+        self.failUnlessEqual(response.status_code, 401)
         response = self.client.post(reverse('remove_service', args=(s.id,)))
         self.failUnlessEqual(response.status_code, 401)
         self.failUnlessEqual(len(Service.objects.all()), 1)
 
         self.client.login(username='serviceowner', password='somepassword')
-        response = self.client.post(reverse('remove_service', args=(s.id,)))
+        form_data = {
+            'service-title': 'Foo Title',
+            'service-description': 'Foo Description',
+            'service-abstract': 'Foo Abstract',
+            'service-keywords': 'Foo, Service, OWS'
+        }
+        form = forms.ServiceForm(form_data, instance=s, prefix="service")
+        self.assertTrue(form.is_valid())
 
+        response = self.client.post(reverse('edit_service', args=(s.id,)), data=form_data)
+        self.assertEqual(s.title, 'Foo Title')
+        self.assertEqual(s.description, 'Foo Description')
+        self.assertEqual(s.abstract, 'Foo Abstract')
+        self.assertEqual([u'Foo', u'OWS', u'Service'],
+                         list(s.keywords.all().values_list('name', flat=True)))
+        response = self.client.post(reverse('remove_service', args=(s.id,)))
         self.failUnlessEqual(len(Service.objects.all()), 0)

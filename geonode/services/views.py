@@ -314,25 +314,29 @@ def edit_service(request, service_id):
     """
     Edit an existing Service
     """
-    service_obj = get_object_or_404(Service, pk=service_id)
-
+    service = get_object_or_404(Service, pk=service_id)
+    if request.user != service.owner and not request.user.has_perm('change_service', obj=service):
+        return HttpResponse(
+            loader.render_to_string(
+                '401.html', context={
+                        'error_message': _(
+                            "You are not permitted to change this service."
+                        )}, request=request), status=401)
     if request.method == "POST":
         service_form = forms.ServiceForm(
-            request.POST, instance=service_obj, prefix="service")
+            request.POST, instance=service, prefix="service")
         if service_form.is_valid():
-            service_obj = service_form.save(commit=False)
-            service_obj.keywords.clear()
-            service_obj.keywords.add(*service_form.cleaned_data['keywords'])
-            service_obj.save()
-
-            return HttpResponseRedirect(service_obj.get_absolute_url())
+            service = service_form.save(commit=False)
+            service.keywords.clear()
+            service.keywords.add(*service_form.cleaned_data['keywords'])
+            service.save()
+            return HttpResponseRedirect(service.get_absolute_url())
     else:
         service_form = forms.ServiceForm(
-            instance=service_obj, prefix="service")
-
+            instance=service, prefix="service")
     return render(request,
                   "services/service_edit.html",
-                  context={"service": service_obj, "service_form": service_form})
+                  context={"service": service, "service_form": service_form})
 
 
 @login_required

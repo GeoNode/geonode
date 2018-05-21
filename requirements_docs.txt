@@ -154,6 +154,7 @@ SQLAlchemy==1.1.14
 tablib==0.12.1
 timeout-decorator==0.4.0
 transifex-client==0.12.4
+tqdm==4.23.3
 typing==3.6.4
 ua-parser==0.7.3
 unicodecsv==0.14.1
