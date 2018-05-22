@@ -133,19 +133,19 @@ Ext.onReady(function() {
 
     {% get_obj_perms request.user for service as "resource_perms" %}
 
-    {% if "change_service" in resource_perms or "remove_service" in resource_perms or "change_service_permissions" in resource_perms %}
+    {% comment %}{% if "change_service" in resource_perms or "remove_service" in resource_perms or "change_service_permissions" in resource_perms %}{% endcomment %}
     <ul class="list-group">
         <li class="list-group-item"><h3>{% trans "Manage" %}</h3></li>
 
-        {% if "change_service" in resource_perms %}
+        {% comment %}{% if "change_service" in resource_perms %}{% endcomment %}
             <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "edit_service" service.id %}">{% trans "Edit Service Metadata" %}</a></li>
             <li class="list-group-item"><a id="harvestResources" class="btn btn-default btn-md btn-block" href="{% url "harvest_resources" service.id %}">{% trans "Import Service Resources" %}</a></li>
-        {% endif %}
-        {% if  "remove_service" or "delete_service" in resource_perms %}
+        {% comment %}{% endif %}{% endcomment %}
+        {% comment %}{% if "remove_service" or "delete_service" in resource_perms %}{% endcomment %}
             <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "remove_service" service.id %}">{% trans "Remove Service" %}</a></li>
-        {% endif %}
+        {% comment %}{% endif %}{% endcomment %}
       </ul>
-    {% endif %}
+    {% comment %}{% endif %}{% endcomment %}
 {% endblock %}
 {% block extra_script %}
     {{ block.super }}

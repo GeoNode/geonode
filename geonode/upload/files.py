@@ -118,12 +118,18 @@ class FileType(object):
 TYPE_UNKNOWN = FileType("unknown", None, None)
 
 _tif_extensions = ("tif", "tiff", "geotif", "geotiff")
+_mosaics_extensions = ("properties", "shp")
 
 types = [
     FileType("Shapefile", "shp", vector,
              auxillary_file_exts=('dbf', 'shx', 'prj')),
     FileType("GeoTIFF", _tif_extensions[0], raster,
              aliases=_tif_extensions[1:]),
+    FileType(
+        "ImageMosaic", "zip-mosaic", raster,
+        aliases=_tif_extensions[1:],
+        auxillary_file_exts=("properties", "aux") + _tif_extensions[1:]
+    ),
     FileType("ASCII Text File", "asc", raster,
              auxillary_file_exts=('prj')),
     # requires geoserver importer extension
@@ -233,9 +239,11 @@ def get_scan_hint(valid_extensions):
     either vector or raster formats, like the KML type.
 
     """
-
-    if "kml" in valid_extensions and len(valid_extensions) > 1:
-        result = "kml-overlay"
+    if "kml" in valid_extensions:
+        if len(valid_extensions) == 2 and valid_extensions[1] == 'sld':
+            result = "kml"
+        else:
+            result = "kml-overlay"
     elif "kmz" in valid_extensions:
         result = "kmz"
     else:
@@ -257,6 +265,7 @@ def scan_file(file_name, scan_hint=None):
         safe_paths = _rename_files(paths)
     else:
         safe_paths = []
+
     found = []
     for file_type in types:
         for path in safe_paths:

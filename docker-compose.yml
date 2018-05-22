@@ -55,6 +55,17 @@ services:
     env_file:
       - ./scripts/docker/env/production/celery.env
 
+  data-dir-conf:
+    image: geonode/geoserver_data:2.13.x
+    restart: on-failure
+    container_name: gsconf4${COMPOSE_PROJECT_NAME}
+    labels:
+        org.geonode.component: conf
+        org.geonode.instance.name: geonode
+    command: /bin/true
+    volumes:
+      - geoserver-data-dir:/geoserver_data/data
+
   geoserver:
     image: geonode/geoserver:2.13.x
     restart: unless-stopped
@@ -68,6 +79,7 @@ services:
       - db
       # - elasticsearch
       - rabbitmq
+      - data-dir-conf
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - geoserver-data-dir:/geoserver_data/data
@@ -109,17 +121,6 @@ services:
       - geoserver
     ports:
       - "80:80"
-
-  data-dir-conf:
-    image: geonode/geoserver_data:2.13.x
-    restart: on-failure
-    container_name: gsconf4${COMPOSE_PROJECT_NAME}
-    labels:
-        org.geonode.component: conf
-        org.geonode.instance.name: geonode
-    command: /bin/true
-    volumes:
-      - geoserver-data-dir:/geoserver_data/data
 
 volumes:
   geoserver-data-dir:
