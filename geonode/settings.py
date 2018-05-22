@@ -1565,7 +1565,9 @@ GEOTIFF_IO_BASE_URL = os.getenv(
 USE_WORLDMAP = True
 
 if USE_WORLDMAP:
+    GEONODE_CLIENT_LOCATION = '/static/worldmap_client/'
     INSTALLED_APPS += (
+            'geoexplorer-worldmap',
             'geonode.contrib.worldmap.gazetteer',
             'geonode.contrib.worldmap.queue',
             'geonode.contrib.worldmap.wm_extra',
