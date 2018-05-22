@@ -54,9 +54,9 @@ from geonode.geoserver.signals import gs_catalog
 from .tasks import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info
 from geoserver.catalog import FailedRequestError, ConflictingDataError
-from .helpers import (get_stores, ogc_server_settings,
-                      extract_name_from_sld, set_styles, style_update,
-                      create_gs_thumbnail, _invalidate_geowebcache_layer)
+from .helpers import (get_stores, ogc_server_settings, extract_name_from_sld, set_styles,
+                      style_update, create_gs_thumbnail,
+                      _stylefilterparams_geowebcache_layer, _invalidate_geowebcache_layer)
 
 from django_basic_auth import logged_in_or_basicauth
 from django.views.decorators.csrf import csrf_exempt
@@ -123,6 +123,13 @@ def layer_style(request, layername):
         s for s in layer.styles if s.name != style_name] + [old_default]
     layer.save()
 
+    # Invalidate GeoWebCache for the updated resource
+    try:
+        _stylefilterparams_geowebcache_layer(layer.alternate)
+        _invalidate_geowebcache_layer(layer.alternate)
+    except:
+        pass
+
     return HttpResponse(
         "Default style for %s changed to %s" %
         (layer.name, style_name), status=200)
@@ -188,8 +195,14 @@ def layer_style_upload(request, layername):
         except ConflictingDataError:
             return respond(errors="""A layer with this name exists. Select
                                      the update option if you want to update.""")
+
     # Invalidate GeoWebCache for the updated resource
-    _invalidate_geowebcache_layer(layer.alternate)
+    try:
+        _stylefilterparams_geowebcache_layer(layer.alternate)
+        _invalidate_geowebcache_layer(layer.alternate)
+    except:
+        pass
+
     return respond(
         body={
             'success': True,
@@ -302,10 +315,14 @@ def layer_style_manage(request, layername):
                 cat.save(gs_layer)
 
             # Save to Django
-            layer = set_styles(layer, cat)
+            set_styles(layer, cat)
 
             # Invalidate GeoWebCache for the updated resource
-            _invalidate_geowebcache_layer(layer.alternate)
+            try:
+                _stylefilterparams_geowebcache_layer(layer.alternate)
+                _invalidate_geowebcache_layer(layer.alternate)
+            except:
+                pass
 
             return HttpResponseRedirect(
                 reverse(
