@@ -1621,7 +1621,12 @@ def set_time_info(layer, attribute, end_attribute, presentation,
     layer = gs_catalog.get_layer(layer.name)
     if layer is None:
         raise ValueError('no such layer: %s' % layer.name)
-    resource = layer.resource
+    resource = layer.resource if layer else None
+    if not resource:
+        resources = gs_catalog.get_resources(store=layer.name)
+        if resources:
+            resource = resources[0]
+
     resolution = None
     if precision_value and precision_step:
         resolution = '%s %s' % (precision_value, precision_step)
@@ -1632,6 +1637,7 @@ def set_time_info(layer, attribute, end_attribute, presentation,
     else:
         metadata = dict({})
     metadata['time'] = info
+
     if resource and resource.metadata:
         resource.metadata = metadata
     if resource:
@@ -1648,7 +1654,12 @@ def get_time_info(layer):
     layer = gs_catalog.get_layer(layer.name)
     if layer is None:
         raise ValueError('no such layer: %s' % layer.name)
-    resource = layer.resource
+    resource = layer.resource if layer else None
+    if not resource:
+        resources = gs_catalog.get_resources(store=layer.name)
+        if resources:
+            resource = resources[0]
+
     info = resource.metadata.get('time', None) if resource.metadata else None
     vals = None
     if info:
@@ -1777,10 +1788,11 @@ def mosaic_delete_first_granule(cat, layer):
     cat.mosaic_delete_granule(coverages['coverages']['coverage'][0]['name'], store, granule_id)
 
 
-def set_time_dimension(cat, layer, time_presentation, time_presentation_res, time_presentation_default_value,
+def set_time_dimension(cat, name, workspace, time_presentation, time_presentation_res, time_presentation_default_value,
                        time_presentation_reference_value):
     # configure the layer time dimension as LIST
     cat._cache.clear()
+    # cat.reload()
 
     presentation = time_presentation
     if not presentation:
@@ -1797,7 +1809,17 @@ def set_time_dimension(cat, layer, time_presentation, time_presentation_res, tim
     timeInfo = DimensionInfo("time", "true", presentation, resolution, "ISO8601", None, attribute="time",
                              strategy=strategy, reference_value=time_presentation_reference_value)
 
-    resource = cat.get_layer(layer).resource
+    layer = cat.get_layer(name)
+    resource = layer.resource if layer else None
+    if not resource:
+        resources = cat.get_resources(store=name) or cat.get_resources(store=name, workspace=workspace)
+        if resources:
+            resource = resources[0]
+
+    if not resource:
+        logger.exception("No resource could be found on GeoServer with name %s" % name)
+        raise Exception("No resource could be found on GeoServer with name %s" % name)
+
     resource.metadata = {'time': timeInfo}
     cat.save(resource)
 
