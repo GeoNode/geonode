@@ -1,7 +1,10 @@
 {% extends "maps/map_base.html" %}
 {% load i18n %}
+{% load staticfiles %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
+{% load bootstrap_tags %}
+{% load pagination_tags %}
 {% load base_tags %}
 {% load guardian_tags %}
 {% load client_lib_tags %}
@@ -314,116 +317,111 @@
 
 {% block extra_script %}
 {{ block.super }}
-{% if DISPLAY_SOCIAL %}
-    {% include 'facebook_sdk.html' %}
-{% endif %}
-{% if request.user.is_authenticated %}
-      {% user_rating_js request.user resource "map" %}
-{% else %}
-      {% overall_rating resource "map" as the_map_rating %}
-{% endif %}
-{% include 'rating.html' %}
-<script type="text/javascript">
-    $(document).ready(function () {
-        post_url = '{% url 'map_embed_widget' resource.id %}';
-        var formatted_data = "";
-        $.post(post_url, function (data) {
-            data = data.split("\n");
-            data_row = data.length;
-            for (var i=0; i < data_row;i++) {
-                formatted_data += data[i] + "\n";
-            }
-            $('#embed-widget-body').text(formatted_data);
+    {% if DISPLAY_SOCIAL %}
+        {% include 'facebook_sdk.html' %}
+    {% endif %}
+    {% if request.user.is_authenticated %}
+          {% user_rating_js request.user resource "map" %}
+    {% else %}
+          {% overall_rating resource "map" as the_map_rating %}
+    {% endif %}
+    {% include 'rating.html' %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            post_url = '{% url 'map_embed_widget' resource.id %}';
+            var formatted_data = "";
+            $.post(post_url, function (data) {
+                data = data.split("\n");
+                data_row = data.length;
+                for (var i=0; i < data_row;i++) {
+                    formatted_data += data[i] + "\n";
+                }
+                $('#embed-widget-body').text(formatted_data);
+            });
         });
-    });
-    var clipboard = new Clipboard('.btn');
-    clipboard.on('success', function(e) {
-        alert("Code copied");
-    });
-    clipboard.on('error', function(e) {
-        alert("Oops.. something went wrong");
-    });
- $(function() {
-
-  {% verbatim %}
-  // Publish layer group
-  // TODO: this should really not be inside a script tag...
-  var $wmsBtn = $("#layer-group"),
-      layerGroupElTpl;
-
-  if ($wmsBtn.length > 0) {
-
-    $wmsBtn.on("click", function(event) {
-      event.preventDefault();
-
-      $.ajax({
-        type: "PUT",
-        url: $wmsBtn.attr("href")
-      })
-
-        .done(function(data) {
-          layerGroupElTpl = "<dt>WMS layer group for local map layers:</dt> \
-            <dd><em>{{layerGroupName}}</em> (on <a href='{{ows}}?service=WMS&request=GetCapabilities'>local OWS</a>)</dd>";
-          $.each(data, function(key, value) {
-            // client-side template hack
-            layerGroupElTpl = layerGroupElTpl.replace("{{"+ key + "}}", value);
-          });
-        })
-
-        .fail(function(){
-          layerGroupElTpl = "<dt>Error:</dt> \
-            <dd>Layer group could not be created.</dd>";
-        })
-
-        .always(function(){
-          $("#layer-group-dl").html(layerGroupElTpl);
+        var clipboard = new Clipboard('.btn');
+        clipboard.on('success', function(e) {
+            alert("Code copied");
         });
+        clipboard.on('error', function(e) {
+            alert("Oops.. something went wrong");
+        });
+     $(function() {
+      {% verbatim %}
+      // Publish layer group
+      // TODO: this should really not be inside a script tag...
+      var $wmsBtn = $("#layer-group"),
+          layerGroupElTpl;
 
-    });
-  };
-  {% endverbatim %}
+      if ($wmsBtn.length > 0) {
 
+        $wmsBtn.on("click", function(event) {
+          event.preventDefault();
 
- });
-{% if DISPLAY_SOCIAL %}
- (function() {
-   var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-   po.src = 'https://apis.google.com/js/plusone.js';
-   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
- })();
-{% endif %}
-  $("#comment_submit_btn").click(function(event) {
-    $.ajax({
-      type: "POST",
-      url: $("#form_post_comment").attr('action'),
-      data: $("#form_post_comment").serialize(),
-      success: function() {
-        $('#form_post_comment_div').modal().find('form')[0].reset();
-        $('#form_post_comment_div').modal('hide');
-        $('#comments_section').load(window.location.pathname + ' #comments_section',
-        		function(){$(this).children().unwrap()})
-      }
-    });
-    return false;
-  });
+          $.ajax({
+            type: "PUT",
+            url: $wmsBtn.attr("href")
+          })
+            .done(function(data) {
+              layerGroupElTpl = "<dt>WMS layer group for local map layers:</dt> \
+                <dd><em>{{layerGroupName}}</em> (on <a href='{{ows}}?service=WMS&request=GetCapabilities'>local OWS</a>)</dd>";
+              $.each(data, function(key, value) {
+                // client-side template hack
+                layerGroupElTpl = layerGroupElTpl.replace("{{"+ key + "}}", value);
+              });
+            })
+            .fail(function(){
+              layerGroupElTpl = "<dt>Error:</dt> \
+                <dd>Layer group could not be created.</dd>";
+            })
+            .always(function(){
+              $("#layer-group-dl").html(layerGroupElTpl);
+            });
 
-</script>
-{% include "_permissions_form_js.html" %}
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
-<script type="text/javascript">
-  $('#set_thumbnail').click(function(){
-    createMapThumbnail();
-    $('#edit-map').modal('toggle');
-  });
-  $('#embed-map-list li').click(function(){
-    if ($(this).attr('id') === 'embed-iframe-link')
-    {
-        $('#embed-iframe').modal('toggle');
-    }
-    else if ($(this).attr('id') === 'embed-widget-link') {
-        $('#embed-widget').modal('toggle');
-    }
-  });
-</script>
+        });
+      };
+      {% endverbatim %}
+     });
+    {% if DISPLAY_SOCIAL %}
+     (function() {
+       var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+       po.src = 'https://apis.google.com/js/plusone.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+     })();
+    {% endif %}
+      $("#comment_submit_btn").click(function(event) {
+        $.ajax({
+          type: "POST",
+          url: $("#form_post_comment").attr('action'),
+          data: $("#form_post_comment").serialize(),
+          success: function() {
+            $('#form_post_comment_div').modal().find('form')[0].reset();
+            $('#form_post_comment_div').modal('hide');
+            $('#comments_section').load(window.location.pathname + ' #comments_section',
+            		function(){$(this).children().unwrap()})
+          }
+        });
+        return false;
+      });
+    </script>
 
-{% endblock %}
+    {% block thumbnail_script %}
+        <script type="text/javascript">
+            {% if preview == 'react' %}
+            $('#set_thumbnail').click(function(){
+              window.setThumbnail({{resource.id}})
+              $('#edit-layer').modal('toggle');
+            });
+            {% else %}
+            $('#set_thumbnail').click(function(){
+              createMapThumbnail();
+              $('#edit-layer').modal('toggle');
+            });
+            {% endif %}
+        </script>
+    {% endblock thumbnail_script %}
+
+    {% if GEONODE_SECURITY_ENABLED %}
+    {% include "_permissions_form_js.html" %}
+    {% endif %}
+{% endblock extra_script %}

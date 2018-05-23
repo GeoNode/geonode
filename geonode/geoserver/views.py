@@ -793,7 +793,7 @@ def get_capabilities(request, layerid=None, user=None,
         alternates = []
         for layer in map_obj.layers:
             if layer.local:
-                alternates.append(layer.alternate)
+                alternates.append(layer.name)
         layers = Layer.objects.filter(alternate__in=alternates)
 
     for layer in layers:
