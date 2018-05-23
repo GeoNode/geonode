@@ -38,7 +38,7 @@ django-celery-results==1.0.1
 django-cors-headers==2.2.0
 django-cuser==2017.3.16
 django-downloadview==1.9
-django-extensions==2.0.3
+django-extensions==2.0.7
 django-filter==1.1.0
 django-floppyforms==1.7.0
 django-forms-bootstrap==3.1.0
@@ -82,11 +82,11 @@ geolinks==0.2.0
 geonode-agon-ratings==0.3.8
 geonode-announcements==1.0.13
 geonode-avatar==2.1.8
-geonode-dialogos==0.9
+geonode-dialogos==1.2
 geonode-user-messages==0.1.14
 gisdata==0.5.4
 glob2==0.6
-gn-gsimporter==1.0.2
+gn-gsimporter>=1.0.3
 gsconfig==1.0.8
 httplib2==0.10.3
 idna==2.6
