@@ -111,11 +111,11 @@ class RequestsTestCase(GeoNodeBaseTestSupport):
         """
         Test if we have geonode requests logged
         """
-        l = Layer.objects.all().first()
+        _l = Layer.objects.all().first()
         self.client.login(username=self.user, password=self.passwd)
         self.client.get(
             reverse('layer_detail',
-                    args=(l.alternate,
+                    args=(_l.alternate,
                           )),
             **{"HTTP_USER_AGENT": self.ua})
 
@@ -123,7 +123,7 @@ class RequestsTestCase(GeoNodeBaseTestSupport):
         rq = RequestEvent.objects.get()
         self.assertTrue(rq.response_time > 0)
         self.assertEqual(
-            list(rq.resources.all().values_list('name', 'type')), [(l.alternate, u'layer',)])
+            list(rq.resources.all().values_list('name', 'type')), [(_l.alternate, u'layer',)])
         self.assertEqual(rq.request_method, 'GET')
 
     def test_gn_error(self):
@@ -147,11 +147,11 @@ class RequestsTestCase(GeoNodeBaseTestSupport):
         Test if we can calculate metrics
         """
         self.client.login(username=self.user, password=self.passwd)
-        for idx, l in enumerate(Layer.objects.all()):
+        for idx, _l in enumerate(Layer.objects.all()):
             for inum in range(0, idx + 1):
                 self.client.get(
                     reverse('layer_detail',
-                            args=(l.alternate,
+                            args=(_l.alternate,
                                   )),
                     **{"HTTP_USER_AGENT": self.ua})
         requests = RequestEvent.objects.all()
@@ -533,7 +533,7 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
         notifications_config = ('geonode is not working',
                                 'detects when requests are not handled',
                                 (('request.count', 'min_value', False, False,
-                                 False, False, 0, 10, None, 'Number of handled requests is lower than',),
+                                  False, False, 0, 10, None, 'Number of handled requests is lower than',),
                                  ('response.time', 'max_value', False, False,
                                   False, False, 500, None, None, 'Response time is higher than',),))
         nc = NotificationCheck.create(*notifications_config)

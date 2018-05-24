@@ -148,7 +148,7 @@ def _render_message_plain(template, resource):
         if "icon_url" in template:
             message["icon_url"] = template["icon_url"].format(** state)
 
-    except:
+    except BaseException:
         print "Could not build plain slack message for resource"
         message = None
 
@@ -172,7 +172,7 @@ def build_slack_message_layer(event, layer):
                 message = _render_message_plain(SLACK_MESSAGE_TEMPLATES[event_lc], layer)
         else:
             print "Slack template not found."
-    except:
+    except BaseException:
         print "Could not build slack message for layer."
         message = None
 
@@ -196,7 +196,7 @@ def build_slack_message_map(event, map_obj):
                 message = _render_message_plain(SLACK_MESSAGE_TEMPLATES[event_lc], map_obj)
         else:
             print "Slack template not found."
-    except:
+    except BaseException:
         print "Could not build slack message for map."
         message = None
 
@@ -220,7 +220,7 @@ def build_slack_message_document(event, document):
                 message = _render_message_plain(SLACK_MESSAGE_TEMPLATES[event_lc], document)
         else:
             print "Slack template not found."
-    except:
+    except BaseException:
         print "Could not build slack message for document."
         message = None
 

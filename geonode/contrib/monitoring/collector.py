@@ -316,10 +316,10 @@ class CollectorAPI(object):
             print MetricValue.add(**mdata)
 
         if data['data'].get('cpu'):
-            l = data['data']['cpu']['usage']
-            mdata = {'value': l,
-                     'value_raw': l,
-                     'value_num': l,
+            _l = data['data']['cpu']['usage']
+            mdata = {'value': _l,
+                     'value_raw': _l,
+                     'value_num': _l,
                      'metric': 'cpu.usage',
                      'label': 'Seconds',
                      }
@@ -536,10 +536,13 @@ class CollectorAPI(object):
                     'service': service}
         cnt = with_errors.count()
         print MetricValue.add(value=cnt, value_num=cnt, value_raw=cnt, **defaults)
+
         defaults['metric'] = 'response.error.types'
         for label in labels:
             cnt = with_errors.filter(exceptions__error_type=label).count()
+
             defaults['label'] = label
+
             defaults['samples_count'] = cnt
             print MetricValue.add(value=cnt, value_num=cnt, value_raw=cnt, **defaults)
 
@@ -786,6 +789,7 @@ class CollectorAPI(object):
         Returns metric data for given metric. Returned dataset contains list of periods and values in that periods
         """
         utc = pytz.utc
+
         default_interval = False
         now = datetime.utcnow().replace(tzinfo=utc)
         if not interval:

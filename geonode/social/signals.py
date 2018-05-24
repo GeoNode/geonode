@@ -127,7 +127,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
                           raw_action=raw_action,
                           )
         # except ModelNotActionable:
-        except:
+        except BaseException:
             logger.debug('The activity received a non-actionable Model or None as the actor/action.')
 
 
@@ -253,7 +253,7 @@ def json_serializer_producer(dictionary):
             y = str(y)
         # check datetime object
         # TODO: Use instanceof
-        if type(y) == datetime.datetime:
+        if isinstance(y, datetime.datetime):
             y = str(y)
 
         output[x] = y

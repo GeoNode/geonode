@@ -22,8 +22,9 @@ fi
 
 # Setup and Build GeoNode
 git clean -dxff
-pip install -e .
-#pip install -r requirements.txt --no-deps
+pip install pip --upgrade
+pip install -r requirements.txt --upgrade
+pip install -e . --upgrade
 paver setup
 
 # Make the Debian package (locally)

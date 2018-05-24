@@ -76,7 +76,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
 # django's dumpdata
 
 imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
-                                '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
+                            '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
 f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
 
 
@@ -139,15 +139,20 @@ def create_fixtures():
 
     next_date = get_test_date()
 
-
     layer_data = [('CA', 'abstract1', 'CA', 'geonode:CA', world_extent, next_date(), ('populartag', 'here'), elevation),
-            ('layer2', 'abstract2', 'layer2', 'geonode:layer2', world_extent, next_date(), ('populartag',), elevation),
-            ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', world_extent, next_date(), ('populartag',), elevation),  # flake8: noqa
-            ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', world_extent, next_date(), ('populartag', 'layertagunique'), location),  # flake8: noqa
-            ('common double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], next_date(), ('populartag',), location),  # flake8: noqa
-            ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], next_date(), ('populartag',), location),  # flake8: noqa
-            ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], next_date(), ('populartag',), biota),   # flake8: noqa
-            ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], next_date(), ('populartag',), biota),   # flake8: noqa
+                  ('layer2', 'abstract2', 'layer2', 'geonode:layer2', world_extent, next_date(), ('populartag',), elevation),
+                  ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer',
+                   world_extent, next_date(), ('populartag',), elevation),  # flake8: noqa
+                  ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', world_extent,
+                   next_date(), ('populartag', 'layertagunique'), location),  # flake8: noqa
+                  ('common double it', 'whatever', 'whatever', 'geonode:whatever', [
+             0, 1, 0, 1], next_date(), ('populartag',), location),  # flake8: noqa
+            ('common double time', 'else', 'fooey', 'geonode:fooey', [
+             0, 5, 0, 5], next_date(), ('populartag',), location),  # flake8: noqa
+            ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [
+             0, 10, 0, 10], next_date(), ('populartag',), biota),   # flake8: noqa
+            ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [
+             0, 50, 0, 50], next_date(), ('populartag',), biota),   # flake8: noqa
             ]
 
     document_data = [('lorem ipsum', 'common lorem ipsum', ('populartag',), world_extent, biota),
@@ -269,7 +274,7 @@ def remove_models(obj_ids, type=None):
             for id in m_ids:
                 m = Map.objects.get(pk=id)
                 m.delete()
-        except:
+        except BaseException:
             pass
     elif type == 'layer':
         try:
@@ -277,7 +282,7 @@ def remove_models(obj_ids, type=None):
             for id in l_ids:
                 l = Layer.objects.get(pk=id)
                 l.delete()
-        except:
+        except BaseException:
             pass
     elif type == 'document':
         try:
@@ -285,7 +290,7 @@ def remove_models(obj_ids, type=None):
             for id in d_ids:
                 d = Document.objects.get(pk=id)
                 d.delete()
-        except:
+        except BaseException:
             pass
 
 

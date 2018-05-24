@@ -105,7 +105,7 @@ def insert_xml_element(root, element_path):
             # if a parent is missing insert it at the right place
             try:
                 element = ElementTree.SubElement(parent, tag)
-            except:
+            except BaseException:
                 # In some cases we can't add parent because the tag name is
                 # not specific
                 pass

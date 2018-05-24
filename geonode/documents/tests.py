@@ -102,13 +102,13 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         m = Map.objects.all()[0]
         ctype = ContentType.objects.get_for_model(m)
-        l = DocumentResourceLink.objects.create(
+        _l = DocumentResourceLink.objects.create(
             document_id=c.id,
             content_type=ctype,
             object_id=m.id)
 
         self.assertEquals(Document.objects.get(pk=c.id).title, 'theimg')
-        self.assertEquals(DocumentResourceLink.objects.get(pk=l.id).object_id,
+        self.assertEquals(DocumentResourceLink.objects.get(pk=_l.id).object_id,
                           m.id)
 
     def test_create_document_url(self):
@@ -478,10 +478,10 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
                 resp = self.client.post(document_upload_url, data=data)
             self.assertEqual(resp.status_code, 302)
             dname = 'document title'
-            l = Document.objects.get(title=dname)
+            _l = Document.objects.get(title=dname)
 
-            self.assertTrue(l.is_published)
-            l.delete()
+            self.assertTrue(_l.is_published)
+            _l.delete()
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             document_upload_url = reverse('document_upload')
@@ -499,9 +499,9 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
                 resp = self.client.post(document_upload_url, data=data)
             self.assertEqual(resp.status_code, 302)
             dname = 'document title'
-            l = Document.objects.get(title=dname)
+            _l = Document.objects.get(title=dname)
 
-            self.assertFalse(l.is_published)
+            self.assertFalse(_l.is_published)
 
 
 class DocumentNotificationsTestCase(NotificationsTestsHelper):
@@ -520,17 +520,17 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
     def testDocumentNotifications(self):
         with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
             self.clear_notifications_queue()
-            l = Document.objects.create(title='test notifications', owner=self.u)
+            _l = Document.objects.create(title='test notifications', owner=self.u)
             self.assertTrue(self.check_notification_out('document_created', self.u))
-            l.title = 'test notifications 2'
-            l.save()
+            _l.title = 'test notifications 2'
+            _l.save()
             self.assertTrue(self.check_notification_out('document_updated', self.u))
 
             from dialogos.models import Comment
-            lct = ContentType.objects.get_for_model(l)
+            lct = ContentType.objects.get_for_model(_l)
             comment = Comment(author=self.u, name=self.u.username,
-                              content_type=lct, object_id=l.id,
-                              content_object=l, comment='test comment')
+                              content_type=lct, object_id=_l.id,
+                              content_object=_l, comment='test comment')
             comment.save()
 
             self.assertTrue(self.check_notification_out('document_comment', self.u))
@@ -579,12 +579,12 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
         for resource in resources:
             ct = ContentType.objects.get_for_model(resource)
-            l = DocumentResourceLink.objects.get(
+            _l = DocumentResourceLink.objects.get(
                 document_id=d.id,
                 content_type=ct.id,
                 object_id=resource.id
             )
-            self.assertEquals(l.object_id, resource.id)
+            self.assertEquals(_l.object_id, resource.id)
 
         # update document links
 
@@ -597,12 +597,12 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
         for resource in layers:
             ct = ContentType.objects.get_for_model(resource)
-            l = DocumentResourceLink.objects.get(
+            _l = DocumentResourceLink.objects.get(
                 document_id=d.id,
                 content_type=ct.id,
                 object_id=resource.id
             )
-            self.assertEquals(l.object_id, resource.id)
+            self.assertEquals(_l.object_id, resource.id)
 
         for resource in maps:
             ct = ContentType.objects.get_for_model(resource)

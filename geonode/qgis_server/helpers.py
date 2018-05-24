@@ -856,7 +856,7 @@ def style_list(layer, internal=True, generating_qgis_capabilities=False):
         try:
             if not qgis_layer.default_style:
                 set_default_style = True
-        except:
+        except BaseException:
             set_default_style = True
 
         if set_default_style and styles_obj:

@@ -232,7 +232,7 @@ def geoserver_upload(
                 style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
                 overwrite = style or False
                 cat.create_style(name, sld, overwrite=overwrite, raw=True, workspace=settings.DEFAULT_WORKSPACE)
-            except:
+            except BaseException:
                 try:
                     style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
                             cat.get_style(name + '_layer')
@@ -271,6 +271,7 @@ def geoserver_upload(
     # FIXME: Do this inside the layer object
     alternate = workspace.name + ':' + gs_resource.name
     layer_uuid = str(uuid.uuid1())
+
     defaults = dict(store=gs_resource.store.name,
                     storeType=gs_resource.store.resource_type,
                     alternate=alternate,

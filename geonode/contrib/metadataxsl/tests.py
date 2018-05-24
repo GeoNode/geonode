@@ -26,6 +26,7 @@ class MetadataXSLTest(GeoNodeBaseTestSupport):
     """
     Tests geonode.contrib.metadataxsl app/module
     """
+
     def setUp(self):
         super(MetadataXSLTest, self).setUp()
         self.adm_un = "admin"

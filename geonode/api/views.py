@@ -77,7 +77,7 @@ def verify_token(request):
     if (request.POST and request.POST['token']):
         try:
             token = verify_access_token(request.POST['token'])
-        except Exception, e:
+        except Exception as e:
             return HttpResponse(
                 json.dumps({
                     'error': str(e)

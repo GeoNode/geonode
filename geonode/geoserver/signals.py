@@ -199,7 +199,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                 e.args = (msg,)
                 logger.exception(e)
 
-    if type(instance) is ResourceBase:
+    if isinstance(instance, ResourceBase):
         if hasattr(instance, 'layer'):
             instance = instance.layer
         else:
@@ -220,7 +220,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     try:
         _stylefilterparams_geowebcache_layer(instance.alternate)
         _invalidate_geowebcache_layer(instance.alternate)
-    except:
+    except BaseException:
         pass
 
     if instance.storeType == "remoteStore":

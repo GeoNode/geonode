@@ -126,7 +126,7 @@ class Upload(models.Model):
             if session:
                 try:
                     session.delete()
-                except:
+                except BaseException:
                     logging.exception('error deleting upload session')
             if self.upload_dir and path.exists(self.upload_dir):
                 shutil.rmtree(self.upload_dir)
