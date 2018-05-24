@@ -1277,8 +1277,7 @@ CELERY_RESULT_PERSISTENT = False
 CELERY_ACKS_LATE = True
 
 # Set this to False in order to run async
-# CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
-CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
 CELERY_TASK_IGNORE_RESULT = True
 
 # I use these to debug kombu crashes; we get a more informative message.
