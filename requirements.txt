@@ -37,7 +37,7 @@ coreapi==2.3.3 # python-coreapi (2.3.3 in our ppa)
 coreschema==0.0.4 # python-coreschema (0.0.4 in our ppa)
 autoflake<=0.7 # python-autoflake (0.7 in our ppa)
 flake8<=2.6.2 # python-flake8 (2.5.4) FIXME
-pycodestyle<=2.0.0 # missing TODO
+pycodestyle<=2.3.0 # missing TODO
 pyflakes<=1.2.3 # python-pyflakes (1.6.0 in our ppa) FIXME
 pep8<=1.7.1 # python-pep8 (1.7.1 in our ppa)
 boto<=2.38.0 # python-boto (2.38.0)
@@ -47,6 +47,7 @@ tqdm==4.23.3
 
 # Django Apps
 dj-pagination<=2.3.2 # python-dj-pagination (2.3.2 in our ppa)
+django-celery-monitor<=1.1.2
 django-extensions>=1.2.5,<=2.0.7 # python-django-extensions (2.0.3 in our ppa)
 django-jsonfield<=1.0.1 # python-django-jsonfield (0.9.15, 1.0.1 in our ppa)
 django-jsonfield-compat<=0.4.4 # python-django-jsonfield-compat (0.4.4 in our ppa)
