@@ -10,11 +10,11 @@ If you are working remotely, you should first connect to the machine that has yo
 
 .. code-block:: console
     :linenos:
-	
+
     $ apt-get install python-django
     $ django-admin startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst
     $ cd my_geonode
-    $ sudo pip install -e .
+    $ sudo pip install -e . --upgrade --no-cache
     $ python manage.py migrate
 
 .. note:: You should NOT use the name *geonode* for your project as it will conflict with your default geonode package name.
@@ -25,11 +25,11 @@ Make sure that the directories are reachable and have the correct rights for the
 
 .. code-block:: console
     :linenos:
-	
+
     $ sudo chown -Rf geonode: *
     $ sudo chmod -Rf 775 my_geonode
 
-If you have a brand new installation of GeoNode, rename the **/home/geonode/geonode/local_settings.py.sample** to **local_settings.py** and edit it's content by setting the SITEURL and SITENAME. This file will be your main settings file for your project. It inherits all the settings from the original one plus you can override the ones that you need. 
+If you have a brand new installation of GeoNode, rename the **/home/geonode/geonode/local_settings.py.sample** to **local_settings.py** and edit it's content by setting the SITEURL and SITENAME. This file will be your main settings file for your project. It inherits all the settings from the original one plus you can override the ones that you need.
 
 .. note:: You can also decide to copy the **/home/geonode/geonode/local_settings.py.sample** to **/path/to/my_geonode/my_geonode/local_settings.py** in order to keep all the custom settings confined into the new project.
 
@@ -82,7 +82,7 @@ Edit the file /etc/apache2/sites-available/geonode.conf and modify the **Documen
             Allow from all
             IndexOptions FancyIndexing
         </Directory>
-        
+
         ...
 
 Then regenerate the static **JavaScript** and **CSS** files from **/path/to/my_geonode/** and restart apache
@@ -144,7 +144,7 @@ It is recommended that you immediately put your new project under source code re
       :linenos:
 
       $ sudo git remote add origin <https url of your custom repo>
-      
+
 
 #. Add your project files to the repository:
 
@@ -161,7 +161,7 @@ It is recommended that you immediately put your new project under source code re
         # Those two command must be issued ONLY once
       $ sudo git config --global user.email "my@email"
       $ sudo git config --global user.name "myuser"
-      
+
       $ sudo git commit -am "Initial commit"
 
 #. Push to the remote repository:
@@ -237,7 +237,7 @@ python module may not be available) is:
 
   .. code-block: python
     :linenos:
-  
+
   try:
       from local_settings import *
   except:

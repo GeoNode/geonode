@@ -52,7 +52,7 @@ Upgrade Development Environment
 
           pip install pip --upgrade
           pip install -r requirements.txt
-          pip install -e .
+          pip install -e . --upgrade --no-cache
 
           # WARNING: your GDAL version might be different. Use the right one accordingly to gdal-config --version
           pip install pygdal==2.2.1.3
