@@ -1569,7 +1569,6 @@ if USE_WORLDMAP:
     INSTALLED_APPS += (
             'geoexplorer-worldmap',
             'geonode.contrib.worldmap.gazetteer',
-            'geonode.contrib.worldmap.queue',
             'geonode.contrib.worldmap.wm_extra',
             'geonode.contrib.createlayer',
         )
