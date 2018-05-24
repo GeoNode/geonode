@@ -23,7 +23,7 @@ We are assuming a Ubuntu 16.04.1 LTS development environment, but these instruct
     sudo apt-get update
     sudo apt-get install python-virtualenv python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk postgresql postgis
 
-    # Install Java 8 (needed by latest GeoServer 2.12)
+    # Install Java 8 (needed by latest GeoServer 2.13)
     sudo apt-add-repository ppa:webupd8team/java
     sudo apt-get update
     sudo apt-get install oracle-java8-installer
@@ -41,30 +41,45 @@ Now install GeoNode from source code::
 
     git clone -b https://github.com/geonode/geonode.git
     cd geonode
-    pip install -r requirements.txt --no-deps
+    pip install -r requirements.txt
     pip install pygdal==1.11.3.3
     pip install -e .
+    paver setup
+    paver sync
 
-GeoNode/WorldMap projection creation
-------------------------------------
+Set the following environment variables as needed (change SITE_NAME and SERVER_IP s needed. Also HYPERMAP_REGISTRY_URL and SOLR_URL may be different). Even better, create a file and source it::
+
+      export SITE_NAME=worldmap
+      export SERVER_IP=128.31.22.73
+      export PG_USERNAME=worldmap
+      export PG_PASSWORD=worldmap
+      export PG_WORLDMAP_DJANGO_DB=worldmap
+      export PG_WORLDMAP_UPLOADS_DB=wmdata
+      export OWNER=$PG_USERNAME
+      export ALLOWED_HOSTS="localhost, $SERVER_IP, "
+      export GEOSERVER_LOCATION=http://localhost:8080/geoserver/
+      export GEOSERVER_PUBLIC_LOCATION=http://$SERVER_IP/geoserver/
+      export SOLR_URL =http://localhost:8983/solr/hypermap/select/
+      export HYPERMAP_REGISTRY_URL =http://localhost:8001
+      export MAPPROXY_URL=http://localhost:8001
+
+
+You can install GeoNode WorldMap in two different ways:
+
+1) By installing GeoNode itself
+2) By using the recommended way of a geonode-project
+
+GeoNode/WorldMap without a geonode-project
+------------------------------------------
+
+Copy the included local_settings.py file and customize it to your needs::
+
+    cp local_settings.py.worldmap.sample local_settings.py
+
+GeoNode/WorldMap with a geonode-project
+---------------------------------------
 
 You will use a geonode-project in order to separate the customization of your instance from GeoNode.
-
-Set the following variables as needed (change SITE_NAME and SERVER_IP s needed. Also HYPERMAP_REGISTRY_URL and SOLR_URL may be different). Even better, create a file and source it::
-
-    export SITE_NAME=worldmap
-    export SERVER_IP=128.31.22.73
-    export PG_USERNAME=worldmap
-    export PG_PASSWORD=worldmap
-    export PG_WORLDMAP_DJANGO_DB=worldmap
-    export PG_WORLDMAP_UPLOADS_DB=wmdata
-    export OWNER=$PG_USERNAME
-    export ALLOWED_HOSTS="localhost, $SERVER_IP, "
-    export GEOSERVER_LOCATION=http://localhost:8080/geoserver/
-    export GEOSERVER_PUBLIC_LOCATION=http://$SERVER_IP/geoserver/
-    export SOLR_URL =http://localhost:8983/solr/hypermap/select/
-    export HYPERMAP_REGISTRY_URL =http://localhost:8001
-    export MAPPROXY_URL=http://localhost:8001
 
 Create your geonode project by using the WorldMap geonode-project as a template  (https://github.com/cga-harvard/geonode-project). Rename it to something meaningful (for example your web site name)::
 
