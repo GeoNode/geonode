@@ -94,6 +94,5 @@ class ProfileForm(forms.ModelForm):
             'is_staff',
             'is_superuser',
             'is_active'
-            # 'date_joined',
-            # 'is_certifier'
+            'date_joined'
             )
