@@ -55,15 +55,15 @@ DEFAULT_GEONODE_BASE_TEMPLATE = "geonode_base.html"
 def get_template_loaders():
     try:
         return settings.TEMPLATE_LOADERS
-    except:
+    except BaseException:
         try:
             return settings.TEMPLATES[0]["OPTIONS"]["loaders"]
-        except:
+        except BaseException:
             try:
                 from django.template.loader import get_template
                 return [get_template(DEFAULT_BASE_TEMPLATE).origin.loader,
                         get_template(DEFAULT_GEONODE_BASE_TEMPLATE).origin.loader, ]
-            except:
+            except BaseException:
                 return None
 
 
@@ -86,7 +86,7 @@ def find_all_templates(pattern='*.html'):
                 loader_class = getattr(import_module(module), klass)
                 try:
                     loader = loader_class(Engine.get_default())
-                except:
+                except BaseException:
                     loader = loader_class()
                 for dir in loader.get_template_sources(''):
                     dir = "%s" % dir
@@ -113,7 +113,7 @@ def find_all_templates(pattern='*.html'):
                                fnmatch.fnmatch(basename, pattern) or \
                                fnmatch.fnmatch(rel_filename, pattern):
                                 templates.append(filename)
-        except:
+        except BaseException:
             pass
     return sorted(set(templates))
 

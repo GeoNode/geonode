@@ -96,6 +96,7 @@ def zip_dir(basedir, archivename):
                 zfn = absfn[len(basedir)+len(os.sep):]  # XXX: relative path
                 z.write(absfn, zfn)
 
+
 """
  HOW TO RUN THE TESTS
  --------------------
@@ -570,13 +571,13 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         try:
             # with self.assertRaises(GeoNodeException):
             thefile = file_upload(thefile, overwrite=True)
-        except GeoNodeException, e:
+        except GeoNodeException as e:
             self.assertEqual(str(e), "Invalid Projection. Layer is missing CRS!")
         finally:
             # Clean up and completely delete the layer
             try:
                 thefile.delete()
-            except:
+            except BaseException:
                 pass
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -955,7 +956,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     raster_layer.delete()
                 if new_vector_layer:
                     new_vector_layer.delete()
-            except:
+            except BaseException:
                 # tb = traceback.format_exc()
                 # logger.warning(tb)
                 pass
@@ -978,6 +979,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             self.assertIsNotNone(lyr)
             self.assertEqual(lyr.name, "test_san_andres_y_providencia_administrative")
             self.assertEqual(lyr.title, "Test San Andres y Providencia Administrative")
+
             default_keywords = [
                 u'import',
                 u'san andreas',
@@ -1672,6 +1674,7 @@ class LayersStylesApiInteractionTests(
         self.assertValidJSONResponse(resp)
         obj = self.deserialize(resp)
         # Take default style url from Layer detail info
+
         default_style_url = obj['default_style']
         resp = self.api_client.get(default_style_url)
         self.assertValidJSONResponse(resp)

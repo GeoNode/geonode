@@ -227,7 +227,7 @@ def execute(sql):
     cursor = db.connections['datastore'].cursor()
     try:
         cursor.execute(sql)
-    except:
+    except BaseException:
         raise
     finally:
         cursor.close()

@@ -127,7 +127,7 @@ def layer_style(request, layername):
     try:
         _stylefilterparams_geowebcache_layer(layer.alternate)
         _invalidate_geowebcache_layer(layer.alternate)
-    except:
+    except BaseException:
         pass
 
     return HttpResponse(
@@ -200,7 +200,7 @@ def layer_style_upload(request, layername):
     try:
         _stylefilterparams_geowebcache_layer(layer.alternate)
         _invalidate_geowebcache_layer(layer.alternate)
-    except:
+    except BaseException:
         pass
 
     return respond(
@@ -263,6 +263,7 @@ def layer_style_manage(request, layername):
                     sld_title = layer.default_style.sld_title
             except BaseException:
                 pass
+
             default_style = (layer.default_style.name, sld_title)
             return render(
                 request,
@@ -294,6 +295,7 @@ def layer_style_manage(request, layername):
     elif request.method == 'POST':
         try:
             selected_styles = request.POST.getlist('style-select')
+
             default_style = request.POST['default_style']
 
             # Save to GeoServer
@@ -321,7 +323,7 @@ def layer_style_manage(request, layername):
             try:
                 _stylefilterparams_geowebcache_layer(layer.alternate)
                 _invalidate_geowebcache_layer(layer.alternate)
-            except:
+            except BaseException:
                 pass
 
             return HttpResponseRedirect(

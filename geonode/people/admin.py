@@ -92,6 +92,7 @@ class ProfileAdmin(admin.ModelAdmin):
                 'form': self.add_form,
                 'fields': admin.utils.flatten_fieldsets(self.add_fieldsets),
             })
+
         defaults.update(kwargs)
         return super(ProfileAdmin, self).get_form(request, obj, **defaults)
 
@@ -130,6 +131,7 @@ class ProfileAdmin(admin.ModelAdmin):
         if extra_context is None:
             extra_context = {}
         username_field = self.model._meta.get_field(self.model.USERNAME_FIELD)
+
         defaults = {
             'auto_populated_fields': (),
             'username_help_text': username_field.help_text,

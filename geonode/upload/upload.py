@@ -881,6 +881,7 @@ def final_step(upload_session, user):
                     identifier=value.lower(),
                     defaults={'description': '', 'gn_description': value})
                 key = 'category'
+
                 defaults[key] = value
             else:
                 defaults[key] = value

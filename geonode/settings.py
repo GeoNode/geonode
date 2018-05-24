@@ -745,7 +745,7 @@ OGC_SERVER = {
         # 'datastore',
         'DATASTORE': '',
         'PG_GEOGIG': False,
-        #'CACHE': ".cache"  # local cache file to for HTTP requests
+        # 'CACHE': ".cache"  # local cache file to for HTTP requests
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }
@@ -1246,7 +1246,7 @@ if NOTIFICATION_ENABLED:
 """
 # Disabling the heartbeat because workers seems often disabled in flower,
 # thanks to http://stackoverflow.com/a/14831904/654755
-BROKER_HEARTBEAT=0
+BROKER_HEARTBEAT = 0
 
 # Avoid long running and retried tasks to be run over-and-over again.
 BROKER_TRANSPORT_OPTIONS = {
@@ -1496,10 +1496,10 @@ SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP = False
 
 # Uncomment this to enable Linkedin and Facebook login
-#INSTALLED_APPS += (
+# INSTALLED_APPS += (
 #    'allauth.socialaccount.providers.linkedin_oauth2',
 #    'allauth.socialaccount.providers.facebook',
-#)
+# )
 
 SOCIALACCOUNT_PROVIDERS = {
     'linkedin_oauth2': {

@@ -97,7 +97,7 @@ This option installs geonode in a virtual environment. This option is very usefu
     cd geonode
 
     # Install pip dependencies
-    pip install -r requirements.txt
+    pip install -r requirements.txt --upgrade
     pip install -e . --upgrade --no-cache
 
     sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update

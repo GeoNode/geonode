@@ -404,6 +404,7 @@ class DjangoParallelTestSuiteRunner(ParallelTestSuiteRunner,
 
         while test_databases:
             changed = False
+
             deferred = []
 
             # Try to find a DB that has all its dependencies met
@@ -553,7 +554,7 @@ class TestResult(object):
         self.failures = self._format_failures(result_obj.failures)
         try:
             self.output = result_obj.stream.read()
-        except:
+        except BaseException:
             pass
         return self
 
@@ -562,7 +563,7 @@ class TestResult(object):
         self.failures = self._format_failures(result_obj.failures)
         try:
             self.output = result_obj.stream.read()
-        except:
+        except BaseException:
             pass
         return self
 
