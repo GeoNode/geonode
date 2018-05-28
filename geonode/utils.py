@@ -1100,7 +1100,7 @@ def designals():
         if signalname in signals_store:
             try:
                 signaltype = getattr(models.signals, signalname)
-            except:
+            except BaseException:
                 continue
             logger.debug("RETRIEVE: %s: %d" %
                          (signalname, len(signaltype.receivers)))
@@ -1294,19 +1294,19 @@ def copy_tree(src, dst, symlinks=False, ignore=None):
                 if os.path.exists(d):
                     try:
                         os.remove(d)
-                    except:
+                    except BaseException:
                         try:
                             shutil.rmtree(d)
-                        except:
+                        except BaseException:
                             pass
                 try:
                     shutil.copytree(s, d, symlinks, ignore)
-                except:
+                except BaseException:
                     pass
             else:
                 try:
                     shutil.copy2(s, d)
-                except:
+                except BaseException:
                     pass
     except Exception:
         traceback.print_exc()

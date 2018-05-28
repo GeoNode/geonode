@@ -331,7 +331,7 @@ class Map(ResourceBase, GXPMapBase):
                     'catalog': gs_catalog.get_layergroup(lg_name),
                     'ows': ogc_server_settings.ows
                 }
-            except:
+            except BaseException:
                 return {
                     'catalog': None,
                     'ows': ogc_server_settings.ows

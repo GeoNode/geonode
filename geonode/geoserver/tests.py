@@ -864,6 +864,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
                 {'PUBLIC_LOCATION': 'http://localhost:8080/geoserver/'})
 
             ogc_settings = OGC_Servers_Handler(OGC_SERVER)['default']
+
             default = OGC_SERVER.get('default')
             self.assertEqual(ogc_settings.server, default)
             self.assertEqual(ogc_settings.BACKEND, default.get('BACKEND'))

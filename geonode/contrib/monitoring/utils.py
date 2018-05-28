@@ -79,7 +79,7 @@ class MonitoringHandler(logging.Handler):
             try:
                 re = RequestEvent.from_geonode(self.service, req, resp)
                 req._monitoring['processed'] = re
-            except:
+            except BaseException:
                 req._monitoring['processed'] = None
         re = req._monitoring.get('processed')
 
@@ -170,7 +170,7 @@ class GeoServerMonitorClient(object):
             # traceback.print_exc()
             try:
                 data = etree.fromstring(r.content)
-            except Exception, err:
+            except Exception as err:
                 log.debug("Cannot parse xml contents for %s: %s", href, err, exc_info=err)
                 data = bs(r.content)
         if data and format != 'json':

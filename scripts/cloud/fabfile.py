@@ -126,7 +126,7 @@ def deploy_project(project):
                 put(projdir,PYLIBS,use_sudo=True)
     put('requirements.txt',GEONODEDIR,use_sudo=True)
     with cd(GEONODEDIR), prefix(ACT):
-        sudo('pip install -r requirements.txt --no-deps')
+        sudo('pip install -r requirements.txt --upgrade')
         sudo('rm requirements.txt')
     put('%s/%s.apache' % (project,project),'/etc/apache2/sites-available/%s' % project, use_sudo=True)
     sed('/etc/apache2/sites-available/%s' % project, 'REPLACE_WITH_SITEDIR', PYLIBS, use_sudo=True)

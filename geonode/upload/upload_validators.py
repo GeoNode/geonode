@@ -297,7 +297,9 @@ def validate_raster(contents, allow_multiple=False):
                 raise forms.ValidationError(
                     _("No multiple rasters allowed"))
             else:
-                if not allow_multiple or 'sld' in other_extensions or 'xml' in other_extensions:
+                if not allow_multiple or (
+                    'properties' not in other_extensions and (
+                        'sld' in other_extensions or 'xml' in other_extensions)):
                     return valid_extensions
                 else:
                     return ("zip-mosaic",)
@@ -310,7 +312,9 @@ def validate_raster_zip(zip_django_file):
     with zipfile.ZipFile(zip_django_file) as zip_handler:
         contents = zip_handler.namelist()
         valid_extensions = validate_raster(contents, allow_multiple=True)
-    if valid_extensions and "zip-mosaic" not in valid_extensions:
-        return ("zip",)
-    else:
-        return ("zip-mosaic",)
+    if valid_extensions:
+        if "zip-mosaic" not in valid_extensions:
+            return ("zip",)
+        else:
+            return ("zip-mosaic",)
+    return None

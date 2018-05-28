@@ -28,6 +28,8 @@ import os.path
 from geoserver.resource import FeatureType
 from geoserver.resource import Coverage
 
+from django.utils.translation import ugettext as _
+
 from UserList import UserList
 import zipfile
 import os
@@ -117,8 +119,9 @@ class FileType(object):
 
 TYPE_UNKNOWN = FileType("unknown", None, None)
 
+_keep_original_data = ('kmz', 'zip-mosaic')
 _tif_extensions = ("tif", "tiff", "geotif", "geotiff")
-_mosaics_extensions = ("properties", "shp")
+_mosaics_extensions = ("properties", "shp", "aux")
 
 types = [
     FileType("Shapefile", "shp", vector,
@@ -127,8 +130,8 @@ types = [
              aliases=_tif_extensions[1:]),
     FileType(
         "ImageMosaic", "zip-mosaic", raster,
-        aliases=_tif_extensions[1:],
-        auxillary_file_exts=("properties", "aux") + _tif_extensions[1:]
+        aliases=_tif_extensions,
+        auxillary_file_exts=_mosaics_extensions + _tif_extensions
     ),
     FileType("ASCII Text File", "asc", raster,
              auxillary_file_exts=('prj')),
@@ -246,6 +249,8 @@ def get_scan_hint(valid_extensions):
             result = "kml-overlay"
     elif "kmz" in valid_extensions:
         result = "kmz"
+    elif "zip-mosaic" in valid_extensions:
+        result = "zip-mosaic"
     else:
         result = None
     return result
@@ -253,10 +258,12 @@ def get_scan_hint(valid_extensions):
 
 def scan_file(file_name, scan_hint=None):
     '''get a list of SpatialFiles for the provided file'''
+    if not os.path.exists(file_name):
+        raise Exception(_("Could not access to uploaded data."))
 
     dirname = os.path.dirname(file_name)
     if zipfile.is_zipfile(file_name):
-        paths, kept_zip = _process_zip(file_name, dirname)
+        paths, kept_zip = _process_zip(file_name, dirname, scan_hint=scan_hint)
         archive = file_name if kept_zip else None
     else:
         paths = [os.path.join(dirname, p) for p in os.listdir(dirname)]
@@ -284,8 +291,8 @@ def scan_file(file_name, scan_hint=None):
         if len(found) == 1:
             found[0].xml_files = xml_files
         else:
-            raise Exception("One or more XML files was provided, but no " +
-                            "matching files were found for them.")
+            raise Exception(_("One or more XML files was provided, but no " +
+                              "matching files were found for them."))
 
     # detect slds and assign if a single upload is found
     sld_files = _find_file_type(safe_paths, extension='.sld')
@@ -293,12 +300,12 @@ def scan_file(file_name, scan_hint=None):
         if len(found) == 1:
             found[0].sld_files = sld_files
         else:
-            raise Exception("One or more SLD files was provided, but no " +
-                            "matching files were found for them.")
+            raise Exception(_("One or more SLD files was provided, but no " +
+                              "matching files were found for them."))
     return SpatialFiles(dirname, found, archive=archive)
 
 
-def _process_zip(zip_path, destination_dir):
+def _process_zip(zip_path, destination_dir, scan_hint=None):
     """Perform sanity checks on uploaded zip file
 
     This function will check if the zip file's contents have legal names.
@@ -308,10 +315,9 @@ def _process_zip(zip_path, destination_dir):
     It will also check if an .sld file exists inside the zip and extract it
 
     """
-
     safe_zip_path = _rename_files([zip_path])[0]
     with zipfile.ZipFile(safe_zip_path, "r") as zip_handler:
-        if safe_zip_path.endswith(".kmz"):
+        if scan_hint in _keep_original_data:
             extracted_paths = _extract_zip(zip_handler, destination_dir)
         else:
             extracted_paths = _sanitize_zip_contents(

@@ -46,12 +46,12 @@ def en_browser(browser, bdd_server):
     try:
         # kill the specific phantomjs child proc
         en_browser.service.process.send_signal(signal.SIGTERM)
-    except:
+    except BaseException:
         pass
     try:
         # quit the node proc
         en_browser.quit()
-    except:
+    except BaseException:
         pass
 
 
