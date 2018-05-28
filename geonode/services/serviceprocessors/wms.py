@@ -168,7 +168,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         try:
             contents_gen = self.parsed_service.contents.itervalues()
             return (r for r in contents_gen if not any(r.children))
-        except:
+        except BaseException:
             return None
 
     def harvest_resource(self, resource_id, geonode_service):

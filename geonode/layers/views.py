@@ -1167,9 +1167,9 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
 
     if settings.MONITORING_ENABLED:
-        for l in layers:
-            if hasattr(l, 'alternate'):
-                request.add_resource('layer', l.alternate)
+        for _l in layers:
+            if hasattr(_l, 'alternate'):
+                request.add_resource('layer', _l.alternate)
     if request.method == 'POST':
         form = PocForm(request.POST)
         if form.is_valid():
@@ -1233,7 +1233,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                             except QGISServerLayer.DoesNotExist:
                                 pass
                             out['ogc_backend'] = qgis_server.BACKEND_PACKAGE
-                    except:
+                    except BaseException:
                         pass
 
                     saved_layer = file_upload(
@@ -1499,6 +1499,6 @@ def layer_batch_metadata(request, ids):
 
 
 def layer_view_counter(layer_id, viewer):
-    l = Layer.objects.get(id=layer_id)
-    u = get_user_model().objects.get(username=viewer)
-    l.view_count_up(u, do_local=True)
+    _l = Layer.objects.get(id=layer_id)
+    _u = get_user_model().objects.get(username=viewer)
+    _l.view_count_up(_u, do_local=True)

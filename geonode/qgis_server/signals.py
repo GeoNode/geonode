@@ -436,15 +436,15 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
     # Geonode map supports local layers and remote layers
     # Remote layers were provided from other OGC services, so we don't
     # deal with it at the moment.
-    local_layers = [l for l in map_layers if l.local]
+    local_layers = [_l for _l in map_layers if _l.local]
 
     layers = []
     for layer in local_layers:
         try:
-            l = Layer.objects.get(alternate=layer.name)
-            if not l.qgis_layer:
+            _l = Layer.objects.get(alternate=layer.name)
+            if not _l.qgis_layer:
                 raise QGISServerLayer.DoesNotExist
-            layers.append(l)
+            layers.append(_l)
         except Layer.DoesNotExist:
             msg = 'No Layer found for typename: {0}'.format(layer.name)
             logger.debug(msg)

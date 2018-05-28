@@ -523,7 +523,7 @@ def map_download_qlr(request, mapid):
         if j_layer["service"] is None:
             j_layers.remove(j_layer)
             continue
-        if (len([l for l in j_layers if l == j_layer])) > 1:
+        if (len([_l for _l in j_layers if _l == j_layer])) > 1:
             j_layers.remove(j_layer)
 
     map_layers = []
@@ -612,13 +612,13 @@ def set_thumbnail_map(request, mapid):
         return HttpResponse('Bad Request')
 
     map_layers = MapLayer.objects.filter(map__id=mapid)
-    local_layers = [l for l in map_layers if l.local]
+    local_layers = [_l for _l in map_layers if _l.local]
 
     layers = {}
     for layer in local_layers:
         try:
-            l = Layer.objects.get(typename=layer.name)
-            layers[l.name] = l
+            _l = Layer.objects.get(typename=layer.name)
+            layers[_l.name] = _l
         except Layer.DoesNotExist:
             msg = 'No Layer found for typename: {0}'.format(layer.name)
             logger.debug(msg)

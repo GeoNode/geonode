@@ -96,6 +96,7 @@ def zip_dir(basedir, archivename):
                 zfn = absfn[len(basedir)+len(os.sep):]  # XXX: relative path
                 z.write(absfn, zfn)
 
+
 """
  HOW TO RUN THE TESTS
  --------------------
@@ -177,7 +178,8 @@ class NormalUserTest(GeoNodeLiveTestSupport):
 
 class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
-    """Tests geonode.maps app/module
+    """
+    Tests geonode.maps app/module
     """
 
     # geonode.maps.utils
@@ -565,13 +567,13 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         try:
             # with self.assertRaises(GeoNodeException):
             thefile = file_upload(thefile, overwrite=True)
-        except GeoNodeException, e:
+        except GeoNodeException as e:
             self.assertEqual(str(e), "Invalid Projection. Layer is missing CRS!")
         finally:
             # Clean up and completely delete the layer
             try:
                 thefile.delete()
-            except:
+            except BaseException:
                 pass
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -950,7 +952,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     raster_layer.delete()
                 if new_vector_layer:
                     new_vector_layer.delete()
-            except:
+            except BaseException:
                 # tb = traceback.format_exc()
                 # logger.warning(tb)
                 pass
@@ -973,6 +975,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             self.assertIsNotNone(lyr)
             self.assertEqual(lyr.name, "test_san_andres_y_providencia_administrative")
             self.assertEqual(lyr.title, "Test San Andres y Providencia Administrative")
+
             default_keywords = [
                 u'import',
                 u'san andreas',
@@ -996,7 +999,8 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
 
 class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
-    """Tests GeoNode permissions and its integration with GeoServer
+    """
+    Tests GeoNode permissions and its integration with GeoServer
     """
 
     """
@@ -1181,7 +1185,8 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
 
 class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
 
-    """Tests thumbnails behavior for layers and maps.
+    """
+    Tests thumbnails behavior for layers and maps.
     """
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -1241,7 +1246,8 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
 
 class GeoNodeMapPrintTest(GeoNodeLiveTestSupport):
 
-    """Tests geonode.maps print
+    """
+    Tests geonode.maps print
     """
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -1332,7 +1338,8 @@ class GeoNodeMapPrintTest(GeoNodeLiveTestSupport):
 
 class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
-    """Tests GeoNode/GeoServer syncronization
+    """
+    Tests GeoNode/GeoServer syncronization
     """
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -1383,7 +1390,8 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
 class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
 
-    """Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
+    """
+    Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
     """
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -1650,6 +1658,7 @@ class LayersStylesApiInteractionTests(
         self.assertValidJSONResponse(resp)
         obj = self.deserialize(resp)
         # Take default style url from Layer detail info
+
         default_style_url = obj['default_style']
         resp = self.api_client.get(default_style_url)
         self.assertValidJSONResponse(resp)
@@ -1740,7 +1749,9 @@ class LayersStylesApiInteractionTests(
 
 
 class GeoTIFFIOTest(GeoNodeLiveTestSupport):
-    """Tests integration of geotiff.io"""
+    """
+    Tests integration of geotiff.io
+    """
 
     def testLink(self):
         thefile = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')

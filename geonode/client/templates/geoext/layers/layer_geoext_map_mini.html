@@ -162,14 +162,14 @@
 
                            var zoomToData = function()
                            {
-                               map.zoomToExtent(extent, true);
+                               map.zoomToExtent(extent, false);
                                app.mapPanel.center = map.center;
                                app.mapPanel.zoom = map.zoom;
                                map.events.unregister('changebaselayer', null, zoomToData);
                            };
                            map.events.register('changebaselayer',null,zoomToData);
                            if(map.baseLayer){
-                               map.zoomToExtent(extent, true);
+                               map.zoomToExtent(extent, false);
                            }
                         }
                     },

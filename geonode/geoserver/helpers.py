@@ -244,14 +244,14 @@ def get_sld_for(gs_catalog, layer):
     _default_style = None
     try:
         _default_style = layer.default_style
-    except:
+    except BaseException:
         pass
     if _default_style is None:
         gs_catalog._cache.clear()
         try:
             gs_layer = gs_catalog.get_layer(layer.name)
             name = gs_layer.default_style.name if gs_layer.default_style is not None else "raster"
-        except:
+        except BaseException:
             name = "raster"
     else:
         name = _default_style.name
@@ -414,7 +414,7 @@ def cascading_delete(cat, layer_name):
         styles = lyr.styles
         try:
             styles = styles + [lyr.default_style]
-        except:
+        except BaseException:
             pass
         gs_styles = [x for x in cat.get_styles()]
         if settings.DEFAULT_WORKSPACE:
@@ -427,7 +427,7 @@ def cascading_delete(cat, layer_name):
                     _s = "%s_%s" % (settings.DEFAULT_WORKSPACE, _name)
                     for _gs in gs_styles:
                         if _s in _gs.name and _gs not in styles:
-                                ws_styles.append(_gs)
+                            ws_styles.append(_gs)
             styles = styles + ws_styles
         cat.delete(lyr)
         for s in styles:
@@ -446,7 +446,7 @@ def cascading_delete(cat, layer_name):
         #       with GS 2.7+
         try:
             cat.delete(resource, recurse=True)  # This may fail
-        except:
+        except BaseException:
             cat._cache.clear()
             cat.reset()
         #    cat.reload()  # this preservers the integrity of geoserver
@@ -912,7 +912,7 @@ def set_styles(layer, gs_catalog):
         default_style = None
         try:
             default_style = gs_layer.default_style or None
-        except:
+        except BaseException:
             pass
 
         if not default_style:
@@ -921,7 +921,7 @@ def set_styles(layer, gs_catalog):
                                 or gs_catalog.get_style(layer.name)
                 gs_layer.default_style = default_style
                 gs_catalog.save(gs_layer)
-            except:
+            except BaseException:
                 logger.exception("GeoServer Layer Default Style issues!")
 
         if default_style:
@@ -941,7 +941,7 @@ def set_styles(layer, gs_catalog):
                 for alt_style in alt_styles:
                     if alt_style:
                         style_set.append(save_style(alt_style))
-        except:
+        except BaseException:
             pass
 
     layer.styles = style_set
@@ -959,7 +959,7 @@ def save_style(gs_style):
     style, created = Style.objects.get_or_create(name=gs_style.name)
     try:
         style.sld_title = gs_style.sld_title
-    except:
+    except BaseException:
         style.sld_title = gs_style.name
     finally:
         style.sld_body = gs_style.sld_body
@@ -1078,18 +1078,18 @@ def cleanup(name, uuid):
     if gs_layer is not None:
         try:
             cat.delete(gs_layer)
-        except:
+        except BaseException:
             logger.warning("Couldn't delete GeoServer layer during cleanup()")
     if gs_resource is not None:
         try:
             cat.delete(gs_resource)
-        except:
+        except BaseException:
             msg = 'Couldn\'t delete GeoServer resource during cleanup()'
             logger.warning(msg)
     if gs_store is not None:
         try:
             cat.delete(gs_store)
-        except:
+        except BaseException:
             logger.warning("Couldn't delete GeoServer store during cleanup()")
 
     logger.warning('Deleting dangling Catalogue record for [%s] '
@@ -1552,7 +1552,7 @@ def style_update(request, url):
         # Need to remove NSx from IE11
         if "HTTP_USER_AGENT" in request.META:
             if ('Trident/7.0' in request.META['HTTP_USER_AGENT'] and
-               'rv:11.0' in request.META['HTTP_USER_AGENT']):
+                    'rv:11.0' in request.META['HTTP_USER_AGENT']):
                 txml = re.sub(r'xmlns:NS[0-9]=""', '', request.body)
                 txml = re.sub(r'NS[0-9]:', '', txml)
                 request._body = txml
@@ -1591,7 +1591,7 @@ def style_update(request, url):
         try:
             _stylefilterparams_geowebcache_layer(layer_name)
             _invalidate_geowebcache_layer(layer_name)
-        except:
+        except BaseException:
             pass
 
     elif request.method == 'DELETE':  # delete style from GN
@@ -1621,7 +1621,12 @@ def set_time_info(layer, attribute, end_attribute, presentation,
     layer = gs_catalog.get_layer(layer.name)
     if layer is None:
         raise ValueError('no such layer: %s' % layer.name)
-    resource = layer.resource
+    resource = layer.resource if layer else None
+    if not resource:
+        resources = gs_catalog.get_resources(store=layer.name)
+        if resources:
+            resource = resources[0]
+
     resolution = None
     if precision_value and precision_step:
         resolution = '%s %s' % (precision_value, precision_step)
@@ -1632,6 +1637,7 @@ def set_time_info(layer, attribute, end_attribute, presentation,
     else:
         metadata = dict({})
     metadata['time'] = info
+
     if resource and resource.metadata:
         resource.metadata = metadata
     if resource:
@@ -1648,7 +1654,12 @@ def get_time_info(layer):
     layer = gs_catalog.get_layer(layer.name)
     if layer is None:
         raise ValueError('no such layer: %s' % layer.name)
-    resource = layer.resource
+    resource = layer.resource if layer else None
+    if not resource:
+        resources = gs_catalog.get_resources(store=layer.name)
+        if resources:
+            resource = resources[0]
+
     info = resource.metadata.get('time', None) if resource.metadata else None
     vals = None
     if info:
@@ -1740,7 +1751,7 @@ def _render_thumbnail(req_body):
     # to a unicode en-dash but is not uncoded properly during transmission
     # 'ignore' the error for now as controls are not being rendered...
     data = spec
-    if type(data) == unicode:
+    if isinstance(data, unicode):
         # make sure any stored bad values are wiped out
         # don't use keyword for errors - 2.6 compat
         # though unicode accepts them (as seen below)
@@ -1777,10 +1788,11 @@ def mosaic_delete_first_granule(cat, layer):
     cat.mosaic_delete_granule(coverages['coverages']['coverage'][0]['name'], store, granule_id)
 
 
-def set_time_dimension(cat, layer, time_presentation, time_presentation_res, time_presentation_default_value,
+def set_time_dimension(cat, name, workspace, time_presentation, time_presentation_res, time_presentation_default_value,
                        time_presentation_reference_value):
     # configure the layer time dimension as LIST
     cat._cache.clear()
+    # cat.reload()
 
     presentation = time_presentation
     if not presentation:
@@ -1797,7 +1809,17 @@ def set_time_dimension(cat, layer, time_presentation, time_presentation_res, tim
     timeInfo = DimensionInfo("time", "true", presentation, resolution, "ISO8601", None, attribute="time",
                              strategy=strategy, reference_value=time_presentation_reference_value)
 
-    resource = cat.get_layer(layer).resource
+    layer = cat.get_layer(name)
+    resource = layer.resource if layer else None
+    if not resource:
+        resources = cat.get_resources(store=name) or cat.get_resources(store=name, workspace=workspace)
+        if resources:
+            resource = resources[0]
+
+    if not resource:
+        logger.exception("No resource could be found on GeoServer with name %s" % name)
+        raise Exception("No resource could be found on GeoServer with name %s" % name)
+
     resource.metadata = {'time': timeInfo}
     cat.save(resource)
 

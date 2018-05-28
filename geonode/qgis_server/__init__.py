@@ -20,4 +20,5 @@
 
 BACKEND_PACKAGE = 'geonode.qgis_server'
 
+
 default_app_config = "geonode.qgis_server.apps.AppConfig"
