@@ -899,7 +899,7 @@ BING_API_KEY = os.environ.get('BING_API_KEY', None)
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 # handle timestamps like 2017-05-30 16:04:00.719 UTC
-if django.VERSION[0] == 1 and django.VERSION[1] >= 11:
+if django.VERSION[0] == 1 and django.VERSION[1] >= 9:
     _DATETIME_INPUT_FORMATS = ['%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z']
 else:
     _DATETIME_INPUT_FORMATS = ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
