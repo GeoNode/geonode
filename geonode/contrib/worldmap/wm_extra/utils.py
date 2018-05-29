@@ -2,6 +2,7 @@ from geonode.layers.utils import create_gs_thumbnail_geonode
 from geonode.layers.models import Layer
 from geonode.contrib.createlayer.utils import DATA_QUALITY_MESSAGE
 
+
 def create_wm_thumbnail(instance, overwrite=False):
     """
     WorldMap doesn't use thumbnails from GeoServer, but just the ones from html.

@@ -1,19 +1,13 @@
 import re
-import urllib
-import urlparse
 
 from django.conf import settings
 from django.db import models
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import signals
 
 from geonode.layers.models import Layer, Attribute
 from geonode.maps.models import Map
 from geonode.people.models import Profile
-
-from .encode import despam, XssCleaner
-from .signals import save_profile, add_ext_layer, add_ext_map
 
 try:
     from django.utils import timezone
@@ -34,6 +28,7 @@ ACTION_TYPES = [
 
 ows_sub = re.compile(r"[&\?]+SERVICE=WMS|[&\?]+REQUEST=GetCapabilities", re.IGNORECASE)
 
+
 class ExtLayer(models.Model):
     layer = models.OneToOneField(Layer)
     in_gazetteer = models.BooleanField(_('In Gazetteer?'), blank=False, null=False, default=False)
@@ -52,7 +47,7 @@ class ExtLayer(models.Model):
             delete_from_gazetteer(self.name)
         else:
             includedAttributes = []
-            #from geonode.contrib.worldmap.gazetteer.models import GazetteerAttribute
+            # from geonode.contrib.worldmap.gazetteer.models import GazetteerAttribute
             for attribute in self.layer.attribute_set.all():
                 if hasattr(attribute, 'gazetteerattribute'):
                     if attribute.gazetteerattribute.in_gazetteer:
@@ -60,16 +55,21 @@ class ExtLayer(models.Model):
 
             print includedAttributes
 
-            #includedAttributes = []
-            #gazetteerAttributes = self.attribute_set.filter(in_gazetteer=True)
-            #for attribute in gazetteerAttributes:
-            #    includedAttributes.append(attribute.attribute)
+            # includedAttributes = []
+            # gazetteerAttributes = self.attribute_set.filter(in_gazetteer=True)
+            # for attribute in gazetteerAttributes:
+            #     includedAttributes.append(attribute.attribute)
 
             # TODO implement this
             startAttribute = None
             endAttribute = None
-            #startAttribute = self.attribute_set.filter(is_gaz_start_date=True)[0].attribute if self.attribute_set.filter(is_gaz_start_date=True).exists() > 0 else None
-            #endAttribute = self.attribute_set.filter(is_gaz_end_date=True)[0].attribute if self.attribute_set.filter(is_gaz_end_date=True).exists() > 0 else None
+            # startAttribute = self.attribute_set.filter(
+            #    is_gaz_start_date=True)[0].attribute if
+            #    self.attribute_set.filter(is_gaz_start_date=True).exists() > 0
+            # else None
+            # endAttribute = self.attribute_set.filter(
+            #   is_gaz_end_date=True)[0].attribute if
+            # self.attribute_set.filter(is_gaz_end_date=True).exists() > 0 else None
 
             add_to_gazetteer(self.layer.name,
                              includedAttributes,
@@ -95,11 +95,12 @@ class ExtMap(models.Model):
     content_map = models.TextField(_('Site Content'), blank=True, null=True, default=settings.DEFAULT_MAP_ABSTRACT)
     group_params = models.TextField(_('Layer Category Parameters'), blank=True)
 
+
 class MapStats(models.Model):
     map = models.OneToOneField(Map)
-    visits = models.IntegerField(_("Visits"), default= 0)
-    uniques = models.IntegerField(_("Unique Visitors"), default = 0)
-    last_modified = models.DateTimeField(auto_now=True,null=True)
+    visits = models.IntegerField(_("Visits"), default=0)
+    uniques = models.IntegerField(_("Unique Visitors"), default=0)
+    last_modified = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:
         verbose_name_plural = 'Map stats'
@@ -107,9 +108,9 @@ class MapStats(models.Model):
 
 class LayerStats(models.Model):
     layer = models.OneToOneField(Layer)
-    visits = models.IntegerField(_("Visits"), default = 0)
-    uniques = models.IntegerField(_("Unique Visitors"), default = 0)
-    downloads = models.IntegerField(_("Downloads"), default = 0)
+    visits = models.IntegerField(_("Visits"), default=0)
+    uniques = models.IntegerField(_("Unique Visitors"), default=0)
+    downloads = models.IntegerField(_("Downloads"), default=0)
     last_modified = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:
@@ -144,8 +145,9 @@ def action_add_layer(instance, sender, created, **kwargs):
                         action_type='layer_create',
                         description='User %s created layer with id %s' % (username, instance.id),
                         args=instance.uuid,
-                        )
+        )
         action.save()
+
 
 def action_delete_layer(instance, sender, **kwargs):
     username = instance.owner.username
@@ -153,8 +155,9 @@ def action_delete_layer(instance, sender, **kwargs):
                     action_type='layer_delete',
                     description='User %s deleted layer with id %s' % (username, instance.id),
                     args=instance.uuid,
-                    )
+    )
     action.save()
+
 
 def action_add_map(instance, sender, created, **kwargs):
     if created:
@@ -163,8 +166,9 @@ def action_add_map(instance, sender, created, **kwargs):
                         action_type='map_create',
                         description='User %s created map with id %s' % (username, instance.id),
                         args=instance.uuid,
-                        )
+        )
         action.save()
+
 
 def action_delete_map(instance, sender, **kwargs):
     username = instance.owner.username
@@ -172,8 +176,9 @@ def action_delete_map(instance, sender, **kwargs):
                     action_type='map_delete',
                     description='User %s deleted map with id %s' % (username, instance.id),
                     args=instance.uuid,
-                    )
+    )
     action.save()
+
 
 signals.post_save.connect(action_add_layer, sender=Layer)
 signals.post_delete.connect(action_delete_layer, sender=Layer)

@@ -1,22 +1,20 @@
 import json
-
 from dicttoxml import dicttoxml
 
-from django.forms.models import inlineformset_factory
 from django.contrib.auth.decorators import login_required
-from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-from geonode.layers.models import Layer, Attribute
 from geonode.layers.views import _resolve_layer
 
 from .utils import add_to_gazetteer, getGazetteerResults, getGazetteerEntry, getExternalServiceResults
 from .models import GazetteerAttribute
 
 
-def search(request, place_name, map=None, layer=None, start_date=None, end_date=None, project=None, services=None, user=None, format='json'):
+def search(request, place_name, map=None, layer=None,
+           start_date=None, end_date=None, project=None, services=None,
+           user=None, format='json'):
     """
     Search the Gazetteer and return results in JSON or XML format.
     """
@@ -97,14 +95,13 @@ def edit_layer_gazetteer(
                          request.user.username)
 
     gazetteer_attributes = []
-    gazetteer_attributes_date = []
     for attribute in layer.attributes:
         if hasattr(attribute, 'gazetteerattribute'):
             attribute.in_gazetteer = attribute.gazetteerattribute.in_gazetteer
         else:
             attribute.in_gazetteer = False
         gazetteer_attributes.append(attribute)
-    template='gazetteer/edit_layer_gazetteer.html'
+    template = 'gazetteer/edit_layer_gazetteer.html'
 
     return render_to_response(template, RequestContext(request, {
         "layer": layer,

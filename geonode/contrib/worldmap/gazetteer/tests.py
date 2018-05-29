@@ -9,7 +9,6 @@ class GazetteerTest(TestCase):
 
     fixtures = ['gazetteer_data.json'] if settings.USE_WORLDMAP else []
 
-
     def test_get_gazetteer_entry(self):
         if settings.USE_WORLDMAP:
             results = getGazetteerEntry(5)
@@ -84,7 +83,6 @@ class GazetteerTest(TestCase):
             placenames = json.loads(response.content)
             self.assertEquals(3, len(placenames))
             self.assertNotContains(response, text="Paradise3", html=False, status_code=200)
-
 
     def test_gazetteer_enddate(self):
         """

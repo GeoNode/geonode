@@ -36,7 +36,7 @@ class LayerResource(ModelResource):
     bbox = fields.CharField(readonly=True)
     created_dttm = fields.DateTimeField(readonly=True)
     is_public = fields.BooleanField(readonly=True)
-    keywords = fields.ToManyField(TagResource, 'keywords', full = True)
+    keywords = fields.ToManyField(TagResource, 'keywords', full=True)
     owner_username = fields.CharField(readonly=True)
     topic_category = fields.CharField(readonly=True)
 
@@ -65,9 +65,10 @@ class LayerResource(ModelResource):
         queryset = Layer.objects.all()
         allowed_methods = ['get', ]
         ordering = ['date', ]
-        fields = ['abstract', 'bbox', 'created_dttm', 'date', 'date_type', 'is_public', 'keywords',
-            'name', 'owner_username', 'srs', 'temporal_extent_end',
-            'temporal_extent_start', 'title', 'topic_category', 'typename', 'uuid',
+        fields = [
+                    'abstract', 'bbox', 'created_dttm', 'date', 'date_type', 'is_public', 'keywords',
+                    'name', 'owner_username', 'srs', 'temporal_extent_end',
+                    'temporal_extent_start', 'title', 'topic_category', 'typename', 'uuid',
         ]
 
 
@@ -76,7 +77,7 @@ class ActionAllResource(ModelResource):
     class Meta:
         queryset = Action.objects.all().order_by('-timestamp')
         allowed_methods = ['get', ]
-        fields = ['args', 'timestamp', 'description',]
+        fields = ['args', 'timestamp', 'description', ]
         ordering = ['timestamp', ]
 
 
@@ -85,7 +86,7 @@ class ActionLayerCreateResource(ModelResource):
     class Meta:
         queryset = Action.objects.filter(action_type='layer_create').order_by('-timestamp')
         allowed_methods = ['get', ]
-        fields = ['args', 'timestamp', 'description',]
+        fields = ['args', 'timestamp', 'description', ]
         ordering = ['timestamp', ]
 
 
@@ -94,7 +95,7 @@ class ActionLayerDeleteResource(ModelResource):
     class Meta:
         queryset = Action.objects.filter(action_type='layer_delete').order_by('-timestamp')
         allowed_methods = ['get', ]
-        fields = ['args', 'timestamp', 'description',]
+        fields = ['args', 'timestamp', 'description', ]
         ordering = ['timestamp', ]
 
 
@@ -103,7 +104,7 @@ class ActionMapCreateResource(ModelResource):
     class Meta:
         queryset = Action.objects.filter(action_type='map_create').order_by('-timestamp')
         allowed_methods = ['get', ]
-        fields = ['args', 'timestamp', 'description',]
+        fields = ['args', 'timestamp', 'description', ]
         ordering = ['timestamp', ]
 
 
@@ -112,5 +113,5 @@ class ActionMapDeleteResource(ModelResource):
     class Meta:
         queryset = Action.objects.filter(action_type='map_delete').order_by('-timestamp')
         allowed_methods = ['get', ]
-        fields = ['args', 'timestamp', 'description',]
+        fields = ['args', 'timestamp', 'description', ]
         ordering = ['timestamp', ]

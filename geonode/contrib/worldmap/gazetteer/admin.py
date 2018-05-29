@@ -13,6 +13,7 @@ class GazetteerEntryAdmin(admin.ModelAdmin):
         'username',
     )
 
+
 class GazetteerAttributeAdmin(admin.ModelAdmin):
     list_display = (
         'layer_name',

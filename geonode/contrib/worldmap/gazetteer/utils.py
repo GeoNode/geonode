@@ -1,22 +1,17 @@
 import re
 import logging
 import psycopg2
-from array import array
 
 from geopy import geocoders
 
-from django.contrib.gis.geos.geometry import GEOSGeometry
-from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-
 from django.conf import settings
 from django.db.models import Q
-from django.core.cache import cache
 
 from geonode.maps.models import Layer, MapLayer, Map
 from geonode.layers.models import Attribute
+
 from .flexidates import parse_julian_date
-from .models import GazetteerEntry
 from .models import GazetteerEntry
 
 GAZETTEER_TABLE = 'gazetteer_gazetteerentry'
@@ -34,6 +29,7 @@ CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
   ON gazetteer_gazetteerentry FOR EACH ROW EXECUTE PROCEDURE
   tsvector_update_trigger(placename_tsv, 'pg_catalog.english', place_name);
 '''
+
 
 def get_geometry_type(layer):
     """
@@ -64,7 +60,6 @@ def getGazetteerEntry(input_id):
     except Exception, e:
         logger.error("Error retrieving results for gazetteer by id %d:%s", input_id, str(e))
         raise
-
 
 
 def formatSourceLink(layer_name):
@@ -100,11 +95,10 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
     elif layer:
         layers = [layer]
 
-    ## The following retrieves results using the GazetteerEntry model.
-
+    # The following retrieves results using the GazetteerEntry model.
     criteria = Q() if settings.GAZETTEER_FULLTEXTSEARCH else Q(place_name__istartswith=place_name)
     if layers:
-        criteria =  criteria & Q(layer_name__in=layers)
+        criteria = criteria & Q(layer_name__in=layers)
 
     if start_date:
         start_date = parse_julian_date(start_date)
@@ -116,30 +110,26 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 
     if start_date and end_date:
         print ("BOTH DATES")
-        #Return all placenames that ended after the start date or started before the end date
-        criteria = criteria & (Q(julian_end__gte=start_date) &  Q(julian_start__lte=end_date) |\
-                               (Q(julian_start__isnull=True) & Q(julian_end__gte=start_date)) |\
-                               (Q(julian_end__isnull=True) &Q(julian_start__lte=end_date)) |\
+        # Return all placenames that ended after the start date or started before the end date
+        criteria = criteria & (Q(julian_end__gte=start_date) & Q(julian_start__lte=end_date) |
+                               (Q(julian_start__isnull=True) & Q(julian_end__gte=start_date)) |
+                               (Q(julian_end__isnull=True) & Q(julian_start__lte=end_date)) |
                                (Q(julian_start__isnull=True) & Q(julian_end__isnull=True)))
-
-
-
     elif start_date:
         print ("START DATE ONLY")
-        #Return all placenames that existed on this date or afterward
-        #End_date >= the specified start date or start_date <= the specified date or both are null
-        criteria = criteria & ((Q(julian_end__gte=start_date)) |\
-                               (Q(julian_end__isnull=True) & Q(julian_start__lte=start_date)) |\
-                               (Q(julian_start__isnull=True) & Q(julian_end__gte=start_date)) |\
+        # Return all placenames that existed on this date or afterward
+        # End_date >= the specified start date or start_date <= the specified date or both are null
+        criteria = criteria & ((Q(julian_end__gte=start_date)) |
+                               (Q(julian_end__isnull=True) & Q(julian_start__lte=start_date)) |
+                               (Q(julian_start__isnull=True) & Q(julian_end__gte=start_date)) |
                                (Q(julian_start__isnull=True) & Q(julian_end__isnull=True)))
-
     elif end_date:
         print ("END DATE ONLY")
-        #Return all placenames that existed on this date or before
-        #End_date >= the specified end date or start_date <= the specified date or both are null
-        criteria = criteria & ((Q(julian_start__lte=end_date)) |\
-                               (Q(julian_start__isnull=True) & Q(julian_end__gte=end_date)) |\
-                               (Q(julian_end__isnull=True) & Q(julian_start__lte=end_date)) |\
+        # Return all placenames that existed on this date or before
+        # End_date >= the specified end date or start_date <= the specified date or both are null
+        criteria = criteria & ((Q(julian_start__lte=end_date)) |
+                               (Q(julian_start__isnull=True) & Q(julian_end__gte=end_date)) |
+                               (Q(julian_end__isnull=True) & Q(julian_start__lte=end_date)) |
                                (Q(julian_start__isnull=True) & Q(julian_end__isnull=True)))
 
     if project:
@@ -147,15 +137,22 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
     if user:
         criteria = criteria & Q(username__exact=user)
 
-    matchingEntries=(GazetteerEntry.objects.extra(
+    matchingEntries = (GazetteerEntry.objects.extra(
         where=['placename_tsv @@ to_tsquery(%s)'],
-        params=[re.sub("\s+"," & ",place_name.strip()) + ":*"]).filter(criteria))[:500] \
+        params=[re.sub("\s+", " & ", place_name.strip()) + ":*"]).filter(criteria))[:500] \
         if settings.GAZETTEER_FULLTEXTSEARCH else GazetteerEntry.objects.filter(criteria)
     posts = []
     for entry in matchingEntries:
-        posts.append({'placename': entry.place_name, 'coordinates': (entry.latitude, entry.longitude),
-            'source': formatSourceLink(entry.layer_name), 'start_date': entry.start_date, 'end_date': entry.end_date,
-            'gazetteer_id': entry.id})
+        posts.append(
+                        {
+                            'placename': entry.place_name,
+                            'coordinates': (entry.latitude, entry.longitude),
+                            'source': formatSourceLink(entry.layer_name),
+                            'start_date': entry.start_date,
+                            'end_date': entry.end_date,
+                            'gazetteer_id': entry.id
+                        }
+                    )
     return posts
 
 
@@ -180,7 +177,8 @@ def add_to_gazetteer(layer, name_attributes, start_attribute=None,
     def get_date_format(date_attribute):
         field_name = "l.\"" + date_attribute.attribute + "\""
         date_format = []
-        if "xsd:date" not in date_attribute.attribute_type and date_attribute.gazetteerattribute.date_format is not None:
+        if "xsd:date" not in date_attribute.attribute_type and \
+        date_attribute.gazetteerattribute.date_format is not None:
             # This could be in any of multiple formats, and postgresql needs a format pattern to convert it.
             # User should supply this format when adding the layer attribute to the gazetteer
             date_format.append(
@@ -190,18 +188,18 @@ def add_to_gazetteer(layer, name_attributes, start_attribute=None,
             date_format.append(
                 "CAST(TO_CHAR(TO_DATE(CAST({name} AS TEXT), '{format}'), 'J') AS integer)".format(
                     name=field_name, format=date_attribute.gazetteerattribute.date_format)
-                )
+            )
         elif "xsd:date" in date_attribute.attribute_type:
             # It's a date, convert to string
             date_format.append("TO_CHAR({}, 'YYYY-MM-DD BC')".format(field_name))
             date_format.append("CAST(TO_CHAR({}, 'J') AS integer)".format(field_name))
-        elif not "xsd:date" in start_attribute_obj.attribute_type:
+        elif "xsd:date" not in start_attribute_obj.attribute_type:
             # It's not a date, it's not an int, and no format was specified if it's a string - so don't use it
             date_format = [None, None]
         return date_format
 
     def get_metadata_format(metadata_date):
-        date_format= []
+        date_format = []
         date_format.append(
             "TO_CHAR(TO_DATE(CAST('{}' AS TEXT), 'YYYY-MM-DD BC'), 'YYYY-MM-DD BC')".format(
             metadata_date))
@@ -216,7 +214,9 @@ def add_to_gazetteer(layer, name_attributes, start_attribute=None,
     namelist = "'" + "','".join(name_attributes) + "'"
 
     """
-    Delete layer placenames where the FID is no longer in the original table or the layer_attribute is not in the list of name attributes.
+    Delete layer placenames where the FID is no longer in the
+    original table or the layer_attribute is not in the list
+    of name attributes.
     """
 
     conn = getConnection(layer.store)
@@ -294,7 +294,11 @@ def add_to_gazetteer(layer, name_attributes, start_attribute=None,
 
         # detect column type, needed by dblink
         cur = conn.cursor(layer.store)
-        cur.execute("select data_type from information_schema.columns where table_name = '%s' and column_name = '%s';" % (layer_name, name))
+        cur.execute(
+                        "select data_type from information_schema.columns where table_name = '%s'"
+                        " and column_name = '%s';"
+                        % (layer_name, name)
+        )
         attribute_type = cur.fetchone()[0]
         cur.close()
 
@@ -302,7 +306,7 @@ def add_to_gazetteer(layer, name_attributes, start_attribute=None,
         Update layer placenames where placename FID = layer FID
         and placename layer attribute = name attribute
         """
-        updateQuery =updateTemplate.format(
+        updateQuery = updateTemplate.format(
             table=GAZETTEER_TABLE,
             attribute=attribute.attribute,
             geom=geom_query,
@@ -318,7 +322,7 @@ def add_to_gazetteer(layer, name_attributes, start_attribute=None,
             store=layer.store,
             geocolumn=geocolumn,
             attribute_type=attribute_type,
-            )
+        )
         updateQueries.append(updateQuery)
 
         """
@@ -381,8 +385,10 @@ def getExternalServiceResults(place_name, services):
 
 def getGoogleResults(place_name):
     if hasattr(settings, 'GOOGLE_SECRET_KEY'):
-        g = geocoders.GoogleV3(client_id=settings.GOOGLE_API_KEY,
-                                secret_key=settings.GOOGLE_SECRET_KEY)
+        g = geocoders.GoogleV3(
+            client_id=settings.GOOGLE_API_KEY,
+            secret_key=settings.GOOGLE_SECRET_KEY
+        )
     else:
         g = geocoders.GoogleV3()
     try:
@@ -398,7 +404,7 @@ def getGoogleResults(place_name):
 def getNominatimResults(place_name):
     g = geocoders.Nominatim()
     try:
-        results = g.geocode(place_name, False,timeout=5)
+        results = g.geocode(place_name, False, timeout=5)
         formatted_results = []
         for result in results:
             formatted_results.append(formatExternalGeocode('Nominatim', result))
@@ -406,16 +412,18 @@ def getNominatimResults(place_name):
     except:
         return []
 
+
 def getConnection(layer_store=None):
     dbname = settings.DATABASES['default']['NAME']
     if layer_store:
         dbname = layer_store
     return psycopg2.connect(
-        "dbname='" + dbname + "' user='" + \
-        settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['USER'] + "'  password='" + \
-        settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['PASSWORD'] + "' port=" + \
-        settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['PORT'] + " host='" + \
+        "dbname='" + dbname + "' user='" +
+        settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['USER'] + "'  password='" +
+        settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['PASSWORD'] + "' port=" +
+        settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['PORT'] + " host='" +
         settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['HOST'] + "'")
+
 
 def getGeonamesResults(place_name):
     g = geocoders.GeoNames(username=settings.GEONAMES_USER)
@@ -430,5 +438,5 @@ def getGeonamesResults(place_name):
 
 
 def formatExternalGeocode(geocoder, geocodeResult):
-    return {'placename': geocodeResult[0], 'coordinates': geocodeResult[1], 'source': geocoder, 'start_date': 'N/A', \
+    return {'placename': geocodeResult[0], 'coordinates': geocodeResult[1], 'source': geocoder, 'start_date': 'N/A',
             'end_date': 'N/A', 'gazetteer_id': 'N/A'}

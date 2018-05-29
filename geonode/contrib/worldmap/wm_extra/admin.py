@@ -13,11 +13,13 @@ class ExtLayerAdmin(admin.ModelAdmin):
         'last_modified',
     )
 
+
 class ExtMapAdmin(admin.ModelAdmin):
     list_display = (
         'map',
         'content_map',
     )
+
 
 class LayerStatsAdmin(admin.ModelAdmin):
     list_display = (
@@ -27,6 +29,7 @@ class LayerStatsAdmin(admin.ModelAdmin):
         'last_modified',
     )
 
+
 class MapStatsAdmin(admin.ModelAdmin):
     list_display = (
         'map',
@@ -35,11 +38,13 @@ class MapStatsAdmin(admin.ModelAdmin):
         'last_modified',
     )
 
+
 class ExtLayerAttributeAdmin(admin.ModelAdmin):
     list_display = (
         'layer_name',
         'searchable',
     )
+
 
 class EndpointAdmin(admin.ModelAdmin):
     list_display = ('id', 'description', 'owner', 'url')
@@ -51,8 +56,8 @@ class ActionAdmin(admin.ModelAdmin):
     """
     Admin for Action.
     """
-    list_display = ('id', 'timestamp','action_type','description', )
-    list_filter  = ('action_type', )
+    list_display = ('id', 'timestamp', 'action_type', 'description', )
+    list_filter = ('action_type', )
     date_hierarchy = 'timestamp'
     ordering = ('-timestamp',)
 

@@ -23,7 +23,7 @@ class GazetteerEntry(models.Model):
     end_date = models.TextField(_('End Date'), blank=True, null=True)
     julian_start = models.IntegerField(_('Julian Date Start'), blank=True, null=True)
     julian_end = models.IntegerField(_('Julian Date End'), blank=True, null=True)
-    project = models.CharField(_('Project'), max_length=255,  blank=True, null=True)
+    project = models.CharField(_('Project'), max_length=255, blank=True, null=True)
     feature = models.GeometryField(_('Geometry'), null=True, blank=True)
     username = models.CharField(_('User Name'), max_length=30, blank=True, null=True)
     objects = models.GeoManager()

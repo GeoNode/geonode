@@ -56,22 +56,21 @@ sitemaps = {
     "map": MapSitemap
 }
 
-urlpatterns = [  # '',
-    # Static pages
-    url(r'^$',
-        TemplateView.as_view(template_name='index.html'),
-        name='home'),
-    url(r'^help/$',
-        TemplateView.as_view(template_name='help.html'),
-        name='help'),
-    url(r'^developer/$',
-        TemplateView.as_view(
-        template_name='developer.html'),
-        name='developer'),
-    url(r'^about/$',
-        TemplateView.as_view(template_name='about.html'),
-        name='about'),
-    ]
+urlpatterns = [
+                url(r'^$',
+                    TemplateView.as_view(template_name='index.html'),
+                    name='home'),
+                url(r'^help/$',
+                    TemplateView.as_view(template_name='help.html'),
+                    name='help'),
+                url(r'^developer/$',
+                    TemplateView.as_view(
+                    template_name='developer.html'),
+                    name='developer'),
+                url(r'^about/$',
+                    TemplateView.as_view(template_name='about.html'),
+                    name='about'),
+              ]
 
 # WorldMap
 if settings.USE_WORLDMAP:

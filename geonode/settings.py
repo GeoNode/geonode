@@ -1566,6 +1566,7 @@ USE_WORLDMAP = True
 
 if USE_WORLDMAP:
     GEONODE_CLIENT_LOCATION = '/static/worldmap_client/'
+    GAZETTEER_DB_ALIAS = 'default'
     INSTALLED_APPS += (
             'geoexplorer-worldmap',
             'geonode.contrib.worldmap.gazetteer',

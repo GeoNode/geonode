@@ -11,14 +11,17 @@ from django.utils.translation import ugettext as _
 
 logger = logging.getLogger("geonode.flexidates")
 
+
 class FlexiDateField(models.Field):
     empty_strings_allowed = False
     default_error_messages = {
-        'invalid': _(u"'%s' value has an invalid date format. Acceptable formats include "
-                     u"YYYY-MM-DD where YYYY = year (at least 4 digits, use"
-                     u"0001 for year 1), MM = month (1-12, optional), DD = day of month (1-31, optional)."
-                     u"For BC dates insert a minus sign before year (-1000-01-01) or append with BC (1000-01-01 BC).")
-        }
+                                'invalid': _(u"'%s' value has an invalid date format. Acceptable formats include "
+                                             u"YYYY-MM-DD where YYYY = year (at least 4 digits, use"
+                                             u"0001 for year 1), MM = month (1-12, optional),"
+                                             u" DD = day of month (1-31, optional)."
+                                             u"For BC dates insert a minus sign before year (-1000-01-01)"
+                                             u" or append with BC (1000-01-01 BC).")
+                              }
     description = _("Date BC/AD (without time)")
 
     def __init__(self, verbose_name=None, name=None, auto_now=False,
@@ -56,9 +59,7 @@ class FlexiDateField(models.Field):
         msg = self.error_messages['invalid_date'] % value
         raise exceptions.ValidationError(msg)
 
-
     def get_db_prep_value(self, value, connection, prepared=False):
-        import re
         # Casts dates into the format expected by the backend
         if not prepared:
             value = self.get_prep_value(value)
@@ -75,29 +76,31 @@ class FlexiDateField(models.Field):
         defaults.update(kwargs)
         return super(FlexiDateField, self).formfield(**defaults)
 
+
 def parse_flex_date(dateString):
     # from datautil.date import DateutilDateParser
     from dateutil.parser import parse
     # parser = DateutilDateParser()
     # TODO fix this, fails with this error "AttributeError: 'tuple' object has no attribute 'year'"
     if dateString is not None and len(dateString) > 0:
-        #return parser.parse(dateString)
+        # return parser.parse(dateString)
         return parse(dateString)
     return None
+
 
 def parse_julian_date(dateString):
     from jdcal import gcal2jd
     flex_date = parse_flex_date(dateString)
-    julian = gcal2jd(int(flex_date.year), int(flex_date.month if flex_date.month is not '' else '1'), \
+    julian = gcal2jd(int(flex_date.year), int(flex_date.month if flex_date.month is not '' else '1'),
                      int(flex_date.day if flex_date.day is not '' else '1'))
     return julian[0] + julian[1]
+
 
 class FlexiDateInput(Input):
     input_type = 'text'
 
     def __init__(self, attrs=None, format=None):
         super(FlexiDateInput, self).__init__(attrs)
-
 
     def _format_value(self, value):
         return value
@@ -112,6 +115,7 @@ class FlexiDateInput(Input):
             pass
         return super(FlexiDateInput, self)._has_changed(self._format_value(initial), data)
 
+
 class FlexiDateFormField(forms.Field):
     widget = FlexiDateInput
     default_error_messages = {
@@ -122,7 +126,6 @@ class FlexiDateFormField(forms.Field):
 
     def __init__(self, *args, **kwargs):
         super(FlexiDateFormField, self).__init__(*args, **kwargs)
-
 
     def to_python(self, value):
         # Try to coerce the value to unicode.

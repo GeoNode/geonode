@@ -964,9 +964,9 @@ def check_shp_columnnames(layer):
                 has_ch = False
                 for ch in field_name:
                     if u'\u4e00' <= ch <= u'\u9fff':
-                        has_ch=True
+                        has_ch = True
                         break
-                if has_ch == True:
+                if has_ch:
                     new_field_name = slugify_zh(field_name, separator='_')
                 else:
                     new_field_name = custom_slugify(field_name)
@@ -1357,8 +1357,8 @@ def slugify_zh(text, separator='_'):
     NUMBERS_PATTERN = re.compile('(?<=\d),(?=\d)')
     DEFAULT_SEPARATOR = '-'
 
-    if not isinstance(text, types.UnicodeType):
-        text = unicode(text, 'utf-8', 'ignore')
+    # if not isinstance(text, types.UnicodeType):
+    #    text = unicode(text, 'utf-8', 'ignore')
     # replace quotes with dashes - pre-process
     text = QUOTE_PATTERN.sub(DEFAULT_SEPARATOR, text)
     # make the text lowercase

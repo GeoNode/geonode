@@ -14,6 +14,7 @@ def save_profile(sender, instance, created, **kwargs):
         group, is_created = Group.objects.get_or_create(name='Registered users')
         group.user_set.add(instance)
 
+
 def add_ext_layer(sender, instance, created, **kwargs):
     """
     Create an ExtLayer and link it to the created layer.
@@ -22,6 +23,7 @@ def add_ext_layer(sender, instance, created, **kwargs):
         from .models import ExtLayer
         ExtLayer.objects.create(layer=instance)
 
+
 def add_ext_map(sender, instance, created, **kwargs):
     """
     Create an ExtMap and link it to the created map.
@@ -29,6 +31,7 @@ def add_ext_map(sender, instance, created, **kwargs):
     if created:
         from .models import ExtMap
         ExtMap.objects.create(map=instance)
+
 
 post_save.connect(save_profile, sender=Profile)
 post_save.connect(add_ext_layer, sender=Layer)
