@@ -49,6 +49,7 @@ Now install GeoNode from source code::
 
 Set the following environment variables as needed (change SITE_NAME and SERVER_IP s needed. Also HYPERMAP_REGISTRY_URL and SOLR_URL may be different). Even better, create a file and source it::
 
+      export USE_WORLDMAP=True
       export SITE_NAME=worldmap
       export SERVER_IP=128.31.22.73
       export PG_USERNAME=worldmap

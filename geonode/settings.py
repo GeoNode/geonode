@@ -1561,7 +1561,7 @@ GEOTIFF_IO_BASE_URL = os.getenv(
 )
 
 # WorldMap settings
-USE_WORLDMAP = True
+USE_WORLDMAP = strtobool(os.getenv('USE_WORLDMAP', 'False'))
 
 if USE_WORLDMAP:
     GEONODE_CLIENT_LOCATION = '/static/worldmap_client/'
