@@ -823,9 +823,9 @@ class MapModerationTestCase(GeoNodeBaseTestSupport):
                                         content_type="text/json")
             self.assertEquals(response.status_code, 200)
             map_id = int(json.loads(response.content)['id'])
-            l = Map.objects.get(id=map_id)
+            _l = Map.objects.get(id=map_id)
 
-            self.assertTrue(l.is_published)
+            self.assertTrue(_l.is_published)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             self.client.login(username=self.user, password=self.passwd)
@@ -835,9 +835,9 @@ class MapModerationTestCase(GeoNodeBaseTestSupport):
                                         content_type="text/json")
             self.assertEquals(response.status_code, 200)
             map_id = int(json.loads(response.content)['id'])
-            l = Map.objects.get(id=map_id)
+            _l = Map.objects.get(id=map_id)
 
-            self.assertFalse(l.is_published)
+            self.assertFalse(_l.is_published)
 
 
 class MapsNotificationsTestCase(NotificationsTestsHelper):
@@ -863,17 +863,17 @@ class MapsNotificationsTestCase(NotificationsTestsHelper):
                                         content_type="text/json")
             self.assertEquals(response.status_code, 200)
             map_id = int(json.loads(response.content)['id'])
-            l = Map.objects.get(id=map_id)
+            _l = Map.objects.get(id=map_id)
             self.assertTrue(self.check_notification_out('map_created', self.u))
-            l.title = 'test notifications 2'
-            l.save()
+            _l.title = 'test notifications 2'
+            _l.save()
             self.assertTrue(self.check_notification_out('map_updated', self.u))
 
             from dialogos.models import Comment
-            lct = ContentType.objects.get_for_model(l)
+            lct = ContentType.objects.get_for_model(_l)
             comment = Comment(author=self.u, name=self.u.username,
-                              content_type=lct, object_id=l.id,
-                              content_object=l, comment='test comment')
+                              content_type=lct, object_id=_l.id,
+                              content_object=_l, comment='test comment')
             comment.save()
 
             self.assertTrue(self.check_notification_out('map_comment', self.u))

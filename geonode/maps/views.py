@@ -827,10 +827,6 @@ def add_layers_to_map_config(
             # bad layer, skip
             continue
 
-        if not layer.is_published:
-            # invisible layer, skip inclusion
-            continue
-
         if not request.user.has_perm(
                 'view_resourcebase',
                 obj=layer.get_self_resource()):
@@ -1102,7 +1098,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
             if j_layer["service"] is None:
                 j_layers.remove(j_layer)
                 continue
-            if (len([l for l in j_layers if l == j_layer])) > 1:
+            if (len([_l for _l in j_layers if _l == j_layer])) > 1:
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
 
@@ -1145,7 +1141,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 else:
                     # we need to add the layer only once
                     if len(
-                            [l for l in downloadable_layers if l.name == lyr.name]) == 0:
+                            [_l for _l in downloadable_layers if _l.name == lyr.name]) == 0:
                         downloadable_layers.append(lyr)
 
     return render(request, template, context={
@@ -1278,7 +1274,7 @@ def snapshot_config(snapshot, map_obj, user, access_token):
     snapshot = get_object_or_404(MapSnapshot, pk=decodedid)
     if snapshot.map == map_obj.map:
         config = json.loads(clean_config(snapshot.config))
-        layers = [l for l in config["map"]["layers"]]
+        layers = [_l for _l in config["map"]["layers"]]
         sources = config["sources"]
         maplayers = []
         for ordering, layer in enumerate(layers):
@@ -1294,10 +1290,10 @@ def snapshot_config(snapshot, map_obj, user, access_token):
 # map_obj, layer, config["sources"][layer["source"]], ordering))
         config['map']['layers'] = [
             snaplayer_config(
-                l,
+                _l,
                 sources,
                 user,
-                access_token) for l in maplayers]
+                access_token) for _l in maplayers]
     else:
         config = map_obj.viewer_json(user, access_token)
     return config

@@ -790,13 +790,13 @@ class LayerResource(CommonModelApi):
             # Default style
             try:
                 obj.qgis_default_style = obj.qgis_layer.default_style
-            except:
+            except BaseException:
                 obj.qgis_default_style = None
 
             # Styles
             try:
                 obj.qgis_styles = obj.qgis_layer.styles
-            except:
+            except BaseException:
                 obj.qgis_styles = []
         return obj
 
@@ -843,7 +843,7 @@ class LayerResource(CommonModelApi):
 
             layer_id = kwargs['id']
             layer = Layer.objects.get(id=layer_id)
-        except:
+        except BaseException:
             return http.HttpBadRequest(reason=reason)
 
         from geonode.qgis_server.views import default_qml_style

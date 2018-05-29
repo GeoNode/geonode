@@ -80,7 +80,7 @@ try:
     ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
 except ValueError:
     # fallback to regular list of values separated with misc chars
-    ALLOWED_HOSTS = ['localhost', ] if os.getenv('ALLOWED_HOSTS') is None \
+    ALLOWED_HOSTS = ['localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
@@ -740,7 +740,7 @@ OGC_SERVER = {
         # 'datastore',
         'DATASTORE': '',
         'PG_GEOGIG': False,
-        #'CACHE': ".cache"  # local cache file to for HTTP requests
+        # 'CACHE': ".cache"  # local cache file to for HTTP requests
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }
@@ -899,7 +899,7 @@ BING_API_KEY = os.environ.get('BING_API_KEY', None)
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 # handle timestamps like 2017-05-30 16:04:00.719 UTC
-if django.VERSION[0] == 1 and django.VERSION[1] >= 11:
+if django.VERSION[0] == 1 and django.VERSION[1] >= 9:
     _DATETIME_INPUT_FORMATS = ['%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z']
 else:
     _DATETIME_INPUT_FORMATS = ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
@@ -1241,7 +1241,7 @@ if NOTIFICATION_ENABLED:
 """
 # Disabling the heartbeat because workers seems often disabled in flower,
 # thanks to http://stackoverflow.com/a/14831904/654755
-BROKER_HEARTBEAT=0
+BROKER_HEARTBEAT = 0
 
 # Avoid long running and retried tasks to be run over-and-over again.
 BROKER_TRANSPORT_OPTIONS = {
@@ -1272,8 +1272,7 @@ CELERY_RESULT_PERSISTENT = False
 CELERY_ACKS_LATE = True
 
 # Set this to False in order to run async
-# CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
-CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
 CELERY_TASK_IGNORE_RESULT = True
 
 # I use these to debug kombu crashes; we get a more informative message.
@@ -1492,10 +1491,10 @@ SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP = False
 
 # Uncomment this to enable Linkedin and Facebook login
-#INSTALLED_APPS += (
+# INSTALLED_APPS += (
 #    'allauth.socialaccount.providers.linkedin_oauth2',
 #    'allauth.socialaccount.providers.facebook',
-#)
+# )
 
 SOCIALACCOUNT_PROVIDERS = {
     'linkedin_oauth2': {

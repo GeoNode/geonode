@@ -274,12 +274,12 @@ def download(request, resourceid, sender=Layer):
                         sld_file = open(sld_file_path, "w")
                         sld_file.write(sld_remote_content.strip())
                         sld_file.close()
-                    except:
+                    except BaseException:
                         traceback.print_exc()
                         tb = traceback.format_exc()
                         logger.debug(tb)
 
-            except:
+            except BaseException:
                 traceback.print_exc()
                 tb = traceback.format_exc()
                 logger.debug(tb)
@@ -304,7 +304,7 @@ def download(request, resourceid, sender=Layer):
                             response = requests.get(link.url, stream=True, timeout=TIMEOUT)
                             response.raw.decode_content = True
                             shutil.copyfileobj(response.raw, link_file)
-                        except:
+                        except BaseException:
                             traceback.print_exc()
                             tb = traceback.format_exc()
                             logger.debug(tb)
@@ -315,7 +315,7 @@ def download(request, resourceid, sender=Layer):
                         link_file = open(link_file, "w")
                         link_file.write(link.url.strip())
                         link_file.close()
-            except:
+            except BaseException:
                 traceback.print_exc()
                 tb = traceback.format_exc()
                 logger.debug(tb)

@@ -23,10 +23,6 @@ import os
 import logging
 import gzip
 import tarfile
-import urllib2 as urllib
-import traceback
-
-from six import StringIO
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -63,20 +59,34 @@ class Command(BaseCommand):
         if not options['overwrite'] and os.path.exists(fname):
             logger.warning("File exists, won't overwrite %s", fname)
             return
+
+        from tqdm import tqdm
+        import requests
+        import math
+        # Streaming, so we can iterate over the response.
+        r = requests.get(options['url'], stream=True, timeout=10)
+        # Total size in bytes.
+        total_size = int(r.headers.get('content-length', 0))
         logger.info("Requesting %s", options['url'])
-
-        r = urllib.urlopen(options['url'], timeout=10.0)
-
-        if OLD_FORMAT:
-            self.handle_old_format(r, fname)
+        block_size = 1024
+        wrote = 0
+        with open('output.bin', 'wb') as f:
+            for data in tqdm(r.iter_content(block_size), total=math.ceil(total_size//block_size) , unit='KB', unit_scale=False):
+                wrote = wrote  + len(data)
+                f.write(data)
+        logger.info(" total_size [%d] / wrote [%d] " % (total_size, wrote))
+        if total_size != 0 and wrote != total_size:
+            logger.info("ERROR, something went wrong")
         else:
-            self.handle_new_format(r, fname)
+            if OLD_FORMAT:
+                self.handle_old_format(open('output.bin', 'r'), fname)
+            else:
+                self.handle_new_format(open('output.bin', 'r'), fname)
 
 
-    def handle_new_format(self, r, fname):
+    def handle_new_format(self, f, fname):
         try:
-            data = StringIO(r.read())
-            with tarfile.open(fileobj=data) as zfile:
+            with tarfile.open(fileobj=f) as zfile:
                 members = zfile.getmembers()
                 for m in members:
                     if m.name.endswith('GeoLite2-City.mmdb'):
@@ -86,36 +96,28 @@ class Command(BaseCommand):
                                 logger.info("Writing to %s", fname)
                                 tofile.write(fromfile.read())
                             except Exception, err:
-                                logger.error("Cannot extract %s and write to %s: %s", m, fname, err, exc_info=err) 
+                                logger.error("Cannot extract %s and write to %s: %s", m, fname, err, exc_info=err)
                                 try:
                                     os.remove(fname)
                                 except OSError:
                                     logger.debug("Could not delete file %s", fname)
                         return
         except Exception, err:
-            logger.error("Cannot process %s: %s", r, err, exc_info=err)
+            logger.error("Cannot process %s: %s", f, err, exc_info=err)
 
 
-    def handle_old_format(self, r, fname):
+    def handle_old_format(self, f, fname):
         try:
-            data = StringIO(r.read())
-            with gzip.GzipFile(fileobj=data) as zfile:
+            with gzip.GzipFile(fileobj=f) as zfile:
                 logger.info("Writing to %s", fname)
-                try:
-                    os.remove(fname)
-                except OSError:
-                    logger.debug('Could not delete file %s' % fname)
                 with open(fname, 'wb') as tofile:
                     try:
                         tofile.write(zfile.read())
-                    except:
-                        tb = traceback.format_exc()
-                        logger.error(tb)
-
+                    except Exception, err:
+                        logger.error("Cannot extract %s and write to %s: %s", f, fname, err, exc_info=err)
                         try:
                             os.remove(fname)
                         except OSError:
                             logger.debug('Could not delete file %s' % fname)
-        except:
-            tb = traceback.format_exc()
-            logger.error(tb)
+        except Exception, err:
+            logger.error("Cannot process %s: %s", f, err, exc_info=err)

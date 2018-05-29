@@ -86,7 +86,7 @@ geonode-dialogos==0.9
 geonode-user-messages==0.1.14
 gisdata==0.5.4
 glob2==0.6
-gn-gsimporter==1.0.2
+gn-gsimporter>=1.0.3
 gsconfig==1.0.8
 httplib2==0.10.3
 idna==2.6
@@ -154,6 +154,7 @@ SQLAlchemy==1.1.14
 tablib==0.12.1
 timeout-decorator==0.4.0
 transifex-client==0.12.4
+tqdm==4.23.3
 typing==3.6.4
 ua-parser==0.7.3
 unicodecsv==0.14.1

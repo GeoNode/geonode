@@ -54,7 +54,7 @@ Move the sources into project folder::
 Navigate to sources folder and install required packages::
 
     cd /opt/apps/geonode/geonode
-    sudo pip install -e .
+    sudo pip install -e . --upgrade --no-cache
 
 .. _geonode_install_settings:
 

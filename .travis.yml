@@ -20,6 +20,8 @@ services:
   - postgresql
 
 addons:
+  hosts:
+    - geonode
   postgresql: 9.6
   apt:
     packages:
@@ -63,6 +65,7 @@ branches:
   only:
     - master
     - 2.9.x
+    - 2.8.0
     - 2.7.x
     - 2.6.x
 
@@ -80,8 +83,8 @@ install:
   - sudo apt-get update
   - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 --no-install-recommends
   - sudo update-java-alternatives --set java-8-oracle
-  - pip install -r requirements.txt
-  - pip install -e .
+  - pip install -r requirements.txt --upgrade
+  - pip install -e . --upgrade
   - pip install pygdal==`gdal-config --version`
   - pip install codecov
 

@@ -108,7 +108,7 @@ class Style(models.Model, PermissionLevelMixin):
             layer = self.layer_styles.first()
             """:type: Layer"""
             return layer.get_self_resource()
-        except:
+        except BaseException:
             return None
 
 
@@ -599,6 +599,7 @@ def pre_delete_layer(instance, sender, **kwargs):
     OverallRating.objects.filter(
         content_type=ct,
         object_id=instance.id).delete()
+
     default_style = instance.default_style
     for style in instance.styles.all():
         if style.layer_styles.all().count() == 1:

@@ -60,6 +60,7 @@ class GroupCategoryUpdateView(UpdateView):
     fields = ['name', 'description']
     template_name_suffix = '_update_form'
 
+
 group_category_create = GroupCategoryCreateView.as_view()
 group_category_detail = GroupCategoryDetailView.as_view()
 group_category_update = GroupCategoryUpdateView.as_view()

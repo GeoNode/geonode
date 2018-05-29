@@ -496,7 +496,9 @@ def file_upload(filename,
     if 'xml' in files:
         with open(files['xml']) as f:
             xml_file = f.read()
+
         defaults['metadata_uploaded'] = True
+
         defaults['metadata_uploaded_preserve'] = metadata_uploaded_preserve
 
         # get model properties from XML
@@ -504,6 +506,7 @@ def file_upload(filename,
 
         if defaults['metadata_uploaded_preserve']:
             defaults['metadata_xml'] = xml_file
+
             defaults['uuid'] = identifier
 
         for key, value in vals.items():
@@ -514,6 +517,7 @@ def file_upload(filename,
                     identifier=value.lower(),
                     defaults={'description': '', 'gn_description': value})
                 key = 'category'
+
                 defaults[key] = value
             else:
                 defaults[key] = value
@@ -562,7 +566,7 @@ def file_upload(filename,
                 layer = Layer.objects.get(alternate=title)
                 created = False
                 overwrite = True
-        except:
+        except BaseException:
             raise
 
     # Delete the old layers if overwrite is true
@@ -572,17 +576,27 @@ def file_upload(filename,
     if not created and overwrite:
         # update with new information
         defaults['upload_session'] = upload_session
+
         defaults['title'] = defaults.get('title', None) or layer.title
+
         defaults['abstract'] = defaults.get('abstract', None) or layer.abstract
+
         defaults['bbox_x0'] = defaults.get('bbox_x0', None) or layer.bbox_x0
+
         defaults['bbox_x1'] = defaults.get('bbox_x1', None) or layer.bbox_x1
+
         defaults['bbox_y0'] = defaults.get('bbox_y0', None) or layer.bbox_y0
+
         defaults['bbox_y1'] = defaults.get('bbox_y1', None) or layer.bbox_y1
+
         defaults['is_approved'] = defaults.get(
             'is_approved', None) or layer.is_approved
+
         defaults['is_published'] = defaults.get(
             'is_published', None) or layer.is_published
+
         defaults['license'] = defaults.get('license', None) or layer.license
+
         defaults['category'] = defaults.get('category', None) or layer.category
 
         try:
