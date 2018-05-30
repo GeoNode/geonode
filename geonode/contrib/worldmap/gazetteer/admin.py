@@ -24,5 +24,6 @@ class GazetteerAttributeAdmin(admin.ModelAdmin):
         'date_format',
     )
 
+
 admin.site.register(GazetteerEntry, GazetteerEntryAdmin)
 admin.site.register(GazetteerAttribute, GazetteerAttributeAdmin)

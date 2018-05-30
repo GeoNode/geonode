@@ -89,7 +89,7 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
             try:
                 layer = Layer.objects.get(typename=maplayer.name)
                 layers.append(layer.name)
-            except:
+            except Exception:
                 logger.info("Could not find %s", maplayer.name)
 
     elif layer:
@@ -409,7 +409,7 @@ def getNominatimResults(place_name):
         for result in results:
             formatted_results.append(formatExternalGeocode('Nominatim', result))
         return formatted_results
-    except:
+    except Exception:
         return []
 
 
@@ -433,7 +433,7 @@ def getGeonamesResults(place_name):
         for result in results:
             formatted_results.append(formatExternalGeocode('Geonames', result))
         return formatted_results
-    except:
+    except Exception:
         return []
 
 
