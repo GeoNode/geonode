@@ -175,6 +175,13 @@
             {% endif %}
 
             localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",
+
+            {% if USE_HYPERMAP %}
+                use_hypermap: true,
+            {% else %}
+                use_hypermap: false,
+            {% endif %}
+
             hypermapRegistryUrl: "{{ HYPERMAP_REGISTRY_URL }}",
             mapProxyUrl: "{{ MAPPROXY_URL }}",
             solrUrl: "{{ SOLR_URL }}",

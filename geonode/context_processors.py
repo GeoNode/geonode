@@ -178,6 +178,12 @@ def resource_urls(request):
             '/static/worldmap/worldmap_client/'
         )
 
+        defaults['USE_HYPERMAP'] = getattr(
+            settings,
+            'USE_HYPERMAP',
+            False
+        )
+
         # TODO disable DB_DATASTORE setting
         defaults['DB_DATASTORE'] = True
 
