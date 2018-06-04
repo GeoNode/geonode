@@ -71,7 +71,7 @@ def set_attributes(layer, overwrite=False):
                 [n.attrib['name'], n.attrib['type']] for n in doc.findall(
                     path) if n.attrib.get('name') and n.attrib.get('type')]
 
-        except:
+        except BaseException:
             attribute_map = []
     else:
         attribute_map = []

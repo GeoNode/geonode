@@ -38,7 +38,7 @@ from geonode.documents.models import (
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 
-autodiscover() # flake8: noqa
+autodiscover()  # flake8: noqa
 
 from geonode.base.forms import ResourceBaseForm
 
@@ -82,7 +82,7 @@ class DocumentFormMixin(object):
 
         # delete remaining links
         DocumentResourceLink.objects\
-                .filter(document_id=self.instance.id).exclude(pk__in=[i.pk for i in instances]).delete()
+        .filter(document_id=self.instance.id).exclude(pk__in=[i.pk for i in instances]).delete()
 
 
 class DocumentForm(ResourceBaseForm, DocumentFormMixin):
@@ -171,7 +171,6 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
     links = forms.MultipleChoiceField(
         label=_("Link to"),
         required=False)
-
 
     class Meta:
         model = Document

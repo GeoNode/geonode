@@ -51,18 +51,16 @@ from geoserver.resource import FeatureType
 from gsimporter import BadRequest
 
 from geonode import GeoNodeException
+from geonode.upload import UploadException, LayerNotReady
 from geonode.base.models import SpatialRepresentationType, TopicCategory
 from ..people.utils import get_default_user
 from ..layers.models import Layer, UploadSession
 from ..layers.metadata import set_metadata
 from ..layers.utils import get_valid_layer_name, resolve_regions
-from ..geoserver.helpers import (mosaic_delete_first_granule,
-                                 set_time_dimension,
-                                 set_time_info,
+from ..geoserver.helpers import (set_time_info,
                                  set_layer_style,
                                  gs_catalog,
-                                 gs_uploader,
-                                 ogc_server_settings)
+                                 gs_uploader)
 from . import signals
 from . import utils
 from .models import Upload
@@ -73,21 +71,6 @@ logger = logging.getLogger(__name__)
 
 def _log(msg, *args):
     logger.debug(msg, *args)
-
-
-class UploadException(Exception):
-
-    '''A handled exception meant to be presented to the user'''
-
-    @staticmethod
-    def from_exc(msg, ex):
-        args = [msg]
-        args.extend(ex.args)
-        return UploadException(*args)
-
-
-class LayerNotReady(Exception):
-    pass
 
 
 class UploaderSession(object):
@@ -336,7 +319,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
         # Is it a regular file or an ImageMosaic?
         # if mosaic_time_regex and mosaic_time_value:
         if mosaic:  # we want to ingest as ImageMosaic
-            target_store = import_imagemosaic_granules(
+            target_store, files_to_upload = utils.import_imagemosaic_granules(
                 spatial_files,
                 append_to_mosaic_opts,
                 append_to_mosaic_name,
@@ -351,30 +334,49 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
             upload.append_to_mosaic_name = append_to_mosaic_name
             upload.mosaic_time_regex = mosaic_time_regex
             upload.mosaic_time_value = mosaic_time_value
+            # moving forward with a regular Importer session
+            if len(files_to_upload) > 1:
+                import_session = gs_uploader.upload_files(
+                    files_to_upload[1:],
+                    use_url=False,
+                    # import_id=next_id,
+                    target_store=target_store
+                )
+            else:
+                import_session = gs_uploader.upload_files(
+                    files_to_upload,
+                    use_url=False,
+                    # import_id=next_id,
+                    target_store=target_store
+                )
+            next_id = import_session.id if import_session else None
+            if not next_id:
+                error_msg = 'No valid Importer Session could be found'
         else:
-            target_store = None
-        # moving forward with a regular Importer session
-        import_session = gs_uploader.upload_files(
-            files_to_upload,
-            use_url=False,
-            import_id=next_id,
-            mosaic=len(spatial_files) > 1,
-            target_store=target_store
-        )
+            # moving forward with a regular Importer session
+            import_session = gs_uploader.upload_files(
+                files_to_upload,
+                use_url=False,
+                import_id=next_id,
+                mosaic=False,
+                target_store=None
+            )
         upload.import_id = import_session.id
         upload.save()
 
         # any unrecognized tasks/files must be deleted or we can't proceed
         import_session.delete_unrecognized_tasks()
 
-        if not import_session.tasks:
-            error_msg = 'No valid upload files could be found'
-        elif import_session.tasks[0].state == 'NO_FORMAT' \
-                or import_session.tasks[0].state == 'BAD_FORMAT':
-            error_msg = 'There may be a problem with the data provided - ' \
-                        'we could not identify its format'
+        if not mosaic:
+            if not import_session.tasks:
+                error_msg = 'No valid upload files could be found'
+        if import_session.tasks:
+            if import_session.tasks[0].state == 'NO_FORMAT' \
+                    or import_session.tasks[0].state == 'BAD_FORMAT':
+                error_msg = 'There may be a problem with the data provided - ' \
+                            'we could not identify its format'
 
-        if len(import_session.tasks) > 1:
+        if not mosaic and len(import_session.tasks) > 1:
             error_msg = "Only a single upload is supported at the moment"
 
         if not error_msg and import_session.tasks:
@@ -879,6 +881,7 @@ def final_step(upload_session, user):
                     identifier=value.lower(),
                     defaults={'description': '', 'gn_description': value})
                 key = 'category'
+
                 defaults[key] = value
             else:
                 defaults[key] = value
@@ -942,149 +945,3 @@ def final_step(upload_session, user):
     cat.reload()
 
     return saved_layer
-
-
-def import_imagemosaic_granules(
-        spatial_files,
-        append_to_mosaic_opts,
-        append_to_mosaic_name,
-        mosaic_time_regex,
-        mosaic_time_value,
-        time_presentation,
-        time_presentation_res,
-        time_presentation_default_value,
-        time_presentation_reference_value):
-
-    # The very first step is to rename the granule by adding the selected regex
-    #  matching value to the filename.
-
-    f = spatial_files[0].base_file
-    dirname = os.path.dirname(f)
-    basename = os.path.basename(f)
-
-    head, tail = os.path.splitext(basename)
-    dst_file = os.path.join(
-        dirname,
-        head.replace(
-            "_",
-            "-") +
-        "_" +
-        mosaic_time_value +
-        tail)
-    os.rename(f, dst_file)
-    spatial_files[0].base_file = dst_file
-
-    # We use the GeoServer REST APIs in order to create the ImageMosaic
-    #  and later add the granule through the GeoServer Importer.
-
-    # 1. Create a zip file containing the ImageMosaic .properties files
-    db = ogc_server_settings.datastore_db
-    db_engine = 'postgis' if \
-        'postgis' in db['ENGINE'] else db['ENGINE']
-
-    if not db_engine == 'postgis':
-        raise UploadException("Unsupported DataBase for Mosaics!")
-
-    context = {
-        "abs_path_flag": "True",
-        "time_attr": "time",
-        "aux_metadata_flag": "False",
-        "mosaic_time_regex": mosaic_time_regex,
-        "db_host": db['HOST'],
-        "db_port": db['PORT'],
-        "db_name": db['NAME'],
-        "db_user": db['USER'],
-        "db_password": db['PASSWORD'],
-        "db_conn_timeout": db['CONN_TOUT'] or "10",
-        "db_conn_min": db['CONN_MIN'] or "1",
-        "db_conn_max": db['CONN_MAX'] or "5",
-        "db_conn_validate": db['CONN_VALIDATE'] or "true",
-    }
-
-    if mosaic_time_regex:
-        indexer_template = """AbsolutePath={abs_path_flag}
-TimeAttribute={time_attr}
-Schema= the_geom:Polygon,location:String,{time_attr}:java.util.Date
-PropertyCollectors=TimestampFileNameExtractorSPI[timeregex]({time_attr})
-CheckAuxiliaryMetadata={aux_metadata_flag}
-SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi"""
-
-        timeregex_template = """regex=(?<=_)({mosaic_time_regex})"""
-
-        with open(dirname + '/timeregex.properties', 'w') as timeregex_prop_file:
-            timeregex_prop_file.write(timeregex_template.format(**context))
-
-    else:
-        indexer_template = """AbsolutePath={abs_path_flag}
-Schema= the_geom:Polygon,location:String,{time_attr}
-CheckAuxiliaryMetadata={aux_metadata_flag}
-SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi"""
-
-    datastore_template = """SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
-host={db_host}
-port={db_port}
-database={db_name}
-user={db_user}
-passwd={db_password}
-Loose\ bbox=true
-Estimated\ extends=false
-validate\ connections={db_conn_validate}
-Connection\ timeout={db_conn_timeout}
-min\ connections={db_conn_min}
-max\ connections={db_conn_max}"""
-
-    with open(dirname + '/indexer.properties', 'w') as indexer_prop_file:
-        indexer_prop_file.write(indexer_template.format(**context))
-
-    with open(dirname + '/datastore.properties', 'w') as datastore_prop_file:
-        datastore_prop_file.write(datastore_template.format(**context))
-
-    if not append_to_mosaic_opts:
-
-        z = zipfile.ZipFile(dirname + '/' + head + '.zip', "w")
-
-        z.write(dst_file, arcname=head + "_" + mosaic_time_value + tail)
-        z.write(dirname + '/indexer.properties', arcname='indexer.properties')
-        z.write(
-            dirname +
-            '/datastore.properties',
-            arcname='datastore.properties')
-        if mosaic_time_regex:
-            z.write(
-                dirname + '/timeregex.properties',
-                arcname='timeregex.properties')
-
-        z.close()
-
-        # 2. Send a "create ImageMosaic" request to GeoServer through gs_config
-        cat = gs_catalog
-        cat._cache.clear()
-        # - name = name of the ImageMosaic (equal to the base_name)
-        # - data = abs path to the zip file
-        # - configure = parameter allows for future configuration after harvesting
-        name = head
-        data = open(dirname + '/' + head + '.zip', 'rb')
-        cat.create_imagemosaic(name, data)
-
-        # configure time as LIST
-        if mosaic_time_regex:
-            set_time_dimension(
-                cat,
-                name,
-                time_presentation,
-                time_presentation_res,
-                time_presentation_default_value,
-                time_presentation_reference_value)
-
-        # - since GeoNode will uploade the first granule again through the Importer, we need to /
-        #   delete the one created by the gs_config
-        mosaic_delete_first_granule(cat, name)
-
-        return head
-    else:
-        cat = gs_catalog
-        cat._cache.clear()
-        cat.reset()
-        # cat.reload()
-
-        return append_to_mosaic_name

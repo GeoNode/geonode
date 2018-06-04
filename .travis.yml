@@ -106,8 +106,8 @@ install:
   - sudo apt-get update
   - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 --no-install-recommends
   - sudo update-java-alternatives --set java-8-oracle
-  - pip install -r requirements.txt
-  - pip install -e .
+  - pip install -r requirements.txt --upgrade
+  - pip install -e . --upgrade
   - pip install pygdal==`gdal-config --version`
   - pip install codecov
 

@@ -624,12 +624,12 @@
             {% for style in resource.styles.all %}
             <li>
               {% if resource.default_style == style %}
-              <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+              <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.sld_title|default_if_none:style.name }}"/>
               (default style)
               {% else %}
-              <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+              <input type="radio" name="style" id="{{ style.name }}" value="{{ style.sld_title|default_if_none:style.name }}"/>
               {% endif %}
-              <a href="{{ GEOSERVER_BASE_URL }}{{ style.absolute_url }}" >{{ style.sld_title }}</a>
+              <a href="{{ GEOSERVER_BASE_URL }}{{ style.absolute_url }}" >{{ style.sld_title|default_if_none:style.name }}</a>
             </li>
             {% empty %}
             <li>{% trans "No styles associated with this layer" %}</li>
@@ -685,7 +685,6 @@
 
 {% block extra_script %}
 {{ block.super }}
-
     {% if GEOGIG_ENABLED and resource.link_set.geogig %}
         {% with "_geogig_scripts.html" as geogig_scripts_template %}
             {% include  geogig_scripts_template %}
@@ -699,6 +698,13 @@
     {% endif %}
     {% include 'rating.html' %}
     {% include 'request_download.html' %}
+    {% if DISPLAY_SOCIAL %}
+     (function() {
+       var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+       po.src = 'https://apis.google.com/js/plusone.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+     })();
+    {% endif %}
     <script type="text/javascript">
        $("#comment_submit_btn").click(function(event) {
             $.ajax({
@@ -728,24 +734,25 @@
             html: items.join('')
 
         }).appendTo('#legend_placeholder');
-
     });
     {% endif %}
         </script>
-    <script type="text/javascript">
-    {% if preview == 'react' %}
-    $('#set_thumbnail').click(function(){
-      window.setThumbnail({{resource.id}})
-      $('#edit-layer').modal('toggle');
-    });
-    {% else %}
-    $('#set_thumbnail').click(function(){
-      createMapThumbnail();
-      $('#edit-layer').modal('toggle');
-    });
-    {% endif %}
 
-    </script>
+    {% block thumbnail_script %}
+        <script type="text/javascript">
+            {% if preview == 'react' %}
+            $('#set_thumbnail').click(function(){
+              window.setThumbnail({{resource.id}})
+              $('#edit-layer').modal('toggle');
+            });
+            {% else %}
+            $('#set_thumbnail').click(function(){
+              createMapThumbnail();
+              $('#edit-layer').modal('toggle');
+            });
+            {% endif %}
+        </script>
+    {% endblock thumbnail_script %}
 
     <script type="text/javascript">
       // set default values for the logical operator list

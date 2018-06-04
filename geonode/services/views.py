@@ -33,7 +33,7 @@ from django.template import loader
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import requires_csrf_token
 from django.views.decorators.cache import cache_control
-from geonode.decorators import superuser_only
+from django.contrib.auth.decorators import login_required
 from geonode.security.views import _perms_info_json
 from geonode.layers.models import Layer
 from geonode.proxy.views import proxy
@@ -73,7 +73,7 @@ def services(request):
     )
 
 
-@superuser_only
+@login_required
 def register_service(request):
     service_register_template = "services/service_register.html"
     if request.method == "POST":
@@ -126,7 +126,7 @@ def _get_service_handler(request, service):
     return service_handler
 
 
-@superuser_only
+@login_required
 def harvest_resources(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
     try:
@@ -201,7 +201,7 @@ def harvest_resources(request, service_id):
     return result
 
 
-@superuser_only
+@login_required
 def harvest_single_resource(request, service_id, resource_id):
     service = get_object_or_404(Service, pk=service_id)
     handler = _get_service_handler(request, service)
@@ -237,7 +237,7 @@ def _gen_harvestable_ids(requested_ids, available_resources):
             yield identifier
 
 
-@superuser_only
+@login_required
 def rescan_service(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
     try:
@@ -255,6 +255,7 @@ def rescan_service(request, service_id):
         reverse("harvest_resources", kwargs={"service_id": service_id}))
 
 
+@login_required
 def service_detail(request, service_id):
     """This view shows the details of a service"""
     service = get_object_or_404(Service, pk=service_id)
@@ -308,37 +309,41 @@ def service_detail(request, service_id):
     )
 
 
-@superuser_only
+@login_required
 def edit_service(request, service_id):
     """
     Edit an existing Service
     """
-    service_obj = get_object_or_404(Service, pk=service_id)
-
+    service = get_object_or_404(Service, pk=service_id)
+    if request.user != service.owner and not request.user.has_perm('change_service', obj=service):
+        return HttpResponse(
+            loader.render_to_string(
+                '401.html', context={
+                        'error_message': _(
+                            "You are not permitted to change this service."
+                        )}, request=request), status=401)
     if request.method == "POST":
         service_form = forms.ServiceForm(
-            request.POST, instance=service_obj, prefix="service")
+            request.POST, instance=service, prefix="service")
         if service_form.is_valid():
-            service_obj = service_form.save(commit=False)
-            service_obj.keywords.clear()
-            service_obj.keywords.add(*service_form.cleaned_data['keywords'])
-            service_obj.save()
-
-            return HttpResponseRedirect(service_obj.get_absolute_url())
+            service = service_form.save(commit=False)
+            service.keywords.clear()
+            service.keywords.add(*service_form.cleaned_data['keywords'])
+            service.save()
+            return HttpResponseRedirect(service.get_absolute_url())
     else:
         service_form = forms.ServiceForm(
-            instance=service_obj, prefix="service")
-
+            instance=service, prefix="service")
     return render(request,
                   "services/service_edit.html",
-                  context={"service": service_obj, "service_form": service_form})
+                  context={"service": service, "service_form": service_form})
 
 
-@superuser_only
+@login_required
 def remove_service(request, service_id):
     """Delete a service and its constituent layers"""
     service = get_object_or_404(Service, pk=service_id)
-    if not request.user.has_perm('maps.delete_service', obj=service):
+    if request.user != service.owner and not request.user.has_perm('delete_service', obj=service):
         return HttpResponse(
             loader.render_to_string(
                 '401.html', context={

@@ -139,7 +139,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         """
         try:
             return self._parse_layers(self.parsed_service.layers)
-        except:
+        except BaseException:
             return None
 
     def _parse_layers(self, layers):

@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-25 02:28-0500\n"
-"PO-Revision-Date: 2016-08-23 11:58+0000\n"
+"POT-Creation-Date: 2018-05-17 15:00+0000\n"
+"PO-Revision-Date: 2018-05-17 17:28+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
 "de/)\n"
@@ -39,16 +39,136 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.6\n"
 
-#: geonode/static/geonode/js/search/search.js:373
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "emitReadable"
+msgstr "emitReadable"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "emit readable"
+msgstr "emit readable"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "maybeReadMore read 0"
+msgstr "maybeReadMore read 0"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "pipeOnDrain"
+msgstr "pipeOnDrain"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "readable nexttick read 0"
+msgstr "readable nexttick read 0"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "resume read 0"
+msgstr "resume read 0"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "flow"
+msgstr "fluss"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "read"
+msgstr "lesen"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "read: emitReadable"
+msgstr "read: emitReadable"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "need readable"
+msgstr "need readable"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "length less than watermark"
+msgstr "length less than watermark"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "reading or ended"
+msgstr "Lesen oder beendet"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "do read"
+msgstr "do read"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "onunpipe"
+msgstr "onunpipe"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "onend"
+msgstr "onend"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "cleanup"
+msgstr "cleanup"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "ondata"
+msgstr "OnData"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "false write response, pause"
+msgstr "false write response, pause"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+#| msgid "Connection Error"
+msgid "onerror"
+msgstr "onerror"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "onfinish"
+msgstr "onfinish"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "unpipe"
+msgstr "unpipe"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+#, javascript-format
+msgid "pipe count=%d opts=%j"
+msgstr "pipe count=%d opts=%j"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "pipe resume"
+msgstr "pipe resume"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "resume"
+msgstr "resume"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+#, javascript-format
+msgid "call pause flowing=%j"
+msgstr "call pause flowing=%j"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "pause"
+msgstr "Pause"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "wrapped end"
+msgstr "wrapped end"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "wrapped data"
+msgstr "wrapped data"
+
+#: geonode/contrib/monitoring/static/monitoring/bundle.js:18
+msgid "wrapped _read"
+msgstr "wrapped _read"
+
+#: geonode/static/geonode/js/search/search.js:524
 msgid "Enter your text here ..."
 msgstr "Geben Sie Ihren Text hier ein..."
 
-#: geonode/static/geonode/js/search/search.js:414
+#: geonode/static/geonode/js/search/search.js:566
 msgid "Enter your region here ..."
 msgstr "Geben Sie Ihre Region hier ein..."
 
-#: geonode/static/geonode/js/upload/FileType.js:33
+#: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "Es fehlt eine %s Datei, die erforderlich ist,"
@@ -58,151 +178,199 @@ msgid "ESRI Shapefile"
 msgstr "ESRI Shapefile"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:13
+msgid "ASCII Text File"
+msgstr "ASCII-Textdatei"
+
 #: geonode/static/geonode/js/upload/FileTypes.js:18
+#: geonode/static/geonode/js/upload/FileTypes.js:23
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:24
+#: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Comma Separated Value"
 msgstr "Komma getrennte Werte"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:29
+#: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "Google Earth KML"
 msgstr "Google Earth KML"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:34
+#: geonode/static/geonode/js/upload/FileTypes.js:39
+#| msgid "Google Earth KML"
+msgid "Google Earth KML with a GroundOverlay"
+msgstr "Google Earth KML with a GroundOverlay"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:45
+#| msgid "Google Earth KML"
+msgid "Google Earth KMZ"
+msgstr "Google Earth KMZ"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:50
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:39
+#: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "Zip Archive"
 msgstr "Zip Archiv"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:45
+#: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "ERDAS Imagine"
 msgstr "ERDAS Imagine"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:50
-#: geonode/static/geonode/js/upload/FileTypes.js:55
+#: geonode/static/geonode/js/upload/FileTypes.js:66
+#: geonode/static/geonode/js/upload/FileTypes.js:71
 msgid "National Imagery Transmission Format"
-msgstr ""
+msgstr "National Imagery Transmission Format"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:61
+#: geonode/static/geonode/js/upload/FileTypes.js:77
 msgid "Controlled Image Base-1 Meter"
-msgstr ""
+msgstr "Controlled Image Base-1 Meter"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:68
+#: geonode/static/geonode/js/upload/FileTypes.js:84
 msgid "Controlled Image Base-5 Meter"
-msgstr ""
+msgstr "Controlled Image Base-5 Meter"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:75
+#: geonode/static/geonode/js/upload/FileTypes.js:91
 msgid "Controlled Image Base-10 Meter"
-msgstr ""
+msgstr "Controlled Image Base-10 Meter"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:82
+#: geonode/static/geonode/js/upload/FileTypes.js:98
 msgid "CADRG-Global Navigation Chart"
-msgstr ""
+msgstr "CADRG-Global Navigation Chart"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:89
+#: geonode/static/geonode/js/upload/FileTypes.js:105
 msgid "CADRG-Jet Navigation Chart"
-msgstr ""
+msgstr "CADRG-Jet Navigation Chart"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:96
+#: geonode/static/geonode/js/upload/FileTypes.js:112
 msgid "CADRG-Operational Navigation Chart"
-msgstr ""
+msgstr "CADRG-Operational Navigation Chart"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:103
+#: geonode/static/geonode/js/upload/FileTypes.js:119
 msgid "CADRG-Tactical Pilotage Chart"
-msgstr ""
+msgstr "CADRG-Tactical Pilotage Chart"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:110
+#: geonode/static/geonode/js/upload/FileTypes.js:126
 msgid "CADRG-Joint Operations Graphic"
-msgstr ""
+msgstr "CADRG-Joint Operations Graphic"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:117
+#: geonode/static/geonode/js/upload/FileTypes.js:133
 msgid "CADRG-Topographic Line Map 100K"
-msgstr ""
+msgstr "CADRG-Topographic Line Map 100K"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:124
+#: geonode/static/geonode/js/upload/FileTypes.js:140
 msgid "CADRG-Topographic Line Map 50K"
-msgstr ""
+msgstr "CADRG-Topographic Line Map 50K"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:131
+#: geonode/static/geonode/js/upload/FileTypes.js:147
 msgid "JPEG2000"
 msgstr "JPEG2000"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:136
+#: geonode/static/geonode/js/upload/FileTypes.js:152
 msgid "MrSID-Multi-resolution Seamless Image Database"
-msgstr ""
+msgstr "MrSID-Multi-resolution Seamless Image Database"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:331
-msgid "Layer Info"
-msgstr "Schicht Info"
+#: geonode/static/geonode/js/upload/FileTypes.js:157
+#| msgid "Metadata Links:"
+msgid "XML Metadata File"
+msgstr "XML Metadata File"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:332
+#: geonode/static/geonode/js/upload/FileTypes.js:163
+msgid "Style Layer Descriptor"
+msgstr "Style Layer Descriptor"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:169
+msgid "JPEG"
+msgstr "JPEG"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:174
+msgid "PNG"
+msgstr "PNG"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:179
+msgid "GIF"
+msgstr "GIF"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:338
+#: geonode/static/geonode/js/upload/LayerInfo.js:482
+#: geonode/static/geonode/js/upload/LayerInfo.js:579
+msgid "Unexpected Error"
+msgstr "Unerwarteter Fehler"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:364
+#| msgid "Layer Info"
+msgid " Info"
+msgstr " Info"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:365
 msgid "Edit Metadata"
 msgstr "Metadaten bearbeiten"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:333
+#: geonode/static/geonode/js/upload/LayerInfo.js:366
+msgid "Upload Metadata"
+msgstr "Upload Metadata"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:367
+msgid "Upload SLD"
+msgstr "Upload SLD"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:368
 msgid "Manage Styles"
 msgstr "Stilverwaltung"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:336
+#: geonode/static/geonode/js/upload/LayerInfo.js:381
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "Die Spalte %1 wurde umbenannt in %2 <br/>"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:342
-msgid "Your layer was successfully uploaded"
-msgstr "Ihre Schicht wurde erfolgreich hochgeladen"
+#: geonode/static/geonode/js/upload/LayerInfo.js:387
+msgid "Your "
+msgstr "Your "
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:371
+#: geonode/static/geonode/js/upload/LayerInfo.js:416
 msgid "Performing Final GeoServer Config Step"
 msgstr "Darstellende Schluss GeoServer Config Schritt"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:386
-#: geonode/static/geonode/js/upload/LayerInfo.js:412
+#: geonode/static/geonode/js/upload/LayerInfo.js:431
+#: geonode/static/geonode/js/upload/LayerInfo.js:468
 msgid "You need to specify more information in order to complete your upload"
 msgstr ""
 "Sie benötigen weitere Informationen, um Ihre Upload abzuschließen angeben"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You need to specify more information in order to complete your upload."
-msgstr ""
-"Sie benötigen weitere Informationen, um Ihre Upload abzuschließen angeben."
+#: geonode/static/geonode/js/upload/LayerInfo.js:451
+msgid "Files are ready to be ingested!"
+msgstr "Files are ready to be ingested!"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You can continue configuring your layer."
-msgstr "Sie können weiterhin die Konfiguration Ihres Schicht."
+#: geonode/static/geonode/js/upload/LayerInfo.js:454
+msgid "A temporal dimension may be added to this Layer."
+msgstr "A temporal dimension may be added to this Layer."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:422
-#: geonode/static/geonode/js/upload/LayerInfo.js:509
-msgid "Unexpected Error"
-msgstr "Unerwarteter Fehler"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:438
+#: geonode/static/geonode/js/upload/LayerInfo.js:498
 msgid "Performing GeoServer Config Step"
 msgstr "Darstellende GeoServer Config Schritt"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:516
+#: geonode/static/geonode/js/upload/LayerInfo.js:586
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Layer-Dateien hochgeladen, die Konfiguration in GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
+#: geonode/static/geonode/js/upload/LayerInfo.js:602
 msgid "Select or create a Geogig repository."
 msgstr "Wählen Sie ein Geogig repository aus oder erstellen Sie eines."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:695
+#: geonode/static/geonode/js/upload/LayerInfo.js:765
 msgid "Remove"
 msgstr "Entfernen"
 
-#: geonode/static/geonode/js/upload/upload.js:125
+#: geonode/static/geonode/js/upload/upload.js:104
+msgid "Only one File at a time can be uploaded!"
+msgstr "Only one File at a time can be uploaded!"
+
+#: geonode/static/geonode/js/upload/upload.js:130
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr ""
 "Die Datei %s ist ein nicht unterstütztes Dateityp, wählen Sie bitte eine "
 "andere Datei."
 
-#: geonode/static/geonode/js/upload/upload.js:285
+#: geonode/static/geonode/js/upload/upload.js:313
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -214,17 +382,17 @@ msgstr ""
 "\n"
 "Bitte prüfen Sie die Fehlermeldung im Formular!"
 
-#: geonode/static/lib/js/assets.min.js:2
+#: geonode/static/lib/js/assets.min.js:2 geonode/static/lib/js/jquery.js:2
 msgid "<iframe frameborder='0' width='0' height='0'/>"
-msgstr ""
+msgstr "<iframe frameborder='0' width='0' height='0'/>"
 
-#: geonode/static/lib/js/assets.min.js:4
+#: geonode/static/lib/js/assets.min.js:4 geonode/static/lib/js/jquery.js:4
 msgid "<script>"
-msgstr ""
+msgstr "<script>"
 
-#: geonode/static/lib/js/assets.min.js:4
+#: geonode/static/lib/js/assets.min.js:4 geonode/static/lib/js/jquery.js:4
 msgid "<div>"
-msgstr ""
+msgstr "<div>"
 
 #: geonode/templates/lang.js:9 geonode/templates/lang.js:236
 msgid "Cancel"
@@ -689,6 +857,17 @@ msgstr "Herunterladen ..."
 #: geonode/templates/lang.js:237
 msgid "Please wait"
 msgstr "Bitte warten"
+
+#~ msgid "Your layer was successfully uploaded"
+#~ msgstr "Ihre Schicht wurde erfolgreich hochgeladen"
+
+#~ msgid ""
+#~ "You need to specify more information in order to complete your upload."
+#~ msgstr ""
+#~ "Sie benötigen weitere Informationen, um Ihre Upload abzuschließen angeben."
+
+#~ msgid "You can continue configuring your layer."
+#~ msgstr "Sie können weiterhin die Konfiguration Ihres Schicht."
 
 #~ msgid "Available %s"
 #~ msgstr "Available %s"

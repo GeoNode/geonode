@@ -57,7 +57,7 @@ def get_visible_resources(queryset,
         is_admin = user.is_superuser if user else False
         try:
             is_manager = user.groupmember_set.all().filter(role='manager').exists()
-        except:
+        except BaseException:
             is_manager = False
 
     # Get the list of objects the user has access to
@@ -68,18 +68,18 @@ def get_visible_resources(queryset,
     manager_groups = []
     try:
         group_list_all = user.group_list_all().values('group')
-    except:
+    except BaseException:
         pass
     try:
         manager_groups = Group.objects.filter(
             name__in=user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
-    except:
+    except BaseException:
         pass
     try:
         anonymous_group = Group.objects.get(name='anonymous')
         if anonymous_group and anonymous_group not in groups:
             groups.append(anonymous_group)
-    except:
+    except BaseException:
         pass
 
     filter_set = queryset
@@ -181,7 +181,7 @@ def get_geofence_rules_count():
         rules_objs = json.loads(r.text)
         rules_count = rules_objs['count']
         return int(rules_count)
-    except:
+    except BaseException:
         tb = traceback.format_exc()
         logger.debug(tb)
         return -1

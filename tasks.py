@@ -76,7 +76,7 @@ def fixtures(ctx):
 
 
 def _docker_host_ip():
-    client = docker.from_env()
+    client = docker.from_env(version='1.24')
     ip_list = client.containers.run(BOOTSTRAP_IMAGE_CHEIP,
                                     network_mode='host'
                                     ).split("\n")
@@ -93,7 +93,7 @@ address {0}".format(ip_list[0]))
 
 
 def _container_exposed_port(component, instname):
-    client = docker.from_env()
+    client = docker.from_env(version='1.24')
     try:
         ports_dict = json.dumps(
             [c.attrs['Config']['ExposedPorts'] for c in client.containers.list(
