@@ -1559,3 +1559,35 @@ GEOTIFF_IO_ENABLED = strtobool(
 GEOTIFF_IO_BASE_URL = os.getenv(
     'GEOTIFF_IO_BASE_URL', 'https://app.geotiff.io'
 )
+
+# WorldMap settings
+USE_WORLDMAP = strtobool(os.getenv('USE_WORLDMAP', 'False'))
+
+if USE_WORLDMAP:
+    GEONODE_CLIENT_LOCATION = '/static/worldmap_client/'
+    GAZETTEER_DB_ALIAS = 'default'
+    INSTALLED_APPS += (
+            'geoexplorer-worldmap',
+            'geonode.contrib.worldmap.gazetteer',
+            'geonode.contrib.worldmap.wm_extra',
+            'geonode.contrib.createlayer',
+        )
+    GAZETTEER_FULLTEXTSEARCH = False
+    WM_COPYRIGHT_URL = "http://gis.harvard.edu/"
+    WM_COPYRIGHT_TEXT = "Center for Geographic Analysis"
+    USE_GAZETTEER = True
+    DEFAULT_MAP_ABSTRACT = """
+        <h3>The Harvard WorldMap Project</h3>
+        <p>WorldMap is an open source web mapping system that is currently
+        under construction. It is built to assist academic research and
+        teaching as well as the general public and supports discovery,
+        investigation, analysis, visualization, communication and archiving
+        of multi-disciplinary, multi-source and multi-format data,
+        organized spatially and temporally.</p>
+    """
+    # these are optionals
+    GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', 'your-key-here')
+    USE_HYPERMAP = strtobool(os.getenv('USE_HYPERMAP', False))
+    HYPERMAP_REGISTRY_URL = os.getenv('HYPERMAP_REGISTRY_URL', 'http://localhost:8001')
+    SOLR_URL = os.getenv('SOLR_URL', 'http://localhost:8983/solr/hypermap/select/')
+    MAPPROXY_URL = os.getenv('MAPPROXY_URL', 'http://localhost:8001')

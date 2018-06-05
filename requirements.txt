@@ -176,6 +176,11 @@ django-ipware<2.2
 # no version here, use latest one with fresh data
 pycountry
 
+# required by worldmap
+datautil==0.4
+dicttoxml==1.7.4
+django-geoexplorer-worldmap==4.0.47
+geopy==1.14.0
 
 #production
 uWSGI==2.0.17
