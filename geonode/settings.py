@@ -1586,7 +1586,7 @@ if USE_WORLDMAP:
     """
     # these are optionals
     GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', 'your-key-here')
-    USE_HYPERMAP = strtobool(os.getenv('USE_HYPERMAP', False))
+    USE_HYPERMAP = strtobool(os.getenv('USE_HYPERMAP', 'False'))
     HYPERMAP_REGISTRY_URL = os.getenv('HYPERMAP_REGISTRY_URL', 'http://localhost:8001')
     SOLR_URL = os.getenv('SOLR_URL', 'http://localhost:8983/solr/hypermap/select/')
     MAPPROXY_URL = os.getenv('MAPPROXY_URL', 'http://localhost:8001')
