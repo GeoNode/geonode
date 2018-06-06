@@ -56,21 +56,28 @@ sitemaps = {
     "map": MapSitemap
 }
 
-urlpatterns = [  # '',
-    # Static pages
-    url(r'^$',
-        TemplateView.as_view(template_name='index.html'),
-        name='home'),
-    url(r'^help/$',
-        TemplateView.as_view(template_name='help.html'),
-        name='help'),
-    url(r'^developer/$',
-        TemplateView.as_view(
-        template_name='developer.html'),
-        name='developer'),
-    url(r'^about/$',
-        TemplateView.as_view(template_name='about.html'),
-        name='about'),
+urlpatterns = [
+                url(r'^$',
+                    TemplateView.as_view(template_name='index.html'),
+                    name='home'),
+                url(r'^help/$',
+                    TemplateView.as_view(template_name='help.html'),
+                    name='help'),
+                url(r'^developer/$',
+                    TemplateView.as_view(
+                    template_name='developer.html'),
+                    name='developer'),
+                url(r'^about/$',
+                    TemplateView.as_view(template_name='about.html'),
+                    name='about'),
+              ]
+
+# WorldMap
+if settings.USE_WORLDMAP:
+    urlpatterns += [url(r'', include('geonode.contrib.worldmap.wm_extra.urls', namespace='worldmap'))]
+    urlpatterns += [url(r'', include('geonode.contrib.worldmap.gazetteer.urls', namespace='gazetteer'))]
+
+urlpatterns += [
 
     # Layer views
     url(r'^layers/', include('geonode.layers.urls')),
@@ -160,7 +167,8 @@ urlpatterns = [  # '',
     url(r'^api/roles', roles, name='roles'),
     url(r'^api/adminRole', admin_role, name='adminRole'),
     url(r'^api/users', users, name='users'),
-    url(r'', include(api.urls)), ]
+    url(r'', include(api.urls)),
+]
 
 urlpatterns += i18n_patterns(
     url("^admin/", include(admin.site.urls)),

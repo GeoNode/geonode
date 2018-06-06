@@ -593,6 +593,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         manager=_HierarchicalTagManager)
     tkeywords = models.ManyToManyField(
         ThesaurusKeyword,
+        verbose_name=_('keywords'),
         help_text=tkeywords_help_text,
         blank=True)
     regions = models.ManyToManyField(
@@ -736,7 +737,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     # metadata XML specific fields
     metadata_uploaded = models.BooleanField(default=False)
-    metadata_uploaded_preserve = models.BooleanField(default=False)
+    metadata_uploaded_preserve = models.BooleanField(_('Metadata uploaded preserve'), default=False)
     metadata_xml = models.TextField(
         null=True,
         default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>',
@@ -757,7 +758,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         help_text=_('Is this resource validated from a publisher or editor?'))
 
     # fields necessary for the apis
-    thumbnail_url = models.TextField(null=True, blank=True)
+    thumbnail_url = models.TextField(_("Thumbnail url"), null=True, blank=True)
     detail_url = models.CharField(max_length=255, null=True, blank=True)
     rating = models.IntegerField(default=0, null=True, blank=True)
 

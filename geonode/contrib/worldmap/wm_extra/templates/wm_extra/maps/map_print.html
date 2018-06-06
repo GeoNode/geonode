@@ -1,0 +1,93 @@
+{% extends "wm_extra/maps/fullscreen.html" %}
+{% load i18n %}
+{% block title %} {% trans "Map Viewer" %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "wm_extra/maps/ext_header.html" %}
+{% include "wm_extra/maps/app_header.html" %}
+{% include "wm_extra/maps/geo_header.html" %}
+{{ block.super }}
+{% if "gme-" in GOOGLE_API_KEY %}
+<script src="https://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
+{% else %}
+<script src="https://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
+{% endif %}
+
+<style type="text/css">
+.pad {padding:10px;}
+</style>
+
+<script type="text/javascript">
+
+
+Ext.onReady(function() {
+{% autoescape off %}
+
+
+
+  var print_app;
+  var parent_app = window.opener.app;
+  var printmapConfig =  parent_app.getState();
+
+
+
+    var printConfig = Ext.applyIf({
+            useCapabilities: false,
+            tools: [],
+            createTools: function() {
+                return [];
+            },
+            proxy: "/proxy/?url=",
+            useToolbar: false,
+            siteUrl: "{{ SITE_URL }}",
+            rest: "/maps/",
+            // tell the map viewer where and how to be rendered
+            portalConfig: {
+                height: 500,
+                width:670,
+                renderTo: "embedded_map"
+            }
+        }, printmapConfig);
+
+
+
+      printConfig.map.controls = [new OpenLayers.Control.Navigation(),
+                                 new OpenLayers.Control.Attribution()];
+
+
+
+    print_app = new GeoExplorer.ViewerPrint(printConfig, true);
+    printConfig.map.controls = [];
+
+    Ext.get("title").update(print_app.about.title);
+    Ext.get("abstract").update(print_app.about.abstract);
+
+    var legendPanel = new GeoExt.LegendPanel({
+        defaults: {
+            labelCls: 'mylabel',
+            style: 'padding:5px'
+        },
+        bodyStyle: 'padding:5px',
+        width: 350,
+        autoScroll: true,
+        renderTo: "legend_panel",
+        layerStore: print_app.mapPanel.layers
+    });
+
+
+    {% endautoescape %}
+});
+</script>
+{% endblock %}
+{% block body %}
+<div class="pad">
+    <h3 id="title"></h3>
+    <p id="abstract"></p>
+</div>
+    <div  class="pad" id="embedded_map" style="height:500px;width:670px;"></div>
+
+    <div class="pad">{% trans "LEGEND" %}
+    	<div id="legend_panel"></div>
+    </div>
+
+{% endblock %}

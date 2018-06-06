@@ -37,6 +37,9 @@ from geonode.geoserver.helpers import ogc_server_settings
 
 logger = logging.getLogger(__name__)
 
+BBOX = [-180, 180, -90, 90]
+DATA_QUALITY_MESSAGE = "Created with GeoNode"
+
 
 def create_layer(name, title, owner_name, geometry_type, attributes=None):
     """
@@ -70,11 +73,11 @@ def create_gn_layer(workspace, datastore, name, title, owner_name):
         title=title,
         owner=owner,
         uuid=str(uuid.uuid4()),
-        bbox_x0=-180,
-        bbox_x1=180,
-        bbox_y0=-90,
-        bbox_y1=90,
-        srid='EPSG:4326',
+        bbox_x0=BBOX[0],
+        bbox_x1=BBOX[1],
+        bbox_y0=BBOX[2],
+        bbox_y1=BBOX[3],
+        data_quality_statement=DATA_QUALITY_MESSAGE,
     )
     return layer
 
@@ -142,7 +145,8 @@ def get_or_create_datastore(cat, workspace=None, charset="UTF-8"):
     """
 
     # TODO refactor this and geoserver.helpers._create_db_featurestore
-    dsname = ogc_server_settings.DATASTORE
+    # dsname = ogc_server_settings.DATASTORE
+    dsname = ogc_server_settings.datastore_db['NAME']
     if not ogc_server_settings.DATASTORE:
         msg = ("To use the createlayer application you must set ogc_server_settings.datastore_db['ENGINE']"
                " to 'django.contrib.gis.db.backends.postgis")
@@ -150,8 +154,7 @@ def get_or_create_datastore(cat, workspace=None, charset="UTF-8"):
         raise GeoNodeException(msg)
 
     try:
-        ds = cat.get_store(dsname, workspace) or\
-            cat.create_datastore(dsname, workspace=workspace)
+        ds = cat.get_store(dsname, workspace)
     except FailedRequestError:
         ds = cat.create_datastore(dsname, workspace=workspace)
 
@@ -228,12 +231,13 @@ def create_gs_layer(name, title, geometry_type, attributes=None):
            "<nativeName>{native_name}</nativeName>"
            "<title>{title}</title>"
            "<srs>EPSG:4326</srs>"
-           "<latLonBoundingBox><minx>-180</minx><maxx>180</maxx><miny>-90</miny><maxy>90</maxy>"
+           "<latLonBoundingBox><minx>{minx}</minx><maxx>{maxx}</maxx><miny>{miny}</miny><maxy>{maxy}</maxy>"
            "<crs>EPSG:4326</crs></latLonBoundingBox>"
            "{attributes}"
            "</featureType>").format(
                 name=name.encode('UTF-8', 'strict'), native_name=native_name.encode('UTF-8', 'strict'),
                 title=title.encode('UTF-8', 'strict'),
+                minx=BBOX[0], maxx=BBOX[1], miny=BBOX[2], maxy=BBOX[3],
                 attributes=attributes_block)
 
     url = ('%s/workspaces/%s/datastores/%s/featuretypes'

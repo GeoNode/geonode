@@ -1,0 +1,14 @@
+{% extends "geonode_base.html" %}
+
+{% load i18n %}
+{% load base_tags %}
+
+{% block title %} {% trans "New Map" %} - {{ block.super }} {% endblock %}
+{% block head %}
+
+	{% include 'wm_extra/maps/worldmap.html' %}
+
+	{{ block.super }}
+{% endblock %}
+
+{% block footer %}{% endblock %}
