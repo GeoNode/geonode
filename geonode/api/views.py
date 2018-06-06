@@ -108,8 +108,6 @@ def user_info(request):
         "groups": groups
     })
 
-    print(" >>>>>>>>>>>>>>>>>>>>>>>>>> user_info %s " % user_info)
-
     response = HttpResponse(
         user_info,
         content_type="application/json"

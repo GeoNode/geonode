@@ -137,6 +137,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
             slug__in=user.groupmember_set.filter().values_list("group__slug", flat=True))
         enhanced_context = context.copy()
         enhanced_context.update({
+            "username": user.username,
             "inviter_name": full_name or str(user),
             "inviter_first_name": user.first_name or str(user),
             "inviter_id": user.id,
