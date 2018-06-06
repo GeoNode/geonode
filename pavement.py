@@ -481,6 +481,7 @@ def start():
     """
     Start GeoNode (Django, GeoServer & Client)
     """
+    sh('sleep 30')
     info("GeoNode is now available.")
 
 

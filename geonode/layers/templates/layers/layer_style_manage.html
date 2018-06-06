@@ -68,13 +68,16 @@
 {{ block.super }}
 <script type="text/javascript">
   $(function () {
-
     $('#style-select').multiSelect({
       afterSelect: function(values){
-        $('#default_style').append($("<option/>", {
-          value: values[0],
-          text: values[0]
-        }));
+          $("#style-select :selected").each(function() {
+              if(this.value === values[0]) {
+                  $('#default_style').append($("<option/>", {
+                    value: this.value,
+                    text: this.text
+                  }));
+              }
+          });
       },
       afterDeselect: function(values){
         $('#default_style option').each(function() {
@@ -84,7 +87,6 @@
         });
       }
     });
-
   });
 </script>
 {% endblock %}
