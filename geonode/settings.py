@@ -763,7 +763,7 @@ OGC_SERVER = {
         % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
         # 'datastore',
-        'DATASTORE': '',
+        'DATASTORE': os.environ.get('DEFAULT_BACKEND_DATASTORE',''),
         'PG_GEOGIG': False,
         # 'CACHE': ".cache"  # local cache file to for HTTP requests
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
@@ -1467,7 +1467,7 @@ RISKS = {'DEFAULT_LOCATION': None,
 ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
-MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'True'))
+MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'False'))
 MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
 MONITORING_SERVICE_NAME = 'geonode'
 

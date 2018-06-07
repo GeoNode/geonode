@@ -813,13 +813,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.srid]
 
     @property
-    def bbox_string(self):
-        """BBOX is in the format: [x0,y0,x1,y1]."""
-        return ",".join([str(self.bbox_x0), str(self.bbox_y0),
-                         str(self.bbox_x1), str(self.bbox_y1)])
-
-    @property
-    def geographic_bounding_box(self):
+    def ll_bbox(self):
         """BBOX is in the format: [x0,x1,y0,y1]."""
         from geonode.utils import bbox_to_projection
         llbbox = self.bbox[0:4]
@@ -829,10 +823,27 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                                             target_srid=4326)
             except BaseException:
                 pass
+        return [
+            llbbox[0],  # x0
+            llbbox[1],  # x1
+            llbbox[2],  # y0
+            llbbox[3],  # y1
+            self.srid]
+
+    @property
+    def bbox_string(self):
+        """BBOX is in the format: [x0,y0,x1,y1]."""
+        return ",".join([str(self.bbox_x0), str(self.bbox_y0),
+                         str(self.bbox_x1), str(self.bbox_y1)])
+
+    @property
+    def geographic_bounding_box(self):
+        """BBOX is in the format: [x0,x1,y0,y1]."""
+        llbbox = self.ll_bbox[0:4]
         return bbox_to_wkt(
             llbbox[0],  # x0
-            llbbox[2],  # x1
-            llbbox[1],  # y0
+            llbbox[1],  # x1
+            llbbox[2],  # y0
             llbbox[3],  # y1
             srid=self.srid)
 

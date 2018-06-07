@@ -259,8 +259,7 @@ class CommonModelApi(ModelResource):
         northeast_lng,northeast_lat'
         returns the modified query
         """
-        bbox = bbox.split(
-            ',')  # TODO: Why is this different when done through haystack?
+        bbox = bbox.split(',')  # TODO: Why is this different when done through haystack?
         bbox = map(str, bbox)  # 2.6 compat - float to decimal conversion
         intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) |
                        Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
@@ -414,14 +413,15 @@ class CommonModelApi(ModelResource):
 
         # Filter by geographic bounding box
         if bbox:
+            print(bbox)
             left, bottom, right, top = bbox.split(',')
             sqs = (
                 SearchQuerySet() if sqs is None else sqs).exclude(
                 SQ(
-                    bbox_top__lte=bottom) | SQ(
-                    bbox_bottom__gte=top) | SQ(
-                    bbox_left__gte=right) | SQ(
-                        bbox_right__lte=left))
+                    ll_bbox_top__lte=bottom) | SQ(
+                    ll_bbox_bottom__gte=top) | SQ(
+                    ll_bbox_left__gte=right) | SQ(
+                        ll_bbox_right__lte=left))
 
         # Apply sort
         if sort.lower() == "-date":
