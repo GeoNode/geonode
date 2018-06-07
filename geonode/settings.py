@@ -763,7 +763,7 @@ OGC_SERVER = {
         % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
         # 'datastore',
-        'DATASTORE': DATABASES.get(os.getenv('DEFAULT_BACKEND_DATASTORE'),''),
+        'DATASTORE': os.environ.get('DEFAULT_BACKEND_DATASTORE',''),
         'PG_GEOGIG': False,
         # 'CACHE': ".cache"  # local cache file to for HTTP requests
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
