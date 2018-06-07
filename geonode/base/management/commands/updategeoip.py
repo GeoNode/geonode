@@ -82,6 +82,11 @@ class Command(BaseCommand):
                 self.handle_old_format(open('output.bin', 'r'), fname)
             else:
                 self.handle_new_format(open('output.bin', 'r'), fname)
+        try:
+            # Cleaning up
+            os.remove('output.bin')
+        except OSError:
+            pass
 
 
     def handle_new_format(self, f, fname):

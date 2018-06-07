@@ -34,7 +34,7 @@ import geonode.proxy.urls
 from . import views
 
 from geonode.api.urls import api
-from geonode.api.views import verify_token, roles, users, admin_role
+from geonode.api.views import verify_token, user_info, roles, users, admin_role
 
 from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
@@ -162,6 +162,8 @@ urlpatterns += [
     # Api Views
     url(r'^api/o/v4/tokeninfo',
         verify_token, name='tokeninfo'),
+    url(r'^api/o/v4/userinfo',
+        user_info, name='userinfo'),
     url(r'^api/roles', roles, name='roles'),
     url(r'^api/adminRole', admin_role, name='adminRole'),
     url(r'^api/users', users, name='users'),

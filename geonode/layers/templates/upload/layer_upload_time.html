@@ -331,7 +331,7 @@
         function iso8601DateFormatter(value, row, index) {
             var time_checked_value = String(value);
             if(data_validation && !time_checked_value.match(
-                /(^\d{4}$)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\d)|(\d{4}\/[01]\d\/[0-3]\d)/
+                /(^\d{4}$)|(\d{4}-[01]\d)|(\d{4}-[01]\d-[0-3]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\dZ+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\dZ)/
             )) {
                 time_checked_value = '<font color="red" title="' + value +'{% trans " does NOT match any valid ISO-8601 Date-Time string!" %}">' +
                     '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;' + value +'</font>';
@@ -349,7 +349,7 @@
         function iso8601Formatter(value, row, index) {
             var time_checked_value = String(value);
             if(data_validation && !time_checked_value.match(
-                /(^\d{4}$)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\dZ+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\dZ)/
+                /(^\d{4}$)|(\d{4}-[01]\d)|(\d{4}-[01]\d-[0-3]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\dZ+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\dZ)/
             )) {
                 time_checked_value = '<font color="red" title="' + value +'{% trans " does NOT match any valid ISO-8601 Date-Time string!" %}">' +
                     '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;' + value +'</font>';
