@@ -167,6 +167,9 @@ def _prepare_oauth_fixture():
             "pk": 1001,
             "fields": {
                 "skip_authorization": True,
+                "created": "2018-05-31T10:00:31.661Z",
+                "updated": "2018-05-31T11:30:31.245Z",
+                "algorithm": "RS256",
                 "redirect_uris": "http://{0}:{1}/geoserver/index.html".format(
                     pub_ip, pub_port
                 ),

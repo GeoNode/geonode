@@ -331,7 +331,7 @@ define(function (require, exports) {
         $(this).text('Done').attr('disabled','disabled');
         var id = (new Date()).getTime();
 	    var newWin = window.open(window.location.href,
-                id, "toolbar=1,scrollbars=1,location=0,statusbar=0,menubar=1,resizable=1,width=800,height=600,left = 240,top = 212");
+                id, "toolbar=1,scrollbars=1,location=0,statusbar=0,menubar=1,resizable=1,width=1100,height=800,left = 240,top = 100");
         common.make_request({
             url: event.data.url,
             async: true,

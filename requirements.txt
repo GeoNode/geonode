@@ -63,12 +63,13 @@ django-reversion<=2.0.13 # python-django-reversion (2.0.13 in our ppa)
 django-suit<=0.2.26 # python-django-suit (0.2.26 in our ppa)
 django-tastypie<=0.14.0 # python-django-tastypie (0.14.0 in our ppa)
 django-invitations<=1.9.2 # python-django-invitations (1.9.2 in our ppa)
-django-oauth-toolkit>=0.10.0,<1.0 # python-django-oauth-toolkit (0.12.0 in our ppa)
+geonode-oauth-toolkit==1.1.2b0 # python-django-oauth-toolkit (0.12.0 in our ppa)
 # djangorestframework<=3.7.7 # TODO
 # djangorestframework-gis<=0.12 # TODO
 # drf-nested-routers==0.90.0 # python-drf-nested-routers (0.90.0 in our ppa)
 # drf-openapi==1.3.0 # python-drf-openapi (1.3.0 in our ppa)
-oauthlib==2.0.1 # python-oauthlib (2.0.6 in our ppa) FIXME
+oauthlib==2.1.0 # python-oauthlib (2.0.6 in our ppa) FIXME
+requests-oauthlib==1.0.0
 
 # geopython dependencies
 pyproj>=1.9.5,<=1.9.5.1 # python-pyproj (1.9.5.1)
@@ -157,7 +158,7 @@ python-gnupg<=0.4.1 # (0.4.1 in our ppa)
 python-mimeparse<=1.6.0 # (1.6.0 in our ppa)
 pytz<=2018.3 # python-pytz (2018.3 in our ppa)
 regex<=2016.7.21 # (0.1.20160110 in ppa)
-requests==2.11.1 # (2.18.4 in our ppa) FIXME
+requests==2.18.4 # (2.18.4 in our ppa) FIXME
 simplejson<=3.13.2 # (3.13.2 in our ppa)
 tablib<=0.12.1 # (0.12.1 in our ppa)
 timeout-decorator==0.4.0 # TODO
@@ -176,6 +177,11 @@ django-ipware<2.2
 # no version here, use latest one with fresh data
 pycountry
 
+# required by worldmap
+datautil==0.4
+dicttoxml==1.7.4
+django-geoexplorer-worldmap==4.0.47
+geopy==1.14.0
 
 #production
 uWSGI==2.0.17

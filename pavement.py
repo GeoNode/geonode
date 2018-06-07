@@ -75,21 +75,45 @@ with open("dev_config.yml", 'r') as f:
 def grab(src, dest, name):
     download = True
     if not dest.exists():
-        print 'Downloading %s' % name
+        print('Downloading %s' % name)
     elif not zipfile.is_zipfile(dest):
-        print 'Downloading %s (corrupt file)' % name
+        print('Downloading %s (corrupt file)' % name)
     else:
         download = False
     if download:
         if str(src).startswith("file://"):
             src2 = src[7:]
             if not os.path.exists(src2):
-                print "Source location (%s) does not exist" % str(src2)
+                print("Source location (%s) does not exist" % str(src2))
             else:
-                print "Copying local file from %s" % str(src2)
+                print("Copying local file from %s" % str(src2))
                 shutil.copyfile(str(src2), str(dest))
         else:
-            urllib.urlretrieve(str(src), str(dest))
+            # urllib.urlretrieve(str(src), str(dest))
+            from tqdm import tqdm
+            import requests
+            import math
+            # Streaming, so we can iterate over the response.
+            r = requests.get(str(src), stream=True, timeout=10)
+            # Total size in bytes.
+            total_size = int(r.headers.get('content-length', 0))
+            print("Requesting %s" % str(src))
+            block_size = 1024
+            wrote = 0
+            with open('output.bin', 'wb') as f:
+                for data in tqdm(r.iter_content(block_size), total=math.ceil(total_size//block_size) , unit='KB', unit_scale=False):
+                    wrote = wrote  + len(data)
+                    f.write(data)
+            print(" total_size [%d] / wrote [%d] " % (total_size, wrote))
+            if total_size != 0 and wrote != total_size:
+                print("ERROR, something went wrong")
+            else:
+                shutil.move('output.bin', str(dest))
+            try:
+                # Cleaning up
+                os.remove('output.bin')
+            except OSError:
+                pass
 
 
 @task
@@ -457,6 +481,7 @@ def start():
     """
     Start GeoNode (Django, GeoServer & Client)
     """
+    sh('sleep 30')
     info("GeoNode is now available.")
 
 

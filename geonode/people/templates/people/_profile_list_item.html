@@ -14,7 +14,9 @@
           </h5>
           <p>
             <small ng-hide="profile.organization">
-              No Organization Info
+              {% endverbatim %}
+              {% trans "No Organization Info" %}
+              {% verbatim %}
             </small>
             <small ng-show="profile.organization">
               {{ profile.organization | limitTo:30 }} <small ng-if="profile.organization.length > 30">...</small>
