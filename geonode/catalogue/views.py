@@ -93,9 +93,9 @@ def csw_global_dispatch(request):
                                                  for e in authorized_ids)) + ")"
             authorized_layers_filter = "id IN " + authorized_layers
             mdict['repository']['filter'] += " AND " + authorized_layers_filter
-
-            mdict['repository']['filter'] = "({}) OR ({})".format(mdict['repository']['filter'],
-                                                                  authorized_layers_filter)
+            if request.user and request.user.is_authenticated():
+                mdict['repository']['filter'] = "({}) OR ({})".format(mdict['repository']['filter'],
+                                                                      authorized_layers_filter)
         else:
             authorized_layers_filter = "id = -9999"
             mdict['repository']['filter'] += " AND " + authorized_layers_filter
@@ -111,7 +111,7 @@ def csw_global_dispatch(request):
 
         if not is_admin and settings.GROUP_PRIVATE_RESOURCES:
             groups_ids = []
-            if request.user:
+            if request.user and request.user.is_authenticated():
                 for group in request.user.groups.all():
                     groups_ids.append(group.id)
                 group_list_all = []

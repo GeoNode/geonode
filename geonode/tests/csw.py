@@ -244,7 +244,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
                 'Expected a specific CRS code value in Dublin Core model')
             # test BBOX properties in Dublin Core
             from decimal import Decimal
-            logger.info([Decimal(record.bbox.minx), Decimal(record.bbox.miny),
+            logger.debug([Decimal(record.bbox.minx), Decimal(record.bbox.miny),
                          Decimal(record.bbox.maxx), Decimal(record.bbox.maxy)])
             self.assertEqual(
                 Decimal(record.bbox.minx),
@@ -296,10 +296,10 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
 
         csw = get_catalogue()
         csw.catalogue.getrecords(bbox=[-140, -70, 80, 70])
-        logger.info(csw.catalogue.results)
+        logger.debug(csw.catalogue.results)
         self.assertEqual(
             csw.catalogue.results,
-            {'matches': 16, 'nextrecord': 11, 'returned': 10},
+            {'matches': 7, 'nextrecord': 0, 'returned': 7},
             'Expected a specific bbox query result set')
 
     def test_csw_upload_fgdc(self):

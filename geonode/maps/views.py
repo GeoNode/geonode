@@ -1428,10 +1428,11 @@ def map_metadata_detail(
             group = GroupProfile.objects.get(slug=map_obj.group.name)
         except GroupProfile.DoesNotExist:
             group = None
+    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
     return render(request, template, context={
         "resource": map_obj,
         "group": group,
-        'SITEURL': settings.SITEURL[:-1]
+        'SITEURL': site_url
     })
 
 

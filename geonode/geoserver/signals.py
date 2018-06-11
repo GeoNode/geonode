@@ -186,8 +186,8 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                    'url': None,
                                    'type': None}
         profile = Profile.objects.get(username=instance.poc.username)
-        gs_resource.attribution_link = settings.SITEURL[
-            :-1] + profile.get_absolute_url()
+        site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+        gs_resource.attribution_link = site_url + profile.get_absolute_url()
         # gs_resource should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
@@ -477,8 +477,9 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                )
                                )
 
+    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
     html_link_url = '%s%s' % (
-        settings.SITEURL[:-1], instance.get_absolute_url())
+        site_url, instance.get_absolute_url())
 
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                url=html_link_url,
