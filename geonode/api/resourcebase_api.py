@@ -413,15 +413,14 @@ class CommonModelApi(ModelResource):
 
         # Filter by geographic bounding box
         if bbox:
-            print(bbox)
             left, bottom, right, top = bbox.split(',')
             sqs = (
                 SearchQuerySet() if sqs is None else sqs).exclude(
                 SQ(
-                    ll_bbox_top__lte=bottom) | SQ(
-                    ll_bbox_bottom__gte=top) | SQ(
-                    ll_bbox_left__gte=right) | SQ(
-                        ll_bbox_right__lte=left))
+                    bbox_top__lte=bottom) | SQ(
+                    bbox_bottom__gte=top) | SQ(
+                    bbox_left__gte=right) | SQ(
+                        bbox_right__lte=left))
 
         # Apply sort
         if sort.lower() == "-date":

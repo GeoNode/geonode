@@ -102,7 +102,7 @@ def edit_layer_gazetteer(
         gazetteer_attributes.append(attribute)
     template = 'gazetteer/edit_layer_gazetteer.html'
 
-    return render(template, {
+    return render(request, template, {
         "layer": layer,
         "gazetteer_attributes": gazetteer_attributes,
         "status_message": status_message,

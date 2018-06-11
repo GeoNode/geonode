@@ -107,7 +107,7 @@ django-utils<=0.0.2 # python-django-utils (0.0.2 in our ppa)
 django-basic-authentication-decorator==0.9 # python-django-basic-authentication-decorator (0.9 in our ppa)
 
 # GeoNode org maintained apps.
-django-geoexplorer>=4.0.0,<5.0 # python-django-geoexplorer (4.0.39 in our ppa)
+django-geoexplorer>=4.0.40,<5.0 # python-django-geoexplorer (4.0.39 in our ppa)
 geonode-user-messages==0.1.14 # python-geonode-user-messages (0.1.14 in our ppa)
 geonode-avatar==2.1.8 # python-geonode-avatar (2.1.7 in our ppa) FIXME
 geonode-announcements==1.0.13 # python-geonode-announcements (1.0.13 in our ppa)

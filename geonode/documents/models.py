@@ -121,10 +121,13 @@ def get_related_documents(resource):
 
 def get_related_resources(document):
     if document.links:
-        return [
-            link.content_type.get_object_for_this_type(id=link.object_id)
-            for link in document.links.all()
-        ]
+        try:
+            return [
+                link.content_type.get_object_for_this_type(id=link.object_id)
+                for link in document.links.all()
+            ]
+        except BaseException:
+            return []
     else:
         return []
 
