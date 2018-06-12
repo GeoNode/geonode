@@ -319,7 +319,7 @@ span.grippy::after {
                                               <option
                                               {% ifequal category_form.initial choice.0 %} selected="selected" {% endifequal %}
                                               value="{{ choice.0 }}"
-                                              data-content="<span class='has-popover' data-container='body' data-toggle='popover' data-placement='top'  data-content=' {{ choice.2.description }}' rigger='hover'><i class='fa {{choice.2.fa_class}}'></i> {{ choice.2.identifier }}<span>"
+                                              data-content="<span class='has-popover' data-container='body' data-toggle='popover' data-placement='top'  data-content=' {{ choice.2.description }}' rigger='hover'><i class='fa {{choice.2.fa_class}}'></i> {{ choice.2.gn_description }}<span>"
                                               >{{ choice.2.gn_description }}</option>
                                           {% endfor %}
                                         </select>

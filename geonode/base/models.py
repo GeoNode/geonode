@@ -1121,7 +1121,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 filename).replace(
                 '\\',
                 '/')
-            url = urljoin(settings.SITEURL, url_path)
+            site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+            url = urljoin(site_url, url_path)
 
             # should only have one 'Thumbnail' link
             obj, created = Link.objects.get_or_create(resource=self,

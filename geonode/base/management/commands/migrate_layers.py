@@ -98,11 +98,11 @@ class Command(BaseCommand):
 
                             print "Deserializing "+fixture_file
                             mangler = helpers.load_class(mangler)
-
+                            site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
                             obj = helpers.load_fixture(app_name, fixture_file, mangler=mangler,
                                                        basepk=higher_pk, owner=owner,
                                                        datastore=settings.OGC_SERVER['default']['DATASTORE'],
-                                                       siteurl=settings.SITEURL)
+                                                       siteurl=site_url)
 
                             from django.core import serializers
 

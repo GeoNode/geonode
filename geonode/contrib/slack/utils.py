@@ -41,7 +41,7 @@ custom_slugify = Slugify(separator='_')
 
 def _build_state_resourcebase(resource):
     site = Site.objects.get_current()
-    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     thumbnail_url = resource.get_thumbnail_url()
     owner_url = "{base}{context}".format(base=site_url, context=resource.owner.get_absolute_url())
 
@@ -49,7 +49,7 @@ def _build_state_resourcebase(resource):
         'title': resource.title,
         'type': resource.polymorphic_ctype,
         'sitename': site.name,
-        'baseurl': settings.SITEURL,
+        'baseurl': site_url,
         'owner_name': (resource.owner.get_full_name() or resource.owner.username),
         'owner_url': owner_url,
         'thumbnail_url': thumbnail_url
@@ -60,7 +60,7 @@ def _build_state_resourcebase(resource):
 
 def _build_state_layer(layer):
     state = _build_state_resourcebase(layer)
-    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     url_detail = "{base}{context}".format(
         base=site_url,
         context=reverse('layer_detail', args=(layer.service_typename,)))
@@ -82,7 +82,7 @@ def _build_state_layer(layer):
 
 def _build_state_map(map):
     state = _build_state_resourcebase(map)
-    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     url_detail = "{base}{context}".format(
         base=site_url,
         context=reverse('map_detail', args=(map.id,)))
@@ -102,7 +102,7 @@ def _build_state_map(map):
 
 def _build_state_document(document):
     state = _build_state_resourcebase(document)
-    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     url_detail = "{base}{context}".format(
         base=site_url,
         context=reverse('document_detail', args=(document.id,)))
