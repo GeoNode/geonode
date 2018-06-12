@@ -1124,10 +1124,10 @@ def layer_metadata(
         try:
             all_metadata_author_groups = chain(
                 request.user.group_list_all().distinct(),
-                GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
+                GroupProfile.objects.exclude(access="private"))
         except BaseException:
             all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private").exclude(access="public-invite")
+                access="private")
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 
@@ -1454,10 +1454,11 @@ def layer_metadata_detail(
             group = GroupProfile.objects.get(slug=layer.group.name)
         except GroupProfile.DoesNotExist:
             group = None
+    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
         "group": group,
-        'SITEURL': settings.SITEURL[:-1]
+        'SITEURL': site_url
     })
 
 
@@ -1470,10 +1471,11 @@ def layer_metadata_upload(
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_METADATA)
+    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
         "layer": layer,
-        'SITEURL': settings.SITEURL[:-1]
+        'SITEURL': site_url
     })
 
 
@@ -1486,10 +1488,11 @@ def layer_sld_upload(
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_METADATA)
+    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
         "layer": layer,
-        'SITEURL': settings.SITEURL[:-1]
+        'SITEURL': site_url
     })
 
 

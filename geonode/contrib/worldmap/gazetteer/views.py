@@ -3,8 +3,7 @@ from dicttoxml import dicttoxml
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 
 from geonode.layers.views import _resolve_layer
 
@@ -103,8 +102,8 @@ def edit_layer_gazetteer(
         gazetteer_attributes.append(attribute)
     template = 'gazetteer/edit_layer_gazetteer.html'
 
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, {
         "layer": layer,
         "gazetteer_attributes": gazetteer_attributes,
         "status_message": status_message,
-    }))
+    })

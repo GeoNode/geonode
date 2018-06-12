@@ -769,6 +769,34 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         raise NotImplementedError()
 
     @property
+    def creator(self):
+        return self.owner.get_full_name() or self.owner.username
+
+    @property
+    def organizationname(self):
+        return self.owner.organization
+
+    @property
+    def restriction_code(self):
+        return self.restriction_code_type.gn_description
+
+    @property
+    def publisher(self):
+        return self.poc.get_full_name() or self.poc.username
+
+    @property
+    def contributor(self):
+        return self.metadata_author.get_full_name() or self.metadata_author.username
+
+    @property
+    def topiccategory(self):
+        return self.category.identifier
+
+    @property
+    def csw_crs(self):
+        return self.srid
+
+    @property
     def group_name(self):
         if self.group:
             return str(self.group)
@@ -785,6 +813,24 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.srid]
 
     @property
+    def ll_bbox(self):
+        """BBOX is in the format: [x0,x1,y0,y1]."""
+        from geonode.utils import bbox_to_projection
+        llbbox = self.bbox[0:4]
+        if self.srid and 'EPSG:' in self.srid:
+            try:
+                llbbox = bbox_to_projection([float(coord) for coord in llbbox] + [self.srid, ],
+                                            target_srid=4326)
+            except BaseException:
+                pass
+        return [
+            llbbox[0],  # x0
+            llbbox[1],  # x1
+            llbbox[2],  # y0
+            llbbox[3],  # y1
+            self.srid]
+
+    @property
     def bbox_string(self):
         """BBOX is in the format: [x0,y0,x1,y1]."""
         return ",".join([str(self.bbox_x0), str(self.bbox_y0),
@@ -793,11 +839,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def geographic_bounding_box(self):
         """BBOX is in the format: [x0,x1,y0,y1]."""
+        llbbox = self.ll_bbox[0:4]
         return bbox_to_wkt(
-            self.bbox_x0,
-            self.bbox_x1,
-            self.bbox_y0,
-            self.bbox_y1,
+            llbbox[0],  # x0
+            llbbox[1],  # x1
+            llbbox[2],  # y0
+            llbbox[3],  # y1
             srid=self.srid)
 
     @property

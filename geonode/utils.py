@@ -199,7 +199,10 @@ def bbox_to_projection(native_bbox, target_srid=4326):
     box = native_bbox[:4]
     proj = native_bbox[-1]
     minx, maxx, miny, maxy = [float(a) for a in box]
-    source_srid = int(proj.split(":")[1])
+    try:
+        source_srid = int(proj.split(":")[1]) if proj and ':' in proj else int(proj)
+    except BaseException:
+        source_srid = target_srid
 
     def _v(coord, x, source_srid=4326, target_srid=3857):
         if source_srid == 4326 and target_srid != 4326:
@@ -927,7 +930,10 @@ def check_shp_columnnames(layer):
         inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
 
     inDriver = ogr.GetDriverByName('ESRI Shapefile')
-    inDataSource = inDriver.Open(inShapefile, 1)
+    try:
+        inDataSource = inDriver.Open(inShapefile, 1)
+    except BaseException:
+        inDataSource = None
     if inDataSource is None:
         logger.warning('Could not open %s' % (inShapefile))
         return False, None, None

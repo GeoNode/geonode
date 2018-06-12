@@ -41,7 +41,10 @@ from django.contrib.auth import get_user_model
 try:
     from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
 except ImportError:
-    from django.contrib.gis.geoip import GeoIP
+    try:
+        from django.contrib.gis.geoip import GeoIP
+    except ImportError:
+        pass
 
 import user_agents
 from ipware import get_client_ip

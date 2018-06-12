@@ -15,8 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseNotAllowed
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
@@ -234,14 +233,14 @@ def map_view_wm(request, mapid, snapshot=None, layer_name=None, template='wm_ext
 
     config = gxp2wm(config, map_obj)
 
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, {
         'config': json.dumps(config),
         'map': map_obj,
         'preview': getattr(
             settings,
             'LAYER_PREVIEW_LIBRARY',
             '')
-    }))
+    })
 
 
 def map_view_js(request, mapid):
@@ -347,9 +346,7 @@ def new_map_wm(request, template='wm_extra/maps/map_new.html'):
     if isinstance(config, HttpResponse):
         return config
     else:
-        return render_to_response(
-            template, RequestContext(
-                request, context_dict))
+        return render(request, template, context_dict)
 
 
 def new_map_json_wm(request):
@@ -642,7 +639,7 @@ def map_detail_wm(request, mapid, snapshot=None, template='wm_extra/maps/map_det
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, map_obj)
 
-    return render_to_response(template, RequestContext(request, context_dict))
+    return render(request, template, context_dict)
 
 
 def uniqifydict(seq, item):
@@ -976,7 +973,7 @@ def snapshot_config(snapshot, map_obj, user, access_token):
 
 def printmap(request, mapid=None, snapshot=None):
 
-    return render_to_response('wm_extra/maps/map_print.html', RequestContext(request, {}))
+    return render(request, 'wm_extra/maps/map_print.html', {})
 
 
 @login_required
@@ -990,22 +987,24 @@ def add_endpoint(request):
             endpoint = endpoint_form.save(commit=False)
             endpoint.owner = request.user
             endpoint.save()
-            return render_to_response(
+            return render(
+                request,
                 'wm_extra/endpoint_added.html',
-                RequestContext(request, {
+                {
                     "endpoint": endpoint,
-                })
+                }
             )
         else:
             print 'Error posting an endpoint'
     else:
         endpoint_form = EndpointForm()
 
-    return render_to_response(
+    return render(
+        request,
         'wm_extra/endpoint_add.html',
-        RequestContext(request, {
+        {
             "form": endpoint_form,
-        })
+        }
     )
 
 
@@ -1055,8 +1054,8 @@ def layer_searchable_fields(
 
     template = 'wm_extra/layers/edit_searchable_fields.html'
 
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, {
         "layer": layer,
         "searchable_attributes": searchable_attributes,
         "status_message": status_message,
-    }))
+    })
