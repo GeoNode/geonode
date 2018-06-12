@@ -205,7 +205,7 @@ def opensearch_dispatch(request):
         'contact': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_email'],
         'attribution': settings.PYCSW['CONFIGURATION']['metadata:main']['provider_name'],
         'tags': settings.PYCSW['CONFIGURATION']['metadata:main']['identification_keywords'].replace(',', ' '),
-        'url': settings.SITEURL.rstrip('/')
+        'url': settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     }
 
     return render(request, 'catalogue/opensearch_description.xml', context=ctx,

@@ -46,8 +46,8 @@ def add_xsl_link(resourcebase):
     """
 
     urlpath = reverse('prefix_xsl_line', args=[resourcebase.id])
-
-    url = urljoin(settings.SITEURL, urlpath)
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+    url = urljoin(site_url, urlpath)
 
     link, created = Link.objects.get_or_create(
                         resource=resourcebase,

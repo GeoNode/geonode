@@ -1143,7 +1143,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
                     if len(
                             [_l for _l in downloadable_layers if _l.name == lyr.name]) == 0:
                         downloadable_layers.append(lyr)
-
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "geoserver": ogc_server_settings.PUBLIC_LOCATION,
         "map_status": map_status,
@@ -1151,7 +1151,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
         "locked_layers": locked_layers,
         "remote_layers": remote_layers,
         "downloadable_layers": downloadable_layers,
-        "site": settings.SITEURL
+        "site": site_url
     })
 
 
@@ -1187,10 +1187,10 @@ def map_wmc(request, mapid, template="maps/wmc.xml"):
         mapid,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
-
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         'map': map_obj,
-        'siteurl': settings.SITEURL,
+        'siteurl': site_url,
     }, content_type='text/xml')
 
 
@@ -1428,7 +1428,7 @@ def map_metadata_detail(
             group = GroupProfile.objects.get(slug=map_obj.group.name)
         except GroupProfile.DoesNotExist:
             group = None
-    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": map_obj,
         "group": group,

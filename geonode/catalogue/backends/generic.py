@@ -160,7 +160,7 @@ class Catalogue(CatalogueServiceWeb):
         id_pname = 'dc:identifier'
         if self.type == 'deegree':
             id_pname = 'apiso:Identifier'
-        site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+        site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
         tpl = get_template(template)
         ctx = {'layer': layer,
                'SITEURL': site_url,

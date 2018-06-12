@@ -185,7 +185,7 @@ def post_save_document(instance, *args, **kwargs):
 
     if instance.doc_file:
         name = "Hosted Document"
-        site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+        site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
         url = '%s%s' % (
             site_url,
             reverse('document_download', args=(instance.id,)))

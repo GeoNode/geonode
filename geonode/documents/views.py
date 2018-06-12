@@ -561,7 +561,7 @@ def document_thumb_upload(
             status=401
         )
 
-    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     if request.method == 'GET':
         return render(request, template, context={
             "resource": document,
@@ -688,7 +688,7 @@ def document_metadata_detail(
             group = GroupProfile.objects.get(slug=document.group.name)
         except GroupProfile.DoesNotExist:
             group = None
-    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": document,
         "group": group,

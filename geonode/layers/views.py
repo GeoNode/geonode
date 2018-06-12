@@ -1454,7 +1454,7 @@ def layer_metadata_detail(
             group = GroupProfile.objects.get(slug=layer.group.name)
         except GroupProfile.DoesNotExist:
             group = None
-    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
         "group": group,
@@ -1471,7 +1471,7 @@ def layer_metadata_upload(
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_METADATA)
-    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
         "layer": layer,
@@ -1488,7 +1488,7 @@ def layer_sld_upload(
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_METADATA)
-    site_url = settings.SITEURL[:-1] if settings.SITEURL.endswith("/") else settings.SITEURL
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
         "layer": layer,
