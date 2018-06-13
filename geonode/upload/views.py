@@ -66,6 +66,7 @@ from .files import (get_scan_hint,
                     scan_file
 )
 from .utils import (
+    _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
     _ASYNC_UPLOAD,
     _geoserver_down_error_msg,
@@ -414,7 +415,7 @@ def check_step_view(request, upload_session):
                     upload_session.completed_step = 'check'
                 else:
                     # This command skip completely 'time' configuration
-                    upload_session.completed_step = 'time'
+                    upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'run'
     elif request.method != 'POST':
         raise Exception()
     return next_step_response(request, upload_session)
@@ -464,11 +465,11 @@ def time_step_view(request, upload_session):
                 }
                 return render(request, 'upload/layer_upload_time.html', context=context)
             else:
-                upload_session.completed_step = 'time'
+                upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'run'
                 return next_step_response(request, upload_session)
         else:
             # TODO: Error
-            upload_session.completed_step = 'time'
+            upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'run'
             return next_step_response(request, upload_session)
     elif request.method != 'POST':
         raise Exception()
@@ -522,7 +523,7 @@ def time_step_view(request, upload_session):
             precision_step=cleaned['precision_step'],
         )
     else:
-        upload_session.completed_step = 'time'
+        upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'run'
 
     return next_step_response(request, upload_session)
 
