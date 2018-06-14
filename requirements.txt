@@ -73,7 +73,7 @@ requests-oauthlib==1.0.0
 asn1crypto==0.24.0
 cffi==1.11.5
 cryptography==2.2.2
-idna>=2.5,<2.7
+idna>=2.5,<2.7  # (2.6 in our ppa)
 pycparser==2.18
 pyopenssl==18.0.0
 
@@ -149,7 +149,6 @@ xmltodict<=0.10.2 # (0.9.2 in ppa)
 funcsigs<=1.0.2 # (1.0.2 in our ppa)
 geolinks<=0.2.0 # python-geolinks (0.2.0 in ppa)
 inflection<=0.3.1  # python-inflection (0.3.1 in our ppa)
-idna<=2.6 # (2.6 in our ppa)
 ipaddress<=1.0.18 # (1.0.18 in our ppa)
 jdcal<=1.3 # (1.3 in our ppa)
 kombu==4.1.0 # python-kombu (4.1.0 in our ppa)
