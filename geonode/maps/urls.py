@@ -88,7 +88,7 @@ urlpatterns = [
     url(r'^(?P<mapid>[^/]+)/(?P<snapshot>[A-Za-z0-9_\-]+)/embed/?$',
         views.map_embed),
     url(r'^(?P<mapid>[^/]+)/(?P<snapshot>[A-Za-z0-9_\-]+)/data$',
-        views.map_json,
+        map_json,
         name='map_json'),
     url(r'^check/$', views.map_download_check, name='map_download_check'),
     url(r'^embed/$', views.map_embed, name='map_embed'),

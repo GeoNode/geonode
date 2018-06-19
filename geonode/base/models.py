@@ -1480,7 +1480,7 @@ def do_logout(sender, user, request, **kwargs):
             pass
 
         # Do GeoServer Logout
-        if 'access_token' in request.session:
+        if request and 'access_token' in request.session:
             access_token = request.session['access_token']
         else:
             access_token = None
