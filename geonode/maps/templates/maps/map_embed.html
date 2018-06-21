@@ -1,43 +1,16 @@
 {% load i18n %}
+{% load client_lib_tags %}
 
 {% block head %}
-    {% include "geoext/ext_header.html" %}
-    {% include "geoext/app_header.html" %}
-    {% include "geoext/geo_header.html" %}
-    <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-mixin.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/Geonode-CatalogueApiSearch.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-GeoExplorer.js"></script>
-    <script type="text/javascript">
-        google.load("earth", "1");
-    </script>
 
-    <script type="text/javascript">
-    var app;
-    Ext.onReady(function() {
-    {% autoescape off %}
-        var config = {
-            useCapabilities: false,
-            useToolbar: false,
-            proxy: '{{ PROXY_URL }}',
-            {% if MAPFISH_PRINT_ENABLED %}
-            printService: "{{GEOSERVER_BASE_URL}}pdf/",
-            {% else %}
-            printService: "",
-            {% endif %}
-            /* The URL to a REST map configuration service.  This service
-             * provides listing and, with an authenticated user, saving of
-             * maps on the server for sharing and editing.
-             */
-            rest: "/maps/"
-        };
+    <style>
+        #paneltbar {
+            margin-top: 0px !important;
+        }
+    </style>
 
-        Ext.apply(config, {{ config }});
-        app = new GeoNode.Viewer(config);
-
-    {% endautoescape %}
-    });
-    </script>
-{% endblock %}
+    {% get_map_embed %}
+{% endblock head %}
 
 {% block body %}
 {% endblock %}

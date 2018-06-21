@@ -1,4 +1,4 @@
-geonode (2.8.0+thefinal1) xenial; urgency=high
+geonode (2.8.0+thefinal1) xenial; urgency=high 
   * [514196] Update README
   * [f6dd15] Constrain pip to 9.0.3
 

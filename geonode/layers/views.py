@@ -574,14 +574,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         # "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
     }
 
-    if 'access_token' in request.session:
+    if request and 'access_token' in request.session:
         access_token = request.session['access_token']
     else:
         u = uuid.uuid1()
         access_token = u.hex
 
     context_dict["viewer"] = json.dumps(map_obj.viewer_json(
-        request.user, access_token, * (NON_WMS_BASE_LAYERS + [maplayer])))
+        request, * (NON_WMS_BASE_LAYERS + [maplayer])))
     context_dict["preview"] = getattr(
         settings,
         'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
@@ -1104,14 +1104,8 @@ def layer_metadata(
         author_form = ProfileForm(prefix="author")
         author_form.hidden = False
 
-    if 'access_token' in request.session:
-        access_token = request.session['access_token']
-    else:
-        u = uuid.uuid1()
-        access_token = u.hex
-
     viewer = json.dumps(map_obj.viewer_json(
-        request.user, access_token, * (NON_WMS_BASE_LAYERS + [maplayer])))
+        request, * (NON_WMS_BASE_LAYERS + [maplayer])))
 
     metadataxsl = False
     if "geonode.contrib.metadataxsl" in settings.INSTALLED_APPS:

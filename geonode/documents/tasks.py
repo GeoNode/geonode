@@ -60,8 +60,9 @@ def create_document_thumbnail(self, object_id):
                          .format(object_id, e))
 
     try:
-        assert isfile(image_path) and access(image_path, R_OK) and os.stat(image_path).st_size > 0
-    except AssertionError:
+        if image_path:
+            assert isfile(image_path) and access(image_path, R_OK) and os.stat(image_path).st_size > 0
+    except (AssertionError, TypeError):
         image_path = None
 
     if not image_path:
