@@ -64,7 +64,7 @@ class GeoExtHookSet(object):
         return 'geoext/maps/map_geoexplorer.js'
 
     def map_embed_template(self, context=None):
-        return 'geoext/maps/map_geoexplorer.js'
+        return 'geoext/maps/map_geoexplorer_viewer.js'
 
     def map_download_template(self, context=None):
         return 'geoext/maps/map_geoexplorer.js'
