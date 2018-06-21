@@ -482,6 +482,7 @@ community."
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.get('Content-Type'), 'html')
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_map_embed(self):
         """Test that map can be properly embedded
         """
