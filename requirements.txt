@@ -63,7 +63,7 @@ django-reversion<=2.0.13 # python-django-reversion (2.0.13 in our ppa)
 django-suit<=0.2.26 # python-django-suit (0.2.26 in our ppa)
 django-tastypie<=0.14.0 # python-django-tastypie (0.14.0 in our ppa)
 django-invitations<=1.9.2 # python-django-invitations (1.9.2 in our ppa)
-geonode-oauth-toolkit==1.1.2b0 # python-django-oauth-toolkit (0.12.0 in our ppa)
+geonode-oauth-toolkit>=1.1.2c0 # python-django-oauth-toolkit (0.12.0 in our ppa)
 # djangorestframework<=3.7.7 # TODO
 # djangorestframework-gis<=0.12 # TODO
 # drf-nested-routers==0.90.0 # python-drf-nested-routers (0.90.0 in our ppa)
