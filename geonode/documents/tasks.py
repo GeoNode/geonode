@@ -18,6 +18,10 @@
 #
 #########################################################################
 
+import os
+from os import access, R_OK
+from os.path import isfile
+
 from celery.app import shared_task
 from celery.utils.log import get_task_logger
 
@@ -55,10 +59,15 @@ def create_document_thumbnail(self, object_id):
             logger.debug("Could not convert document #{}: {}."
                          .format(object_id, e))
 
+    try:
+        assert isfile(image_path) and access(image_path, R_OK) and os.stat(image_path).st_size > 0
+    except AssertionError:
+        image_path = None
+
     if not image_path:
         image_path = document.find_placeholder()
 
-    if not image_path:
+    if not image_path or not os.path.exists(image_path):
         logger.debug("Could not find placeholder for document #{}"
                      .format(object_id))
         return

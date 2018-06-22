@@ -89,7 +89,7 @@ def resource_permissions(request, resource_id):
                 status=200,
                 content_type='text/plain'
             )
-        except:
+        except BaseException:
             success = False
             message = "Error updating permissions :("
             return HttpResponse(
@@ -158,7 +158,7 @@ def request_permissions(request):
             json.dumps({'success': 'ok', }),
             status=200,
             content_type='text/plain')
-    except:
+    except BaseException:
         return HttpResponse(
             json.dumps({'error': 'error delivering notification'}),
             status=400,
@@ -188,5 +188,5 @@ def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.n
                " was seen by {2}").format(layer.name, layer.uuid, viewer)
         try:
             send_mail(subject_email, msg, geonode_email, [owner_email, ])
-        except:
+        except BaseException:
             pass

@@ -121,7 +121,7 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
         disconnected_post_save = signals.post_save.disconnect(geoserver_post_save, sender=Layer)
 
         # Create dummy layer to attach attributes to
-        l = Layer.objects.create(
+        _l = Layer.objects.create(
             name='dummy_layer',
             bbox_x0=-180,
             bbox_x1=180,
@@ -144,13 +144,13 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
         expected_results = copy.deepcopy(attribute_map)
 
         # set attributes for resource
-        set_attributes(l, attribute_map)
+        set_attributes(_l, attribute_map)
 
         # 2 items in attribute_map should translate into 2 Attribute instances
-        self.assertEquals(l.attributes.count(), len(expected_results))
+        self.assertEquals(_l.attributes.count(), len(expected_results))
 
         # The name and type should be set as provided by attribute map
-        for a in l.attributes:
+        for a in _l.attributes:
             self.assertIn([a.attribute, a.attribute_type], expected_results)
 
 

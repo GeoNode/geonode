@@ -93,6 +93,9 @@ def csw_global_dispatch(request):
                                                  for e in authorized_ids)) + ")"
             authorized_layers_filter = "id IN " + authorized_layers
             mdict['repository']['filter'] += " AND " + authorized_layers_filter
+            if request.user and request.user.is_authenticated():
+                mdict['repository']['filter'] = "({}) OR ({})".format(mdict['repository']['filter'],
+                                                                      authorized_layers_filter)
         else:
             authorized_layers_filter = "id = -9999"
             mdict['repository']['filter'] += " AND " + authorized_layers_filter
@@ -108,7 +111,7 @@ def csw_global_dispatch(request):
 
         if not is_admin and settings.GROUP_PRIVATE_RESOURCES:
             groups_ids = []
-            if request.user:
+            if request.user and request.user.is_authenticated():
                 for group in request.user.groups.all():
                     groups_ids.append(group.id)
                 group_list_all = []
@@ -124,7 +127,7 @@ def csw_global_dispatch(request):
                         groups_ids.append(group.id)
 
             public_groups = GroupProfile.objects.exclude(
-                access="private").exclude(access="public-invite").values('group')
+                access="private").values('group')
             for group in public_groups:
                 if isinstance(group, dict):
                     if 'group' in group:
@@ -202,7 +205,7 @@ def opensearch_dispatch(request):
         'contact': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_email'],
         'attribution': settings.PYCSW['CONFIGURATION']['metadata:main']['provider_name'],
         'tags': settings.PYCSW['CONFIGURATION']['metadata:main']['identification_keywords'].replace(',', ' '),
-        'url': settings.SITEURL.rstrip('/')
+        'url': settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     }
 
     return render(request, 'catalogue/opensearch_description.xml', context=ctx,

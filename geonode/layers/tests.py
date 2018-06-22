@@ -1035,10 +1035,10 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
             self.assertEqual(resp.status_code, 200)
             data = json.loads(resp.content)
             lname = data['url'].split(':')[-1]
-            l = Layer.objects.get(name=lname)
+            _l = Layer.objects.get(name=lname)
 
-            self.assertTrue(l.is_published)
-            l.delete()
+            self.assertTrue(_l.is_published)
+            _l.delete()
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             layer_upload_url = reverse('layer_upload')
@@ -1064,10 +1064,10 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
             self.assertEqual(resp.status_code, 200)
             data = json.loads(resp.content)
             lname = data['url'].split(':')[-1]
-            l = Layer.objects.get(name=lname)
+            _l = Layer.objects.get(name=lname)
 
-            self.assertFalse(l.is_published)
-            l.delete()
+            self.assertFalse(_l.is_published)
+            _l.delete()
 
 
 class LayerNotificationsTestCase(NotificationsTestsHelper):
@@ -1090,22 +1090,22 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
     def testLayerNotifications(self):
         with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
             self.clear_notifications_queue()
-            l = Layer.objects.create(
+            _l = Layer.objects.create(
                 name='test notifications',
                 bbox_x0=-180,
                 bbox_x1=180,
                 bbox_y0=-90,
                 bbox_y1=90,
                 srid='EPSG:4326')
-            l.name = 'test notifications 2'
-            l.save()
+            _l.name = 'test notifications 2'
+            _l.save()
             self.assertTrue(self.check_notification_out('layer_updated', self.u))
 
             from dialogos.models import Comment
-            lct = ContentType.objects.get_for_model(l)
+            lct = ContentType.objects.get_for_model(_l)
             comment = Comment(author=self.u, name=self.u.username,
-                              content_type=lct, object_id=l.id,
-                              content_object=l, comment='test comment')
+                              content_type=lct, object_id=_l.id,
+                              content_object=_l, comment='test comment')
             comment.save()
 
             self.assertTrue(self.check_notification_out('layer_comment', self.u))

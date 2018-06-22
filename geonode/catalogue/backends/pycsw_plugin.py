@@ -164,15 +164,13 @@ class GeoNodeRepository(Repository):
         # search engine
         if 'where' in constraint:  # GetRecords with constraint
             query = self._get_repo_filter(
-                Layer.objects).filter(
-                is_published=True).extra(
+                Layer.objects).filter(alternate__isnull=False).extra(
                 where=[
                     constraint['where']],
                 params=constraint['values'])
         else:  # GetRecords sans constraint
             query = self._get_repo_filter(
-                Layer.objects).filter(
-                is_published=True)
+                Layer.objects).filter(alternate__isnull=False)
 
         total = query.count()
 

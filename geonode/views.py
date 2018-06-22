@@ -119,9 +119,9 @@ def ident_json(request):
             reverse('account_login') +
             '?next=' +
             request.get_full_path())
-
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     json_data = {}
-    json_data['siteurl'] = settings.SITEURL
+    json_data['siteurl'] = site_url
     json_data['name'] = settings.PYCSW['CONFIGURATION']['metadata:main']['identification_title']
 
     json_data['poc'] = {

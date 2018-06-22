@@ -35,7 +35,7 @@ except ImportError:
 from geonode.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
 
-autodiscover() # flake8: noqa
+autodiscover()  # flake8: noqa
 
 from geonode.base.forms import ResourceBaseForm
 

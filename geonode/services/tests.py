@@ -22,15 +22,17 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 from unittest import TestCase as StandardTestCase
 
+from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 import mock
 from owslib.map.wms111 import ContentMetadata
 
-from . import enumerations
-from .serviceprocessors import base
-from .serviceprocessors import handler
-from .serviceprocessors import wms
+from . import enumerations, forms
+from .models import Service
+from .serviceprocessors import (base,
+                                handler,
+                                wms)
 from .serviceprocessors.wms import WebMapService
 from owslib.wms import WebMapService as OwsWebMapService
 
@@ -133,8 +135,16 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             mock_layer_meta.name: mock_layer_meta,
         }
         self.parsed_wms = mock_parsed_wms
-        self.test_user = get_user_model().objects.create_user(
-            "serviceowner", "usermail@fake.mail", "somepassword")
+
+        self.test_user, created = get_user_model().objects.get_or_create(username="serviceowner")
+        if created:
+            self.test_user.set_password("somepassword")
+            self.test_user.save()
+
+        self.local_user, created = get_user_model().objects.get_or_create(username="serviceuser")
+        if created:
+            self.local_user.set_password("somepassword")
+            self.local_user.save()
 
     @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
                 autospec=True)
@@ -273,3 +283,58 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             user=mock_catalog.username,
             password=mock_catalog.password
         )
+
+    # @mock.patch("geonode.services.serviceprocessors.handler.WmsServiceHandler",
+    #             autospec=True)
+    # def test_local_user_cant_delete_service(self, mock_wms_handler):
+    def test_local_user_cant_delete_service(self):
+        self.client.logout()
+        response = self.client.get(reverse('register_service'))
+        self.failUnlessEqual(response.status_code, 302)
+
+        # self.client.login(username='serviceowner', password='somepassword')
+        # response = self.client.get(reverse('register_service'))
+        # self.failUnlessEqual(response.status_code, 200)
+
+        url = 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
+        # url = "http://fake"
+        service_type = enumerations.WMS
+        form_data = {
+            'url': url,
+            'type': service_type
+        }
+        form = forms.CreateServiceForm(form_data)
+        self.assertTrue(form.is_valid())
+
+        self.client.login(username='serviceowner', password='somepassword')
+        response = self.client.post(reverse('register_service'), data=form_data)
+
+        s = Service.objects.all().first()
+        self.failUnlessEqual(len(Service.objects.all()), 1)
+        self.assertEqual(s.owner, self.test_user)
+
+        self.client.login(username='serviceuser', password='somepassword')
+        response = self.client.post(reverse('edit_service', args=(s.id,)))
+        self.failUnlessEqual(response.status_code, 401)
+        response = self.client.post(reverse('remove_service', args=(s.id,)))
+        self.failUnlessEqual(response.status_code, 401)
+        self.failUnlessEqual(len(Service.objects.all()), 1)
+
+        self.client.login(username='serviceowner', password='somepassword')
+        form_data = {
+            'service-title': 'Foo Title',
+            'service-description': 'Foo Description',
+            'service-abstract': 'Foo Abstract',
+            'service-keywords': 'Foo, Service, OWS'
+        }
+        form = forms.ServiceForm(form_data, instance=s, prefix="service")
+        self.assertTrue(form.is_valid())
+
+        response = self.client.post(reverse('edit_service', args=(s.id,)), data=form_data)
+        self.assertEqual(s.title, 'Foo Title')
+        self.assertEqual(s.description, 'Foo Description')
+        self.assertEqual(s.abstract, 'Foo Abstract')
+        self.assertEqual([u'Foo', u'OWS', u'Service'],
+                         list(s.keywords.all().values_list('name', flat=True)))
+        response = self.client.post(reverse('remove_service', args=(s.id,)))
+        self.failUnlessEqual(len(Service.objects.all()), 0)

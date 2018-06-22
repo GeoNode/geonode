@@ -20,13 +20,18 @@
 
 from .base import GeoNodeBaseTestSupport
 
-import glob
 import os
-from lxml import etree
+import glob
 import gisdata
-from geonode.catalogue import get_catalogue
-from geonode.utils import check_ogc_backend
+import logging
+
+from lxml import etree
+
 from geonode import geoserver, qgis_server
+from geonode.utils import check_ogc_backend
+from geonode.catalogue import get_catalogue
+
+logger = logging.getLogger(__name__)
 
 
 class GeoNodeCSWTest(GeoNodeBaseTestSupport):
@@ -239,6 +244,8 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
                 'Expected a specific CRS code value in Dublin Core model')
             # test BBOX properties in Dublin Core
             from decimal import Decimal
+            logger.debug([Decimal(record.bbox.minx), Decimal(record.bbox.miny),
+                         Decimal(record.bbox.maxx), Decimal(record.bbox.maxy)])
             self.assertEqual(
                 Decimal(record.bbox.minx),
                 Decimal('-81.8593555'),
@@ -289,6 +296,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
 
         csw = get_catalogue()
         csw.catalogue.getrecords(bbox=[-140, -70, 80, 70])
+        logger.debug(csw.catalogue.results)
         self.assertEqual(
             csw.catalogue.results,
             {'matches': 7, 'nextrecord': 0, 'returned': 7},

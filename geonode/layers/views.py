@@ -737,10 +737,11 @@ def load_layer_data(request, template='layers/layer_detail.html'):
 
         # loop the dictionary based on the values on the list and add the properties
         # in the dictionary (if doesn't exist) together with the value
+        from collections import Iterable
         for i in range(len(decoded_features)):
             for key, value in decoded_features[i]['properties'].iteritems():
                 if value != '' and isinstance(value, (string_types, int, float)) and (
-                        '/load_layer_data' not in value):
+                        (isinstance(value, Iterable) and '/load_layer_data' not in value) or value):
                     properties[key].append(value)
 
         for key in properties:
@@ -1123,10 +1124,10 @@ def layer_metadata(
         try:
             all_metadata_author_groups = chain(
                 request.user.group_list_all().distinct(),
-                GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
+                GroupProfile.objects.exclude(access="private"))
         except BaseException:
             all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private").exclude(access="public-invite")
+                access="private")
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 
@@ -1166,9 +1167,9 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
 
     if settings.MONITORING_ENABLED:
-        for l in layers:
-            if hasattr(l, 'alternate'):
-                request.add_resource('layer', l.alternate)
+        for _l in layers:
+            if hasattr(_l, 'alternate'):
+                request.add_resource('layer', _l.alternate)
     if request.method == 'POST':
         form = PocForm(request.POST)
         if form.is_valid():
@@ -1232,7 +1233,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                             except QGISServerLayer.DoesNotExist:
                                 pass
                             out['ogc_backend'] = qgis_server.BACKEND_PACKAGE
-                    except:
+                    except BaseException:
                         pass
 
                     saved_layer = file_upload(
@@ -1453,10 +1454,11 @@ def layer_metadata_detail(
             group = GroupProfile.objects.get(slug=layer.group.name)
         except GroupProfile.DoesNotExist:
             group = None
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
         "group": group,
-        'SITEURL': settings.SITEURL[:-1]
+        'SITEURL': site_url
     })
 
 
@@ -1469,10 +1471,11 @@ def layer_metadata_upload(
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_METADATA)
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
         "layer": layer,
-        'SITEURL': settings.SITEURL[:-1]
+        'SITEURL': site_url
     })
 
 
@@ -1485,10 +1488,11 @@ def layer_sld_upload(
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_METADATA)
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
         "layer": layer,
-        'SITEURL': settings.SITEURL[:-1]
+        'SITEURL': site_url
     })
 
 
@@ -1498,6 +1502,6 @@ def layer_batch_metadata(request, ids):
 
 
 def layer_view_counter(layer_id, viewer):
-    l = Layer.objects.get(id=layer_id)
-    u = get_user_model().objects.get(username=viewer)
-    l.view_count_up(u, do_local=True)
+    _l = Layer.objects.get(id=layer_id)
+    _u = get_user_model().objects.get(username=viewer)
+    _l.view_count_up(_u, do_local=True)

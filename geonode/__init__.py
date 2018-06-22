@@ -22,6 +22,7 @@ import os
 
 __version__ = (2, 9, 0, 'unstable', 0)
 
+
 default_app_config = "geonode.apps.AppConfig"
 
 

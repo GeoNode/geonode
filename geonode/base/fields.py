@@ -41,7 +41,7 @@ class MultiThesauriField(forms.MultiValueField):
                     tkl = tk.keyword.filter(lang='en')
                     choices_list.append((tkl[0].id, tkl[0].label))
                 fields_list.append(forms.MultipleChoiceField(choices=tuple(choices_list)))
-            except:
+            except BaseException:
                 tb = traceback.format_exc()
                 logger.error(tb)
 

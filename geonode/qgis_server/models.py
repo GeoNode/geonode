@@ -182,7 +182,7 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
         # Associate this model with resource
         try:
             return self.layer.get_self_resource()
-        except:
+        except BaseException:
             return None
 
     class Meta:
@@ -315,7 +315,7 @@ class QGISServerStyle(models.Model, PermissionLevelMixin):
             qgis_layer = self.layer_styles.first()
             """:type: QGISServerLayer"""
             return qgis_layer.get_self_resource()
-        except:
+        except BaseException:
             return None
 
     class Meta:
@@ -377,7 +377,7 @@ class QGISServerMap(models.Model, PermissionLevelMixin):
         # Associate this model with resource
         try:
             return self.layer.get_self_resource()
-        except:
+        except BaseException:
             return None
 
     class Meta:

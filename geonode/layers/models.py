@@ -108,7 +108,7 @@ class Style(models.Model, PermissionLevelMixin):
             layer = self.layer_styles.first()
             """:type: Layer"""
             return layer.get_self_resource()
-        except:
+        except BaseException:
             return None
 
 
@@ -126,21 +126,22 @@ class Layer(ResourceBase):
 
     # internal fields
     objects = LayerManager()
-    workspace = models.CharField(max_length=128)
-    store = models.CharField(max_length=128)
-    storeType = models.CharField(max_length=128)
-    name = models.CharField(max_length=128)
-    typename = models.CharField(max_length=128, null=True, blank=True)
+    workspace = models.CharField(_('Workspace'), max_length=128)
+    store = models.CharField(_('Store'), max_length=128)
+    storeType = models.CharField(_('Storetype'), max_length=128)
+    name = models.CharField(_('Name'), max_length=128)
+    typename = models.CharField(_('Typename'), max_length=128, null=True, blank=True)
 
-    is_mosaic = models.BooleanField(default=False)
-    has_time = models.BooleanField(default=False)
-    has_elevation = models.BooleanField(default=False)
+    is_mosaic = models.BooleanField(_('Is mosaic?'), default=False)
+    has_time = models.BooleanField(_('Has time?'), default=False)
+    has_elevation = models.BooleanField(_('Has elevation?'), default=False)
     time_regex = models.CharField(
+        _('Time regex'),
         max_length=128,
         null=True,
         blank=True,
         choices=TIME_REGEX)
-    elevation_regex = models.CharField(max_length=128, null=True, blank=True)
+    elevation_regex = models.CharField(_('Elevation regex'), max_length=128, null=True, blank=True)
 
     default_style = models.ForeignKey(
         Style,
@@ -598,6 +599,7 @@ def pre_delete_layer(instance, sender, **kwargs):
     OverallRating.objects.filter(
         content_type=ct,
         object_id=instance.id).delete()
+
     default_style = instance.default_style
     for style in instance.styles.all():
         if style.layer_styles.all().count() == 1:

@@ -17,3 +17,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+
+class UploadException(Exception):
+
+    '''A handled exception meant to be presented to the user'''
+
+    @staticmethod
+    def from_exc(msg, ex):
+        args = [msg]
+        args.extend(ex.args)
+        return UploadException(*args)
+
+
+class LayerNotReady(Exception):
+    pass

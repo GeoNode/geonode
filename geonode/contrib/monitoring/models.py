@@ -41,7 +41,10 @@ from django.contrib.auth import get_user_model
 try:
     from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
 except ImportError:
-    from django.contrib.gis.geoip import GeoIP
+    try:
+        from django.contrib.gis.geoip import GeoIP
+    except ImportError:
+        pass
 
 import user_agents
 from ipware import get_client_ip
@@ -497,7 +500,7 @@ class RequestEvent(models.Model):
                 inst.resources.add(*resources)
                 inst.save()
             return inst
-        except:
+        except BaseException:
             return None
 
     @classmethod
@@ -540,7 +543,7 @@ class RequestEvent(models.Model):
         utc = pytz.utc
         try:
             local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
-        except:
+        except BaseException:
             local_tz = pytz.timezone(settings.TIME_ZONE)
 
         start_time = parse_datetime(rd['startTime'])
@@ -718,10 +721,10 @@ class MetricValue(models.Model):
     def __str__(self):
         metric = self.service_metric.metric.name
         if self.label:
-            l = self.label.name
-            if isinstance(l, unicode):
-                l = l.encode('utf-8')
-            metric = '{} [{}]'.format(metric, l)
+            _l = self.label.name
+            if isinstance(_l, unicode):
+                _l = _l.encode('utf-8')
+            metric = '{} [{}]'.format(metric, _l)
         if self.resource and self.resource.type:
             metric = '{} for {}'.format(
                 metric, '{}={}'.format(
@@ -1039,6 +1042,7 @@ class NotificationCheck(models.Model):
         Return form to validate metric thresholds input from user.
         """
         this = self
+
         defs = this.definitions.all()
 
         class F(forms.Form):
@@ -1308,6 +1312,7 @@ class MetricNotificationCheck(models.Model):
                                            "Max timeout for given metric before error should be raised")
                                        )
     active = models.BooleanField(default=True, null=False, blank=False)
+
     definition = models.OneToOneField(
         NotificationMetricDefinition,
         null=True,
@@ -1374,6 +1379,7 @@ class MetricNotificationCheck(models.Model):
         metric_name = m.description or m.name
         unit_name = ' {}'.format(m.unit) if not m.is_count else ''
         had_check = False
+
         def_msg = self.definition.description
         msg_prefix = []
         if self.ows_service:

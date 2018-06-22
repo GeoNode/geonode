@@ -160,10 +160,10 @@ class Catalogue(CatalogueServiceWeb):
         id_pname = 'dc:identifier'
         if self.type == 'deegree':
             id_pname = 'apiso:Identifier'
-
+        site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
         tpl = get_template(template)
         ctx = {'layer': layer,
-               'SITEURL': settings.SITEURL[:-1],
+               'SITEURL': site_url,
                'id_pname': id_pname,
                'LICENSES_METADATA': getattr(settings,
                                             'LICENSES',

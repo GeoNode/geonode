@@ -65,7 +65,7 @@ def enable_theme(self, request, queryset):
                         request,
                         "'" + theme.name + "' Theme Activation Failed!",
                         level=messages.WARNING)
-            except:
+            except BaseException:
                 self.message_user(
                     request,
                     "Exception occurred while trying to activate theme: " + theme.name,
@@ -126,7 +126,7 @@ def disable_theme(self, request, queryset):
                 theme.is_enabled = False
                 theme.save()
                 self.message_user(request, "Disabled Theme: " + theme.name)
-            except:
+            except BaseException:
                 self.message_user(
                     request,
                     "Exception occurred while trying to deactivate theme: " + theme.name,
@@ -164,70 +164,70 @@ def disable_theme(self, request, queryset):
 
 
 def refresh_theme(self, request, queryset):
-        """
-        Refresh the selected Themes
-        """
-        siteObjs = queryset.filter(is_enabled=True).all()
-        if len(siteObjs) == 0:
-            self.message_user(
-                request,
-                "Please select at least one active custom theme to disable!",
-                level=messages.ERROR)
-            return
+    """
+    Refresh the selected Themes
+    """
+    siteObjs = queryset.filter(is_enabled=True).all()
+    if len(siteObjs) == 0:
+        self.message_user(
+            request,
+            "Please select at least one active custom theme to disable!",
+            level=messages.ERROR)
+        return
 
-        if request.POST.get("post"):
-            value = None
-            for theme in siteObjs:
-                try:
-                    if theme.is_enabled:
-                        value = deactivate_theme(theme)
-                        value = activate_theme(theme)
+    if request.POST.get("post"):
+        value = None
+        for theme in siteObjs:
+            try:
+                if theme.is_enabled:
+                    value = deactivate_theme(theme)
+                    value = activate_theme(theme)
 
-                    """
+                """
                         Final checks if not exception has been raised until now
                     """
-                    if value:
-                        self.message_user(request, "Enabled Theme: " + theme.name)
-                    else:
-                        self.message_user(
-                            request,
-                            "'" + theme.name + "' Theme Activation Failed!",
-                            level=messages.WARNING)
-                except:
+                if value:
+                    self.message_user(request, "Enabled Theme: " + theme.name)
+                else:
                     self.message_user(
                         request,
-                        "Exception occurred while trying to activate theme: " + theme.name,
-                        level=messages.ERROR)
-                    tb = traceback.format_exc()
-                    self.message_user(
-                        request,
-                        tb,
+                        "'" + theme.name + "' Theme Activation Failed!",
                         level=messages.WARNING)
-                    logger.debug(tb)
-                    return
-            out = StringIO.StringIO()
-            call_command(
-                'collectstatic',
-                '--noinput',
-                stdout=out)
-            value = out.getvalue()
-            if not value:
+            except BaseException:
                 self.message_user(
                     request,
-                    "Collectstatic Regeneration Failed!",
+                    "Exception occurred while trying to activate theme: " + theme.name,
+                    level=messages.ERROR)
+                tb = traceback.format_exc()
+                self.message_user(
+                    request,
+                    tb,
                     level=messages.WARNING)
-        else:
-            context = {
-                "objects_name": "Themes",
-                'title': "Refresh GeoNode Custom Themes",
-                'action_exec': "refresh_theme",
-                'cancellable_themes': siteObjs,
-                'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
-            }
-            return TemplateResponse(
+                logger.debug(tb)
+                return
+        out = StringIO.StringIO()
+        call_command(
+            'collectstatic',
+            '--noinput',
+            stdout=out)
+        value = out.getvalue()
+        if not value:
+            self.message_user(
                 request,
-                'admin/themes/confirm_cancel.html',
-                context=context)
+                "Collectstatic Regeneration Failed!",
+                level=messages.WARNING)
+    else:
+        context = {
+            "objects_name": "Themes",
+            'title': "Refresh GeoNode Custom Themes",
+            'action_exec': "refresh_theme",
+            'cancellable_themes': siteObjs,
+            'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+        }
+        return TemplateResponse(
+            request,
+            'admin/themes/confirm_cancel.html',
+            context=context)
 
 
 enable_theme.short_description = "Activate Theme"

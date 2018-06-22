@@ -62,9 +62,11 @@ from .forms import (
     UploadFileForm,
 )
 from .models import Upload, UploadFile
-from .files import get_scan_hint
-from .files import scan_file
+from .files import (get_scan_hint,
+                    scan_file
+)
 from .utils import (
+    _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
     _ASYNC_UPLOAD,
     _geoserver_down_error_msg,
@@ -131,11 +133,10 @@ def _select_relevant_files(allowed_extensions, files):
     :param files: list of django files with the files to be filtered
 
     """
-
     result = []
     for django_file in files:
         extension = os.path.splitext(django_file.name)[-1].lower()[1:]
-        if extension in allowed_extensions:
+        if extension in allowed_extensions or get_scan_hint(allowed_extensions):
             already_selected = django_file.name in (f.name for f in result)
             if not already_selected:
                 result.append(django_file)
@@ -156,18 +157,21 @@ def save_step_view(req, session):
     form = LayerUploadForm(req.POST, req.FILES)
     if form.is_valid():
         tempdir = tempfile.mkdtemp(dir=settings.FILE_UPLOAD_TEMP_DIR)
+        logger.info("valid_extensions: {}".format(form.cleaned_data["valid_extensions"]))
         relevant_files = _select_relevant_files(
             form.cleaned_data["valid_extensions"],
             req.FILES.itervalues()
         )
+        logger.info("relevant_files: {}".format(relevant_files))
         _write_uploaded_files_to_disk(tempdir, relevant_files)
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
         name, ext = os.path.splitext(os.path.basename(base_file))
         logger.debug('Name: {0}, ext: {1}'.format(name, ext))
         logger.debug("base_file: {}".format(base_file))
+        scan_hint = get_scan_hint(form.cleaned_data["valid_extensions"])
         spatial_files = scan_file(
             base_file,
-            scan_hint=get_scan_hint(form.cleaned_data["valid_extensions"])
+            scan_hint=scan_hint
         )
         logger.info("spatial_files: {}".format(spatial_files))
         import_session = save_step(
@@ -175,7 +179,7 @@ def save_step_view(req, session):
             name,
             spatial_files,
             overwrite=False,
-            mosaic=form.cleaned_data['mosaic'],
+            mosaic=form.cleaned_data['mosaic'] or scan_hint == 'zip-mosaic',
             append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
             append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
             mosaic_time_regex=form.cleaned_data['mosaic_time_regex'],
@@ -411,7 +415,7 @@ def check_step_view(request, upload_session):
                     upload_session.completed_step = 'check'
                 else:
                     # This command skip completely 'time' configuration
-                    upload_session.completed_step = 'time'
+                    upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'run'
     elif request.method != 'POST':
         raise Exception()
     return next_step_response(request, upload_session)
@@ -461,11 +465,11 @@ def time_step_view(request, upload_session):
                 }
                 return render(request, 'upload/layer_upload_time.html', context=context)
             else:
-                upload_session.completed_step = 'time'
+                upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'run'
                 return next_step_response(request, upload_session)
         else:
             # TODO: Error
-            upload_session.completed_step = 'time'
+            upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'run'
             return next_step_response(request, upload_session)
     elif request.method != 'POST':
         raise Exception()
@@ -519,7 +523,7 @@ def time_step_view(request, upload_session):
             precision_step=cleaned['precision_step'],
         )
     else:
-        upload_session.completed_step = 'time'
+        upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'run'
 
     return next_step_response(request, upload_session)
 

@@ -259,8 +259,7 @@ class CommonModelApi(ModelResource):
         northeast_lng,northeast_lat'
         returns the modified query
         """
-        bbox = bbox.split(
-            ',')  # TODO: Why is this different when done through haystack?
+        bbox = bbox.split(',')  # TODO: Why is this different when done through haystack?
         bbox = map(str, bbox)  # 2.6 compat - float to decimal conversion
         intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) |
                        Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
@@ -790,13 +789,13 @@ class LayerResource(CommonModelApi):
             # Default style
             try:
                 obj.qgis_default_style = obj.qgis_layer.default_style
-            except:
+            except BaseException:
                 obj.qgis_default_style = None
 
             # Styles
             try:
                 obj.qgis_styles = obj.qgis_layer.styles
-            except:
+            except BaseException:
                 obj.qgis_styles = []
         return obj
 
@@ -843,7 +842,7 @@ class LayerResource(CommonModelApi):
 
             layer_id = kwargs['id']
             layer = Layer.objects.get(id=layer_id)
-        except:
+        except BaseException:
             return http.HttpBadRequest(reason=reason)
 
         from geonode.qgis_server.views import default_qml_style

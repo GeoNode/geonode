@@ -199,7 +199,10 @@ def bbox_to_projection(native_bbox, target_srid=4326):
     box = native_bbox[:4]
     proj = native_bbox[-1]
     minx, maxx, miny, maxy = [float(a) for a in box]
-    source_srid = int(proj.split(":")[1])
+    try:
+        source_srid = int(proj.split(":")[1]) if proj and ':' in proj else int(proj)
+    except BaseException:
+        source_srid = target_srid
 
     def _v(coord, x, source_srid=4326, target_srid=3857):
         if source_srid == 4326 and target_srid != 4326:
@@ -927,7 +930,10 @@ def check_shp_columnnames(layer):
         inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
 
     inDriver = ogr.GetDriverByName('ESRI Shapefile')
-    inDataSource = inDriver.Open(inShapefile, 1)
+    try:
+        inDataSource = inDriver.Open(inShapefile, 1)
+    except BaseException:
+        inDataSource = None
     if inDataSource is None:
         logger.warning('Could not open %s' % (inShapefile))
         return False, None, None
@@ -960,8 +966,16 @@ def check_shp_columnnames(layer):
                 charset)
 
             if not a.match(field_name):
-                new_field_name = custom_slugify(field_name)
-
+                # once the field_name contains Chinese, to use slugify_zh
+                has_ch = False
+                for ch in field_name:
+                    if u'\u4e00' <= ch <= u'\u9fff':
+                        has_ch = True
+                        break
+                if has_ch:
+                    new_field_name = slugify_zh(field_name, separator='_')
+                else:
+                    new_field_name = custom_slugify(field_name)
                 if not b.match(new_field_name):
                     new_field_name = '_' + new_field_name
                 j = 0
@@ -1100,7 +1114,7 @@ def designals():
         if signalname in signals_store:
             try:
                 signaltype = getattr(models.signals, signalname)
-            except:
+            except BaseException:
                 continue
             logger.debug("RETRIEVE: %s: %d" %
                          (signalname, len(signaltype.receivers)))
@@ -1294,19 +1308,19 @@ def copy_tree(src, dst, symlinks=False, ignore=None):
                 if os.path.exists(d):
                     try:
                         os.remove(d)
-                    except:
+                    except BaseException:
                         try:
                             shutil.rmtree(d)
-                        except:
+                        except BaseException:
                             pass
                 try:
                     shutil.copytree(s, d, symlinks, ignore)
-                except:
+                except BaseException:
                     pass
             else:
                 try:
                     shutil.copy2(s, d)
-                except:
+                except BaseException:
                     pass
     except Exception:
         traceback.print_exc()
@@ -1332,3 +1346,37 @@ def chmod_tree(dst, permissions=0o777):
         for dirname in dirnames:
             path = os.path.join(dirpath, dirname)
             os.chmod(path, permissions)
+
+
+def slugify_zh(text, separator='_'):
+    """
+    Make a slug from the given text, which is simplified from slugify.
+    It remove the other args and do not convert Chinese into Pinyin
+    :param text (str): initial text
+    :param separator (str): separator between words
+    :return (str):
+    """
+
+    QUOTE_PATTERN = re.compile(r'[\']+')
+    ALLOWED_CHARS_PATTERN = re.compile(u'[^\u4e00-\u9fa5a-z0-9]+')
+    DUPLICATE_DASH_PATTERN = re.compile('-{2,}')
+    NUMBERS_PATTERN = re.compile('(?<=\d),(?=\d)')
+    DEFAULT_SEPARATOR = '-'
+
+    # if not isinstance(text, types.UnicodeType):
+    #    text = unicode(text, 'utf-8', 'ignore')
+    # replace quotes with dashes - pre-process
+    text = QUOTE_PATTERN.sub(DEFAULT_SEPARATOR, text)
+    # make the text lowercase
+    text = text.lower()
+    # remove generated quotes -- post-process
+    text = QUOTE_PATTERN.sub('', text)
+    # cleanup numbers
+    text = NUMBERS_PATTERN.sub('', text)
+    # replace all other unwanted characters
+    text = re.sub(ALLOWED_CHARS_PATTERN, DEFAULT_SEPARATOR, text)
+    # remove redundant
+    text = re.sub(DUPLICATE_DASH_PATTERN, DEFAULT_SEPARATOR, text).strip(DEFAULT_SEPARATOR)
+    if separator != DEFAULT_SEPARATOR:
+        text = text.replace(DEFAULT_SEPARATOR, separator)
+    return text
