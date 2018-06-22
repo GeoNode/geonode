@@ -50,7 +50,7 @@ def csw_global_dispatch(request):
     mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
 
     access_token = None
-    if 'access_token' in request.session:
+    if request and 'access_token' in request.session:
         access_token = request.session['access_token']
 
     absolute_uri = ('%s' % request.build_absolute_uri())

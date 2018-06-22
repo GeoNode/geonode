@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#
+#########################################################################
 #
 # Copyright (C) 2016 OSGeo
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-#
+#########################################################################
 
 import os
 import re
@@ -470,7 +470,7 @@ def geoserver_proxy(request,
     path = strip_prefix(request.get_full_path(), proxy_path)
 
     access_token = None
-    if 'access_token' in request.session:
+    if request and 'access_token' in request.session:
         access_token = request.session['access_token']
 
     if access_token and 'access_token' not in path:
@@ -760,8 +760,14 @@ def format_online_resource(workspace, layer, element):
     generic links returned by a site-wide GetCapabilities document
     """
     layerName = element.find('.//Name')
+    if not layerName:
+        return
+
     layerName.text = workspace + ":" + layer if workspace else layer
     layerresources = element.findall('.//OnlineResource')
+    if not layerresources:
+        return
+
     for resource in layerresources:
         wtf = resource.attrib['{http://www.w3.org/1999/xlink}href']
         replace_string = "/" + workspace + "/" + layer if workspace else "/" + layer
@@ -802,7 +808,7 @@ def get_capabilities(request, layerid=None, user=None,
         if request.user.has_perm('view_resourcebase',
                                  layer.get_self_resource()):
             access_token = None
-            if 'access_token' in request.session:
+            if request and 'access_token' in request.session:
                 access_token = request.session['access_token']
             else:
                 access_token = None
@@ -817,7 +823,9 @@ def get_capabilities(request, layerid=None, user=None,
                         layercap = etree.fromstring(layercap)
                         rootdoc = etree.ElementTree(layercap)
                         format_online_resource(workspace, layername, rootdoc)
-                        rootdoc.find('.//Service/Name').text = cap_name
+                        service_name = rootdoc.find('.//Service/Name')
+                        if service_name:
+                            service_name.text = cap_name
                         rootdoc = rootdoc.find('.//Capability/Layer/Layer')
                     except Exception as e:
                         import traceback

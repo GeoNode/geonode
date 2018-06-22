@@ -324,15 +324,17 @@
 
     <script type="text/javascript">
         {% autoescape off %}
-
+        /* ******
+            /(^\d{4}$)|(\d{4}-[01]\d)|(\d{4}-[01]\d-[0-3]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\dZ+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\dZ)|(\d{4}\/[01]\d\/[0-3]\d)/
+            /(^\d{4}$)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\dZ+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\dZ)|(\d{4}\/[01]\d\/[0-3]\d)/
+        ******* */
+        var ISO_time_regex = /(^\d{4}$)|(^\d{4}\/\d{2}$)|(^\d{4}\/\d{2}\/\d{2}$)|(\d{4}-[01]\d)|(\d{4}-[01]\d-[0-3]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\dZ+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\dZ)/;
         var data_validation = false;
         var data_is_valid = {};
 
         function iso8601DateFormatter(value, row, index) {
             var time_checked_value = String(value);
-            if(data_validation && !time_checked_value.match(
-                /(^\d{4}$)|(\d{4}-[01]\d)|(\d{4}-[01]\d-[0-3]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\dZ+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\dZ)/
-            )) {
+            if(data_validation && !time_checked_value.match(ISO_time_regex)) {
                 time_checked_value = '<font color="red" title="' + value +'{% trans " does NOT match any valid ISO-8601 Date-Time string!" %}">' +
                     '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;' + value +'</font>';
                 try {
@@ -348,9 +350,7 @@
 
         function iso8601Formatter(value, row, index) {
             var time_checked_value = String(value);
-            if(data_validation && !time_checked_value.match(
-                /(^\d{4}$)|(\d{4}-[01]\d)|(\d{4}-[01]\d-[0-3]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\dZ+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\dZ)/
-            )) {
+            if(data_validation && !time_checked_value.match(ISO_time_regex)) {
                 time_checked_value = '<font color="red" title="' + value +'{% trans " does NOT match any valid ISO-8601 Date-Time string!" %}">' +
                     '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;' + value +'</font>';
                 try {
@@ -407,9 +407,7 @@
                         /(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/
                     **/
                     var time_value = String(row[time_attribute]);
-                    if(time_value.match(
-                        /(^\d{4}$)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\dZ+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\dZ)/
-                    )) {
+                    if(time_value.match(ISO_time_regex)) {
                         $("#timeMsgBoxModalOK").find('.modal-title').text('{% trans "Valid ISO-8601 for" %} "' + time_attribute + '"');
                         $("#timeMsgBoxModalOK").find('.modal-body').text(time_value + ' {% trans "matches a valid ISO-8601 Date-Time string!" %}');
                         $("#timeMsgBoxModalOK").modal("show");

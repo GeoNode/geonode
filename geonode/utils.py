@@ -337,7 +337,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering):
 
 class GXPMapBase(object):
 
-    def viewer_json(self, user, access_token, *added_layers):
+    def viewer_json(self, request, *added_layers):
         """
         Convert this map to a nested dictionary structure matching the JSON
         configuration for GXP Viewers.
@@ -347,6 +347,10 @@ class GXPMapBase(object):
         configuration. These are not persisted; if you want to add layers you
         should use ``.layer_set.create()``.
         """
+
+        user = request.user if request else None
+        access_token = request.session['access_token'] if request and \
+            'access_token' in request.session else uuid.uuid1().hex
 
         if self.id and len(added_layers) == 0:
             cfg = cache.get("viewer_json_" +
@@ -478,6 +482,9 @@ class GXPMapBase(object):
                       "_" +
                       str(0 if user is None else user.id), config)
 
+        # Client conversion if needed
+        from geonode.client.hooks import hookset
+        config = hookset.viewer_json(config, context={'request': request})
         return config
 
 
@@ -627,18 +634,9 @@ def default_map_config(request):
         _baselayer(
             lyr, idx) for idx, lyr in enumerate(
             settings.MAP_BASELAYERS)]
-    user = None
-    access_token = None
-    if request:
-        user = request.user
-        if 'access_token' in request.session:
-            access_token = request.session['access_token']
-        else:
-            u = uuid.uuid1()
-            access_token = u.hex
 
     DEFAULT_MAP_CONFIG = _default_map.viewer_json(
-        user, access_token, *DEFAULT_BASE_LAYERS)
+        request, *DEFAULT_BASE_LAYERS)
 
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 

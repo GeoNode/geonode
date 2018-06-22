@@ -227,7 +227,7 @@ community."
         """ Make some assertions about the data structure produced for serialization
             to a JSON map configuration"""
         map_obj = Map.objects.all().first()
-        cfg = map_obj.viewer_json(None, None)
+        cfg = map_obj.viewer_json(None)
         self.assertEquals(
             cfg['about']['abstract'],
             'GeoNode default map abstract')
@@ -482,6 +482,7 @@ community."
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.get('Content-Type'), 'html')
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_map_embed(self):
         """Test that map can be properly embedded
         """
@@ -513,7 +514,7 @@ community."
 
         # Config equals to that of the map whose id is given
         map_obj = Map.objects.get(id=map_id)
-        config_map = map_obj.viewer_json(None, None)
+        config_map = map_obj.viewer_json(None)
         response_config_dict = json.loads(response.context['config'])
         self.assertEquals(
             config_map['about']['abstract'],
@@ -573,7 +574,7 @@ community."
 
         # Config equals to that of the map whose id is given
         map_obj = Map.objects.get(id=map_id)
-        config_map = map_obj.viewer_json(None, None)
+        config_map = map_obj.viewer_json(None)
         response_config_dict = json.loads(response.context['config'])
         self.assertEquals(
             config_map['about']['abstract'],
@@ -600,7 +601,7 @@ community."
         response = self.client.get(url, {'copy': map_id})
         self.assertEquals(response.status_code, 200)
         map_obj = Map.objects.get(id=map_id)
-        config_map = map_obj.viewer_json(None, None)
+        config_map = map_obj.viewer_json(None)
         response_config_dict = json.loads(response.content)
         self.assertEquals(
             config_map['map']['layers'],
