@@ -36,8 +36,7 @@ import base64
 import httplib2
 
 import urllib
-from urlparse import urlparse
-from urlparse import urlsplit
+from urlparse import urlsplit, urlparse, urljoin
 
 from agon_ratings.models import OverallRating
 from bs4 import BeautifulSoup
@@ -1257,15 +1256,14 @@ class OGC_Server(object):
         The Open Web Service url for the server.
         """
         location = self.PUBLIC_LOCATION if self.PUBLIC_LOCATION else self.LOCATION
-        return self.OWS_LOCATION if self.OWS_LOCATION else location + 'ows'
+        return self.OWS_LOCATION if self.OWS_LOCATION else urljoin(location, 'ows')
 
     @property
     def rest(self):
         """
         The REST endpoint for the server.
         """
-        return self.LOCATION + \
-            'rest' if not self.REST_LOCATION else self.REST_LOCATION
+        return urljoin(self.LOCATION, 'rest') if not self.REST_LOCATION else self.REST_LOCATION
 
     @property
     def public_url(self):
@@ -1280,14 +1278,14 @@ class OGC_Server(object):
         The Open Web Service url for the server used by GeoNode internally.
         """
         location = self.LOCATION
-        return location + 'ows'
+        return urljoin(location, 'ows')
 
     @property
     def internal_rest(self):
         """
         The internal REST endpoint for the server.
         """
-        return self.LOCATION + 'rest'
+        return urljoin(self.LOCATION, 'rest')
 
     @property
     def hostname(self):

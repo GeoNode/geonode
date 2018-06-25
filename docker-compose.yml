@@ -99,7 +99,8 @@ services:
       - db
       # - elasticsearch
       - rabbitmq
-    command: paver start_django -b 0.0.0.0:8000
+    # command: paver start_django -b 0.0.0.0:8000
+    command: uwsgi --ini uwsgi.ini
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - geoserver-data-dir:/geoserver_data/data
