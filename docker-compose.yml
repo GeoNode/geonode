@@ -120,8 +120,6 @@ services:
       - django
       - celery
       - geoserver
-    env_file:
-      - ./scripts/docker/env/production/django.env
     ports:
       - "80:80"
 
