@@ -1,7 +1,8 @@
 {% extends "people/profile_base.html" %}
 {% load static %}
-{% load friendly_loader %}
-{% friendly_load i18n avatar_tags relationship_tags activity_tags %}
+{% load i18n %}
+{% load avatar_tags %}
+{% load activity_tags %}
 {% load pagination_tags %}
 
 {% block title %} {% trans "Profile of " %}{{ profile.first_name|default:profile.username }}{% endblock %}
@@ -25,7 +26,7 @@
 </div>
 
 <div class="col-xs-3 col-md-2 profile-image">
-  {% avatar profile 240 %}
+  {% autoescape off %}{% avatar profile 240 %}{% endautoescape %}
 </div>
 
 <div class="col-xs-9 col-md-7 profile-details">
@@ -34,7 +35,7 @@
 {% if user == profile %}
   {% for group in profile.group_list_all %}
   <div ng-if="group.logo != ''" class="col-xs-1 pull-right group-logo">
-    <a href="{{ group.get_absolute_url }}" ><img src="/uploaded/{{ group.logo }}" alt="{{ group.title }}" /></a>
+    <a href="{{ group.get_absolute_url }}" ><img src="{% get_media_prefix %}{{ group.logo }}" alt="{{ group.title }}" /></a>
   </div>
   <!-- <div class="col-xs-6 col-md-8">
     <h5>
@@ -46,7 +47,7 @@
 {% else %}
   {% for group in profile.group_list_public %}
   <div ng-if="group.logo != ''" class="col-xs-1 pull-right group-logo">
-    <a href="{{ group.get_absolute_url }}" ><img src="/uploaded/{{ group.logo }}" alt="{{ group.title }}" /></a>
+    <a href="{{ group.get_absolute_url }}" ><img src="{% get_media_prefix %}{{ group.logo }}" alt="{{ group.title }}" /></a>
   </div>
   <!-- <div class="col-xs-6 col-md-8">
     <h5>
@@ -147,7 +148,7 @@
     </ul>
     <ul class="list-group">
       {% if USE_NOTIFICATIONS %}
-      <li class="list-group-item"><a href="{% url "notice_settings" %}"><i class="fa fa-bell"></i> {% trans "Notifications" %}</a></li>
+      <li class="list-group-item"><a href="{% url "pinax_notifications:notice_settings" %}"><i class="fa fa-bell"></i> {% trans "Notifications" %}</a></li>
       {% endif %}
       {% if perms.announcements.can_manage %}
       <li class="list-group-item"><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>
@@ -155,17 +156,11 @@
     </ul>
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "geonode.invitations:geonode-send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite Users" %}</a></li>
-      {% if user.is_superuser %}
-      <li class="list-group-item"><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
-      <li class="list-group-item"><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
-      {% endif %}
-      {% if user.is_staff %}
-      <li class="list-group-item"><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
+      {% if user.is_superuser or user.is_staff %}
+          <li class="list-group-item"><a href="{% url "proxy" %}?url={{ OGC_SERVER.default.LOCATION }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
+          <li class="list-group-item"><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
       {% endif %}
     </ul>
-    {% if_has_tag if_relationship %}
-      {% include "relationships/_manage_connections.html" %}
-    {% endif_has_tag %}
   {% else %}
     {% if user.is_superuser %}
     <ul class="list-group">
@@ -175,14 +170,7 @@
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "user-activity" profile.username %}"><i class="fa fa-fire"></i> {% trans "User Activities" %}</a></li>
     </ul>
-    {% if_has_tag if_relationship %}
-      {% include "relationships/_profile_follow.html" %}
-    {% endif_has_tag %}
   {% endif %}
-
-  {% if_has_tag if_relationship %}
-    {% include "relationships/_list_connections.html" %}
-  {% endif_has_tag %}
 </div>
 
 <div class="col-md-9">

@@ -29,62 +29,64 @@ import ast
 
 class Command(BaseCommand):
     help = 'Update the GeoNode application with data from GeoServer'
-    option_list = BaseCommand.option_list + (
-        make_option(
+
+    def add_arguments(self, parser):
+        parser.add_argument(
             '-i',
             '--ignore-errors',
             action='store_true',
             dest='ignore_errors',
             default=False,
-            help='Stop after any errors are encountered.'),
-        make_option(
+            help='Stop after any errors are encountered.'
+        )
+        parser.add_argument(
             '--skip-unadvertised',
             action='store_true',
             dest='skip_unadvertised',
             default=False,
             help='Skip processing unadvertised layers from GeoSever.'),
-        make_option(
+        parser.add_argument(
             '--skip-geonode-registered',
             action='store_true',
             dest='skip_geonode_registered',
             default=False,
             help='Just processing GeoServer layers still not registered in GeoNode.'),
-        make_option(
+        parser.add_argument(
             '--remove-deleted',
             action='store_true',
             dest='remove_deleted',
             default=False,
             help='Remove GeoNode layers that have been deleted from GeoSever.'),
-        make_option(
+        parser.add_argument(
             '-u',
             '--user',
             dest="user",
             default=None,
             help="Name of the user account which should own the imported layers"),
-        make_option(
+        parser.add_argument(
             '-f',
             '--filter',
             dest="filter",
             default=None,
             help="Only update data the layers that match the given filter"),
-        make_option(
+        parser.add_argument(
             '-s',
             '--store',
             dest="store",
             default=None,
             help="Only update data the layers for the given geoserver store name"),
-        make_option(
+        parser.add_argument(
             '-w',
             '--workspace',
             dest="workspace",
             default=None,
             help="Only update data on specified workspace"),
-        make_option(
+        parser.add_argument(
             '-p',
             '--permissions',
             dest="permissions",
             default=None,
-            help="Permissions to apply to each layer"))
+            help="Permissions to apply to each layer")
 
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')

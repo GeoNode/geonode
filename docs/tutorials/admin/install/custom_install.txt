@@ -45,7 +45,7 @@ This includes:
 * Python development libraries
 * PostgreSQL database
 * The GDAL, GEOS, and OGR geospatial software libraries
-  
+
 For detailed information on dependencies please refer to the section :ref:`dependencies`.
 
 For convenience, appropriate commands to retrieve these dependencies on Ubuntu
@@ -100,7 +100,7 @@ installation-configuration of GeoNode:
 #. `Configure using the ubuntu config file`_.
    This is the recommended way, using the provided .sh scripts
 #. `Configure manually`_, doing each step by hand as opposed to using the .sh scripts
-  
+
 In the end you will have the same running instance of Geonode.
 
 Configure Manually
@@ -120,7 +120,7 @@ Download the code using git.
     $ cd geonode
 
     # Installs django etc.
-    $ sudo pip install -e .
+    $ sudo pip install -e . --upgrade --no-cache
 
     # Downloads geoserver.war
     $ sudo paver setup
@@ -192,7 +192,7 @@ To create the databases (the geonode one and the spatial for shapefile imports):
     $ psql -d geonode_data -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
     $ exit
 
-This creates databases called *geonode* and *geonode_data* 
+This creates databases called *geonode* and *geonode_data*
 (which automatically has the postgis extension as well!)
 with owner *geonode*.
 
@@ -491,7 +491,7 @@ pre-installed.
 However, some manual configuration may still be needed in case of not standard
 installation.
 
-**Configure GeoServer** 
+**Configure GeoServer**
 
 Configure GeoServer with the location of the GeoNode site, used for
 authentication (so that GeoServer can recognize logins from the main site).
@@ -508,12 +508,12 @@ so:
        <context-param>
            <param-name>GEONODE_BASE_URL</param-name>
            <param-value>http://localhost/</param-value>
-       </context-param> 
+       </context-param>
 
 The ``<param-value>`` tag should enclose the URL to the Django application
 homepage.
 
-And secondly, update the value of the ``baseUrl`` tag in 
+And secondly, update the value of the ``baseUrl`` tag in
 ``data/security/auth/geonodeAuthProvider/config.xml``:
 
 .. code-block:: xml
@@ -544,16 +544,16 @@ Download the code using git.
     $ git clone https://github.com/GeoNode/geonode.git
     $ cd geonode
 
-* Installer configuration file *(located in ``package/support/config-ubuntu.sh``)* 
+* Installer configuration file *(located in ``package/support/config-ubuntu.sh``)*
   This is the first thing to edit.
 * The installer script *(located in ``package/install.sh``)*
   Second thing to edit.
- 
+
 #. First open the ``package/support/config-ubuntu.sh`` installer configuration file.
    Now provide the details of your installation,
    such as where your web server looks for documents.
 
-#. Second, open ``install.sh`` and configure to your needs. 
+#. Second, open ``install.sh`` and configure to your needs.
 
 .. note:: you might have to change the postgresql and postgis versions in
     this file, according to the versions you use!
@@ -573,6 +573,6 @@ Once edited (if necessary) run the ``./install.sh`` file with the following comm
 
     # create the IP address to your address
     $ sudo geonode-updateip youraddress
-    
+
 
 GeoNode can now be accessed at http://localhost

@@ -129,7 +129,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
         user_username(user, safe_username)
 
     def render_mail(self, template_prefix, email, context):
-        user = context.get("inviter")
+        user = context.get("inviter") if context.get("inviter") else context.get("user")
         full_name = " ".join((user.first_name, user.last_name)) if user.first_name or user.last_name else None
         # manager_groups = Group.objects.filter(
         #     name__in=user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
@@ -137,6 +137,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
             slug__in=user.groupmember_set.filter().values_list("group__slug", flat=True))
         enhanced_context = context.copy()
         enhanced_context.update({
+            "username": user.username,
             "inviter_name": full_name or str(user),
             "inviter_first_name": user.first_name or str(user),
             "inviter_id": user.id,

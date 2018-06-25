@@ -69,13 +69,13 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
     )
 
     default_style = models.ForeignKey(
-        'QGISServerStyle',
+        'qgis_server.QGISServerStyle',
         related_name='layer_default_style',
         default=None,
         null=True,
         on_delete=models.SET_NULL)
     styles = models.ManyToManyField(
-        'QGISServerStyle',
+        'qgis_server.QGISServerStyle',
         related_name='layer_styles')
 
     @property
@@ -167,7 +167,7 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
 
         # Removing the cache.
         path = self.cache_path
-        logger.info('Removing the cache from a qgis layer : %s' % path)
+        logger.debug('Removing the cache from a qgis layer : %s' % path)
         try:
             rmtree(path)
         except OSError:
@@ -182,13 +182,15 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
         # Associate this model with resource
         try:
             return self.layer.get_self_resource()
-        except:
+        except BaseException:
             return None
+
+    class Meta:
+        app_label = "qgis_server"
 
 
 class QGISServerStyle(models.Model, PermissionLevelMixin):
     """Model wrapper for QGIS Server styles."""
-
     name = models.CharField(_('style name'), max_length=255)
     title = models.CharField(max_length=255, null=True, blank=True)
     body = models.TextField(_('style xml'), null=True, blank=True)
@@ -313,8 +315,11 @@ class QGISServerStyle(models.Model, PermissionLevelMixin):
             qgis_layer = self.layer_styles.first()
             """:type: QGISServerLayer"""
             return qgis_layer.get_self_resource()
-        except:
+        except BaseException:
             return None
+
+    class Meta:
+        app_label = "qgis_server"
 
 
 class QGISServerMap(models.Model, PermissionLevelMixin):
@@ -372,10 +377,8 @@ class QGISServerMap(models.Model, PermissionLevelMixin):
         # Associate this model with resource
         try:
             return self.layer.get_self_resource()
-        except:
+        except BaseException:
             return None
 
-
-from geonode.qgis_server.signals import \
-    register_qgis_server_signals  # noqa: F402,F401
-register_qgis_server_signals()
+    class Meta:
+        app_label = "qgis_server"

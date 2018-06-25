@@ -2,6 +2,13 @@ sudo: required
 
 language: python
 
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
+
 python:
   - "2.7"
 
@@ -13,13 +20,32 @@ services:
   - postgresql
 
 addons:
+  hosts:
+    - geonode
   postgresql: 9.6
   apt:
     packages:
     - postgresql-9.6-postgis-2.3
+    - nginx
 
 env:
   - BACKEND: 'geonode.geoserver'
+    ON_TRAVIS: 'True'
+    TEST_RUN_CORE: 'True'
+    MONITORING_ENABLED: 'False'
+  - BACKEND: 'geonode.geoserver'
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTERNAL_APPS: 'True'
+    MONITORING_ENABLED: 'False'
+  - BACKEND: 'geonode.geoserver'
+    DOCKER_COMPOSE_VERSION: 1.19.0
+    # This is GeoServer server address
+    GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+    GEOSERVER_SERVER_PORT: 8080
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTEGRATION: 'True'
+    MONITORING_ENABLED: 'False'
+    CELERY_ALWAYS_EAGER: 'True'
   - BACKEND: 'geonode.qgis_server'
     DOCKER_COMPOSE_VERSION: 1.11.2
     # This is qgis server address
@@ -28,17 +54,45 @@ env:
     # So QGIS server can access this address
     SITEURL: http://localhost:8000/
     QGIS_SERVER_PORT: 9000
-    ON_TRAVIS: True
-    CELERY_ALWAYS_EAGER: True
+    ON_TRAVIS: 'True'
+    TEST_RUN_CORE: 'True'
+    MONITORING_ENABLED: 'False'
+    CELERY_ALWAYS_EAGER: 'True'
+  - BACKEND: 'geonode.qgis_server'
+    DOCKER_COMPOSE_VERSION: 1.11.2
+    # This is qgis server address
+    QGIS_SERVER_URL: http://localhost:9000/
+    # This is the location of docker network bridge
+    # So QGIS server can access this address
+    SITEURL: http://localhost:8000/
+    QGIS_SERVER_PORT: 9000
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTERNAL_APPS: 'True'
+    MONITORING_ENABLED: 'False'
+    CELERY_ALWAYS_EAGER: 'True'
+  - BACKEND: 'geonode.qgis_server'
+    DOCKER_COMPOSE_VERSION: 1.11.2
+    # This is qgis server address
+    QGIS_SERVER_URL: http://localhost:9000/
+    # This is the location of docker network bridge
+    # So QGIS server can access this address
+    SITEURL: http://localhost:8000/
+    QGIS_SERVER_PORT: 9000
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTEGRATION: 'True'
+    MONITORING_ENABLED: 'False'
+    CELERY_ALWAYS_EAGER: 'True'
 
 branches:
   only:
     - master
     - 2.9.x
+    - 2.8.0
     - 2.7.x
     - 2.6.x
 
 before_install:
+  - scripts/misc/geoserver_server_setup.sh before_install
   - scripts/misc/qgis_server_setup.sh before_install
   - chmod +x scripts/misc/bdd_setup.sh
   - scripts/misc/bdd_setup.sh before_install
@@ -52,8 +106,8 @@ install:
   - sudo apt-get update
   - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 --no-install-recommends
   - sudo update-java-alternatives --set java-8-oracle
-  - pip install -r requirements.txt --no-deps
-  - pip install -e .
+  - pip install -r requirements.txt --upgrade
+  - pip install -e . --upgrade
   - pip install pygdal==`gdal-config --version`
   - pip install codecov
 
@@ -63,18 +117,30 @@ before_script:
   - psql -U postgres -c "create extension postgis"
   - chmod +x scripts/misc/create_dbs_travis.sh
   - scripts/misc/create_dbs_travis.sh before_script
+  # For GeoServer Server Travis steps
+  - scripts/misc/geoserver_server_setup.sh before_script
   # For QGIS Server Travis steps
   - scripts/misc/qgis_server_setup.sh before_script
   - scripts/misc/bdd_setup.sh before_script
 
+  # Start NGINX server
+  - sudo nginx -s stop
+  - sudo nginx -c `pwd`/scripts/misc/nginx_integration.conf
+
+  # Setup GeoNode
   - paver setup
 
 script:
   - paver run_tests --coverage --local false
 
 after_script:
+  # For GeoServer Server Travis steps
+  - scripts/misc/geoserver_server_setup.sh after_script
   # For QGIS Server Travis steps
   - scripts/misc/qgis_server_setup.sh after_script
+
+  # Stop NGINX server
+  - sudo nginx -c `pwd`/scripts/misc/nginx_integration.conf -s stop
 
   # Cleanup
   - paver reset_hard
@@ -88,7 +154,7 @@ notifications:
       - "irc.freenode.org#geonode"
     use_notice: true
   email:
-    - geonode-dev@boundlessgeo.com
+    - alessio.fabiani@gmail.com
     - ingenieroariel@gmail.com
     - simone.dalmasso@gmail.com
   slack: geonode-sprint:oQylJRkU9feZ8JruGi6czWwe

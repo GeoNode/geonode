@@ -35,7 +35,7 @@ class LoginRequiredMiddleware(object):
         reverse('account_login'),
         reverse('forgot_username'),
         reverse('help'),
-        reverse('jscat'),
+        reverse('javascript-catalog'),
         reverse('lang'),
         reverse('layer_acls'),
         reverse('layer_acls_dep'),

@@ -17,6 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import os
 import urlparse
 import unittest
@@ -32,7 +35,6 @@ import requests
 from django.conf import settings
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from django.test import LiveServerTestCase
 
 from geonode import qgis_server
 from geonode.decorators import on_ogc_backend
@@ -43,10 +45,9 @@ from geonode.qgis_server.helpers import validate_django_settings, \
     style_remove_url
 
 
-class HelperTest(LiveServerTestCase):
+class HelperTest(GeoNodeBaseTestSupport):
 
-    def setUp(self):
-        call_command('loaddata', 'people_data', verbosity=0)
+    fixtures = ['initial_data.json', 'people_data.json']
 
     @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_validate_settings(self):
@@ -62,14 +63,16 @@ class HelperTest(LiveServerTestCase):
         new_bbox = transform_layer_bbox(uploaded, 3857)
 
         expected_bbox = [
-            10793092.549352637, -615294.6893182276,
-            10810202.947307253, -591232.8900397373]
+            10793092.549352637, -615294.6893182159,
+            10810202.947307253, -591232.8900397272]
 
         self.assertEqual(new_bbox, expected_bbox)
 
         new_bbox = transform_layer_bbox(uploaded, 4326)
 
-        expected_bbox = [96.956, -5.518733, 97.10970532, -5.303545552]
+        expected_bbox = [
+            96.956, -5.5187329999999,
+            97.10970532, -5.3035455519999]
 
         self.assertEqual(new_bbox, expected_bbox)
 
@@ -179,9 +182,12 @@ class HelperTest(LiveServerTestCase):
 
         # Get style list
         qml_styles = style_list(uploaded, internal=False)
-        expected_style_names = ['default', 'new_style']
-        actual_style_names = [s.name for s in qml_styles]
-        self.assertEqual(set(expected_style_names), set(actual_style_names))
+        if qml_styles:
+            expected_style_names = ['default', 'new_style']
+            actual_style_names = [s.name for s in qml_styles]
+            self.assertEqual(
+                set(expected_style_names),
+                set(actual_style_names))
 
         # Get new style
         style_url = style_get_url(uploaded, 'new_style', internal=True)

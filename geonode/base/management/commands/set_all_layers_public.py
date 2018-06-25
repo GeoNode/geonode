@@ -21,7 +21,7 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from geonode.layers.models import Layer
-from geonode.security.models import set_geofence_all
+from geonode.security.utils import set_geofence_all
 
 
 class Command(BaseCommand):

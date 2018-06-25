@@ -33,13 +33,18 @@ from math import floor, ceil
 
 from xml.etree import ElementTree as etree
 from bs4 import BeautifulSoup as bs
+from requests.auth import HTTPBasicAuth
 import requests
 
+from django.conf import settings
 from django.db.models.fields.related import RelatedField
 
 from geonode.contrib.monitoring.models import RequestEvent, ExceptionEvent
 
+
 GS_FORMAT = '%Y-%m-%dT%H:%M:%S'  # 2010-06-20T2:00:00
+
+log = logging.getLogger(__name__)
 
 
 class MonitoringFilter(logging.Filter):
@@ -71,11 +76,14 @@ class MonitoringHandler(logging.Handler):
         req = record.request
         resp = record.response
         if not req._monitoring.get('processed'):
-            re = RequestEvent.from_geonode(self.service, req, resp)
-            req._monitoring['processed'] = re
+            try:
+                re = RequestEvent.from_geonode(self.service, req, resp)
+                req._monitoring['processed'] = re
+            except BaseException:
+                req._monitoring['processed'] = None
         re = req._monitoring.get('processed')
 
-        if exc_info:
+        if re and exc_info:
             tb = traceback.format_exception(*exc_info)
             ExceptionEvent.add_error(self.service, exc_info[1], tb, request=re)
 
@@ -123,51 +131,67 @@ class GeoServerMonitorClient(object):
         rest_url = '{}rest/monitor/requests.html'.format(self.base_url)
         qargs = {}
         if since:
+            # since = since.astimezone(utc)
             qargs['from'] = since.strftime(GS_FORMAT)
         if until:
+            # until = until.astimezone(utc)
             qargs['to'] = until.strftime(GS_FORMAT)
         if qargs:
             rest_url = '{}?{}'.format(rest_url, urlencode(qargs))
 
         print('checking', rest_url)
-        resp = requests.get(rest_url)
+        username = settings.OGC_SERVER['default']['USER']
+        password = settings.OGC_SERVER['default']['PASSWORD']
+        resp = requests.get(rest_url, auth=HTTPBasicAuth(username, password))
         doc = bs(resp.content)
         links = doc.find_all('a')
         for l in links:
-            if l.get('href').startswith(self.base_url):
-                href = self.get_href(l, format)
-                data = self.get_request(href, format=format)
-                if data:
-                    yield data
-                else:
-                    print("Skipping payload for {}".format(href))
+            # we're skipping this check, as gs can generate
+            # url with other base url
+            # if l.get('href').startswith(self.base_url):
+            href = self.get_href(l, format)
+            data = self.get_request(href, format=format)
+            if data:
+                yield data
+            else:
+                print("Skipping payload for {}".format(href))
 
     def get_request(self, href, format=format):
-        r = requests.get(href)
+        username = settings.OGC_SERVER['default']['USER']
+        password = settings.OGC_SERVER['default']['PASSWORD']
+        r = requests.get(href, auth=HTTPBasicAuth(username, password))
         if r.status_code != 200:
+            log.warning('Invalid response for %s: %s', href, r)
             return
         data = None
         try:
             data = r.json()
         except (ValueError, TypeError,):
+            # traceback.print_exc()
             try:
                 data = etree.fromstring(r.content)
-            except Exception:
+            except Exception as err:
+                log.debug("Cannot parse xml contents for %s: %s", href, err, exc_info=err)
                 data = bs(r.content)
         if data and format != 'json':
             return self.to_json(data, format)
         return data
 
     def _from_xml(self, val):
-        return xmljson.yahoo.data(val)
+        try:
+            return xmljson.yahoo.data(val)
+        except BaseException:
+            # raise ValueError("Cannot convert from val %s" % val)
+            pass
 
     def _from_html(self, val):
         raise ValueError("Cannot convert from html")
 
     def to_json(self, data, from_format):
         h = getattr(self, '_from_{}'.format(from_format), None)
-        if not h:
-            raise ValueError("Cannot convert from {} - no handler".format(from_format))
+        if not h or not data:
+            raise ValueError(
+                "Cannot convert from {} - no handler".format(from_format))
         return h(data)
 
 
@@ -182,21 +206,23 @@ def align_period_end(end, interval):
     # rounding to last lower full period
     interval_num = ceil(diff_s / float(int_s))
 
-    return day_end + timedelta(seconds=(interval_num * interval.total_seconds()))
+    return day_end + \
+        timedelta(seconds=(interval_num * interval.total_seconds()))
 
 
 def align_period_start(start, interval):
     utc = pytz.utc
     day_start = datetime(*start.date().timetuple()[:6]).replace(tzinfo=utc)
     # timedelta
-    diff = (start - day_start)
+    diff = (start.replace(tzinfo=utc) - day_start)
     # seconds
     diff_s = diff.total_seconds()
     int_s = interval.total_seconds()
     # rounding to last lower full period
     interval_num = floor(diff_s / float(int_s))
 
-    return day_start + timedelta(seconds=(interval_num * interval.total_seconds()))
+    return day_start + \
+        timedelta(seconds=(interval_num * interval.total_seconds()))
 
 
 def generate_periods(since, interval, end=None, align=True):
@@ -217,7 +243,8 @@ def generate_periods(since, interval, end=None, align=True):
     if _periods[1]:
         periods_count += 1
 
-    end = since_aligned + timedelta(seconds=(periods_count * interval.total_seconds()))
+    end = since_aligned + \
+        timedelta(seconds=(periods_count * interval.total_seconds()))
 
     while since_aligned < end:
         yield (since_aligned, since_aligned + interval,)
@@ -253,7 +280,8 @@ class TypeChecks(object):
             try:
                 rtype, rname = val.split('=')
             except (ValueError, IndexError,):
-                raise ValueError("{} is not valid resource description".format(val))
+                raise ValueError(
+                    "{} is not valid resource description".format(val))
         return MonitoredResource.objects.get(type=rtype, name=rname)
 
     @staticmethod

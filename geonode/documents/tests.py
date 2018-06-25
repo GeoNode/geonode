@@ -23,13 +23,14 @@ This file demonstrates writing tests using the unittest module. These will pass
 when you run "manage.py test".
 
 """
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import os
 import StringIO
 import json
 
 import gisdata
 from datetime import datetime
-from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -50,9 +51,9 @@ from geonode.tests.utils import NotificationsTestsHelper
 from geonode.documents import DocumentsAppConfig
 
 
-class DocumentsTest(TestCase):
-    fixtures = ['initial_data.json', 'bobby']
+class DocumentsTest(GeoNodeBaseTestSupport):
 
+    type = 'document'
     perm_spec = {
         "users": {
             "admin": [
@@ -62,7 +63,7 @@ class DocumentsTest(TestCase):
         "groups": {}}
 
     def setUp(self):
-        create_models('document')
+        super(DocumentsTest, self).setUp()
         create_models('map')
         self.imgfile = StringIO.StringIO(
             'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
@@ -101,13 +102,13 @@ class DocumentsTest(TestCase):
 
         m = Map.objects.all()[0]
         ctype = ContentType.objects.get_for_model(m)
-        l = DocumentResourceLink.objects.create(
+        _l = DocumentResourceLink.objects.create(
             document_id=c.id,
             content_type=ctype,
             object_id=m.id)
 
         self.assertEquals(Document.objects.get(pk=c.id).title, 'theimg')
-        self.assertEquals(DocumentResourceLink.objects.get(pk=l.id).object_id,
+        self.assertEquals(DocumentResourceLink.objects.get(pk=_l.id).object_id,
                           m.id)
 
     def test_create_document_url(self):
@@ -207,14 +208,14 @@ class DocumentsTest(TestCase):
 
     def test_document_details(self):
         """/documents/1 -> Test accessing the detail view of a document"""
-        d = Document.objects.get(pk=1)
+        d = Document.objects.all().first()
         d.set_default_permissions()
 
         response = self.client.get(reverse('document_detail', args=(str(d.id),)))
         self.assertEquals(response.status_code, 200)
 
     def test_document_metadata_details(self):
-        d = Document.objects.get(pk=1)
+        d = Document.objects.all().first()
         d.set_default_permissions()
 
         response = self.client.get(reverse('document_metadata_detail', args=(str(d.id),)))
@@ -401,17 +402,22 @@ class DocumentsTest(TestCase):
         self.assertEquals(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertTrue(region in resource.regions.all())
+            if resource.regions.all():
+                self.assertTrue(region in resource.regions.all())
         # test date change
-        date = datetime.now()
+        from django.utils import timezone
+        date = datetime.now(timezone.get_current_timezone())
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'date': date},
         )
-        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.status_code, 200)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertEquals(resource.date, date)
+            today = date.today()
+            todoc = resource.date.today()
+            self.assertEquals((today.day, today.month, today.year),
+                              (todoc.day, todoc.month, todoc.year))
         # test language change
         language = 'eng'
         response = self.client.post(
@@ -435,9 +441,7 @@ class DocumentsTest(TestCase):
                 self.assertTrue(word.name in keywords.split(','))
 
 
-class DocumentModerationTestCase(TestCase):
-
-    fixtures = ['initial_data.json', 'bobby']
+class DocumentModerationTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(DocumentModerationTestCase, self).setUp()
@@ -474,10 +478,10 @@ class DocumentModerationTestCase(TestCase):
                 resp = self.client.post(document_upload_url, data=data)
             self.assertEqual(resp.status_code, 302)
             dname = 'document title'
-            l = Document.objects.get(title=dname)
+            _l = Document.objects.get(title=dname)
 
-            self.assertTrue(l.is_published)
-            l.delete()
+            self.assertTrue(_l.is_published)
+            _l.delete()
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             document_upload_url = reverse('document_upload')
@@ -495,17 +499,14 @@ class DocumentModerationTestCase(TestCase):
                 resp = self.client.post(document_upload_url, data=data)
             self.assertEqual(resp.status_code, 302)
             dname = 'document title'
-            l = Document.objects.get(title=dname)
+            _l = Document.objects.get(title=dname)
 
-            self.assertFalse(l.is_published)
+            self.assertFalse(_l.is_published)
 
 
 class DocumentNotificationsTestCase(NotificationsTestsHelper):
 
-    fixtures = ['initial_data.json', 'bobby']
-
     def setUp(self):
-        super(DocumentNotificationsTestCase, self).setUp()
         self.user = 'admin'
         self.passwd = 'admin'
         create_models(type='document')
@@ -519,25 +520,23 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
     def testDocumentNotifications(self):
         with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
             self.clear_notifications_queue()
-            l = Document.objects.create(title='test notifications', owner=self.u)
+            _l = Document.objects.create(title='test notifications', owner=self.u)
             self.assertTrue(self.check_notification_out('document_created', self.u))
-            l.title = 'test notifications 2'
-            l.save()
+            _l.title = 'test notifications 2'
+            _l.save()
             self.assertTrue(self.check_notification_out('document_updated', self.u))
 
             from dialogos.models import Comment
-            lct = ContentType.objects.get_for_model(l)
+            lct = ContentType.objects.get_for_model(_l)
             comment = Comment(author=self.u, name=self.u.username,
-                              content_type=lct, object_id=l.id,
-                              content_object=l, comment='test comment')
+                              content_type=lct, object_id=_l.id,
+                              content_object=_l, comment='test comment')
             comment.save()
 
             self.assertTrue(self.check_notification_out('document_comment', self.u))
 
 
-class DocumentResourceLinkTestCase(TestCase):
-
-    fixtures = ['initial_data.json', 'bobby']
+class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         create_models('document')
@@ -580,12 +579,12 @@ class DocumentResourceLinkTestCase(TestCase):
 
         for resource in resources:
             ct = ContentType.objects.get_for_model(resource)
-            l = DocumentResourceLink.objects.get(
+            _l = DocumentResourceLink.objects.get(
                 document_id=d.id,
                 content_type=ct.id,
                 object_id=resource.id
             )
-            self.assertEquals(l.object_id, resource.id)
+            self.assertEquals(_l.object_id, resource.id)
 
         # update document links
 
@@ -598,12 +597,12 @@ class DocumentResourceLinkTestCase(TestCase):
 
         for resource in layers:
             ct = ContentType.objects.get_for_model(resource)
-            l = DocumentResourceLink.objects.get(
+            _l = DocumentResourceLink.objects.get(
                 document_id=d.id,
                 content_type=ct.id,
                 object_id=resource.id
             )
-            self.assertEquals(l.object_id, resource.id)
+            self.assertEquals(_l.object_id, resource.id)
 
         for resource in maps:
             ct = ContentType.objects.get_for_model(resource)

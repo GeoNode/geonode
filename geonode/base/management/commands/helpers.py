@@ -19,18 +19,12 @@
 #########################################################################
 
 from __future__ import with_statement
-from contextlib import closing
-from zipfile import ZipFile, ZIP_DEFLATED
 
 import traceback
 import psycopg2
 import ConfigParser
 import os
 import sys
-import time
-import shutil
-
-from optparse import make_option
 
 try:
     import json
@@ -45,46 +39,52 @@ LOCALE_PATHS = 'locale_dirs'
 EXTERNAL_ROOT = 'external'
 
 
-class Config(object):
+def option(parser):
 
-    option = make_option(
+    # Named (optional) arguments
+    parser.add_argument(
         '-c',
         '--config',
-        type="string",
         help='Use custom settings.ini configuration file')
 
-    geoserver_option_list = (
-        make_option(
-            '--geoserver-data-dir',
-            dest="gs_data_dir",
-            type="string",
-            default=None,
-            help="Geoserver data directory"),
-        make_option(
-            '--dump-geoserver-vector-data',
-            dest="dump_gs_vector_data",
-            action="store_true",
-            default=None,
-            help="Dump geoserver vector data"),
-        make_option(
-            '--no-geoserver-vector-data',
-            dest="dump_gs_vector_data",
-            action="store_false",
-            default=None,
-            help="Don't dump geoserver vector data"),
-        make_option(
-            '--dump-geoserver-raster-data',
-            dest="dump_gs_raster_data",
-            action="store_true",
-            default=None,
-            help="Dump geoserver raster data"),
-        make_option(
-            '--no-geoserver-raster-data',
-            dest="dump_gs_raster_data",
-            action="store_false",
-            default=None,
-            help="Don't dump geoserver raster data"),
-    )
+def geoserver_option_list(parser):
+
+    # Named (optional) arguments
+    parser.add_argument(
+        '--geoserver-data-dir',
+        dest="gs_data_dir",
+        default=None,
+        help="Geoserver data directory")
+
+    parser.add_argument(
+        '--dump-geoserver-vector-data',
+        dest="dump_gs_vector_data",
+        action="store_true",
+        default=None,
+        help="Dump geoserver vector data")
+
+    parser.add_argument(
+        '--no-geoserver-vector-data',
+        dest="dump_gs_vector_data",
+        action="store_false",
+        default=None,
+        help="Don't dump geoserver vector data")
+
+    parser.add_argument(
+        '--dump-geoserver-raster-data',
+        dest="dump_gs_raster_data",
+        action="store_true",
+        default=None,
+        help="Dump geoserver raster data")
+
+    parser.add_argument(
+        '--no-geoserver-raster-data',
+        dest="dump_gs_raster_data",
+        action="store_false",
+        default=None,
+        help="Don't dump geoserver raster data")
+
+class Config(object):
 
     def __init__(self, options):
         self.load_settings(settings_path=options.get('config'))
@@ -275,76 +275,6 @@ def load_fixture(apps, fixture_file, mangler=None, basepk=-1, owner="admin", dat
     fixture.close()
 
     return objects
-
-
-def get_dir_time_suffix():
-    """Returns the name of a folder with the 'now' time as suffix"""
-    dirfmt = "%4d-%02d-%02d_%02d%02d%02d"
-    now = time.localtime()[0:6]
-    dirname = dirfmt % now
-
-    return dirname
-
-
-def zip_dir(basedir, archivename):
-    assert os.path.isdir(basedir)
-    with closing(ZipFile(archivename, "w", ZIP_DEFLATED, allowZip64=True)) as z:
-        for root, dirs, files in os.walk(basedir):
-            # NOTE: ignore empty directories
-            for fn in files:
-                absfn = os.path.join(root, fn)
-                zfn = absfn[len(basedir)+len(os.sep):]  # XXX: relative path
-                z.write(absfn, zfn)
-
-
-def copy_tree(src, dst, symlinks=False, ignore=None):
-    try:
-        for item in os.listdir(src):
-            s = os.path.join(src, item)
-            d = os.path.join(dst, item)
-            if os.path.isdir(s):
-                # shutil.rmtree(d)
-                if os.path.exists(d):
-                    try:
-                        os.remove(d)
-                    except:
-                        try:
-                            shutil.rmtree(d)
-                        except:
-                            pass
-                try:
-                    shutil.copytree(s, d, symlinks, ignore)
-                except:
-                    pass
-            else:
-                try:
-                    shutil.copy2(s, d)
-                except:
-                    pass
-    except Exception:
-        traceback.print_exc()
-
-
-def unzip_file(zip_file, dst):
-    target_folder = os.path.join(dst, os.path.splitext(os.path.basename(zip_file))[0])
-    if not os.path.exists(target_folder):
-        os.makedirs(target_folder)
-
-    with ZipFile(zip_file, "r", allowZip64=True) as z:
-        z.extractall(target_folder)
-
-    return target_folder
-
-
-def chmod_tree(dst, permissions=0o777):
-    for dirpath, dirnames, filenames in os.walk(dst):
-        for filename in filenames:
-            path = os.path.join(dirpath, filename)
-            os.chmod(path, permissions)
-
-        for dirname in dirnames:
-            path = os.path.join(dirpath, dirname)
-            os.chmod(path, permissions)
 
 
 def confirm(prompt=None, resp=False):

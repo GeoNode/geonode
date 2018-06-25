@@ -21,12 +21,11 @@
 import uuid
 import logging
 
-from datetime import datetime
-
 from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
@@ -35,9 +34,8 @@ from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_
 from geonode.people.utils import get_valid_user
 from agon_ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
-from geonode.security.models import (
-    remove_object_permissions,
-    PermissionLevelMixin)
+from geonode.security.models import PermissionLevelMixin
+from geonode.security.utils import remove_object_permissions
 
 from ..services.enumerations import CASCADED
 from ..services.enumerations import INDEXED
@@ -110,7 +108,7 @@ class Style(models.Model, PermissionLevelMixin):
             layer = self.layer_styles.first()
             """:type: Layer"""
             return layer.get_self_resource()
-        except:
+        except BaseException:
             return None
 
 
@@ -128,21 +126,22 @@ class Layer(ResourceBase):
 
     # internal fields
     objects = LayerManager()
-    workspace = models.CharField(max_length=128)
-    store = models.CharField(max_length=128)
-    storeType = models.CharField(max_length=128)
-    name = models.CharField(max_length=128)
-    typename = models.CharField(max_length=128, null=True, blank=True)
+    workspace = models.CharField(_('Workspace'), max_length=128)
+    store = models.CharField(_('Store'), max_length=128)
+    storeType = models.CharField(_('Storetype'), max_length=128)
+    name = models.CharField(_('Name'), max_length=128)
+    typename = models.CharField(_('Typename'), max_length=128, null=True, blank=True)
 
-    is_mosaic = models.BooleanField(default=False)
-    has_time = models.BooleanField(default=False)
-    has_elevation = models.BooleanField(default=False)
+    is_mosaic = models.BooleanField(_('Is mosaic?'), default=False)
+    has_time = models.BooleanField(_('Has time?'), default=False)
+    has_elevation = models.BooleanField(_('Has elevation?'), default=False)
     time_regex = models.CharField(
+        _('Time regex'),
         max_length=128,
         null=True,
         blank=True,
         choices=TIME_REGEX)
-    elevation_regex = models.CharField(max_length=128, null=True, blank=True)
+    elevation_regex = models.CharField(_('Elevation regex'), max_length=128, null=True, blank=True)
 
     default_style = models.ForeignKey(
         Style,
@@ -151,7 +150,7 @@ class Layer(ResourceBase):
         null=True,
         blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')
-    service = models.ForeignKey("services.Service", null=True, blank=True)
+    remote_service = models.ForeignKey("services.Service", null=True, blank=True)
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
@@ -159,6 +158,9 @@ class Layer(ResourceBase):
 
     def is_vector(self):
         return self.storeType == 'dataStore'
+
+    def get_upload_session(self):
+        return self.upload_session
 
     @property
     def display_type(self):
@@ -185,8 +187,8 @@ class Layer(ResourceBase):
 
     @property
     def ows_url(self):
-        if self.service is not None and self.service.method == INDEXED:
-            result = self.service.base_url
+        if self.remote_service is not None and self.remote_service.method == INDEXED:
+            result = self.remote_service.service_url
         else:
             result = "{base}ows".format(
                 base=settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
@@ -195,18 +197,26 @@ class Layer(ResourceBase):
 
     @property
     def ptype(self):
-        return self.service.ptype if self.service else "gxp_wmscsource"
+        return self.remote_service.ptype if self.remote_service else "gxp_wmscsource"
 
     @property
     def service_typename(self):
-        if self.service is not None and self.service.method == INDEXED:
-            return "%s:%s" % (self.service.name, self.alternate)
+        if self.remote_service is not None and self.remote_service.method == INDEXED:
+            return "%s:%s" % (self.remote_service.name, self.alternate)
         else:
             return self.alternate
 
     @property
     def attributes(self):
         return self.attribute_set.exclude(attribute='the_geom').order_by('display_order')
+
+    # layer geometry type.
+    @property
+    def gtype(self):
+        # return attribute type without 'gml:' and 'PropertyType'
+        if self.attribute_set.filter(attribute='the_geom').exists():
+            return self.attribute_set.get(attribute='the_geom').attribute_type[4:-12]
+        return None
 
     def get_base_file(self):
         """Get the shp or geotiff file for this layer.
@@ -328,6 +338,7 @@ class UploadSession(models.Model):
 
     """Helper class to keep track of uploads.
     """
+    resource = models.ForeignKey(ResourceBase, blank=True, null=True)
     date = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     processed = models.BooleanField(default=False)
@@ -338,6 +349,9 @@ class UploadSession(models.Model):
     def successful(self):
         return self.processed and self.errors is None
 
+    def __str__(self):
+        return u'%s' % self.resource or self.date
+
 
 class LayerFile(models.Model):
 
@@ -347,7 +361,7 @@ class LayerFile(models.Model):
     name = models.CharField(max_length=255)
     base = models.BooleanField(default=False)
     file = models.FileField(
-        upload_to='layers',
+        upload_to='layers/%Y/%m/%d',
         storage=FileSystemStorage(
             base_url=settings.LOCAL_MEDIA_URL),
         max_length=255)
@@ -471,7 +485,7 @@ class Attribute(models.Model):
         null=True,
         blank=True,
         default='NA')
-    last_stats_updated = models.DateTimeField(_('last modified'), default=datetime.now, help_text=_(
+    last_stats_updated = models.DateTimeField(_('last modified'), default=now, help_text=_(
         'date when attribute statistics were last updated'))  # passing the method itself, not
 
     objects = AttributeManager()
@@ -485,9 +499,9 @@ class Attribute(models.Model):
 
 
 def _get_alternate_name(instance):
-    if instance.service is not None and instance.service.method == INDEXED:
+    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
         result = instance.name
-    elif instance.service is not None and instance.service.method == CASCADED:
+    elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
         result = "{}:{}".format(
             getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE),
             instance.name
@@ -508,6 +522,7 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_x1 = instance.resourcebase_ptr.bbox_x1
         instance.bbox_y0 = instance.resourcebase_ptr.bbox_y0
         instance.bbox_y1 = instance.resourcebase_ptr.bbox_y1
+        instance.srid = instance.resourcebase_ptr.srid
 
     if instance.abstract == '' or instance.abstract is None:
         instance.abstract = unicode(_('No abstract provided'))
@@ -557,7 +572,7 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_y0,
         instance.bbox_y1]
 
-    instance.set_bounds_from_bbox(bbox)
+    instance.set_bounds_from_bbox(bbox, instance.srid)
 
 
 def pre_delete_layer(instance, sender, **kwargs):
@@ -565,8 +580,8 @@ def pre_delete_layer(instance, sender, **kwargs):
     Remove any associated style to the layer, if it is not used by other layers.
     Default style will be deleted in post_delete_layer
     """
-    if instance.service is not None and instance.service.method == INDEXED:
-        # we need to delete the maplayers here because in the post save layer.service is not available anymore
+    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
+        # we need to delete the maplayers here because in the post save layer.remote_service is not available anymore
         # REFACTOR
         from geonode.maps.models import MapLayer
         logger.debug(
@@ -584,6 +599,7 @@ def pre_delete_layer(instance, sender, **kwargs):
     OverallRating.objects.filter(
         content_type=ct,
         object_id=instance.id).delete()
+
     default_style = instance.default_style
     for style in instance.styles.all():
         if style.layer_styles.all().count() == 1:
@@ -599,22 +615,18 @@ def post_delete_layer(instance, sender, **kwargs):
     Removed the layer from any associated map, if any.
     Remove the layer default style.
     """
-    if instance.service is not None and instance.service.method == INDEXED:
+    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
         return
 
     from geonode.maps.models import MapLayer
-    if instance.alternate:
-        logger.debug(
-            "Going to delete associated maplayers for [%s]",
-            instance.alternate.encode('utf-8'))
-        MapLayer.objects.filter(
-            name=instance.alternate,
-            ows_url=instance.ows_url).delete()
+    logger.debug(
+        "Going to delete associated maplayers for [%s]", instance.name)
+    MapLayer.objects.filter(
+        name=instance.alternate,
+        ows_url=instance.ows_url).delete()
 
-    if instance.alternate:
-        logger.debug(
-            "Going to delete the default style for [%s]",
-            instance.alternate.encode('utf-8'))
+    logger.debug(
+        "Going to delete the default style for [%s]", instance.name)
 
     if instance.default_style and Layer.objects.filter(
             default_style__id=instance.default_style.id).count() == 0:
@@ -624,6 +636,7 @@ def post_delete_layer(instance, sender, **kwargs):
         if instance.upload_session:
             for lf in instance.upload_session.layerfile_set.all():
                 lf.file.delete()
+            instance.upload_session.delete()
     except UploadSession.DoesNotExist:
         pass
 

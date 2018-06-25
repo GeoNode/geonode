@@ -106,8 +106,9 @@ attributes = [
 ]
 
 
-def create_layer_data():
-    layer = Layer.objects.get(pk=1)
+def create_layer_data(object_id=None):
+    layer = Layer.objects.get(pk=object_id) if object_id else\
+        Layer.objects.all().first()
     for style in styles:
         new_style = Style.objects.create(
             name=style['name'],

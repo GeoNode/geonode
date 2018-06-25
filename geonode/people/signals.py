@@ -28,6 +28,7 @@ import logging
 from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
+from django.db.models import Q
 
 from geonode.notifications_helper import send_notification
 
@@ -48,12 +49,11 @@ def update_user_email_addresses(sender, **kwargs):
             EmailAddress.objects.add_email(
                 request=None, user=user, email=sociallogin_email, confirm=False)
         except IntegrityError:
-            logging.exception(msg="Could not add email address {!r } "
-                                  "to user {}".format(sociallogin_email, user))
+            logging.exception(msg="Could not add email address {} to user {}".format(sociallogin_email, user))
 
 
 def notify_admins_new_signup(sender, **kwargs):
-    staff = get_user_model().objects.filter(is_staff=True)
+    staff = get_user_model().objects.filter(Q(is_active=True) & (Q(is_staff=True) | Q(is_superuser=True)))
     send_notification(
         users=staff,
         label="account_approve",

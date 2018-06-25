@@ -43,7 +43,10 @@ from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
 from geonode.utils import num_encode
-from geonode.security.models import remove_object_permissions
+from geonode.security.utils import remove_object_permissions
+
+from geonode import geoserver, qgis_server  # noqa
+from geonode.utils import check_ogc_backend
 
 from agon_ratings.models import OverallRating
 
@@ -194,7 +197,7 @@ class Map(ResourceBase, GXPMapBase):
         for ordering, layer in enumerate(layers):
             self.layer_set.add(
                 layer_from_viewer_config(
-                    MapLayer, layer, source_for(layer), ordering
+                    self.id, MapLayer, layer, source_for(layer), ordering
                 ))
 
         self.save()
@@ -210,7 +213,7 @@ class Map(ResourceBase, GXPMapBase):
             return []
 
     def get_absolute_url(self):
-        return reverse('geonode.maps.views.map_detail', None, [str(self.id)])
+        return reverse('map_detail', None, [str(self.id)])
 
     def get_bbox_from_layers(self, layers):
         """
@@ -235,7 +238,7 @@ class Map(ResourceBase, GXPMapBase):
         self.owner = user
         self.title = title
         self.abstract = abstract
-        self.projection = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
+        self.projection = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
         self.zoom = 0
         self.center_x = 0
         self.center_y = 0
@@ -281,13 +284,17 @@ class Map(ResourceBase, GXPMapBase):
         # bbox format: [xmin, xmax, ymin, ymax]
         bbox = self.get_bbox_from_layers(self.local_layers)
 
-        self.set_bounds_from_bbox(bbox)
+        self.set_bounds_from_bbox(bbox, self.projection)
 
         self.set_missing_info()
 
         # Save again to persist the zoom and bbox changes and
         # to generate the thumbnail.
         self.save()
+
+    @property
+    def sender(self):
+        return None
 
     @property
     def class_name(self):
@@ -316,7 +323,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         Returns layer group name from local OWS for this map instance.
         """
-        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import gs_catalog, ogc_server_settings
             lg_name = '%s_%d' % (slugify(self.title), self.id)
             try:
@@ -324,7 +331,7 @@ class Map(ResourceBase, GXPMapBase):
                     'catalog': gs_catalog.get_layergroup(lg_name),
                     'ows': ogc_server_settings.ows
                 }
-            except:
+            except BaseException:
                 return {
                     'catalog': None,
                     'ows': ogc_server_settings.ows
@@ -336,7 +343,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         Publishes local map layers as WMS layer group on local OWS.
         """
-        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import gs_catalog
             from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
         else:

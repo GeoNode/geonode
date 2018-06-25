@@ -2,9 +2,7 @@
 {% load i18n %}
 {% load guardian_tags %}
 {% block head %}
-{% include "geonode/ext_header.html" %}
-{% include "geonode/app_header.html" %}
-{% include "geonode/geo_header.html" %}
+
 {{ block.super }}
 <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 var app;
@@ -15,7 +13,7 @@ Ext.onReady(function() {
        new GeoNode.WorldMapPermissionsEditor({
                 renderTo: "permissions_form",
                 submitTo: "{% url "geonode.services.views.ajax_service_permissions" service.id %}",
-                userLookup: "{% url "geonode.views.ajax_lookup" %}",
+                userLookup: "{% url "account_ajax_lookup" %}",
                 customGroup: "{{ customGroup }}",
                 permissions: {{ permissions_json }},
         levels: {
@@ -40,8 +38,7 @@ Ext.onReady(function() {
 {% block body %}
 <div class="twocol">
   <h3>{{service.title|default:service.name}}</h3>
-      <p><strong>{% trans "Name:" %}</strong> {{service.name}}</p>
-      <p><strong>{% trans "Type:" %}</strong> {{service.type}}</p>
+      <p><strong>{% trans "Type:" %}</strong> {{service.service_type}}</p>
       <p><strong>{% trans "URL:" %}</strong> {{service.base_url}}</p>
       <p><strong>{% trans "Abstract:" %}</strong> {{service.abstract}}</p>
       <p><strong>{% trans "Keywords:" %}</strong> {{ service.keywords.all|join:", " }}</p>
@@ -136,19 +133,19 @@ Ext.onReady(function() {
 
     {% get_obj_perms request.user for service as "resource_perms" %}
 
-    {% if "change_service" in resource_perms or "remove_service" in resource_perms or "change_service_permissions" in resource_perms %}
+    {% comment %}{% if "change_service" in resource_perms or "remove_service" in resource_perms or "change_service_permissions" in resource_perms %}{% endcomment %}
     <ul class="list-group">
         <li class="list-group-item"><h3>{% trans "Manage" %}</h3></li>
 
-        {% if "change_service" in resource_perms %}
+        {% comment %}{% if "change_service" in resource_perms %}{% endcomment %}
             <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "edit_service" service.id %}">{% trans "Edit Service Metadata" %}</a></li>
             <li class="list-group-item"><a id="harvestResources" class="btn btn-default btn-md btn-block" href="{% url "harvest_resources" service.id %}">{% trans "Import Service Resources" %}</a></li>
-        {% endif %}
-        {% if  "remove_service" or "delete_service" in resource_perms %}
+        {% comment %}{% endif %}{% endcomment %}
+        {% comment %}{% if "remove_service" or "delete_service" in resource_perms %}{% endcomment %}
             <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "remove_service" service.id %}">{% trans "Remove Service" %}</a></li>
-        {% endif %}
+        {% comment %}{% endif %}{% endcomment %}
       </ul>
-    {% endif %}
+    {% comment %}{% endif %}{% endcomment %}
 {% endblock %}
 {% block extra_script %}
     {{ block.super }}

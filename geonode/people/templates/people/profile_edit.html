@@ -14,7 +14,7 @@
 </div>
 
 <div class="col-xs-3 col-md-2 profile-image">
-  {% avatar profile.username 240 %}
+  {% autoescape off %}{% avatar profile.username 240 %}{% endautoescape %}
   {% if user == profile %}
   <p><a class="btn btn-primary btn-block" href="{% url 'avatar_change' %}">{% trans "Change your avatar" %}</a></p>
   {% endif %}

@@ -18,14 +18,19 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import json
 from django.core.urlresolvers import reverse
-from django.test import TestCase
 from geonode.base.models import ResourceBase
 from geonode.catalogue import get_catalogue
 
 
-class CatalogueTest(TestCase):
+class CatalogueTest(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super(CatalogueTest, self).setUp()
+
     def test_get_catalog(self):
         """Tests the get_catalogue function works."""
 
@@ -43,16 +48,16 @@ class CatalogueTest(TestCase):
                           'Expected equality of json and repository lengths')
 
         record_keys = [
-            'accessLevel',
-            'contactPoint',
-            'description',
-            'distribution',
-            'identifier',
-            'keyword',
-            'mbox',
-            'modified',
-            'publisher',
-            'title'
+            u'publisher',
+            u'identifier',
+            u'description',
+            u'keyword',
+            u'title',
+            u'modified',
+            u'contactPoint',
+            u'accessLevel',
+            u'mbox',
+            u'distribution'
         ]
 
         for record in data_json:

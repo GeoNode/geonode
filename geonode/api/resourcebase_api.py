@@ -41,7 +41,6 @@ from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 
 from tastypie.utils.mime import build_content_type
@@ -55,6 +54,7 @@ from geonode.base.models import HierarchicalKeyword
 from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
+from geonode.security.utils import get_visible_resources
 
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
@@ -113,6 +113,18 @@ class CommonModelApi(ModelResource):
         'uuid',
         'title',
         'date',
+        'date_type',
+        'edition',
+        'purpose',
+        'maintenance_frequency',
+        'restriction_code_type',
+        'constraints_other',
+        'license',
+        'language',
+        'spatial_representation_type',
+        'temporal_extent_start',
+        'temporal_extent_end',
+        'data_quality_statement',
         'abstract',
         'csw_wkt_geometry',
         'csw_type',
@@ -120,6 +132,10 @@ class CommonModelApi(ModelResource):
         'share_count',
         'popular_count',
         'srid',
+        'bbox_x0',
+        'bbox_x1',
+        'bbox_y0',
+        'bbox_y1',
         'category__gn_description',
         'supplemental_information',
         'thumbnail_url',
@@ -203,130 +219,28 @@ class CommonModelApi(ModelResource):
         return filtered
 
     def filter_published(self, queryset, request):
-        is_admin = False
-        is_manager = False
-        if request.user:
-            is_admin = request.user.is_superuser if request.user else False
-            try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except:
-                is_manager = False
+        filter_set = get_visible_resources(
+            queryset,
+            request.user if request else None,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING)
 
-        # Get the list of objects the user has access to
-        anonymous_group = None
-        public_groups = GroupProfile.objects.exclude(access="private").values('group')
-        groups = []
-        group_list_all = []
-        manager_groups = []
-        try:
-            group_list_all = request.user.group_list_all().values('group')
-        except:
-            pass
-        try:
-            manager_groups = Group.objects.filter(
-                name__in=request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
-        except:
-            pass
-        try:
-            anonymous_group = Group.objects.get(name='anonymous')
-            if anonymous_group and anonymous_group not in groups:
-                groups.append(anonymous_group)
-        except:
-            pass
-
-        filtered = queryset
-        if settings.ADMIN_MODERATE_UPLOADS:
-            if not is_admin:
-                if is_manager:
-                    filtered = filtered.filter(
-                        Q(is_published=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=manager_groups) |
-                        Q(group__in=group_list_all) |
-                        Q(owner__username__iexact=str(request.user)))
-                elif request.user:
-                    filtered = filtered.filter(
-                        Q(is_published=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=group_list_all) |
-                        Q(owner__username__iexact=str(request.user)))
-                else:
-                    filtered = filtered.filter(Q(is_published=True))
-
-        if settings.RESOURCE_PUBLISHING:
-            if not is_admin:
-                if is_manager:
-                    filtered = filtered.filter(
-                        Q(group__isnull=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=manager_groups) |
-                        Q(group__in=group_list_all) |
-                        Q(group__in=public_groups) |
-                        Q(owner__username__iexact=str(request.user)))
-                elif request.user:
-                    filtered = filtered.filter(
-                        Q(is_published=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=group_list_all) |
-                        Q(owner__username__iexact=str(request.user)))
-                else:
-                    filtered = filtered.filter(Q(is_published=True))
-
-        return filtered
+        return filter_set
 
     def filter_group(self, queryset, request):
-        is_admin = False
-        if request.user:
-            is_admin = request.user.is_superuser if request.user else False
+        filter_set = get_visible_resources(
+            queryset,
+            request.user if request else None,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
-        try:
-            anonymous_group = Group.objects.get(name='anonymous')
-        except BaseException:
-            anonymous_group = None
-
-        public_groups = GroupProfile.objects.exclude(access="private").values('group')
-        if is_admin:
-            filtered = queryset
-        elif request.user:
-            groups = request.user.groups.all()
-            group_list_all = []
-            try:
-                group_list_all = request.user.group_list_all().values('group')
-            except:
-                pass
-            if anonymous_group:
-                filtered = queryset.filter(
-                    Q(group__isnull=True) |
-                    Q(group__in=groups) |
-                    Q(group__in=group_list_all) |
-                    Q(group__in=public_groups) |
-                    Q(group=anonymous_group) |
-                    Q(owner__username__iexact=str(request.user)))
-            else:
-                filtered = queryset.filter(
-                    Q(group__isnull=True) |
-                    Q(group__in=group_list_all) |
-                    Q(group__in=public_groups) |
-                    Q(group__in=groups) |
-                    Q(owner__username__iexact=str(request.user)))
-        else:
-            if anonymous_group:
-                filtered = queryset.filter(
-                    Q(group__isnull=True) |
-                    Q(group__in=public_groups) |
-                    Q(group=anonymous_group))
-            else:
-                filtered = queryset.filter(
-                    Q(group__isnull=True) |
-                    Q(group__in=public_groups))
-        return filtered
+        return filter_set
 
     def filter_h_keywords(self, queryset, keywords):
         filtered = queryset
         treeqs = HierarchicalKeyword.objects.none()
         for keyword in keywords:
             try:
-                kws = HierarchicalKeyword.objects.filter(name__iexact=keyword)
+                kws = HierarchicalKeyword.objects.filter(Q(name__iexact=keyword) | Q(slug__iexact=keyword))
                 for kw in kws:
                     treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
             except ObjectDoesNotExist:
@@ -345,8 +259,7 @@ class CommonModelApi(ModelResource):
         northeast_lng,northeast_lat'
         returns the modified query
         """
-        bbox = bbox.split(
-            ',')  # TODO: Why is this different when done through haystack?
+        bbox = bbox.split(',')  # TODO: Why is this different when done through haystack?
         bbox = map(str, bbox)  # 2.6 compat - float to decimal conversion
         intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) |
                        Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
@@ -540,98 +453,16 @@ class CommonModelApi(ModelResource):
         sqs = self.build_haystack_filters(request.GET)
 
         if not settings.SKIP_PERMS_FILTER:
-            is_admin = False
-            is_manager = False
-            if request.user:
-                is_admin = request.user.is_superuser if request.user else False
-                try:
-                    is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-                except:
-                    is_manager = False
 
             filter_set = get_objects_for_user(
                 request.user, 'base.view_resourcebase')
 
-            # Get the list of objects the user has access to
-            anonymous_group = None
-            public_groups = GroupProfile.objects.exclude(access="private").values('group')
-            groups = []
-            group_list_all = []
-            manager_groups = []
-            try:
-                group_list_all = request.user.group_list_all().values('group')
-            except:
-                pass
-            try:
-                manager_groups = Group.objects.filter(
-                    name__in=request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
-            except:
-                pass
-            try:
-                anonymous_group = Group.objects.get(name='anonymous')
-                if anonymous_group and anonymous_group not in groups:
-                    groups.append(anonymous_group)
-            except:
-                pass
-
-            if settings.ADMIN_MODERATE_UPLOADS:
-                if not is_admin:
-                    if is_manager:
-                        filter_set = filter_set.filter(
-                            Q(is_published=True) |
-                            Q(group__in=groups) |
-                            Q(group__in=manager_groups) |
-                            Q(group__in=group_list_all) |
-                            Q(owner__username__iexact=str(request.user)))
-                    elif request.user:
-                        filter_set = filter_set.filter(
-                            Q(is_published=True) |
-                            Q(group__in=groups) |
-                            Q(group__in=group_list_all) |
-                            Q(owner__username__iexact=str(request.user)))
-                    else:
-                        filter_set = filter_set.filter(Q(is_published=True))
-
-            if settings.RESOURCE_PUBLISHING:
-                if not is_admin:
-                    if is_manager:
-                        filter_set = filter_set.filter(
-                            Q(group__isnull=True) |
-                            Q(group__in=groups) |
-                            Q(group__in=manager_groups) |
-                            Q(group__in=group_list_all) |
-                            Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                    elif request.user:
-                        filter_set = filter_set.filter(
-                            Q(is_published=True) |
-                            Q(group__in=groups) |
-                            Q(group__in=group_list_all) |
-                            Q(owner__username__iexact=str(request.user)))
-                    else:
-                        filter_set = filter_set.filter(Q(is_published=True))
-
-            if settings.GROUP_PRIVATE_RESOURCES:
-                if is_admin:
-                    filter_set = filter_set
-                elif request.user:
-                    filter_set = filter_set.filter(
-                        Q(group__isnull=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=manager_groups) |
-                        Q(group__in=public_groups) |
-                        Q(group__in=group_list_all) |
-                        Q(owner__username__iexact=str(request.user)))
-                else:
-                    if anonymous_group:
-                        filter_set = filter_set.filter(
-                            Q(group__isnull=True) |
-                            Q(group__in=public_groups) |
-                            Q(group=anonymous_group))
-                    else:
-                        filter_set = filter_set.filter(
-                            Q(group__isnull=True) |
-                            Q(group__in=public_groups))
+            filter_set = get_visible_resources(
+                filter_set,
+                request.user if request else None,
+                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
             filter_set_ids = filter_set.values_list('id')
             # Do the query using the filterset and the query term. Facet the
@@ -891,6 +722,9 @@ class LayerResource(CommonModelApi):
                 except GroupProfile.DoesNotExist:
                     formatted_obj['group_name'] = obj.group
 
+            formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
+            formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
+
             # add the geogig link
             formatted_obj['geogig_link'] = obj.geogig_link
 
@@ -904,6 +738,20 @@ class LayerResource(CommonModelApi):
                     bundle)
             # Add resource uri
             formatted_obj['resource_uri'] = self.get_resource_uri(bundle)
+
+            # Probe Remote Services
+            formatted_obj['store_type'] = 'dataset'
+            formatted_obj['online'] = True
+            if hasattr(obj, 'storeType'):
+                formatted_obj['store_type'] = obj.storeType
+                if obj.storeType == 'remoteStore' and hasattr(obj, 'remote_service'):
+                    if obj.remote_service:
+                        formatted_obj['online'] = (obj.remote_service.probe == 200)
+                    else:
+                        formatted_obj['online'] = False
+
+            formatted_obj['gtype'] = self.dehydrate_gtype(bundle)
+
             # put the object on the response stack
             formatted_objects.append(formatted_obj)
         return formatted_objects
@@ -926,6 +774,9 @@ class LayerResource(CommonModelApi):
 
         return dehydrated
 
+    def dehydrate_gtype(self, bundle):
+        return bundle.obj.gtype
+
     def populate_object(self, obj):
         """Populate results with necessary fields
 
@@ -938,13 +789,13 @@ class LayerResource(CommonModelApi):
             # Default style
             try:
                 obj.qgis_default_style = obj.qgis_layer.default_style
-            except:
+            except BaseException:
                 obj.qgis_default_style = None
 
             # Styles
             try:
                 obj.qgis_styles = obj.qgis_layer.styles
-            except:
+            except BaseException:
                 obj.qgis_styles = []
         return obj
 
@@ -991,7 +842,7 @@ class LayerResource(CommonModelApi):
 
             layer_id = kwargs['id']
             layer = Layer.objects.get(id=layer_id)
-        except:
+        except BaseException:
             return http.HttpBadRequest(reason=reason)
 
         from geonode.qgis_server.views import default_qml_style
@@ -1057,6 +908,13 @@ class MapResource(CommonModelApi):
                 except GroupProfile.DoesNotExist:
                     formatted_obj['group_name'] = obj.group
 
+            formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
+            formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
+
+            # Probe Remote Services
+            formatted_obj['store_type'] = 'map'
+            formatted_obj['online'] = True
+
             # get map layers
             map_layers = obj.layers
             formatted_layers = []
@@ -1090,7 +948,41 @@ class MapResource(CommonModelApi):
 
 class DocumentResource(CommonModelApi):
 
-    """Maps API"""
+    """Documents API"""
+
+    def format_objects(self, objects):
+        """
+        Formats the objects and provides reference to list of layers in map
+        resources.
+
+        :param objects: Map objects
+        """
+        formatted_objects = []
+        for obj in objects:
+            # convert the object to a dict using the standard values.
+            formatted_obj = model_to_dict(obj, fields=self.VALUES)
+            username = obj.owner.get_username()
+            full_name = (obj.owner.get_full_name() or username)
+            formatted_obj['owner__username'] = username
+            formatted_obj['owner_name'] = full_name
+            if obj.category:
+                formatted_obj['category__gn_description'] = obj.category.gn_description
+            if obj.group:
+                formatted_obj['group'] = obj.group
+                try:
+                    formatted_obj['group_name'] = GroupProfile.objects.get(slug=obj.group.name)
+                except GroupProfile.DoesNotExist:
+                    formatted_obj['group_name'] = obj.group
+
+            formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
+            formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
+
+            # Probe Remote Services
+            formatted_obj['store_type'] = 'dataset'
+            formatted_obj['online'] = True
+
+            formatted_objects.append(formatted_obj)
+        return formatted_objects
 
     class Meta(CommonMetaApi):
         filtering = CommonMetaApi.filtering

@@ -1,0 +1,56 @@
+{% extends "geonode_base.html" %}
+
+{% load i18n %}
+{% load staticfiles %}
+{% load bootstrap_tags %}
+{% load base_tags %}
+
+{% block title %}{{ layer.title }} — {{ block.super }}{% endblock %}
+
+{% block body_outer %}
+
+<div class="page-header">
+    <h2 class="page-title">{{ layer.title }}</h2>
+</div>
+
+<p>
+
+<form method="POST">{% csrf_token %}
+
+  <div class="form-group">
+    <label for="fields">{% trans "Select the fields for this layer which are searchable in maps." %}</label>
+    {% for attribute in searchable_attributes %}
+    <div class="checkbox">
+        <label>
+        <input type="checkbox" name="attributes" value="{{ attribute.attribute }}"
+          {% if attribute.searchable %}checked{% endif %}>
+          {{ attribute.attribute }}
+        </label>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="form-actions">
+    <a href="{% url 'layer_detail' layername=layer.alternate %}" class="btn btn-primary">{% trans "Return to Layer" %}</a>
+    <input type="submit" id="btn_upd_md_up" class="btn btn-primary" value="{% trans "Update Fields" %}"/>
+  </div>
+
+</form>
+
+{{ block.super }}
+{% endblock body_outer %}
+
+{% block extra_script %}
+{{ block.super }}
+
+<script type="text/javascript">
+  jQuery(document).ready(function(){
+      {% if status_message %}
+        $('#status-message-text').text('The following fields are now searchable:');
+        $('#status-message-text-body').text("{{ status_message }}");
+        $('#status-message').addClass('alert-success').show();
+      {% endif %}
+  });
+</script>
+
+{% endblock extra_script %}

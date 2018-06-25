@@ -5,7 +5,6 @@
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load pagination_tags %}
-{% load url from future %}
 {% load base_tags %}
 {% load guardian_tags %}
 
@@ -72,7 +71,7 @@
     <form id="file-uploader" method="post" enctype="multipart/form-data">
       <!-- UI change to hide the list of previously uploaded files from the user -->
       <input type="file" id="file-input" style="display: none;" multiple>
-      <input class="btn btn-default" type="button" value="Choose Files" onclick="document.getElementById('file-input').click();">
+      <input class="btn btn-default" type="button" value="{% trans "Choose Files" %}" onclick="document.getElementById('file-input').click();">
     </form>
 
     <section class="widget">
@@ -131,7 +130,7 @@
       geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
       time_enabled = false,
       mosaic_enabled = false,
-      userLookup = "{% url "geonode.views.ajax_lookup" %}"
+      userLookup = "{% url "account_ajax_lookup" %}"
 
     {% endautoescape %}
 

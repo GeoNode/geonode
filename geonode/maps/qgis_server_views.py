@@ -29,9 +29,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse
+from django.shortcuts import render
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 
 from geonode.maps.views import _resolve_map, _PERMISSION_MSG_VIEW, \
     snapshot_config, _resolve_layer
@@ -60,7 +59,7 @@ logger = logging.getLogger("geonode.maps.qgis_server_views")
 class MapCreateView(CreateView):
     model = Map
     fields = '__all__'
-    template_name = 'leaflet_maps/map_view.html'
+    template_name = 'leaflet/maps/map_view.html'
     context_object_name = 'map'
 
     def get_context_data(self, **kwargs):
@@ -100,7 +99,7 @@ class MapCreateView(CreateView):
                 'map_layers': map_layers,
                 'preview': getattr(
                     settings,
-                    'LAYER_PREVIEW_LIBRARY',
+                    'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
                     '')
             }
             return context
@@ -153,7 +152,7 @@ class MapCreateView(CreateView):
                         [float(coord) for coord in bbox])
 
                     if layer.storeType == "remoteStore":
-                        service = layer.service
+                        service = layer.remote_service
                         # Probably not a good idea to send the access token to every remote service.
                         # This should never match, so no access token should be sent to remote services.
                         ogc_server_url = urlparse.urlsplit(
@@ -176,7 +175,8 @@ class MapCreateView(CreateView):
                                                 "ptype": service.ptype,
                                                 "remote": True,
                                                 "url": url,
-                                                "name": service.name}))
+                                                "name": service.name,
+                                                "title": "[R] %s" % service.title}))
                     else:
                         ogc_server_url = urlparse.urlsplit(
                             ogc_server_settings.PUBLIC_LOCATION).netloc
@@ -199,7 +199,7 @@ class MapCreateView(CreateView):
                             visibility=True
                         )
 
-                if bbox is not None:
+                if bbox and len(bbox) >= 4:
                     minx, miny, maxx, maxy = [float(coord) for coord in bbox]
                     x = (minx + maxx) / 2
                     y = (miny + maxy) / 2
@@ -250,7 +250,7 @@ class MapCreateView(CreateView):
                     'map_layers': map_layers,
                     'preview': getattr(
                         settings,
-                        'LAYER_PREVIEW_LIBRARY',
+                        'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
                         '')
                 }
 
@@ -273,7 +273,7 @@ class MapCreateView(CreateView):
 
 class MapDetailView(DetailView):
     model = Map
-    template_name = 'leaflet_maps/map_view.html'
+    template_name = 'leaflet/maps/map_view.html'
     context_object_name = 'map'
 
     def get_context_data(self, **kwargs):
@@ -308,7 +308,7 @@ class MapDetailView(DetailView):
             'map_layers': map_layers,
             'preview': getattr(
                 settings,
-                'LAYER_PREVIEW_LIBRARY',
+                'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
                 '')
         }
         return context
@@ -319,7 +319,7 @@ class MapDetailView(DetailView):
 
 class MapEmbedView(DetailView):
     model = Map
-    template_name = 'leaflet_maps/map_detail.html'
+    template_name = 'leaflet/maps/map_detail.html'
     context_object_name = 'map'
 
     def get_context_data(self, **kwargs):
@@ -352,7 +352,7 @@ class MapEmbedView(DetailView):
             'layers': map_layers,
             'preview': getattr(
                 settings,
-                'LAYER_PREVIEW_LIBRARY',
+                'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
                 '')
         }
         return context
@@ -368,7 +368,7 @@ class MapEmbedView(DetailView):
 class MapEditView(UpdateView):
     model = Map
     fields = '__all__'
-    template_name = 'leaflet_maps/map_edit.html'
+    template_name = 'leaflet/maps/map_edit.html'
     context_object_name = 'map'
 
     def get_context_data(self, **kwargs):
@@ -407,7 +407,7 @@ class MapEditView(UpdateView):
             'map': map_obj,
             'preview': getattr(
                 settings,
-                'LAYER_PREVIEW_LIBRARY',
+                'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
                 '')
         }
         return context
@@ -432,7 +432,7 @@ class MapEditView(UpdateView):
 class MapUpdateView(UpdateView):
     model = Map
     fields = '__all__'
-    template_name = 'leaflet_maps/map_edit.html'
+    template_name = 'leaflet/maps/map_edit.html'
     context_object_name = 'map'
 
     def get_context_data(self, **kwargs):
@@ -523,7 +523,7 @@ def map_download_qlr(request, mapid):
         if j_layer["service"] is None:
             j_layers.remove(j_layer)
             continue
-        if (len([l for l in j_layers if l == j_layer])) > 1:
+        if (len([_l for _l in j_layers if _l == j_layer])) > 1:
             j_layers.remove(j_layer)
 
     map_layers = []
@@ -559,7 +559,7 @@ def map_download_qlr(request, mapid):
 
 
 def map_download_leaflet(request, mapid,
-                         template='leaflet_maps/map_embed.html'):
+                         template='leaflet/maps/map_embed.html'):
     """Download leaflet map as static HTML.
 
     :param request: The request from the frontend.
@@ -588,8 +588,7 @@ def map_download_leaflet(request, mapid,
         'for_download': True
     }
 
-    the_page = render_to_response(template,
-                                  RequestContext(request, context))
+    the_page = render(request, template, context=context)
 
     response = HttpResponse(
         the_page.content, content_type="html",
@@ -613,13 +612,13 @@ def set_thumbnail_map(request, mapid):
         return HttpResponse('Bad Request')
 
     map_layers = MapLayer.objects.filter(map__id=mapid)
-    local_layers = [l for l in map_layers if l.local]
+    local_layers = [_l for _l in map_layers if _l.local]
 
     layers = {}
     for layer in local_layers:
         try:
-            l = Layer.objects.get(typename=layer.name)
-            layers[l.name] = l
+            _l = Layer.objects.get(typename=layer.name)
+            layers[_l.name] = _l
         except Layer.DoesNotExist:
             msg = 'No Layer found for typename: {0}'.format(layer.name)
             logger.debug(msg)

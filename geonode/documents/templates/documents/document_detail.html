@@ -3,7 +3,6 @@
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
-{% load url from future %}
 {% load base_tags %}
 {% load guardian_tags %}
 
@@ -134,6 +133,13 @@
                   <h4>{% trans "Metadata" %}</h4>
                   <a class="btn btn-default btn-block btn-xs" href="{% url "document_metadata" resource.id %}">{% trans "Wizard" %}</a>
                   <a class="btn btn-default btn-block btn-xs" href="{% url "document_metadata_advanced" resource.id %}">{% trans "Advanced Edit" %}</a>
+                </div>
+                {% endif %}
+                {% if "change_resourcebase" in perms_list %}
+                <div class="col-sm-3">
+                  <i class="fa fa-photo fa-3x"></i>
+                  <h4>{% trans "Thumbnail" %}</h4>
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "document_thumb_upload" resource.id %}" id="set_thumbnail">{% trans "Set" %}</a>
                 </div>
                 {% endif %}
                 {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list %}

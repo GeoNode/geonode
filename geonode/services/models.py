@@ -19,11 +19,14 @@
 #########################################################################
 
 import logging
-from django.conf import settings
 from django.db import models
+from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from geonode.base.models import ResourceBase
 from geonode.people.enumerations import ROLE_VALUES
+from urlparse import urljoin
 
 from . import enumerations
 
@@ -34,16 +37,8 @@ class Service(ResourceBase):
     """Service Class to represent remote Geo Web Services"""
 
     type = models.CharField(
-        max_length=4,
-        choices=(
-            (enumerations.AUTO, _('Auto-detect')),
-            (enumerations.OWS, _('Paired WMS/WFS/WCS')),
-            (enumerations.WMS, _('Web Map Service')),
-            (enumerations.CSW, _('Catalogue Service')),
-            (enumerations.REST, _('ArcGIS REST Service')),
-            (enumerations.OGP, _('OpenGeoPortal')),
-            (enumerations.HGL, _('Harvard Geospatial Library')),
-        )
+        max_length=10,
+        choices=enumerations.SERVICE_TYPES
     )
     method = models.CharField(
         max_length=1,
@@ -60,6 +55,10 @@ class Service(ResourceBase):
     base_url = models.URLField(
         unique=True,
         db_index=True
+    )
+    proxy_base = models.URLField(
+        null=True,
+        blank=True
     )
     version = models.CharField(
         max_length=10,
@@ -159,12 +158,34 @@ class Service(ResourceBase):
         return self.name
 
     @property
+    def service_url(self):
+        service_url = self.base_url if not self.proxy_base else urljoin(
+            settings.SITEURL, reverse('service_proxy', args=[self.id]))
+        return service_url
+
+    @property
     def ptype(self):
         # Return the gxp ptype that should be used to display layers
         return enumerations.GXP_PTYPES[self.type]
 
+    @property
+    def service_type(self):
+        # Return the gxp ptype that should be used to display layers
+        return [x for x in enumerations.SERVICE_TYPES if x[0] == self.type][0][1]
+
     def get_absolute_url(self):
         return '/services/%i' % self.id
+
+    @cached_property
+    def probe(self):
+        # AF: this must be handled asynchronously
+        # from geonode.utils import http_client
+        # try:
+        #     resp, content = http_client.request(self.service_url)
+        #     return resp.status
+        # except:
+        #     return 404
+        return 200
 
 
 class ServiceProfileRole(models.Model):
@@ -192,7 +213,7 @@ class HarvestJob(models.Model):
         default=enumerations.QUEUED,
         max_length=15,
     )
-    details = models.TextField(default=_("Resource is queued"))
+    details = models.TextField(null=True, blank=True, default=_("Resource is queued"))
 
     def update_status(self, status, details=""):
         self.status = status

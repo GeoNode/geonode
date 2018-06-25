@@ -18,15 +18,18 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 from datetime import datetime
 from lxml import etree
 
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+
 try:
     import json
 except ImportError:
     from django.utils import simplejson as json
+
 from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
 from django.contrib.auth import get_user_model
@@ -38,7 +41,6 @@ from geonode.maps.models import Map
 from geonode.maps.utils import fix_baselayers
 from geonode import geoserver, qgis_server
 from geonode.utils import default_map_config, check_ogc_backend
-from geonode.base.populate_test_data import create_models
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.maps import MapsAppConfig
@@ -77,18 +79,16 @@ VIEWER_CONFIG = """
 """
 
 
-class MapsTest(TestCase):
+class MapsTest(GeoNodeBaseTestSupport):
 
     """Tests geonode.maps app/module
     """
 
-    fixtures = ['initial_data.json', 'bobby']
-
     def setUp(self):
+        super(MapsTest, self).setUp()
+
         self.user = 'admin'
         self.passwd = 'admin'
-        create_models(type='map')
-        create_models(type='layer')
         create_maplayers()
 
     default_abstract = "This is a demonstration of GeoNode, an application \
@@ -141,12 +141,14 @@ community."
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_map_json(self):
+        map_obj = Map.objects.all().first()
+        map_id = map_obj.id
         # Test that saving a map when not logged in gives 401
         response = self.client.put(
             reverse(
                 'map_json',
                 args=(
-                    '1',
+                    str(map_id),
                 )),
             data=self.viewer_config,
             content_type="text/json")
@@ -157,13 +159,13 @@ community."
             reverse(
                 'map_json',
                 args=(
-                    '1',
+                    str(map_id),
                 )),
             data=self.viewer_config_alternative,
             content_type="text/json")
         self.assertEqual(response.status_code, 200)
 
-        map_obj = Map.objects.get(id=1)
+        map_obj = Map.objects.all().first()
         self.assertEquals(map_obj.title, "Title2")
         self.assertEquals(map_obj.abstract, "Abstract2")
         self.assertEquals(map_obj.layer_set.all().count(), 1)
@@ -189,8 +191,8 @@ community."
         map_id = int(json.loads(response.content)['id'])
         self.client.logout()
 
-        # We have now 9 maps and 8 layers so the next pk will be 18
-        self.assertEquals(map_id, 18)
+        # We have now 10 maps and 8 layers
+        self.assertEquals(Map.objects.all().count(), 10)
         map_obj = Map.objects.get(id=map_id)
         self.assertEquals(map_obj.title, "Title")
         self.assertEquals(map_obj.abstract, "Abstract")
@@ -210,7 +212,7 @@ community."
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_map_fetch(self):
         """/maps/[id]/data -> Test fetching a map in JSON"""
-        map_obj = Map.objects.get(id=1)
+        map_obj = Map.objects.all().first()
         map_obj.set_default_permissions()
         response = self.client.get(reverse('map_json', args=(map_obj.id,)))
         self.assertEquals(response.status_code, 200)
@@ -224,7 +226,7 @@ community."
     def test_map_to_json(self):
         """ Make some assertions about the data structure produced for serialization
             to a JSON map configuration"""
-        map_obj = Map.objects.get(id=1)
+        map_obj = Map.objects.all().first()
         cfg = map_obj.viewer_json(None, None)
         self.assertEquals(
             cfg['about']['abstract'],
@@ -245,7 +247,7 @@ community."
             for serialization to a Web Map Context Document
         """
 
-        map_obj = Map.objects.get(id=1)
+        map_obj = Map.objects.all().first()
         map_obj.set_default_permissions()
         response = self.client.get(reverse('map_wmc', args=(map_obj.id,)))
         self.assertEquals(response.status_code, 200)
@@ -257,7 +259,7 @@ community."
         title = '{ns}General/{ns}Title'.format(ns=namespace)
         abstract = '{ns}General/{ns}Abstract'.format(ns=namespace)
 
-        self.assertEquals(wmc.attrib.get('id'), '1')
+        self.assertIsNotNone(wmc.attrib.get('id'))
         self.assertEquals(wmc.find(title).text, 'GeoNode Default Map')
         self.assertEquals(
             wmc.find(abstract).text,
@@ -272,13 +274,13 @@ community."
 
     def test_map_details(self):
         """/maps/1 -> Test accessing the map browse view function"""
-        map_obj = Map.objects.get(id=1)
+        map_obj = Map.objects.all().first()
         map_obj.set_default_permissions()
         response = self.client.get(reverse('map_detail', args=(map_obj.id,)))
         self.assertEquals(response.status_code, 200)
 
     def test_describe_map(self):
-        map_obj = Map.objects.get(id=1)
+        map_obj = Map.objects.all().first()
         map_obj.set_default_permissions()
         response = self.client.get(reverse('map_metadata_detail', args=(map_obj.id,)))
         self.failUnlessEqual(response.status_code, 200)
@@ -302,16 +304,16 @@ community."
         self.client.get(reverse('new_map'))
 
     def test_new_map_with_layer(self):
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.all().first()
         self.client.get(reverse('new_map') + '?layer=' + layer.alternate)
 
     def test_new_map_with_empty_bbox_layer(self):
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.all().first()
         self.client.get(reverse('new_map') + '?layer=' + layer.alternate)
 
     def test_add_layer_to_existing_map(self):
-        layer = Layer.objects.all()[0]
-        map_obj = Map.objects.get(id=1)
+        layer = Layer.objects.all().first()
+        map_obj = Map.objects.all().first()
         self.client.get(reverse('add_layer') + '?layer_name=%s&map_id=%s' % (layer.alternate, map_obj.id))
 
     def test_ajax_map_permissions(self):
@@ -319,7 +321,7 @@ community."
         """
 
         # Setup some layer names to work with
-        mapid = Map.objects.all()[0].pk
+        mapid = Map.objects.all().first().pk
         invalid_mapid = "42"
 
         def url(id):
@@ -346,7 +348,7 @@ community."
         self.assertEquals(response.status_code, 401)
 
         # Next Test with a user that does NOT have the proper perms
-        logged_in = self.client.login(username='bobby', password='bob')
+        logged_in = self.client.login(username='foo', password='pass')
         self.assertEquals(logged_in, True)
         response = self.client.post(
             url(mapid),
@@ -391,9 +393,9 @@ community."
         self.assertEquals(response.status_code, 302)
 
         # test a user without metadata modify permission
-        self.client.login(username='norman', password='norman')
+        self.client.login(username='foo', password='pass')
         response = self.client.post(url)
-        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.status_code, 401)
         self.client.logout()
 
         # Now test with a valid user using GET method
@@ -431,9 +433,9 @@ community."
         self.assertEquals(response.status_code, 302)
 
         # test a user without map removal permission
-        self.client.login(username='norman', password='norman')
+        self.client.login(username='foo', password='pass')
         response = self.client.post(url)
-        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.status_code, 401)
         self.client.logout()
 
         # Now test with a valid user using GET method
@@ -445,14 +447,14 @@ community."
         # which removes map and associated layers, and redirects webpage
         response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
-        self.assertEquals(response['Location'], 'http://testserver/maps/')
+        self.assertTrue('/maps/' in response['Location'])
 
         # After removal, map is not existent
         response = self.client.get(url)
         self.assertEquals(response.status_code, 404)
 
         # Prepare map object for later test that if it is completely removed
-        #   map_obj = Map.objects.get(id=1)
+        # map_obj = Map.objects.all().first()
 
         # TODO: Also associated layers are not existent
         # self.assertEquals(map_obj.layer_set.all().count(), 0)
@@ -588,7 +590,7 @@ community."
         # Test successful new map creation
         m = Map()
         admin_user = get_user_model().objects.get(username='admin')
-        layer_name = Layer.objects.all()[0].alternate
+        layer_name = Layer.objects.all().first().alternate
         m.create_from_layer_list(admin_user, [layer_name], "title", "abstract")
         map_id = m.id
 
@@ -646,14 +648,14 @@ community."
         # Check
         # BBox format: [xmin, xmax, ymin, ymax
         bbox_str = [
-            '-90.1932079140', '-79.2067920625',
-            '9.0592199045', '16.5407800920', 'EPSG:4326']
+            '-90.193207913954200', '-79.206792062465500',
+            '9.059219904470890', '16.540780092025600', 'EPSG:4326']
 
         self.assertEqual(
             bbox_str,
             [str(c) for c in map_obj.bbox])
-        bbox_long_str = '-90.1932079140,9.0592199045,' \
-                        '-79.2067920625,16.5407800920'
+        bbox_long_str = '-90.193207913954200,9.059219904470890,' \
+                        '-79.206792062465500,16.540780092025600'
         self.assertEqual(bbox_long_str, map_obj.bbox_string)
 
         # Test methods other than GET or POST and no layer in params
@@ -693,8 +695,8 @@ community."
     def test_fix_baselayers(self):
         """Test fix_baselayers function, used by the fix_baselayers command
         """
-        map_id = 1
-        map_obj = Map.objects.get(id=map_id)
+        map_obj = Map.objects.all().first()
+        map_id = map_obj.id
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # number of base layers (we remove the local geoserver entry from the total)
@@ -759,24 +761,29 @@ community."
         self.assertEquals(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertTrue(region in resource.regions.all())
+            if resource.regions.all():
+                self.assertTrue(region in resource.regions.all())
         # test date change
-        date = datetime.now()
+        from django.utils import timezone
+        date = datetime.now(timezone.get_current_timezone())
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'date': date},
         )
-        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.status_code, 200)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertEquals(resource.date, date)
+            today = date.today()
+            todoc = resource.date.today()
+            self.assertEquals((today.day, today.month, today.year),
+                              (todoc.day, todoc.month, todoc.year))
+
         # test language change
         language = 'eng'
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'language': language},
         )
-        self.assertEquals(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             self.assertEquals(resource.language, language)
@@ -786,23 +793,19 @@ community."
             reverse(view, args=(ids,)),
             data={'keywords': keywords},
         )
-        self.assertEquals(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             for word in resource.keywords.all():
                 self.assertTrue(word.name in keywords.split(','))
 
 
-class MapModerationTestCase(TestCase):
-
-    fixtures = ['initial_data.json', 'bobby']
+class MapModerationTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(MapModerationTestCase, self).setUp()
+
         self.user = 'admin'
         self.passwd = 'admin'
-        create_models(type='layer')
-        create_models(type='map')
         self.u = get_user_model().objects.get(username=self.user)
         self.u.email = 'test@email.com'
         self.u.is_active = True
@@ -820,9 +823,9 @@ class MapModerationTestCase(TestCase):
                                         content_type="text/json")
             self.assertEquals(response.status_code, 200)
             map_id = int(json.loads(response.content)['id'])
-            l = Map.objects.get(id=map_id)
+            _l = Map.objects.get(id=map_id)
 
-            self.assertTrue(l.is_published)
+            self.assertTrue(_l.is_published)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             self.client.login(username=self.user, password=self.passwd)
@@ -832,21 +835,18 @@ class MapModerationTestCase(TestCase):
                                         content_type="text/json")
             self.assertEquals(response.status_code, 200)
             map_id = int(json.loads(response.content)['id'])
-            l = Map.objects.get(id=map_id)
+            _l = Map.objects.get(id=map_id)
 
-            self.assertFalse(l.is_published)
+            self.assertFalse(_l.is_published)
 
 
 class MapsNotificationsTestCase(NotificationsTestsHelper):
 
-    fixtures = ['initial_data.json', 'bobby']
-
     def setUp(self):
         super(MapsNotificationsTestCase, self).setUp()
+
         self.user = 'admin'
         self.passwd = 'admin'
-        create_models(type='layer')
-        create_models(type='map')
         self.u = get_user_model().objects.get(username=self.user)
         self.u.email = 'test@email.com'
         self.u.is_active = True
@@ -863,17 +863,17 @@ class MapsNotificationsTestCase(NotificationsTestsHelper):
                                         content_type="text/json")
             self.assertEquals(response.status_code, 200)
             map_id = int(json.loads(response.content)['id'])
-            l = Map.objects.get(id=map_id)
+            _l = Map.objects.get(id=map_id)
             self.assertTrue(self.check_notification_out('map_created', self.u))
-            l.title = 'test notifications 2'
-            l.save()
+            _l.title = 'test notifications 2'
+            _l.save()
             self.assertTrue(self.check_notification_out('map_updated', self.u))
 
             from dialogos.models import Comment
-            lct = ContentType.objects.get_for_model(l)
+            lct = ContentType.objects.get_for_model(_l)
             comment = Comment(author=self.u, name=self.u.username,
-                              content_type=lct, object_id=l.id,
-                              content_object=l, comment='test comment')
+                              content_type=lct, object_id=_l.id,
+                              content_object=_l, comment='test comment')
             comment.save()
 
             self.assertTrue(self.check_notification_out('map_comment', self.u))

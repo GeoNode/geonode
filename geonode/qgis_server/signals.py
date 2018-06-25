@@ -41,6 +41,7 @@ from geonode.qgis_server.models import QGISServerLayer, QGISServerMap
 from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
 from geonode.qgis_server.xml_utilities import update_xml
 from geonode.utils import check_ogc_backend
+from geonode.decorators import on_ogc_backend
 
 logger = logging.getLogger("geonode.qgis_server.signals")
 
@@ -50,12 +51,14 @@ if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
 qgis_map_with_layers = Signal(providing_args=[])
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_layer_post_delete(instance, sender, **kwargs):
     """Removes the layer from Local Storage."""
     logger.debug('QGIS Server Layer Post Delete')
     instance.delete_qgis_layer()
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_pre_delete(instance, sender, **kwargs):
     """Removes the layer from Local Storage."""
     # logger.debug('QGIS Server Pre Delete')
@@ -64,6 +67,7 @@ def qgis_server_pre_delete(instance, sender, **kwargs):
     # Delete file is included when deleting the object.
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_pre_save(instance, sender, **kwargs):
     """Send information to QGIS Server.
 
@@ -79,6 +83,7 @@ def qgis_server_pre_save(instance, sender, **kwargs):
     # logger.debug('QGIS Server Pre Save')
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_post_save(instance, sender, **kwargs):
     """Save keywords to QGIS Server.
 
@@ -162,14 +167,14 @@ def qgis_server_post_save(instance, sender, **kwargs):
             dataset = ogr.Open(geonode_layer_path)
             layer = dataset.GetLayer()
             spatial_ref = layer.GetSpatialRef()
-            srid = spatial_ref.GetAuthorityCode(None)
+            srid = spatial_ref.GetAuthorityCode(None) if spatial_ref else None
             if srid:
                 instance.srid = srid
         else:
             dataset = gdal.Open(geonode_layer_path)
             prj = dataset.GetProjection()
             srs = osr.SpatialReference(wkt=prj)
-            srid = srs.GetAuthorityCode(None)
+            srid = srs.GetAuthorityCode(None) if srs else None
             if srid:
                 instance.srid = srid
     except Exception as e:
@@ -406,6 +411,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
             pass
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
     logger.debug('QGIS Server Pre Save Map Layer %s' % instance.name)
     try:
@@ -416,6 +422,7 @@ def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
         pass
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_post_save_map(instance, sender, **kwargs):
     """Post Save Map Hook for QGIS Server
 
@@ -429,15 +436,15 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
     # Geonode map supports local layers and remote layers
     # Remote layers were provided from other OGC services, so we don't
     # deal with it at the moment.
-    local_layers = [l for l in map_layers if l.local]
+    local_layers = [_l for _l in map_layers if _l.local]
 
     layers = []
     for layer in local_layers:
         try:
-            l = Layer.objects.get(alternate=layer.name)
-            if not l.qgis_layer:
+            _l = Layer.objects.get(alternate=layer.name)
+            if not _l.qgis_layer:
                 raise QGISServerLayer.DoesNotExist
-            layers.append(l)
+            layers.append(_l)
         except Layer.DoesNotExist:
             msg = 'No Layer found for typename: {0}'.format(layer.name)
             logger.debug(msg)
@@ -512,12 +519,13 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
     # Set default bounding box based on all layers extents.
     # bbox format [xmin, xmax, ymin, ymax]
     bbox = instance.get_bbox_from_layers(instance.local_layers)
-    instance.set_bounds_from_bbox(bbox)
+    instance.set_bounds_from_bbox(bbox, instance.srid)
     Map.objects.filter(id=map_id).update(
         bbox_x0=instance.bbox_x0,
         bbox_x1=instance.bbox_x1,
         bbox_y0=instance.bbox_y0,
         bbox_y1=instance.bbox_y1,
+        srid=instance.srid,
         zoom=instance.zoom,
         center_x=instance.center_x,
         center_y=instance.center_y)
@@ -547,32 +555,32 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
         instance, overwrite=True)
 
 
+@on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def register_qgis_server_signals():
     """Helper function to register model signals."""
-    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-        # Do it only if qgis_server is being used
-        logger.debug('Register signals QGIS Server')
-        signals.pre_save.connect(
-            qgis_server_pre_save,
-            dispatch_uid='Layer-qgis_server_pre_save',
-            sender=Layer)
-        signals.pre_delete.connect(
-            qgis_server_pre_delete,
-            dispatch_uid='Layer-qgis_server_pre_delete',
-            sender=Layer)
-        signals.post_save.connect(
-            qgis_server_post_save,
-            dispatch_uid='Layer-qgis_server_post_save',
-            sender=Layer)
-        signals.pre_save.connect(
-            qgis_server_pre_save_maplayer,
-            dispatch_uid='MapLayer-qgis_server_pre_save_maplayer',
-            sender=MapLayer)
-        signals.post_save.connect(
-            qgis_server_post_save_map,
-            dispatch_uid='Map-qgis_server_post_save_map',
-            sender=Map)
-        signals.post_delete.connect(
-            qgis_server_layer_post_delete,
-            dispatch_uid='QGISServerLayer-qgis_server_layer_post_delete',
-            sender=QGISServerLayer)
+    # Do it only if qgis_server is being used
+    logger.debug('Registering signals QGIS Server')
+    signals.pre_save.connect(
+        qgis_server_pre_save,
+        dispatch_uid='Layer-qgis_server_pre_save',
+        sender=Layer)
+    signals.pre_delete.connect(
+        qgis_server_pre_delete,
+        dispatch_uid='Layer-qgis_server_pre_delete',
+        sender=Layer)
+    signals.post_save.connect(
+        qgis_server_post_save,
+        dispatch_uid='Layer-qgis_server_post_save',
+        sender=Layer)
+    signals.pre_save.connect(
+        qgis_server_pre_save_maplayer,
+        dispatch_uid='MapLayer-qgis_server_pre_save_maplayer',
+        sender=MapLayer)
+    signals.post_save.connect(
+        qgis_server_post_save_map,
+        dispatch_uid='Map-qgis_server_post_save_map',
+        sender=Map)
+    signals.post_delete.connect(
+        qgis_server_layer_post_delete,
+        dispatch_uid='QGISServerLayer-qgis_server_layer_post_delete',
+        sender=QGISServerLayer)

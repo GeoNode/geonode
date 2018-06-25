@@ -43,13 +43,13 @@ CONFIGURATION = {
         #  'loglevel': 'DEBUG',
         #  'logfile': '/tmp/pycsw.log',
         #  'federatedcatalogues': 'http://geo.data.gov/geoportal/csw/discovery',
-        #  'pretty_print': 'true',
-        #  'domainquerytype': 'range',
+        'pretty_print': 'true',
+        'domainquerytype': 'range',
         'domaincounts': 'true',
         'profiles': 'apiso,ebrim',
     },
     'repository': {
-        'source': 'geonode',
+        'source': 'geonode.catalogue.backends.pycsw_plugin.GeoNodeRepository',
         'filter': 'is_published = %s' % true_value,
         'mappings': os.path.join(os.path.dirname(__file__), 'pycsw_local_mappings.py')
     }

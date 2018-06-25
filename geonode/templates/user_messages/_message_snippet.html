@@ -21,7 +21,7 @@
                     <div class="media">
                         {% ifnotequal request.user user %}
                             <div class="media-left">
-                                {% avatar user 30 %}
+                                {% autoescape off %}{% avatar user 30 %}{% endautoescape %}
                             </div>
                             <div class="media-body">
                                 <a href="{{  user.get_absolute_url }}">{{ user }}</a>
@@ -34,7 +34,7 @@
                         {% with profile=group.groupprofile %}
                             <div class="media-left">
                                 <a href="{{ profile.get_absolute_url }}">
-                                    {% group_profile_image profile css_classes="media-object" size=30 %}
+                                    {% autoescape off %}{% group_profile_image profile css_classes="media-object" size=30 %}{% endautoescape %}
                                 </a>
                             </div>
                             <div class="media-body">

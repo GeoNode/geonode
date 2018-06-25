@@ -54,7 +54,7 @@ Move the sources into project folder::
 Navigate to sources folder and install required packages::
 
     cd /opt/apps/geonode/geonode
-    sudo pip install -e .
+    sudo pip install -e . --upgrade --no-cache
 
 .. _geonode_install_settings:
 
@@ -232,7 +232,7 @@ The resulting configuration file should look like this:::
     }
 
     # Default preview library
-    #LAYER_PREVIEW_LIBRARY = 'geoext'
+    # GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'
 
 .. _geonode_install_initialization:
 

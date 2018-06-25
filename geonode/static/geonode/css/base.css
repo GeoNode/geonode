@@ -5224,7 +5224,6 @@ a.thumbnail.active {
   background-color: #fff;
   border: 1px solid #ddd;
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
   word-wrap: break-word;
 }

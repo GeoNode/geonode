@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+        <div class="grp-group">
+            <h2>
+                Are you sure you want to activate/deactivate the following {{ objects_name }}?
+            </h2>
+            <ul class="grp-nested-list">
+            {% for theme in cancellable_themes %}
+                <li>[{{ theme.id }}] {{ theme.name }} - <i>{{ theme.description }}</i></li>
+            {% endfor %}
+            </ul>
+        </div>
+        <form action="" method="post">{% csrf_token %}
+            <div id="submit" class="grp-module grp-submit-row grp-fixed-footer">
+                {% for theme in cancellable_themes %}
+                    <input type="hidden" name="{{ action_checkbox_name }}" value="{{ theme.id }}" />
+                {% endfor %}
+                <input type="hidden" name="action" value="{{ action_exec }}" />
+                <input type="hidden" name="post" value="yes" />
+                <!-- a href="." class="grp-button grp-cancel-link">Cancel</a -->
+                <input type="submit" value="Yes, I'm sure" class="grp-button grp-default" />
+                <input type="button" value="No, take me back" class="grp-button grp-default" onclick="javascript:window.location.href='.';"/>
+                <input type="hidden" name="post" value="yes" />
+            </div>
+        </form>
+
+{% endblock %}

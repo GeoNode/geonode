@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2018 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +18,9 @@
 #
 #########################################################################
 
+import ast
 import os
+from urlparse import urlparse, urlunparse
 from geonode.settings import *
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -31,7 +33,15 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
 
 # SECRET_KEY = '************************'
 
-SITEURL = "http://localhost:8000"
+SITEURL = "http://localhost:8000/"
+
+# we need hostname for deployed
+_surl = urlparse(SITEURL)
+HOSTNAME = _surl.hostname
+
+# add trailing slash to site url. geoserver url will be relative to this
+if not SITEURL.endswith('/'):
+    SITEURL = '{}/'.format(SITEURL)
 
 ALLOWED_HOSTS = ['localhost', 'geonode.example.com']
 
@@ -45,6 +55,7 @@ DATABASES = {
         'PASSWORD': 'geonode',
         'HOST': 'localhost',
         'PORT': '5432',
+        'CONN_TOUT': 900,
     },
     # vector datastore for uploads
     'datastore': {
@@ -55,6 +66,7 @@ DATABASES = {
         'PASSWORD': 'geonode',
         'HOST': 'localhost',
         'PORT': '5432',
+        'CONN_TOUT': 900,
     }
 }
 
@@ -63,8 +75,8 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    #    'GEOSERVER_PUBLIC_LOCATION', '{}/geoserver/'.format(SITEURL)
-    'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
+    #  'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)
+    'GEOSERVER_PUBLIC_LOCATION', GEOSERVER_LOCATION
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -104,6 +116,14 @@ OGC_SERVER = {
     }
 }
 
+# WARNING: Map Editing is affected by this. GeoExt Configuration is cached for 5 minutes
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#         'LOCATION': '/var/tmp/django_cache',
+#     }
+# }
+
 # If you want to enable Mosaics use the following configuration
 UPLOADER = {
     # 'BACKEND': 'geonode.rest',
@@ -117,9 +137,21 @@ UPLOADER = {
         'EPSG:4326',
         'EPSG:3785',
         'EPSG:3857',
-        'EPSG:900913',
         'EPSG:32647',
         'EPSG:32736'
+    ],
+    'SUPPORTED_EXT': [
+        '.shp',
+        '.csv',
+        '.kml',
+        '.kmz',
+        '.json',
+        '.geojson',
+        '.tif',
+        '.tiff',
+        '.geotiff',
+        '.gml',
+        '.xml'
     ]
 }
 
@@ -136,13 +168,14 @@ CATALOGUE = {
         # 'ENGINE': 'geonode.catalogue.backends.generic',
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        'URL': '%s/catalogue/csw' % SITEURL,
+        'URL': '%scatalogue/csw' % SITEURL,
         # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
         # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
 
         # login credentials (for GeoNetwork)
         'USER': 'admin',
         'PASSWORD': 'admin',
+        'ALTERNATES_ONLY': True,
     }
 }
 
@@ -202,7 +235,9 @@ PYCSW = {
 
 # default map projection
 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
-DEFAULT_MAP_CRS = "EPSG:900913"
+DEFAULT_MAP_CRS = "EPSG:3857"
+
+DEFAULT_LAYER_FORMAT = "image/png8"
 
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)
@@ -213,8 +248,23 @@ DEFAULT_MAP_CENTER = (0, 0)
 DEFAULT_MAP_ZOOM = 0
 
 # Default preview library
-LAYER_PREVIEW_LIBRARY = 'geoext'
-#LAYER_PREVIEW_LIBRARY = 'leaflet'
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'  # DEPRECATED use HOOKSET instead
+GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
+
+# To enable the REACT based Client enable those
+# INSTALLED_APPS += ('geonode-client', )
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'react'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.ReactHookSet"
+
+# To enable the Leaflet based Client enable those
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
+
+# To enable the MapStore2 based Client enable those
+# INSTALLED_APPS += ('geonode_mapstore_client', )
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'mapstore'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode_mapstore_client.hooksets.MapStoreHookSet"
+
 # LEAFLET_CONFIG = {
 #    'TILES': [
 #        # Find tiles at:
@@ -255,13 +305,13 @@ LAYER_PREVIEW_LIBRARY = 'geoext'
 #    'RESET_VIEW': False
 #}
 
-ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)
-CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
-STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
-THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
-MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', '<MAPBOX_ACCESS_TOKEN>')
-BING_API_KEY = os.environ.get('BING_API_KEY', '<BING_API_KEY>')
-GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', '<GOOGLE_API_KEY>')
+ALT_OSM_BASEMAPS = ast.literal_eval(os.environ.get('ALT_OSM_BASEMAPS', 'False'))
+CARTODB_BASEMAPS = ast.literal_eval(os.environ.get('CARTODB_BASEMAPS', 'False'))
+STAMEN_BASEMAPS = ast.literal_eval(os.environ.get('STAMEN_BASEMAPS', 'False'))
+THUNDERFOREST_BASEMAPS = ast.literal_eval(os.environ.get('THUNDERFOREST_BASEMAPS', 'False'))
+MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
+BING_API_KEY = os.environ.get('BING_API_KEY', None)
+GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
@@ -361,10 +411,6 @@ LOGGING = {
         }
     },
     'handlers': {
-        'null': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.NullHandler',
-        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -394,12 +440,18 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 GEOIP_PATH = "/usr/local/share/GeoIP"
 
-MONITORING_ENABLED = True
 # add following lines to your local settings to enable monitoring
+MONITORING_ENABLED = True
+
 if MONITORING_ENABLED:
-    MIDDLEWARE_CLASSES += ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+    if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode.contrib.monitoring',)
+    if 'geonode.contrib.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
+        MIDDLEWARE_CLASSES += \
+            ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
     MONITORING_CONFIG = None
-    MONITORING_SERVICE_NAME = 'local-geonode'
+    MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
+    MONITORING_SERVICE_NAME = 'geonode'
 
 #Define email service on GeoNode
 EMAIL_ENABLE = True
@@ -412,6 +464,13 @@ if EMAIL_ENABLE:
     EMAIL_HOST_PASSWORD = ''
     EMAIL_USE_TLS = False
     DEFAULT_FROM_EMAIL = 'Example.com <no-reply@localhost>'
+
+# Documents Thumbnails
+UNOCONV_ENABLE = True
+
+if UNOCONV_ENABLE:
+    UNOCONV_EXECUTABLE = os.getenv('UNOCONV_EXECUTABLE', '/usr/bin/unoconv')
+    UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
 
 # Advanced Security Workflow Settings
 CLIENT_RESULTS_LIMIT = 20
