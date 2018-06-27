@@ -1302,8 +1302,8 @@ CELERY_TASK_IGNORE_RESULT = True
 
 # I use these to debug kombu crashes; we get a more informative message.
 CELERY_TASK_SERIALIZER = 'json'
-#CELERY_RESULT_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT = ['json', 'pickle']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
 
 # Set Tasks Queues
 # CELERY_TASK_DEFAULT_QUEUE = "default"
@@ -1321,9 +1321,9 @@ CELERY_TASK_QUEUES = (
     Queue('email', GEONODE_EXCHANGE, routing_key='email'),
 )
 
-if USE_GEOSERVER and ASYNC_SIGNALS:
-    from geonode.messaging.queues import QUEUES
-    CELERY_TASK_QUEUES += QUEUES
+# if USE_GEOSERVER and ASYNC_SIGNALS:
+#     from geonode.messaging.queues import QUEUES
+#     CELERY_TASK_QUEUES += QUEUES
 
 # CELERYBEAT_SCHEDULE = {
 #     ...
