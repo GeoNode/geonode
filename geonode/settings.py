@@ -418,7 +418,7 @@ UNOCONV_ENABLE = strtobool(os.getenv('UNOCONV_ENABLE', 'False'))
 
 if UNOCONV_ENABLE:
     UNOCONV_EXECUTABLE = os.getenv('UNOCONV_EXECUTABLE', '/usr/bin/unoconv')
-    UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
+    UNOCONV_TIMEOUT = int(os.getenv('UNOCONV_TIMEOUT', 30))  # seconds
 
 LOGGING = {
     'version': 1,
@@ -740,7 +740,7 @@ OGC_SERVER = {
         'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE',''),
         'PG_GEOGIG': False,
         # 'CACHE': ".cache"  # local cache file to for HTTP requests
-        'TIMEOUT': 10  # number of seconds to allow for HTTP requests
+        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '10'))  # number of seconds to allow for HTTP requests
     }
 }
 
