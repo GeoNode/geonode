@@ -1321,9 +1321,17 @@ CELERY_TASK_QUEUES = (
     Queue('email', GEONODE_EXCHANGE, routing_key='email'),
 )
 
-# if USE_GEOSERVER and ASYNC_SIGNALS:
-#     from geonode.messaging.queues import QUEUES
-#     CELERY_TASK_QUEUES += QUEUES
+if USE_GEOSERVER:
+    CELERY_TASK_QUEUES += (
+        Queue("broadcast", GEOSERVER_EXCHANGE, routing_key="#"),
+        Queue("email.events", GEOSERVER_EXCHANGE, routing_key="email"),
+        Queue("all.geoserver", GEOSERVER_EXCHANGE, routing_key="geoserver.#"),
+        Queue("geoserver.catalog", GEOSERVER_EXCHANGE, routing_key="geoserver.catalog"),
+        Queue("geoserver.data", GEOSERVER_EXCHANGE, routing_key="geoserver.catalog"),
+        Queue("geoserver.events", GEOSERVER_EXCHANGE, routing_key="geonode.geoserver"),
+        Queue("notifications.events", GEOSERVER_EXCHANGE, routing_key="notifications"),
+        Queue("geonode.layer.viewer", GEOSERVER_EXCHANGE, routing_key="geonode.viewer"),
+    )
 
 # CELERYBEAT_SCHEDULE = {
 #     ...
