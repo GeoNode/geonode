@@ -19,7 +19,7 @@
 #########################################################################
 
 from django.conf import settings
-from kombu import Exchange, Queue
+from kombu import Queue
 
 geoserver_exchange = settings.GEOSERVER_EXCHANGE
 
