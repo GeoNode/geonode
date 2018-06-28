@@ -18,16 +18,44 @@
 #
 #########################################################################
 from django.conf import settings
-from kombu import pools
-from kombu import BrokerConnection
+from geonode.notifications_helper import NotificationsAppConfigBase
 
-connections = pools.Connections(limit=100)
-producers = pools.Producers(limit=connections.limit)
+connections = None
+producers = None
+url = None
+task_serializer = None
+broker_transport_options = None
+broker_socket_timeout = None
+connection = None
 
-# run in-memory if broker is not available
-# see producer code for synchronous queue
-url = getattr(settings, 'BROKER_URL', 'memory://')
-task_serializer = getattr(settings, 'CELERY_TASK_SERIALIZER', 'pickle')
-broker_transport_options = getattr(settings, 'BROKER_TRANSPORT_OPTIONS', {'socket_timeout': 10})
-broker_socket_timeout = getattr(broker_transport_options, 'socket_timeout', 10)
-connection = BrokerConnection(url, connect_timeout=broker_socket_timeout)
+
+class MessagingAppConfig(NotificationsAppConfigBase):
+    name = 'geonode.messaging'
+
+    def ready(self):
+        super(MessagingAppConfig, self).ready()
+
+        from kombu import pools
+        from kombu import BrokerConnection
+
+        global connections
+        global producers
+        global url
+        global task_serializer
+        global broker_transport_options
+        global broker_socket_timeout
+        global connection
+
+        connections = pools.Connections(limit=100)
+        producers = pools.Producers(limit=connections.limit)
+
+        # run in-memory if broker is not available
+        # see producer code for synchronous queue
+        url = getattr(settings, 'BROKER_URL', 'memory://')
+        task_serializer = getattr(settings, 'CELERY_TASK_SERIALIZER', 'pickle')
+        broker_transport_options = getattr(settings, 'BROKER_TRANSPORT_OPTIONS', {'socket_timeout': 10})
+        broker_socket_timeout = getattr(broker_transport_options, 'socket_timeout', 10)
+        connection = BrokerConnection(url, connect_timeout=broker_socket_timeout)
+
+
+default_app_config = 'geonode.messaging.MessagingAppConfig'

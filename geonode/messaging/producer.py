@@ -24,11 +24,13 @@ import logging
 import traceback
 
 from decorator import decorator
+from kombu import BrokerConnection
 from kombu.common import maybe_declare
 from queues import queue_email_events, queue_geoserver_events,\
                    queue_notifications_events, queue_layer_viewers
 
-from . import (producers,
+from . import (url,
+               producers,
                connection,
                broker_socket_timeout,
                task_serializer)
@@ -52,6 +54,7 @@ def sync_if_local_memory(func, *args, **kwargs):
     try:
         return func(*args, **kwargs)
     finally:
+        connection = BrokerConnection(url, connect_timeout=broker_socket_timeout)
         if getattr(connection.connection, 'driver_name', None) == 'memory':
             # hack explained:
             # when using memory://, first run usually contains only message for
@@ -71,6 +74,10 @@ def sync_if_local_memory(func, *args, **kwargs):
                 msg = "Exception while publishing message: {}".format(tb)
                 logger.error(msg)
                 raise
+        elif not getattr(connection.connection, 'driver_name', None):
+            msg = "Exception while getting connection to {}".format(url)
+            logger.error(msg)
+            raise
 
 
 @sync_if_local_memory
