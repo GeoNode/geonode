@@ -1158,10 +1158,14 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
     ds = get_store(cat, dsname, workspace=workspace)
 
     try:
-        cat.add_data_to_store(ds, name, data,
+        cat.add_data_to_store(ds,
+                              name,
+                              data,
                               overwrite=overwrite,
+                              workspace=workspace,
                               charset=charset)
         resource = cat.get_resource(name, store=ds, workspace=workspace)
+        assert resource is not None
         return ds, resource
     except Exception:
         msg = _("An exception occurred loading data to PostGIS")
