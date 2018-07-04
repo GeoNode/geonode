@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import uuid
 import logging
 import geoserver
@@ -163,6 +164,10 @@ def geoserver_upload(
                 'successful import to GeoSever', name)
 
     # Verify the resource was created
+    if not gs_resource:
+        gs_resource = gs_catalog.get_resource(
+                name,
+                workspace=workspace)
     if gs_resource is not None:
         assert gs_resource.name == name
     else:

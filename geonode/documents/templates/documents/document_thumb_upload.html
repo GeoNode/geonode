@@ -44,7 +44,7 @@
             <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
             <!-- UI change to hide the list of previously uploaded files from the user -->
             <input type="file" id="file-input" style="display: none;" multiple>
-            <input class="btn btn-default" type="button" value="Choose Files" onclick="document.getElementById('file-input').click();">
+            <input class="btn btn-default" type="button" value="{% trans "Choose Files" %}" onclick="document.getElementById('file-input').click();">
         </form>
 
         <section class="widget">

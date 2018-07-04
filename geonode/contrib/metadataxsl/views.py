@@ -43,13 +43,14 @@ def prefix_xsl_line(req, id):
     try:
         catalogue = get_catalogue()
         record = catalogue.get_record(resource.uuid)
+        if record:
+            logger.debug(record.xml)
     except Exception as err:
         msg = 'Could not connect to catalogue to save information for layer "%s"' % str(resource.title)
         logger.warn(msg)
         raise err
 
     try:
-        xml = record.xml
         # generate an XML document (GeoNode's default is ISO)
         if resource.metadata_uploaded and resource.metadata_uploaded_preserve:
             md_doc = etree.tostring(etree.fromstring(resource.metadata_xml))
@@ -61,8 +62,8 @@ def prefix_xsl_line(req, id):
         return HttpResponse(
             "Resource Metadata not available!"
         )
-
-    xsl_path = '{}/static/metadataxsl/metadata.xsl'.format(settings.SITEURL.rstrip('/'))
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+    xsl_path = '{}/static/metadataxsl/metadata.xsl'.format(site_url)
     xsl_line = '<?xml-stylesheet type="text/xsl" href="{}"?>'.format(xsl_path)
 
     return HttpResponse(

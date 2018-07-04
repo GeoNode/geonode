@@ -40,16 +40,16 @@ custom_slugify = Slugify(separator='_')
 
 
 def _build_state_resourcebase(resource):
-
     site = Site.objects.get_current()
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     thumbnail_url = resource.get_thumbnail_url()
-    owner_url = "{base}{context}".format(base=settings.SITEURL[:-1], context=resource.owner.get_absolute_url())
+    owner_url = "{base}{context}".format(base=site_url, context=resource.owner.get_absolute_url())
 
     state = {
         'title': resource.title,
         'type': resource.polymorphic_ctype,
         'sitename': site.name,
-        'baseurl': settings.SITEURL,
+        'baseurl': site_url,
         'owner_name': (resource.owner.get_full_name() or resource.owner.username),
         'owner_url': owner_url,
         'thumbnail_url': thumbnail_url
@@ -59,17 +59,16 @@ def _build_state_resourcebase(resource):
 
 
 def _build_state_layer(layer):
-
     state = _build_state_resourcebase(layer)
-
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     url_detail = "{base}{context}".format(
-        base=settings.SITEURL[:-1],
+        base=site_url,
         context=reverse('layer_detail', args=(layer.service_typename,)))
     link_shp = Link.objects.get(resource=layer.get_self_resource(), name='Zipped Shapefile')
     link_geojson = Link.objects.get(resource=layer.get_self_resource(), name='GeoJSON')
     link_netkml = Link.objects.get(resource=layer.get_self_resource(), name='View in Google Earth')
     url_map = "{base}{context}".format(
-        base=settings.SITEURL[:-1],
+        base=site_url,
         context=reverse("new_map")+"?layer="+layer.service_typename)
 
     state['url_detail'] = url_detail
@@ -82,17 +81,16 @@ def _build_state_layer(layer):
 
 
 def _build_state_map(map):
-
     state = _build_state_resourcebase(map)
-
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     url_detail = "{base}{context}".format(
-        base=settings.SITEURL[:-1],
+        base=site_url,
         context=reverse('map_detail', args=(map.id,)))
     url_view = "{base}{context}".format(
-        base=settings.SITEURL[:-1],
+        base=site_url,
         context=reverse('map_view', args=(map.id,)))
     url_download = "{base}{context}".format(
-        base=settings.SITEURL[:-1],
+        base=site_url,
         context=reverse('map_download', args=(map.id,)))
 
     state['url_detail'] = url_detail
@@ -103,14 +101,13 @@ def _build_state_map(map):
 
 
 def _build_state_document(document):
-
     state = _build_state_resourcebase(document)
-
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     url_detail = "{base}{context}".format(
-        base=settings.SITEURL[:-1],
+        base=site_url,
         context=reverse('document_detail', args=(document.id,)))
     url_download = "{base}{context}".format(
-        base=settings.SITEURL[:-1],
+        base=site_url,
         context=reverse('document_download', args=(document.id,)))
 
     state['url_detail'] = url_detail

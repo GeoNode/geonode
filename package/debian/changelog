@@ -90,6 +90,7 @@ geonode (2.8.0+rc12) xenial; urgency=high
  -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 30 Mar 2018 11:55:49 +0200
 
 geonode (2.8.0+rc10) xenial; urgency=high
+
   * [c8abc4] GeoNode 2.7.5.dev20180123130714
 
  -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Wed, 24 Jan 2018 16:41:05 +0100

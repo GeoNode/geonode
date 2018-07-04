@@ -17,6 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 
 
 class GeoExtHookSet(object):
@@ -60,13 +64,27 @@ class GeoExtHookSet(object):
         return 'geoext/maps/map_geoexplorer.js'
 
     def map_embed_template(self, context=None):
-        return 'geoext/maps/map_geoexplorer.js'
+        return 'geoext/maps/map_geoexplorer_viewer.js'
 
     def map_download_template(self, context=None):
         return 'geoext/maps/map_geoexplorer.js'
 
+    # Map Persisting
+    def viewer_json(self, conf, context=None):
+        if not context:
+            context = {}
 
-class LeafletHookSet(object):
+        if isinstance(conf, basestring):
+            conf = json.loads(conf)
+        return conf
+
+    def update_from_viewer(self, conf, context=None):
+        conf = self.viewer_json(conf, context=context)
+        context['config'] = conf
+        return 'geoext/maps/map_geoexplorer.js'
+
+
+class LeafletHookSet(GeoExtHookSet):
 
     # Layers
     def layer_detail_template(self, context=None):
@@ -113,7 +131,7 @@ class LeafletHookSet(object):
         return 'leaflet/maps/map_embed.html'
 
 
-class ReactHookSet(object):
+class ReactHookSet(GeoExtHookSet):
 
     # Layers
     def layer_detail_template(self, context=None):

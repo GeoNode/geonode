@@ -56,7 +56,7 @@ services:
       - ./scripts/docker/env/production/celery.env
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.13.x
+    image: geonode/geoserver_data:latest
     restart: on-failure
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     labels:
@@ -67,7 +67,7 @@ services:
       - geoserver-data-dir:/geoserver_data/data
 
   geoserver:
-    image: geonode/geoserver:2.13.x
+    image: geonode/geoserver:latest
     restart: unless-stopped
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     stdin_open: true
@@ -99,7 +99,8 @@ services:
       - db
       # - elasticsearch
       - rabbitmq
-    command: paver start_django -b 0.0.0.0:8000
+    # command: paver start_django -b 0.0.0.0:8000
+    command: uwsgi --ini uwsgi.ini
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - geoserver-data-dir:/geoserver_data/data

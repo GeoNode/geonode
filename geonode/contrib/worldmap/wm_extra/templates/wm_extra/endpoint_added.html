@@ -1,0 +1,20 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load base_tags %}
+
+{% block title %} {% trans "Endpoint Suggested" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}submit_map_service{% endblock %}
+
+{% block body_outer %}
+
+<div class="page-header">
+  <h2>{% trans "Endpoint Suggested" %}</h2>
+</div>
+
+<p>{% trans "Thanks" %} {{ endpoint.owner.username }} {% trans "for suggesting the endpoint" %} <a href="{{ endpoint.url }}">{{ endpoint.url }}</a></p>
+
+{% endblock %}
+
+{% block footer %}{% endblock %}

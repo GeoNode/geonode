@@ -5,13 +5,13 @@
 {% block body_outer %}
 <ul id="md_tabs" class="nav nav-tabs">
   <li id="metadata_edit_tab" class="active">
-      <a data-toggle="tab" href="#edit-metadata"><i class="fa fa-pencil"></i> Edit</a>
+      <a data-toggle="tab" href="#edit-metadata"><i class="fa fa-pencil"></i>{% trans "Edit" %}</a>
   </li>
     <!-- li id="preview_tab" data-toggle="tab" dhref="#preview">
         <a data-toggle="tab" href="#preview">Preview</a>
     </li -->
     <li id="settings_tab" dhref="#settings">
-        <a data-toggle="tab" href="#settings"><i class="fa fa-cog"></i> Settings</a>
+        <a data-toggle="tab" href="#settings"><i class="fa fa-cog"></i>{% trans "Settings" %}</a>
     </li>
 </ul>
 
@@ -20,24 +20,24 @@
   <div id="completeness-hints" class="progress">
 
   <div class="mandatory-hint progress-bar" role="progressbar" style="width:33%">
-    Mandatory
+    {% trans "Mandatory" %}
   </div>
   <div class="advanced-hint progress-bar" role="progressbar" style="width:34%">
-    Mandatory
+    {% trans "Mandatory" %}
   </div>
   <div class="progress-bar" role="progressbar" style="width:33%">
-    Optional
+    {% trans "Optional" %}
   </div>
 </div>
   <ul class="wizard--progress wizard--progress--medium">
       <li data-step="1" id="first" class="is-active" data-toggle="tab" href="#mandatory">
-          <a>Basic Metadata</a>
+          <a>{% trans "Basic Metadata" %}</a>
       </li>
       <li data-step="2" id="second"  data-toggle="tab" href="#advanced">
-          <a>Location and Licenses</a>
+          <a>{% trans "Location and Licenses" %}</a>
       </li>
       <li data-step="3" data-toggle="tab" href="#ownership">
-          <a>Optional Metadata</a>
+          <a>{% trans "Optional Metadata<" %}/a>
       </li>
   </ul>
     <div id="mandatory" class="tab-pane fade in active">
@@ -208,7 +208,7 @@
         <div class="panel-group"><div class="panel panel-default"><div class="panel-body">
         <div>
             <div class="col-xs-12 col-lg-4">
-              <p>Other, Optional, Metadata</p>
+              <p>{% trans "Other, Optional, Metadata" %}</p>
                 <div>
                     <span><label for="{{ map_form.edition|id }}">{{ map_form.edition.label }}</label></span>
                     <!--<p class="xxs-font-size">(Version of the cited resource)</p>-->
@@ -255,7 +255,7 @@
             </div>
             <div class="col-xs-12 col-lg-3">
               <div class="panel panel-default" style="margin-top: 5px">
-                          <div class="panel-heading">Responsible Parties</div>
+                          <div class="panel-heading">{% trans "Responsible Parties" %}</div>
                           <div class="panel-body">
                               <span><label for="{{ map_form.poc|id }}">{{ map_form.poc.label }}</label></span>
                               {{ map_form.poc }}
@@ -263,7 +263,7 @@
                       </div>
 
                       <div class="panel panel-default">
-                          <div class="panel-heading">Owner and Permissions</div>
+                          <div class="panel-heading">{% trans "Owner and Permissions" %}</div>
                           <div class="panel-body">
                               <div>
                                 <span><label for="{{ map_form.owner|id }}">{{ map_form.owner.label }}</label></span>
@@ -311,7 +311,7 @@
           <div class="panel panel-default">
               <div class="panel-body">
                 <div class="panel panel-default" >
-                  <div class="panel-heading">Publishing</div>
+                  <div class="panel-heading">{% trans "Publishing" %}</div>
                   <div class="panel-body">
                     <div>
                         <span><label for="{{ map_form.metadata_uploaded_preserve|id }}">{{ map_form.metadata_uploaded_preserve.label }}</label></span>
@@ -340,7 +340,7 @@
           <div class="panel panel-default">
               <div class="panel-body">
                 <div class="panel panel-default" >
-                  <div class="panel-heading">Other Settings</div>
+                  <div class="panel-heading">{% trans "Other Settings" %}</div>
                   <div class="panel-body">
                     <div>
                         <span><label for="{{ map_form.urlsuffix|id }}">{{ map_form.urlsuffix.label }}</label></span>

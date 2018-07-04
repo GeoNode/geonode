@@ -199,7 +199,10 @@ def bbox_to_projection(native_bbox, target_srid=4326):
     box = native_bbox[:4]
     proj = native_bbox[-1]
     minx, maxx, miny, maxy = [float(a) for a in box]
-    source_srid = int(proj.split(":")[1])
+    try:
+        source_srid = int(proj.split(":")[1]) if proj and ':' in proj else int(proj)
+    except BaseException:
+        source_srid = target_srid
 
     def _v(coord, x, source_srid=4326, target_srid=3857):
         if source_srid == 4326 and target_srid != 4326:
@@ -334,7 +337,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering):
 
 class GXPMapBase(object):
 
-    def viewer_json(self, user, access_token, *added_layers):
+    def viewer_json(self, request, *added_layers):
         """
         Convert this map to a nested dictionary structure matching the JSON
         configuration for GXP Viewers.
@@ -344,6 +347,10 @@ class GXPMapBase(object):
         configuration. These are not persisted; if you want to add layers you
         should use ``.layer_set.create()``.
         """
+
+        user = request.user if request else None
+        access_token = request.session['access_token'] if request and \
+            'access_token' in request.session else uuid.uuid1().hex
 
         if self.id and len(added_layers) == 0:
             cfg = cache.get("viewer_json_" +
@@ -475,6 +482,9 @@ class GXPMapBase(object):
                       "_" +
                       str(0 if user is None else user.id), config)
 
+        # Client conversion if needed
+        from geonode.client.hooks import hookset
+        config = hookset.viewer_json(config, context={'request': request})
         return config
 
 
@@ -624,18 +634,9 @@ def default_map_config(request):
         _baselayer(
             lyr, idx) for idx, lyr in enumerate(
             settings.MAP_BASELAYERS)]
-    user = None
-    access_token = None
-    if request:
-        user = request.user
-        if 'access_token' in request.session:
-            access_token = request.session['access_token']
-        else:
-            u = uuid.uuid1()
-            access_token = u.hex
 
     DEFAULT_MAP_CONFIG = _default_map.viewer_json(
-        user, access_token, *DEFAULT_BASE_LAYERS)
+        request, *DEFAULT_BASE_LAYERS)
 
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
@@ -927,7 +928,10 @@ def check_shp_columnnames(layer):
         inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
 
     inDriver = ogr.GetDriverByName('ESRI Shapefile')
-    inDataSource = inDriver.Open(inShapefile, 1)
+    try:
+        inDataSource = inDriver.Open(inShapefile, 1)
+    except BaseException:
+        inDataSource = None
     if inDataSource is None:
         logger.warning('Could not open %s' % (inShapefile))
         return False, None, None
@@ -960,8 +964,16 @@ def check_shp_columnnames(layer):
                 charset)
 
             if not a.match(field_name):
-                new_field_name = custom_slugify(field_name)
-
+                # once the field_name contains Chinese, to use slugify_zh
+                has_ch = False
+                for ch in field_name:
+                    if u'\u4e00' <= ch <= u'\u9fff':
+                        has_ch = True
+                        break
+                if has_ch:
+                    new_field_name = slugify_zh(field_name, separator='_')
+                else:
+                    new_field_name = custom_slugify(field_name)
                 if not b.match(new_field_name):
                     new_field_name = '_' + new_field_name
                 j = 0
@@ -1332,3 +1344,37 @@ def chmod_tree(dst, permissions=0o777):
         for dirname in dirnames:
             path = os.path.join(dirpath, dirname)
             os.chmod(path, permissions)
+
+
+def slugify_zh(text, separator='_'):
+    """
+    Make a slug from the given text, which is simplified from slugify.
+    It remove the other args and do not convert Chinese into Pinyin
+    :param text (str): initial text
+    :param separator (str): separator between words
+    :return (str):
+    """
+
+    QUOTE_PATTERN = re.compile(r'[\']+')
+    ALLOWED_CHARS_PATTERN = re.compile(u'[^\u4e00-\u9fa5a-z0-9]+')
+    DUPLICATE_DASH_PATTERN = re.compile('-{2,}')
+    NUMBERS_PATTERN = re.compile('(?<=\d),(?=\d)')
+    DEFAULT_SEPARATOR = '-'
+
+    # if not isinstance(text, types.UnicodeType):
+    #    text = unicode(text, 'utf-8', 'ignore')
+    # replace quotes with dashes - pre-process
+    text = QUOTE_PATTERN.sub(DEFAULT_SEPARATOR, text)
+    # make the text lowercase
+    text = text.lower()
+    # remove generated quotes -- post-process
+    text = QUOTE_PATTERN.sub('', text)
+    # cleanup numbers
+    text = NUMBERS_PATTERN.sub('', text)
+    # replace all other unwanted characters
+    text = re.sub(ALLOWED_CHARS_PATTERN, DEFAULT_SEPARATOR, text)
+    # remove redundant
+    text = re.sub(DUPLICATE_DASH_PATTERN, DEFAULT_SEPARATOR, text).strip(DEFAULT_SEPARATOR)
+    if separator != DEFAULT_SEPARATOR:
+        text = text.replace(DEFAULT_SEPARATOR, separator)
+    return text

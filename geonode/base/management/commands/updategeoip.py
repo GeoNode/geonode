@@ -35,9 +35,12 @@ try:
     URL = 'http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz'
     OLD_FORMAT = False
 except ImportError:
-    from django.contrib.gis.geoip import GeoIP
-    URL = 'http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz'
-    OLD_FORMAT = True
+    try:
+        from django.contrib.gis.geoip import GeoIP
+        URL = 'http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz'
+        OLD_FORMAT = True
+    except:
+        URL = None
 
 
 class Command(BaseCommand):
@@ -54,6 +57,9 @@ class Command(BaseCommand):
                             help=_("Overwrite file if exists"))
 
     def handle(self, *args, **options):
+        if not settings.MONITORING_ENABLED or not URL:
+            return
+
         fname = options['file']
         fbase = '.'.join(os.path.basename(options['url']).split('.')[:-1])
         if not options['overwrite'] and os.path.exists(fname):
@@ -82,6 +88,11 @@ class Command(BaseCommand):
                 self.handle_old_format(open('output.bin', 'r'), fname)
             else:
                 self.handle_new_format(open('output.bin', 'r'), fname)
+        try:
+            # Cleaning up
+            os.remove('output.bin')
+        except OSError:
+            pass
 
 
     def handle_new_format(self, f, fname):

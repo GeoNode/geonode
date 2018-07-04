@@ -18,9 +18,10 @@
 #
 #########################################################################
 
-from kombu import Exchange, Queue
+from django.conf import settings
+from kombu import Queue
 
-geoserver_exchange = Exchange("geonode", type="topic", durable=False)
+geoserver_exchange = settings.GEOSERVER_EXCHANGE
 
 queue_all_events = Queue("broadcast", geoserver_exchange, routing_key="#")
 queue_email_events = Queue("email.events", geoserver_exchange, routing_key="email")

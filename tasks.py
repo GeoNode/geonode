@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import re
+import ast
 
 import docker
 
@@ -26,23 +27,36 @@ def update(ctx):
     print "Public PORT is {0}".format(pub_port)
     db_url = _update_db_connstring()
     geodb_url = _update_geodb_connstring()
+    override_env = "$HOME/.override_env"
     envs = {
-        "public_fqdn": "{0}:{1}".format(pub_ip, pub_port),
+        "public_fqdn": "{0}:{1}".format(pub_ip, pub_port or 80),
         "public_host": "{0}".format(pub_ip),
         "dburl": db_url,
         "geodburl": geodb_url,
-        "override_fn": "$HOME/.override_env"
+        "override_fn": override_env
     }
-    ctx.run("echo export GEOSERVER_PUBLIC_LOCATION=\
+    if not os.environ.get('GEOSERVER_PUBLIC_LOCATION'):
+        ctx.run("echo export GEOSERVER_PUBLIC_LOCATION=\
 http://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
-    ctx.run("echo export SITEURL=\
+    if not os.environ.get('SITEURL'):
+        ctx.run("echo export SITEURL=\
 http://{public_fqdn}/ >> {override_fn}".format(**envs), pty=True)
-    ctx.run("echo export ALLOWED_HOSTS=\
-\"\\\"['{public_fqdn}', '{public_host}', 'django', 'geonode',]\\\"\" \
->> {override_fn}".format(**envs), pty=True)
-    ctx.run("echo export DATABASE_URL=\
+
+    try:
+        current_allowed = ast.literal_eval(os.getenv('ALLOWED_HOSTS') or \
+                                           "['{public_fqdn}', '{public_host}', 'localhost', 'django', 'geonode',]".format(**envs))
+    except ValueError:
+        current_allowed = []
+    current_allowed.extend(['{}'.format(pub_ip), '{}:{}'.format(pub_ip, pub_port)])
+    allowed_hosts = ['"{}"'.format(c) for c in current_allowed] + ['"geonode"', '"django"']
+
+    ctx.run('echo export ALLOWED_HOSTS="\\"{}\\"" >> {}'.format(allowed_hosts, override_env), pty=True)
+
+    if not os.environ.get('DATABASE_URL'):
+        ctx.run("echo export DATABASE_URL=\
 {dburl} >> {override_fn}".format(**envs), pty=True)
-    ctx.run("echo export GEODATABASE_URL=\
+    if not os.environ.get('GEODATABASE_URL'):
+        ctx.run("echo export GEODATABASE_URL=\
 {geodburl} >> {override_fn}".format(**envs), pty=True)
     ctx.run("source $HOME/.override_env", pty=True)
     print "****************************final**********************************"
@@ -167,6 +181,9 @@ def _prepare_oauth_fixture():
             "pk": 1001,
             "fields": {
                 "skip_authorization": True,
+                "created": "2018-05-31T10:00:31.661Z",
+                "updated": "2018-05-31T11:30:31.245Z",
+                "algorithm": "RS256",
                 "redirect_uris": "http://{0}:{1}/geoserver/index.html".format(
                     pub_ip, pub_port
                 ),

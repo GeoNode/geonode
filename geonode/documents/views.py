@@ -486,10 +486,10 @@ def document_metadata(
             try:
                 all_metadata_author_groups = chain(
                     request.user.group_list_all(),
-                    GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
+                    GroupProfile.objects.exclude(access="private"))
             except BaseException:
                 all_metadata_author_groups = GroupProfile.objects.exclude(
-                    access="private").exclude(access="public-invite")
+                    access="private")
             [metadata_author_groups.append(item) for item in all_metadata_author_groups
                 if item not in metadata_author_groups]
 
@@ -561,11 +561,12 @@ def document_thumb_upload(
             status=401
         )
 
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     if request.method == 'GET':
         return render(request, template, context={
             "resource": document,
             "docid": docid,
-            'SITEURL': settings.SITEURL[:-1]
+            'SITEURL': site_url
         })
     elif request.method == 'POST':
         status_code = 401
@@ -687,10 +688,11 @@ def document_metadata_detail(
             group = GroupProfile.objects.get(slug=document.group.name)
         except GroupProfile.DoesNotExist:
             group = None
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": document,
         "group": group,
-        'SITEURL': settings.SITEURL[:-1]
+        'SITEURL': site_url
     })
 
 
