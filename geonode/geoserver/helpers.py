@@ -927,13 +927,17 @@ def set_styles(layer, gs_catalog):
             # make sure we are not using a defaul SLD (which won't be editable)
             if not default_style.workspace or default_style.workspace != layer.workspace:
                 sld_body = default_style.sld_body
-                gs_catalog.create_style(layer.name, sld_body, raw=True, workspace=layer.workspace)
+                try:
+                    gs_catalog.create_style(layer.name, sld_body, raw=True, workspace=layer.workspace)
+                except BaseException:
+                    pass
                 style = gs_catalog.get_style(layer.name, workspace=layer.workspace)
             else:
                 style = default_style
-            layer.default_style = save_style(style)
-            # FIXME: This should remove styles that are no longer valid
-            style_set.append(layer.default_style)
+            if style:
+                layer.default_style = save_style(style)
+                # FIXME: This should remove styles that are no longer valid
+                style_set.append(layer.default_style)
         try:
             if gs_layer.styles:
                 alt_styles = gs_layer.styles
@@ -1158,10 +1162,14 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
     ds = get_store(cat, dsname, workspace=workspace)
 
     try:
-        cat.add_data_to_store(ds, name, data,
+        cat.add_data_to_store(ds,
+                              name,
+                              data,
                               overwrite=overwrite,
+                              workspace=workspace,
                               charset=charset)
         resource = cat.get_resource(name, store=ds, workspace=workspace)
+        assert resource is not None
         return ds, resource
     except Exception:
         msg = _("An exception occurred loading data to PostGIS")

@@ -1151,7 +1151,10 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
 
         # with settings disabled
         with self.settings(RESOURCE_PUBLISHING=True):
-            layer = file_upload(thefile, overwrite=True)
+            layer = file_upload(thefile,
+                                overwrite=True,
+                                is_approved=False,
+                                is_published=False)
             layer.set_default_permissions()
             check_layer(layer)
 
