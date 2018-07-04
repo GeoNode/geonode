@@ -212,7 +212,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     set_styles(instance, gs_catalog)
 
     # set SLD
-    sld = instance.default_style.sld_body
+    sld = instance.default_style.sld_body if instance.default_style else None
     if sld:
         set_layer_style(instance, instance.alternate, sld)
 
