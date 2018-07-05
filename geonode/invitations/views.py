@@ -26,18 +26,19 @@ except ImportError:
     from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from django.contrib.auth.decorators import login_required
 
 from .forms import GeoNodeInviteForm
 from invitations import signals
 from invitations.views import SendInvite
 from invitations.utils import get_invitation_model
 from invitations.adapters import get_invitations_adapter
-from geonode.decorators import view_decorator, superuser_only
+from geonode.decorators import view_decorator
 
 Invitation = get_invitation_model()
 
 
-@view_decorator(superuser_only, subclass=True)
+@view_decorator(login_required, subclass=True)
 class GeoNodeSendInvite(SendInvite):
     template_name = 'invitations/forms/_invite.html'
     form_class = GeoNodeInviteForm
