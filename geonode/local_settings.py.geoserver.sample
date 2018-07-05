@@ -33,7 +33,7 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
 
 # SECRET_KEY = '************************'
 
-SITEURL = "http://localhost:8000/"
+SITEURL = "http://localhost/"
 
 # we need hostname for deployed
 _surl = urlparse(SITEURL)
@@ -75,8 +75,7 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    #  'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)
-    'GEOSERVER_PUBLIC_LOCATION', GEOSERVER_LOCATION
+    'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -112,7 +111,7 @@ OGC_SERVER = {
         # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
         'DATASTORE': 'datastore',
         'PG_GEOGIG': False,
-        'TIMEOUT': 10  # number of seconds to allow for HTTP requests
+        'TIMEOUT': 60  # number of seconds to allow for HTTP requests
     }
 }
 
