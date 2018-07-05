@@ -47,9 +47,10 @@ if [[ $UID != 0 ]]; then
     exit 1
 fi
 
-GEONODE_ETC=/etc/geonode
-GEOSERVER_DATA_DIR=/usr/share/geoserver/data
-APACHE_SERVICE="invoke-rc.d apache2"
+GEONODE_ETC=${GEONODE_ETC:-/etc/geonode}
+GEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR:-/usr/share/geoserver/data}
+TOMCAT_SERVICE=${TOMCAT_SERVICE:-"invoke-rc.d tomcat8"}
+APACHE_SERVICE=${APACHE_SERVICE:-"invoke-rc.d apache2"}
 
 # Replace SITEURL in $GEONODE_ETC/local_settings.py
 echo "Replacing SITEURL value with '$NEWIP' in $GEONODE_ETC/local_settings.py ... " | tr -d '\n'
@@ -163,6 +164,8 @@ sleep 5s
 
 # Run updatelayers
 geonode updatelayers
+geonode set_all_layers_alternate
+geonode set_all_layers_metadata
 
 # Run updatemaplayerip
 geonode updatemaplayerip

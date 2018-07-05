@@ -1,6 +1,15 @@
 #!/bin/bash
-if hash django-admin 2>/dev/null; then
-    django-admin $@ --settings=geonode.settings
+
+DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-geonode.settings}
+
+if [ -n "$WORKON_HOME" ]; then
+    DJANGO_ADMIN_CMD=$WORKON_HOME/bin/django-admin >/dev/null 2>/dev/null
+elif hash django-admin 2>/dev/null; then
+    DJANGO_ADMIN_CMD=django-admin
+fi
+
+if [ -n "$DJANGO_ADMIN_CMD" ]; then
+    DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE $DJANGO_ADMIN_CMD $@
 else
-    django-admin.py $@ --settings=geonode.settings
+    DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE django-admin.py $@
 fi

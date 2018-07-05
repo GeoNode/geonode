@@ -1,0 +1,108 @@
+WSGIDaemonProcess geonode python-path=/home/geo/geonode:/home/geo/Envs/geonode/lib/python2.7/site-packages user=www-data threads=15 processes=2
+
+<VirtualHost *:80>
+    ServerName http://localhost
+    ServerAdmin webmaster@localhost
+    DocumentRoot /home/geo/geonode/geonode
+
+    LimitRequestFieldSize 32760
+    LimitRequestLine 32760
+
+    ErrorLog /var/log/apache2/error.log
+    LogLevel info
+    CustomLog /var/log/apache2/access.log combined
+
+    WSGIProcessGroup geonode
+    WSGIPassAuthorization On
+    WSGIScriptAlias / /home/geo/geonode/geonode/wsgi.py
+
+    Alias /static/ /home/geo/geonode/geonode/static_root/
+    Alias /uploaded/ /home/geo/geonode/geonode/uploaded/
+
+    <Directory "/home/geo/geonode/geonode/">
+         <Files wsgi.py>
+             Order deny,allow
+             Allow from all
+             Require all granted
+         </Files>
+
+        Order allow,deny
+        Options Indexes FollowSymLinks
+        Allow from all
+        IndexOptions FancyIndexing
+    </Directory>
+
+    <Directory "/home/geo/geonode/geonode/static_root/">
+        Order allow,deny
+        Options Indexes FollowSymLinks
+        Allow from all
+        Require all granted
+        IndexOptions FancyIndexing
+    </Directory>
+
+    <Directory "/home/geo/geonode/geonode/uploaded/thumbs/">
+        Order allow,deny
+        Options Indexes FollowSymLinks
+        Allow from all
+        Require all granted
+        IndexOptions FancyIndexing
+    </Directory>
+
+    <Directory "/home/geo/geonode/geonode/uploaded/avatars/">
+        Order allow,deny
+        Options Indexes FollowSymLinks
+        Allow from all
+        Require all granted
+        IndexOptions FancyIndexing
+    </Directory>
+
+    <Directory "/home/geo/geonode/geonode/uploaded/people_group/">
+        Order allow,deny
+        Options Indexes FollowSymLinks
+        Allow from all
+        Require all granted
+        IndexOptions FancyIndexing
+    </Directory>
+
+    <Directory "/home/geo/geonode/geonode/uploaded/group/">
+        Order allow,deny
+        Options Indexes FollowSymLinks
+        Allow from all
+        Require all granted
+        IndexOptions FancyIndexing
+    </Directory>
+
+    <Directory "/home/geo/geonode/geonode/uploaded/documents/">
+        Order allow,deny
+        Options Indexes FollowSymLinks
+        Allow from all
+        Require all granted
+        IndexOptions FancyIndexing
+    </Directory>
+
+    <Directory "/home/geo/geonode/geonode/uploaded/layers/">
+        Order allow,deny
+        Options Indexes FollowSymLinks
+        Allow from all
+        Require all granted
+        IndexOptions FancyIndexing
+    </Directory>
+
+    <Directory "/home/geo/geonode/geonode/uploaded/img/">
+        Order allow,deny
+        Options Indexes FollowSymLinks
+        Allow from all
+        Require all granted
+        IndexOptions FancyIndexing
+    </Directory>
+
+    <Proxy *>
+        Order allow,deny
+        Allow from all
+    </Proxy>
+
+    ProxyPreserveHost On
+    ProxyPass /geoserver http://localhost:8080/geoserver
+    ProxyPassReverse /geoserver http://localhost:8080/geoserver
+
+</VirtualHost>
