@@ -41,7 +41,13 @@
         <h4>{% trans "Available styles" %}</h4>
         <p>{% trans "Click on an available style in the upper box to assign it to this layer. Selected styles appear in the lower box." %}</p>
       </div>
+              
       <div class="col-md-9">
+        <div class="row form-group">
+          <div class="col-xs-6 col-md-3">
+            <input type="text" class="js-searchlist form-control"  placeholder="&#xF002; Search" style="font-family:Arial, FontAwesome, sans-serif">
+          </div>
+        </div>
         <select multiple="multiple" id="style-select" name="style-select">
           {% for style in gs_styles %}
             {% if style in layer_styles %}
@@ -87,6 +93,16 @@
         });
       }
     });
+
+    $('.js-searchlist').on('keyup', function() {  
+      var searchString = $(this).val();
+      $(".ms-elem-selectable:not(.ms-selected)").each(function() {
+        var listElement = $(this);
+        var styleName = $("span", listElement).html();
+        if(styleName !=null)
+          styleName.toUpperCase().indexOf(searchString.toUpperCase()) > -1 ? listElement.show() : listElement.hide();            
+      }); 
+    });   
   });
 </script>
 {% endblock %}

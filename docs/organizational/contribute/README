@@ -82,7 +82,7 @@ For GeoServer: http://geonode/geoserver/web/
 Ubuntu
 ------
 
-Ubuntu development build instructions using an isolated virtual environment (tested on Ubuntu 14.04 LTS)::
+Ubuntu development build instructions using an isolated virtual environment (tested on Ubuntu 16.04 LTS)::
 
     # Install Ubuntu dependencies
     sudo apt-get update
