@@ -113,10 +113,12 @@
         {%  endif %}
       {%  endif %}
       </li>
-
+      {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list %}
       <li class="list-group-item">
         <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-document">{% trans "Edit Document" %}</button>
       </li>
+      {% endif %}
+
       <div class="modal fade" id="edit-document" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
