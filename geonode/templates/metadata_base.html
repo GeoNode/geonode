@@ -4,9 +4,9 @@
 {% load base_tags %}
 {% load guardian_tags %}
 {% load floppyforms %}
+{% load static from staticfiles %}
 
 {% block head %}
-{% load static from staticfiles %}
   <script src="{% static "lib/js/jquery.js" %}?v={{ VERSION }}"></script>
   <script src="{% static "lib/js/moment-with-locales.min.js" %}?v={{ VERSION }}"></script>
   <script src="{% static "lib/js/bootstrap-datetimepicker.min.js" %}?v={{ VERSION }}"></script>

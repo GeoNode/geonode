@@ -344,13 +344,21 @@ define(function (require, exports) {
             },
             success: function (resp, status) {
                 if(resp.url && resp.input_required){
-                    // window.location = resp.url;
-                    newWin.location = resp.url;
-                    newWin.focus();
+                    /* ****
+                     * AF: Switching those two below allows to open a new window instead of redirecting
+                     *     the active one.
+                     * ****/
+                    window.location = resp.url;
+                    /* newWin.location = resp.url;
+                    newWin.focus(); */
                 }else {
-                    // window.location = resp.redirect_to;
-                    newWin.location = resp.redirect_to;
-                    newWin.focus();
+                    /* ****
+                     * AF: Switching those two below allows to open a new window instead of redirecting
+                     *     the active one.
+                     * ****/
+                    window.location = resp.redirect_to;
+                    /* newWin.location = resp.redirect_to;
+                    newWin.focus(); */
                 }
             },
         });
