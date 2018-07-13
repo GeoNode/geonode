@@ -1,6 +1,6 @@
 {% extends "geonode_base.html" %}
 {% load bootstrap_tags %}
-{% load staticfiles %}
+{% load static from staticfiles %}
 {% load i18n %}
 {% load leaflet_tags %}
 
@@ -21,7 +21,7 @@
           href="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/css/leaflet.control.orderlayers.min.css"
           type="text/css"/>
     <link rel="stylesheet" href="{% static 'lib/css/L.Control.Pan.css' %}"/>
-    <link href="{{ STATIC_URL }}geonode/css/map_leaflet.css" rel="stylesheet"/>
+    <link href="{% static "geonode/css/map_leaflet.css" %}" rel="stylesheet"/>
     <style type="text/css">
         html, body, #wrap {
             height: 100%;

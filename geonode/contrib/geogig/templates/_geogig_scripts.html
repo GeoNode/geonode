@@ -1,14 +1,15 @@
 {% load geogig_tags %}
+{% load static from staticfiles %}
 
 {% if DEBUG_STATIC %}
-    <script src="{{ STATIC_URL }}lib/js/jquery.min.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/angular.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/ZeroClipboard.min.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/moment.min.js"></script>
+    <script src="{% static "lib/js/jquery.min.js" %}"></script>
+    <script src="{% static "lib/js/angular.js" %}"></script>
+    <script src="{% static "lib/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "lib/js/ZeroClipboard.min.js" %}"></script>
+    <script src="{% static "lib/js/moment.min.js" %}"></script>
 {% endif %}
-<script src="{{ STATIC_URL }}geogig/geogig.js"></script>
-<link href="{{ STATIC_URL }}geogig/css/geogig.css" rel="stylesheet"/>
+<script src="{% static "geogig/geogig.js" %}"></script>
+<link href="{% static "geogig/css/geogig.css" %}" rel="stylesheet"/>
 
 <script type="text/javascript">
   var module = angular.module('g', ['geogig']);

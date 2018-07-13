@@ -41,7 +41,7 @@
               </h4>
             </div>
           </div>
-          <em ng-if="item.online and item.store_type == 'remoteStore'">
+          <em ng-if="item.online && item.store_type == 'remoteStore'">
             {% endverbatim %}
             <span ng-if="item.online == true"><i class="fa fa-power-off text-success"></i> {% trans "Service is" %} {% trans "online" %}</span>
             <span ng-if="item.online == false"><i class="fa fa-power-off text-danger"></i> {% trans "Service is" %} {% trans "offline" %}</span>
