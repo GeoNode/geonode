@@ -330,8 +330,12 @@ define(function (require, exports) {
     LayerInfo.prototype.doResume = function (event) {
         $(this).text('Done').attr('disabled','disabled');
         var id = (new Date()).getTime();
-	    var newWin = window.open(window.location.href,
-                id, "toolbar=1,scrollbars=1,location=0,statusbar=0,menubar=1,resizable=1,width=1100,height=800,left = 240,top = 100");
+        /* ****
+         * AF: Switching those two below allows to open a new window instead of redirecting
+         *     the active one.
+         * ****/
+	    // var newWin = window.open(window.location.href,
+        //        id, "toolbar=1,scrollbars=1,location=0,statusbar=0,menubar=1,resizable=1,width=1100,height=800,left = 240,top = 100");
         common.make_request({
             url: event.data.url,
             async: true,
@@ -344,13 +348,21 @@ define(function (require, exports) {
             },
             success: function (resp, status) {
                 if(resp.url && resp.input_required){
-                    // window.location = resp.url;
-                    newWin.location = resp.url;
-                    newWin.focus();
+                    /* ****
+                     * AF: Switching those two below allows to open a new window instead of redirecting
+                     *     the active one.
+                     * ****/
+                    window.location = resp.url;
+                    /* newWin.location = resp.url;
+                    newWin.focus(); */
                 }else {
-                    // window.location = resp.redirect_to;
-                    newWin.location = resp.redirect_to;
-                    newWin.focus();
+                    /* ****
+                     * AF: Switching those two below allows to open a new window instead of redirecting
+                     *     the active one.
+                     * ****/
+                    window.location = resp.redirect_to;
+                    /* newWin.location = resp.redirect_to;
+                    newWin.focus(); */
                 }
             },
         });
