@@ -1,6 +1,6 @@
 {% extends "geonode_base.html" %}
 {% load i18n %}
-{% load staticfiles %}
+{% load static from staticfiles %}
 {% load base_tags %}
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
@@ -318,7 +318,7 @@
 {% block extra_script %}
 {{ block.super }}
 {% if DEBUG_STATIC %}
-<script src="{{ STATIC_URL }}lib/js/angular.js"></script>
+<script src="{% static "lib/js/angular.js" %}"></script>
 {% endif %}
 <script type="text/javascript">
     FEATURED_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='featured' %}'
