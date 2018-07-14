@@ -1,14 +1,16 @@
 {% load i18n %}
+{% load static from staticfiles %}
+
 <html>
 <head>
 
     <title>{% block title %}{% trans "WorldMap" %}{% endblock %}</title>
-    <link rel="shortcut icon" href="{{ STATIC_URL }}worldmap/theme/img/favicon.ico"/>
+    <link rel="shortcut icon" href="{% static "worldmap/theme/img/favicon.ico" %}"/>
 
         {% if urlsuffix %}
         <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}{{urlsuffix}}/site.css" media="screen" />
         {% else %}
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}worldmap_client/theme/site.css" />
+        <link rel="stylesheet" type="text/css" href="{% static "worldmap_client/theme/site.css" %}" />
         {% endif %}
     {% block head %}
 
