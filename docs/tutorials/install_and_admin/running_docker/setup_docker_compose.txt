@@ -41,6 +41,16 @@ Clone the repository::
 Launch the stack with the build of GeoNode so any changes you did will be immediately available::
 
     docker-compose up --build
+	
+.. note:: 
+   **For Windows users**: In case you're using the native Docker for Windows (on Hyper-V) you will probably be affected by an error related to mounting the /var/run/docker.sock volume. It's due to a `problem with the current version of Docker Compose <https://github.com/docker/for-win/issues/1829>`_ for Windows.
+   In this case you need to set the **COMPOSE_CONVERT_WINDOWS_PATHS** environmental variable:
+   
+   .. code-block:: none
+   
+      set COMPOSE_CONVERT_WINDOWS_PATHS=1 
+   
+   before running docker-compose up
 
 GeoNode will be available at the ip address of the ``docker0`` interface::
 
