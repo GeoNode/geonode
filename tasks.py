@@ -125,7 +125,7 @@ def _container_exposed_port(component, instname):
 
 
 def _update_db_connstring():
-    user = os.getenv('GEONODE_DATABASE', 'geonode')
+    user = os.getenv('GEONODE_DATABASE_USER', 'geonode')
     pwd = os.getenv('GEONODE_DATABASE_PASSWORD', 'geonode')
     dbname = os.getenv('GEONODE_DATABASE', 'geonode')
     connstr = 'postgres://{0}:{1}@db:5432/{2}'.format(
@@ -137,7 +137,7 @@ def _update_db_connstring():
 
 
 def _update_geodb_connstring():
-    geouser = os.getenv('GEONODE_GEODATABASE', 'geonode_data')
+    geouser = os.getenv('GEONODE_GEODATABASE_USER', 'geonode_data')
     geopwd = os.getenv('GEONODE_GEODATABASE_PASSWORD', 'geonode_data')
     geodbname = os.getenv('GEONODE_GEODATABASE', 'geonode_data')
     geoconnstr = 'postgis://{0}:{1}@db:5432/{2}'.format(
