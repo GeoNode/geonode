@@ -4,13 +4,13 @@
 {% load base_tags %}
 {% load guardian_tags %}
 {% load floppyforms %}
+{% load static from staticfiles %}
 
 {% block head %}
-{% load static %}
-  <script src="{{ STATIC_URL }}lib/js/jquery.js?v={{ VERSION }}"></script>
-  <script src="{{ STATIC_URL }}lib/js/moment-with-locales.min.js?v={{ VERSION }}"></script>
-  <script src="{{ STATIC_URL }}lib/js/bootstrap-datetimepicker.min.js?v={{ VERSION }}"></script>
-  <link rel="stylesheet" href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.min.css?v={{ VERSION }}" />
+  <script src="{% static "lib/js/jquery.js" %}?v={{ VERSION }}"></script>
+  <script src="{% static "lib/js/moment-with-locales.min.js" %}?v={{ VERSION }}"></script>
+  <script src="{% static "lib/js/bootstrap-datetimepicker.min.js" %}?v={{ VERSION }}"></script>
+  <link rel="stylesheet" href="{% static "lib/css/bootstrap-datetimepicker.min.css" %}?v={{ VERSION }}" />
 
     <style>
         .xxs-font-size{
