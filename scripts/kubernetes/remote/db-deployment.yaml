@@ -1,0 +1,107 @@
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: geonode-dbdata
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/dbdata"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: geonode-dbdata
+  annotations:
+    volume.beta.kubernetes.io/storage-class: ""
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: geonode-dbbackups
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/dbbackups"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: geonode-dbbackups
+  annotations:
+    volume.beta.kubernetes.io/storage-class: ""
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: db
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - env:
+        - name: GEONODE_DATABASE
+          value: geonode
+        - name: GEONODE_DATABASE_PASSWORD
+          value: geonode
+        - name: GEONODE_GEODATABASE
+          value: geonode_data
+        - name: GEONODE_GEODATABASE_PASSWORD
+          value: geonode_data
+        image: geonode/postgis:9.6
+        name: db4geonode
+        ports:
+        - containerPort: 5432
+          name: postgresql
+        stdin: true
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: geonode-dbdata
+        - mountPath: /pg-backups
+          name: geonode-dbbackups
+      restartPolicy: Always
+      volumes:
+      - name: geonode-dbdata
+        persistentVolumeClaim:
+          claimName: geonode-dbdata
+      - name: geonode-dbbackups
+        persistentVolumeClaim:
+          claimName: geonode-dbbackups
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  ports:
+  - port: 5432
+    protocol: TCP
+    name: db
+  selector:
+    app: db

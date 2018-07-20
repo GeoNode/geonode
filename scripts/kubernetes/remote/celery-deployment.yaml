@@ -1,0 +1,107 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: celery
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: celery
+    spec:
+      containers:
+      - args:
+        - celery
+        - worker
+        - --app=geonode.celery_app:app
+        - -B
+        - -l
+        - INFO
+        env:
+        - name: ALLOWED_HOSTS
+          value: '[''django'']'
+        - name: ASYNC_SIGNALS
+          value: "False"
+        - name: BROKER_URL
+          value: amqp://guest:guest@rabbitmq:5672
+        - name: CELERY_CMD
+          value: celery worker --app=geonode.celery_app:app --broker=amqp://guest:guest@rabbitmq:5672/
+            -B -l INFO
+        - name: C_FORCE_ROOT
+          value: "1"
+        - name: DATABASE_URL
+          value: postgres://postgres:postgres@db:5432/postgres
+        - name: GEODATABASE_URL
+          value: postgis://geonode:geonode@db:5432/geonode_data
+        - name: DEFAULT_BACKEND_DATASTORE
+          value: datastore
+        - name: DJANGO_SETTINGS_MODULE
+          value: geonode.settings
+        - name: DOCKER_ENV
+          value: production
+        - name: GEONODE_DATABASE
+          value: geonode
+        - name: GEONODE_DATABASE_PASSWORD
+          value: geonode
+        - name: GEONODE_GEODATABASE
+          value: geonode_data
+        - name: GEONODE_GEODATABASE_PASSWORD
+          value: geonode_data
+        - name: GEONODE_INSTANCE_NAME
+          value: geonode
+        - name: GEONODE_LB_HOST_IP
+        - name: GEONODE_LB_PORT
+        - name: GEOSERVER_LOCATION
+          value: http://geonode/geoserver/
+        - name: GEOSERVER_PUBLIC_LOCATION
+          value: http://geonode/geoserver/
+        - name: IS_CELERY
+          value: "true"
+        - name: SITEURL
+          value: http://geonode/
+        image: eggshell/geonode:latest
+        imagePullPolicy: Always
+        name: celery4geonode
+        securityContext:
+          privileged: true
+        stdin: true
+        volumeMounts:
+        - name: varlibdocker
+          mountPath: /var/lib/docker
+        - name: rundind
+          mountPath: /var/run/
+      - name: dind
+        image: docker:dind
+        securityContext:
+          privileged: true
+        args:
+          - dockerd
+          - --storage-driver=overlay2
+          - -H unix:///var/run/docker.sock
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: varlibdocker
+          mountPath: /var/lib/docker
+        - name: rundind
+          mountPath: /var/run/
+      restartPolicy: Always
+      volumes:
+      - name: varlibdocker
+        emptyDir: {}
+      - name: rundind
+        hostPath:
+          path: /var/run/dind/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: celery
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+    name: celery
+  selector:
+    app: celery

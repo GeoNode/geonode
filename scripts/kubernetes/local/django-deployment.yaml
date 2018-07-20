@@ -1,0 +1,118 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: django
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: django
+    spec:
+      containers:
+      - args:
+        - uwsgi
+        - --ini
+        - uwsgi.ini
+        env:
+        - name: ALLOWED_HOSTS
+          value: '[''localhost'', ''django'', ''geonode'', ''geonode-ingress'']'
+        - name: ASYNC_SIGNALS
+          value: "False"
+        - name: BROKER_URL
+          value: amqp://guest:guest@rabbitmq:5672
+        - name: COMPOSE_HTTP_TIMEOUT
+          value: "300"
+        - name: C_FORCE_ROOT
+          value: "1"
+        - name: DATABASE_URL
+          value: postgres://postgres:postgres@db:5432/geonode
+        - name: GEODATABASE_URL
+          value: postgis://geonode:geonode@db:5432/geonode_data
+        - name: DEFAULT_BACKEND_DATASTORE
+          value: datastore
+        - name: DEFAULT_BACKEND_UPLOADER
+          value: geonode.importer
+        - name: DJANGO_SETTINGS_MODULE
+          value: geonode.settings
+        - name: DOCKER_API_VERSION
+          value: '"1.24"'
+        - name: DOCKER_ENV
+          value: production
+        - name: GEOGIG_ENABLED
+          value: "False"
+        - name: GEONODE_DATABASE
+          value: geonode
+        - name: GEONODE_DATABASE_PASSWORD
+          value: geonode
+        - name: GEONODE_GEODATABASE
+          value: geonode_data
+        - name: GEONODE_GEODATABASE_PASSWORD
+          value: geonode_data
+        - name: GEONODE_INSTANCE_NAME
+          value: geonode
+        - name: GEONODE_LB_HOST_IP
+          # value: 10.176.239.166
+        - name: GEONODE_LB_PORT
+          # value: 30080
+        - name: GEOSERVER_LOCATION
+          value: http://geonode/geoserver/
+        - name: GEOSERVER_PUBLIC_LOCATION
+          value: http://geonode/geoserver/
+        - name: IS_CELERY
+          value: "False"
+        - name: MOSAIC_ENABLED
+          value: "False"
+        - name: SITEURL
+          value: http://geonode/
+        - name: TIME_ENABLED
+          value: "True"
+        - name: UWSGI_CMD
+          value: uwsgi --ini /usr/src/app/uwsgi.ini
+        image: eggshell/geonode:latest
+        imagePullPolicy: Always
+        name: django4geonode
+        stdin: true
+        volumeMounts:
+        - name: geonode-geoserver-data-dir
+          mountPath: /geoserver_data/data
+        - name: varlibdocker
+          mountPath: /var/lib/docker
+        - name: rundind
+          mountPath: /var/run/
+      - name: dind
+        image: docker:dind
+        securityContext:
+          privileged: true
+        args:
+          - dockerd
+          - --storage-driver=overlay2
+          - -H unix:///var/run/docker.sock
+        volumeMounts:
+        - name: varlibdocker
+          mountPath: /var/lib/docker
+        - name: rundind
+          mountPath: /var/run/
+      restartPolicy: Always
+      volumes:
+      - name: varlibdocker
+        emptyDir: {}
+      - name: rundind
+        hostPath:
+          path: /var/run/dind/
+      - name: geonode-geoserver-data-dir
+        persistentVolumeClaim:
+          claimName: geonode-geoserver-data-dir
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+    name: django
+  selector:
+    app: django

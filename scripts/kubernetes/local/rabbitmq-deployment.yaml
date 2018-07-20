@@ -1,0 +1,41 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - image: rabbitmq
+        name: rabbitmq4geonode
+        ports:
+          - containerPort: 5672
+        stdin: true
+        tty: true
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+spec:
+  ports:
+#  - port: 4369
+#    protocol: TCP
+#    name: "4369"
+#  - port: 5671
+#    protocol: TCP
+#    name: "5671"
+  - port: 5672
+    protocol: TCP
+    name: "5672"
+#  - port: 25672
+#    protocol: TCP
+#    name: "25672"
+  selector:
+    app: rabbitmq

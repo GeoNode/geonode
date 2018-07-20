@@ -1,0 +1,105 @@
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: geonode-geoserver-data-dir
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/geoserver-data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: geonode-geoserver-data-dir
+  annotations:
+    volume.beta.kubernetes.io/storage-class: ""
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: geoserver
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: geoserver
+    spec:
+      containers:
+      - env:
+        - name: DOCKERHOST
+        - name: DOCKER_HOST_IP
+        - name: GEONODE_LB_HOST_IP
+        - name: GEONODE_LB_PORT
+        - name: PUBLIC_PORT
+          value: "80"
+        - name: NGINX_BASE_URL
+          value: "http://geonode:80"
+        - name: DATABASE_URL
+          value: postgres://postgres:postgres@db:5432/geonode
+        - name: GEODATABASE_URL
+          value: postgis://geonode:geonode@db:5432/geonode_data
+        image: eggshell/geoserver:latest
+        name: geoserver4geonode
+        stdin: true
+        volumeMounts:
+        - name: geonode-geoserver-data-dir
+          mountPath: /geoserver_data/data
+        - name: varlibdocker
+          mountPath: /var/lib/docker
+        - name: rundind
+          mountPath: /var/run/
+      - name: dind
+        image: docker:dind
+        securityContext:
+          privileged: true
+        args:
+          - dockerd
+          - --storage-driver=overlay2
+          - -H unix:///var/run/docker.sock
+        volumeMounts:
+        - name: varlibdocker
+          mountPath: /var/lib/docker
+        - name: rundind
+          mountPath: /var/run/
+      restartPolicy: Always
+      initContainers:
+        - name: data-dir-conf
+          image: geonode/geoserver_data:latest
+          command: ["cp", "-r", "/tmp/geonode/downloaded/data", "/geoserver_data"]
+          volumeMounts:
+          - mountPath: /geoserver_data/data
+            name: geonode-geoserver-data-dir
+      volumes:
+      - name: varlibdocker
+        emptyDir: {}
+      - name: rundind
+        hostPath:
+          path: /var/run/dind/
+      - name: geonode-geoserver-data-dir
+        persistentVolumeClaim:
+          claimName: geonode-geoserver-data-dir
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: geoserver
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    name: geoserver
+  selector:
+    app: geoserver

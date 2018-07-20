@@ -1,0 +1,56 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: geonode
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: geonode
+    spec:
+      containers:
+      - image: geonode/nginx:geoserver
+        name: nginx4geonode
+        env:
+        - name: NGINX_LISTEN
+          value: "*:80"
+        ports:
+        - containerPort: 80
+        stdin: true
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: geonode
+spec:
+  selector:
+    app: geonode
+  ports:
+  - name: geonode
+    protocol: TCP
+    port: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: geonode-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    ingress.bluemix.net/client-max-body-size: "100m"
+spec:
+  tls:
+  - hosts:
+    - eggshell.us-south.containers.appdomain.cloud
+    secretName: eggshell
+  rules:
+  - host: eggshell.us-south.containers.appdomain.cloud
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: geonode
+          servicePort: 80
