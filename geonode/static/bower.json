@@ -1,6 +1,6 @@
 {
   "name": "geonode",
-  "version": "2.6.0",
+  "version": "2.9.0",
   "main": "geonode/css/base.css",
   "componentsDirectory": ".components",
   "dependencies": {
@@ -15,6 +15,7 @@
     "jquery-waypoints": "2.0.5",
     "bootstrap": "3.3.7",
     "moment": "2.17.1",
+    "mime": "~> 1.4.1",
     "raty": "2.5.2",
     "json2": "43d7836c8ec9b31a02a31ae0c400bdae04d3650d",
     "bootstrap-wysiwyghtml5": "https://github.com/jhollingworth/bootstrap-wysihtml5.git",
