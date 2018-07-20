@@ -176,3 +176,25 @@ class ReactHookSet(GeoExtHookSet):
 
     def map_download_template(self, context=None):
         return 'geonode-client/map_view.html'
+
+
+class MaploomHookSet(GeoExtHookSet):
+
+    # Maps
+    def map_new_template(self, context=None):
+        return 'maploom/maps/maploom.html'
+
+    def map_view_template(self, context=None):
+        return 'maploom/maps/maploom.html'
+
+    def map_edit_template(self, context=None):
+        return 'maploom/maps/map_edit.html'
+
+    def map_update_template(self, context=None):
+        return 'maploom/maps/map_edit.html'
+
+    def map_embed_template(self, context=None):
+        return 'maploom/maps/map_view.html'
+
+    def map_download_template(self, context=None):
+        return 'maploom/maps/map_view.html'
