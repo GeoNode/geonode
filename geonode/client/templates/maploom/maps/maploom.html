@@ -4,31 +4,34 @@
 <html ng-app="MapLoom" ng-controller="AppCtrl">
 <head>
 <title ng-bind="pageTitle"></title>
-
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-COMPATIBLE" content="IE-Edge">
-  <script type="text/javascript">
-    window.MAPLOOM_VERSION = {
-        "version_string": "1.5.135",
-        "build_date": "2018-07-05"
-    };
-  </script>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-COMPATIBLE" content="IE-Edge">
+<script type="text/javascript">
+window.MAPLOOM_VERSION = {
+    "version_string": "1.5.135",
+    "build_date": "2018-07-05"
+};
+</script>
 
 <!-- compiled CSS -->
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}maploom/assets/MapLoom-1.5.135.css"/>
 
-        <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}maploom/assets/MapLoom-1.5.135.css"/>
+<style>
+    body{
+        padding-bottom: 0px;
+        overflow: hidden;
+    }
+    .maploom{
+        width: 100%;
+        border:0px;
 
-
-
+    }
+</style>
 
 <!-- compiled JavaScript -->
+<script type="text/javascript" src="{{STATIC_URL}}maploom/assets/MapLoom-1.5.135.js"></script>
 
-        <script type="text/javascript" src="{{STATIC_URL}}maploom/assets/MapLoom-1.5.135.js"></script>
-
-
-
-
-    {% get_current_language as language%}
+{% get_current_language as language%}
 <script type="text/javascript">
     var catalogList = [];
     try {
@@ -152,12 +155,29 @@
     config.map.layers = scrubMapLayers();
 </script>
 
-
 <script type="text/javascript">
   var onErrorCallback = function(msg, url, linenumber) { return true; };
   window.onerror = function(msg, url, linenumber) {
     onErrorCallback(msg,url,linenumber);
   };
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+
+      var setHeight = function(){
+        return $('.maploom').css({height:$(window).height()-($('.navbar').height()+$('.classification-banner-text').height())});
+      }
+
+      $('#wrap').css({'padding-top':0});
+      $('body').css({'padding-top':$('.classification-banner-text').height()+$('.navbar').height()});
+      setHeight();
+
+      $(window).resize(function(){
+              setHeight();
+              });
+
+      });
 </script>
 
 </head>
