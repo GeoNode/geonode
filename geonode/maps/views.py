@@ -42,7 +42,8 @@ except ImportError:
     from django.utils import simplejson as json
 from django.utils.html import strip_tags
 from django.db.models import F
-from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.clickjacking import (xframe_options_exempt,
+                                                  xframe_options_sameorigin)
 from django.views.decorators.http import require_http_methods
 
 from geonode.layers.models import Layer
@@ -505,6 +506,7 @@ def add_layer(request):
     return map_view(request, str(map_obj.id), layer_name=layer_name)
 
 
+@xframe_options_sameorigin
 def map_view(request, mapid, snapshot=None, layer_name=None,
              template='maps/map_view.html'):
     """
@@ -597,6 +599,7 @@ def map_json(request, mapid, snapshot=None):
             )
 
 
+@xframe_options_sameorigin
 def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
     """
     The view that returns the map composer opened to
