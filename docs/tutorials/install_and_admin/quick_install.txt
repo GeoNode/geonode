@@ -102,13 +102,13 @@ This option installs geonode in a virtual environment. This option is very usefu
 
     sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update
     sudo apt-get install gdal-bin
-    # check GDAL version
-    gdalinfo --version
+  
+    # install the correct PyGDAL version
+    gdal-config --version | cut -c 1-5 | xargs -I % pip install 'pygdal>=%.0,<=%.999'
 
-    # install the correct PyGDAL version (>1.10.1)
-    pip install pygdal==`gdal-config --version`
-
-    # if you cannot find exactly the same version, be sure to install at least the closer major one e.g. 2.1.2 -> 2.1.2.3
+    # if the command cannot install a suitable version, be sure to install at least the closer major one e.g. 2.1.2 -> 2.1.2.3
+    # gdalinfo --version
+    # pip install pygdal==`gdal-config --version`
 
 You can now setup and start GeoNode::
 
