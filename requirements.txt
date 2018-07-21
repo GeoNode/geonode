@@ -5,7 +5,7 @@
 # # Apps with official Ubuntu 16.04 packages
 
 # native dependencies
-Pillow<=3.3.1 # python-imaging (3.1.2) - python-pillow (3.3.1 in our ppa)
+Pillow>3.3.1,<=3.3.2 # python-imaging (3.1.2) - python-pillow (3.3.1 in our ppa)
 lxml==3.6.2 # python-lxml (3.6.2 in our ppa) FIXME # <=3.8.0 throws pkg_resources.ContextualVersionConflict: (lxml 3.8.0 (/usr/local/lib/python2.7/site-packages), Requirement.parse('lxml==3.6.2'), set(['pycsw']))
 psycopg2<=2.7.3.1 # python-psycopg2 (2.7.3.1 in our ppa)
 Django==1.11.11 # python-django (1.8.19 in our ppa) FIXME
@@ -25,8 +25,9 @@ Paver<=1.2.4 # python-paver (1.2.4)
 Unidecode<=0.4.19 # python-unidecode (0.04.19)
 django-nose<=1.4.5 # python-django-nose (1.4.5 in our ppa)
 nose<=1.3.7 # python-nose (1.3.7)
+Markdown==2.6.11
+MarkupSafe==1.0
 awesome-slugify<=1.6.5 # python-awesome-slugify (1.6.5)
-django-filter==1.1.0 # python-django-filter (1.1.0 in our ppa)
 django-floppyforms<=1.7.0 # python-django-floppyforms (1.7.0 in our ppa)
 chardet<=3.0.4 # python-chardet (3.0.4 in our ppa)
 decorator<=4.1.2 # python-decorator (4.1.2 in our ppa)
@@ -48,7 +49,9 @@ tqdm==4.23.3
 # Django Apps
 dj-pagination<=2.3.2 # python-dj-pagination (2.3.2 in our ppa)
 django-celery-monitor<=1.1.2
+django-crispy-forms==1.7.2
 django-extensions>=1.2.5,<=2.0.7 # python-django-extensions (2.0.3 in our ppa)
+django-filter==2.0.0 # python-django-filter (1.1.0 in our ppa)
 django-jsonfield<=1.0.1 # python-django-jsonfield (0.9.15, 1.0.1 in our ppa)
 django-jsonfield-compat<=0.4.4 # python-django-jsonfield-compat (0.4.4 in our ppa)
 django-leaflet<=0.23.0 # python-django-leaflet (0.23.0 in our ppa)
@@ -58,16 +61,16 @@ django-treebeard<=4.2.1 # django-treebeard (4.2.1 in our ppa)
 django-guardian<=1.4.9 # django-guardian (1.4.9 in our ppa)
 django-downloadview<=1.9 # python-django-downloadview (1.9 in our ppa)
 django-polymorphic<2.0 # python-django-polymorphic (1.3)
-# django-rest-swagger==2.1.2 # python-django-rest-swagger (2.1.2 in our ppa)
 django-reversion<=2.0.13 # python-django-reversion (2.0.13 in our ppa)
 django-suit<=0.2.26 # python-django-suit (0.2.26 in our ppa)
 django-tastypie<=0.14.0 # python-django-tastypie (0.14.0 in our ppa)
 django-invitations<=1.9.2 # python-django-invitations (1.9.2 in our ppa)
-geonode-oauth-toolkit>=1.1.2c0 # python-django-oauth-toolkit (0.12.0 in our ppa)
-# djangorestframework<=3.7.7 # TODO
+djangorestframework==3.8.2
 # djangorestframework-gis<=0.12 # TODO
+# django-rest-swagger==2.1.2 # python-django-rest-swagger (2.1.2 in our ppa)
 # drf-nested-routers==0.90.0 # python-drf-nested-routers (0.90.0 in our ppa)
 # drf-openapi==1.3.0 # python-drf-openapi (1.3.0 in our ppa)
+geonode-oauth-toolkit>=1.1.2c0 # python-django-oauth-toolkit (0.12.0 in our ppa)
 oauthlib==2.1.0 # python-oauthlib (2.0.6 in our ppa) FIXME
 requests-oauthlib==1.0.0
 asn1crypto==0.24.0
@@ -120,9 +123,9 @@ geonode-announcements==1.0.13 # python-geonode-announcements (1.0.13 in our ppa)
 geonode-agon-ratings==0.3.8 # python-geonode-agon-ratings (0.3.8 in our ppa)
 arcrest>=10.0 # TODO
 geonode-dialogos==1.2 # python-geonode-dialogos (0.9 in our ppa)
-gsconfig<2.0.0 # python-gsconfig (1.0.8 in our ppa)
-gn-gsimporter>=1.0.3,<2.0.0 # python-gn-gsimporter (1.0.2 in our ppa)
-gisdata==0.5.4 # python-gisdata (0.5.4 in our ppa)
+gsconfig>=1.0.10 # python-gsconfig (1.0.8 in our ppa)
+gn-gsimporter>=1.0.9 # python-gn-gsimporter (1.0.2 in our ppa)
+gisdata>=0.5.4 # python-gisdata (0.5.4 in our ppa)
 
 # haystack/elasticsearch, uncomment to use
 django-haystack==2.8.0 # (2.8.0 in our ppa)

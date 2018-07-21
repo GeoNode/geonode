@@ -1,18 +1,18 @@
 {% load api_basemaps_tags %}
-
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/GeoExt/resources/css/geoext-all.css?v={{ VERSION }}" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/GeoExt/resources/css/gxtheme-gray.css?v={{ VERSION }}">
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/ux/colorpicker/color-picker.ux.css?v={{ VERSION }}" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/PrintPreview/resources/css/printpreview.css?v={{ VERSION }}" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/style.css?v={{ VERSION }}" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/gxp/src/theme/all.css?v={{ VERSION }}" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/geoexplorer.css?v={{ VERSION }}" />
-<!--[if IE]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/ie.css"/><![endif]-->
+{% load static from staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/GeoExt/resources/css/geoext-all.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/GeoExt/resources/css/gxtheme-gray.css" %}?v={{ VERSION }}">
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/theme/ux/colorpicker/color-picker.ux.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/PrintPreview/resources/css/printpreview.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/openlayers/theme/default/style.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/gxp/src/theme/all.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/theme/app/geoexplorer.css" %}?v={{ VERSION }}" />
+<!--[if IE]><link rel="stylesheet" type="text/css" href="{% static "geoexplorer/theme/app/ie.css" %}"/><![endif]-->
 
 <script src="https://maps.googleapis.com/maps/api/js?key={% google_api_key %}" type="text/javascript"></script>
 
-<script src="{{ STATIC_URL }}geoexplorer/script/GeoExplorer.js?v={{ VERSION }}" type="text/javascript"></script>
-<!-- script type="text/javascript" src="{{ STATIC_URL }}geonode/js/extjs/GeoExplorer-debug.js"></script -->
+<script src="{% static "geoexplorer/script/GeoExplorer.js" %}?v={{ VERSION }}" type="text/javascript"></script>
+<!-- script type="text/javascript" src="{% static "geonode/js/extjs/GeoExplorer-debug.js"></script -->
 
 <style>
     .olImageLoadError {
@@ -20,7 +20,7 @@
         opacity: 0.2 !important;
         filter: alpha(opacity=20) !important; /* IE */
 
-        /* background-image: url('{{ STATIC_URL }}geonode/img/light_gray.jpg') !important;
+        /* background-image: url('{% static "geonode/img/light_gray.jpg') !important;
         background-repeat: no-repeat !important; */
 
         /*display: none !important;*/
@@ -28,11 +28,11 @@
 </style>
 
 <script type="text/javascript">
-OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
+OpenLayers.ImgPath = "{% static "geoexplorer/externals/openlayers/theme/default/img" %}";
 OpenLayers.Util.onImageLoadErrorColor = 1;
 OpenLayers.Util.onImageLoadErrorColor = 'transparent';
 OpenLayers.Util.onImageLoadError = function() {
-    this.src = '{{ STATIC_URL }}geonode/img/light_gray.jpg';
+    this.src = '{% static "geonode/img/light_gray.jpg';
 };
 
 OpenLayers.Request.DEFAULT_CONFIG.headers = {

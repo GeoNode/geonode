@@ -25,6 +25,7 @@ import errno
 from itertools import cycle, izip
 import json
 import logging
+import traceback
 import os
 from os.path import basename, splitext, isfile
 import re
@@ -240,24 +241,28 @@ def get_sld_for(gs_catalog, layer):
     # GeoServer sometimes fails to associate a style with the data, so
     # for now we default to using a point style.(it works for lines and
     # polygons, hope this doesn't happen for rasters  though)
+    gs_layer = None
     _default_style = None
     try:
         _default_style = layer.default_style
     except BaseException:
+        traceback.print_exc()
         pass
+
     if _default_style is None:
         gs_catalog._cache.clear()
         try:
             gs_layer = gs_catalog.get_layer(layer.name)
             name = gs_layer.default_style.name if gs_layer.default_style is not None else "raster"
         except BaseException:
-            name = "raster"
+            traceback.print_exc()
+            name = None
     else:
         name = _default_style.name
 
     # Detect geometry type if it is a FeatureType
-    if layer.resource and layer.resource.resource_type == 'featureType':
-        res = layer.resource
+    if gs_layer and gs_layer.resource and gs_layer.resource.resource_type == 'featureType':
+        res = gs_layer.resource
         res.fetch()
         ft = res.store.get_resources(res.name)
         ft.fetch()
@@ -434,7 +439,8 @@ def cascading_delete(cat, layer_name):
                 try:
                     logger.info("Trying to delete Style [%s]" % s.name)
                     cat.delete(s, purge='true')
-                    workspace, name = layer_name.split(':')
+                    workspace, name = layer_name.split(':') if ':' in layer_name else \
+                        (settings.DEFAULT_WORKSPACE, layer_name)
                 except FailedRequestError as e:
                     # Trying to delete a shared style will fail
                     # We'll catch the exception and log it.

@@ -5,6 +5,7 @@
 {% load base_tags %}
 {% load guardian_tags %}
 {% load client_lib_tags %}
+{% load static from staticfiles %}
 
 {% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
@@ -388,7 +389,7 @@
 
 </script>
 {% include "_permissions_form_js.html" %}
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+<script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
 <script type="text/javascript">
   $('#set_thumbnail').click(function(){
     createMapThumbnail();
