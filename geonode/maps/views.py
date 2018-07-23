@@ -839,6 +839,7 @@ def add_layers_to_map_config(
             "name": layer.alternate,
             "title": layer.title,
             "queryable": True,
+            "storeType": layer.storeType,
             "bbox": {
                 layer.srid: {
                     "srs": layer.srid,
