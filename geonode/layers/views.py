@@ -361,6 +361,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "name": layer.alternate,
         "title": layer.title,
         "queryable": True,
+        "storeType": layer.storeType,
         "bbox": {
             layer.srid: {
                 "srs": layer.srid,
