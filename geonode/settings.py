@@ -1324,7 +1324,7 @@ if ASYNC_SIGNALS:
 else:
     _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
 
-# Note:BROKER_URL is deprecated in favour of CELERY_BROKER_URL 
+# Note:BROKER_URL is deprecated in favour of CELERY_BROKER_URL
 CELERY_BROKER_URL = _BROKER_URL
 
 CELERY_RESULT_PERSISTENT = False
@@ -1429,19 +1429,6 @@ if S3_MEDIA_ENABLED:
     MEDIAFILES_LOCATION = 'media'
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
-
-
-# djcelery.setup_loader()
-
-# There are 3 ways to override GeoNode settings:
-# 1. Using environment variables, if your changes to GeoNode are minimal.
-# 2. Creating a downstream project, if you are doing a lot of customization.
-# 3. Override settings in a local_settings.py file, legacy.
-# Load more settings from a file called local_settings.py if it exists
-try:
-    from geonode.local_settings import *  # flake8: noqa
-except ImportError:
-    pass
 
 
 # Load additonal basemaps, see geonode/contrib/api_basemap/README.md
