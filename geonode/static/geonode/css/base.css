@@ -7074,7 +7074,7 @@ article.tab-pane {
 }
 .home .big-search .search .fa-search {
   position: absolute;
-  top: 10px;
+  top: 3px;
   left: 15px;
 }
 .home .big-search .btn-default {
@@ -7551,6 +7551,10 @@ nav.filter li a {
 #clear-button,
 #upload-button {
   margin-top: 20px;
+}
+/* overwrite bootstrap styling, save updates */
+#id_metadata_uploaded_preserve {
+  margin-left: 5px;
 }
 /* Upload Documents
 ----------------------- */
