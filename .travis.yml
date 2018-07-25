@@ -71,6 +71,7 @@ env:
     MONITORING_ENABLED: 'False'
     CELERY_ALWAYS_EAGER: 'True'
   - BACKEND: 'geonode.qgis_server'
+    DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
     DOCKER_COMPOSE_VERSION: 1.11.2
     # This is qgis server address
     QGIS_SERVER_URL: http://localhost:9000/
