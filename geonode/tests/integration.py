@@ -80,7 +80,7 @@ LOCAL_TIMEOUT = 300
 
 LOGIN_URL = "/accounts/login/"
 
-logger = logging.getLogger("south").setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Reconnect post_save signals that is disconnected by populate_test_data
 reconnect_signals()
@@ -1654,7 +1654,7 @@ class LayersStylesApiInteractionTests(
         self.assertTrue('body' in obj and obj['body'])
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_add_delete_styles(self):
         """Style API Add/Delete interaction."""
         # Check styles count
@@ -1703,14 +1703,14 @@ class LayersStylesApiInteractionTests(
         resp = self.client.post(style_list_url, data=data)
 
         # Should not be able to add style without authentication
-        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(resp.status_code, 405)
 
         # Login using anonymous user
         self.client.login(username='AnonymousUser')
         style_stream.seek(0)
         resp = self.client.post(style_list_url, data=data)
         # Should not be able to add style without correct permission
-        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(resp.status_code, 405)
         self.client.logout()
 
         # Use admin credentials
