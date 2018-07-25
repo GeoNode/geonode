@@ -128,9 +128,8 @@ gn-gsimporter>=1.0.9 # python-gn-gsimporter (1.0.2 in our ppa)
 gisdata>=0.5.4 # python-gisdata (0.5.4 in our ppa)
 
 # haystack/elasticsearch, uncomment to use
-django-haystack==2.8.0 # (2.8.0 in our ppa)
-elasticsearch<=2.4.0 # (2.4.0 in ppa)
-pyelasticsearch<=0.6.1
+django-haystack==2.8.1 # (2.8.0 in our ppa)
+elasticsearch>=2.0.0,<3.0.0
 
 # datetimepicker widget
 django-bootstrap3-datetimepicker-2==2.5.0 # python-django-bootstrap3-datetimepicker-2 (2.5.0 in our ppa)
