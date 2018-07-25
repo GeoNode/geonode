@@ -18,6 +18,12 @@
 #
 #########################################################################
 
+""" There are 3 ways to override GeoNode settings:
+   1. Using environment variables, if your changes to GeoNode are minimal.
+   2. Creating a downstream project, if you are doing a lot of customization.
+   3. Override settings in a local_settings.py file, legacy.
+"""
+
 import ast
 import os
 from urlparse import urlparse, urlunparse
@@ -33,7 +39,7 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
 
 # SECRET_KEY = '************************'
 
-SITEURL = "http://localhost/"
+SITEURL = "http://localhost:8000/"
 
 # we need hostname for deployed
 _surl = urlparse(SITEURL)
@@ -246,24 +252,6 @@ DEFAULT_MAP_CENTER = (0, 0)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 0
 
-# Default preview library
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'  # DEPRECATED use HOOKSET instead
-GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
-
-# To enable the REACT based Client enable those
-# INSTALLED_APPS += ('geonode-client', )
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'react'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.ReactHookSet"
-
-# To enable the Leaflet based Client enable those
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
-
-# To enable the MapStore2 based Client enable those
-# INSTALLED_APPS += ('geonode_mapstore_client', )
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'mapstore'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode_mapstore_client.hooksets.MapStoreHookSet"
-
 # LEAFLET_CONFIG = {
 #    'TILES': [
 #        # Find tiles at:
@@ -302,7 +290,7 @@ GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
 #    },
 #    'SRID': 3857,
 #    'RESET_VIEW': False
-#}
+# }
 
 ALT_OSM_BASEMAPS = ast.literal_eval(os.environ.get('ALT_OSM_BASEMAPS', 'False'))
 CARTODB_BASEMAPS = ast.literal_eval(os.environ.get('CARTODB_BASEMAPS', 'False'))
@@ -352,6 +340,48 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
+
+# To enable the REACT based Client enable those
+# INSTALLED_APPS += ('geonode-client', )
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'react'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.ReactHookSet"
+
+# To enable the Leaflet based Client enable those
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
+
+# To enable the MapLoom based Client enable those
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'maploom'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.MaploomHookSet"
+#
+# CORS_ORIGIN_WHITELIST = (
+#     HOSTNAME
+# )
+
+# To enable the MapStore2 based Client enable those
+# if 'geonode_mapstore_client' not in INSTALLED_APPS:
+#     INSTALLED_APPS += (
+#         'mapstore2_adapter',
+#         'geonode_mapstore_client',)
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'mapstore'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode_mapstore_client.hooksets.MapStoreHookSet"
+# MAPSTORE_DEBUG = False
+
+
+
+if 'geonode.geoserver' in INSTALLED_APPS:
+    LOCAL_GEOSERVER = {
+        "type": "wms",
+        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+        "visibility": True,
+        "title": "Local GeoServer",
+        "group": "background",
+        "format": "image/png8",
+        "restUrl": "/gs/rest"
+    }
+    # baselayers = MAPSTORE_BASELAYERS
+    # MAPSTORE_BASELAYERS = [LOCAL_GEOSERVER]
+    # MAPSTORE_BASELAYERS.extend(baselayers)
 
 # Use kombu broker by default
 # REDIS_URL = 'redis://localhost:6379/1'
@@ -415,8 +445,16 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
+        'celery': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'celery.log',
+            'formatter': 'simple',
+            'maxBytes': 1024 * 1024 * 10,  # 10 mb
+        },
         'mail_admins': {
-            'level': 'ERROR', 'filters': ['require_debug_false'],
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
@@ -424,13 +462,17 @@ LOGGING = {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "DEBUG", },
-        "gsconfig.catalog": {
-            "handlers": ["console"], "level": "DEBUG", },
-        "owslib": {
-            "handlers": ["console"], "level": "DEBUG", },
-        "pycsw": {
+            "handlers": ["console"], "level": "INFO", },
+        "geonode.qgis_server": {
             "handlers": ["console"], "level": "ERROR", },
+        "gsconfig.catalog": {
+            "handlers": ["console"], "level": "ERROR", },
+        "owslib": {
+            "handlers": ["console"], "level": "ERROR", },
+        "pycsw": {
+            "handlers": ["console"], "level": "INFO", },
+        "celery": {
+            'handlers': ['celery', 'console'], 'level': 'ERROR', },
     },
 }
 
@@ -472,6 +514,7 @@ if UNOCONV_ENABLE:
     UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
 
 # Advanced Security Workflow Settings
+ACCOUNT_APPROVAL_REQUIRED = False
 CLIENT_RESULTS_LIMIT = 20
 API_LIMIT_PER_PAGE = 1000
 FREETEXT_KEYWORDS_READONLY = False

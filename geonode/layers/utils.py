@@ -339,15 +339,41 @@ def get_resolution(filename):
 
 def get_bbox(filename):
     """Return bbox in the format [xmin,xmax,ymin,ymax]."""
-    from django.contrib.gis.gdal import DataSource
+    from django.contrib.gis.gdal import DataSource, SRSException
     srid = None
     bbox_x0, bbox_y0, bbox_x1, bbox_y1 = None, None, None, None
 
     if is_vector(filename):
+        y_min = -90
+        y_max = 90
+        x_min = -180
+        x_max = 180
         datasource = DataSource(filename)
         layer = datasource[0]
         bbox_x0, bbox_y0, bbox_x1, bbox_y1 = layer.extent.tuple
-        srid = layer.srs.srid if layer.srs else 'EPSG:4326'
+        srs = layer.srs
+        try:
+            if not srs:
+                raise GeoNodeException('Invalid Projection. Layer is missing CRS!')
+            srs.identify_epsg()
+        except SRSException:
+            pass
+        epsg_code = srs.srid
+        # can't find epsg code, then check if bbox is within the 4326 boundary
+        if epsg_code is None and (x_min <= bbox_x0 <= x_max and
+                                  x_min <= bbox_x1 <= x_max and
+                                  y_min <= bbox_y0 <= y_max and
+                                  y_min <= bbox_y1 <= y_max):
+            # set default epsg code
+            epsg_code = '4326'
+        elif epsg_code is None:
+            # otherwise, stop the upload process
+            raise GeoNodeException(
+                "Invalid Layers. "
+                "Needs an authoritative SRID in its CRS to be accepted")
+
+        # eliminate default EPSG srid as it will be added when this function returned
+        srid = epsg_code if epsg_code else '4326'
     elif is_raster(filename):
         gtif = gdal.Open(filename)
         gt = gtif.GetGeoTransform()
@@ -375,7 +401,7 @@ def get_bbox(filename):
         bbox_y0 = min(ext[0][1], ext[2][1])
         bbox_x1 = max(ext[0][0], ext[2][0])
         bbox_y1 = max(ext[0][1], ext[2][1])
-        srid = srs.GetAuthorityCode(None) if srs else 'EPSG:4326'
+        srid = srs.GetAuthorityCode(None) if srs else '4326'
 
     return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
 
