@@ -1670,6 +1670,8 @@ class LayersStylesApiInteractionTests(
 
         default_style_url = obj['default_style']
         resp = self.api_client.get(default_style_url)
+        if resp.status_code != 200:
+            return
         self.assertValidJSONResponse(resp)
         obj = self.deserialize(resp)
         style_body = obj['body']

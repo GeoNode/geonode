@@ -37,7 +37,8 @@ env:
     TEST_RUN_INTEGRATION: 'True'
     MONITORING_ENABLED: 'False'
   - BACKEND: 'geonode.qgis_server'
-    DOCKER_COMPOSE_VERSION: 1.11.2
+    DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
+    DOCKER_COMPOSE_VERSION: 1.19.0
     # This is qgis server address
     QGIS_SERVER_URL: http://localhost:9000/
     # This is the location of docker network bridge
@@ -50,7 +51,7 @@ env:
     CELERY_ALWAYS_EAGER: 'True'
   - BACKEND: 'geonode.qgis_server'
     DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
-    DOCKER_COMPOSE_VERSION: 1.11.2
+    DOCKER_COMPOSE_VERSION: 1.19.0
     # This is qgis server address
     QGIS_SERVER_URL: http://localhost:9000/
     # This is the location of docker network bridge

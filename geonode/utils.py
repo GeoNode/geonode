@@ -1256,14 +1256,21 @@ def check_ogc_backend(backend_package):
     :return: bool
     :rtype: bool
     """
+    ogc_conf = settings.OGC_SERVER['default']
+    is_configured = ogc_conf.get('BACKEND') == backend_package
+
+    # Check environment variables
+    _backend = os.environ.get('BACKEND', None)
+    if _backend:
+        return backend_package == _backend and is_configured
+
     # Check exists in INSTALLED_APPS
     try:
         in_installed_apps = backend_package in settings.INSTALLED_APPS
-        ogc_conf = settings.OGC_SERVER['default']
-        is_configured = ogc_conf.get('BACKEND') == backend_package
         return in_installed_apps and is_configured
     except BaseException:
-        return False
+        pass
+    return False
 
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
