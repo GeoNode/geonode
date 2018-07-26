@@ -37,7 +37,7 @@ REQUIREMENTS = [str(r.req) for r in inst_req]
 setup(name='GeoNode',
       version=__import__('geonode').get_version(),
       description="Application for serving and sharing geospatial data",
-      long_description=open('README').read(),
+      long_description=open('README.rst').read(),
       classifiers=[
           "Development Status :: 4 - Beta"],
       keywords='',
