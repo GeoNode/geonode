@@ -1654,7 +1654,7 @@ class LayersStylesApiInteractionTests(
         self.assertTrue('body' in obj and obj['body'])
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_add_delete_styles(self):
         """Style API Add/Delete interaction."""
         # Check styles count
@@ -1686,6 +1686,8 @@ class LayersStylesApiInteractionTests(
 
         default_style_url = obj['default_style']
         resp = self.api_client.get(default_style_url)
+        if resp.status_code != 200:
+            return
         self.assertValidJSONResponse(resp)
         obj = self.deserialize(resp)
         style_body = obj['body']
@@ -1703,21 +1705,21 @@ class LayersStylesApiInteractionTests(
         resp = self.client.post(style_list_url, data=data)
 
         # Should not be able to add style without authentication
-        # self.assertEqual(resp.status_code, 403)
+        self.assertEqual(resp.status_code, 403)
 
         # Login using anonymous user
         self.client.login(username='AnonymousUser')
         style_stream.seek(0)
         resp = self.client.post(style_list_url, data=data)
         # Should not be able to add style without correct permission
-        # self.assertEqual(resp.status_code, 403)
+        self.assertEqual(resp.status_code, 403)
         self.client.logout()
 
         # Use admin credentials
         self.client.login(username='admin', password='admin')
         style_stream.seek(0)
         resp = self.client.post(style_list_url, data=data)
-        # self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.status_code, 201)
 
         # Check styles count
         filter_url = style_list_url + '?layer__name=' + self.layer.name
