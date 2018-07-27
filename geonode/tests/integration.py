@@ -1673,7 +1673,7 @@ class LayersStylesApiInteractionTests(
             resp = self.api_client.get(default_style_url)
             if resp.status_code != 200:
                 return
-        except:
+        except BaseException:
             return
         self.assertValidJSONResponse(resp)
         obj = self.deserialize(resp)

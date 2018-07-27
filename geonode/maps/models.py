@@ -170,15 +170,19 @@ class Map(ResourceBase, GXPMapBase):
         """
 
         template_name = hookset.update_from_viewer(conf, context=context)
-
         conf = context['config']
+
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
 
+        center = conf['map']['center'] if 'center' in conf['map'] else settings.DEFAULT_MAP_CENTER
+        zoom = conf['map']['zoom'] if 'zoom' in conf['map'] else settings.DEFAULT_MAP_ZOOM
+        center_x = center['x'] if isinstance(center, dict) else center[0]
+        center_y = center['y'] if isinstance(center, dict) else center[1]
         self.set_bounds_from_center_and_zoom(
-            conf['map']['center'][0],
-            conf['map']['center'][1],
-            conf['map']['zoom'])
+            center_x,
+            center_y,
+            zoom)
 
         self.projection = conf['map']['projection']
 
@@ -186,7 +190,13 @@ class Map(ResourceBase, GXPMapBase):
             self.uuid = str(uuid.uuid1())
 
         def source_for(layer):
-            return conf["sources"][layer["source"]]
+            try:
+                return conf["sources"][layer["source"]]
+            except BaseException:
+                if 'url' in layer:
+                    return {'url': layer['url']}
+                else:
+                    return {}
 
         layers = [l for l in conf["map"]["layers"]]
         layer_names = set([l.alternate for l in self.local_layers])
