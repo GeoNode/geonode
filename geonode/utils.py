@@ -297,22 +297,32 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering):
     layer_cfg["wrapDateLine"] = True
     layer_cfg["displayOutsideMaxExtent"] = True
 
-    source_cfg = dict(source)
-    for k in ["url", "projection"]:
-        if k in source_cfg:
-            del source_cfg[k]
+    source_cfg = dict(source) if source else {}
+    if source_cfg:
+        for k in ["url", "projection"]:
+            if k in source_cfg:
+                del source_cfg[k]
 
     # We don't want to hardcode 'access_token' into the storage
+    styles = []
     if 'capability' in layer_cfg:
         capability = layer_cfg['capability']
         if 'styles' in capability:
             styles = capability['styles']
             for style in styles:
+                if 'name' in styles:
+                    styles.append(style['name'])
                 if 'legend' in style:
                     legend = style['legend']
                     if 'href' in legend:
                         legend['href'] = re.sub(
                             r'\&access_token=.*', '', legend['href'])
+    if not styles and layer.get("styles", None):
+        for style in layer.get("styles", None):
+            if 'name' in style:
+                styles.append(style['name'])
+            else:
+                styles.append(style)
 
     _model = model(
         map_id=map_id,
@@ -320,7 +330,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering):
         format=layer.get("format", None),
         name=layer.get("name", None),
         opacity=layer.get("opacity", 1),
-        styles=layer.get("styles", None),
+        styles=styles,
         transparent=layer.get("transparent", False),
         fixed=layer.get("fixed", False),
         group=layer.get('group', None),
@@ -404,7 +414,7 @@ class GXPMapBase(object):
             return cfg
 
         source_urls = [source['url']
-                       for source in sources.values() if 'url' in source]
+                       for source in sources.values() if source and 'url' in source]
 
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
             if len(sources.keys(
@@ -418,7 +428,7 @@ class GXPMapBase(object):
         def _base_source(source):
             base_source = copy.deepcopy(source)
             for key in ["id", "baseParams", "title"]:
-                if key in base_source:
+                if base_source and key in base_source:
                     del base_source[key]
             return base_source
 
