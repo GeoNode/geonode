@@ -276,7 +276,8 @@
 
                 <div style="position:relative;float:left;">
                     <h3>{%trans "Rectify Images"  %}</h3>
-                    <p style="font-size: 14px">{% trans "Use <a target='_blank' href='https://mapwarper.net/'>Map Warper</a> to upload and rectify scanned maps for use in WorldMap." %} <br/><br/> {% trans "Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 4.5 in <a href='{% static "docs/WorldMap_Help.pdf" %}'>WorldMap Help</a>." %}</p>
+                    <p style="font-size: 14px"><a target='_blank' href='https://mapwarper.net/'>{% trans "Use Map Warper to upload and rectify scanned maps for use in WorldMap." %}</a> <br/>
+                      <br/><a href='{% static "docs/WorldMap_Help.pdf"'>{% trans "Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 4.5 in >WorldMap Help." %}</a></p>
                     <br/><br/>
                     <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{% static "worldmap/theme/img/warper-sample.jpg" %}" border="0" /></a></div>
                 </div>

@@ -238,6 +238,54 @@ def map_view_wm(request, mapid, snapshot=None, layer_name=None, template='wm_ext
     })
 
 
+def map_view_wm_mobile(request, mapid=None, snapshot=None):
+    """
+    The view that returns the map composer opened to
+    the mobile version for the map with the given map ID.
+    """
+    map_obj = _resolve_map(
+        request,
+        mapid,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
+
+    # TODO check if it is a new map
+    # if mapid is None:
+    #    return newmap(request);
+
+    # TODO check if it is a mapid or suffix
+    # if mapid.isdigit():
+    #    map_obj = Map.objects.get(pk=mapid)
+    # else:
+    #    map_obj = Map.objects.get(urlsuffix=mapid)
+
+    if snapshot is None:
+        config = map_obj.viewer_json(request)
+    else:
+        config = snapshot_config(snapshot, map_obj, request)
+
+    config = gxp2wm(config, map_obj)
+
+    first_visit_mobile = True
+    if request.session.get('visit_mobile' + str(map_obj.id), False):
+        first_visit_mobile = False
+    else:
+        request.session['visit_mobile' + str(map_obj.id)] = True
+    config['first_visit_mobile'] = first_visit_mobile
+
+    template = 'wm_extra/maps/mobilemap.html'
+
+    return render(request, template, {
+        'config': json.dumps(config),
+        # 'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        # 'GEONETWORK_BASE_URL' : settings.GEONETWORK_BASE_URL,
+        # 'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        # 'DB_DATASTORE' : settings.DB_DATASTORE,
+        'maptitle': map_obj.title,
+        # 'urlsuffix': get_suffix_if_custom(map_obj),
+    })
+
+
 def map_view_js(request, mapid):
     map_obj = _resolve_map(
         request,
@@ -461,6 +509,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
             else llbbox_to_mercator([float(coord) for coord in bbox])
 
+        access_token = request.session['access_token'] if request and 'access_token' in request.session else None
         if layer.storeType == "remoteStore":
             service = layer.service
             # Probably not a good idea to send the access token to every remote service.
@@ -470,7 +519,6 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
                 ogc_server_settings.PUBLIC_LOCATION).netloc
             service_url = urlparse.urlsplit(service.base_url).netloc
 
-            access_token = request.session['access_token'] if request and 'access_token' in request.session else None
             if access_token and ogc_server_url == service_url and 'access_token' not in service.base_url:
                 url = service.base_url + '?access_token=' + access_token
             else:
