@@ -306,11 +306,10 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering):
     # We don't want to hardcode 'access_token' into the storage
     styles = []
     if 'capability' in layer_cfg:
-        capability = layer_cfg['capability']
-        if 'styles' in capability:
-            styles = capability['styles']
-            for style in styles:
-                if 'name' in styles:
+        _capability = layer_cfg['capability']
+        if 'styles' in _capability:
+            for style in _capability['styles']:
+                if 'name' in style:
                     styles.append(style['name'])
                 if 'legend' in style:
                     legend = style['legend']
