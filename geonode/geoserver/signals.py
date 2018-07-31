@@ -590,6 +590,11 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # need to be removed when fixing #2015
     catalogue_post_save(instance, Layer)
 
+    # Updating HAYSTACK Indexes if needed
+    if settings.HAYSTACK_SEARCH:
+        from django.core.management import call_command
+        call_command('update_index')
+
 
 def geoserver_pre_save_maplayer(instance, sender, **kwargs):
     # If this object was saved via fixtures,
