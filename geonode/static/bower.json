@@ -42,5 +42,10 @@
     "fastselect": "https://github.com/dbrekalo/fastselect.git",
     "clipboard": "^1.7.1",
     "Leaflet.EasyButton": "^2.2.4"
+  },
+  "resolutions": {
+    "angular": "1.4.0",
+    "bootstrap": "3.3.7",
+    "leaflet": "~1.0.1"
   }
 }
