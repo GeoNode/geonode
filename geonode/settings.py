@@ -1595,6 +1595,34 @@ GEOTIFF_IO_BASE_URL = os.getenv(
 USE_WORLDMAP = strtobool(os.getenv('USE_WORLDMAP', 'False'))
 
 if USE_WORLDMAP:
+    # WorldMap requirest PostgreSQL and PostGIS
+    PG_HOST = os.getenv('PG_HOST', 'localhost')
+    PG_USERNAME = os.getenv('PG_USERNAME', 'worldmap')
+    PG_PASSWORD = os.getenv('PG_PASSWORD', 'worldmap')
+    PG_WORLDMAP_DJANGO_DB = os.getenv('PG_WORLDMAP_DJANGO_DB', 'geonode')
+    PG_WORLDMAP_UPLOADS_DB = os.getenv('PG_WORLDMAP_UPLOADS_DB', 'geonode_data')
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': PG_WORLDMAP_DJANGO_DB,
+            'USER': PG_USERNAME,
+            'PASSWORD': PG_PASSWORD,
+            'HOST': PG_HOST,
+            'PORT': '5432',
+            'CONN_TOUT': 900,
+        },
+        # vector datastore for uploads
+        'datastore': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            # 'ENGINE': '', # Empty ENGINE name disables
+            'NAME': PG_WORLDMAP_UPLOADS_DB,
+            'USER': PG_USERNAME,
+            'PASSWORD': PG_PASSWORD,
+            'HOST': PG_HOST,
+            'PORT': '5432',
+            'CONN_TOUT': 900,
+        }
+    }
     GEONODE_CLIENT_LOCATION = '/static/worldmap_client/'
     GAZETTEER_DB_ALIAS = 'default'
     INSTALLED_APPS += (
