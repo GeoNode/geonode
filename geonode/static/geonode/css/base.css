@@ -7288,6 +7288,9 @@ article.tab-pane {
   font-size: 12px;
   text-transform: uppercase;
 }
+.item-details h4 a {
+  word-wrap: break-word;
+}
 .item-details .btn-sm {
   margin-right: -17px;
   margin-top: -1px;
