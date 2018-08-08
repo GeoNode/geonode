@@ -61,17 +61,18 @@ develop: pull build up sync
 
 setup_worldmap:
 	# setup databases for using the worldmap application
-	export PG_USERNAME=$(PG_USERNAME); \
-	export PG_PASSWORD=$(PG_PASSWORD); \
-	export PG_WORLDMAP_DJANGO_DB=$(PG_WORLDMAP_DJANGO_DB); \
-	export PG_WORLDMAP_UPLOADS_DB=$(PG_WORLDMAP_UPLOADS_DB); \
-	export OWNER=$(OWNER); \
-	sudo -u postgres psql -c "CREATE USER $(PG_USERNAME) WITH SUPERUSER PASSWORD '$(PG_PASSWORD)';" ;
-	sudo -u postgres psql -c "CREATE DATABASE $(PG_WORLDMAP_DJANGO_DB) WITH OWNER $(OWNER);"
-	sudo -u postgres psql -d $(PG_WORLDMAP_DJANGO_DB) -c "CREATE EXTENSION postgis;"
-	sudo -u postgres psql -d $(PG_WORLDMAP_DJANGO_DB) -c "CREATE EXTENSION dblink;"
-	sudo -u postgres psql -c "CREATE DATABASE $(PG_WORLDMAP_UPLOADS_DB) WITH OWNER $(OWNER);"
-	sudo -u postgres psql -d $(PG_WORLDMAP_UPLOADS_DB) -c "CREATE EXTENSION postgis;"
+	export PG_ADMIN_USER=$(PG_ADMIN_USER);
+	export PG_USERNAME=$(PG_USERNAME);
+	export PG_PASSWORD=$(PG_PASSWORD);
+	export PG_WORLDMAP_DJANGO_DB=$(PG_WORLDMAP_DJANGO_DB);
+	export PG_WORLDMAP_UPLOADS_DB=$(PG_WORLDMAP_UPLOADS_DB);
+	export OWNER=$(OWNER);
+	#psql -c "CREATE USER $(PG_USERNAME) WITH SUPERUSER PASSWORD '$(PG_PASSWORD)';" ;
+	psql -h $(PG_HOST) -U $(PG_ADMIN_USER) -c "CREATE DATABASE $(PG_WORLDMAP_DJANGO_DB) WITH OWNER $(OWNER);"
+	psql -h $(PG_HOST) -U $(PG_ADMIN_USER) -d $(PG_WORLDMAP_DJANGO_DB) -c "CREATE EXTENSION postgis;"
+	psql -h $(PG_HOST) -U $(PG_ADMIN_USER) -d $(PG_WORLDMAP_DJANGO_DB) -c "CREATE EXTENSION dblink;"
+	psql -h $(PG_HOST) -U $(PG_ADMIN_USER) -c "CREATE DATABASE $(PG_WORLDMAP_UPLOADS_DB) WITH OWNER $(OWNER);"
+	psql -h $(PG_HOST) -U $(PG_ADMIN_USER) -d $(PG_WORLDMAP_UPLOADS_DB) -c "CREATE EXTENSION postgis;"
 	python manage.py migrate --noinput
 	python manage.py loaddata sample_admin
 	python manage.py loaddata geonode/base/fixtures/default_oauth_apps_docker.json
@@ -79,11 +80,12 @@ setup_worldmap:
 
 remove_worldmap:
 	# remove databases for using the worldmap application
-	sudo -u postgres psql -c "DROP DATABASE $(PG_WORLDMAP_DJANGO_DB);"
-	sudo -u postgres psql -c "DROP DATABASE $(PG_WORLDMAP_UPLOADS_DB);"
-	sudo -u postgres psql -c "DROP ROLE $(PG_USERNAME);"
-	unset PG_USERNAME; \
-	unset PG_PASSWORD; \
-	unset PG_WORLDMAP_DJANGO_DB; \
-	unset PG_WORLDMAP_UPLOADS_DB; \
-	unset OWNER; \
+	export PG_ADMIN_USER=$(PG_ADMIN_USER);
+	export PG_USERNAME=$(PG_USERNAME);
+	export PG_PASSWORD=$(PG_PASSWORD);
+	export PG_WORLDMAP_DJANGO_DB=$(PG_WORLDMAP_DJANGO_DB);
+	export PG_WORLDMAP_UPLOADS_DB=$(PG_WORLDMAP_UPLOADS_DB);
+	export OWNER=$(OWNER);
+	psql -h $(PG_HOST) -U $(PG_ADMIN_USER) -c "DROP DATABASE $(PG_WORLDMAP_DJANGO_DB);"
+	psql -h $(PG_HOST) -U $(PG_ADMIN_USER) -c "DROP DATABASE $(PG_WORLDMAP_UPLOADS_DB);"
+	psql -h $(PG_HOST) -U $(PG_ADMIN_USER) -c "DROP ROLE $(PG_USERNAME);"

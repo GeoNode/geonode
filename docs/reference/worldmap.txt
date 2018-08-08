@@ -21,7 +21,7 @@ We are assuming a Ubuntu 16.04.1 LTS development environment, but these instruct
 
     # Install Ubuntu dependencies
     sudo apt-get update
-    sudo apt-get install python-virtualenv python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk postgresql postgis
+    sudo apt-get install python-virtualenv python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk gdal-bin postgresql postgis
 
     # Install Java 8 (needed by latest GeoServer 2.13)
     sudo apt-add-repository ppa:webupd8team/java
@@ -45,25 +45,30 @@ Now install GeoNode from source code::
     pip install pygdal==1.11.3.3
     pip install -e .
     paver setup
-    paver sync
 
-Set the following environment variables as needed (change SITE_NAME and SERVER_IP s needed. Also HYPERMAP_REGISTRY_URL and SOLR_URL may be different). Even better, create a file and source it::
+Set the following environment variables as needed (change SITE_NAME and SERVER_IP s needed. Also HYPERMAP_REGISTRY_URL and SOLR_URL may be different). Even better, create a file and source it:
 
-      export USE_WORLDMAP=True
-      export SITE_NAME=worldmap
-      export SERVER_IP=128.31.22.73
-      export PG_USERNAME=worldmap
-      export PG_PASSWORD=worldmap
-      export PG_WORLDMAP_DJANGO_DB=worldmap
-      export PG_WORLDMAP_UPLOADS_DB=wmdata
-      export OWNER=$PG_USERNAME
-      export ALLOWED_HOSTS="localhost, $SERVER_IP, "
-      export GEOSERVER_LOCATION=http://localhost:8080/geoserver/
-      export GEOSERVER_PUBLIC_LOCATION=http://$SERVER_IP/geoserver/
-      export SOLR_URL =http://localhost:8983/solr/hypermap/select/
-      export HYPERMAP_REGISTRY_URL =http://localhost:8001
-      export MAPPROXY_URL=http://localhost:8001
+    export USE_WORLDMAP=True
+    export SITE_NAME=worldmap
+    export SERVER_IP=128.31.22.73
+    export PG_HOST=localhost
+    export PG_ADMIN_USER=postgres
+    export PGPASSWORD=***
+    export PG_USERNAME=worldmap
+    export PG_PASSWORD=***
+    export PG_WORLDMAP_DJANGO_DB=geonode
+    export PG_WORLDMAP_UPLOADS_DB=geonode_data
+    export OWNER=$PG_USERNAME
+    export ALLOWED_HOSTS="localhost, $SERVER_IP, "
+    export GEOSERVER_LOCATION=http://localhost:8080/geoserver/
+    export GEOSERVER_PUBLIC_LOCATION=http://$SERVER_IP/geoserver/
+    export SOLR_URL=http://localhost:8983/solr/hypermap/select/
+    export HYPERMAP_REGISTRY_URL=http://localhost:8001
+    export MAPPROXY_URL=http://localhost:8001
 
+Now create the Postgres databases needed by WorldMap:
+
+    make setup_worldmap
 
 You can install GeoNode WorldMap in two different ways:
 
