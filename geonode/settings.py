@@ -78,7 +78,7 @@ else:
 try:
     # try to parse python notation, default in dockerized env
     ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
-except ValueError:
+except:
     # fallback to regular list of values separated with misc chars
     ALLOWED_HOSTS = ['localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
