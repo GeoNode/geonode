@@ -1,3 +1,4 @@
+import ast
 import json
 import math
 import re
@@ -738,9 +739,11 @@ def gxp2wm(config, map_obj=None):
             layer_config['url'] = layer.ows_url.replace('ows', 'wms')
             if 'styles' not in layer_config:
                 if layer.default_style:
-                    layer_config['styles'] = layer.default_style.name
+                    layer_config['styles'] = [layer.default_style.name, ] # OK
                 else:
-                    layer_config['styles'] = layer.styles.all()[0].name
+                    layer_config['styles'] = [layer.styles.all()[0].name, ]
+            else: # now styles is a list
+                layer_config['styles'] = ast.literal_eval(layer_config['styles']) #[0]
             if layer.category:
                 group = layer.category.gn_description
             layer_config["srs"] = getattr(
