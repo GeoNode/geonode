@@ -1005,7 +1005,7 @@ def deb(options):
         #  use the following line instead:
         # sh(('gbp dch --spawn-editor=snapshot --git-author --new-version=%s'
         #    ' --id-length=6 --ignore-branch --release' % (simple_version)))
-        distribution = "xenial"
+        distribution = "bionic"
         sh(('gbp dch --distribution=%s --force-distribution --spawn-editor=snapshot --git-author --new-version=%s'
            ' --id-length=6 --ignore-branch --release' % (distribution, simple_version)))
 
@@ -1046,8 +1046,8 @@ def publish():
 
     call_task('deb', options={
         'key': key,
-        # 'ppa': 'geonode/testing',
-        'ppa': 'geonode/unstable',
+        'ppa': 'geonode/testing',
+        # 'ppa': 'geonode/unstable',
     })
 
     version, simple_version = versions()

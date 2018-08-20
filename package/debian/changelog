@@ -1,4 +1,113 @@
-geonode (2.8.0+thefinal1) xenial; urgency=high 
+geonode (2.8.1+rc0) bionic; urgency=high
+
+  * [62bc2f97e] Backporting PRs fixes from master: https://github.com/GeoNode/geonode/pull/3866 https://github.com/GeoNode/geonode/pull/3865 https://github.com/GeoNode/geonode/pull/3864
+  * [1e2fdc228] Now there is not a local_settings.py file, so we need to set DATABASES when using worldmap application
+  * [81f44237f] Includes commands in Makefile to create and remove databases needed when using the worldmap contrib application
+  * [f9fae7dea] Ported the mobile client as per #404
+  * [5516a184b]  - Fix typo
+  * [19f80f9e4] Backport fixes from master
+  * [6a16176ac]  - Fix integration tests
+  * [a7b49d60f] Backport fixes from master
+  * [3fec66ff4] Backport fixes from master
+  * [89649f623]  - Backporting fixes from master
+  * [3cfd575d5]  - Backporting master branch fixes
+  * [af3a1e048] Backport #3856
+  * [96575c953] Backport fix #3853
+  * [7e4454a24] Backport fixes from master branch
+  * [a378b94cc]  - Backport fixes and PRs from master (#3846)
+  * [688497d17]  - Minor Layout improvements
+  * [4b635efd1]  - Backport fixes and PRs from master
+  * [7df99f25f]  - backport from master
+  * [5869b40c1]  - Fix max zoom issue
+  * [1b4095a26]  - Packagin scripts updates
+  * [4a95271dd] [backport 2.7.x] Minor improvements: allow registered users to invite others / improve French translation
+  * [4d7d14ae1] add missing ast import
+  * [b98e102c3] Update helpers.py
+  * [f61bc8553] Update helpers.py
+  * [515b8392b]  - Fixes layer replace
+  * [028047d47] - Fix celery initialization when using GeoNode ad a depenency
+  * [4a4eb8fea] pep8 fixes
+  * [8d32e289c] - Fix celery initialization when using GeoNode ad a depenency
+  * [2ccb0ed83] - Fix celery initialization when using GeoNode ad a depenency
+  * [7c6e5e60b] - Fix celery initialization when using GeoNode ad a depenency
+  * [cdab39a9f] pep8 issues
+  * [02b64cf2d]  - Fix celery initialization when using GeoNode ad a depenency
+  * [75128b86a] Externalize OGC TIMEOUT setting as ENV var
+  * [6fff0c0ed] Update Dockerfile
+  * [5bbbcaf3f]  - Backporting Docker Improvs and Fixes from master branch
+  * [4c4e60c4c]  - Backport stable fixes from master branch
+  * [edbbd733b]  - Backport stable fixes from master branch
+  * [1f3978caa] [Fixes #3800] Uploading shapefiles without a datefield and time-enabled is False in importer settings fails in 2.7.x
+  * [878ac6efa]  - SITEURL rstrip (/) consistently
+  * [75baa8f62] Backport from master branch
+  * [304ac29ed] [Backport fixes from master]
+  * [af5371385] [Backport fixes from master]
+  * [ec76b2dc3] By default we dont use hypermap
+  * [2b5e6ca68] Fixes a problem with createlayer app
+  * [b590fa7c6] Fixes PEP8 violations and a syntax error
+  * [8a6ba6ad9] By default USE_WORLDMAP is False
+  * [b4f590faa] Fixes pep8 violations
+  * [e54eb9233]  - Backport from master
+  * [7ccf3f02e] Reset a couple of files
+  * [651511a9b] Removed the worldmap.queue application for now
+  * [fe10f4305] Updated worldmap installation documentation
+  * [25d620f56]  - Backport fixes from master branch
+  * [7a98b25c2] Now using django-geoexplorer-worldmap from the pypi package
+  * [754e4da56] Including a local_settings sample file for worldmap
+  * [e77ea3f85] Updated requirements for WorldMap
+  * [c229e1c03] Fixing a number of things before sending PR to GeoNode 2.7.x
+  * [5c25cd9eb] Removing all static files, which should be added by pip install worldmap-geoexplorer
+  * [8f33c8295] Removing worldmap account, which will be part of the cga geonode project
+  * [8d406ac41] Removing from git the compiled geoexplorer worldmap client
+  * [4bd34841d]  - Backport commit 6c0e8ca from master
+  * [6c9cc752d] A couple of fixes and removing geoexplorer source code
+  * [5bd4f3dcf]  - Backport commit 15123a5 from master
+  * [2af5e39ab] Removed stale worldmap documentation page
+  * [42513be7b] Move the worldmap documentation to the correct place
+  * [78530ef07] Updating the client
+  * [ae8dc3238]  - Allow registered users to edit Remote Services
+  * [9aa2f2f62]  - Backport fixes from master
+  * [c6b85ae91]  - Backport fixes from master
+  * [2c3a00c98] Update integration.py
+  * [a63c39a4f] Backporting Master PRs
+  * [3eb806e7d] Fixes #375
+  * [7de6421e8] Fixes #3801
+  * [87e652980] Backporting Master PRs
+  * [c5540fb7a] Now thumbanils are not generate from layers which are created. Fixes #358
+  * [272017b33] Fixes part of #358 (the layer extent)
+  * [b29abc581] Some improvement to the createlayer application
+  * [09a9bb868] Fixes https://github.com/camp-zju/geonode/issues/37
+  * [ed16ac394] Modify the file for translation
+  * [b9376f0d3] Fixes https://github.com/camp-zju/geonode/issues/36
+  * [cbb1ace8b] Add Chinese translation file
+  * [698081e1c] Add Chinese translation file
+  * [c96bc5d73] Fixes https://github.com/camp-zju/geonode/issues/34
+  * [ed468785b] Fixes https://github.com/camp-zju/geonode/issues/33
+  * [6ebc54008] Fixes https://github.com/camp-zju/geonode/issues/32
+  * [d930947be] Fixes 31
+  * [7a2d4b771] Fixes #367
+  * [a1601e26a] Backporting Master PRs
+  * [151c08067] Backporting Master PRs
+  * [15db8a01f] Update helpers.py
+  * [4a039537a] Fixes the updatelayers command
+  * [79409faef] renaming celery to celery_app
+  * [419397081] Fixing a couple of things broke when merging
+  * [e0a1808df] Fixes a couple of things which were broken by merge with 2.8.0
+  * [de6dd0bc4] Updating geoexplorer to last version
+  * [7b17e8cd0] Sync with GeoNode 2.8 part 1/2
+  * [f42ed7dff] Now categories order is respected for existing maps. Refs #341
+  * [5a8c785a6] Re-enable thumbnails for layers. Fixes #351
+  * [f4ddf56cd] Fixes #350
+  * [de5cbdcac] Backporting Master PRs
+  * [948664881] Updated changelog for version 2.8
+  * [f6dd1582e] Constrain pip to 9.0.3
+  * [f9e81c62c] Use HTML widget in GXP for any field starting with "descriptio". Refs #348
+  * [a2c55c265] use geoip2 for monitoring
+  * [1e02bcc12] fix slow login/logout on certain circumstances
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Mon, 20 Aug 2018 16:26:33 +0200
+
+geonode (2.8.0+thefinal1) xenial; urgency=high
   * [514196] Update README
   * [f6dd15] Constrain pip to 9.0.3
 
