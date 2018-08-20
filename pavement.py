@@ -1006,8 +1006,8 @@ def deb(options):
         # sh(('gbp dch --spawn-editor=snapshot --git-author --new-version=%s'
         #    ' --id-length=6 --ignore-branch --release' % (simple_version)))
         distribution = "bionic"
-        sh(('gbp dch --distribution=%s --force-distribution --spawn-editor=snapshot --git-author --new-version=%s'
-           ' --id-length=6 --ignore-branch --release' % (distribution, simple_version)))
+        # sh(('gbp dch --distribution=%s --force-distribution --spawn-editor=snapshot --git-author --new-version=%s'
+        #    ' --id-length=6 --ignore-branch --release' % (distribution, simple_version)))
 
         deb_changelog = path('debian') / 'changelog'
         for idx, line in enumerate(fileinput.input([deb_changelog], inplace=True)):
@@ -1020,16 +1020,16 @@ def deb(options):
         sh('rm -rf .git')
 
         if key is None and ppa is None:
-            # A local installable package
+            print("A local installable package")
             sh('debuild -uc -us -A')
         elif key is None and ppa is not None:
-                # A sources package, signed by daemon
+            print("A sources package, signed by daemon")
             sh('debuild -S')
         elif key is not None and ppa is None:
-            # A signed installable package
+            print("A signed installable package")
             sh('debuild -k%s -A' % key)
         elif key is not None and ppa is not None:
-            # A signed, source package
+            print("A signed, source package")
             sh('debuild -k%s -S' % key)
 
     if ppa is not None:
@@ -1044,21 +1044,28 @@ def publish():
         print "You need to set the GPG_KEY_GEONODE environment variable"
         return
 
+    if 'PPA_GEONODE' in os.environ:
+        ppa = os.environ['PPA_GEONODE']
+    else:
+        ppa = None
+
     call_task('deb', options={
         'key': key,
-        'ppa': 'geonode/testing',
+        'ppa': ppa,
+        # 'ppa': 'geonode/testing',
         # 'ppa': 'geonode/unstable',
     })
 
     version, simple_version = versions()
-    sh('git add package/debian/changelog')
-    sh('git commit -m "Updated changelog for version %s"' % version)
-    sh('git tag -f %s' % version)
-    sh('git push origin %s' % version)
-    sh('git tag -f debian/%s' % simple_version)
-    sh('git push origin debian/%s' % simple_version)
-    # sh('git push origin master')
-    sh('python setup.py sdist upload -r pypi')
+    if ppa:
+        sh('git add package/debian/changelog')
+        sh('git commit -m "Updated changelog for version %s"' % version)
+        sh('git tag -f %s' % version)
+        sh('git push origin %s' % version)
+        sh('git tag -f debian/%s' % simple_version)
+        sh('git push origin debian/%s' % simple_version)
+        # sh('git push origin master')
+        sh('python setup.py sdist upload -r pypi')
 
 
 def versions():
