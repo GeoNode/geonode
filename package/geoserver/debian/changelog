@@ -1,3 +1,9 @@
+geoserver-geonode (2.13.2) bionic; urgency=high
+
+  * Updated GeoServer 13.x packages on testing
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Mon, 20 Aug 2018 12:29:29 +0200
+
 geoserver-geonode (2.12.2-4) xenial; urgency=high
 
   * Fixed Tomcat 8 dependencies on Catalina properties
