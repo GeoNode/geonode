@@ -1,5 +1,4 @@
-geonode (2.8.1+rc0) bionic; urgency=high
-
+geonode (2.8.1+rc0) bionic; urgency=high 
   * [62bc2f97e] Backporting PRs fixes from master: https://github.com/GeoNode/geonode/pull/3866 https://github.com/GeoNode/geonode/pull/3865 https://github.com/GeoNode/geonode/pull/3864
   * [1e2fdc228] Now there is not a local_settings.py file, so we need to set DATABASES when using worldmap application
   * [81f44237f] Includes commands in Makefile to create and remove databases needed when using the worldmap contrib application
