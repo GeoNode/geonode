@@ -137,10 +137,10 @@ OGC_SERVER = {
 
 # If you want to enable Mosaics use the following configuration
 UPLOADER = {
-    # 'BACKEND': 'geonode.rest',
-    'BACKEND': 'geonode.importer',
+    'BACKEND': 'geonode.rest',
+    # 'BACKEND': 'geonode.importer',
     'OPTIONS': {
-        'TIME_ENABLED': True,
+        'TIME_ENABLED': False,
         'MOSAIC_ENABLED': False,
         'GEOGIG_ENABLED': False,
     },
@@ -252,7 +252,7 @@ PYCSW = {
     }
 }
 
-GEONODE_ROOT = os.path.dirname(geonode.__file__)
+GEONODE_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 TEMPLATE_DIRS = (
     '/etc/geonode/templates',
