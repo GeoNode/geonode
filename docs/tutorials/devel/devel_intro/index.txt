@@ -59,7 +59,7 @@ Core development tools and libraries
 - Python
 
   - https://docs.python.org/2/tutorial/
-  - http://www.learnpython.org/
+  - https://svrtechnologies.com/sap-training/sap-abap-online-training
   - https://learnpythonthehardway.org/book/
   - http://www.guru99.com/python-tutorials.html
 
