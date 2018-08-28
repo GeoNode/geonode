@@ -85,7 +85,7 @@ function setup_django_once() {
 }
 
 function setup_django_every_time() {
-    pip install pip --upgrade --quiet
+    pip install pip==9.0.3 --quiet
     pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies --quiet
     pip install $GEONODE_SHARE/jwcrypto-0.5.0-py2.py3-none-any.whl --no-dependencies --no-cache-dir --quiet
     pip install $GEONODE_SHARE/xmltodict-0.10.2.tar.gz --no-dependencies --no-cache-dir --quiet
