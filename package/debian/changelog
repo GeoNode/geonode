@@ -1,4 +1,5 @@
-geonode (2.10.0+rc4) bionic; urgency=high geonode (2.10.0+rc3) bionic; urgency=high
+
+geonode (2.10.0+rc3) bionic; urgency=high
 
   * [dfa999fdb] 2018-07-31 - (afabiani         )   - #3180 restoring angular 1.4.0
   * [573a6a9c3] 2018-07-31 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
