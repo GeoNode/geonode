@@ -4,7 +4,10 @@
     "pk": 1001,
     "fields": {
         "skip_authorization": true,
-        "redirect_uris": "http://geonode/geoserver/",
+        "created": "2018-05-31T10:00:31.661Z",
+        "updated": "2018-05-31T11:30:31.245Z",
+        "algorithm": "RS256",
+        "redirect_uris": "http://geonode/geoserver",
         "name": "GeoServer",
         "authorization_grant_type": "authorization-code",
         "client_type": "confidential",

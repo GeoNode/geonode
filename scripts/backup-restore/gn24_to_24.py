@@ -21,11 +21,12 @@
 import re
 import json
 import datetime
+from django.utils import timezone
 
 class DefaultMangler(json.JSONDecoder):
    """ TODO """
    def __init__(self, *args, **kwargs):
-      
+
       self.basepk    = kwargs.get('basepk', -1)
       self.owner     = kwargs.get('owner', 'admin')
       self.datastore = kwargs.get('datastore', '')
@@ -70,7 +71,7 @@ class ResourceBaseMangler(DefaultMangler):
          obj['pk'] = obj['pk'] + self.basepk
 
          obj['fields']['owner'] = [self.owner]
-         
+
          if 'distribution_url' in obj['fields']:
             if not obj['fields']['distribution_url'] is None and 'layers' in obj['fields']['distribution_url']:
                try:
@@ -101,7 +102,7 @@ class ResourceBaseMangler(DefaultMangler):
       obj['fields']['context'] = None
       obj['fields']['error'] = None
       obj['fields']['processed'] = True
-      obj['fields']['date'] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+      obj['fields']['date'] = datetime.datetime.now(from django.utils import timezone).strftime("%Y-%m-%dT%H:%M:%S")
 
       return obj
 
@@ -150,7 +151,7 @@ class LayerAttributesMangler(DefaultMangler):
       # ....
       for obj in default_obj:
           obj['pk'] = obj['pk'] + self.basepk
-          
+
           obj['fields']['layer'] = obj['fields']['layer'] + self.basepk
 
       return default_obj
@@ -176,5 +177,3 @@ class MapLayersMangler(DefaultMangler):
           obj['fields']['map'] = obj['fields']['map'] + self.basepk
 
       return default_obj
-
-

@@ -1,7 +1,8 @@
+{% load static from staticfiles %}
 {% load floppyforms %}
 {% load i18n %}
-<!--<link href="{{ STATIC_URL }}lib/css/bootstrap-select.min.css?v={{ VERSION }}" rel="stylesheet" />-->
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+<!--<link href="{% static "lib/css/bootstrap-select.min.css" %}?v={{ VERSION }}" rel="stylesheet" />-->
+<script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
 <style>
 /* general panel styles */
 #mdeditor_form .panel-group .panel{
@@ -37,6 +38,7 @@ form #mdeditor_form label{
 
 /* publishing checkboxes */
 #mdeditor_form #id_resource-metadata_uploaded_preserve,
+#mdeditor_form #id_resource-is_approved,
 #mdeditor_form #id_resource-is_published,
 #mdeditor_form #id_resource-featured  {
   float: right;
@@ -197,18 +199,18 @@ span.grippy::after {
   content: '.. .. .. ..';
 }
 </style>
-<button class="btn btn-success metadata-edit-done" id="btn_upd_md_done" type="submit" style="float:right; opacity: 0;" >Done!</button>
+<button class="btn btn-success metadata-edit-done" id="btn_upd_md_done" type="submit" style="float:right; opacity: 0;" >{% trans "Done!" %}</button>
 
 {% block body_outer %}
 <ul id="md_tabs" class="nav nav-tabs">
     <li id="metadata_edit_tab" class="active">
-        <a data-toggle="tab" href="#edit-metadata"><i class="fa fa-pencil"></i> Edit</a>
+        <a data-toggle="tab" href="#edit-metadata"><i class="fa fa-pencil"></i>{% trans "Edit" %}</a>
     </li>
     <li id="preview_tab" dhref="#preview">
-        <a data-toggle="tab" href="#preview"><i class="fa fa-camera"></i> Preview</a>
+        <a data-toggle="tab" href="#preview"><i class="fa fa-camera"></i>{% trans "Preview" %}</a>
     </li>
     <li id="settings_tab" dhref="#settings">
-        <a data-toggle="tab" href="#settings"><i class="fa fa-cog"></i> Settings</a>
+        <a data-toggle="tab" href="#settings"><i class="fa fa-cog"></i>{% trans "Settings" %}</a>
     </li>
 </ul>
 
@@ -217,27 +219,27 @@ span.grippy::after {
   <div id="completeness-hints" class="progress">
 
   <div class="mandatory-hint progress-bar" role="progressbar" style="width:25%">
-    Mandatory
+    {% trans "Mandatory" %}
   </div>
   <div class="advanced-hint progress-bar" role="progressbar" style="width:25%">
-    Mandatory
+    {% trans "Mandatory" %}
   </div>
   <div class="progress-bar" role="progressbar" style="width:50%">
-    Optional
+    {% trans "Optional" %}
   </div>
 </div>
   <ul class="wizard--progress wizard--progress--medium">
       <li data-step="1" id="first" class="is-active" data-toggle="tab" href="#mandatory">
-          <a>Basic Metadata</a>
+          <a>{% trans "Basic Metadata" %}</a>
       </li>
       <li data-step="2" id="second"  data-toggle="tab" href="#advanced">
-          <a>Location and Licenses</a>
+          <a>{% trans "Location and Licenses" %}</a>
       </li>
       <li data-step="3" data-toggle="tab" href="#ownership">
-          <a>Optional Metadata</a>
+          <a>{% trans "Optional Metadata" %}</a>
       </li>
       <li data-step="4"  data-toggle="tab" href="#dataset">
-          <a>Dataset Attributes</a>
+          <a>{% trans "Dataset Attributes" %}</a>
       </li>
   </ul>
     <div id="mandatory" class="tab-pane fade in active">
@@ -339,7 +341,7 @@ span.grippy::after {
                                                 value="{{ group.group.id }}"
                                                 {% ifequal resource.group group.group %} selected="selected" {% endifequal %}
                                                 >
-                                                {{ group.group.name }}
+                                                {{ group.title }}
                                             </option>
                                             {% endfor %}
                                         </select>
@@ -410,7 +412,7 @@ span.grippy::after {
         <div class="panel-group"><div class="panel panel-default"><div class="panel-body">
         <div>
             <div class="col-xs-12 col-lg-4">
-              <p>Other, Optional, Metadata</p>
+              <p>{% trans "Other, Optional, Metadata" %}</p>
                 <div>
                     <span><label for="{{ layer_form.edition|id }}">{{ layer_form.edition.label }}</label></span>
                     <!--<p class="xxs-font-size">(Version of the cited resource)</p>-->
@@ -457,7 +459,7 @@ span.grippy::after {
             </div>
             <div class="col-xs-12 col-lg-3">
               <div class="panel panel-default" style="margin-top: 5px">
-                          <div class="panel-heading">Responsible Parties</div>
+                          <div class="panel-heading">{% trans "Responsible Parties" %}</div>
                           <div class="panel-body">
                               <span><label for="{{ layer_form.poc|id }}">{{ layer_form.poc.label }}</label></span>
                               {{ layer_form.poc }}
@@ -465,7 +467,7 @@ span.grippy::after {
                       </div>
 
                       <div class="panel panel-default">
-                          <div class="panel-heading">Owner and Permissions</div>
+                          <div class="panel-heading">{% trans "Owner and Permissions" %}</div>
                           <div class="panel-body">
                               <div>
                                   <span><label for="{{ layer_form.owner|id }}">{{ layer_form.owner.label }}</label></span>
@@ -518,6 +520,10 @@ span.grippy::after {
                                   <th>{% trans "Label" %}</th>
                                   <th>{% trans "Description" %}</th>
                                   <th>{% trans "Display Order" %}</th>
+                                  {% if USE_WORLDMAP %}
+                                    <th>{% trans "Visible" %}</th>
+                                    <th>{% trans "Searchable" %}</th>
+                                  {% endif %}
                               </tr>
                               {% for form in attribute_form.forms %}
                                   {% if form.attribute %}
@@ -527,6 +533,10 @@ span.grippy::after {
                                           <td>{{form.attribute_label}}</td>
                                           <td>{{form.description}}</td>
                                           <td>{{form.display_order}}</td>
+                                          {% if USE_WORLDMAP %}
+                                            <td>{{form.visible}}</td>
+                                            <td>{{form.searchable}}</td>
+                                          {% endif %}
                                       </tr>
                                   {% endif %}
                               {% endfor %}
@@ -554,11 +564,15 @@ span.grippy::after {
           <div class="panel panel-default">
               <div class="panel-body">
                 <div class="panel panel-default" >
-                    <div class="panel-heading">Publishing</div>
+                    <div class="panel-heading">{% trans "Publishing" %}</div>
                       <div class="panel-body">
                         <div>
                             <span><label for="{{ layer_form.metadata_uploaded_preserve|id }}">{{ layer_form.metadata_uploaded_preserve.label }}</label></span>
                             {{ layer_form.metadata_uploaded_preserve }}
+                        </div>
+                        <div>
+                            <span><label for="{{ layer_form.is_approved|id }}">{{ layer_form.is_approved.label }}</label></span>
+                            {{ layer_form.is_approved }}
                         </div>
                         <div>
                             <span><label for="{{ layer_form.is_published|id }}">{{ layer_form.is_published.label }}</label></span>
@@ -579,7 +593,7 @@ span.grippy::after {
           <div class="panel panel-default">
               <div class="panel-body">
                 <div class="panel panel-default" >
-                  <div class="panel-heading">Other Settings</div>
+                  <div class="panel-heading">{% trans "Other Settings" %}</div>
                   <div class="panel-body">
                     <div>
                         <span><label for="{{ layer_form.is_mosaic|id }}">{{ layer_form.is_mosaic.label }}</label></span>

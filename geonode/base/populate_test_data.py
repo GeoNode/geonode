@@ -25,12 +25,15 @@ from datetime import timedelta
 from django.core.serializers import serialize
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils import timezone
 from django.conf import settings
 from geonode.layers.models import Layer
 from geonode.base.models import TopicCategory
 from geonode.maps.models import Map, MapLayer
 from geonode.documents.models import Document
 from geonode.people.models import Profile
+from geonode import geoserver, qgis_server  # noqa
+from geonode.utils import check_ogc_backend
 from itertools import cycle
 from taggit.models import Tag
 from taggit.models import TaggedItem
@@ -39,7 +42,8 @@ import os.path
 import six
 
 
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
+def disconnect_signals():
+    """Disconnect signals for test class purposes."""
     from django.db.models import signals
     from geonode.geoserver.signals import geoserver_pre_save_maplayer
     from geonode.geoserver.signals import geoserver_post_save_map
@@ -50,12 +54,29 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
     signals.pre_save.disconnect(geoserver_pre_save, sender=Layer)
     signals.post_save.disconnect(geoserver_post_save, sender=Layer)
 
+
+def reconnect_signals():
+    """Reconnect signals for test class purposes."""
+    from django.db.models import signals
+    from geonode.geoserver.signals import geoserver_pre_save_maplayer
+    from geonode.geoserver.signals import geoserver_post_save_map
+    from geonode.geoserver.signals import geoserver_pre_save
+    from geonode.geoserver.signals import geoserver_post_save
+    signals.pre_save.connect(geoserver_pre_save_maplayer, sender=MapLayer)
+    signals.post_save.connect(geoserver_post_save_map, sender=Map)
+    signals.pre_save.connect(geoserver_pre_save, sender=Layer)
+    signals.post_save.connect(geoserver_post_save, sender=Layer)
+
+
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    disconnect_signals()
+
 # This is used to populate the database with the search fixture data. This is
 # primarily used as a first step to generate the json data for the fixture using
 # django's dumpdata
 
 imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
-                                '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
+                            '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
 f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
 
 
@@ -88,6 +109,8 @@ def create_fixtures():
             ]
 
     user_data = [
+            ('bobby', 'bob', 'bobby', ''),
+            ('norman', 'norman', 'norman', ''),
             ('user1', 'pass', 'uniquefirst', 'foo'),
             ('user2', 'pass', 'foo', 'uniquelast'),
             ('unique_username', 'pass', 'foo', 'uniquelast'),
@@ -99,7 +122,7 @@ def create_fixtures():
             ('this contains all my interesting profile information',),
             ('some other information goes here',),
             ]
-    now = datetime.now()
+    now = datetime.now(timezone.get_current_timezone())
     step = timedelta(days=60)
 
     def get_test_date():
@@ -116,15 +139,20 @@ def create_fixtures():
 
     next_date = get_test_date()
 
-
     layer_data = [('CA', 'abstract1', 'CA', 'geonode:CA', world_extent, next_date(), ('populartag', 'here'), elevation),
-            ('layer2', 'abstract2', 'layer2', 'geonode:layer2', world_extent, next_date(), ('populartag',), elevation),
-            ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', world_extent, next_date(), ('populartag',), elevation),  # flake8: noqa
-            ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', world_extent, next_date(), ('populartag', 'layertagunique'), location),  # flake8: noqa
-            ('common double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], next_date(), ('populartag',), location),  # flake8: noqa
-            ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], next_date(), ('populartag',), location),  # flake8: noqa
-            ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], next_date(), ('populartag',), biota),   # flake8: noqa
-            ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], next_date(), ('populartag',), biota),   # flake8: noqa
+                  ('layer2', 'abstract2', 'layer2', 'geonode:layer2', world_extent, next_date(), ('populartag',), elevation),
+                  ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer',
+                   world_extent, next_date(), ('populartag',), elevation),  # flake8: noqa
+                  ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', world_extent,
+                   next_date(), ('populartag', 'layertagunique'), location),  # flake8: noqa
+                  ('common double it', 'whatever', 'whatever', 'geonode:whatever', [
+             0, 1, 0, 1], next_date(), ('populartag',), location),  # flake8: noqa
+            ('common double time', 'else', 'fooey', 'geonode:fooey', [
+             0, 5, 0, 5], next_date(), ('populartag',), location),  # flake8: noqa
+            ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [
+             0, 10, 0, 10], next_date(), ('populartag',), biota),   # flake8: noqa
+            ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [
+             0, 50, 0, 50], next_date(), ('populartag',), biota),   # flake8: noqa
             ]
 
     document_data = [('lorem ipsum', 'common lorem ipsum', ('populartag',), world_extent, biota),
@@ -153,6 +181,7 @@ def create_models(type=None):
         user_name, password, first_name, last_name = ud
         u, created = get_user_model().objects.get_or_create(username=user_name)
         if created:
+            u.set_password(password)
             u.first_name = first_name
             u.last_name = last_name
             u.save()
@@ -161,6 +190,7 @@ def create_models(type=None):
 
     get_user_model().objects.get(username='AnonymousUser').groups.add(anonymous_group)
 
+    obj_ids = []
     if not type or type == 'map':
         for md, user in zip(map_data, cycle(users)):
             title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = md
@@ -175,9 +205,11 @@ def create_models(type=None):
                     bbox_x1=bbox_x1,
                     bbox_y0=bbox_y0,
                     bbox_y1=bbox_y1,
+                    srid='EPSG:4326',
                     category=category,
                     )
             m.save()
+            obj_ids.append(m.id)
             for kw in kws:
                 m.keywords.add(kw)
                 m.save()
@@ -192,9 +224,11 @@ def create_models(type=None):
                          bbox_x1=bbox_x1,
                          bbox_y0=bbox_y0,
                          bbox_y1=bbox_y1,
+                         srid='EPSG:4326',
                          category=category,
                          doc_file=f)
             m.save()
+            obj_ids.append(m.id)
             for kw in kws:
                 m.keywords.add(kw)
                 m.save()
@@ -211,6 +245,7 @@ def create_models(type=None):
                       bbox_x1=bbox_x1,
                       bbox_y0=bbox_y0,
                       bbox_y1=bbox_y1,
+                      srid='EPSG:4326',
                       uuid=str(uuid4()),
                       owner=owner,
                       temporal_extent_start=start,
@@ -220,9 +255,43 @@ def create_models(type=None):
                       category=category,
                       )
             l.save()
+            obj_ids.append(l.id)
             for kw in kws:
                 l.keywords.add(kw)
                 l.save()
+    return obj_ids
+
+
+def remove_models(obj_ids, type=None):
+    if not type:
+        remove_models(None, type='map')
+        remove_models(None, type='layer')
+        remove_models(None, type='document')
+
+    if type == 'map':
+        try:
+            m_ids = obj_ids or [m.id for m in Map.objects.all()]
+            for id in m_ids:
+                m = Map.objects.get(pk=id)
+                m.delete()
+        except BaseException:
+            pass
+    elif type == 'layer':
+        try:
+            l_ids = obj_ids or [l.id for l in Layer.objects.all()]
+            for id in l_ids:
+                l = Layer.objects.get(pk=id)
+                l.delete()
+        except BaseException:
+            pass
+    elif type == 'document':
+        try:
+            d_ids = obj_ids or [d.id for d in Document.objects.all()]
+            for id in d_ids:
+                d = Document.objects.get(pk=id)
+                d.delete()
+        except BaseException:
+            pass
 
 
 def dump_models(path=None):

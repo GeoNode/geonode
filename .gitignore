@@ -7,74 +7,35 @@ pip-log.txt
 MANIFEST
 dist
 .idea/
+.vscode/
+.pytest_cache/
 # supporting stuff pulled in by paver script
 geonode/development.db
 /geoserver/
 downloaded
+package-lock.json
+GeoIPCities.dat
 
 docs/i18n/pot/
 
 # Static media handling
 *.jshintrc
 geonode/static/.components/
-geonode/static/geoexplorer/
 geonode/static_root/
 geonode/static/node_modules/
 node_modules/
 # Listing all of them instead of putting geonode/static/lib out of version control.
 geonode/local_settings.py
-geonode/static/lib/css/jquery-ui.css
-geonode/static/lib/css/jquery.dataTables.css
-geonode/static/lib/css/multi-select.css
-geonode/static/lib/css/qunit.css
-geonode/static/lib/css/select2.css
-geonode/static/lib/css/assets.min.css
-geonode/static/lib/css/Control.Opacity.css
-geonode/static/lib/css/leaflet.fullscreen.css
-geonode/static/lib/css/Leaflet.NavBar.css
-geonode/static/lib/css/leaflet-measure.css
-geonode/static/lib/css/leaflet-plugins.min.css
-geonode/static/lib/css/bootstrap-tokenfield.css
-geonode/static/lib/js/assets.min.js
-geonode/static/lib/js/Control.Opacity.js
-geonode/static/lib/js/Leaflet.fullscreen.min.js
-geonode/static/lib/js/Leaflet.NavBar.js
-geonode/static/lib/js/leaflet-measure.js
-geonode/static/lib/js/leaflet-plugins.min.js
-geonode/static/lib/js/bootstrap-datepicker.js
-geonode/static/lib/js/bootstrap.js
-geonode/static/lib/js/jquery-ui.custom.js
-geonode/static/lib/js/jquery.ajaxQueue.js
-geonode/static/lib/js/jquery.ajaxprogress.js
-geonode/static/lib/js/jquery.dataTables.js
-geonode/static/lib/js/jquery.js
-geonode/static/lib/js/jquery.multi-select.js
-geonode/static/lib/js/jquery.timeago.js
-geonode/static/lib/js/jquery.tinysort.js
-geonode/static/lib/js/jquery.raty.js
-geonode/static/lib/js/json2.js
-geonode/static/lib/js/qunit.js
-geonode/static/lib/js/require.js
-geonode/static/lib/js/select2.js
-geonode/static/lib/js/text.js
-geonode/static/lib/js/underscore.js
-geonode/static/lib/js/waypoints.js
-geonode/static/lib/js/angular.min.js
-geonode/static/lib/js/angular.min.js.map
-geonode/static/lib/js/ZeroClipboard.min.js
-geonode/static/lib/js/moment.min.js
-geonode/static/lib/css/bootstrap-treeview.css
-geonode/static/lib/js/bootstrap-treeview.js
-geonode/static/lib/css/bootstrap-treeview.min.css
-geonode/static/lib/js/bootstrap-tokenfield.js
-geonode/static/lib/js/bootstrap-treeview.min.js
 
 # Uploaded files
 geonode/uploaded
+geonode/qgis_layer
+geonode/qgis_tiles
 
 #Testing output
 .coverage
 .noseids
+.cache
 geonode_test_data/
 nosetests.xml
 geonode/static/geonode/junit.xml
@@ -82,7 +43,8 @@ geonode/static/geonode/junit.xml
 #Temporary files
 *~
 *.swp
-celerybeat-schedule
+celerybeat-schedule.*
+*.log
 
 # OSX specific
 .Python
@@ -93,12 +55,6 @@ docs/_build
 
 # ec2.py
 scripts/cloud/.gnec2.cfg
-jquery.raty.js
-angular.js
-angular-leaflet-directive.min.js
-bootstrap.min.js
-jquery.min.js
-bootstrap.min.css
 uploaded
 development.db
 master
@@ -116,5 +72,12 @@ geonode/pip-selfcheck.json
 geonode/shapely/
 geonode/share/
 
+# Contrib monitoring module
+geonode/contrib/monitoring/frontend/node_modules
+geonode/contrib/monitoring/frontend/static
 # celery files
 celerybeat-schedule.*
+
+geonode\.tests\.bdd\.e2e\.test_login/
+
+*.log

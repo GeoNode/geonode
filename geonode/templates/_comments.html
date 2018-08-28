@@ -1,10 +1,8 @@
 {% load dialogos_tags %}
-{% load bootstrap_tags %}
 {% load pagination_tags %}
-{% load url from future %}
-{% load friendly_loader %}
+{% load bootstrap_tags %}
 {% load i18n %}
-{% friendly_load avatar_tags %}
+{% load avatar_tags %}
 
 {% load i18n %}
 <div id="comments_section" class="comments paginate paginate-manual">
@@ -26,7 +24,7 @@
   {% autopaginate comment_list 5 %}
   {% for comment in comment_list %}      
     <article class="col-md-8 comment">
-      <div class="avatar pull-left"><a href="{{ comment.author.get_absolute_url }}">{% avatar comment.author 40 %}</a></div>
+      <div class="avatar pull-left"><a href="{{ comment.author.get_absolute_url }}">{% autoescape off %}{% avatar comment.author 40 %}{% endautoescape %}</a></div>
       <p class="comment-description">
         {{ comment.comment }}
           <div class="comment-author">

@@ -1,0 +1,28 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load base_tags %}
+
+{% block title %} {% trans "Suggests an Endpoint"  %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}submit_map_service{% endblock %}
+
+{% block body_outer %}
+
+<div class="page-header">
+  <h2>{% trans "Submit Map Service URL" %}</h2>
+</div>
+
+<p>{% trans "Please describe the type of mapping within the map service (i.e. roads, water features, historic maps, satellite imagery, etc.), the name of the organization hosting the map service, the source of the data, and the year or year range the data represents." %}</p>
+<p>{% trans "Service harvesting and loading to WorldMap is currently a manual process so it may take some time for your map service layers to appear in search." %}</p>
+<p>{% trans "The system currently supports OGC WMS and CSW, as well as Esri Image and Map service endpoint types. If you are not sure what you have, feel free to submit it and we will attempt to load it." %}</p>
+<p>{% trans "Write us at worldmap@harvard.edu if you have any questions.  Thank you for your contribution." %}</p>
+
+<form action="" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value={% trans "Submit map service URL" %} class="btn btn-primary pull-right" />
+</form>
+
+{% endblock %}
+
+{% block footer %}{% endblock %}

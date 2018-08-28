@@ -86,16 +86,17 @@ def ajax_lookup(request):
             content='use a field named "query" to specify a prefix to filter usernames',
             content_type='text/plain')
     keyword = request.POST['query']
-    users = get_user_model().objects.filter(Q(username__istartswith=keyword) |
-                                            Q(first_name__icontains=keyword) |
-                                            Q(organization__icontains=keyword)).exclude(username='AnonymousUser')
-    groups = GroupProfile.objects.filter(Q(title__icontains=keyword))
+    users = get_user_model().objects.filter(Q(username__icontains=keyword)).exclude(Q(username='AnonymousUser') |
+                                                                                    Q(is_active=False))
+    groups = GroupProfile.objects.filter(Q(title__icontains=keyword) |
+                                         Q(slug__icontains=keyword))
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),
     }
 
-    json_dict['groups'] = [({'name': g.slug, 'title': g.title}) for g in groups]
+    json_dict['groups'] = [({'name': g.slug, 'title': g.title})
+                           for g in groups]
     return HttpResponse(
         content=json.dumps(json_dict),
         content_type='text/plain'
@@ -118,9 +119,9 @@ def ident_json(request):
             reverse('account_login') +
             '?next=' +
             request.get_full_path())
-
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     json_data = {}
-    json_data['siteurl'] = settings.SITEURL
+    json_data['siteurl'] = site_url
     json_data['name'] = settings.PYCSW['CONFIGURATION']['metadata:main']['identification_title']
 
     json_data['poc'] = {
@@ -138,10 +139,21 @@ def ident_json(request):
 
     json_data['counts'] = facets({'request': request, 'facet_type': 'home'})
 
-    return HttpResponse(content=json.dumps(json_data), mimetype='application/json')
+    return HttpResponse(content=json.dumps(json_data),
+                        mimetype='application/json')
 
 
 def h_keywords(request):
     from geonode.base.models import HierarchicalKeyword as hk
     keywords = json.dumps(hk.dump_bulk_tree())
     return HttpResponse(content=keywords)
+
+
+def moderator_contacted(request, inactive_user=None):
+    """Used when a user signs up."""
+    user = get_user_model().objects.get(id=inactive_user)
+    return TemplateResponse(
+        request,
+        template="account/admin_approval_sent.html",
+        context={"email": user.email}
+    )

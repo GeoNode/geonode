@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 LINK_TYPES = ['original', 'data', 'image', 'metadata', 'html',
               'OGC:WMS', 'OGC:WFS', 'OGC:WCS']
@@ -349,6 +349,7 @@ ALL_LANGUAGES = (
     ('fry', 'Frisian'),
     ('glg', 'Gallegan'),
     ('ger', 'German'),
+    ('gre', 'Greek'),
     ('kal', 'Greenlandic'),
     ('grn', 'Guarani'),
     ('guj', 'Gujarati'),

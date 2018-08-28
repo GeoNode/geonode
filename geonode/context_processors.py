@@ -29,16 +29,17 @@ from geonode.notifications_helper import has_notifications
 def resource_urls(request):
     """Global values to pass to templates"""
     site = Site.objects.get_current()
+
     defaults = dict(
         STATIC_URL=settings.STATIC_URL,
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
         ACCOUNT_OPEN_SIGNUP=settings.ACCOUNT_OPEN_SIGNUP,
+        ACCOUNT_APPROVAL_REQUIRED=settings.ACCOUNT_APPROVAL_REQUIRED,
         VERSION=get_version(),
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
         SITEURL=settings.SITEURL,
         INSTALLED_APPS=settings.INSTALLED_APPS,
-        RESOURCE_PUBLISHING=settings.RESOURCE_PUBLISHING,
         THEME_ACCOUNT_CONTACT_EMAIL=settings.THEME_ACCOUNT_CONTACT_EMAIL,
         DEBUG_STATIC=getattr(
             settings,
@@ -60,6 +61,10 @@ def resource_urls(request):
             settings,
             'DISPLAY_RATINGS',
             False),
+        DISPLAY_WMS_LINKS=getattr(
+            settings,
+            'DISPLAY_WMS_LINKS',
+            False),
         TWITTER_CARD=getattr(
             settings,
             'TWITTER_CARD',
@@ -75,6 +80,22 @@ def resource_urls(request):
         OPENGRAPH_ENABLED=getattr(
             settings,
             'OPENGRAPH_ENABLED',
+            False),
+        ADMIN_MODERATE_UPLOADS=getattr(
+            settings,
+            'ADMIN_MODERATE_UPLOADS',
+            False),
+        GROUP_MANDATORY_RESOURCES=getattr(
+            settings,
+            'GROUP_MANDATORY_RESOURCES',
+            False),
+        GROUP_PRIVATE_RESOURCES=getattr(
+            settings,
+            'GROUP_PRIVATE_RESOURCES',
+            False),
+        RESOURCE_PUBLISHING=getattr(
+            settings,
+            'RESOURCE_PUBLISHING',
             False),
         HAYSTACK_SEARCH=getattr(
             settings,
@@ -92,6 +113,10 @@ def resource_urls(request):
             settings,
             'CLIENT_RESULTS_LIMIT',
             10),
+        API_LIMIT_PER_PAGE=getattr(
+            settings,
+            'API_LIMIT_PER_PAGE',
+            20),
         SRID_DETAIL=getattr(
             settings,
             'SRID',
@@ -116,7 +141,10 @@ def resource_urls(request):
             dict()).get(
             'METADATA',
             'never'),
+        USE_GEOSERVER=settings.USE_GEOSERVER,
         USE_NOTIFICATIONS=has_notifications,
+        USE_MONITORING='geonode.contrib.monitoring' in settings.INSTALLED_APPS and settings.MONITORING_ENABLED,
+        USE_WORLDMAP=settings.USE_WORLDMAP,
         DEFAULT_ANONYMOUS_VIEW_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_VIEW_PERMISSION', False),
         DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', False),
         EXIF_ENABLED=getattr(
@@ -136,8 +164,53 @@ def resource_urls(request):
         MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS=getattr(
             settings, 'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS', False
         ),
+        SHOW_PROFILE_EMAIL=getattr(
+            settings,
+            "SHOW_PROFILE_EMAIL",
+            False
+        ),
+        OGC_SERVER=getattr(settings, 'OGC_SERVER', None),
     )
-    defaults['message_create_url'] = 'message_create' if not settings.USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS\
-        else 'message_create_multiple'
+    if settings.USE_WORLDMAP:
+        defaults['GEONODE_CLIENT_LOCATION'] = getattr(
+            settings,
+            'GEONODE_CLIENT_LOCATION',
+            '/static/worldmap/worldmap_client/'
+        )
+
+        defaults['USE_HYPERMAP'] = getattr(
+            settings,
+            'USE_HYPERMAP',
+            False
+        )
+
+        # TODO disable DB_DATASTORE setting
+        defaults['DB_DATASTORE'] = True
+
+        defaults['HYPERMAP_REGISTRY_URL'] = settings.HYPERMAP_REGISTRY_URL
+
+        defaults['MAPPROXY_URL'] = settings.HYPERMAP_REGISTRY_URL
+
+        defaults['SOLR_URL'] = settings.SOLR_URL
+
+        defaults['USE_GAZETTEER'] = settings.USE_GAZETTEER
+
+        defaults['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
+
+        defaults['GOOGLE_MAPS_API_KEY'] = settings.GOOGLE_MAPS_API_KEY
+
+        defaults['WM_COPYRIGHT_URL'] = getattr(
+                                                   settings,
+                                                   'WM_COPYRIGHT_URL',
+                                                   'http://gis.harvard.edu/'
+                                               )
+
+        defaults['WM_COPYRIGHT_TEXT'] = getattr(
+                                                    settings,
+                                                    'WM_COPYRIGHT_TEXT',
+                                                    'Center for Geographic Analysis'
+                                                )
+
+        defaults['HYPERMAP_REGISTRY_URL'] = settings.HYPERMAP_REGISTRY_URL
 
     return defaults

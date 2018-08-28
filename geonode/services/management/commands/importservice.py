@@ -19,7 +19,6 @@
 #########################################################################
 
 from django.core.management.base import BaseCommand
-from optparse import make_option
 from geonode.services.models import Service
 from geonode.services.views import _register_cascaded_service, _register_indexed_service, \
     _register_harvested_service, _register_cascaded_layers, _register_indexed_layers
@@ -31,19 +30,24 @@ import sys
 class Command(BaseCommand):
 
     help = 'Import a remote map service into GeoNode'
-    option_list = BaseCommand.option_list + (
 
-        make_option('-o', '--owner', dest="owner", default=None,
-                    help="Name of the user account which should own the imported layers"),
-        make_option('-r', '--registerlayers', dest="registerlayers", default=False,
-                    help="Register all layers found in the service"),
-        make_option('-u', '--username', dest="username", default=None,
-                    help="Username required to login to this service if any"),
-        make_option('-p', '--password', dest="password", default=None,
-                    help="Username required to login to this service if any"),
-        make_option('-s', '--security', dest="security", default=None,
-                    help="Security permissions JSON - who can view/edit"),
-    )
+    def add_arguments(self, parser):
+
+        # Named (optional) arguments
+        parser.add_argument('-o', '--owner', dest="owner", default=None,
+                            help="Name of the user account which should own the imported layers")
+
+        parser.add_argument('-r', '--registerlayers', dest="registerlayers", default=False,
+                            help="Register all layers found in the service")
+
+        parser.add_argument('-u', '--username', dest="username", default=None,
+                            help="Username required to login to this service if any")
+
+        parser.add_argument('-p', '--password', dest="password", default=None,
+                            help="Username required to login to this service if any")
+
+        parser.add_argument('-s', '--security', dest="security", default=None,
+                            help="Security permissions JSON - who can view/edit")
 
     args = 'url name type method'
 

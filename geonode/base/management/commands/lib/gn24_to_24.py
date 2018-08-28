@@ -24,6 +24,7 @@ try:
     import json
 except ImportError:
     from django.utils import simplejson as json
+from django.utils import timezone
 
 
 class DefaultMangler(json.JSONDecoder):
@@ -105,7 +106,7 @@ class ResourceBaseMangler(DefaultMangler):
         obj['fields']['context'] = None
         obj['fields']['error'] = None
         obj['fields']['processed'] = True
-        obj['fields']['date'] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+        obj['fields']['date'] = datetime.datetime.now(timezone.get_current_timezone()).strftime("%Y-%m-%dT%H:%M:%S")
 
         return obj
 

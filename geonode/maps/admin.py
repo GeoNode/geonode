@@ -40,9 +40,12 @@ class MapAdminForm(ResourceBaseAdminForm):
 class MapAdmin(MediaTranslationAdmin):
     inlines = [MapLayerInline, ]
     list_display_links = ('title',)
-    list_display = ('id', 'title', 'owner', 'is_published', 'featured',)
-    list_filter = ('owner', 'category', 'featured', 'is_published',)
-    search_fields = ('title', 'abstract', 'purpose',)
+    list_display = ('id', 'title', 'owner', 'category', 'group', 'is_approved', 'is_published', 'featured',)
+    list_editable = ('owner', 'category', 'group', 'is_approved', 'is_published', 'featured',)
+    list_filter = ('owner', 'category', 'group', 'featured',
+                   'is_approved', 'is_published',)
+    search_fields = ('title', 'abstract', 'purpose',
+                     'is_approved', 'is_published',)
     form = MapAdminForm
     actions = [metadata_batch_edit]
 

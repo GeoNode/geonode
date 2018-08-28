@@ -1,0 +1,43 @@
+{% load static from staticfiles %}
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+{% include "wm_extra/maps/ext_header.html" %}
+{% include "wm_extra/maps/app_header.html" %}
+{% include "wm_extra/maps/geo_header.html" %}
+
+<script type="text/javascript" src="{% static "geonode/js/extjs/GeoNode-mixin.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/Geonode-CatalogueApiSearch.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/GeoNode-GeoExplorer.js" %}"></script>
+<script type="text/javascript">
+var app;
+Ext.onReady(function() {
+{% autoescape off %}
+    GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
+    var config = Ext.apply({
+        tools: [{
+            ptype: "gxp_wmsgetfeatureinfo",
+            format: "grid",
+            actionTarget: "main.tbar",
+            outputConfig: {width: 400, height: 200, panIn: false}
+        }],
+        useToolbar: true,
+        {% if PROXY_URL %}
+        proxy: '{{ PROXY_URL }}',
+        {% endif %}
+        {% if MAPFISH_PRINT_ENABLED %}
+        printService: "{{GEOSERVER_BASE_URL}}pdf/",
+        {% else %}
+        printService: "",
+        {% endif %}
+        rest: "/maps/",
+        // tell the map viewer where and how to be rendered
+        portalConfig: {
+            height: 600,
+            renderTo: "the_map"
+        }
+    }, {{ config }});
+    app = new GeoExplorer.Viewer(config);
+{% endautoescape %}
+});
+</script>

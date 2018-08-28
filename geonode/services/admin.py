@@ -20,23 +20,31 @@
 
 from django.contrib import admin
 
-from geonode.services.models import Service, ServiceLayer
 from geonode.base.admin import ResourceBaseAdminForm
+
+from . import models
+
+
+class HarvestJobAdminInline(admin.StackedInline):
+    model = models.HarvestJob
+    extra = 0
 
 
 class ServiceAdminForm(ResourceBaseAdminForm):
 
     class Meta:
-        model = Service
+        model = models.Service
         fields = '__all__'
 
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'type', 'method')
+    list_display = ('id', 'name', 'base_url', 'type', 'method')
     list_display_links = ('id', 'name', )
     list_filter = ('type', 'method')
     form = ServiceAdminForm
+    inlines = (
+        HarvestJobAdminInline,
+    )
 
 
-admin.site.register(Service, ServiceAdmin)
-admin.site.register(ServiceLayer)
+admin.site.register(models.Service, ServiceAdmin)

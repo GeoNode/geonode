@@ -1,0 +1,9 @@
+{% load static from staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/ext/resources/css/ext-all.css" %}?v={{ VERSION }}" />
+<script type="text/javascript" src="{% static "geoexplorer/externals/ext/adapter/ext/ext-base.js" %}?v={{ VERSION }}"></script>
+<script type="text/javascript" src="{% static "geoexplorer/externals/ext/ext-all.js" %}?v={{ VERSION }}"></script>
+
+<script type="text/javascript">
+  Ext.Ajax.defaultHeaders = { 'X-CSRFToken': '{{ csrf_token|escapejs }}' };
+  Ext.BLANK_IMAGE_URL = "{% static "geoexplorer/externals/ext/resources/images/default/s.gif" %}";
+</script>

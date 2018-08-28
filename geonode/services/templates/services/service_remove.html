@@ -14,10 +14,36 @@
       {% csrf_token %}
       <input type="hidden" value="{{next}}" id="next" name="next">
       <div class="form-actions">
-        <input class="btn btn-danger" type="submit" value="{% trans "Yes, I am sure" %}" />
+        <input class="btn btn-danger" id="confirmDelete" type="submit" value="{% trans "Yes, I am sure" %}" />
         <a class="btn btn-deafult" href="{{ service.get_absolute_url }}">{% trans "No, don't remove it" %}</a>
       </div>
     </form>
   </div>
 </div>
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                {% trans "Deleting service and its associated resources..." %}
+            </div>
+            <div class="modal-body">
+                <div class="progress" id="serviceRegisterProgress">
+                    <div class="progress-bar progress-bar-striped progress-bar-danger active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
+
+{% block extra_script %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#confirmDelete').on("click", function() {
+                $("#progressModal").modal("show");
+            });
+        });
+    </script>
+{% endblock extra_script %}

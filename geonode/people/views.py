@@ -22,18 +22,17 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
-from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.http import HttpResponseForbidden
+from django.db.models import Q
 
 from geonode.people.models import Profile
 from geonode.people.forms import ProfileForm
 from geonode.people.forms import ForgotUsernameForm
-from geonode.tasks.email import send_email
+from geonode.tasks.tasks import send_email
 
 
 @login_required
@@ -45,7 +44,7 @@ def profile_edit(request, username=None):
         except Profile.DoesNotExist:
             return redirect("profile_browse")
     else:
-        profile = get_object_or_404(Profile, username=username)
+        profile = get_object_or_404(Profile, Q(is_active=True), username=username)
 
     if username == request.user.username or request.user.is_superuser:
         if request.method == "POST":
@@ -71,7 +70,7 @@ def profile_edit(request, username=None):
 
 
 def profile_detail(request, username):
-    profile = get_object_or_404(Profile, username=username)
+    profile = get_object_or_404(Profile, Q(is_active=True), username=username)
     # combined queryset from each model content type
 
     return render(request, "people/profile_detail.html", {
@@ -107,8 +106,7 @@ def forgot_username(request):
             else:
                 message = _("No user could be found with that email address.")
 
-    return render_to_response('people/forgot_username_form.html',
-                              RequestContext(request, {
+    return render(request, 'people/forgot_username_form.html', context={
                                   'message': message,
                                   'form': username_form
-                              }))
+                              })

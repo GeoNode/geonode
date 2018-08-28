@@ -1,0 +1,324 @@
+{% extends "wm_extra/maps/fullscreen.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block title %} {{maptitle}}{% endblock %}
+
+{% block head %}
+
+<script src="http://maps.google.com/maps/api/js?v=3&key={{GOOGLE_MAPS_API_KEY}}"></script>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+{% include "wm_extra/maps/ext_header.html" %}
+{% include "wm_extra/maps/app_header.html" %}
+{% include "wm_extra/maps/geo_header.html" %}
+
+<script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
+<script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
+<script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
+
+{% if "gme-" in GOOGLE_API_KEY %}
+    <script src="https://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
+{% else %}
+    <script src="https://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
+{% endif %}
+
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/spinner/Spinner.css" />
+<style type="text/css">
+    #templates { display: none; }
+</style>
+
+{{ block.super }}
+
+<script>
+    var originalConfigureLayerNode =  GeoExt.WMSLegend.prototype.getLegendUrl;
+    GeoExt.WMSLegend.prototype.getLegendUrl = function(layerName,layerNames) {
+        var rec = this.layerRecord;
+        var layer = rec.getLayer();
+        if (OpenLayers.Layer.WMS && layer instanceof OpenLayers.Layer.WMS && layer.getVisibility() === false) {
+            return "";
+        } else {
+            return originalConfigureLayerNode.apply(this, arguments);
+        }
+    };
+    var app;
+    var init = function() {
+    {% autoescape off %}
+        var config = Ext.apply({
+            tools:  [{
+                      ptype: "gxp_geonodequerytool",
+                      id: "worldmap_query_tool",
+                      actionTarget:  {target: "paneltbar", index: 2},
+                      toolText: '<span class="x-btn-text">{% trans 'Identify' %}</span>',
+                      iconCls: null,
+                      outputConfig: {width: 400, height: 200, panIn: false},
+                      featurePanel: 'queryPanel',
+                      attributePanel: 'gridWinPanel',
+                      toggleGroup: 'featureGroup'
+                    },
+                    {
+                        ptype: "gxp_coordinatetool",
+                        title: "<span class='x-btn-text'>{% trans 'Map Coordinates - longitude, latitude' %}</span>",
+                        actionTarget:  {target: "paneltbar"}
+                    },
+                    {
+                        ptype: "gxp_printpage",
+                        openInNewWindow: true,
+                        includeLegend: true,
+                        text: '<span class="x-btn-text">{% trans 'Print' %}</span>',
+                        iconCls: null,
+                        actionTarget: {target: "paneltbar", index: 4}
+                    },
+                    {
+                        ptype: "gxp_annotation",
+                        user: "{{ user.id }}",
+                        toggleGroup: 'featureGroup',
+                        actionTarget:  {target: "paneltbar", index: 6}
+                    },
+                    {
+                    	ptype: "gxp_streetviewtool",
+                    	actionTarget:   {target: "paneltbar", index: 7},
+                        toggleGroup: 'featureGroup'
+                    },
+                    {
+                    	  ptype: "gxp_measure",
+                        toggleGroup: 'featureGroup',
+                        text: '<span class="x-btn-text">{% trans 'Measure' %}</span>',
+                        iconCls: null,
+                    	  actionTarget:   {target: "paneltbar", index: 8}
+                    },
+                    {
+                    	ptype: 'gxp_mapshare',
+                    	target: this,
+                    	text: '<span class="x-btn-text">{% trans 'Share Map' %}</span>',
+                    	iconCls: null,
+                        actionTarget:  {target: "paneltbar", index: 24}
+                    }
+                    {% if USE_GAZETTEER %},
+                    {
+                        ptype: "gxp_gazetteertool",
+                        actionTarget:  {target: "paneltbar", index: 5},
+                        title: '<span class="x-btn-text">{% trans 'Find Place' %}</span>',
+                        iconCls: null,
+                        toggleGroup: 'featureGroup',
+                        pressed: false
+                    }
+                    {% endif %}
+                    {% if user.is_authenticated and DB_DATASTORE  %},
+                    {
+                        ptype: "gxp_featuremanager",
+                        id: "feature_manager",
+                        paging: false,
+                        autoSetLayer: true,
+                        autoLoadFeatures: true,
+                        listeners: {
+                            'layerchange': function(mgr, layer, schema) {
+                                app.checkLayerPermissions(layer);
+                            }
+                        },
+                        actionTarget:  {target: "paneltbar"},
+                        toggleGroup: 'featureGroup'
+                    },
+                    {
+                        ptype: "gxp_featureeditor",
+                        id: "gn_layer_editor",
+                        featureManager: "feature_manager",
+                        autoLoadFeature: true,
+                        iconClsAdd: null,
+                        iconClsEdit: null,
+                        createFeatureActionText: '<span class="x-btn-text" >{% trans 'Create Feature' %}</span>',
+                        editFeatureActionText: '<span class="x-btn-text">{% trans 'Edit Feature' %}</span>',
+                        actionTarget:  {target: "paneltbar", index: 2},
+                        toggleGroup: 'featureGroup'
+                    }
+                    {% endif %}
+                    {% if user.is_authenticated %},
+                    {
+                    	ptype: "gxp_maprevisiontool",
+                    	actionTarget:   {target: "paneltbar", index: 20}
+                    }{% endif %}
+                    ],
+
+            {% if PROXY_URL %}
+            proxy: '{{ PROXY_URL }}',
+            {% endif %}
+
+            {% if 'access_token' in request.session %}
+            access_token: "{{request.session.access_token}}",
+            {% else %}
+            access_token: null,
+            {% endif %}
+
+            {% if MAPFISH_PRINT_ENABLED %}
+            printService: "{{GEOSERVER_BASE_URL}}pdf/",
+            {% else %}
+            printService: null,
+            printCapabilities: null,
+            {% endif %}
+
+            /* The URL to a REST map configuration service.  This service
+             * provides listing and, with an authenticated user, saving of
+             * maps on the server for sharing and editing.
+             */
+            rest: "{% url "maps_browse" %}",
+            ajaxLoginUrl: "{% url "account_ajax_login" %}",
+            homeUrl: "{% url "home" %}",
+
+            {% if 'access_token' in request.session %}
+            localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}?access_token={{request.session.access_token}}",
+            access_token: "{{request.session.access_token}}",
+            {% else %}
+            localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+            access_token: null,
+            {% endif %}
+
+            localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",
+
+            {% if USE_HYPERMAP %}
+                use_hypermap: true,
+            {% else %}
+                use_hypermap: false,
+            {% endif %}
+
+            hypermapRegistryUrl: "{{ HYPERMAP_REGISTRY_URL }}",
+            mapProxyUrl: "{{ MAPPROXY_URL }}",
+            solrUrl: "{{ SOLR_URL }}",
+            copyrightUrl: "{{ WM_COPYRIGHT_URL }}",
+            copyrightText: "{{ WM_COPYRIGHT_TEXT }}",
+            username: "{{ user.username }}",
+            csrfToken: "{{ csrf_token }}",
+
+            {% if user.is_authenticated %}
+            db_datastore: true,
+            {% endif %}
+
+            authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
+        }, {{ config }});
+
+        app = new GeoExplorer(config, true);
+        var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
+        var permalink = function(id) {
+            return permalinkTemplate.apply({
+                protocol: window.location.protocol,
+                host: window.location.host,
+                id: id
+            })
+        };
+        {% endautoescape %}
+    }
+    $(document).ready(init);
+</script>
+
+{% endblock %}
+
+{% block body %}
+<div id="header-wrapper">
+    {{ block.super }}
+    <div id="dataTabs" class="x-hidden">
+        <div id="searchDiv" style="background-color:#fff;width:100%;">
+            <div style="position:relative;float:left;margin:10px;width:500px;height:250px;">
+                <div class="block">
+                    <div id="search_form"></div>
+                </div>
+                <div id="refine" style="float:left;width:100%;padding-bottom:15px;">
+                    <div class="bbox-controls">
+                        <div class="bbox-expand"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="position:relative;float:right;width:330px;margin-right:10px;">
+                <div style="">
+                    <div id="search_results" style="margin-left:15px;"></div>
+                    <div id="search_controls"></div>
+                    <div id="selection">
+                        <div id="data_cart" style="margin-left:15px;"></div>
+                    </div>
+                    <div id="data_ops" style="margin-left: 15px; float:left"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="externalDiv"></div>
+
+        {% if user.is_authenticated %}
+            <div id="uploadDiv">
+                <div id="tabContainer" style="padding:20px;">
+                    <div style="position:relative;float:left;">
+                        <h3>{%trans "Upload a Layer"  %}</h3>
+                        <p style="font-size: 14px">
+                          <a href='{% url 'layer_upload' %}'>{% trans "Click here to upload a layer." %}</a>
+                          {% trans "Remember to save the map before." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% if DB_DATASTORE  %}
+              <div id="createDiv">
+                  <div id="tabContainer" style="padding:20px;">
+                      <div style="position:relative;float:left;">
+                          <h3>{%trans "Create a new Layer"  %}</h3>
+                          <p style="font-size: 14px">
+                            <a href='{% url 'layer_create' %}'>{% trans "Click here to create a new layer." %}</a>
+                            {% trans "Remember to save the map before." %}
+                          </p>
+                      </div>
+                  </div>
+              </div>
+            {% endif %}
+        {% endif %}
+
+        <div id="warpDiv">
+            <div id="tabContainer" style="padding:20px;">
+
+                <div style="position:relative;float:left;">
+                    <h3>{%trans "Rectify Images"  %}</h3>
+                    <p style="font-size: 14px">{% trans "Use <a target='_blank' href='https://mapwarper.net/'>Map Warper</a> to upload and rectify scanned maps for use in WorldMap." %} <br/><br/> {% trans "Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 4.5 in <a href='{% static "docs/WorldMap_Help.pdf" %}'>WorldMap Help</a>." %}</p>
+                    <br/><br/>
+                    <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{% static "worldmap/theme/img/warper-sample.jpg" %}" border="0" /></a></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="submitEndpointDiv">
+            <div id="tabContainer" style="padding:20px;">
+
+                <div style="position:relative;float:left;">
+
+
+                    <h3>{%trans "Submit a Map Service URL"  %}</h3>
+
+                    <p style="font-size: 14px">
+                      {% trans "<a target='_blank' href='/maps/add_endpoint'>Submit a Map Service URL</a>" %}
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="submitEndpointDiv">
+            <div id="tabContainer" style="padding:20px;">
+
+                <div style="position:relative;float:left;">
+
+
+                    <h3>{%trans "Submit a Map Service URL"  %}</h3>
+
+                    <p style="font-size: 14px">
+                      {% trans "<a target='_blank' href='/maps/add_endpoint'>Submit a Map Service URL</a>" %}
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="featuredetails" style="float:right; width: 300px"></div>
+
+
+
+{% endblock %}

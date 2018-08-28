@@ -9,7 +9,7 @@ So far GeoNode implements two distinct roles, that can be assigned to resources 
 * party who authored the resource
 * party who can be contacted for acquiring knowledge about or acquisition of the resource
 
-This two profiles can be set in the GeoNode interface by accessing the metadata page and setting the "Point of Contact" and "Metadata Author" fields respectively.
+These two profiles can be set in the GeoNode interface by accessing the metadata page and setting the "Point of Contact" and "Metadata Author" fields respectively.
 
 Is possible for an administrator to add new roles if needed, by clicking on the "Add Role" button in the "Base" -> "Contact Roles" section:
 

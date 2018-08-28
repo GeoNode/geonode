@@ -1,6 +1,8 @@
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block extra_head %}
-<link href="{{ STATIC_URL }}geonode/css/social_twitter.css" rel="stylesheet" />
+<link href="{% static "geonode/css/social_twitter.css" %}" rel="stylesheet" />
 {% endblock %}
 
 {% block social_links %}

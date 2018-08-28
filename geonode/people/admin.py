@@ -18,9 +18,10 @@
 #
 #########################################################################
 
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.forms import AdminPasswordChangeForm
-from django.utils.translation import ugettext, ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.db import transaction
@@ -70,7 +71,7 @@ class ProfileAdmin(admin.ModelAdmin):
     form = ProfileChangeForm
     add_form = ProfileCreationForm
     change_password_form = AdminPasswordChangeForm
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('username',)
@@ -91,15 +92,15 @@ class ProfileAdmin(admin.ModelAdmin):
                 'form': self.add_form,
                 'fields': admin.utils.flatten_fieldsets(self.add_fieldsets),
             })
+
         defaults.update(kwargs)
         return super(ProfileAdmin, self).get_form(request, obj, **defaults)
 
     def get_urls(self):
-        from django.conf.urls import patterns
-        return patterns('',
-                        (r'^(\d+)/password/$',
-                         self.admin_site.admin_view(self.user_change_password))
-                        ) + super(ProfileAdmin, self).get_urls()
+        return [  # '',
+                url(r'^(\d+)/password/$',
+                    self.admin_site.admin_view(self.user_change_password))
+               ] + super(ProfileAdmin, self).get_urls()
 
     def lookup_allowed(self, lookup, value):
         # See #20078: we don't want to allow any lookups involving passwords.
@@ -130,6 +131,7 @@ class ProfileAdmin(admin.ModelAdmin):
         if extra_context is None:
             extra_context = {}
         username_field = self.model._meta.get_field(self.model.USERNAME_FIELD)
+
         defaults = {
             'auto_populated_fields': (),
             'username_help_text': username_field.help_text,
@@ -152,7 +154,7 @@ class ProfileAdmin(admin.ModelAdmin):
                     form,
                     None)
                 self.log_change(request, user, change_message)
-                msg = ugettext('Password changed successfully.')
+                msg = _('Password changed successfully.')
                 messages.success(request, msg)
                 return HttpResponseRedirect('..')
         else:
@@ -166,7 +168,7 @@ class ProfileAdmin(admin.ModelAdmin):
             'adminForm': adminForm,
             'form_url': form_url,
             'form': form,
-            'is_popup': IS_POPUP_VAR in request.REQUEST,
+            'is_popup': IS_POPUP_VAR in request.GET,
             'add': True,
             'change': False,
             'has_delete_permission': False,
@@ -180,7 +182,7 @@ class ProfileAdmin(admin.ModelAdmin):
         return TemplateResponse(request,
                                 self.change_user_password_template or
                                 'admin/auth/user/change_password.html',
-                                context, current_app=self.admin_site.name)
+                                context)  # , using=self.admin_site.name)
 
     def response_add(self, request, obj, post_url_continue=None):
         """
@@ -194,7 +196,10 @@ class ProfileAdmin(admin.ModelAdmin):
         # * The user has pressed the 'Save and add another' button
         # * We are adding a user in a popup
         if '_addanother' not in request.POST and IS_POPUP_VAR not in request.POST:
+            mutable = request.POST._mutable
+            request.POST._mutable = True
             request.POST['_continue'] = 1
+            request.POST._mutable = mutable
         return super(ProfileAdmin, self).response_add(request, obj,
                                                       post_url_continue)
 

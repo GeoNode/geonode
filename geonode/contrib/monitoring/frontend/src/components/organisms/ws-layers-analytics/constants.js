@@ -1,0 +1,2 @@
+export const WS_LAYER_RESPONSE = 'WS_LAYER_RESPONSE';
+export const WS_LAYER_ERROR = 'WS_LAYER_ERROR';

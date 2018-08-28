@@ -26,15 +26,15 @@ Linux
 Ubuntu (standard deployment)
 ----------------------------
 
-The easiest way to get the .deb is to install it using APT, the standard installation management tool for Ubuntu. The current release, 2.4 is available only for Ubuntu 14.04.
+The easiest way to get the .deb is to install it using APT, the standard installation management tool for Ubuntu. The current release, 2.8 is available only for Ubuntu 16.04.
 
-These instructions have been tested on a fresh install of Ubuntu 14.04.5 LTS 64 bit server edition. Please ensure the latest packages are installed with::
+These instructions have been tested on a fresh install of Ubuntu 16.04 64 bit server edition. Please ensure the latest packages are installed with::
 
     sudo apt-get update; sudo apt-get upgrade
 
 Amongst other things, this will ensure that the ``software-properties-common`` package is installed, which is required to make the ``add-apt-repository`` command used below available.
 
-The steps to install geonode and all dependencies in Ubuntu 14.04 are as follows:
+The steps to install geonode and all dependencies in Ubuntu 16.04 are as follows:
 
 1. Set up the GeoNode PPA repository (you only need to do this once; the repository will still be available for upgrades later)::
 
@@ -42,27 +42,31 @@ The steps to install geonode and all dependencies in Ubuntu 14.04 are as follows
 
    .. note:: If you want to try latest unstable version of GeoNode, add the repository::
 
-       sudo add-apt-repository ppa:geonode/test
+       sudo add-apt-repository ppa:geonode/testing
 
 2. Install the geonode package and dependencies::
 
-    sudo apt-get update; sudo apt-get install geonode
+    sudo apt-get update; sudo apt-get upgrade; sudo apt-get autoremove
+    sudo apt-get install geonode
 
-3. Create a geonode superuser, which is used in the geonode web application. You will be prompted for a username, email and password::
+3. Set the correct IP address (NB: the first command below looks up the IP address automatically)::
 
-    geonode createsuperuser
+   .. note:: If you want to run geonode on your local instance, just run::
 
-4. Set the correct IP public address (NB: the first command below looks up the IP address automatically)::
+       sudo geonode-updateip localhost
 
     IP_ADDRESS=$(ip route get 8.8.8.8 | awk '{print $NF; exit}')
-    sudo geonode-updateip -p $IP_ADDRESS
-   
+    sudo geonode-updateip $IP_ADDRESS
+
    NB: The IP address must be set to enable access from another machine, e.g. the host machine if geonode is installed in a virtual machine.
-   NB: If geoserver is not on the same machine as geonode then also add the local address og your geonode by adding -l yourlocaladdress
 
-5. Access geonode from your web browser, using the IP address from step 3 above. The neonode web applicaiton should be displayed and you can log in using the superuser details entered immediately above::
+4. Access geonode from your web browser, using the IP address from step 3 above. The neonode web applicaiton should be displayed and you can log in using the superuser details entered immediately above::
 
-    http://[IP_ADDRESS]
+.. note:: If you want to access geonode on your local instance, just go to::
+
+       http://localhost/
+
+    http://[IP_ADDRESS]/
 
 NB: With this installation method you use ``sudo geonode xxxx`` in place of any ``python manage.py xxx`` command referred to in documentation. For example, try::
 
@@ -73,7 +77,7 @@ For further information, read the Admin Docs at http://docs.geonode.org/en/maste
 Ubuntu (for development)
 ---------------------------------
 
-This option installs geonode in a virtual environment. This option is very useful in case you want to develop using Ubuntu (tested on Ubuntu 14.04 LTS)::
+This option installs geonode in a virtual environment. This option is very useful in case you want to develop using Ubuntu (tested on Ubuntu 16.04 LTS)::
 
     # Install Ubuntu dependencies
     sudo apt-get update
@@ -93,19 +97,19 @@ This option installs geonode in a virtual environment. This option is very usefu
     cd geonode
 
     # Install pip dependencies
-    pip install -r requirements.txt
-    pip install -e .
-    
+    pip install -r requirements.txt --upgrade
+    pip install -e . --upgrade --no-cache
+
     sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update
     sudo apt-get install gdal-bin
-    # check GDAL version
-    gdalinfo --version
-    
-    # install the correct PyGDAL version (>1.10.1)
-    pip install pygdal==`gdal-config --version`
+  
+    # install the correct PyGDAL version
+    gdal-config --version | cut -c 1-5 | xargs -I % pip install 'pygdal>=%.0,<=%.999'
 
-    # if you cannot find exactly the same version, be sure to install at least the closer major one e.g. 2.1.2 -> 2.1.2.3
-    
+    # if the command cannot install a suitable version, be sure to install at least the closer major one e.g. 2.1.2 -> 2.1.2.3
+    # gdalinfo --version
+    # pip install pygdal==`gdal-config --version`
+
 You can now setup and start GeoNode::
 
     # Paver setup
@@ -115,14 +119,29 @@ You can now setup and start GeoNode::
 
 In case you want to be involved in static files development::
 
-    sudo apt-get install npm
-    sudo npm install
-    sudo npm install -g bower
-    sudo npm install -g grunt
+    # The following lines must be run only the first time
+    sudo apt-get install -y nodejs, npm
+
 
 Rebuild libraries through::
 
     cd geonode/static
+
+    # The following lines must be run only the first time
+    npm install --save-dev
+    npm install bower --save-dev
+    npm install grunt-cli --save-dev
+    npm install grunt-contrib-jshint --save-dev
+    npm install grunt-contrib-less --save-dev
+    npm install grunt-contrib-concat --save-dev
+    npm install grunt-contrib-copy --save-dev
+    npm install grunt-text-replace --save-dev
+    npm install grunt-contrib-uglify --save-dev
+    npm install grunt-contrib-cssmin --save-dev
+    npm install grunt-contrib-watch --save-dev
+    npm install -g grunt-cli
+
+    # Later you can just do the following
     bower cache clean
     bower update
     grunt production
@@ -185,7 +204,7 @@ Install Python native dependencies, this command will look for and install binar
 
 Install GeoNode in the local virtualenv::
 
-    pip install -e .
+    pip install -e . --upgrade --no-cache
 
 You have two options to set up the GEOS and GDAL libraries.  Either create an environment variable
 or add the variables to your local_settings.py file as below.
@@ -250,7 +269,7 @@ On a production environment, remember to refresh also the "static_root" folder::
 
 Install pip dependencies::
 
-    pip install -e .
+    pip install -e . --upgrade --no-cache
 
 Paver handles dependencies for Geonode, first setup (this will download and update your python dependencies - ensure you're in a virtualenv)::
 
@@ -315,4 +334,3 @@ CentOS/RHEL and other \*nix distros
 We recommend you to download the latest release and modify the included ``install.sh`` and ``support/config.sh``. GeoNode has been installed in CentOS/RHEL using this mechanism.
 
 Once the package is installed, please consult the :ref:`custom_install` to learn how to create the admin user and tweak the settings to get more performance.
-

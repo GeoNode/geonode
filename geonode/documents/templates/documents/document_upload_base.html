@@ -1,6 +1,8 @@
 {% extends "geonode_base.html" %}
 {% load i18n %}
-{% load url from future %}
+{% load base_tags %}
+{% load guardian_tags %}
+{% load pagination_tags %}
 
 {% block title %} {{ block.super }} {% endblock %}
 
@@ -8,7 +10,7 @@
 
 {% block body_outer %}
 <div class="page-header">
-  <a href="{% url "document_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
+  <a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
   <h2 class="page-title">{% trans "Upload Documents" %}</h2>
 	<p>Allowed document types:</p>
 	<p>

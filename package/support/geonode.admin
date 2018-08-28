@@ -1,20 +1,18 @@
-[
-    {
-        "pk": 9999,
-        "model": "people.Profile",
-        "fields": {
-            "username": "geonode",
-            "first_name": "",
-            "last_name": "",
-            "is_active": true,
-            "is_superuser": true,
-            "is_staff": true,
-            "last_login": "2011-03-29 23:32:19",
-            "groups": [],
-            "user_permissions": [],
-            "password": "!",
-            "email": "",
-            "date_joined": "2011-03-29 23:32:19"
-        }
-    }
-]
+[{
+	"fields": {
+		"date_joined": "2011-06-09 15:15:27",
+		"email": "ad@m.in",
+		"first_name": "",
+		"groups": [],
+		"is_active": true,
+		"is_staff": true,
+		"is_superuser": true,
+		"last_login": "2011-06-09 15:45:34",
+		"last_name": "",
+		"password": "pbkdf2_sha256$30000$rjuGt0Obn8on$cxF75frIOSaitNklLZ0IJ/VonUW0fwEFVF96o0M+lGc=",
+		"user_permissions": [],
+		"username": "admin"
+	},
+	"model": "people.Profile",
+	"pk": 1000
+}]

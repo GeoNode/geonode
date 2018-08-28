@@ -21,13 +21,12 @@
 import uuid
 import logging
 
-from datetime import datetime
-
 from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from django.utils.translation import ugettext as _
+from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
 
@@ -35,7 +34,11 @@ from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_
 from geonode.people.utils import get_valid_user
 from agon_ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
-from geonode.security.models import remove_object_permissions
+from geonode.security.models import PermissionLevelMixin
+from geonode.security.utils import remove_object_permissions
+
+from ..services.enumerations import CASCADED
+from ..services.enumerations import INDEXED
 
 logger = logging.getLogger("geonode.layers.models")
 
@@ -58,8 +61,12 @@ TIME_REGEX_FORMAT = {
     '[0-9]{8}T[0-9]{6}Z': '%Y%m%dT%H%M%SZ'
 }
 
+# these are only used if there is no user-configured value in the settings
+_DEFAULT_CASCADE_WORKSPACE = "cascaded-services"
+_DEFAULT_WORKSPACE = "cascaded-services"
 
-class Style(models.Model):
+
+class Style(models.Model, PermissionLevelMixin):
 
     """Model for storing styles.
     """
@@ -94,6 +101,16 @@ class Style(models.Model):
                 self.name.encode('utf-8'))
             return None
 
+    def get_self_resource(self):
+        """Get associated resource base."""
+        # Associate this model with resource
+        try:
+            layer = self.layer_styles.first()
+            """:type: Layer"""
+            return layer.get_self_resource()
+        except BaseException:
+            return None
+
 
 class LayerManager(ResourceBaseManager):
 
@@ -109,49 +126,41 @@ class Layer(ResourceBase):
 
     # internal fields
     objects = LayerManager()
-    workspace = models.CharField(max_length=128)
-    store = models.CharField(max_length=128)
-    storeType = models.CharField(max_length=128)
-    name = models.CharField(max_length=128)
-    typename = models.CharField(max_length=128, null=True, blank=True)
+    workspace = models.CharField(_('Workspace'), max_length=128)
+    store = models.CharField(_('Store'), max_length=128)
+    storeType = models.CharField(_('Storetype'), max_length=128)
+    name = models.CharField(_('Name'), max_length=128)
+    typename = models.CharField(_('Typename'), max_length=128, null=True, blank=True)
 
-    is_mosaic = models.BooleanField(default=False)
-    has_time = models.BooleanField(default=False)
-    has_elevation = models.BooleanField(default=False)
+    is_mosaic = models.BooleanField(_('Is mosaic?'), default=False)
+    has_time = models.BooleanField(_('Has time?'), default=False)
+    has_elevation = models.BooleanField(_('Has elevation?'), default=False)
     time_regex = models.CharField(
+        _('Time regex'),
         max_length=128,
         null=True,
         blank=True,
         choices=TIME_REGEX)
-    elevation_regex = models.CharField(max_length=128, null=True, blank=True)
+    elevation_regex = models.CharField(_('Elevation regex'), max_length=128, null=True, blank=True)
 
     default_style = models.ForeignKey(
         Style,
+        on_delete=models.SET_NULL,
         related_name='layer_default_style',
         null=True,
         blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')
+    remote_service = models.ForeignKey("services.Service", null=True, blank=True)
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
     upload_session = models.ForeignKey('UploadSession', blank=True, null=True)
 
-    @property
-    def is_remote(self):
-        return self.storeType == "remoteStore"
-
-    @property
-    def service(self):
-        """Get the related service object dynamically
-        """
-        service_layers = self.servicelayer_set.all()
-        if len(service_layers) == 0:
-            return None
-        else:
-            return service_layers[0].service
-
     def is_vector(self):
         return self.storeType == 'dataStore'
+
+    def get_upload_session(self):
+        return self.upload_session
 
     @property
     def display_type(self):
@@ -177,39 +186,37 @@ class Layer(ResourceBase):
         return None
 
     @property
-    def service_type(self):
-        if self.storeType == 'coverageStore':
-            return "WCS"
-        if self.storeType == 'dataStore':
-            return "WFS"
-
-    @property
     def ows_url(self):
-        if self.is_remote:
-            if self.service and self.service.base_url:
-                return self.service.base_url
-            else:
-                return None
+        if self.remote_service is not None and self.remote_service.method == INDEXED:
+            result = self.remote_service.service_url
         else:
-            return settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms"
+            result = "{base}ows".format(
+                base=settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
+            )
+        return result
 
     @property
     def ptype(self):
-        if self.is_remote:
-            return self.service.ptype
-        else:
-            return "gxp_wmscsource"
+        return self.remote_service.ptype if self.remote_service else "gxp_wmscsource"
 
     @property
     def service_typename(self):
-        if self.is_remote:
-            return "%s:%s" % (self.service.name, self.alternate)
+        if self.remote_service is not None and self.remote_service.method == INDEXED:
+            return "%s:%s" % (self.remote_service.name, self.alternate)
         else:
             return self.alternate
 
     @property
     def attributes(self):
         return self.attribute_set.exclude(attribute='the_geom').order_by('display_order')
+
+    # layer geometry type.
+    @property
+    def gtype(self):
+        # return attribute type without 'gml:' and 'PropertyType'
+        if self.attribute_set.filter(attribute='the_geom').exists():
+            return self.attribute_set.get(attribute='the_geom').attribute_type[4:-12]
+        return None
 
     def get_base_file(self):
         """Get the shp or geotiff file for this layer.
@@ -240,13 +247,16 @@ class Layer(ResourceBase):
                 msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
             else:
                 msg = _('File cannot be opened, maybe check the encoding')
-            assert valid_shp, msg
+            # AF: Removing assertion since if the original file does not exists anymore
+            #     it won't be possible to update Metadata anymore
+            # assert valid_shp, msg
 
         # no error, let's return the base files
         return base_files.get(), list_col
 
     def get_absolute_url(self):
-        return reverse('layer_detail', args=(self.service_typename,))
+        # return reverse('layer_detail', args=(self.service_typename,))
+        return reverse('layer_detail', args=(self.alternate,))
 
     def attribute_config(self):
         # Get custom attribute sort order and labels if any
@@ -260,12 +270,13 @@ class Layer(ResourceBase):
         return cfg
 
     def __str__(self):
-        if self.alternate is not None:
-            return "%s Layer" % self.service_typename.encode('utf-8')
-        elif self.name is not None:
-            return "%s Layer" % self.name
-        else:
-            return "Unamed Layer"
+        return self.alternate
+        # if self.alternate is not None:
+        #     return "%s Layer" % self.service_typename.encode('utf-8')
+        # elif self.name is not None:
+        #     return "%s Layer" % self.name
+        # else:
+        #     return "Unamed Layer"
 
     class Meta:
         # custom permissions,
@@ -327,6 +338,7 @@ class UploadSession(models.Model):
 
     """Helper class to keep track of uploads.
     """
+    resource = models.ForeignKey(ResourceBase, blank=True, null=True)
     date = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     processed = models.BooleanField(default=False)
@@ -337,6 +349,9 @@ class UploadSession(models.Model):
     def successful(self):
         return self.processed and self.errors is None
 
+    def __str__(self):
+        return u'%s' % self.resource or self.date
+
 
 class LayerFile(models.Model):
 
@@ -346,7 +361,7 @@ class LayerFile(models.Model):
     name = models.CharField(max_length=255)
     base = models.BooleanField(default=False)
     file = models.FileField(
-        upload_to='layers',
+        upload_to='layers/%Y/%m/%d',
         storage=FileSystemStorage(
             base_url=settings.LOCAL_MEDIA_URL),
         max_length=255)
@@ -470,7 +485,7 @@ class Attribute(models.Model):
         null=True,
         blank=True,
         default='NA')
-    last_stats_updated = models.DateTimeField(_('last modified'), default=datetime.now, help_text=_(
+    last_stats_updated = models.DateTimeField(_('last modified'), default=now, help_text=_(
         'date when attribute statistics were last updated'))  # passing the method itself, not
 
     objects = AttributeManager()
@@ -483,6 +498,22 @@ class Attribute(models.Model):
         return self.unique_values.split(',')
 
 
+def _get_alternate_name(instance):
+    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
+        result = instance.name
+    elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
+        result = "{}:{}".format(
+            getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE),
+            instance.name
+        )
+    else:  # we are not dealing with a service-related instance
+        result = "{}:{}".format(
+            getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE),
+            instance.name
+        )
+    return result
+
+
 def pre_save_layer(instance, sender, **kwargs):
     if kwargs.get('raw', False):
         instance.owner = instance.resourcebase_ptr.owner
@@ -491,6 +522,7 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_x1 = instance.resourcebase_ptr.bbox_x1
         instance.bbox_y0 = instance.resourcebase_ptr.bbox_y0
         instance.bbox_y1 = instance.resourcebase_ptr.bbox_y1
+        instance.srid = instance.resourcebase_ptr.srid
 
     if instance.abstract == '' or instance.abstract is None:
         instance.abstract = unicode(_('No abstract provided'))
@@ -504,12 +536,10 @@ def pre_save_layer(instance, sender, **kwargs):
     if instance.uuid == '':
         instance.uuid = str(uuid.uuid1())
 
+    logger.debug("In pre_save_layer")
     if instance.alternate is None:
-        # Set a sensible default for the typename
-        if instance.is_remote:
-            instance.alternate = instance.name
-        else:
-            instance.alternate = 'geonode:%s' % instance.name
+        instance.alternate = _get_alternate_name(instance)
+    logger.debug("instance.alternate is: {}".format(instance.alternate))
 
     base_file, info = instance.get_base_file()
 
@@ -542,7 +572,7 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_y0,
         instance.bbox_y1]
 
-    instance.set_bounds_from_bbox(bbox)
+    instance.set_bounds_from_bbox(bbox, instance.srid)
 
 
 def pre_delete_layer(instance, sender, **kwargs):
@@ -550,17 +580,16 @@ def pre_delete_layer(instance, sender, **kwargs):
     Remove any associated style to the layer, if it is not used by other layers.
     Default style will be deleted in post_delete_layer
     """
-    if instance.is_remote:
-        # we need to delete the maplayers here because in the post save layer.service is not available anymore
+    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
+        # we need to delete the maplayers here because in the post save layer.remote_service is not available anymore
         # REFACTOR
         from geonode.maps.models import MapLayer
-        if instance.alternate:
-            logger.debug(
-                "Going to delete associated maplayers for [%s]",
-                instance.alternate.encode('utf-8'))
-            MapLayer.objects.filter(
-                name=instance.alternate,
-                ows_url=instance.ows_url).delete()
+        logger.debug(
+            "Going to delete associated maplayers for [%s]",
+            instance.alternate.encode('utf-8'))
+        MapLayer.objects.filter(
+            name=instance.alternate,
+            ows_url=instance.ows_url).delete()
         return
 
     logger.debug(
@@ -570,6 +599,7 @@ def pre_delete_layer(instance, sender, **kwargs):
     OverallRating.objects.filter(
         content_type=ct,
         object_id=instance.id).delete()
+
     default_style = instance.default_style
     for style in instance.styles.all():
         if style.layer_styles.all().count() == 1:
@@ -585,22 +615,18 @@ def post_delete_layer(instance, sender, **kwargs):
     Removed the layer from any associated map, if any.
     Remove the layer default style.
     """
-    if instance.is_remote:
+    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
         return
 
     from geonode.maps.models import MapLayer
-    if instance.alternate:
-        logger.debug(
-            "Going to delete associated maplayers for [%s]",
-            instance.alternate.encode('utf-8'))
-        MapLayer.objects.filter(
-            name=instance.alternate,
-            ows_url=instance.ows_url).delete()
+    logger.debug(
+        "Going to delete associated maplayers for [%s]", instance.name)
+    MapLayer.objects.filter(
+        name=instance.alternate,
+        ows_url=instance.ows_url).delete()
 
-    if instance.alternate:
-        logger.debug(
-            "Going to delete the default style for [%s]",
-            instance.alternate.encode('utf-8'))
+    logger.debug(
+        "Going to delete the default style for [%s]", instance.name)
 
     if instance.default_style and Layer.objects.filter(
             default_style__id=instance.default_style.id).count() == 0:
@@ -610,11 +636,22 @@ def post_delete_layer(instance, sender, **kwargs):
         if instance.upload_session:
             for lf in instance.upload_session.layerfile_set.all():
                 lf.file.delete()
+            instance.upload_session.delete()
     except UploadSession.DoesNotExist:
         pass
+
+
+def post_delete_layer_file(instance, sender, **kwargs):
+    """Delete associated file.
+
+    :param instance: LayerFile instance
+    :type instance: LayerFile
+    """
+    instance.file.delete(save=False)
 
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.post_save.connect(resourcebase_post_save, sender=Layer)
 signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)
+signals.post_delete.connect(post_delete_layer_file, sender=LayerFile)

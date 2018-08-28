@@ -35,10 +35,20 @@ class DocumentAdminForm(ResourceBaseAdminForm):
 
 
 class DocumentAdmin(MediaTranslationAdmin):
-    list_display = ('id', 'title', 'date', 'category')
+    list_display = ('id',
+                    'title',
+                    'date',
+                    'category',
+                    'group',
+                    'is_approved',
+                    'is_published',
+                    'metadata_completeness')
     list_display_links = ('id',)
-    list_filter = ('date', 'date_type', 'restriction_code_type', 'category')
-    search_fields = ('title', 'abstract', 'purpose',)
+    list_editable = ('title', 'category', 'group', 'is_approved', 'is_published')
+    list_filter = ('date', 'date_type', 'restriction_code_type', 'category',
+                   'group', 'is_approved', 'is_published',)
+    search_fields = ('title', 'abstract', 'purpose',
+                     'is_approved', 'is_published',)
     date_hierarchy = 'date'
     form = DocumentAdminForm
     actions = [metadata_batch_edit]

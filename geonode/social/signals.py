@@ -29,7 +29,7 @@ from dialogos.models import Comment
 
 from django.conf import settings
 from django.db.models import signals
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 # from actstream.exceptions import ModelNotActionable
 
@@ -127,7 +127,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
                           raw_action=raw_action,
                           )
         # except ModelNotActionable:
-        except:
+        except BaseException:
             logger.debug('The activity received a non-actionable Model or None as the actor/action.')
 
 
@@ -160,6 +160,22 @@ def notification_post_save_resource(instance, sender, created, **kwargs):
     notice_type_label = notice_type_label % instance.class_name.lower()
     recipients = get_notification_recipients(notice_type_label)
     send_notification(recipients, notice_type_label, {'resource': instance})
+
+    # Approval Notifications Here
+    if settings.ADMIN_MODERATE_UPLOADS:
+        if instance.is_approved and not instance.is_published:
+            notice_type_label = '%s_approved'
+            notice_type_label = notice_type_label % instance.class_name.lower()
+            recipients = get_notification_recipients(notice_type_label)
+            send_notification(recipients, notice_type_label, {'resource': instance})
+
+    # Publishing Notifications Here
+    if settings.RESOURCE_PUBLISHING:
+        if instance.is_approved and instance.is_published:
+            notice_type_label = '%s_published'
+            notice_type_label = notice_type_label % instance.class_name.lower()
+            recipients = get_notification_recipients(notice_type_label)
+            send_notification(recipients, notice_type_label, {'resource': instance})
 
 
 def notification_post_delete_resource(instance, sender, **kwargs):
@@ -215,9 +231,21 @@ def json_serializer_producer(dictionary):
     if 'doc_file' in dictionary.keys():
         file_object = dictionary['doc_file']
         dictionary['doc_file'] = str(file_object)
+    if 'regions' in dictionary.keys():
+        keys = dictionary['regions']
+        dictionary['regions'] = str(keys)
     if 'keywords' in dictionary.keys():
         keys = dictionary['keywords']
         dictionary['keywords'] = str(keys)
+    if 'tkeywords' in dictionary.keys():
+        keys = dictionary['tkeywords']
+        dictionary['tkeywords'] = str(keys)
+    if 'styles' in dictionary.keys():
+        keys = dictionary['styles']
+        dictionary['styles'] = str(keys)
+    if 'contacts' in dictionary.keys():
+        keys = dictionary['contacts']
+        dictionary['contacts'] = str(keys)
     for (x, y) in dictionary.items():
         if not y:
             # this is used to solve
@@ -225,7 +253,7 @@ def json_serializer_producer(dictionary):
             y = str(y)
         # check datetime object
         # TODO: Use instanceof
-        if type(y) == datetime.datetime:
+        if isinstance(y, datetime.datetime):
             y = str(y)
 
         output[x] = y

@@ -19,9 +19,12 @@
 #########################################################################
 
 import os
+import logging
 
 from slugify import Slugify
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 custom_slugify = Slugify(separator='_')
 
@@ -101,8 +104,8 @@ def exif_extract_dict(doc):
         if date:
             try:
                 date = convertExifDateToDjangoDate(date)
-            except:
-                print "Could not parse exif date"
+            except BaseException:
+                logger.error("Could not parse exif date")
                 date = None
 
         if date:
@@ -159,8 +162,8 @@ def exif_extract_metadata_doc(doc):
         if date:
             try:
                 date = convertExifDateToDjangoDate(date)
-            except:
-                print "Could not parse exif date"
+            except BaseException:
+                logger.error("Could not parse exif date")
                 date = None
 
         if "Make" in exif_data:

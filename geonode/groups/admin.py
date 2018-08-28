@@ -19,21 +19,19 @@
 #########################################################################
 
 from django.contrib import admin
-
 from modeltranslation.admin import TranslationAdmin
 
-from geonode.groups.models import (GroupMember, GroupProfile,
-                                   GroupInvitation, GroupCategory)
+from . import models
 
 
-@admin.register(GroupCategory)
+@admin.register(models.GroupCategory)
 class GroupCategoryAdmin(TranslationAdmin):
     list_display = ('name', 'slug',)
     readonly_fields = ('slug',)
 
 
 class GroupMemberInline(admin.TabularInline):
-    model = GroupMember
+    model = models.GroupMember
 
 
 class GroupAdmin(admin.ModelAdmin):
@@ -43,6 +41,4 @@ class GroupAdmin(admin.ModelAdmin):
     exclude = ['group', ]
 
 
-admin.site.register(GroupProfile, GroupAdmin)
-
-admin.site.register(GroupInvitation)
+admin.site.register(models.GroupProfile, GroupAdmin)

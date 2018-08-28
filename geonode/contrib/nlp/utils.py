@@ -40,7 +40,7 @@ def _load_ner():
             if not ner:
                 from mitie import named_entity_extractor
                 ner = named_entity_extractor(settings.NLP_MODEL_PATH)
-        except:
+        except BaseException:
             print "Could not load the NLP NER"
 
 
@@ -122,7 +122,7 @@ def _nlp_extract_metadata_core(text=None):
                     region = Region.objects.get(name__iexact=location_text)
                     if region:
                         regions.append(region)
-                except:
+                except BaseException:
                     pass
 
         # Resolve organizations to Keywords/Tags
@@ -133,7 +133,7 @@ def _nlp_extract_metadata_core(text=None):
                 keyword = Tag.objects.get(name__iexact=organization_text)
                 if keyword:
                     keywords.append(keyword.name)
-            except:
+            except BaseException:
                 pass
 
         return {'regions': regions, 'keywords': keywords}

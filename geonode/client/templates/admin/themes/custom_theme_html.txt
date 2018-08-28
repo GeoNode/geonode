@@ -1,0 +1,88 @@
+{{ custom_base_header|safe }}
+
+{% if theme.jumbotron_welcome_title or theme.jumbotron_welcome_content %}
+{{ hero_header|safe }}
+<div class="jumbotron">
+  <div class="container">
+    <h1>{{ theme.jumbotron_welcome_title }}</h1>
+    <p>{{ theme.jumbotron_welcome_content }}</p>
+    <div class="small-search">
+      <div class="search">
+        <form id="search" action="{% url "search" %}" >
+          <span class="fa fa-search fa-2x"></span>
+          {% if HAYSTACK_SEARCH %}
+          <input id="search_input" type="text" placeholder="Search for data..." class="form-control" name="q">
+          {% else %}
+          <input id="search_input" type="text" placeholder="Search for data..." class="form-control" name="title__icontains">
+          {% endif %}
+        </form>
+      </div>
+      <p><a class="btn btn-default btn-lg" href="{% url "search" %}">Advanced Search</a></p>
+    </div>
+  </div>
+</div>
+{{ hero_footer|safe }}
+{% endif %}
+
+{% if theme.jumbotron_site_description %}
+{{ bigsearch_header|safe }}
+<div class="big-search">
+  <div class="container">
+      <p>{{ theme.jumbotron_site_description }}</p>
+  </div>
+</div>
+{{ bigsearch_footer|safe }}
+{% endif %}
+
+{{ partners_header|safe }}
+{% if theme.partners_title %}
+<section id="partners">
+  <div class="container text-center">
+      <h2>{{ theme.partners_title }}</h2>
+      <div class="row">
+         {% for partner in theme.partners.all %}
+          <div class="col-md-6">
+              <div class="{{ partner.logo_class }}"></div>
+              <div><a href="{{ partner.partner_link }}" target="_blank">{{ partner.title }}</a></div>
+          </div>
+         {% endfor %}
+      </div>
+  </div>
+</section>
+{% endif %}
+{{ partners_footer|safe }}
+
+{{ contactus_header|safe }}
+ {% if theme.contactus %}
+    <ul class="list-unstyled">
+        <li style="text-align: left;"><h2 style="margin-top: 0px;">Contact Us </h2> </li>
+        {% if theme.contact_name %}<li style="text-align: left;">{{ theme.contact_name }}</li>{% endif %}
+        {% if theme.contact_position %}<li style="text-align: left;">{{ theme.contact_position }}</li>{% endif %}
+        {% if theme.contact_administrative_area %}<li style="text-align: left;">{{ theme.contact_administrative_area }}</li>{% endif %}
+        {% if theme.contact_city %}<li style="text-align: left;">{{ theme.contact_city }}</li>{% endif %}
+        {% if theme.contact_street %}<li style="text-align: left;">{{ theme.contact_street }}</li>{% endif %}
+        {% if theme.contact_postal_code %}<li style="text-align: left;">{{ theme.contact_postal_code }}</li>{% endif %}
+        {% if theme.contact_country %}<li style="text-align: left;">{{ theme.contact_country }}</li>{% endif %}
+        {% if theme.contact_delivery_point %}<li style="text-align: left;">{{ theme.contact_delivery_point }}</li>{% endif %}
+        {% if theme.contact_voice %}<li style="text-align: left;">Tel: {{ theme.contact_voice }}</li>{% endif %}
+        {% if theme.contact_facsimile %}<li style="text-align: left;">Fax: {{ theme.contact_facsimile }}</li>{% endif %}
+        {% if theme.contact_email %}<li style="text-align: left;">E-mail: {{ theme.contact_email }}</li>{% endif %}
+    </ul>
+ {% endif %}
+{{ contactus_footer|safe }}
+
+{{ footer_header|safe }}
+ {% if theme.copyright %}
+    <section class="footer-copyright">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 copyright ">
+            <div class="module">
+              <small>{{ theme.copyright }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+ {% endif %}
+{{ footer_footer|safe }}

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2017 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,15 +18,23 @@
 #
 #########################################################################
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns('geonode.services.views',
-                       url(r'^$', 'services', name='services'),
-                       url(r'^register/$', 'register_service', name="register_service"),
-                       url(r'^registerbytype/$', 'register_service_by_type'),
-                       url(r'^(?P<service_id>\d+)/$', 'service_detail', name='service_detail'),
-                       url(r'^(?P<service_id>\d+)/edit$', 'edit_service', name='edit_service'),
-                       url(r'^(?P<service_id>\d+)/remove', 'remove_service', name='remove_service'),
-                       url(r'^(?P<service_id>\d+)/ajax-permissions$', 'ajax_service_permissions',
-                           name='ajax_service_permissions'),
-                       )
+from . import views
+
+urlpatterns = [
+    # 'geonode.services.views',
+    url(r'^$', views.services, name='services'),
+    url(r'^register/$', views.register_service, name="register_service"),
+    url(r'^(?P<service_id>\d+)/$', views.service_detail, name='service_detail'),
+    url(r'^(?P<service_id>\d+)/proxy$', views.service_proxy, name='service_proxy'),
+    url(r'^(?P<service_id>\d+)/edit$', views.edit_service, name='edit_service'),
+    url(r'^(?P<service_id>\d+)/rescan$', views.rescan_service,
+        name='rescan_service'),
+    url(r'^(?P<service_id>\d+)/remove', views.remove_service,
+        name='remove_service'),
+    url(r'^(?P<service_id>\d+)/harvest$', views.harvest_resources,
+        name='harvest_resources'),
+    url(r'^(?P<service_id>\d+)/harvest/(?P<resource_id>\S+)',
+        views.harvest_single_resource, name='harvest_single_resource'),
+]

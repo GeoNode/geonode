@@ -70,12 +70,12 @@
       $('#completeness-hints .mandatory-hint')
         .toggleClass('progress-bar-danger', mandatoryMissing)
         .toggleClass('progress-bar-success', !mandatoryMissing)
-        .attr('title', mandatoryMissing ? "some schema mandatory fields are missing" : "Metadata Schema mandatory fields completed" )
+        .attr('title', mandatoryMissing ? gettext("some schema mandatory fields are missing") : gettext("Metadata Schema mandatory fields completed") )
         .tooltip('fixTitle');
       $('#completeness-hints .advanced-hint')
         .toggleClass('progress-bar-danger', advancedMissing)
         .toggleClass('progress-bar-success', !advancedMissing)
-        .attr('title', advancedMissing ? "some schema mandatory fields are missing" : "Metadata Schema mandatory fields completed" )
+        .attr('title', advancedMissing ? gettext("some schema mandatory fields are missing") : gettext("Metadata Schema mandatory fields completed") )
         .tooltip('fixTitle');
 
         //done button tooltip
@@ -128,8 +128,8 @@
     $(document).ready(
         function() {
           var pickerOptions = {
-              // format: 'YYYY-MM-DD hh:mm',
-              format: 'YYYY-MM-DD',
+              //format: 'YYYY-MM-DD hh:mm:ss',
+              format: 'YYYY-MM-DD HH:mm',
               icons: {
                   time: 'fa fa-clock-o',
                   date: 'fa fa-calendar',
@@ -138,9 +138,11 @@
               }
           };
 
-          $('#id_resource-date_picker').datetimepicker(pickerOptions);
-          $('#id_resource-temporal_extent_start_picker').datetimepicker(pickerOptions);
-          $('#id_resource-temporal_extent_end_picker').datetimepicker(pickerOptions);
+          /*
+            $('#id_resource-date_picker').datetimepicker(options=pickerOptions);
+            $('#id_resource-temporal_extent_start_picker').datetimepicker(pickerOptions);
+            $('#id_resource-temporal_extent_end_picker').datetimepicker(pickerOptions);
+          */
     });
 
     $(document).ready(function() {
@@ -261,7 +263,7 @@
               if(otherRestrictionsSelected() && ee.value !== undefined && ee.value.trim() === '') {
                 if(!$(ee).hasClass("input-empty")) {
                     setInputEmpty(ee, true);
-                    $(ee).parent().append("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>");
+                    $(ee).parent().append(gettext("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>"));
                     empty++;
                 } else {
                     setInputEmpty(ee, false);
@@ -301,7 +303,7 @@
                     if(isMandatoryField(this)) {
                         setInputEmpty(e.target, true);
                         if(!!$(this).closest('#mdinfo').length) {
-                            $(e.target).parent().append("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>");
+                            $(e.target).parent().append(gettext("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>"));
                         }
                         empty++;
                     }
@@ -522,32 +524,72 @@
                 $('#group_mandatoryDialog').modal();
             } else {
                 var formData = $(this).serializeArray();
-                // edit data here
-                    /* var date = $('#id_resource-date').val();
-                    var resource_date = $.grep(formData, function(e){ return e.name == 'resource-date'; });
-                    if (resource_date.length >= 1) {
-                        resource_date[0].value = date + ' AM';
-                    } */
-                $.post('metadata', /*$(this).serialize()*/ $.param(formData), function(data){
-                    // Do something more fancy with your respone
-                    // $('.message').html(data.message);
-                    if (!is_advanced) {
-                        try {
-                            $('#preview_encoder_iframe')[0].style.width='100%';
-                            $('#preview_encoder_iframe')[0].style.height='100%';
-                            $('#preview_encoder_iframe')[0].contentWindow.location.reload(true);
-                        } catch(err) {
-                            // Log error
-                            console.log(err);
+                formData.forEach(function(entry) {
+                    try{
+                        if((typeof entry["name"]) === "string" && 
+                            entry["name"].includes("keywords")) {
+                            entry["value"] = escape(entry["value"]);
                         }
+                        else if((typeof entry["name"]) !== "string" && 
+                            entry["name"].contains("keywords")) {
+                            entry["value"] = escape(entry["value"]);
+                        }
+                    }catch(err){
+                        console.log(err);
                     }
-                    $('#preview_pleaseWaitDialog').modal('hide');
                 });
+
+                // $.post('metadata', /*$(this).serialize()*/ $.param(formData))
+                $.ajax({
+                        url: "metadata",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: $.param(formData)
+                   }).done(function(data){
+                        // Do something more fancy with your respone
+                        // $('.message').html(data.message);
+                        if (!is_advanced) {
+                            try {
+                                $('#preview_encoder_iframe')[0].style.width='100%';
+                                $('#preview_encoder_iframe')[0].style.height='100%';
+                                $('#preview_encoder_iframe')[0].contentWindow.location.reload(true);
+                            } catch(err) {
+                                // Log error
+                                console.log(err);
+                            }
+                        }
+                        metadata_update_done = true;
+                    }).fail(function(xhr, status, error) {
+                        // error handling
+                        // console.log(error);
+                        try {
+                            if(xhr.responseJSON && xhr.responseJSON['errors']) {
+                                var errors = "<ul>";
+                                for(error in xhr.responseJSON['errors']) {
+                                    errors += "<li>" + error + ": " + xhr.responseJSON['errors'][error][0] + "</li>";
+                                }
+                                errors += "</ul>";
+                                $("#preview_errorDialog .modal-body").html(errors);
+                            } else {
+                                $("#preview_errorDialog .modal-body").html(xhr.responseText);
+                            }
+                        } catch(err) {
+                            $("#preview_errorDialog .modal-body").html(xhr.responseText);
+                        }
+                        $('#preview_errorDialog').modal();
+                        metadata_update_done = false;
+                    }).always(function (a, textStatus, b) {
+                          $('#preview_pleaseWaitDialog').modal('hide');
+                          if(textStatus === 'success' && metadata_update_done) {
+                              if(new RegExp(".*/metadata$").test(e.target.action)) {
+                                  window.location.replace(e.target.action.replace('/metadata',''));
+                              } else if(new RegExp(".*/"+metadata_uri+"$").test(e.target.action)) {
+                                  window.location.replace(e.target.action.replace('/'+metadata_uri,''));
+                              }
+                          }
+                    });
             }
             e.preventDefault();
-            if (metadata_update_done) {
-                window.location.replace(e.target.action.replace('/'+metadata_uri,''));
-            }
         });
 
         if(totalNum == prevNum) {
@@ -577,12 +619,7 @@
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         $.ajax('/h_keywords_api', {params: params}).success(function(data){
             data = JSON.parse(data)
-            var kws = [];
-            for (kw in data) {
-                if (data[kw] && data[kw].text) {
-				    kws.push(data[kw].text);
-                }
-            }
+            var kws = parseKeywords(data);
 
             {% if freetext_readonly %}
                 $('#id_resource-keywords').tokenfield({
@@ -692,6 +729,23 @@
               icon.toggleClass('fa-folder').toggleClass('fa-folder-open');
             });
         });
+
+        var parseKeywords = function(data) {
+            var kws = [];
+            for (kw in data) {
+                if (data[kw] && data[kw].text) {
+                    kws.push(data[kw].text);
+                    if (data[kw].nodes) {
+                        var kwcs = parseKeywords(data[kw].nodes);
+                        for (kwc in kwcs) {
+                            kws.push(kwcs[kwc]);
+                        }
+                    }
+                }
+            }
+            return kws;
+        };
+
     });
 {% endautoescape %}
 </script>

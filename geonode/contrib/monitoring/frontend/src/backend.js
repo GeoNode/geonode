@@ -1,0 +1,1 @@
+export default '/monitoring/api';

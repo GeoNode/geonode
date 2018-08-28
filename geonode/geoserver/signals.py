@@ -24,24 +24,35 @@ import urllib
 
 from urlparse import urlparse, urljoin
 
-from django.utils.translation import ugettext
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext
 from django.forms.models import model_to_dict
 
 
+# use different name to avoid module clash
+from . import BACKEND_PACKAGE
+from geonode import GeoNodeException
+from geonode.decorators import on_ogc_backend
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
-from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
-from geonode.geoserver.helpers import set_styles, gs_catalog
-from geonode.geoserver.helpers import ogc_server_settings
-from geonode.geoserver.helpers import geoserver_upload
-from geonode.geoserver.helpers import create_gs_thumbnail
-from geonode.base.models import ResourceBase
-from geonode.base.models import Link
+from geonode.geoserver.upload import geoserver_upload
+from geonode.geoserver.helpers import (cascading_delete,
+                                       set_attributes_from_geoserver,
+                                       set_styles,
+                                       set_layer_style,
+                                       gs_catalog,
+                                       ogc_server_settings,
+                                       create_gs_thumbnail,
+                                       _stylefilterparams_geowebcache_layer,
+                                       _invalidate_geowebcache_layer)
+from geonode.base.models import ResourceBase, Link
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
 from geonode.social.signals import json_serializer_producer
 from geonode.catalogue.models import catalogue_post_save
+from geonode.services.enumerations import CASCADED
 
+import geoserver
 from geoserver.layer import Layer as GsLayer
 
 logger = logging.getLogger("geonode.geoserver.signals")
@@ -60,7 +71,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        if not getattr(instance, "service", None):
+        if instance.remote_service is None or instance.remote_service.method == CASCADED:
             if instance.alternate:
                 cascading_delete(gs_catalog, instance.alternate)
 
@@ -70,14 +81,18 @@ def geoserver_pre_save(*args, **kwargs):
     pass
 
 
+@on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_post_save(instance, sender, **kwargs):
     from geonode.messaging import producer
-    instance_dict = model_to_dict(instance)
-    payload = json_serializer_producer(instance_dict)
-    producer.geoserver_upload_layer(payload)
+    # this is attached to various models, (ResourceBase, Document)
+    # so we should select what will be handled here
+    if isinstance(instance, Layer):
+        instance_dict = model_to_dict(instance)
+        payload = json_serializer_producer(instance_dict)
+        producer.geoserver_upload_layer(payload)
 
 
-def geoserver_post_save_local(layer_id, *args, **kwargs):
+def geoserver_post_save_local(instance, *args, **kwargs):
     """Send information to geoserver.
 
        The attributes sent include:
@@ -89,16 +104,8 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    # If it is a layer object, post process it. If not, abort.
-    try:
-        instance = Layer.objects.get(id=layer_id)
-    except Layer.DoesNotExist as e:
-        logger.exception(e)
-        return
-        # raise e
-
     # Don't run this signal if is a Layer from a remote service
-    if getattr(instance, "service", None) is not None:
+    if getattr(instance, "remote_service", None) is not None:
         return
 
     # Don't run this signal handler if it is a tile layer or a remote store (Service)
@@ -148,7 +155,9 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
                           abstract=gs_resource.abstract or '',
                           owner=instance.owner)
     else:
-        return
+        msg = "There isn't a geoserver resource for this layer: %s" % instance.name
+        logger.exception(msg)
+        raise Exception(msg)
 
     # Get metadata links
     metadata_links = []
@@ -159,34 +168,60 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
     # gs_resource should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        gs_catalog.save(gs_resource)
+        try:
+            gs_catalog.save(gs_resource)
+        except geoserver.catalog.FailedRequestError as e:
+            msg = ('Error while trying to save resource named %s in GeoServer, '
+                   'try to use: "%s"' % (gs_resource, str(e)))
+            e.args = (msg,)
+            logger.exception(e)
 
-    gs_layer = gs_catalog.get_layer(instance.name)
-
-    if not gs_layer:
-        gs_layer = gs_catalog.get_layer(instance.alternate)
-
-    if gs_layer and instance.poc:
+    # Update Attribution link
+    if instance.poc:
         # gsconfig now utilizes an attribution dictionary
-        gs_layer.attribution = {'title': str(instance.poc),
-                                'width': None,
-                                'height': None,
-                                'href': None,
-                                'url': None,
-                                'type': None}
+        gs_resource.attribution = {'title': str(instance.poc),
+                                   'width': None,
+                                   'height': None,
+                                   'href': None,
+                                   'url': None,
+                                   'type': None}
         profile = Profile.objects.get(username=instance.poc.username)
-        gs_layer.attribution_link = settings.SITEURL[
-            :-1] + profile.get_absolute_url()
-        # gs_layer should only be called if
+        site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+        gs_resource.attribution_link = site_url + profile.get_absolute_url()
+        # gs_resource should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-            gs_catalog.save(gs_layer)
+            try:
+                gs_catalog.save(gs_resource)
+            except geoserver.catalog.FailedRequestError as e:
+                msg = ('Error while trying to save layer named %s in GeoServer, '
+                       'try to use: "%s"' % (gs_resource, str(e)))
+                e.args = (msg,)
+                logger.exception(e)
 
-    if type(instance) is ResourceBase:
+    if isinstance(instance, ResourceBase):
         if hasattr(instance, 'layer'):
             instance = instance.layer
         else:
             return
+
+    # Save layer attributes
+    set_attributes_from_geoserver(instance)
+
+    # Save layer styles
+    set_styles(instance, gs_catalog)
+
+    # set SLD
+    sld = instance.default_style.sld_body if instance.default_style else None
+    if sld:
+        set_layer_style(instance, instance.alternate, sld)
+
+    # Invalidate GeoWebCache for the updated resource
+    try:
+        _stylefilterparams_geowebcache_layer(instance.alternate)
+        _invalidate_geowebcache_layer(instance.alternate)
+    except BaseException:
+        pass
 
     if instance.storeType == "remoteStore":
         # Save layer attributes
@@ -202,25 +237,26 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
        * Download links (WMS, WCS or WFS and KML)
        * Styles (SLD)
     """
-    # instance.name = instance.name or gs_layer.name
+    # instance.name = instance.name or gs_resource.name
     # instance.title = instance.title or gs_resource.title
     instance.abstract = gs_resource.abstract or ''
     instance.workspace = gs_resource.store.workspace.name
     instance.store = gs_resource.store.name
 
-    bbox = gs_resource.latlon_bbox
-
-    # FIXME(Ariel): Correct srid setting below
-    # self.srid = gs_resource.src
-
-    instance.srid_url = "http://www.spatialreference.org/ref/" + \
-        instance.srid.replace(':', '/').lower() + "/"
+    bbox = gs_resource.native_bbox
 
     # Set bounding box values
     instance.bbox_x0 = bbox[0]
     instance.bbox_x1 = bbox[1]
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
+    instance.srid = bbox[4]
+
+    if instance.srid:
+        instance.srid_url = "http://www.spatialreference.org/ref/" + \
+            instance.srid.replace(':', '/').lower() + "/"
+    else:
+        raise GeoNodeException("Invalid Projection. Layer is missing CRS!")
 
     # Iterate over values from geoserver.
     for key in ['alternate', 'store', 'storeType']:
@@ -235,21 +271,25 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
                 gs_catalog.save(gs_resource)
 
     if not settings.FREETEXT_KEYWORDS_READONLY:
-        if gs_resource.keywords:
+        if len(instance.keyword_list()) == 0 and gs_resource.keywords:
             for keyword in gs_resource.keywords:
-                instance.keywords.add(keyword)
+                if keyword not in instance.keyword_list():
+                    instance.keywords.add(keyword)
 
     if any(instance.keyword_list()):
         keywords = instance.keyword_list()
-        if settings.FREETEXT_KEYWORDS_READONLY:
-            if gs_resource.keywords:
-                keywords += gs_resource.keywords
         gs_resource.keywords = list(set(keywords))
 
         # gs_resource should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-            gs_catalog.save(gs_resource)
+            try:
+                gs_catalog.save(gs_resource)
+            except geoserver.catalog.FailedRequestError as e:
+                msg = ('Error while trying to save resource named %s in GeoServer, '
+                       'try to use: "%s"' % (gs_resource, str(e)))
+                e.args = (msg,)
+                logger.exception(e)
 
     to_update = {
         'title': instance.title or instance.name,
@@ -258,7 +298,8 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
         'bbox_x0': instance.bbox_x0,
         'bbox_x1': instance.bbox_x1,
         'bbox_y0': instance.bbox_y0,
-        'bbox_y1': instance.bbox_y1
+        'bbox_y1': instance.bbox_y1,
+        'srid': instance.srid
     }
 
     # Update ResourceBase
@@ -280,7 +321,7 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
     # store the resource to avoid another geoserver call in the post_save
     instance.gs_resource = gs_resource
 
-    bbox = gs_resource.latlon_bbox
+    bbox = gs_resource.native_bbox
     dx = float(bbox[1]) - float(bbox[0])
     dy = float(bbox[3]) - float(bbox[2])
 
@@ -289,10 +330,32 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
     height = 550
     width = int(height * dataAspect)
 
+    # Parse Layer BBOX and SRID
+    srid = instance.srid if instance.srid else getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:4326')
+    if srid and instance.bbox_x0:
+        bbox = ','.join(str(x) for x in [instance.bbox_x0, instance.bbox_y0,
+                                         instance.bbox_x1, instance.bbox_y1])
+
+    # Create Raw Data download link
+    path = gs_resource.dom.findall('nativeName')
+    download_url = urljoin(settings.SITEURL,
+                           reverse('download', args=[instance.id]))
+    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                               url=download_url,
+                               defaults=dict(extension='zip',
+                                             name='Original Dataset',
+                                             mime='application/octet-stream',
+                                             link_type='original',
+                                             )
+                               )
+
     # Set download links for WMS, WCS or WFS and KML
     links = wms_links(ogc_server_settings.public_url + 'wms?',
-                      instance.alternate.encode('utf-8'), instance.bbox_string,
-                      instance.srid, height, width)
+                      instance.alternate.encode('utf-8'),
+                      bbox,
+                      srid,
+                      height,
+                      width)
 
     for ext, name, mime, wms_url in links:
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
@@ -306,10 +369,10 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
                                    )
 
     if instance.storeType == "dataStore":
-        links = wfs_links(
-            ogc_server_settings.public_url +
-            'wfs?',
-            instance.alternate.encode('utf-8'))
+        links = wfs_links(ogc_server_settings.public_url + 'wfs?',
+                          instance.alternate.encode('utf-8'),
+                          bbox=None,  # bbox filter should be set at runtime otherwise conflicting with CQL
+                          srid=srid)
         for ext, name, mime, wfs_url in links:
             if mime == 'SHAPE-ZIP':
                 name = 'Zipped Shapefile'
@@ -374,8 +437,8 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
     elif instance.storeType == 'coverageStore':
         links = wcs_links(ogc_server_settings.public_url + 'wcs?',
                           instance.alternate.encode('utf-8'),
-                          ','.join(str(x) for x in instance.bbox[0:4]),
-                          instance.srid)
+                          bbox,
+                          srid)
 
     for ext, name, mime, wcs_url in links:
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
@@ -414,8 +477,9 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
                                )
                                )
 
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     html_link_url = '%s%s' % (
-        settings.SITEURL[:-1], instance.get_absolute_url())
+        site_url, instance.get_absolute_url())
 
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                url=html_link_url,
@@ -427,8 +491,12 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
                                )
                                )
 
-    logger.info("Creating Thumbnail for Layer [%s]" % (instance.alternate))
-    create_gs_thumbnail(instance, overwrite=False)
+    # some thumbnail generators will update thumbnail_url.  If so, don't
+    # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
+    if not ('update_fields' in kwargs and kwargs['update_fields'] is not None and
+            'thumbnail_url' in kwargs['update_fields']):
+        logger.info("Creating Thumbnail for Layer [%s]" % (instance.alternate))
+        create_gs_thumbnail(instance, overwrite=True)
 
     legend_url = ogc_server_settings.PUBLIC_LOCATION + \
         'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
@@ -445,7 +513,8 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
                                )
                                )
 
-    ogc_wms_path = '%s/wms' % instance.workspace
+    # ogc_wms_path = '%s/ows' % instance.workspace
+    ogc_wms_path = 'ows'
     ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
     ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,
@@ -460,7 +529,8 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
                                )
 
     if instance.storeType == "dataStore":
-        ogc_wfs_path = '%s/wfs' % instance.workspace
+        # ogc_wfs_path = '%s/wfs' % instance.workspace
+        ogc_wfs_path = 'wfs'
         ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
         ogc_wfs_name = 'OGC WFS: %s Service' % instance.workspace
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
@@ -475,7 +545,8 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
                                    )
 
     if instance.storeType == "coverageStore":
-        ogc_wcs_path = '%s/wcs' % instance.workspace
+        # ogc_wcs_path = '%s/wcs' % instance.workspace
+        ogc_wcs_path = 'wcs'
         ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)
         ogc_wcs_name = 'OGC WCS: %s Service' % instance.workspace
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
@@ -515,15 +586,14 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
     if created:
         Link.objects.filter(pk=link.pk).update(url=tile_url)
 
-    # Save layer attributes
-    set_attributes_from_geoserver(instance)
-
-    # Save layer styles
-    set_styles(instance, gs_catalog)
-
     # NOTTODO by simod: we should not do this!
     # need to be removed when fixing #2015
     catalogue_post_save(instance, Layer)
+
+    # Updating HAYSTACK Indexes if needed
+    if settings.HAYSTACK_SEARCH:
+        from django.core.management import call_command
+        call_command('update_index')
 
 
 def geoserver_pre_save_maplayer(instance, sender, **kwargs):
@@ -540,11 +610,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
     except EnvironmentError as e:
         if e.errno == errno.ECONNREFUSED:
             msg = 'Could not connect to catalog to verify if layer %s was local' % instance.name
-            try:
-                # HACK: The logger on signals throws an exception
-                logger.warn(msg, e)
-            except:
-                pass
+            logger.warn(msg)
         else:
             raise e
 

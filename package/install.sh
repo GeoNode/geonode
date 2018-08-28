@@ -42,6 +42,7 @@ function reorganize_configuration() {
     cp -rp $INSTALL_DIR/support/geonode.wsgi $GEONODE_WWW/wsgi/
     cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
     cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
+    cp -rp $INSTALL_DIR/support/packages/*.* $GEONODE_SHARE
     cp -rp $INSTALL_DIR/GeoNode*.zip $GEONODE_SHARE
     cp -rp $INSTALL_DIR/support/geonode.updateip $GEONODE_BIN/geonode-updateip
     cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
@@ -70,6 +71,7 @@ psql -d geonode_data -c 'CREATE EXTENSION postgis'
 EOF
 su - postgres -c "psql" <<EOF
 CREATE ROLE geonode WITH LOGIN PASSWORD '$psqlpass' SUPERUSER INHERIT;
+ALTER USER geonode WITH PASSWORD '$psqlpass';
 EOF
 }
 
@@ -83,7 +85,11 @@ function setup_django_once() {
 }
 
 function setup_django_every_time() {
+    pip install pip==9.0.3 --quiet
     pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies --quiet
+    pip install $GEONODE_SHARE/jwcrypto-0.5.0-py2.py3-none-any.whl --no-dependencies --no-cache-dir --quiet
+    pip install $GEONODE_SHARE/xmltodict-0.10.2.tar.gz --no-dependencies --no-cache-dir --quiet
+    pip install $GEONODE_SHARE/lxml-3.6.2.tar.gz --no-dependencies --no-cache-dir --quiet
 
     geonodedir=`python -c "import geonode;import os;print os.path.dirname(geonode.__file__)"`
 
@@ -92,16 +98,29 @@ function setup_django_every_time() {
     mkdir -p $GEONODE_LOG
     ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
 
-    export DJANGO_SETTINGS_MODULE=geonode.settings
+    export DJANGO_SETTINGS_MODULE=geonode.local_settings
 
-    django-admin migrate account --settings=geonode.settings
+    # django-admin migrate account --settings=geonode.settings
+    geonode makemigrations --merge --verbosity 0
+    geonode makemigrations --verbosity 0
+    # geonode migrate auth --verbosity 0
+    # geonode migrate sites --verbosity 0
+    # geonode migrate people --verbosity 0
     geonode migrate --verbosity 0
+    geonode loaddata $geonodedir/people/fixtures/sample_admin.json
+    geonode loaddata $geonodedir/base/fixtures/default_oauth_apps.json
     geonode loaddata $geonodedir/base/fixtures/initial_data.json
+    geonode set_all_layers_alternate --verbosity 0
     geonode collectstatic --noinput --verbosity 0
 
     # Create an empty uploads dir
     mkdir -p $GEONODE_WWW/uploaded
+    mkdir -p $GEONODE_WWW/uploaded/documents/
+    mkdir -p $GEONODE_WWW/uploaded/layers/
     mkdir -p $GEONODE_WWW/uploaded/thumbs/
+    mkdir -p $GEONODE_WWW/uploaded/avatars/
+    mkdir -p $GEONODE_WWW/uploaded/people_group/
+    mkdir -p $GEONODE_WWW/uploaded/group/
     # Apply the permissions to the newly created folders.
     chown www-data -R $GEONODE_WWW
     # Open up the permissions of the media folders so the python
@@ -117,8 +136,14 @@ function setup_apache_once() {
     sed -i '1d' $APACHE_SITES/geonode.conf
     sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2" $APACHE_SITES/geonode.conf
 
-    #FIXME: This could be removed if setup_apache_every_time is called after setup_apache_once
     $APACHE_SERVICE restart
+    sleep 15
+
+    $GEONODE_BIN/geonode-updateip localhost
+
+    $TOMCAT_SERVICE restart
+    sleep 30
+
 }
 
 function setup_apache_every_time() {
@@ -146,14 +171,13 @@ function setup_geoserver() {
     paver setup
     popd
     mv ../downloaded/geoserver.war $TOMCAT_WEBAPPS
+    $TOMCAT_SERVICE restart
 }
 
 function postinstall() {
     setup_postgres_every_time
     setup_django_every_time
     setup_apache_every_time
-    $TOMCAT_SERVICE restart
-    $APACHE_SERVICE restart
 }
 
 function once() {
