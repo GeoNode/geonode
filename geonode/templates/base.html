@@ -29,7 +29,68 @@
       <link href="{% static "geonode/css/ux-all.css" %}?v={{ VERSION }}" rel="stylesheet" />
       <link href="{% static "geonode/css/base.css" %}?v={{ VERSION }}" rel="stylesheet" />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
+      <style type="text/css">
+        /* Additional styles by custom themes */
+        {% if custom_theme.body_color %}
+        body {
+          background: {{ custom_theme.body_color }};
+        }
+        {% endif %}
 
+        {% if custom_theme.navbar_color %}
+        .home .navbar-inverse , .navbar-inverse {
+          background-color: {{ custom_theme.navbar_color }};
+        }
+        {% endif %}
+
+        {% if custom_theme.logo %}
+        .navbar-brand {
+          background-image: url({{ custom_theme.logo.url }});
+        }
+        {% endif %}
+
+        {% if custom_theme.jumbotron_color %}
+        .home .jumbotron {
+          background-color: {{ custom_theme.jumbotron_color }}
+        }
+        {% endif %}
+
+        {% if custom_theme.jumbotron_welcome_hide %}
+        .home .jumbotron .container {
+          visibility: hidden;
+        }
+        {% endif %}
+
+        {% if custom_theme.jumbotron_bg %}
+        .home .jumbotron .container {
+          position: relative;
+          z-index: 1;
+        }        
+        .home .jumbotron:after {
+          content: "";
+          background-image: url({{ custom_theme.jumbotron_bg.url }});
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: cover;
+          {% if not custom_theme.jumbotron_welcome_hide %}
+          opacity: 0.5;
+          {% endif %}
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          position: absolute;
+          z-index: 0;
+        }
+        {% endif %}
+
+        {% if custom_theme.copyright_color %}
+        .footer-copyright {
+          background-color: {{ custom_theme.copyright_color }};
+        }
+        {% endif %}
+
+      </style>
       {% block extra_head %}
       {% endblock %}
     {% endblock %}
@@ -255,6 +316,22 @@
 
         <div class="col-md-6 text-right">
           {% block contactus %}
+          {% if custom_theme.contactus %}
+          <ul class="list-unstyled">
+              <li style="text-align: left;"><h2 style="margin-top: 0px;">Contact Us </h2> </li>
+              {% if custom_theme.contact_name %}<li style="text-align: left;">{{ custom_theme.contact_name }}</li>{% endif %}
+              {% if custom_theme.contact_position %}<li style="text-align: left;">{{ custom_theme.contact_position }}</li>{% endif %}
+              {% if custom_theme.contact_administrative_area %}<li style="text-align: left;">{{ custom_theme.contact_administrative_area }}</li>{% endif %}
+              {% if custom_theme.contact_city %}<li style="text-align: left;">{{ custom_theme.contact_city }}</li>{% endif %}
+              {% if custom_theme.contact_street %}<li style="text-align: left;">{{ custom_theme.contact_street }}</li>{% endif %}
+              {% if custom_theme.contact_postal_code %}<li style="text-align: left;">{{ custom_theme.contact_postal_code }}</li>{% endif %}
+              {% if custom_theme.contact_country %}<li style="text-align: left;">{{ custom_theme.contact_country }}</li>{% endif %}
+              {% if custom_theme.contact_delivery_point %}<li style="text-align: left;">{{ custom_theme.contact_delivery_point }}</li>{% endif %}
+              {% if custom_theme.contact_voice %}<li style="text-align: left;">Tel: {{ custom_theme.contact_voice }}</li>{% endif %}
+              {% if custom_theme.contact_facsimile %}<li style="text-align: left;">Fax: {{ custom_theme.contact_facsimile }}</li>{% endif %}
+              {% if custom_theme.contact_email %}<li style="text-align: left;">E-mail: {{ custom_theme.contact_email }}</li>{% endif %}
+          </ul>
+          {% endif %}
           {% endblock contactus %}
           <ul class="list-unstyled">
             <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em></li>
@@ -278,6 +355,21 @@
       </div>
     </div>
   </footer>
+
+  {% if custom_theme.copyright %}
+    <section class="footer-copyright">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 copyright ">
+            <div class="module">
+              <small>{{ custom_theme.copyright }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
   {% endblock footer %}
 
 
