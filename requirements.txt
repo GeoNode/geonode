@@ -75,7 +75,7 @@ oauthlib==2.1.0 # python-oauthlib (2.0.6 in our ppa) FIXME
 requests-oauthlib==1.0.0
 asn1crypto==0.24.0
 cffi==1.11.5
-cryptography==2.2.2
+cryptography==2.3.1
 idna>=2.5,<2.7  # (2.6 in our ppa)
 pycparser==2.18
 pyopenssl==18.0.0
