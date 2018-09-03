@@ -139,7 +139,7 @@ function setup_apache_once() {
     $APACHE_SERVICE restart
     sleep 15
 
-    $GEONODE_BIN/geonode-updateip localhost
+    $GEONODE_BIN/geonode-updateip -p localhost
 
     $TOMCAT_SERVICE restart
     sleep 30

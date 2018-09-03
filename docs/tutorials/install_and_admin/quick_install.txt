@@ -53,10 +53,14 @@ The steps to install geonode and all dependencies in Ubuntu 16.04 are as follows
 
    .. note:: If you want to run geonode on your local instance, just run::
 
-       sudo geonode-updateip localhost
+       sudo geonode-updateip -p localhost
 
     IP_ADDRESS=$(ip route get 8.8.8.8 | awk '{print $NF; exit}')
-    sudo geonode-updateip $IP_ADDRESS
+    sudo geonode-updateip -p $IP_ADDRESS
+
+    .. note:: If geoserver and geonode are not on the same machine then add your local geonode address::
+
+        sudo geonode-updateip -p $IP_ADDRESS -l yourlocaladdress
 
    NB: The IP address must be set to enable access from another machine, e.g. the host machine if geonode is installed in a virtual machine.
 
@@ -102,7 +106,7 @@ This option installs geonode in a virtual environment. This option is very usefu
 
     sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update
     sudo apt-get install gdal-bin
-  
+
     # install the correct PyGDAL version
     gdal-config --version | cut -c 1-5 | xargs -I % pip install 'pygdal>=%.0,<=%.999'
 
