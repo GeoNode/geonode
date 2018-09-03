@@ -6,14 +6,17 @@ usage () {
 
     cat <<EOF
 USAGE:
-  $bname <newip>
-      substitute SITEURL with <newip>, append it
+  $bname <-p|--public> <public_ip>
+      substitute SITEURL with <public_ip>, append it
       to ALLOWED_HOSTS in local_settings.py
       and geoserver printing config lists
-  $bname <-r|--replace> <newip>
-      substitute SITEURL and ALLOWED_HOSTS with <newip>
-      in local_settings.py, append it to geoserver
-      printing config list
+      This is mandatory and must be the pubic extenral address you use to access GeoNode
+  $bname <-l|--local> <local_ip>
+      same as above but taking into account
+      LOCAL vs PUBLIC ip addresses (or names)
+      This is optional and if not specified the default is 'localhost'
+  $bname <-s|--secure>
+      HTTPS instead of HTTP protocol
   $bname <-h|--help>
       this help
 EOF
@@ -21,25 +24,42 @@ EOF
     exit $ret
 }
 
-IS_REPLACE=0
-while [ "$1" ]; do
-    case "$1" in
-        -r|--replace)
-            IS_REPLACE=1
-            shift
-            ;;
-        -h|--help)
-            usage 0
-            ;;
-        -*)
-            usage 1
-            ;;
-        *)
-            break
-            ;;
-    esac
+if [[ $# -eq 0 ]] ; then
+    usage 0
+    exit 0
+fi
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+IS_HTTPS=0
+case $key in
+    -h|--help)
+        usage 0
+        ;;
+    -p|--public)
+        PUBLIC_IP="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -l|--local)
+        LOCAL_IP="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -s|--secure)
+        IS_HTTPS=1
+        shift # past argument
+        ;;
+    *)    # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
 done
-NEWIP="$1"
+set -- "${POSITIONAL[@]}" # restore positional parameters
 
 if [[ $UID != 0 ]]; then
     echo "Please run this script with sudo:"
@@ -47,24 +67,50 @@ if [[ $UID != 0 ]]; then
     exit 1
 fi
 
+if [ -z "$PUBLIC_IP" ]; then
+    echo "Public IP is mandatory!"
+    usage 1
+fi
+
+if [ -z "$LOCAL_IP" ]; then
+    # LOCAL_IP=$PUBLIC_IP
+    LOCAL_IP="localhost"
+fi
+
+NET_PROTOCOL="http"
+if [[ $IS_HTTPS != 0 ]]; then
+    NET_PROTOCOL="https"
+fi
+
+# Getting the full netloc
+NEW_EXT_IP="$NET_PROTOCOL://$PUBLIC_IP"
+NEW_INT_IP="$NET_PROTOCOL://$LOCAL_IP"
+
+# Removing slash at the end of variables
+NEW_EXT_IP=${NEW_EXT_IP%/}
+NEW_INT_IP=${NEW_INT_IP%/}
+
+echo "PUBLIC_IP" $NEW_EXT_IP
+echo "LOCAL_IP" $NEW_INT_IP
+
 GEONODE_ETC=${GEONODE_ETC:-/etc/geonode}
 GEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR:-/usr/share/geoserver/data}
 TOMCAT_SERVICE=${TOMCAT_SERVICE:-"invoke-rc.d tomcat8"}
 APACHE_SERVICE=${APACHE_SERVICE:-"invoke-rc.d apache2"}
 
 # Replace SITEURL in $GEONODE_ETC/local_settings.py
-echo "Replacing SITEURL value with '$NEWIP' in $GEONODE_ETC/local_settings.py ... " | tr -d '\n'
-sed -i "s@\(SITEURL[ 	]*=[ 	]*\).*@\1\'http://$NEWIP\/'@g" $GEONODE_ETC/local_settings.py
+echo "Replacing SITEURL value with '$NEW_EXT_IP' in $GEONODE_ETC/local_settings.py ... " | tr -d '\n'
+sed -i "s@\(SITEURL[ 	]*=[ 	]*\).*@\1\'$NEW_EXT_IP\/'@g" $GEONODE_ETC/local_settings.py
 echo "done."
 
-echo "Adding entry for '$NEWIP' in $GEOSERVER_DATA_DIR/printing/config.yaml ... " | tr -d '\n'
+echo "Adding entry for '$PUBLIC_IP' in $GEOSERVER_DATA_DIR/printing/config.yaml ... " | tr -d '\n'
 printing_config=$GEOSERVER_DATA_DIR/printing/config.yaml
 
-if grep -q "$NEWIP" "$printing_config"
+if grep -q "$PUBLIC_IP" "$printing_config"
 then
-    echo "'$NEWIP' already found to the printing whitelist."
+    echo "'$PUBLIC_IP' already found to the printing whitelist."
 else
-    sed -i "s#hosts:#hosts:\n  - !ipMatch\n    ip: $NEWIP#g" $printing_config
+    sed -i "s#hosts:#hosts:\n  - !ipMatch\n    ip: $PUBLIC_IP#g" $printing_config
     echo "done."
 fi
 
@@ -129,27 +175,23 @@ echo "Setting up oauth"
 oauth_keys=$(geonode fixoauthuri 2>&1)
 client_id=`echo $oauth_keys | cut -d \, -f 1`
 client_secret=`echo $oauth_keys | cut -d \, -f 2`
+
+# Updating OAuth2 Service Config
 oauth_config="$GEOSERVER_DATA_DIR/security/filter/geonode-oauth2/config.xml"
 sed -i "s|<cliendId>.*</cliendId>|<cliendId>$client_id</cliendId>|g" $oauth_config
 sed -i "s|<clientSecret>.*</clientSecret>|<clientSecret>$client_secret</clientSecret>|g" $oauth_config
-sed -i "s|<accessTokenUri>.*</accessTokenUri>|<accessTokenUri>http://$NEWIP/o/token/</accessTokenUri>|g" $oauth_config
-sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>http://$NEWIP/o/authorize/</userAuthorizationUri>|g" $oauth_config
-sed -i "s|<redirectUri>.*</redirectUri>|<redirectUri>http://$NEWIP/geoserver/</redirectUri>|g" $oauth_config
-sed -i "s|<checkTokenEndpointUrl>.*</checkTokenEndpointUrl>|<checkTokenEndpointUrl>http://$NEWIP/api/o/v4/tokeninfo/</checkTokenEndpointUrl>|g" $oauth_config
-sed -i "s|<logoutUri>.*</logoutUri>|<logoutUri>http://$NEWIP/account/logout/</logoutUri>|g" $oauth_config
+sed -i "s|<accessTokenUri>.*</accessTokenUri>|<accessTokenUri>$NEW_INT_IP/o/token/</accessTokenUri>|g" $oauth_config
+sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>$NEW_EXT_IP/o/authorize/</userAuthorizationUri>|g" $oauth_config
+sed -i "s|<redirectUri>.*</redirectUri>|<redirectUri>$NEW_EXT_IP/geoserver/</redirectUri>|g" $oauth_config
+sed -i "s|<checkTokenEndpointUrl>.*</checkTokenEndpointUrl>|<checkTokenEndpointUrl>$NEW_INT_IP/api/o/v4/tokeninfo/</checkTokenEndpointUrl>|g" $oauth_config
+sed -i "s|<logoutUri>.*</logoutUri>|<logoutUri>$NEW_EXT_IP/account/logout/</logoutUri>|g" $oauth_config
 
-sed -i "s/localhost:8000/$NEWIP/g" $oauth_config
-sed -i "s/localhost:8080/$NEWIP/g" $oauth_config
-sed -i "s/localhost/$NEWIP/g" $oauth_config
-sed -i "s/localhost/$NEWIP/g" $oauth_config
+# Updating REST Role Service Config
+sed -i "s|<baseUrl>.*</baseUrl>|<baseUrl>$NEW_INT_IP</baseUrl>|g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
 
-sed -i "s|<baseUrl>.*</baseUrl>|<baseUrl>http://$NEWIP</baseUrl>|g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
-sed -i "s/localhost:8000/$NEWIP/g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
-sed -i "s/localhost/$NEWIP/g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
-
-sed -i "s|<proxyBaseUrl>.*</proxyBaseUrl>|<proxyBaseUrl>http://$NEWIP/geoserver</proxyBaseUrl>|g" "$GEOSERVER_DATA_DIR/global.xml"
-sed -i "s/localhost:8080/$NEWIP/g" "$GEOSERVER_DATA_DIR/global.xml"
-sed -i "s/localhost/$NEWIP/g" "$GEOSERVER_DATA_DIR/global.xml"
+# Updating GeoServer Global Config
+global_config="$GEOSERVER_DATA_DIR/global.xml"
+sed -i "s|<proxyBaseUrl>.*</proxyBaseUrl>|<proxyBaseUrl>$NEW_EXT_IP/geoserver</proxyBaseUrl>|g" $global_config
 
 # Restart tomcat server
 $TOMCAT_SERVICE restart
