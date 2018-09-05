@@ -19,7 +19,7 @@
 #########################################################################
 
 from django import forms
-
+from django.utils.translation import ugettext as _
 
 GEOMETRY_TYPES = (
     ('Point', 'Points'),
@@ -32,9 +32,9 @@ class NewLayerForm(forms.Form):
     """
     A form to create an empty layer in PostGIS.
     """
-    name = forms.CharField(label='Layer name', max_length=255)
-    title = forms.CharField(label='Layer title', max_length=255)
-    geometry_type = forms.ChoiceField(choices=GEOMETRY_TYPES)
+    name = forms.CharField(label=_('Layer name'), max_length=255)
+    title = forms.CharField(label=_('Layer title'), max_length=255)
+    geometry_type = forms.ChoiceField(label=_('Geometry type'), choices=GEOMETRY_TYPES)
 
     permissions = forms.CharField(
         widget=forms.HiddenInput(

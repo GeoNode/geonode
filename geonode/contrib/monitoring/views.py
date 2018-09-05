@@ -19,14 +19,14 @@
 #########################################################################
 
 import json
+import pytz
 from datetime import datetime, timedelta
-
 from django.shortcuts import render
-
 from django import forms
 from django.conf import settings
 from django.views.generic.base import View
 from django.core.urlresolvers import reverse
+from django.core.management import call_command
 from django.views.decorators.csrf import csrf_exempt
 
 from geonode.utils import json_response
@@ -108,7 +108,8 @@ class _ValidFromToLastForm(forms.Form):
         vf = self.cleaned_data.get('valid_from')
         vt = self.cleaned_data.get('valid_to')
         if last and (vf or vt):
-            raise forms.ValidationError('Cannot use last and valid_from/valid_to at the same time')
+            raise forms.ValidationError(
+                'Cannot use last and valid_from/valid_to at the same time')
 
     def clean(self):
         super(_ValidFromToLastForm, self).clean()
@@ -120,6 +121,7 @@ class CheckTypeForm(_ValidFromToLastForm):
     Special form class to validate values from specific db dictionaries
     (services, resources, ows services etc)
     """
+
     def _check_type(self, tname):
         """
         Returns tname-specific object instance from db.
@@ -139,7 +141,7 @@ class CheckTypeForm(_ValidFromToLastForm):
             raise forms.ValidationError("No type check for {}".format(tname))
         try:
             return tcheck(val)
-        except (Exception,), err:
+        except (Exception,) as err:
             raise forms.ValidationError(err)
 
 
@@ -149,7 +151,8 @@ class MetricsFilters(CheckTypeForm):
     service = forms.CharField(required=False)
     label = forms.CharField(required=False)
     resource = forms.CharField(required=False)
-    resource_type = forms.ChoiceField(choices=MonitoredResource.TYPES, required=False)
+    resource_type = forms.ChoiceField(
+        choices=MonitoredResource.TYPES, required=False)
     ows_service = forms.CharField(required=False)
     service_type = forms.CharField(required=False)
     group_by = forms.ChoiceField(choices=GROUP_BY_CHOICES, required=False)
@@ -173,7 +176,8 @@ class MetricsFilters(CheckTypeForm):
         s = self.cleaned_data.get('service')
         st = self.cleaned_data.get('service_type')
         if st and s:
-            raise forms.ValidationError("Cannot use service and service type at the same time")
+            raise forms.ValidationError(
+                "Cannot use service and service type at the same time")
 
     def clean(self):
         super(MetricsFilters, self).clean()
@@ -224,7 +228,8 @@ class FilteredView(View):
         q = self.get_queryset(**qargs)
         from_fields = [f[0] for f in self.fields_map]
         to_fields = [f[1] for f in self.fields_map]
-        out = [dict(zip(to_fields, (getattr(item, f) for f in from_fields))) for item in q]
+        out = [dict(zip(to_fields, (getattr(item, f)
+                                    for f in from_fields))) for item in q]
         data = {self.output_name: out,
                 'success': True,
                 'errors': {},
@@ -257,7 +262,7 @@ class ResourcesList(FilteredView):
             sm = ServiceTypeMetric.objects.filter(metric__name=metric_name)
             qparams['metric_values__service_metric__in'] = sm
         if last:
-            _from = datetime.now() - timedelta(seconds=last)
+            _from = datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(seconds=last)
             if interval is None:
                 interval = 60
             if not isinstance(interval, timedelta):
@@ -279,14 +284,15 @@ class LabelsList(FilteredView):
                   ('name', 'name',),)
     output_name = 'labels'
 
-    def get_queryset(self, metric_name, valid_from, valid_to, interval=None, last=None):
+    def get_queryset(self, metric_name, valid_from,
+                     valid_to, interval=None, last=None):
         q = MetricLabel.objects.all().distinct()
         qparams = {}
         if metric_name:
             sm = ServiceTypeMetric.objects.filter(metric__name=metric_name)
             qparams['metric_values__service_metric__in'] = sm
         if last:
-            _from = datetime.now() - timedelta(seconds=last)
+            _from = datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(seconds=last)
             if interval is None:
                 interval = 60
             if not isinstance(interval, timedelta):
@@ -333,7 +339,7 @@ class MetricDataView(View):
         last = filters.pop('last', None)
         if last:
             td = timedelta(seconds=last)
-            now = datetime.now()
+            now = datetime.utcnow().replace(tzinfo=pytz.utc)
             filters['valid_from'] = now - td
             filters['valid_to'] = now
         out = capi.get_metrics_for(metric_name, **filters)
@@ -375,7 +381,7 @@ class ExceptionsListView(FilteredView):
         if error_type:
             q = q.filter(error_type=error_type)
         if last:
-            _from = datetime.now() - timedelta(seconds=last)
+            _from = datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(seconds=last)
             if interval is None:
                 interval = 60
             if not isinstance(interval, timedelta):
@@ -405,7 +411,8 @@ class ExceptionDataView(View):
     def get(self, request, exception_id, *args, **kwargs):
         e = self.get_object(exception_id)
         if not e:
-            return json_response(errors={'exception_id': "Object not found"}, status=404)
+            return json_response(
+                errors={'exception_id': "Object not found"}, status=404)
         data = e.expose()
         return json_response(data)
 
@@ -415,14 +422,16 @@ class BeaconView(View):
     def get(self, request, *args, **kwargs):
         service = kwargs.get('exposed')
         if not service:
-            data = [{'name': s, 'url': reverse('monitoring:api_beacon_exposed', args=(s,))} for s in exposes.keys()]
+            data = [{'name': s, 'url': reverse(
+                'monitoring:api_beacon_exposed', args=(s,))} for s in exposes.keys()]
             return json_response({'exposed': data})
         try:
             ex = exposes[service]()
         except KeyError:
-            return json_response(errors={'exposed': 'No service for {}'.format(service)}, status=404)
+            return json_response(
+                errors={'exposed': 'No service for {}'.format(service)}, status=404)
         out = {'data': ex.expose(),
-               'timestamp': datetime.now()}
+               'timestamp': datetime.utcnow().replace(tzinfo=pytz.utc)}
         return json_response(out)
 
 
@@ -448,7 +457,12 @@ class MetricNotificationCheckForm(forms.ModelForm):
 
     class Meta:
         model = MetricNotificationCheck
-        fields = ('notification_check', 'min_value', 'max_value', 'max_timeout',)
+        fields = (
+            'notification_check',
+            'min_value',
+            'max_value',
+            'max_timeout',
+        )
 
     def _get_clean_model(self, cls, name):
         val = self.cleaned_data.get(name)
@@ -479,7 +493,8 @@ class MetricNotificationCheckForm(forms.ModelForm):
         try:
             vtype, vname = val.split('=')
         except IndexError:
-            raise forms.ValidationError("Invalid resource name: {}".format(val))
+            raise forms.ValidationError(
+                "Invalid resource name: {}".format(val))
         try:
             return MonitoredResource.objects.get(name=vname, type=vtype)
         except MonitoredResource.DoesNotExist:
@@ -535,7 +550,7 @@ class UserNotificationConfigView(View):
                 out['status'] = 'ok'
                 out['data'] = [dump(c) for c in configs]
                 status = 200
-            except forms.ValidationError, err:
+            except forms.ValidationError as err:
                 out['errors'] = err.errors
                 status = 400
         else:
@@ -590,7 +605,8 @@ class NotificationsList(FilteredView):
 
 
 class StatusCheckView(View):
-    fields = ('name', 'severity',
+    fields = ('name',
+              'severity',
               'offending_value',
               'threshold_value',
               'spotted_at',
@@ -646,6 +662,30 @@ class AutoconfigureView(View):
         return json_response(out)
 
 
+class CollectMetricsView(View):
+    """
+     - Run command "collect_metrics -n -t xml" via web
+    """
+    authkey = 'OzhVMECJUn9vDu2oLv1HjGPKByuTBwF8'
+
+    def get(self, request, *args, **kwargs):
+        authkey = kwargs.get('authkey')
+        if not authkey or authkey != self.authkey:
+            out = {'success': False,
+                   'status': 'error',
+                   'errors': {'denied': ['Call is not permitted']}
+                   }
+            return json_response(out, status=401)
+        else:
+            call_command(
+                'collect_metrics', '-n', '-t', 'xml')
+            out = {'success': True,
+                   'status': 'ok',
+                   'errors': {}
+                   }
+            return json_response(out)
+
+
 api_metrics = MetricsList.as_view()
 api_services = ServicesList.as_view()
 api_hosts = HostsList.as_view()
@@ -653,6 +693,7 @@ api_labels = LabelsList.as_view()
 api_resources = ResourcesList.as_view()
 api_ows_services = OWSServiceList.as_view()
 api_metric_data = MetricDataView.as_view()
+api_metric_collect = CollectMetricsView.as_view()
 api_exceptions = ExceptionsListView.as_view()
 api_exception = ExceptionDataView.as_view()
 api_beacon = BeaconView.as_view()

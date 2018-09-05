@@ -18,11 +18,13 @@
 #
 #########################################################################
 
+from uuid import uuid4
+
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AbstractUser, UserManager
-from django.contrib import auth
+from django.contrib.sites.models import Site
 from django.db.models import signals
 from django.conf import settings
 
@@ -30,11 +32,17 @@ from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
 from geonode.groups.models import GroupProfile
-from geonode.notifications_helper import has_notifications, send_notification
+# from geonode.notifications_helper import send_notification
 
-from account.models import EmailAddress
+from allauth.account.signals import user_signed_up
+from allauth.socialaccount.signals import social_account_added
+# from account.models import EmailAddress
 
 from .utils import format_address
+from .signals import (update_user_email_addresses,
+                      notify_admins_new_signup)
+from .languages import LANGUAGES
+from .timezones import TIMEZONES
 
 
 class ProfileUserManager(UserManager):
@@ -52,7 +60,11 @@ class Profile(AbstractUser):
         blank=True,
         null=True,
         help_text=_('name of the responsible organization'))
-    profile = models.TextField(_('Profile'), null=True, blank=True, help_text=_('introduce yourself'))
+    profile = models.TextField(
+        _('Profile'),
+        null=True,
+        blank=True,
+        help_text=_('introduce yourself'))
     position = models.CharField(
         _('Position Name'),
         max_length=255,
@@ -88,6 +100,7 @@ class Profile(AbstractUser):
         null=True,
         help_text=_('ZIP or other postal code'))
     country = models.CharField(
+        _('Country'),
         choices=COUNTRIES,
         max_length=3,
         blank=True,
@@ -96,6 +109,23 @@ class Profile(AbstractUser):
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_(
         'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
             (space or comma-separated'))
+    language = models.CharField(
+        _("language"),
+        max_length=10,
+        choices=LANGUAGES,
+        default=settings.LANGUAGE_CODE
+    )
+    timezone = models.CharField(
+        _('Timezone'),
+        max_length=100,
+        default="",
+        choices=TIMEZONES,
+        blank=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(Profile, self).__init__(*args, **kwargs)
+        self._previous_active_state = self.is_active
 
     def get_absolute_url(self):
         return reverse('profile_detail', args=[self.username, ])
@@ -110,10 +140,17 @@ class Profile(AbstractUser):
     USERNAME_FIELD = 'username'
 
     def group_list_public(self):
-        return GroupProfile.objects.exclude(access="private").filter(groupmember__user=self)
+        return GroupProfile.objects.exclude(
+            access="private").filter(groupmember__user=self)
 
     def group_list_all(self):
         return GroupProfile.objects.filter(groupmember__user=self).distinct()
+
+    def is_member_of_group(self, group_slug):
+        """
+        Returns if the Profile belongs to a group of a given slug.
+        """
+        return self.groups.filter(name=group_slug).exists()
 
     def keyword_list(self):
         """
@@ -124,7 +161,8 @@ class Profile(AbstractUser):
     @property
     def name_long(self):
         if self.first_name and self.last_name:
-            return '%s %s (%s)' % (self.first_name, self.last_name, self.username)
+            return '%s %s (%s)' % (self.first_name,
+                                   self.last_name, self.username)
         elif (not self.first_name) and self.last_name:
             return '%s (%s)' % (self.last_name, self.username)
         elif self.first_name and (not self.last_name):
@@ -134,7 +172,40 @@ class Profile(AbstractUser):
 
     @property
     def location(self):
-        return format_address(self.delivery, self.zipcode, self.city, self.area, self.country)
+        return format_address(self.delivery, self.zipcode,
+                              self.city, self.area, self.country)
+
+    def save(self, *args, **kwargs):
+        super(Profile, self).save(*args, **kwargs)
+        self._notify_account_activated()
+        self._previous_active_state = self.is_active
+
+    def _notify_account_activated(self):
+        """Notify user that its account has been activated by a staff member"""
+        became_active = self.is_active and not self._previous_active_state
+        if became_active and self.last_login is None:
+            try:
+                # send_notification(users=(self,), label="account_active")
+
+                from invitations.adapters import get_invitations_adapter
+                current_site = Site.objects.get_current()
+                ctx = {
+                    'username': self.username,
+                    'current_site': current_site,
+                    'site_name': current_site.name,
+                    'email': self.email,
+                    'inviter': self,
+                }
+
+                email_template = 'pinax/notifications/account_active/account_active'
+
+                get_invitations_adapter().send_mail(
+                    email_template,
+                    self.email,
+                    ctx)
+            except BaseException:
+                import traceback
+                traceback.print_exc()
 
 
 def get_anonymous_user_instance(Profile):
@@ -152,38 +223,17 @@ def profile_post_save(instance, sender, **kwargs):
     # do not create email, when user-account signup code is in use
     if getattr(instance, '_disable_account_creation', False):
         return
-    # keep in sync Profile email address with Account email address
-    if instance.email not in [u'', '', None] and not kwargs.get('raw', False):
-        address, created = EmailAddress.objects.get_or_create(
-            user=instance, primary=True,
-            defaults={'email': instance.email, 'verified': False})
-        if not created:
-            EmailAddress.objects.filter(user=instance, primary=True).update(email=instance.email)
 
 
-def email_post_save(instance, sender, **kw):
-    if instance.primary:
-        Profile.objects.filter(id=instance.user.pk).update(email=instance.email)
-
-
-def profile_pre_save(instance, sender, **kw):
-    matching_profiles = Profile.objects.filter(id=instance.id)
-    if matching_profiles.count() == 0:
-        return
-    if instance.is_active and not matching_profiles.get().is_active:
-        send_notification((instance,), "account_active")
-
-
-def profile_signed_up(user, form, **kwargs):
-    staff = auth.get_user_model().objects.filter(is_staff=True)
-    send_notification(staff, "account_approve", {"from_user": user})
-
-
-signals.pre_save.connect(profile_pre_save, sender=Profile)
+""" Connect relevant signals to their corresponding handlers. """
+social_account_added.connect(
+    update_user_email_addresses,
+    dispatch_uid=str(uuid4()),
+    weak=False
+)
+user_signed_up.connect(
+    notify_admins_new_signup,
+    dispatch_uid=str(uuid4()),
+    weak=False
+)
 signals.post_save.connect(profile_post_save, sender=Profile)
-signals.post_save.connect(email_post_save, sender=EmailAddress)
-
-if has_notifications and 'account' in settings.INSTALLED_APPS and getattr(settings, 'ACCOUNT_APPROVAL_REQUIRED', False):
-    from account import signals as s
-    from account.forms import SignupForm
-    s.user_signed_up.connect(profile_signed_up, sender=SignupForm)

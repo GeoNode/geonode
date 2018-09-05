@@ -25,7 +25,7 @@ from geonode.notifications_helper import NotificationsAppConfigBase
 class BaseAppConfig(NotificationsAppConfigBase):
     name = 'geonode.base'
     NOTIFICATIONS = (("request_download_resourcebase", _("Request to download a resource"),
-                     _("A request for downloading a resource was sent")),
+                      _("A request for downloading a resource was sent")),
                      )
 
 

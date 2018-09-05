@@ -100,5 +100,6 @@ def format_address(street=None, zipcode=None, city=None, area=None, country=None
             address.append(city)
         if area:
             address.append(area)
-        address.append(country)
+        if country:
+            address.append(country)
         return " ".join(address)

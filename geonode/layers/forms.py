@@ -32,10 +32,10 @@ try:
     import json
 except ImportError:
     from django.utils import simplejson as json
-from geonode.layers.utils import unzip_file
+from geonode.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
 
-autodiscover() # flake8: noqa
+autodiscover()  # flake8: noqa
 
 from geonode.base.forms import ResourceBaseForm
 
@@ -61,7 +61,7 @@ class LayerForm(ResourceBaseForm):
             'default_style',
             'styles',
             'upload_session',
-            'service',)
+            'remote_service',)
         # widgets = {
         #     'title': forms.TextInput({'placeholder': title_help_text})
         # }
@@ -157,7 +157,7 @@ class LayerUploadForm(forms.Form):
                     sld_file = cleaned["sld_file"].name
 
         if not cleaned["metadata_upload_form"] and not cleaned["style_upload_form"] and base_ext.lower() not in (
-                ".shp", ".tif", ".tiff", ".geotif", ".geotiff", ".asc"):
+                ".shp", ".tif", ".tiff", ".geotif", ".geotiff", ".asc", ".sld", ".kml", ".kmz"):
             raise forms.ValidationError(
                 "Only Shapefiles, GeoTiffs, and ASCIIs are supported. You "
                 "uploaded a %s file" % base_ext)
@@ -210,8 +210,8 @@ class LayerUploadForm(forms.Form):
         tempdir = tempfile.mkdtemp()
 
         if zipfile.is_zipfile(self.cleaned_data['base_file']):
-            absolute_base_file = unzip_file(self.cleaned_data['base_file'], '.shp', tempdir=tempdir)
-
+            absolute_base_file = unzip_file(self.cleaned_data['base_file'],
+                                            '.shp', tempdir=tempdir)
         else:
             for field in self.spatial_files:
                 f = self.cleaned_data[field]

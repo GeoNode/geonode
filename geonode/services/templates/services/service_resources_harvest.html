@@ -1,0 +1,146 @@
+{% extends "services/services_base.html" %}
+{% load bootstrap_tags %}
+{% load i18n %}
+{% load guardian_tags %}
+
+{% block title %}Import resources{% endblock %}
+
+{% block body %}
+<div class="twocol">
+    <div class="page-header">
+        <h3>{% trans "Import resources" %}<small> {{ service.name }}</small></h3>
+    </div>
+    <div class="container">
+        {% if resources %}
+            <p>{% if errored_state %}{% trans "no" %}{% else %}{{ importable|length }}{% endif %} {% trans "resources can be imported" %}
+            {% if service_handler.is_cascaded and resources %}
+                {% trans "- These will be cascaded through your local geoserver instance" %}
+            {% endif %}
+            </p>
+            <div class="row">
+                <form method="POST">
+                    {% csrf_token %}
+                    <table class="table table table-hover">
+                        <thead>
+                        <tr>
+                            <th>{% if not errored_state %}<input type="checkbox" checked="true" id="checkAll" />{% endif %}</th>
+                            <th>{% trans "Id" %}</th>
+                            <th>{% trans "Name" %}</th>
+                            <th>{% trans "Description" %}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for resource_meta in resources %}
+                            <tr>
+                                <td>{% if not errored_state %}<input type="checkbox" name="resource_list" id="option_{{resource_meta.id}}" value="{{ resource_meta.id }}" checked/>{% endif %}</td>
+                                <td>{{ resource_meta.id }}</td>
+                                <td>{{ resource_meta.title }}</td>
+                                <td>{{ resource_meta.abstract }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div align="center">
+                        <div class="btn-group">
+                            <a class="btn btn-default" href="{% url "service_detail" service.id %}">{% trans "Back to service details" %}</a>
+                            <input type="submit" class="btn btn-primary" value="{% trans "Import Resources" %}" />
+                        </div>
+                    </div>
+                </form>
+                {% if resources.paginator.num_pages > 1 %}
+                    <div class="row">
+                        <nav aria-label="importable resources pages">
+                            <ul class="pagination hidden-xs pull-right">
+                                {% if resources.has_previous %}
+                                    <li><a id="previous" aria-label="Previous" href="?page={{ resources.previous_page_number }}">previous</a></li>
+                                {% else %}
+                                    <li class="disabled"><a aria-label="Previous" href="#">previous</a></li>
+                                {% endif %}
+                                <li class="active"><a href="#">{{ resources.number }}/{{ resources.paginator.num_pages }}</a></li>
+                                {% if resources.has_next %}
+                                    <li><a aria-label="Next" href="?page={{ resources.next_page_number }}">next</a></li>
+                                {% else %}
+                                    <li class="disabled"><a aria-label="Next" href="#">next</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                {% endif %}
+
+
+            </div>
+        {% else %}
+            <p>{% trans "All resources have already been imported" %}</p>
+        {% endif %}
+        <div class="modal fade" data-backdrop="static" data-keyboard="false" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        {% trans "Connecting to service..." %}
+                    </div>
+                    <div class="modal-body">
+                        <div class="progress" id="serviceConnectionProgress">
+                            <div class="progress-bar progress-bar-striped progress-bar-info active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" data-backdrop="static" data-keyboard="false" id="harvestingResourceSync" tabindex="-1" role="dialog" aria-labelledby="harvestingResourceSyncLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        {% trans "Harvesting resources..." %}
+                    </div>
+                    <div class="modal-body">
+                        <div class="progress" id="harvestingProgress">
+                            <div class="progress-bar progress-bar-striped progress-bar-info active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+    {% get_obj_perms request.user for service as "resource_perms" %}
+
+    {% if "change_service" in resource_perms or "remove_service" in resource_perms or "change_service_permissions" in resource_perms %}
+        <ul class="list-group">
+            <li class="list-group-item"><h3>{% trans "Manage" %}</h3></li>
+
+            <form method="POST" action="{% url "rescan_service" service.id %}">
+            {% if "change_service" in resource_perms %}
+                {% csrf_token %}
+                    <li class="list-group-item">
+                        <input id="rescanService" type="submit" class="btn btn-default btn-md btn-block" value="{% trans "Re-scan Service for new Resources" %}">
+                    </li>
+            {% endif %}
+            </form>
+        </ul>
+    {% endif %}
+{% endblock sidebar %}
+
+{% block extra_script %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#checkAll").on('click', function () {
+                $('input[name=resource_list]').prop('checked', this.checked);
+            });
+            $("#rescanService").on('click', function () {
+                $("#progressModal").modal("show");
+            });
+            {% if is_sync %}
+                $("input[type = submit]").on('click', function () {
+                    $("#harvestingResourceSync").modal("show");
+                });
+            {% endif %}
+        });
+    </script>
+{% endblock extra_script %}

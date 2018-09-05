@@ -18,36 +18,33 @@
 #
 #########################################################################
 
+from geonode.tests.base import GeoNodeBaseTestSupport
+
 import json
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
-from django.test import TestCase
 from django.test import override_settings
 from django.conf import settings
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.groups.models import GroupProfile, GroupInvitation, GroupCategory
+from geonode.groups.models import GroupProfile, GroupCategory
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.base.populate_test_data import create_models
 from geonode.security.views import _perms_info_json
 
 
-class SmokeTest(TestCase):
+class SmokeTest(GeoNodeBaseTestSupport):
     """
     Basic checks to make sure pages load, etc.
     """
 
-    fixtures = ['initial_data.json', "group_test_data"]
-
     def setUp(self):
-        create_models(type='layer')
-        create_models(type='map')
-        create_models(type='document')
+        super(SmokeTest, self).setUp()
+
         self.norman = get_user_model().objects.get(username="norman")
         self.norman.groups.add(Group.objects.get(name='anonymous'))
         self.test_user = get_user_model().objects.get(username='test_user')
@@ -388,9 +385,9 @@ class SmokeTest(TestCase):
         response = self.client.get("/groups/group/bar/update/")
         self.assertEqual(302, response.status_code)
 
-        # 405 - json endpoint, doesn't support GET
-        response = self.client.get("/groups/group/bar/invite/")
-        self.assertEqual(405, response.status_code)
+        # # 405 - json endpoint, doesn't support GET
+        # response = self.client.get("/groups/group/bar/invite/")
+        # self.assertEqual(405, response.status_code)
 
     def test_protected_pages_render(self):
         """
@@ -414,9 +411,9 @@ class SmokeTest(TestCase):
         response = self.client.get("/groups/group/bar/update/")
         self.assertEqual(200, response.status_code)
 
-        # 405 - json endpoint, doesn't support GET
-        response = self.client.get("/groups/group/bar/invite/")
-        self.assertEqual(405, response.status_code)
+        # # 405 - json endpoint, doesn't support GET
+        # response = self.client.get("/groups/group/bar/invite/")
+        # self.assertEqual(405, response.status_code)
 
     def test_group_activity_pages_render(self):
         """
@@ -483,12 +480,10 @@ class SmokeTest(TestCase):
             layer.save()
 
 
-class MembershipTest(TestCase):
+class MembershipTest(GeoNodeBaseTestSupport):
     """
     Tests membership logic in the geonode.groups models
     """
-
-    fixtures = ["group_test_data"]
 
     def test_group_is_member(self):
         """
@@ -514,88 +509,100 @@ class MembershipTest(TestCase):
         self.assert_(group.user_is_member(normal))
         self.assertRaises(ValueError, lambda: group.join(anon))
 
-
-class InvitationTest(TestCase):
-    """
-    Tests invitation logic in geonode.groups models
-    """
-
-    fixtures = ["group_test_data"]
-
-    def test_invite_user(self):
+    def test_profile_is_member_of_group(self):
         """
-        Tests inviting a registered user
+        Tests profile is_member_of_group property
         """
 
         normal = get_user_model().objects.get(username="norman")
-        admin = get_user_model().objects.get(username="admin")
         group = GroupProfile.objects.get(slug="bar")
-        group.invite(normal, admin, role="member", send=False)
+        self.assertFalse(normal.is_member_of_group(group.slug))
 
-        self.assert_(
-            GroupInvitation.objects.filter(
-                user=normal,
-                from_user=admin,
-                group=group).exists())
-
-        invite = GroupInvitation.objects.get(
-            user=normal, from_user=admin, group=group)
-
-        # Test that the user can access the token url.
-        self.client.login(username="norman", password="norman")
-        response = self.client.get(
-            "/groups/group/{group}/invite/{token}/".format(group=group, token=invite.token))
-        self.assertEqual(200, response.status_code)
-
-    def test_accept_invitation(self):
-        """
-        Tests accepting an invitation
-        """
-
-        anon = get_anonymous_user()
-        normal = get_user_model().objects.get(username="norman")
-        admin = get_user_model().objects.get(username="admin")
-        group = GroupProfile.objects.get(slug="bar")
-        group.invite(normal, admin, role="member", send=False)
-
-        invitation = GroupInvitation.objects.get(
-            user=normal, from_user=admin, group=group)
-
-        self.assertRaises(ValueError, lambda: invitation.accept(anon))
-        self.assertRaises(ValueError, lambda: invitation.accept(admin))
-        invitation.accept(normal)
-
-        self.assert_(group.user_is_member(normal))
-        self.assert_(invitation.state == "accepted")
-
-    def test_decline_invitation(self):
-        """
-        Tests declining an invitation
-        """
-
-        anon = get_anonymous_user()
-        normal = get_user_model().objects.get(username="norman")
-        admin = get_user_model().objects.get(username="admin")
-        group = GroupProfile.objects.get(slug="bar")
-        group.invite(normal, admin, role="member", send=False)
-
-        invitation = GroupInvitation.objects.get(
-            user=normal, from_user=admin, group=group)
-
-        self.assertRaises(ValueError, lambda: invitation.decline(anon))
-        self.assertRaises(ValueError, lambda: invitation.decline(admin))
-        invitation.decline(normal)
-
-        self.assert_(not group.user_is_member(normal))
-        self.assert_(invitation.state == "declined")
+        group.join(normal)
+        self.assertTrue(normal.is_member_of_group(group.slug))
 
 
-class GroupCategoriesTestCase(TestCase):
+# class InvitationTest(GeoNodeBaseTestSupport):
+#     """
+#     Tests invitation logic in geonode.groups models
+#     """
+#
+#     def test_invite_user(self):
+#         """
+#         Tests inviting a registered user
+#         """
+#
+#         normal = get_user_model().objects.get(username="norman")
+#         admin = get_user_model().objects.get(username="admin")
+#         group = GroupProfile.objects.get(slug="bar")
+#         group.invite(normal, admin, role="member", send=False)
+#
+#         self.assert_(
+#             GroupInvitation.objects.filter(
+#                 user=normal,
+#                 from_user=admin,
+#                 group=group).exists())
+#
+#         invite = GroupInvitation.objects.get(
+#             user=normal, from_user=admin, group=group)
+#
+#         # Test that the user can access the token url.
+#         self.client.login(username="norman", password="norman")
+#         response = self.client.get(
+#             "/groups/group/{group}/invite/{token}/".format(group=group, token=invite.token))
+#         self.assertEqual(200, response.status_code)
+#
+#     def test_accept_invitation(self):
+#         """
+#         Tests accepting an invitation
+#         """
+#
+#         anon = get_anonymous_user()
+#         normal = get_user_model().objects.get(username="norman")
+#         admin = get_user_model().objects.get(username="admin")
+#         group = GroupProfile.objects.get(slug="bar")
+#         group.invite(normal, admin, role="member", send=False)
+#
+#         invitation = GroupInvitation.objects.get(
+#             user=normal, from_user=admin, group=group)
+#
+#         self.assertRaises(ValueError, lambda: invitation.accept(anon))
+#         self.assertRaises(ValueError, lambda: invitation.accept(admin))
+#         invitation.accept(normal)
+#
+#         self.assert_(group.user_is_member(normal))
+#         self.assert_(invitation.state == "accepted")
+#
+#     def test_decline_invitation(self):
+#         """
+#         Tests declining an invitation
+#         """
+#
+#         anon = get_anonymous_user()
+#         normal = get_user_model().objects.get(username="norman")
+#         admin = get_user_model().objects.get(username="admin")
+#         group = GroupProfile.objects.get(slug="bar")
+#         group.invite(normal, admin, role="member", send=False)
+#
+#         invitation = GroupInvitation.objects.get(
+#             user=normal, from_user=admin, group=group)
+#
+#         self.assertRaises(ValueError, lambda: invitation.decline(anon))
+#         self.assertRaises(ValueError, lambda: invitation.decline(admin))
+#         invitation.decline(normal)
+#
+#         self.assert_(not group.user_is_member(normal))
+#         self.assert_(invitation.state == "declined")
+
+
+class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
     """
     Group Categories tests
     """
 
     def setUp(self):
+        super(GroupCategoriesTestCase, self).setUp()
+
         c1 = GroupCategory.objects.create(name='test #1 category')
         g = GroupProfile.objects.create(title='test')
         g.categories.add(c1)
@@ -634,13 +641,21 @@ class GroupCategoriesTestCase(TestCase):
 
     def test_group_categories_add(self):
         view_url = reverse('group_category_create')
+        # Test that the view is protected to anonymous users
+        r = self.client.get(view_url)
+        self.assertEqual(r.status_code, 302)
+
+        # Test that the view is protected to non-admin users
+        self.client.login(username='test', password='test')
+        r = self.client.post(view_url)
+        self.assertEqual(r.status_code, 401)
+
+        # Test that the view is accessible to administrators
+        self.client.login(username='admin', password='admin')
         r = self.client.get(view_url)
         self.assertEqual(r.status_code, 200)
 
-        r = self.client.post(view_url)
-        self.assertEqual(r.status_code, 200)
-
-        self.client.login(username='test', password='test')
+        # Create e new category
         category = 'test #3 category'
         r = self.client.post(view_url, {'name': category})
 
@@ -650,7 +665,7 @@ class GroupCategoriesTestCase(TestCase):
         self.assertTrue(q.get().slug)
 
 
-class GroupProfileTest(TestCase):
+class GroupProfileTest(GeoNodeBaseTestSupport):
 
     @override_settings(MEDIA_ROOT="/tmp/geonode_tests")
     def test_group_logo_is_present_on_list_view(self):

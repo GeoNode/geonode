@@ -18,20 +18,15 @@
 #
 #########################################################################
 
-import datetime
-import hashlib
-
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from django.db import models, IntegrityError
-from django.utils.translation import ugettext as _
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.db.models import signals
-from django.contrib.sites.models import Site
-from django.template.loader import render_to_string
-from django.core.mail import send_mail
+from django.utils.timezone import now
 
 from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group
@@ -39,8 +34,8 @@ from guardian.shortcuts import get_objects_for_group
 
 class GroupCategory(models.Model):
     slug = models.SlugField(max_length=255, unique=True, null=False, blank=False)
-    name = models.CharField(max_length=255, unique=True, null=False, blank=False)
-    description = models.TextField(null=True, default=None, blank=True)
+    name = models.CharField(_("Name"), max_length=255, unique=True, null=False, blank=False)
+    description = models.TextField(_("Description"), null=True, default=None, blank=True)
 
     class Meta:
         verbose_name_plural = _('Group Categories')
@@ -95,7 +90,7 @@ class GroupProfile(models.Model):
         choices=GROUP_CHOICES,
         help_text=access_help_text)
     last_modified = models.DateTimeField(auto_now=True)
-    categories = models.ManyToManyField(GroupCategory, blank=True, related_name='groups')
+    categories = models.ManyToManyField(GroupCategory, verbose_name=_("Categories"), blank=True, related_name='groups')
     created = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
@@ -176,11 +171,6 @@ class GroupProfile(models.Model):
         else:
             return True
 
-    def can_invite(self, user):
-        if not user.is_authenticated():
-            return False
-        return self.user_is_role(user, "manager")
-
     def join(self, user, **kwargs):
         if user == user.get_anonymous():
             raise ValueError("The invited user cannot be anonymous")
@@ -189,33 +179,6 @@ class GroupProfile(models.Model):
             user.groups.add(self.group)
         else:
             raise ValueError("The invited user \"{0}\" is already a member".format(user.username))
-
-    def invite(self, user, from_user, role="member", send=True):
-        params = dict(role=role, from_user=from_user)
-        if isinstance(user, get_user_model()):
-            params["user"] = user
-            params["email"] = user.email
-        else:
-            params["email"] = user
-        bits = [
-            settings.SECRET_KEY,
-            params["email"],
-            str(datetime.datetime.now()),
-            settings.SECRET_KEY
-        ]
-        params["token"] = hashlib.sha1("".join(bits)).hexdigest()
-
-        # If an invitation already exists, re-use it.
-        try:
-            invitation = self.invitations.create(**params)
-        except IntegrityError:
-            invitation = self.invitations.get(
-                group=self,
-                email=params["email"])
-
-        if send:
-            invitation.send(from_user)
-        return invitation
 
     @models.permalink
     def get_absolute_url(self):
@@ -227,83 +190,16 @@ class GroupProfile(models.Model):
 
 
 class GroupMember(models.Model):
+    MANAGER = "manager"
+    MEMBER = "member"
 
     group = models.ForeignKey(GroupProfile)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     role = models.CharField(max_length=10, choices=[
-        ("manager", _("Manager")),
-        ("member", _("Member")),
+        (MANAGER, _("Manager")),
+        (MEMBER, _("Member")),
     ])
-    joined = models.DateTimeField(default=datetime.datetime.now)
-
-
-class GroupInvitation(models.Model):
-
-    group = models.ForeignKey(GroupProfile, related_name="invitations")
-    token = models.CharField(max_length=40)
-    email = models.EmailField()
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        null=True,
-        related_name="pg_invitations_received")
-    from_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="pg_invitations_sent")
-    role = models.CharField(max_length=10, choices=[
-        ("manager", _("Manager")),
-        ("member", _("Member")),
-    ])
-    state = models.CharField(
-        max_length=10,
-        choices=(
-            ("sent", _("Sent")),
-            ("accepted", _("Accepted")),
-            ("declined", _("Declined")),
-        ),
-        default="sent",
-    )
-    created = models.DateTimeField(default=datetime.datetime.now)
-
-    def __unicode__(self):
-        return "%s to %s" % (self.email, self.group.title)
-
-    class Meta:
-        unique_together = [("group", "email")]
-
-    def send(self, from_user):
-
-        current_site = Site.objects.get_current()
-        domain = unicode(current_site.domain)
-        ctx = {
-            "invite": self,
-            "group": self.group,
-            "from_user": from_user,
-            "domain": domain,
-        }
-        subject = render_to_string("groups/email/invite_user_subject.txt", ctx)
-        message = render_to_string("groups/email/invite_user.txt", ctx)
-        # TODO Send a notification rather than a mail
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
-
-    def accept(self, user):
-        if not user.is_authenticated() or user == user.get_anonymous():
-            raise ValueError("You must log in to accept invitations")
-        if not user.email == self.email:
-            raise ValueError(
-                "You can't accept an invitation that wasn't for you")
-        self.group.join(user, role=self.role)
-        self.state = "accepted"
-        self.user = user
-        self.save()
-
-    def decline(self, user):
-        if not user.is_authenticated() or user == user.get_anonymous():
-            raise ValueError("You must log in to decline invitations")
-        if not user.email == self.email:
-            raise ValueError(
-                "You can't decline an invitation that wasn't for you")
-        self.state = "declined"
-        self.save()
+    joined = models.DateTimeField(default=now)
 
 
 def group_pre_delete(instance, sender, **kwargs):

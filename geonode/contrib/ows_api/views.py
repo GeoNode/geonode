@@ -22,8 +22,9 @@ from django.views.generic import View
 from django.conf import settings
 
 from geonode.base.enumerations import LINK_TYPES as _LT
-from geonode.base.models import Link
+# from geonode.base.models import Link
 from geonode.utils import json_response
+from geonode.geoserver import ows
 
 
 LINK_TYPES = [L for L in _LT if L.startswith("OGC:")]
@@ -36,8 +37,12 @@ class OWSListView(View):
         data = []
         out['data'] = data
         # per-layer links
-        for link in Link.objects.filter(link_type__in=LINK_TYPES).distinct('url'):
-            data.append({'url': link.url, 'type': link.link_type})
+        # for link in Link.objects.filter(link_type__in=LINK_TYPES):  # .distinct('url'):
+        #     data.append({'url': link.url, 'type': link.link_type})
+        data.append({'url': ows._wcs_get_capabilities(), 'type': 'OGC:WCS'})
+        data.append({'url': ows._wfs_get_capabilities(), 'type': 'OGC:WFS'})
+        data.append({'url': ows._wms_get_capabilities(), 'type': 'OGC:WMS'})
+
         # catalogue from configuration
         for catname, catconf in settings.CATALOGUE.items():
             data.append({'url': catconf['URL'], 'type': 'OGC:CSW'})

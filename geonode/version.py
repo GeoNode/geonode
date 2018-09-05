@@ -46,7 +46,7 @@ def get_version(version=None):
             sub = '.dev%s' % git_changeset
 
     elif version[3] != 'final':
-        mapping = {'beta': 'b', 'rc': 'c'}
+        mapping = {'beta': 'b', 'rc': 'rc'}
         sub = mapping[version[3]] + str(version[4])
 
     return main + sub

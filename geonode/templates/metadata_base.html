@@ -1,12 +1,17 @@
 {% extends "geonode_base.html" %}
 {% load i18n %}
-{% load url from future %}
 {% load bootstrap_tags %}
 {% load base_tags %}
 {% load guardian_tags %}
 {% load floppyforms %}
+{% load static from staticfiles %}
 
 {% block head %}
+  <script src="{% static "lib/js/jquery.js" %}?v={{ VERSION }}"></script>
+  <script src="{% static "lib/js/moment-with-locales.min.js" %}?v={{ VERSION }}"></script>
+  <script src="{% static "lib/js/bootstrap-datetimepicker.min.js" %}?v={{ VERSION }}"></script>
+  <link rel="stylesheet" href="{% static "lib/css/bootstrap-datetimepicker.min.css" %}?v={{ VERSION }}" />
+
     <style>
         .xxs-font-size{
             font-size: 10px;
@@ -115,16 +120,33 @@
 {% block body_class %}data{% endblock body_class %}
 
 {% block body_outer %}
+<div class="modal fade" style="width: 100%; height: 100%;" id="preview_errorDialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header alert alert-danger">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h1 class="modal-title">Error</h1>
+            </div>
+            <div class="modal-body">
+                <p>Error...</p>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" style="width: 100%; height: 100%;" id="preview_pleaseWaitDialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1>Processing...</h1>
+                <h1>{% trans "Processing..." %}</h1>
             </div>
             <div class="modal-body">
                 <div class="progress">
                   <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                    Updating Metadata...
+                    {% trans "Updating Metadata..." %}
                   </div>
                 </div>
             </div>
@@ -137,13 +159,13 @@
     <div class="modal-content panel-warning">
       <div class="modal-header panel-heading">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">ERROR</h4>
+        <h4 class="modal-title">{% trans "ERROR" %}</h4>
       </div>
       <div class="modal-body">
-        Topic Category is mandatory and cannot be empty!
+        {% trans "Topic Category is mandatory and cannot be empty!" %}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
       </div>
     </div>
   </div>
@@ -154,13 +176,13 @@
     <div class="modal-content panel-warning">
       <div class="modal-header panel-heading">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">ERROR</h4>
+        <h4 class="modal-title">{% trans "ERROR" %}</h4>
       </div>
       <div class="modal-body">
-        Group is mandatory and cannot be empty!
+        {% trans "Group is mandatory and cannot be empty!" %}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
       </div>
     </div>
   </div>

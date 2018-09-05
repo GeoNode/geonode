@@ -1,0 +1,409 @@
+{% extends "maps/map_base.html" %}
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load base_tags %}
+{% load guardian_tags %}
+{% load client_lib_tags %}
+{% load static from staticfiles %}
+
+{% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
+
+{% block head %}
+  {% if TWITTER_CARD %}
+    {% include "base/_resourcebase_twittercard.html" %}
+  {% endif %}
+  {% if OPENGRAPH_ENABLED %}
+    {% include "base/_resourcebase_opengraph.html" %}
+  {% endif %}
+
+  {% include "wm_extra/maps/map_include.html" %}
+  {{ block.super }}
+{% endblock %}
+
+{% block body_class %}maps{% endblock %}
+
+{% block body_outer %}
+  {% overall_rating resource "map" as map_rating %}
+
+<div class="page-header">
+    <style>
+    #paneltbar {
+        margin-top: 1px !important;
+    }
+    </style>
+
+  <h2 class="page-title">{{ resource.title }}</h2>
+</div>
+
+  <div class="row">
+    <div class="col-md-8">
+
+      <div id="embedded_map">
+        <div id="the_map"></div>
+      </div>
+
+      <div class="map-actions">
+        {% include "_actions.html" %}
+      </div>
+
+      <div class="tab-content">
+        {% include "base/resourcebase_info_panel.html" %}
+
+        {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
+        <p>
+          {% if request.user.is_authenticated and 'access_token' in request.session %}
+            <a href="{% url 'capabilities_map' resource.id %}?access_token={{ request.session.access_token }}">
+          {% else %}
+            <a href="{% url 'capabilities_map' resource.id %}">
+          {% endif %}
+          <i class="fa fa-map"></i> {% trans 'Map layers WMS GetCapabilities document' %}</a></p>
+        {% endif %}
+
+        {% block social_links %}
+            {% if DISPLAY_SOCIAL %}
+              {% include "social_links.html" %}
+            {% endif %}
+        {% endblock %}
+
+        {% if DISPLAY_COMMENTS %}
+        <article class="tab-pane" id="comments">
+        {% include "_comments.html" %}
+        </article>
+        {% endif %}
+
+        {% if DISPLAY_RATINGS %}
+        <article class="tab-pane" id="rate">
+        <!-- TODO: Move this to a reusable template snippet -->
+          {% if request.user.is_authenticated %}
+          <h3>{% trans "Rate this Map" %}</h3>
+          {% user_rating request.user resource "map" as user_map_rating %}
+          <div id="user_rating" class="category-map" data-score="{{ user_map_rating }}"></div>
+          {% endif %}
+          <h3>{% trans 'Average Rating' %}</h3>
+          {% overall_rating resource "map" as map_rating %}
+          {% num_ratings resource as num_votes %}
+          <div class="overall_rating" style="float:left" data-score="{{ map_rating }}"></div> ({{num_votes}})
+        </article>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <div class="col-md-4">
+      <ul class="list-group">
+        {% if "download_resourcebase" in perms_list %}
+        <li class="list-group-item">
+          <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-map">{% trans "Download Map" %}</button>
+        </li>
+        {% endif %}
+
+        <li class="list-group-item">
+           <a href="{% url "map_metadata_detail" resource.id %}">
+               <button class="btn btn-primary btn-md btn-block" >{% trans "Metadata Detail" %}</button>
+           </a>
+        </li>
+
+        <div class="modal fade" id="download-map" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">{% trans "Download Map" %}</h4>
+              </div>
+              <div class="modal-body">
+                <ul>
+                    {% if links %}
+                        {% for link in links %}
+                            <li><a href="{{ link.url }}">{{ link.name }}</a></li>
+                        {% endfor %}
+                    {% endif %}
+                <ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% if "change_resourcebase" in perms_list  or "change_resourcebase_metadata" in perms_list %}
+        <li class="list-group-item">
+          <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-map">{% trans "Edit Map" %}</button>
+        </li>
+        <div class="modal fade" id="edit-map" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">{% trans "Edit Map" %}</h4>
+              </div>
+              <div class="modal-body">
+                <div class="row edit-modal">
+                  {% if "change_resourcebase_metadata" in perms_list %}
+                  <div class="col-sm-3">
+                    <i class="fa fa-list-alt fa-3x"></i>
+                    <h4>{% trans "Metadata" %}</h4>
+                    <a class="btn btn-default btn-block btn-xs" href="{% url "map_metadata" resource.id %}">{% trans "Wizard" %}</a>
+                    <a class="btn btn-default btn-block btn-xs" href="{% url "map_metadata_advanced" resource.id %}">{% trans "Advanced Edit" %}</a>
+                  </div>
+                  {% endif %}
+                  {% if "change_resourcebase" in perms_list %}
+                  <div class="col-sm-3">
+                    <i class="fa fa-photo fa-3x"></i>
+                    <h4>{% trans "Thumbnail" %}</h4>
+                    <a class="btn btn-default btn-block btn-xs" href="#" id="set_thumbnail">{% trans "Set" %}</a>
+                  </div>
+                  {% endif %}
+                  {% if "change_resourcebase" in perms_list %}
+                  <div class="col-sm-3">
+                    <i class="fa fa-map-marker fa-3x"></i>
+                    <h4>{% trans "Map" %}</h4>
+                    <a class="btn btn-default btn-block btn-xs" href="{% url "map_edit" resource.id %}">{% trans "Edit" %}</a>
+                    <a class="btn btn-danger btn-block btn-xs" href="{% url "map_remove" resource.id %}">{% trans "Remove" %}</a>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        <li class="list-group-item">
+          <a href="{% url "map_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
+        </li>
+        {% comment %}
+        <li class="list-group-item">
+          <a href="#" class="btn btn-default btn-md btn-block">{% trans "Print Map" %}</a>
+        </li>
+        {% endcomment %}
+
+        <li class="list-group-item">
+          <h4 class="list-group-item-heading">{% trans "Map Layers" %}</h4>
+          <p>{% trans "This map uses the following layers:" %}</p>
+          <ul class="list-unstyled">
+            {% for layer in resource.layer_set.all %}
+            {% ifnotequal layer.group 'background' %}
+              {% if layer.local %}
+              <li><a href="{% url "layer_detail" layer.name %}">{{ layer.layer_title }}</a></li>
+              {% else %}
+              <li>{{ layer.layer_title }}</li>
+              {% endif %}
+            {% endifnotequal %}
+            {% endfor %}
+          </ul>
+        </li>
+
+        {% if documents.count > 0 %}
+        <li class="list-group-item">
+          <h4>{% trans "Documents related to this map" %}</h4>
+          <p>{% trans "List of documents related to this map:" %}</p>
+          <ul class="list-unstyled">
+            {% for document in documents %}
+            <li><a href="{{ document.get_absolute_url }}">{{ document.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endif %}
+
+        {% if "change_resourcebase_permissions" in perms_list %}
+        <li class="list-group-item">
+          <h4>{% trans "Permissions" %}</h4>
+          <p>{% trans "Specify which users can view or modify this map" %}</p>
+          <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#_permissions">{% trans "Change Permissions of this Map" %}</button>
+        </li>
+        {% include "_permissions_form.html" %}
+        {% endif %}
+
+        <li class="list-group-item">
+          <h4>{% trans "Copy this map" %}</h4>
+          <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
+          <a href="{% url "new_map" %}?copy={{ resource.id }}" class="btn btn-default btn-md btn-block">{% trans "Create a New Map" %}</a>
+        </li>
+
+
+        {% if resource.is_public and "change_resourcebase" in perms_list or resource.layer_group %}
+        <li class="list-group-item">
+          <h4>{% trans "Map WMS" %}</h4>
+          <dl>{% if resource.layer_group %}
+            <dt>{% trans "WMS layer group for local map layers" %}:</dt>
+            <dd><em>{{ resource.layer_group.catalog.name }}</em> ({% trans "on" %} <a href="{{ resource.layer_group.ows }}?service=WMS&request=GetCapabilities">{% trans "local OWS" %}</a>)</dd>
+            {% endif %}</dl>
+          {% if "change_resourcebase" in perms_list %}
+          <p>{% trans "Publish local map layers as WMS layer group" %}</p>
+          <a id="layer-group" href="{%url "map_wms" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "Publish Map WMS" %}</a>
+          {% endif %}
+          <dl id="layer-group-dl"></dl>
+        </li>
+        {% endif %}
+
+        {% include "base/_resourcebase_contact_snippet.html" %}
+
+      </ul>
+
+    </div>
+
+  </div>
+
+    <div class="modal fade" id="embed-iframe" tabindex="-1" role="dialog" aria-labelledby="Embed Iframe"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">{% trans "Embed Iframe" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>To embed this map, add the following code snippet and customize its properties (scrolling, width,
+                        height) based on your needs to your site:</p>
+                    <p style="font-weight: bold">
+                        &lt;iframe scrolling="yes" src="{{ SITEURL|slice:":-1" }}{% url "map_embed" resource.id %}"
+                        width="480px" height="360px"&gt;&lt;/iframe&gt;
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="embed-widget" tabindex="-1" role="dialog" aria-labelledby="Embed Widget"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">{% trans "Embed Widget" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>To embed this map, copy the following code snippet into your own page:</p>
+                    <pre id="embed-widget-body" style="font-size: 0.5em"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-clipboard-target="#embed-widget-body">{% trans "Copy to Clipboard" %}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  {% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+{% if DISPLAY_SOCIAL %}
+    {% include 'facebook_sdk.html' %}
+{% endif %}
+{% if request.user.is_authenticated %}
+      {% user_rating_js request.user resource "map" %}
+{% else %}
+      {% overall_rating resource "map" as the_map_rating %}
+{% endif %}
+{% include 'rating.html' %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        post_url = '{% url 'map_embed_widget' resource.id %}';
+        var formatted_data = "";
+        $.post(post_url, function (data) {
+            data = data.split("\n");
+            data_row = data.length;
+            for (var i=0; i < data_row;i++) {
+                formatted_data += data[i] + "\n";
+            }
+            $('#embed-widget-body').text(formatted_data);
+        });
+    });
+    var clipboard = new Clipboard('.btn');
+    clipboard.on('success', function(e) {
+        alert("Code copied");
+    });
+    clipboard.on('error', function(e) {
+        alert("Oops.. something went wrong");
+    });
+ $(function() {
+
+  {% verbatim %}
+  // Publish layer group
+  // TODO: this should really not be inside a script tag...
+  var $wmsBtn = $("#layer-group"),
+      layerGroupElTpl;
+
+  if ($wmsBtn.length > 0) {
+
+    $wmsBtn.on("click", function(event) {
+      event.preventDefault();
+
+      $.ajax({
+        type: "PUT",
+        url: $wmsBtn.attr("href")
+      })
+
+        .done(function(data) {
+          layerGroupElTpl = "<dt>WMS layer group for local map layers:</dt> \
+            <dd><em>{{layerGroupName}}</em> (on <a href='{{ows}}?service=WMS&request=GetCapabilities'>local OWS</a>)</dd>";
+          $.each(data, function(key, value) {
+            // client-side template hack
+            layerGroupElTpl = layerGroupElTpl.replace("{{"+ key + "}}", value);
+          });
+        })
+
+        .fail(function(){
+          layerGroupElTpl = "<dt>Error:</dt> \
+            <dd>Layer group could not be created.</dd>";
+        })
+
+        .always(function(){
+          $("#layer-group-dl").html(layerGroupElTpl);
+        });
+
+    });
+  };
+  {% endverbatim %}
+
+
+ });
+{% if DISPLAY_SOCIAL %}
+ (function() {
+   var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+   po.src = 'https://apis.google.com/js/plusone.js';
+   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+ })();
+{% endif %}
+  $("#comment_submit_btn").click(function(event) {
+    $.ajax({
+      type: "POST",
+      url: $("#form_post_comment").attr('action'),
+      data: $("#form_post_comment").serialize(),
+      success: function() {
+        $('#form_post_comment_div').modal().find('form')[0].reset();
+        $('#form_post_comment_div').modal('hide');
+        $('#comments_section').load(window.location.pathname + ' #comments_section',
+        		function(){$(this).children().unwrap()})
+      }
+    });
+    return false;
+  });
+
+</script>
+{% include "_permissions_form_js.html" %}
+<script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
+<script type="text/javascript">
+  $('#set_thumbnail').click(function(){
+    createMapThumbnail();
+    $('#edit-map').modal('toggle');
+  });
+  $('#embed-map-list li').click(function(){
+    if ($(this).attr('id') === 'embed-iframe-link')
+    {
+        $('#embed-iframe').modal('toggle');
+    }
+    else if ($(this).attr('id') === 'embed-widget-link') {
+        $('#embed-widget').modal('toggle');
+    }
+  });
+</script>
+
+{% endblock %}

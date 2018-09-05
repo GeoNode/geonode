@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2018 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@ scattered over the codebase
 import os.path
 from geoserver.resource import FeatureType
 from geoserver.resource import Coverage
+
+from django.utils.translation import ugettext as _
 
 from UserList import UserList
 import zipfile
@@ -79,18 +81,14 @@ class SpatialFile(object):
 
 class FileType(object):
 
-    def __init__(
-            self,
-            name,
-            code,
-            layer_type,
-            aliases=None,
-            auxillary_file_exts=None):
+    def __init__(self, name, code, layer_type, aliases=None,
+                 auxillary_file_exts=None):
         self.name = name
         self.code = code
         self.layer_type = layer_type
-        self.auxillary_file_exts = auxillary_file_exts or []
-        self.aliases = aliases or []
+        self.aliases = list(aliases) if aliases is not None else []
+        self.auxillary_file_exts = list(
+            auxillary_file_exts) if auxillary_file_exts is not None else []
 
     def matches(self, ext):
         ext = ext.lower()
@@ -121,11 +119,20 @@ class FileType(object):
 
 TYPE_UNKNOWN = FileType("unknown", None, None)
 
+_keep_original_data = ('kmz', 'zip-mosaic')
+_tif_extensions = ("tif", "tiff", "geotif", "geotiff")
+_mosaics_extensions = ("properties", "shp", "aux")
+
 types = [
     FileType("Shapefile", "shp", vector,
              auxillary_file_exts=('dbf', 'shx', 'prj')),
-    FileType("GeoTIFF", "tif", raster,
-             aliases=('tiff', 'geotif', 'geotiff')),
+    FileType("GeoTIFF", _tif_extensions[0], raster,
+             aliases=_tif_extensions[1:]),
+    FileType(
+        "ImageMosaic", "zip-mosaic", raster,
+        aliases=_tif_extensions,
+        auxillary_file_exts=_mosaics_extensions + _tif_extensions
+    ),
     FileType("ASCII Text File", "asc", raster,
              auxillary_file_exts=('prj')),
     # requires geoserver importer extension
@@ -135,8 +142,12 @@ types = [
              auxillary_file_exts=('prj')),
     FileType("CSV", "csv", vector),
     FileType("GeoJSON", "geojson", vector),
-    FileType("KML", "kml", vector,
-             aliases=('kmz')),
+    FileType("KML", "kml", vector),
+    FileType(
+        "KML Ground Overlay", "kml-overlay", raster,
+        aliases=("kmz", "kml"),
+        auxillary_file_exts=("png", "gif", "jpg") + _tif_extensions
+    ),
     # requires geoserver gdal extension
     FileType("ERDASImg", "img", raster),
     FileType("NITF", "ntf", raster,
@@ -166,6 +177,14 @@ types = [
              auxillary_file_exts=('sdw')),
     FileType("JP2", "jp2", raster)
 ]
+
+
+def get_type(name):
+    try:
+        file_type = [t for t in types if t.name == name][0]
+    except IndexError:
+        file_type = None
+    return file_type
 
 
 def _contains_bad_names(file_names):
@@ -216,66 +235,120 @@ def clean_macosx_dir(file_names):
     return [f for f in file_names if '__MACOSX' not in f]
 
 
-def scan_file(file_name):
+def get_scan_hint(valid_extensions):
+    """Provide hint on the type of file being handled in the upload session.
+
+    This function is useful mainly for those file types that can carry
+    either vector or raster formats, like the KML type.
+
+    """
+    if "kml" in valid_extensions:
+        if len(valid_extensions) == 2 and valid_extensions[1] == 'sld':
+            result = "kml"
+        else:
+            result = "kml-overlay"
+    elif "kmz" in valid_extensions:
+        result = "kmz"
+    elif "zip-mosaic" in valid_extensions:
+        result = "zip-mosaic"
+    else:
+        result = None
+    return result
+
+
+def scan_file(file_name, scan_hint=None):
     '''get a list of SpatialFiles for the provided file'''
+    if not os.path.exists(file_name):
+        raise Exception(_("Could not access to uploaded data."))
 
     dirname = os.path.dirname(file_name)
-    files = None
-
-    archive = None
-
     if zipfile.is_zipfile(file_name):
-        # rename this now
-        logger.debug('{} is a zip.'.format(file_name))
-        file_name = _rename_files([file_name])[0]
-        zf = None
-        try:
-            zf = zipfile.ZipFile(file_name, 'r')
-            files = zf.namelist()
-            files = clean_macosx_dir(files)
-            if _contains_bad_names(files):
-                zf.extractall(dirname)
-                files = None
-            else:
-                archive = os.path.abspath(file_name)
-                for f in _find_file_type(files, extension='.sld'):
-                    zf.extract(f, dirname)
-        except:
-            raise Exception('Unable to read zip file')
-        zf.close()
-
-    def dir_files():
-        def abs(*p):
-            return os.path.abspath(os.path.join(*p))
-        return [abs(dirname, f) for f in os.listdir(dirname)]
-
-    if files is None:
-        # not a zip, list the files
-        files = dir_files()
-
+        paths, kept_zip = _process_zip(file_name, dirname, scan_hint=scan_hint)
+        archive = file_name if kept_zip else None
     else:
-        # is a zip, add other files (sld if any)
-        files.extend(dir_files())
-
-    logger.debug('Found the following files: {0}'.format(files))
-    files = _rename_files(files)
-    logger.debug('Cleaned file names: {0}'.format(files))
+        paths = [os.path.join(dirname, p) for p in os.listdir(dirname)]
+        archive = None
+    if paths is not None:
+        safe_paths = _rename_files(paths)
+    else:
+        safe_paths = []
 
     found = []
-
     for file_type in types:
-        for f in files:
-            name, ext = os.path.splitext(f)
-            if file_type.matches(ext[1:]):
-                found.append(file_type.build_spatial_file(f, files))
+        for path in safe_paths:
+            path_extension = os.path.splitext(path)[-1][1:]
+            hint_ok = (scan_hint is None or file_type.code == scan_hint or
+                       scan_hint in file_type.aliases)
+            if file_type.matches(path_extension) and hint_ok:
+                _f = file_type.build_spatial_file(path, safe_paths)
+                found_paths = [f.base_file for f in found]
+                if path not in found_paths:
+                    found.append(_f)
 
-    # detect slds and assign iff a single upload is found
-    sld_files = _find_file_type(files, extension='.sld')
+    # detect xmls and assign if a single upload is found
+    xml_files = _find_file_type(safe_paths, extension='.xml')
+    if xml_files:
+        if len(found) == 1:
+            found[0].xml_files = xml_files
+        else:
+            raise Exception(_("One or more XML files was provided, but no " +
+                              "matching files were found for them."))
+
+    # detect slds and assign if a single upload is found
+    sld_files = _find_file_type(safe_paths, extension='.sld')
     if sld_files:
         if len(found) == 1:
             found[0].sld_files = sld_files
         else:
-            raise Exception("One or more SLD files was provided, but no " +
-                            "matching files were found for them.")
+            raise Exception(_("One or more SLD files was provided, but no " +
+                              "matching files were found for them."))
+    return SpatialFiles(dirname, found, archive=archive)
 
-    return SpatialFiles(dirname, found, archive)
+
+def _process_zip(zip_path, destination_dir, scan_hint=None):
+    """Perform sanity checks on uploaded zip file
+
+    This function will check if the zip file's contents have legal names.
+    If they do the zipfile remains compressed. Otherwise, it is extracted and
+    the files are renamed.
+
+    It will also check if an .sld file exists inside the zip and extract it
+
+    """
+    safe_zip_path = _rename_files([zip_path])[0]
+    with zipfile.ZipFile(safe_zip_path, "r") as zip_handler:
+        if scan_hint in _keep_original_data:
+            extracted_paths = _extract_zip(zip_handler, destination_dir)
+        else:
+            extracted_paths = _sanitize_zip_contents(
+                zip_handler, destination_dir)
+        if extracted_paths is not None:
+            all_paths = extracted_paths
+            kept_zip = False
+        else:
+            kept_zip = True
+            all_paths = [zip_path]
+            sld_paths = _probe_zip_for_sld(zip_handler, destination_dir)
+            all_paths.extend(sld_paths)
+    return all_paths, kept_zip
+
+
+def _sanitize_zip_contents(zip_handler, destination_dir):
+    clean_macosx_dir(zip_handler.namelist())
+    result = _extract_zip(zip_handler, destination_dir)
+    return result
+
+
+def _extract_zip(zip_handler, destination):
+    file_names = zip_handler.namelist()
+    zip_handler.extractall(destination)
+    return [os.path.join(destination, p) for p in file_names]
+
+
+def _probe_zip_for_sld(zip_handler, destination_dir):
+    file_names = clean_macosx_dir(zip_handler.namelist())
+    result = []
+    for f in _find_file_type(file_names, extension='.sld'):
+        zip_handler.extract(f, destination_dir)
+        result.append(os.path.join(destination_dir, f))
+    return result

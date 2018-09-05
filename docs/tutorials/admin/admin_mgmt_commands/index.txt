@@ -245,3 +245,20 @@ Usage::
 
   # synchronize all layers which contain a given search string in their name
   python manage.py sync_geofence --layername cambridge
+
+
+find_geoserver_broken_layers
+============================
+
+Find GeoNode layers with a missing GeoServer resource.
+
+Usage::
+
+  # search the whole catalog
+  python manage.py find_geoserver_broken_layers
+
+  # search all layers which contain a given search string in their name and owned by a given user
+  python manage.py sync_geofence --layername cambridge  --owner bob
+
+  # remove layers which are broken
+  python manage.py find_geoserver_broken_layers --remove

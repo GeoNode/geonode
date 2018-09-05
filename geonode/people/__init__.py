@@ -30,5 +30,8 @@ class PeopleAppConfig(NotificationsAppConfigBase):
                       _("This account is now active and can log in the site"),),
                      )
 
+    def ready(self):
+        super(PeopleAppConfig, self).ready()
+
 
 default_app_config = 'geonode.people.PeopleAppConfig'

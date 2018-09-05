@@ -19,6 +19,7 @@
 #########################################################################
 
 import logging
+import pytz
 from datetime import datetime, timedelta
 
 import requests
@@ -78,9 +79,10 @@ class GeoNodeServiceExpose(BaseServiceExpose):
     NAME = 'geonode'
 
     def expose(self, *args, **kwargs):
+        utc = pytz.utc
         data = {}
         exceptions = []
-        since = datetime.now() - timedelta(minutes=10)
+        since = datetime.utcnow().replace(tzinfo=utc) - timedelta(minutes=10)
         for e in ExceptionEvent.objects.filter(created__gte=since, service__service_type__name=self.NAME):
             exceptions.append(e.expose())
         data['exceptions'] = exceptions
@@ -90,9 +92,10 @@ class GeoNodeServiceExpose(BaseServiceExpose):
 class BaseServiceHandler(object):
 
     def __init__(self, service, force_check=False):
+        utc = pytz.utc
         self.service = service
-        self.check_since = service.last_check
-        self.now = datetime.now()
+        self.now = datetime.utcnow().replace(tzinfo=utc)
+        self.check_since = service.last_check.astimezone(utc) if service.last_check else self.now
         self.force_check = force_check
         self.setup()
 
@@ -109,17 +112,21 @@ class BaseServiceHandler(object):
             return r.created
 
     def collect(self, since=None, until=None, **kwargs):
-        now = self.now
-
+        utc = pytz.utc
+        now = self.now or datetime.utcnow().replace(tzinfo=utc)
         if since is None:
-            since = self.service.last_check
+            since = self.service.last_check.astimezone(utc) if self.service.last_check else now
         if until is None:
             until = now
+        if not self.service.last_check:
+            self.service.last_check = self.now
+            self.service.save()
         if self.service.last_check and not self.force_check:
-            if self.service.last_check + self.service.check_interval > now:
+            last_check = self.service.last_check.astimezone(utc) if self.service.last_check else now
+            if last_check + self.service.check_interval > now:
                 log.warning("Next check too soon")
                 return
-        _collected = self._collect(since, until, **kwargs)
+        _collected = self._collect(since.astimezone(utc), until.astimezone(utc), **kwargs)
         return self.handle_collected(_collected)
 
     def _collect(self, since, until, *args, **kwargs):
@@ -166,7 +173,8 @@ class GeoServerService(BaseServiceHandler):
         return requests
 
     def handle_collected(self, requests):
-        now = datetime.now()
+        utc = pytz.utc
+        now = datetime.utcnow().replace(tzinfo=utc)
         for r in requests:
             RequestEvent.from_geoserver(self.service, r, received=now)
         return RequestEvent.objects.filter(service=self.service, received=now)
@@ -180,9 +188,7 @@ class HostGeoServerService(BaseServiceHandler):
         base_url = self.service.url
         if not base_url:
             raise ValueError("Service {} should have url provided".format(self.service.name))
-
         url = '{}{}'.format(base_url.rstrip('/'), self.PATH)
-
         rdata = requests.get(url)
         if rdata.status_code != 200:
             raise ValueError("Error response from api: ({}) {}".format(url, rdata))
@@ -190,7 +196,6 @@ class HostGeoServerService(BaseServiceHandler):
         return data
 
     def handle_collected(self, data, *args, **kwargs):
-
         return data
 
 
@@ -208,7 +213,6 @@ class HostGeoNodeService(BaseServiceHandler):
         return data
 
     def handle_collected(self, data, *args, **kwargs):
-
         return data
 
 

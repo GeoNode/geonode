@@ -18,10 +18,16 @@
 #
 #########################################################################
 
+from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization
 from tastypie.exceptions import Unauthorized
+from tastypie.compat import get_user_model, get_username_field
 
 from guardian.shortcuts import get_objects_for_user
+from tastypie.http import HttpUnauthorized
+
+from geonode import geoserver, qgis_server
+from geonode.utils import check_ogc_backend
 
 
 class GeoNodeAuthorization(DjangoAuthorization):
@@ -69,3 +75,74 @@ class GeoNodeAuthorization(DjangoAuthorization):
         return bundle.request.user.has_perm(
             'delete_resourcebase',
             bundle.obj.get_self_resource())
+
+
+class GeonodeApiKeyAuthentication(ApiKeyAuthentication):
+    """
+    Override ApiKeyAuthentication to prevent 401 response when no api key is provided.
+    """
+
+    def is_authenticated(self, request, **kwargs):
+        """
+        Finds the user and checks their API key.
+
+        Should return either ``True`` if allowed, ``False`` if not or an
+        ``HttpResponse`` if you need something custom.
+        """
+
+        try:
+            username, api_key = self.extract_credentials(request)
+        except ValueError:
+            return self._unauthorized()
+
+        if not username or not api_key:
+            return True
+
+        username_field = get_username_field()
+        User = get_user_model()
+
+        try:
+            lookup_kwargs = {username_field: username}
+            user = User.objects.get(**lookup_kwargs)
+        except (User.DoesNotExist, User.MultipleObjectsReturned):
+            return self._unauthorized()
+
+        if not self.check_active(user):
+            return False
+
+        key_auth_check = self.get_key(user, api_key)
+        if key_auth_check and not isinstance(key_auth_check, HttpUnauthorized):
+            request.user = user
+
+        return key_auth_check
+
+
+class GeoNodeStyleAuthorization(GeoNodeAuthorization):
+    """Object level API authorization based on GeoNode granular
+    permission system
+
+    Style object permissions should follow it's layer permissions
+    """
+
+    def filter_by_resource_ids(self, object_list, permitted_ids):
+        """Filter Style queryset by permitted resource ids."""
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            return object_list.filter(layer_styles__id__in=permitted_ids)
+        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+            return object_list.filter(
+                layer_styles__layer__id__in=permitted_ids)
+
+    def read_list(self, object_list, bundle):
+        permitted_ids = get_objects_for_user(
+            bundle.request.user,
+            'base.view_resourcebase').values('id')
+
+        return self.filter_by_resource_ids(object_list, permitted_ids)
+
+    def delete_detail(self, object_list, bundle):
+        permitted_ids = get_objects_for_user(
+            bundle.request.user,
+            'layer.change_layer_style').values('id')
+
+        resource_obj = bundle.obj.get_self_resource()
+        return resource_obj in permitted_ids

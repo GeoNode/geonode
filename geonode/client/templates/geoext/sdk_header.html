@@ -1,0 +1,26 @@
+{% load static from staticfiles %}
+<!-- OpenLayers resources -->
+<link rel="stylesheet" type="text/css" href="{% static "sdk/src/openlayers/theme/default/style.css" %}?v={{ VERSION }}">
+<!-- GeoExt resources -->
+<link rel="stylesheet" type="text/css" href="{% static "sdk/src/GeoExt/resources/css/popup.css" %}?v={{ VERSION }}">
+<link rel="stylesheet" type="text/css" href="{% static "sdk/src/GeoExt/resources/css/layerlegend.css" %}?v={{ VERSION }}">
+<link rel="stylesheet" type="text/css" href="{% static "sdk/src/GeoExt/resources/css/gxtheme-gray.css" %}?v={{ VERSION }}">
+<!-- gxp resources -->
+<link rel="stylesheet" type="text/css" href="{% static "sdk/src/gxp/theme/all.css" %}?v={{ VERSION }}">
+<!-- GeoNode mixin -->
+<script type="text/javascript" src="{% static "geonode/js/maps/GeoNode-mixin.js" %}?v={{ VERSION }}"></script>
+<!-- app resources -->
+<link rel="stylesheet" type="text/css" href="{% static "sdk/theme/app/style.css" %}?v={{ VERSION }}">
+<script type="text/javascript" src="{% static "sdk/lib/app.js" %}?v={{ VERSION }}"></script>
+<script type="text/javascript">
+OpenLayers.ImgPath = "{% static "sdk/externals/openlayers/img/" %}";
+OpenLayers.Util.onImageLoadErrorColor = 'transparent';
+OpenLayers.Util.onImageLoadError = function() {
+    this.src = '{% static "geonode/img/light_gray.jpg';
+};
+
+OpenLayers.Request.DEFAULT_CONFIG.headers = {
+  'X-CSRFToken': '{{ csrf_token|escapejs }}'
+};
+
+</script>

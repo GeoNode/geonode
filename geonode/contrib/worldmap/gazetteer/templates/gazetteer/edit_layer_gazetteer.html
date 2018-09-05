@@ -1,0 +1,98 @@
+{% extends "geonode_base.html" %}
+
+{% load i18n %}
+{% load staticfiles %}
+{% load bootstrap_tags %}
+{% load base_tags %}
+
+{% block title %}{{ layer.title }} — {{ block.super }}{% endblock %}
+
+{% block body_outer %}
+
+<div class="page-header">
+    <h2 class="page-title">{{ layer.title }}</h2>
+</div>
+
+<p>
+{% trans "By adding your layer features to the gazetteer, they will be searchable and viewable by anyone regardless of your layer's security permissions. If you do not choose at least one depict-date field, the system will use the depict-date in the layer metadata (if any)." %}</p>
+
+<form method="POST">{% csrf_token %}
+
+  <div class="form-group">
+    <label for="fields">{% trans "Select fields for this layer to be part of the gazetteer" %}</label>
+    {% for attribute in gazetteer_attributes %}
+    <div class="checkbox">
+        <label>
+        <input type="checkbox" name="attributes" value="{{ attribute.attribute }}"
+          {% if attribute.in_gazetteer %}checked{% endif %}>
+          {{ attribute.attribute }}
+        </label>
+    </div>
+    {% endfor %}
+  </div>
+
+  <label for="optional">{% trans "Optional Parameters" %}</label>
+
+  <div class="form-group">
+    <label for="name">{% trans "Custom Gazetteer Name" %}</label>
+    <input type="text" class="form-control" id="gazetteer-name" name="gazetteer-name" />
+  </div>
+
+  <div class="form-group">
+
+    <label for="start-attribute">{% trans "Start depict-date field" %}</label>
+    <select class="form-control" id="start-attribute" name="start-attribute" />
+      <option value="">-----</option>
+      {% for attribute in gazetteer_attributes %}
+        {% if attribute.attribute_type != 'xsd:string' %}
+          <option>{{ attribute.attribute }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+
+    <label for="sel-start-date-format">{% trans "Date Format (Examples: 'YYYY', 'MM/DD/YYYY', 'YYYY/MM/DD')" %}</label>
+    <input type="text" class="form-control" id="sel-start-date-format" name="sel-start-date-format" />
+  </div>
+
+  <div class="form-group">
+
+    <label for="end-attribute">{% trans "End depict-date field" %}</label>
+    <select class="form-control" id="end-attribute" name="end-attribute" />
+      <option value="">-----</option>
+      {% for attribute in gazetteer_attributes %}
+        {% if attribute.attribute_type != 'xsd:string' %}
+          <option>{{ attribute.attribute }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+
+    <label for="sel-end-date-format">{% trans "Date Format (Examples: 'YYYY', 'MM/DD/YYYY', 'YYYY/MM/DD')" %}</label>
+    <input type="text" class="form-control" id="sel-end-date-format" name="sel-end-date-format" />
+  </div>
+
+  <div class="form-actions">
+    <a href="{% url 'layer_detail' layername=layer.alternate %}" class="btn btn-primary">{% trans "Return to Layer" %}</a>
+    <input type="submit" id="btn_upd_md_up" class="btn btn-primary" value="{% trans "Update Gazetteer" %}"/>
+  </div>
+
+</form>
+
+
+
+{{ block.super }}
+{% endblock body_outer %}
+
+{% block extra_script %}
+{{ block.super }}
+
+<script type="text/javascript">
+  jQuery(document).ready(function(){
+      {% if status_message %}
+        $('#status-message-text').text('The following fields of this layer are now part of the gazetteer:');
+        $('#status-message-text-body').text("{{ status_message }}");
+        $('#status-message').addClass('alert-success').show();
+      {% endif %}
+  });
+</script>
+
+{% endblock extra_script %}

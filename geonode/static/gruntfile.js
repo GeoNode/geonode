@@ -46,24 +46,27 @@ module.exports = function(grunt) {
 
     concat: {
       bootstrap: {
-        src: [
-          '.components/bootstrap/js/bootstrap-affix.js',
-          '.components/bootstrap/js/bootstrap-dropdown.js',
-          '.components/bootstrap/js/bootstrap-tooltip.js',
-          '.components/bootstrap/js/bootstrap-alert.js',
-          '.components/bootstrap/js/bootstrap-modal.js',
-          '.components/bootstrap/js/bootstrap-transition.js',
-          '.components/bootstrap/js/bootstrap-button.js',
-          '.components/bootstrap/js/bootstrap-popover.js',
-          '.components/bootstrap/js/bootstrap-typeahead.js',
-          '.components/bootstrap/js/bootstrap-carousel.js',
-          '.components/bootstrap/js/bootstrap-scrollspy.js',
-          '.components/bootstrap/js/bootstrap-collapse.js',
-          '.components/bootstrap/js/bootstrap-select.js',
-          '.components/bootstrap/js/bootstrap-multiselect.js',
-          '.components/bootstrap/js/bootstrap-tab.js'
-        ],
-        dest: 'lib/js/bootstrap.js'
+          files: [{
+            expand: true,
+            flatten: true,
+            cwd: '.components',
+            dest: 'lib/js',
+            src: [
+              'bootstrap/dist/js/bootstrap.js',
+              'bootstrap/js/affix.js',
+              'bootstrap/js/alert.js',
+              'bootstrap/js/button.js',
+              'bootstrap/js/carousel.js',
+              'bootstrap/js/collapse.js',
+              'bootstrap/js/dropdown.js',
+              'bootstrap/js/modal.js',
+              'bootstrap/js/popover.js',
+              'bootstrap/js/scrollspy.js',
+              'bootstrap/js/tab.js',
+              'bootstrap/js/tooltip.js',
+              'bootstrap/js/transition.js'
+            ]
+        }]
       }
     },
 
@@ -92,7 +95,10 @@ module.exports = function(grunt) {
             'bootstrap-tokenfield/dist/css/tokenfield-typeahead.min.css',
             'bootstrap-select/dist/css/bootstrap-select.min.css',
             'bootstrap-wysiwyghtml5/dist/bootstrap-wysihtml5-0.0.2.css',
-            'fastselect/dist/fastselect.min.css'
+            'bootstrap-table/dist/bootstrap-table.min.css',
+            'bootstrap-toggle/css/bootstrap-toggle.min.css',
+            'fastselect/dist/fastselect.min.css',
+            'Leaflet.EasyButton/src/easy-button.css'
           ]
         }, {
           expand: true,
@@ -153,7 +159,11 @@ module.exports = function(grunt) {
             'bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js',
             'bootstrap-select/dist/js/bootstrap-select.min.js',
             'bootstrap-wysiwyghtml5/dist/bootstrap-wysihtml5-0.0.2.min.js',
-            'fastselect/dist/fastselect.standalone.min.js'
+            'bootstrap-table/dist/bootstrap-table.min.js',
+            'bootstrap-toggle/js/bootstrap-toggle.min.js',
+            'fastselect/dist/fastselect.standalone.min.js',
+            'clipboard/dist/clipboard.js',
+            'Leaflet.EasyButton/src/easy-button.js'
           ]
         }]
       }
@@ -264,6 +274,8 @@ module.exports = function(grunt) {
             'lib/css/bootstrap-tokenfield.min.css',
             'lib/css/bootstrap-select.min.css',
             'lib/css/bootstrap-wysihtml5-0.0.2.css',
+            'lib/css/bootstrap-table.min.css',
+            'lib/css/bootstrap-toggle.min.css',
             'lib/css/fastselect.min.css',
             'lib/css/jquery-ui.css',
             'lib/css/jquery.dataTables.css',
@@ -277,7 +289,8 @@ module.exports = function(grunt) {
             'lib/css/leaflet.fullscreen.css',
             'lib/css/Leaflet.NavBar.css',
             'lib/css/leaflet-measure.css',
-            'lib/css/Control.Opacity.css'
+            'lib/css/Control.Opacity.css',
+            'lib/css/easy-button.css'
           ]
         }
       }
@@ -307,6 +320,8 @@ module.exports = function(grunt) {
             'lib/js/bootstrap-treeview.min.js',
             'lib/js/bootstrap-select.min.js',
             'lib/js/bootstrap-wysihtml5-0.0.2.min.js',
+            'lib/js/bootstrap-table.min.js',
+            'lib/js/bootstrap-toggle.min.js',
             'lib/js/jquery.ajaxprogress.js',
             'lib/js/jquery.ajaxQueue.js',
             'lib/js/jquery.multi-select.js',
@@ -315,7 +330,8 @@ module.exports = function(grunt) {
             'lib/js/angular.js',
             'lib/js/angular-cookies.js',
             'lib/js/angular-leaflet-directive.min.js',
-            'lib/js/ZeroClipboard.min.js'
+            'lib/js/ZeroClipboard.min.js',
+            'lib/js/clipboard.js'
           ],
           'lib/js/jquery.js': ['lib/js/jquery.min.js'],
           'lib/js/require.js': ['lib/js/require.js'],
@@ -325,7 +341,8 @@ module.exports = function(grunt) {
             'lib/js/Leaflet.fullscreen.min.js',
             'lib/js/Leaflet.NavBar.js',
             'lib/js/leaflet-measure.js',
-            'lib/js/Control.Opacity.js'
+            'lib/js/Control.Opacity.js',
+            'lib/js/easy-button.js'
           ]
         }
       }

@@ -15,8 +15,19 @@
         <div class="col-lg-8 item-details">
           <div class="row">
             <div class="col-xs-10">
-              <p class="item-meta"><span class="item-category">{{ item.category__gn_description }}</span></p>
-              <h4><a href="{{ item.detail_url }}">{{ item.title }}</a></h4>
+              <p class="item-meta">
+                  <span class="item-category">{{ item.category__gn_description }}</span><br>
+                  <span class="item-category" ng-if="item.group"><a href="/groups/group/{{ item.group }}/activity/"><i class="fa fa-group" aria-hidden="true" style="margin-right: 8px;"></i>{{ item.group_name }}</a><br></span>
+                  <span class="item-category" ng-if="item.has_time"><i class="fa fa-clock-o" aria-hidden="true" style="margin-right: 8px;"></i>Temporal Serie<br></span>
+              </p>
+              <h4>
+                  <i ng-if="item.store_type == 'remoteStore'" title="Remote Service" class="fa fa-external-link fa-1" style="vertical-align:  middle;padding-right: 10px;"></i>
+                  <i ng-if="item.store_type == 'dataStore'" title="Vector Data" class="fa fa-pencil-square-o fa-1" style="vertical-align:  middle;padding-right: 10px;"></i>
+                  <i ng-if="item.store_type == 'coverageStore'" title="Raster Data" class="fa fa-picture-o fa-1" style="vertical-align:  middle;padding-right: 10px;"></i>
+                  <i ng-if="item.store_type == 'dataset'" title="File/Dataset" class="fa fa-newspaper-o fa-1" style="vertical-align:  middle;padding-right: 10px;"></i>
+                  <i ng-if="item.store_type == 'map'" title="Map" class="fa fa-map-o fa-1" style="vertical-align:  middle;padding-right: 10px;"></i>
+                  <a href="{{ item.detail_url }}">{{ item.title }}</a>
+              </h4>
             </div>
             <div class="col-xs-2">
               <h4>
@@ -30,11 +41,19 @@
               </h4>
             </div>
           </div>
+          <em ng-if="item.online && item.store_type == 'remoteStore'">
+            {% endverbatim %}
+            <span ng-if="item.online == true"><i class="fa fa-power-off text-success"></i> {% trans "Service is" %} {% trans "online" %}</span>
+            <span ng-if="item.online == false"><i class="fa fa-power-off text-danger"></i> {% trans "Service is" %} {% trans "offline" %}</span>
+            {% verbatim %}
+          </em>
+          <div class="alert alert-warning" ng-if="item.is_approved == false">PENDING APPROVAL</div>
+          <div class="alert alert-danger" ng-if="item.is_approved == true && item.is_published == false">UNPUBLISHED</div>
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
           <div class="row">
             <div class="col-lg-12 item-items">
               <ul class="list-inline">
-                <li><a href="/people/profile/{{ item.owner__username }}"><i class="fa fa-user"></i>{{ item.owner__username }}</a></li>
+                <li><a href="/people/profile/{{ item.owner__username }}"><i class="fa fa-user"></i>{{ item.owner_name }}</a></li>
                 <li><a href="{{ item.detail_url }}#info"><i class="fa fa-calendar-o"></i>{{ item.date|date:'d MMM y' }}</a></li>
                 <li><a href="{{ item.detail_url }}"><i class="fa fa-eye"></i>{{ item.popular_count }}</a></li>
                 <li><a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a></li>

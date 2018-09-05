@@ -1,0 +1,348 @@
+{% load static from staticfiles %}
+{% load leaflet_tags %}
+{% load i18n %}
+
+{% leaflet_js %}
+{% leaflet_css %}
+
+<style>
+    .leaflet-container { /* all maps */
+        height: 400px;
+    }
+
+    .leaflet-control-zoom, .leaflet-control-zoomslider {  /* all controls */
+        position: relative;
+        left: 0px !important;
+    }
+</style>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function (event) {
+      L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
+
+        onAdd: function (map) {
+          // Triggered when the layer is added to a map.
+          // Register a click listener, then do all the upstream WMS things
+          L.TileLayer.WMS.prototype.onAdd.call(this, map);
+          map.on('click', this.getFeatureInfo, this);
+        },
+
+        onRemove: function (map) {
+          // Triggered when the layer is removed from a map.
+          // Unregister a click listener, then do all the upstream WMS things
+          L.TileLayer.WMS.prototype.onRemove.call(this, map);
+          map.off('click', this.getFeatureInfo, this);
+        },
+
+        getFeatureInfo: function (evt) {
+          // Make an AJAX request to the server and hope for the best
+          var url = this.getFeatureInfoUrl(evt.containerPoint),
+              showResults = L.Util.bind(this.showGetFeatureInfo, this);
+          // console.log(url);
+          $.ajax({
+            url: url,
+            success: function (data, status, xhr) {
+              var err = typeof data === 'string' ? null : data;
+              showResults(err, evt.latlng, data);
+            },
+            error: function (xhr, status, error) {
+              showResults(error);
+            }
+          });
+        },
+
+        getFeatureInfoUrl: function (layerPoint) {
+          // Construct a GetFeatureInfo request URL given a point
+          if (!map) {
+              map = this._map;
+          }
+          // Compute WMS options
+          var bounds = map.getBounds();
+          var size = map.getSize();
+          var wmsVersion = parseFloat(this.wmsParams.version);
+          var crs = this.options.crs || map.options.crs;
+          var projectionKey = wmsVersion >= 1.3 ? 'crs' : 'srs';
+          var nw = crs.project(bounds.getNorthWest());
+          var se = crs.project(bounds.getSouthEast());
+
+          // Assemble WMS parameter string
+
+          var size = this._map.getSize(),
+              params = {
+                request: 'GetFeatureInfo',
+                service: 'WMS',
+                srs: 'EPSG:4326',
+                styles: this.wmsParams.styles,
+                transparent: this.wmsParams.transparent,
+                version: this.wmsParams.version,
+                format: this.wmsParams.format,
+                // bbox: this._map.getBounds().toBBoxString(),
+                height: size.y,
+                width: size.x,
+                layers: this.wmsParams.layers,
+                query_layers: this.wmsParams.layers,
+                info_format: 'text/html'
+              };
+          params[projectionKey] = crs.code;
+          params.bbox = (
+              wmsVersion >= 1.3 && crs === L.CRS.EPSG4326 ?
+              [se.y, nw.x, nw.y, se.x] :
+              [nw.x, se.y, se.x, nw.y]
+          ).join(',');
+
+          params[params.version === '1.3.0' ? 'i' : 'x'] = Math.floor(layerPoint.x);
+          params[params.version === '1.3.0' ? 'j' : 'y'] = Math.floor(layerPoint.y);
+
+          return this._url + L.Util.getParamString(params, this._url, true);
+        },
+
+        showGetFeatureInfo: function (err, latlng, content) {
+          if (err) { console.log(err); return; } // do nothing if there's an error
+
+          // Otherwise show the content in a popup, or something.
+          L.popup({ maxWidth: 900, maxHeight: 200})
+            .setLatLng(latlng)
+            .setContent(content)
+            .openOn(this._map);
+        }
+      });
+
+        L.tileLayer.betterWms = function (url, options) {
+          return new L.TileLayer.BetterWMS(url, options);
+        };
+        var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        });
+
+        var unesco = L.tileLayer(
+            'http://en.unesco.org/tiles/{z}/{x}/{y}.png', {
+            attribution: '&copy; unesco'
+        });
+
+        var unesco_geodata = L.tileLayer(
+            'http://en.unesco.org/tiles/geodata/{z}/{x}/{y}.png', {
+            attribution: '&copy; unesco'
+        });
+
+        var OpenMapSurfer_Roads = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        });
+
+        // not yet available
+        // var unesco_white = L.tileLayer(
+        //     'http://en.unesco.org/tiles/white/{z}/{x}/{y}.png', {
+        //     attribution: '&copy; unesco'
+        // });
+
+        var base_maps = {
+            "OpenMapSurfer_Roads": OpenMapSurfer_Roads,
+            'OpenStreetMap': osm
+        };
+
+        var overlay_layer = {};
+
+        var map = L.map('preview_map',{measureControl: true});
+
+      	//add elements to maps page
+        var scale_bar = L.control.scale().addTo(map);
+       	//var attribution = L.control.attribution({prefix: 'UNESCO-IHP-Wins'}).addTo(map);
+      	//on surcharge attribution
+      	map.attributionControl.addAttribution('<a href="http://en.unesco.org/themes/water-security/hydrology", class="your_class">UNESCO-IHP-Wins</a>');
+
+        L.Control.Watermark = L.Control.extend({
+          onAdd: function(map) {
+          var img = L.DomUtil.create('img');
+
+          // Default to Geonode logo
+          img.src = "{% static "geonode/img/logo.png" %}";
+          img.style.width = '120px';
+
+          return img;
+          },
+
+          onRemove: function(map) {
+          // Nothing to do here
+          }
+        });
+
+        L.control.watermark = function(opts) {
+          return new L.Control.Watermark(opts);
+        };
+
+        L.control.watermark({ position: 'bottomright' }).addTo(map);
+
+        // L.control.measureControl.addTo(map);
+        map.addLayer(OpenMapSurfer_Roads);
+
+        {% if layer_bbox %}
+            zoom_to_box(map, [{{ layer_bbox }}]);
+        {% endif %}
+
+        var tile_layer;
+        {% if resource.get_tiles_url %}
+            tile_layer = L.tileLayer("{{ resource.get_tiles_url|safe }}",
+                    {
+                        'opacity': 0.8
+                    });
+        {%  elif resource.ptype == "gxp_wmscsource"  %}
+            tile_layer = L.tileLayer.betterWms('{{ resource.ows_url|safe }}', {
+                layers: '{{ resource.alternate }}',
+                format: 'image/png',
+                transparent: true,
+                'opacity': 0.8
+            });
+        {%  elif resource.ptype == "gxp_arcrestsource" %}
+            tile_layer = L.esri.dynamicMapLayer('{{ resource.ows_url|safe }}', {
+                layers: '{{ resource.alternate }}',
+                format: 'png',
+                transparent: true,
+                'opacity': 0.8
+            });
+        {% elif resource.ows_url %}
+            tile_layer = L.tileLayer.betterWms('{{ resource.ows_url|safe }}', {
+              layers: '{{ resource.alternate }}',
+              transparent: true,
+              format: 'image/png'
+            });
+        {% endif %}
+
+        if (tile_layer != null) {
+            overlay_layer["{{ resource.title }}"] = tile_layer;
+            map.addLayer(tile_layer);
+        }
+        var layerControl = L.control.layers(
+                base_maps, overlay_layer
+        ).addTo(map);
+
+        if (L.control.hasOwnProperty('fullscreen')) {
+            L.control.fullscreen().addTo(map);
+        }
+
+        if(L.Control.hasOwnProperty('opacitySlider')) {
+            //adjust opacity
+            var opacitySlider = new L.Control.opacitySlider();
+            map.addControl(opacitySlider);
+
+            opacitySlider.setOpacityLayer(tile_layer);
+        }
+
+        if(L.control.hasOwnProperty('navbar')){
+            //adjust info
+            L.control.navbar().addTo(map);
+        }
+
+        {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
+            {# expose map object to window #}
+            window.preview_map = map;
+            window.tile_layer = tile_layer;
+
+            {# Trigger dialog for Style edit #}
+            $(".style-edit").on('click', function (event) {
+                $("#qgis-server-style-edit").modal('show');
+            });
+
+            {# Attach form submit event #}
+            $("#qgis-server-style-add-form").on('submit', edit_style_on_submit);
+
+            {# Attach handler for style change #}
+            $("input[name='style']").on('change', function(event){
+                var $input = $(this);
+                if($input.prop('checked') == true){
+                    {# Tile url change #}
+                    var url;
+                    {% if resource.get_tiles_url %}
+                        url = '{% url "qgis_server:tile" layername=resource.name style='style_name' %}';
+                        url = url.replace('style_name', $input.attr('id'));
+                        url = decodeURIComponent(url);
+                        tile_layer.setUrl(url);
+                    {% endif %}
+
+                    {# Legend icon change #}
+                    url = '{% url "qgis_server:legend" layername=resource.name style='style_name' %}';
+                    url = url.replace('style_name', $input.attr('id'));
+                    url = decodeURIComponent(url);
+                    $("#legend_icon").attr('src', url);
+                }
+            });
+        {% endif %}
+  });
+
+  function zoom_to_box(map, bbox) {
+          var bounds = [
+              [bbox[1], bbox[0]],
+              [bbox[3], bbox[2]]
+          ];
+          map.fitBounds(bounds);
+      }
+
+
+  {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
+
+    function createMapThumbnail() {
+        {# Use map extent #}
+        var map = window.preview_map;
+        var bbox = map.getBounds().toBBoxString();
+        var data = {
+            'bbox': bbox
+        };
+        $.post('{% url "qgis_server:set-thumbnail" layername=resource.name %}', data);
+    }
+
+    {# Event handler for style editing #}
+    function edit_style_on_submit(event){
+        {# prevent form submit by default #}
+        var data = new FormData();
+        $.each($("#id_qml")[0].files, function(i, file){
+            data.append('qml', file);
+        });
+        data.append('name', $("#id_name").val());
+        data.append('title', $("#id_title").val());
+        var action = $(this).attr('action');
+        $.ajax({
+            url: action,
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            success: function(data){
+                if(data){
+                    $("#qgis-server-style-edit .modal-body").html(data);
+                    $(document).ready(function() {
+                        $("#qgis-server-style-add-form").on('submit', edit_style_on_submit);
+                    });
+                }
+            },
+            error: function(jqXhr, textStatus, errorThrown){
+                $("#qgis-server-style-edit .modal-body").html(jqXhr.responseText);
+                $(document).ready(function() {
+                    $("#qgis-server-style-add-form").on('submit', edit_style_on_submit);
+                });
+            }
+        });
+        return false;
+    }
+  {% endif %}
+</script>
+
+{% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
+    <style>
+        #qgis-server-style-edit .modal-body{
+            overflow-y: scroll;
+            max-height: 600px;
+        }
+    </style>
+    <div class="modal fade" id="qgis-server-style-edit" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Upload QML Style" %}</h4>
+                </div>
+                <div class="modal-body">
+                    {% include "qgis_server/forms/qml_style.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

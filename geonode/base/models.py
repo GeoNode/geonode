@@ -36,7 +36,8 @@ from urlparse import urljoin, urlsplit
 from django.db import models
 from django.core import serializers
 from django.db.models import Q, signals
-from django.utils.translation import ugettext as _
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
@@ -47,6 +48,7 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
 from django.contrib.gis.geos import GEOSGeometry
+from django.utils.timezone import now
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -183,26 +185,30 @@ class Region(MPTTModel):
     # This is useful for spatial searches and for generating thumbnail images
     # and metadata records.
     bbox_x0 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_x1 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_y0 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_y1 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
-    srid = models.CharField(max_length=255, default='EPSG:4326')
+    srid = models.CharField(
+        max_length=30,
+        blank=False,
+        null=False,
+        default='EPSG:4326')
 
     def __unicode__(self):
         return self.name
@@ -320,7 +326,7 @@ class HierarchicalKeyword(TagBase, MP_Node):
             serobj = serializers.serialize('python', [pyobj])[0]
             # django's serializer stores the attributes in 'fields'
             fields = serobj['fields']
-            depth = fields['depth']
+            depth = fields['depth'] or 1
             fields['text'] = fields['name']
             fields['href'] = fields['slug']
             del fields['name']
@@ -382,9 +388,9 @@ class _HierarchicalTagManager(_TaggableManager):
             name__in=str_tags
         )
         tag_objs.update(existing)
-
         for new_tag in str_tags - set(t.name for t in existing):
-            tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
+            if new_tag:
+                tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
 
         for tag in tag_objs:
             try:
@@ -546,7 +552,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     alternate = models.CharField(max_length=128, null=True, blank=True)
     date = models.DateTimeField(
         _('date'),
-        default=datetime.datetime.now,
+        default=now,
         help_text=date_help_text)
     date_type = models.CharField(
         _('date type'),
@@ -587,6 +593,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         manager=_HierarchicalTagManager)
     tkeywords = models.ManyToManyField(
         ThesaurusKeyword,
+        verbose_name=_('keywords'),
         help_text=tkeywords_help_text,
         blank=True)
     regions = models.ManyToManyField(
@@ -672,26 +679,30 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # This is useful for spatial searches and for generating thumbnail images
     # and metadata records.
     bbox_x0 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_x1 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_y0 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
     bbox_y1 = models.DecimalField(
-        max_digits=19,
-        decimal_places=10,
+        max_digits=30,
+        decimal_places=15,
         blank=True,
         null=True)
-    srid = models.CharField(max_length=255, default='EPSG:4326')
+    srid = models.CharField(
+        max_length=30,
+        blank=False,
+        null=False,
+        default='EPSG:4326')
 
     # CSW specific fields
     csw_typename = models.CharField(
@@ -726,7 +737,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     # metadata XML specific fields
     metadata_uploaded = models.BooleanField(default=False)
-    metadata_uploaded_preserve = models.BooleanField(default=False)
+    metadata_uploaded_preserve = models.BooleanField(_('Metadata uploaded preserve'), default=False)
     metadata_xml = models.TextField(
         null=True,
         default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>',
@@ -743,16 +754,47 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         help_text=_('Should this resource be published and searchable?'))
     is_approved = models.BooleanField(
         _("Approved"),
-        default=False,
+        default=True,
         help_text=_('Is this resource validated from a publisher or editor?'))
 
     # fields necessary for the apis
-    thumbnail_url = models.TextField(null=True, blank=True)
+    thumbnail_url = models.TextField(_("Thumbnail url"), null=True, blank=True)
     detail_url = models.CharField(max_length=255, null=True, blank=True)
     rating = models.IntegerField(default=0, null=True, blank=True)
 
     def __unicode__(self):
         return self.title
+
+    def get_upload_session(self):
+        raise NotImplementedError()
+
+    @property
+    def creator(self):
+        return self.owner.get_full_name() or self.owner.username
+
+    @property
+    def organizationname(self):
+        return self.owner.organization
+
+    @property
+    def restriction_code(self):
+        return self.restriction_code_type.gn_description
+
+    @property
+    def publisher(self):
+        return self.poc.get_full_name() or self.poc.username
+
+    @property
+    def contributor(self):
+        return self.metadata_author.get_full_name() or self.metadata_author.username
+
+    @property
+    def topiccategory(self):
+        return self.category.identifier
+
+    @property
+    def csw_crs(self):
+        return self.srid
 
     @property
     def group_name(self):
@@ -771,6 +813,24 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.srid]
 
     @property
+    def ll_bbox(self):
+        """BBOX is in the format: [x0,x1,y0,y1]."""
+        from geonode.utils import bbox_to_projection
+        llbbox = self.bbox[0:4]
+        if self.srid and 'EPSG:' in self.srid:
+            try:
+                llbbox = bbox_to_projection([float(coord) for coord in llbbox] + [self.srid, ],
+                                            target_srid=4326)
+            except BaseException:
+                pass
+        return [
+            llbbox[0],  # x0
+            llbbox[1],  # x1
+            llbbox[2],  # y0
+            llbbox[3],  # y1
+            self.srid]
+
+    @property
     def bbox_string(self):
         """BBOX is in the format: [x0,y0,x1,y1]."""
         return ",".join([str(self.bbox_x0), str(self.bbox_y0),
@@ -779,11 +839,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def geographic_bounding_box(self):
         """BBOX is in the format: [x0,x1,y0,y1]."""
+        llbbox = self.ll_bbox[0:4]
         return bbox_to_wkt(
-            self.bbox_x0,
-            self.bbox_x1,
-            self.bbox_y0,
-            self.bbox_y1,
+            llbbox[0],  # x0
+            llbbox[1],  # x1
+            llbbox[2],  # y0
+            llbbox[3],  # y1
             srid=self.srid)
 
     @property
@@ -868,15 +929,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         else:
             return ''
 
-    def set_latlon_bounds(self, box):
-        """
-        Set the four bounds in lat lon projection
-        """
-        self.bbox_x0 = box[0]
-        self.bbox_x1 = box[1]
-        self.bbox_y0 = box[2]
-        self.bbox_y1 = box[3]
-
     def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
         """
         Calculate zoom level and center coordinates in mercator.
@@ -918,7 +970,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.bbox_y0 = lat - distance_y_degrees
         self.bbox_y1 = lat + distance_y_degrees
 
-    def set_bounds_from_bbox(self, bbox):
+    def set_bounds_from_bbox(self, bbox, srid):
         """
         Calculate zoom level and center coordinates in mercator.
 
@@ -927,7 +979,19 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             [xmin, xmax, ymin, ymax]
         :type bbox: list
         """
-        self.set_latlon_bounds(bbox)
+        if not bbox or len(bbox) < 4:
+            raise ValidationError(
+                'Bounding Box cannot be empty %s for a given resource' %
+                self.name)
+        if not srid:
+            raise ValidationError(
+                'Projection cannot be empty %s for a given resource' %
+                self.name)
+        self.bbox_x0 = bbox[0]
+        self.bbox_x1 = bbox[1]
+        self.bbox_y0 = bbox[2]
+        self.bbox_y1 = bbox[3]
+        self.srid = srid
 
         minx, maxx, miny, maxy = [float(c) for c in bbox]
         x = (minx + maxx) / 2
@@ -1036,6 +1100,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """Determine if the thumbnail object exists and an image exists"""
         return self.link_set.filter(name='Thumbnail').exists()
 
+    # Note - you should probably broadcast layer#post_save() events to ensure
+    # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
         upload_to = 'thumbs/'
         upload_path = os.path.join('thumbs/', filename)
@@ -1055,16 +1121,21 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 filename).replace(
                 '\\',
                 '/')
-            url = urljoin(settings.SITEURL, url_path)
+            site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+            url = urljoin(site_url, url_path)
 
-            Link.objects.get_or_create(resource=self,
-                                       url=url,
-                                       defaults=dict(
-                                           name='Thumbnail',
-                                           extension='png',
-                                           mime='image/png',
-                                           link_type='image',
-                                       ))
+            # should only have one 'Thumbnail' link
+            obj, created = Link.objects.get_or_create(resource=self,
+                                                      name='Thumbnail',
+                                                      defaults=dict(
+                                                          url=url,
+                                                          extension='png',
+                                                          mime='image/png',
+                                                          link_type='image',
+                                                      ))
+            self.thumbnail_url = url
+            obj.url = url
+            obj.save()
 
             ResourceBase.objects.filter(id=self.id).update(
                 thumbnail_url=url
@@ -1157,7 +1228,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return the_ma
 
     def handle_moderated_uploads(self):
-        if settings.ADMIN_MODERATE_UPLOADS:
+        if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
+            self.is_approved = False
             self.is_published = False
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
@@ -1187,7 +1259,7 @@ class LinkManager(models.Manager):
         return self.get_queryset().filter(link_type='image')
 
     def download(self):
-        return self.get_queryset().filter(link_type__in=['image', 'data'])
+        return self.get_queryset().filter(link_type__in=['image', 'data', 'original'])
 
     def metadata(self):
         return self.get_queryset().filter(link_type='metadata')
@@ -1252,17 +1324,23 @@ def resourcebase_post_save(instance, *args, **kwargs):
                 link.delete()
 
     try:
+        # set default License if no specified
+        if instance.license is None:
+            license = License.objects.filter(name="Not Specified")
+
+            if license and len(license) > 0:
+                instance.license = license[0]
+
         ResourceBase.objects.filter(id=instance.id).update(
             thumbnail_url=instance.get_thumbnail_url(),
             detail_url=instance.get_absolute_url(),
-            csw_insert_date=datetime.datetime.now())
+            csw_insert_date=now(),
+            license=instance.license)
+        instance.refresh_from_db()
     except BaseException:
-        pass
-
-    try:
-        instance.thumbnail_url = instance.get_thumbnail_url()
-        instance.detail_url = instance.get_absolute_url()
-        instance.csw_insert_date = datetime.datetime.now()
+        tb = traceback.format_exc()
+        if tb:
+            logger.debug(tb)
     finally:
         instance.set_missing_info()
 
@@ -1319,13 +1397,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
         if tb:
             logger.debug(tb)
 
-    # set default License if no specified
-    if instance.license is None:
-        no_license = License.objects.filter(name="Not Specified")
-
-        if no_license and len(no_license) > 0:
-            instance.license = no_license[0]
-
 
 def rating_post_save(instance, *args, **kwargs):
     """
@@ -1357,7 +1428,7 @@ def do_login(sender, user, request, **kwargs):
             AccessToken.objects.get_or_create(
                 user=user,
                 application=app,
-                expires=datetime.datetime.now() +
+                expires=datetime.datetime.now(timezone.get_current_timezone()) +
                 datetime.timedelta(
                     days=1),
                 token=token)
@@ -1366,7 +1437,7 @@ def do_login(sender, user, request, **kwargs):
             token = u.hex
 
         # Do GeoServer Login
-        url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
+        url = "%s%s&access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
                                         'ows?service=wms&version=1.3.0&request=GetCapabilities',
                                         token)
 
@@ -1409,20 +1480,20 @@ def do_logout(sender, user, request, **kwargs):
             pass
 
         # Do GeoServer Logout
-        if 'access_token' in request.session:
+        if request and 'access_token' in request.session:
             access_token = request.session['access_token']
         else:
             access_token = None
 
         if access_token:
-            url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
+            url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
                                             settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'],
                                             access_token)
             header_params = {
                 "Authorization": ("Bearer %s" % access_token)
             }
         else:
-            url = "%s%s" % (settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
+            url = "%s%s" % (settings.OGC_SERVER['default']['LOCATION'],
                             settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'])
 
         param = {}

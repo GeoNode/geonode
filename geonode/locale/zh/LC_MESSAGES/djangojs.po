@@ -40,11 +40,11 @@ msgstr ""
 
 #: geonode/static/geonode/js/search/search.js:373
 msgid "Enter your text here ..."
-msgstr ""
+msgstr "在这里输入你的文本"
 
 #: geonode/static/geonode/js/search/search.js:414
 msgid "Enter your region here ..."
-msgstr ""
+msgstr "在这里输入你的地区"
 
 #: geonode/static/geonode/js/upload/FileType.js:33
 #, javascript-format
@@ -58,11 +58,11 @@ msgstr "ESRI shape文件"
 #: geonode/static/geonode/js/upload/FileTypes.js:13
 #: geonode/static/geonode/js/upload/FileTypes.js:18
 msgid "GeoTIFF"
-msgstr ""
+msgstr "GeoTIFF"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:24
 msgid "Comma Separated Value"
-msgstr ""
+msgstr "标点分隔值"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Google Earth KML"
@@ -74,16 +74,16 @@ msgstr "GeoJSON"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:39
 msgid "Zip Archive"
-msgstr ""
+msgstr "压缩文档"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:45
 msgid "ERDAS Imagine"
-msgstr ""
+msgstr "ERDAS影像"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:50
 #: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "National Imagery Transmission Format"
-msgstr ""
+msgstr "国家影像传输格式"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "Controlled Image Base-1 Meter"
@@ -135,11 +135,19 @@ msgstr ""
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:331
 msgid "Layer Info"
-msgstr "层信息"
+msgstr "图层信息"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:332
 msgid "Edit Metadata"
 msgstr "修改元数据"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:333
+msgid "Upload Metadata"
+msgstr "上传元数据"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:333
+msgid "Upload SLD"
+msgstr "上传SLD"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:333
 msgid "Manage Styles"
@@ -147,15 +155,15 @@ msgstr "管理样式"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:336
 msgid "The column %1 was renamed to %2 <br/>"
-msgstr ""
+msgstr "属性列 %1 重命名为 %2 <br/>"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:342
 msgid "Your layer was successfully uploaded"
-msgstr "你的层已成功上传"
+msgstr "你的图层已成功上传"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:371
 msgid "Performing Final GeoServer Config Step"
-msgstr "执行最后的GeoServer的配置步骤"
+msgstr "执行最后的GeoServer配置步骤"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:386
 #: geonode/static/geonode/js/upload/LayerInfo.js:412
@@ -168,7 +176,7 @@ msgstr "您需要在为了完成您指定上传的更多信息。"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:404
 msgid "You can continue configuring your layer."
-msgstr "您可以继续配置层。"
+msgstr "您可以继续配置图层。"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:422
 #: geonode/static/geonode/js/upload/LayerInfo.js:509
@@ -177,7 +185,7 @@ msgstr "意外错误"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:438
 msgid "Performing GeoServer Config Step"
-msgstr "表演GeoServer的配置步骤"
+msgstr "展示GeoServer的配置步骤"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:516
 msgid "Layer files uploaded, configuring in GeoServer"
@@ -185,7 +193,7 @@ msgstr "图层文件上传，配置在GeoServer的"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:532
 msgid "Select or create a Geogig repository."
-msgstr ""
+msgstr "选择或者创建一个Geoig仓库。"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
@@ -203,18 +211,21 @@ msgid ""
 "\n"
 "Please check for errors in the form!"
 msgstr ""
+"你正在试图上传一个不完整的文件集或者不是全部强制的选项都已经有效。\n"
+"\n"
+"请检查表格中的错误。"
 
 #: geonode/static/lib/js/assets.min.js:2
 msgid "<iframe frameborder='0' width='0' height='0'/>"
-msgstr ""
+msgstr "<iframe frameborder='0' width='0' height='0'/>"
 
 #: geonode/static/lib/js/assets.min.js:4
 msgid "<script>"
-msgstr ""
+msgstr "<script>"
 
 #: geonode/static/lib/js/assets.min.js:4
 msgid "<div>"
-msgstr ""
+msgstr "<div>"
 
 #: geonode/templates/lang.js:9 geonode/templates/lang.js:236
 msgid "Cancel"
@@ -257,7 +268,11 @@ msgstr "详情..."
 
 #: geonode/templates/lang.js:28 geonode/templates/lang.js:31
 msgid "Add Layers"
-msgstr "添加层"
+msgstr "添加图层"
+
+#: geonode/templates/lang.js:29
+msgid "Add ArcGIS REST Server"
+msgstr "添加ArcGIS REST Server"
 
 #: geonode/templates/lang.js:29
 msgid "Area"
@@ -273,7 +288,87 @@ msgstr "完成"
 
 #: geonode/templates/lang.js:33
 msgid "Available Layers"
-msgstr "可用层"
+msgstr "可用图层"
+
+#: geonode/templates/lang.js:38
+msgid "Add feeds"
+msgstr "添加供给源"
+
+#: geonode/templates/lang.js:39
+msgid "Flickr"
+msgstr "网络相簿"
+
+#: geonode/templates/lang.js:40
+msgid "Google Earth"
+msgstr "谷歌地球"
+
+#: geonode/templates/lang.js:40
+msgid "Upload your own data"
+msgstr "上传你的数据"
+
+#: geonode/templates/lang.js:43
+msgid "Help"
+msgstr "帮助"
+
+#: geonode/templates/lang.js:57
+msgid "Warning"
+msgstr "警告"
+
+#: geonode/templates/lang.js:58
+msgid "You now have %n layers in your map.  With more than %max layers you may experience problems with layer ordering, info balloon display, and general performance. "
+msgstr "您的地图现在拥有 %n 个图层。超过 %max 的图层可能会遇到层排序、信息激增显示和其他一般性能的问题。"
+msgid "Copy"
+msgstr "拷贝"
+msgid "About this Map View"
+msgstr "关于该地图视图"
+msgid "Abstract (brief description)"
+msgstr "概述（简要描述）"
+msgid "Introduction (tell visitors more about your map view)"
+msgstr "介绍（向访问者展示更多底图信息）"
+msgid "UserUrl"
+msgstr "用户URL"
+msgid "Add Category"
+msgstr "添加分类"
+msgid "Add a new category to the layer tree"
+msgstr "向图层树添加新的分类"
+msgid "Rename Category"
+msgstr "重命名分类"
+msgid "Rename this category"
+msgstr "重命名该分类"
+msgid "Remove Category"
+msgstr "移除分类"
+msgid "Remove this category and layers"
+msgstr "移除该分类以及其内图层"
+msgid "Share Layer"
+msgstr "分享图层"
+msgid "Unsupported Layers"
+msgstr "不支持的图层"
+msgid "The following layers cannot be printed:"
+msgstr "下列图层不能打印："
+msgid "Upload Layer"
+msgstr "上传图层"
+msgid "Create Layer"
+msgstr "创建图层"
+msgid "Rectify Layer"
+msgstr "校正图层"
+msgid "Submit a Map Service"
+msgstr "提交地图服务"
+msgid "External Data"
+msgstr "外部数据"
+msgid "If you leave this page, unsaved changes will be lost."
+msgstr "如果离开该页面，将丢失未保存的设置。"
+msgid "About"
+msgstr "关于"
+msgid "About us"
+msgstr "关于我们"
+msgid "Center for Geographic Analysis"
+msgstr "哈佛大学地理分析中心"
+msgid "Bigdata and AMAP Innovation Team"
+msgstr "浙江大学大数据与学术地图创新团队"
+
+#: geonode/templates/lang.js:41
+msgid "<p>Your map is ready to be published to the web! </p><p> Simply copy the following HTML to embed the map in your website: </p>"
+msgstr "<p>您的地图已准备好发布到网络上！ </p><p> 只需在浏览器中复制以下链接即可打开地图 ：</p>"
 
 #: geonode/templates/lang.js:35 geonode/templates/lang.js:121
 msgid "Height"
@@ -281,7 +376,7 @@ msgstr "高度"
 
 #: geonode/templates/lang.js:36
 msgid "Get Feature Info"
-msgstr "获取图形信息"
+msgstr "获取要素信息"
 
 #: geonode/templates/lang.js:37 geonode/templates/lang.js:122
 msgid "Large"
@@ -371,6 +466,10 @@ msgstr "打印预览"
 #: geonode/templates/lang.js:59
 msgid "Properties"
 msgstr "属性"
+
+#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
+msgid "Link"
+msgstr "发布地图"
 
 #: geonode/templates/lang.js:60 geonode/templates/lang.js:126
 msgid "Publish Map"
@@ -540,6 +639,10 @@ msgstr "此图层没有指定元数据链接。"
 msgid "Metadata Links:"
 msgstr "元数据链接："
 
+#: geonode/templates/lang.js:212
+msgid "Click here for more information about this layer."
+msgstr "点击此处查看该图层的更多信息。"
+
 #: geonode/templates/lang.js:149
 msgid "Paper size:"
 msgstr "纸张尺寸："
@@ -587,6 +690,38 @@ msgstr "对于"
 #: geonode/templates/lang.js:170 geonode/templates/lang.js:191
 msgid "Your search did not match any items."
 msgstr "没有搜索到您要的结果。"
+
+#:  geonode/templates/lang.js:194
+msgid "Keyword"
+msgstr "关键字"
+
+#:  geonode/templates/lang.js:196
+msgid "Showing..."
+msgstr "显示"
+
+#: geonode/templates/lang.js:205 geonode/templates/lang.js:203
+msgid "Source"
+msgstr "源"
+
+#: geonode/templates/lang.js:204
+msgid "Data Type"
+msgstr "数据类型"
+
+#: geonode/templates/lang.js:206
+msgid "Date"
+msgstr "日期"
+
+#: geonode/templates/lang.js:207
+msgid "from year"
+msgstr "起始日期"
+
+#: geonode/templates/lang.js:208
+msgid "to year"
+msgstr "终止时间"
+
+#: geonode/templates/lang.js:209
+msgid "Reset"
+msgstr "重置"
 
 #: geonode/templates/lang.js:171
 msgid "Search Maps"
@@ -636,6 +771,14 @@ msgstr "您没有权限查看此数据"
 msgid "This data is stored on a remote server"
 msgstr "此数据存储在远程服务器上"
 
+#: geonode/templates/lang.js:198
+msgid "Invalid Query"
+msgstr "不正确的检索"
+
+#: geonode/templates/lang.js:199
+msgid "You need to specify a search term"
+msgstr "您需要明确检索项"
+
 #: geonode/templates/lang.js:203
 msgid "No abstract is provided for this layer."
 msgstr "此图层没有抽象摘要。"
@@ -677,49 +820,47 @@ msgid "Please wait"
 msgstr "请稍候"
 
 #~ msgid "Available %s"
-#~ msgstr "Available %s"
+#~ msgstr "可用的%s"
 
 #~ msgid ""
 #~ "This is the list of available %s. You may choose some by selecting them "
 #~ "in the box below and then clicking the \"Choose\" arrow between the two "
 #~ "boxes."
 #~ msgstr ""
-#~ "This is the list of available %s. You may choose some by selecting them "
-#~ "in the box below and then clicking the \"Choose\" arrow between the two "
-#~ "boxes."
+#~ "这是可用的%s列表。你可以通过在下方的框中选中它们，然后在两个框中点击\"Choose\"箭"
+#~ "头来选择。"
 
 #~ msgid "Type into this box to filter down the list of available %s."
-#~ msgstr "Type into this box to filter down the list of available %s."
+#~ msgstr "在这个框中填入条件滤出可用的的%s列表。"
 
 #~ msgid "Filter"
-#~ msgstr "Filter"
+#~ msgstr "过滤器"
 
 #~ msgid "Choose all"
-#~ msgstr "Choose all"
+#~ msgstr "全选"
 
 #~ msgid "Click to choose all %s at once."
-#~ msgstr "Click to choose all %s at once."
+#~ msgstr "立刻选中所有%s。"
 
 #~ msgid "Choose"
-#~ msgstr "Choose"
+#~ msgstr "选择"
 
 #~ msgid "Chosen %s"
-#~ msgstr "Chosen %s"
+#~ msgstr "被选中的%s"
 
 #~ msgid ""
 #~ "This is the list of chosen %s. You may remove some by selecting them in "
 #~ "the box below and then clicking the \"Remove\" arrow between the two "
 #~ "boxes."
 #~ msgstr ""
-#~ "This is the list of chosen %s. You may remove some by selecting them in "
-#~ "the box below and then clicking the \"Remove\" arrow between the two "
-#~ "boxes."
+#~ "这是一列被选中的%s。你可以通过在下方框中选中它们，然后在两个框中点击移除\"Remove\""
+#~ "箭头来移除一些。"
 
 #~ msgid "Remove all"
-#~ msgstr "Remove all"
+#~ msgstr "移除全部"
 
 #~ msgid "Click to remove all chosen %s at once."
-#~ msgstr "Click to remove all chosen %s at once."
+#~ msgstr "立刻移除所有选中的%s。"
 
 #~ msgid "%(sel)s of %(cnt)s selected"
 #~ msgid_plural "%(sel)s of %(cnt)s selected"
@@ -729,108 +870,126 @@ msgstr "请稍候"
 #~ "You have unsaved changes on individual editable fields. If you run an "
 #~ "action, your unsaved changes will be lost."
 #~ msgstr ""
-#~ "You have unsaved changes on individual editable fields. If you run an "
-#~ "action, your unsaved changes will be lost."
+#~ "你没有在个人可编辑区域保存改动。如果你运行操作，你未保存的改动将会丢失。"
 
 #~ msgid ""
 #~ "You have selected an action, but you haven't saved your changes to "
 #~ "individual fields yet. Please click OK to save. You'll need to re-run the "
 #~ "action."
 #~ msgstr ""
-#~ "You have selected an action, but you haven't saved your changes to "
-#~ "individual fields yet. Please click OK to save. You'll need to re-run the "
-#~ "action."
+#~ "你已经选中一个操作，但是你还没有保存你的改动到个人区域。"
+#~ "请点击OK进行保存。你将需要重新启动操作。"
 
 #~ msgid ""
 #~ "You have selected an action, and you haven't made any changes on "
 #~ "individual fields. You're probably looking for the Go button rather than "
 #~ "the Save button."
 #~ msgstr ""
-#~ "You have selected an action, and you haven't made any changes on "
-#~ "individual fields. You're probably looking for the Go button rather than "
-#~ "the Save button."
+#~ "你已经选中了一个操作，但是你还没有在个人区域里做任何改动。"
+#~ "你可能正在寻找Go按钮而不是保存按钮。"
 
 #~ msgid ""
 #~ "January February March April May June July August September October "
 #~ "November December"
 #~ msgstr ""
-#~ "January February March April May June July August September October "
-#~ "November December"
+#~ "一月 二月 三月 四月 五月 六月 七月 八月 九月 十月 "
+#~ "十一月 十二月"
 
 #~ msgid "S M T W T F S"
 #~ msgstr "S M T W T F S"
 
 #~ msgid "Show"
-#~ msgstr "Show"
+#~ msgstr "显示"
 
 #~ msgid "Hide"
-#~ msgstr "Hide"
+#~ msgstr "隐藏"
 
 #~ msgid "Now"
-#~ msgstr "Now"
+#~ msgstr "现在"
 
 #~ msgid "Clock"
-#~ msgstr "Clock"
+#~ msgstr "时钟"
 
 #~ msgid "Choose a time"
-#~ msgstr "Choose a time"
+#~ msgstr "选择一个时间"
 
 #~ msgid "Midnight"
-#~ msgstr "Midnight"
+#~ msgstr "半夜"
 
 #~ msgid "6 a.m."
 #~ msgstr "6 a.m."
 
 #~ msgid "Noon"
-#~ msgstr "Noon"
+#~ msgstr "中午"
 
 #~ msgid "Today"
-#~ msgstr "Today"
+#~ msgstr "今天"
 
 #~ msgid "Calendar"
-#~ msgstr "Calendar"
+#~ msgstr "日历"
 
 #~ msgid "Yesterday"
-#~ msgstr "Yesterday"
+#~ msgstr "昨天"
 
 #~ msgid "Tomorrow"
-#~ msgstr "Tomorrow"
+#~ msgstr "明天"
 
 #~ msgid "Add user..."
-#~ msgstr "Add user..."
+#~ msgstr "添加用户..."
 
 #~ msgid "Who can view and download this data?"
-#~ msgstr "Who can view and download this data?"
+#~ msgstr "谁可以查看和下载这个数据？"
 
 #~ msgid "Anyone"
-#~ msgstr "Anyone"
+#~ msgstr "任何人"
 
 #~ msgid "Any registered user"
-#~ msgstr "Any registered user"
+#~ msgstr "任何注册用户"
 
 #~ msgid "Only users who can edit"
-#~ msgstr "Only users who can edit"
+#~ msgstr "只允许可编辑用户"
 
 #~ msgid "Who can edit this data?"
-#~ msgstr "Who can edit this data?"
+#~ msgstr "谁可以编辑这个数据？"
 
 #~ msgid "Only the following users or groups:"
-#~ msgstr "Only the following users or groups:"
+#~ msgstr "只有下列用户或组可以："
 
 #~ msgid "Who can manage and edit this data?"
-#~ msgstr "Who can manage and edit this data?"
+#~ msgstr "谁可以管理和编辑这个数据？"
 
 #~ msgid "GeoTiff File"
-#~ msgstr "GeoTiff File"
+#~ msgstr "GeoTiff文件"
 
 #~ msgid "Comma Separated File"
-#~ msgstr "Comma Separated File"
+#~ msgstr "逗号分隔文件"
 
 #~ msgid "Zip Archives"
-#~ msgstr "Zip Archives"
+#~ msgstr "Zip文档"
 
 #~ msgid "You are uploading an incomplete set of files."
-#~ msgstr "You are uploading an incomplete set of files."
+#~ msgstr "你正在上传一个不完整的文件集。"
 
 #~ msgid "No error message supplied"
-#~ msgstr "No error message supplied"
+#~ msgstr "没有错误信息提供"
+
+#: geonode/templates/metadata_form_js.html
+msgid "some schema mandatory fields are missing"
+msgstr "缺少一些元数据模式强制性字段"
+msgid "Metadata Schema mandatory fields completed"
+msgstr "元数据模式强制性字段已完成"
+msgid "<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>"
+msgstr "<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* 元数据模式声明的强制性字段</strong></p>"
+
+#: camp/static/js/base.js
+msgid "Title:"
+msgstr "标题："
+msgid "Author:"
+msgstr "作者："
+msgid "Updated Date:"
+msgstr "更新时间："
+msgid "Popular Count:"
+msgstr "浏览量："
+
+
+

@@ -25,7 +25,7 @@
       <div class="col-md-6">
         <select id='default_style' name='default_style' required='required'>
           {% for style in layer_styles %}
-            {% if style = layer.default_style %}
+            {% if style == layer.default_style %}
             <option value="{{ style.0 }}" selected>{{ style.1 }}</option>
             {% else %}
             <option value="{{ style.0 }}">{{ style.1 }}</option>
@@ -41,7 +41,13 @@
         <h4>{% trans "Available styles" %}</h4>
         <p>{% trans "Click on an available style in the upper box to assign it to this layer. Selected styles appear in the lower box." %}</p>
       </div>
+              
       <div class="col-md-9">
+        <div class="row form-group">
+          <div class="col-xs-6 col-md-3">
+            <input type="text" class="js-searchlist form-control"  placeholder="&#xF002; Search" style="font-family:Arial, FontAwesome, sans-serif">
+          </div>
+        </div>
         <select multiple="multiple" id="style-select" name="style-select">
           {% for style in gs_styles %}
             {% if style in layer_styles %}
@@ -68,13 +74,16 @@
 {{ block.super }}
 <script type="text/javascript">
   $(function () {
-
     $('#style-select').multiSelect({
       afterSelect: function(values){
-        $('#default_style').append($("<option/>", {
-          value: values[0],
-          text: values[0]
-        }));
+          $("#style-select :selected").each(function() {
+              if(this.value === values[0]) {
+                  $('#default_style').append($("<option/>", {
+                    value: this.value,
+                    text: this.text
+                  }));
+              }
+          });
       },
       afterDeselect: function(values){
         $('#default_style option').each(function() {
@@ -85,6 +94,15 @@
       }
     });
 
+    $('.js-searchlist').on('keyup', function() {  
+      var searchString = $(this).val();
+      $(".ms-elem-selectable:not(.ms-selected)").each(function() {
+        var listElement = $(this);
+        var styleName = $("span", listElement).html();
+        if(styleName !=null)
+          styleName.toUpperCase().indexOf(searchString.toUpperCase()) > -1 ? listElement.show() : listElement.hide();            
+      }); 
+    });   
   });
 </script>
 {% endblock %}

@@ -23,7 +23,6 @@ import re
 import urllib
 import urllib2
 from django.conf import settings
-from django.template import Context
 from django.template.loader import get_template
 from owslib.csw import CatalogueServiceWeb, namespaces
 from owslib.util import http_post
@@ -161,16 +160,16 @@ class Catalogue(CatalogueServiceWeb):
         id_pname = 'dc:identifier'
         if self.type == 'deegree':
             id_pname = 'apiso:Identifier'
-
+        site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
         tpl = get_template(template)
-        ctx = Context({'layer': layer,
-                       'SITEURL': settings.SITEURL[:-1],
-                       'id_pname': id_pname,
-                       'LICENSES_METADATA': getattr(settings,
-                                                    'LICENSES',
-                                                    dict()).get('METADATA',
-                                                                'never')})
-        md_doc = tpl.render(ctx)
+        ctx = {'layer': layer,
+               'SITEURL': site_url,
+               'id_pname': id_pname,
+               'LICENSES_METADATA': getattr(settings,
+                                            'LICENSES',
+                                            dict()).get('METADATA',
+                                                        'never')}
+        md_doc = tpl.render(context=ctx)
         return md_doc
 
     def csw_gen_anytext(self, xml):

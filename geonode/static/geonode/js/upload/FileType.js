@@ -20,8 +20,25 @@ define(function (require, exports) {
     };
 
 
-    FileType.prototype.isType = function (file) {
-        return (this.main === getExt(file));
+    FileType.prototype.isType = function (file, extensions) {
+        var main_matches = (this.main === getExt(file));
+        var aux_matches = this.findAuxiliaryFiles(extensions);
+        return main_matches && aux_matches;
+    };
+
+    FileType.prototype.findAuxiliaryFiles = function (extensions) {
+        if (this.aux === undefined || this.aux === null || this.aux.length === 0) {
+            return true;
+        }
+
+        var matches = false;
+        $.each(this.aux, function (idx, req) {
+            idx = $.inArray(req, extensions);
+            if (idx !== -1) {
+                matches = true;
+            }
+        });
+        return matches;
     };
 
     FileType.prototype.findTypeErrors = function (extensions) {
@@ -34,13 +51,8 @@ define(function (require, exports) {
             }
         });
         return errors;
-
     };
 
     return FileType;
 
 });
-
-
-
-
