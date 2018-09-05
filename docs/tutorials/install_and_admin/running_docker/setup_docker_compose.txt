@@ -31,8 +31,8 @@ Verify the installation::
 
     docker-compose --version
 
-Running GeoNode stack
-=====================
+Running GeoNode stack on localhost
+==================================
 
 Clone the repository::
 
@@ -40,8 +40,11 @@ Clone the repository::
 
 Launch the stack with the build of GeoNode so any changes you did will be immediately available::
 
-    docker-compose up --build
-	
+    docker-compose up -f docker-compose.override.localhost.yml --build
+
+.. note::
+   **docker-compose.override.localhost.yml** containse environment variables to allow you run the instances on *localhost*. You can use this file as template in order to run on other public addresses.
+
 .. note:: 
    **For Windows users**: In case you're using the native Docker for Windows (on Hyper-V) you will probably be affected by an error related to mounting the /var/run/docker.sock volume. It's due to a `problem with the current version of Docker Compose <https://github.com/docker/for-win/issues/1829>`_ for Windows.
    In this case you need to set the **COMPOSE_CONVERT_WINDOWS_PATHS** environmental variable:
@@ -51,6 +54,13 @@ Launch the stack with the build of GeoNode so any changes you did will be immedi
       set COMPOSE_CONVERT_WINDOWS_PATHS=1 
    
    before running docker-compose up
+
+Running GeoNode stack on docker ip address
+==========================================
+
+If you want to navigate the application from the address of the Docker socket than run simply::
+
+    docker-compose up --build
 
 GeoNode will be available at the ip address of the ``docker0`` interface::
 
