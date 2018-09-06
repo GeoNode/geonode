@@ -398,6 +398,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     """
 
     gf_services = {}
+    gf_services["*"] = 'view_resourcebase' in perms
     gf_services["WMS"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
     gf_services["GWC"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
     gf_services["WFS"] = 'download_resourcebase' in perms or 'change_layer_data' in perms and layer.is_vector()
@@ -410,7 +411,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
                 print "Adding to geofence the rule: %s %s %s" % (layer, service, user)
                 _update_geofence_rule(layer.name, layer.workspace, service, user=user.username)
             if group:
-                print "Adding to geofence the rule: %s %s %s" % (layer, service, user)
+                print "Adding to geofence the rule: %s %s %s" % (layer, service, group)
                 _update_geofence_rule(layer.name, layer.workspace, service, group=group.name)
 
     set_geofence_invalidate_cache()

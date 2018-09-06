@@ -168,6 +168,7 @@ class PermissionLevelMixin(object):
         # TODO refactor this
         remove_object_permissions(self)
 
+        set_owner_permissions(self)
         print perm_spec
 
         # Anonymous User group
@@ -185,8 +186,11 @@ class PermissionLevelMixin(object):
                 sync_geofence_with_guardian(self.layer, perms, group=anonymous_group)
 
         # All the other users
+        owner_is_in_perms_spec = False
         if 'users' in perm_spec:
             for user, perms in perm_spec['users'].items():
+                if user == self.layer.owner.username:
+                    owner_is_in_perms_spec = True
                 if user != "AnonymousUser":
                     user = get_user_model().objects.get(username=user)
                     for perm in perms:
@@ -198,6 +202,11 @@ class PermissionLevelMixin(object):
                             assign_perm(perm, user, self.get_self_resource())
                     if GEOFENCE_SECURITY_ENABLED:
                         sync_geofence_with_guardian(self.layer, perms, user=user)
+
+        # Owner
+        if GEOFENCE_SECURITY_ENABLED and not owner_is_in_perms_spec:
+            OWNER_PERMISSIONS = ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
+            sync_geofence_with_guardian(self.layer, OWNER_PERMISSIONS, user=self.layer.owner)
 
         # All the other groups
         if 'groups' in perm_spec:
