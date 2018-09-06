@@ -201,9 +201,6 @@ def get_geofence_rules_count():
 def set_geofence_invalidate_cache():
     """invalidate GeoFence Cache Rules"""
     if models.GEOFENCE_SECURITY_ENABLED:
-        if settings.GEOFENCE_URL:
-            # not needed if we interact directly with postgresql
-            return
         try:
             url = settings.OGC_SERVER['default']['LOCATION']
             user = settings.OGC_SERVER['default']['USER']
@@ -364,32 +361,62 @@ def _get_geofence_payload(layer, workspace, access, user=None, group=None,
     return etree.tostring(root_el)
 
 
+def _update_geofence_rule_with_psycopg(layer, workspace, service, user=None, group=None):
+    if settings.GEOFENCE_URL:
+
+        conn = psycopg2.connect(settings.GEOFENCE_URL)
+        cur = conn.cursor()
+        cur.execute('select max(priority), max(id) from gf_rule;;')
+        values = cur.fetchone()
+        max_priority = int(values[0])
+        max_id = int(values[1])
+        if user:
+            cur.execute("""
+                insert into gf_rule (id, priority, grant_type, layer, service, username, workspace)
+                values (%s, %s, %s, %s, %s, %s, %s);
+                """,
+                (max_id + 1, max_priority + 1, 'ALLOW', layer, service, user, workspace )
+            )
+        if group:
+            rolename = 'ROLE_%s' % group.upper()
+            cur.execute("""
+                insert into gf_rule (id, priority, grant_type, layer, service, rolename, workspace)
+                values (%s, %s, %s, %s, %s, %s, %s);
+                """,
+                (max_id + 1, max_priority + 1, 'ALLOW', layer, service, rolename, workspace )
+            )
+        conn.commit()
+
+
 def _update_geofence_rule(layer, workspace, service, user=None, group=None):
-    payload = _get_geofence_payload(
-        layer=layer,
-        workspace=workspace,
-        access="ALLOW",
-        user=user,
-        group=group,
-        service=service
-    )
-    logger.debug("request data: {}".format(payload))
-    response = requests.post(
-        "{base_url}geofence/rest/rules".format(
-            base_url=settings.OGC_SERVER['default']['LOCATION']),
-        data=payload,
-        headers={
-            'Content-type': 'application/xml'
-        },
-        auth=HTTPBasicAuth(
-            username=settings.OGC_SERVER['default']['USER'],
-            password=settings.OGC_SERVER['default']['PASSWORD']
+    if settings.GEOFENCE_URL:
+        _update_geofence_rule_with_psycopg(layer, workspace, service, user, group)
+    else:
+        payload = _get_geofence_payload(
+            layer=layer,
+            workspace=workspace,
+            access="ALLOW",
+            user=user,
+            group=group,
+            service=service
         )
-    )
-    if response.status_code not in (200, 201):
-        msg = ("Could not ADD GeoServer User {!r} Rule for "
-               "Layer {!r}".format(user, layer))
-        raise RuntimeError(msg)
+        logger.debug("request data: {}".format(payload))
+        response = requests.post(
+            "{base_url}geofence/rest/rules".format(
+                base_url=settings.OGC_SERVER['default']['LOCATION']),
+            data=payload,
+            headers={
+                'Content-type': 'application/xml'
+            },
+            auth=HTTPBasicAuth(
+                username=settings.OGC_SERVER['default']['USER'],
+                password=settings.OGC_SERVER['default']['PASSWORD']
+            )
+        )
+        if response.status_code not in (200, 201):
+            msg = ("Could not ADD GeoServer User {!r} Rule for "
+                   "Layer {!r}".format(user, layer))
+            raise RuntimeError(msg)
 
 
 def sync_geofence_with_guardian(layer, perms, user=None, group=None):
