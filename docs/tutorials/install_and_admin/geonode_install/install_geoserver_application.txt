@@ -134,17 +134,6 @@ administrator will be able to access and administer GeoServer as well.
         <checkTokenEndpointUrl>http://localhost/api/o/v4/tokeninfo/</checkTokenEndpointUrl>
         <logoutUri>http://localhost/account/logout/</logoutUri>
 
-#. Edit ``/data/geoserver-data/security/auth/geonodeAuthProvider/config.xml`` with a text editor
-
-    .. code-block:: bash
-
-        $ sudo gedit /data/geoserver-data/security/auth/geonodeAuthProvider/config.xml
-
-    And make sure the following values are configured as follows:
-
-    .. code-block:: xml
-
-        <baseUrl>http://localhost/</baseUrl>
 
 #. Edit ``/data/geoserver-data/security/role/geonode\ REST\ role\ service/config.xml`` with a text editor
 
