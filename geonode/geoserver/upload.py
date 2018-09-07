@@ -277,14 +277,6 @@ def geoserver_upload(
     alternate = workspace.name + ':' + gs_resource.name
     layer_uuid = str(uuid.uuid1())
 
-    # Step 11. Setting permissions accordingly
-    if permissions is not None:
-        logger.info('>>> Step 11. Setting permissions to [%s]', name)
-        layer.set_permissions(permissions)
-    else:
-        logger.info('>>> Step 11. Setting default permissions for [%s]', name)
-        layer.set_default_permissions()
-
     defaults = dict(store=gs_resource.store.name,
                     storeType=gs_resource.store.resource_type,
                     alternate=alternate,
