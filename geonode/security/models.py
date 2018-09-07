@@ -24,6 +24,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from geonode.groups.models import GroupProfile
 from guardian.shortcuts import assign_perm, get_groups_with_perms
+from guardian.shortcuts import get_anonymous_user
 
 from .utils import (get_users_with_perms,
                     sync_geofence_with_guardian,
@@ -191,17 +192,19 @@ class PermissionLevelMixin(object):
             for user, perms in perm_spec['users'].items():
                 if user == self.layer.owner.username:
                     owner_is_in_perms_spec = True
-                if user != "AnonymousUser":
+                if "AnonymousUser" in str(user):
+                    user = get_anonymous_user()
+                else:
                     user = get_user_model().objects.get(username=user)
-                    for perm in perms:
-                        if self.polymorphic_ctype.name == 'layer' and perm in (
-                                'change_layer_data', 'change_layer_style',
-                                'add_layer', 'change_layer', 'delete_layer',):
-                            assign_perm(perm, user, self.layer)
-                        else:
-                            assign_perm(perm, user, self.get_self_resource())
-                    if GEOFENCE_SECURITY_ENABLED:
-                        sync_geofence_with_guardian(self.layer, perms, user=user)
+                for perm in perms:
+                    if self.polymorphic_ctype.name == 'layer' and perm in (
+                            'change_layer_data', 'change_layer_style',
+                            'add_layer', 'change_layer', 'delete_layer',):
+                        assign_perm(perm, user, self.layer)
+                    else:
+                        assign_perm(perm, user, self.get_self_resource())
+                if GEOFENCE_SECURITY_ENABLED:
+                    sync_geofence_with_guardian(self.layer, perms, user=user)
 
         # Owner
         if GEOFENCE_SECURITY_ENABLED and not owner_is_in_perms_spec:
