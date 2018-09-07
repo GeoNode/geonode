@@ -190,7 +190,7 @@ def get_geofence_rules_count():
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def set_geofence_invalidate_cache():
     """invalidate GeoFence Cache Rules"""
-    if models.GEOFENCE_SECURITY_ENABLED:
+    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
         try:
             url = settings.OGC_SERVER['default']['LOCATION']
             user = settings.OGC_SERVER['default']['USER']
@@ -311,7 +311,6 @@ def set_geofence_owner(instance, username=None, view_perms=False, download_perms
           http://<host>:<port>/geoserver/rest/geofence/rules
 
     """
-
     resource = instance.get_self_resource()
     try:
         workspace = _get_layer_workspace(resource.layer)
@@ -319,6 +318,8 @@ def set_geofence_owner(instance, username=None, view_perms=False, download_perms
         # resource is either not a layer (if raised AttributeError) or
         # a layer that is not manageable by geofence (if raised
         # RuntimeError) so we have nothing to do
+        tb = traceback.format_exc()
+        logger.debug(tb)
         pass
     else:
         services = (
@@ -382,8 +383,11 @@ def set_owner_permissions(resource):
             geofence_user = str(resource.owner)
             if "AnonymousUser" in geofence_user:
                 geofence_user = None
-            if models.GEOFENCE_SECURITY_ENABLED:
-                set_geofence_owner(resource, username=geofence_user)
+            if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
+                set_geofence_owner(resource,
+                                   username=geofence_user,
+                                   view_perms=True,
+                                   download_perms=True)
             for perm in models.LAYER_ADMIN_PERMISSIONS:
                 assign_perm(perm, resource.owner, resource.layer)
 
@@ -411,7 +415,7 @@ def remove_object_permissions(instance):
                 content_type=ContentType.objects.get_for_model(resource.layer),
                 object_pk=instance.id
             ).delete()
-            if models.GEOFENCE_SECURITY_ENABLED:
+            if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
                 # Scan GeoFence Rules associated to the Layer
                 """
                 curl -u admin:geoserver
@@ -539,6 +543,7 @@ def _update_geofence_rule(layer, workspace, service, user=None, group=None):
             password=settings.OGC_SERVER['default']['PASSWORD']
         )
     )
+    logger.debug("response status_code: {}".format(response.status_code))
     if response.status_code not in (200, 201):
         msg = ("Could not ADD GeoServer User {!r} Rule for "
                "Layer {!r}".format(user, layer))

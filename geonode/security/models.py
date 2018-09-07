@@ -49,9 +49,6 @@ LAYER_ADMIN_PERMISSIONS = [
     'change_layer_style'
 ]
 
-GEOFENCE_SECURITY_ENABLED = settings.OGC_SERVER['default'].get(
-    "GEOFENCE_SECURITY_ENABLED", False)
-
 
 class PermissionLevelError(Exception):
     pass
@@ -132,6 +129,7 @@ class PermissionLevelMixin(object):
             raise Exception("Could not acquire 'anonymous' Group.")
 
         # default permissions for resource owner
+        logger.debug("... Default permissions for resource owner")
         set_owner_permissions(self)
 
         anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
@@ -140,7 +138,8 @@ class PermissionLevelMixin(object):
                         anonymous_group, self.get_self_resource())
 
         if self.__class__.__name__ == 'Layer':
-            if anonymous_can_view and GEOFENCE_SECURITY_ENABLED:
+            if anonymous_can_view and settings.OGC_SERVER['default'].get(
+                    "GEOFENCE_SECURITY_ENABLED", False):
                 set_geofence_all(self)
             # only for layer owner
             assign_perm('change_layer_data', self.owner, self)
@@ -170,7 +169,6 @@ class PermissionLevelMixin(object):
                 ]
         }
         """
-
         remove_object_permissions(self)
 
         # default permissions for resource owner
@@ -194,7 +192,7 @@ class PermissionLevelMixin(object):
                 geofence_user = str(user)
                 if "AnonymousUser" in geofence_user:
                     geofence_user = None
-                if GEOFENCE_SECURITY_ENABLED:
+                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                     set_geofence_owner(self, username=geofence_user,
                                        view_perms=has_view_perms,
                                        download_perms=has_download_perms)
@@ -213,7 +211,7 @@ class PermissionLevelMixin(object):
                 # Set the GeoFence Owner Rules
                 has_view_perms = ('view_resourcebase' in perms)
                 has_download_perms = ('download_resourcebase' in perms)
-                if GEOFENCE_SECURITY_ENABLED:
+                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                     set_geofence_group(
                         self, str(group),
                         view_perms=has_view_perms,
