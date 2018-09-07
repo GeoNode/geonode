@@ -388,6 +388,13 @@ def _update_geofence_rule_with_psycopg(layer, workspace, service, user=None, gro
             """,
             (max_id + 1, max_priority + 1, 'ALLOW', layer, service, rolename, workspace )
         )
+    if not user and not group:
+        cur.execute("""
+            insert into gf_rule (id, priority, grant_type, layer, service, workspace)
+            values (%s, %s, %s, %s, %s, %s);
+            """,
+            (max_id + 1, max_priority + 1, 'ALLOW', layer, service, workspace )
+        )
     conn.commit()
 
 
@@ -428,7 +435,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     """
 
     gf_services = {}
-    gf_services["*"] = 'view_resourcebase' in perms
+    gf_services["*"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
     gf_services["WMS"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
     gf_services["GWC"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
     gf_services["WFS"] = 'download_resourcebase' in perms or 'change_layer_data' in perms and layer.is_vector()
@@ -437,11 +444,17 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
 
     for service, allowed in gf_services.iteritems():
         if allowed:
+            if not user and not group:
+                logger.debug("Adding to geofence the rule: %s %s * *" % (layer, service))
+                _update_geofence_rule(layer.name, layer.workspace, service)
             if user:
-                print "Adding to geofence the rule: %s %s %s" % (layer, service, user)
+                logger.debug("Adding to geofence the rule: %s %s %s" % (layer, service, user))
                 _update_geofence_rule(layer.name, layer.workspace, service, user=user.username)
             if group:
-                print "Adding to geofence the rule: %s %s %s" % (layer, service, group)
+                logger.debug("Adding to geofence the rule: %s %s %s" % (layer, service, group))
                 _update_geofence_rule(layer.name, layer.workspace, service, group=group.name)
+                if group.name == 'anonymous':
+                    logger.debug("Adding to geofence the rule: %s %s * *" % (layer, service))
+                    _update_geofence_rule(layer.name, layer.workspace, service)
 
     set_geofence_invalidate_cache()
