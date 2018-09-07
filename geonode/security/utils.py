@@ -46,6 +46,11 @@ from ..services.enumerations import CASCADED
 
 logger = logging.getLogger("geonode.security.utils")
 
+USE_GEOFENCE_DIRECT_CONNECT = False
+if 'internal' not in settings.OGC_SERVER['default']['GEOFENCE_URL']:
+    GEOFENCE_URL = settings.OGC_SERVER['default']['GEOFENCE_URL']
+    logger.debug('Enabling USE_GEOFENCE_DIRECT_CONNECT')
+    USE_GEOFENCE_DIRECT_CONNECT = True
 
 def get_visible_resources(queryset,
                           user,
@@ -164,8 +169,8 @@ def get_users_with_perms(obj):
 def get_geofence_rules_count():
     """invalidate GeoFence Cache Rules"""
     try:
-        if settings.GEOFENCE_URL:
-            conn = psycopg2.connect(settings.GEOFENCE_URL)
+        if USE_GEOFENCE_DIRECT_CONNECT:
+            conn = psycopg2.connect(GEOFENCE_URL)
             cur = conn.cursor()
             cur.execute('SELECT COUNT(*) FROM gf_rule;')
             count = int(cur.fetchone()[0])
@@ -362,34 +367,32 @@ def _get_geofence_payload(layer, workspace, access, user=None, group=None,
 
 
 def _update_geofence_rule_with_psycopg(layer, workspace, service, user=None, group=None):
-    if settings.GEOFENCE_URL:
-
-        conn = psycopg2.connect(settings.GEOFENCE_URL)
-        cur = conn.cursor()
-        cur.execute('select max(priority), max(id) from gf_rule;;')
-        values = cur.fetchone()
-        max_priority = int(values[0] or 0)
-        max_id = int(values[1] or 0)
-        if user:
-            cur.execute("""
-                insert into gf_rule (id, priority, grant_type, layer, service, username, workspace)
-                values (%s, %s, %s, %s, %s, %s, %s);
-                """,
-                (max_id + 1, max_priority + 1, 'ALLOW', layer, service, user, workspace )
-            )
-        if group:
-            rolename = 'ROLE_%s' % group.upper()
-            cur.execute("""
-                insert into gf_rule (id, priority, grant_type, layer, service, rolename, workspace)
-                values (%s, %s, %s, %s, %s, %s, %s);
-                """,
-                (max_id + 1, max_priority + 1, 'ALLOW', layer, service, rolename, workspace )
-            )
-        conn.commit()
+    conn = psycopg2.connect(GEOFENCE_URL)
+    cur = conn.cursor()
+    cur.execute('select max(priority), max(id) from gf_rule;;')
+    values = cur.fetchone()
+    max_priority = int(values[0] or 0)
+    max_id = int(values[1] or 0)
+    if user:
+        cur.execute("""
+            insert into gf_rule (id, priority, grant_type, layer, service, username, workspace)
+            values (%s, %s, %s, %s, %s, %s, %s);
+            """,
+            (max_id + 1, max_priority + 1, 'ALLOW', layer, service, user, workspace )
+        )
+    if group:
+        rolename = 'ROLE_%s' % group.upper()
+        cur.execute("""
+            insert into gf_rule (id, priority, grant_type, layer, service, rolename, workspace)
+            values (%s, %s, %s, %s, %s, %s, %s);
+            """,
+            (max_id + 1, max_priority + 1, 'ALLOW', layer, service, rolename, workspace )
+        )
+    conn.commit()
 
 
 def _update_geofence_rule(layer, workspace, service, user=None, group=None):
-    if settings.GEOFENCE_URL:
+    if USE_GEOFENCE_DIRECT_CONNECT:
         _update_geofence_rule_with_psycopg(layer, workspace, service, user, group)
     else:
         payload = _get_geofence_payload(

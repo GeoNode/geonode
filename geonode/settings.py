@@ -738,8 +738,8 @@ OGC_SERVER = {
         'PASSWORD': OGC_SERVER_DEFAULT_PASSWORD,
         'MAPFISH_PRINT_ENABLED': True,
         'PRINT_NG_ENABLED': True,
-        'GEONODE_SECURITY_ENABLED': True,
         'GEOFENCE_SECURITY_ENABLED': GEOFENCE_SECURITY_ENABLED,
+        'GEOFENCE_URL': os.getenv('GEOFENCE_URL', 'internal:/'),
         'GEOGIG_ENABLED': False,
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
@@ -1590,6 +1590,9 @@ GEOTIFF_IO_ENABLED = strtobool(
 GEOTIFF_IO_BASE_URL = os.getenv(
     'GEOTIFF_IO_BASE_URL', 'https://app.geotiff.io'
 )
+
+# Enable this if you want direct access to geofence (much faster) than via API
+# GEOFENCE_URL = 'postgresql://user:password@host:5432/geofence_db'
 
 # WorldMap settings
 USE_WORLDMAP = strtobool(os.getenv('USE_WORLDMAP', 'False'))
