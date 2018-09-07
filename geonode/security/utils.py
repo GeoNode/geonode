@@ -368,8 +368,8 @@ def _update_geofence_rule_with_psycopg(layer, workspace, service, user=None, gro
         cur = conn.cursor()
         cur.execute('select max(priority), max(id) from gf_rule;;')
         values = cur.fetchone()
-        max_priority = int(values[0])
-        max_id = int(values[1])
+        max_priority = int(values[0] or 0)
+        max_id = int(values[1] or 0)
         if user:
             cur.execute("""
                 insert into gf_rule (id, priority, grant_type, layer, service, username, workspace)
