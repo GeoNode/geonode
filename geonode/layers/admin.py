@@ -47,12 +47,13 @@ class LayerAdmin(MediaTranslationAdmin):
         'group',
         'is_approved',
         'is_published',
+        'featured',
         'metadata_completeness')
     list_display_links = ('id',)
-    list_editable = ('title', 'category', 'group', 'is_approved', 'is_published')
+    list_editable = ('title', 'category', 'group', 'is_approved', 'is_published', 'featured')
     list_filter = ('storeType', 'owner', 'category', 'group',
                    'restriction_code_type__identifier', 'date', 'date_type',
-                   'is_approved', 'is_published')
+                   'is_approved', 'is_published', 'featured')
     search_fields = ('alternate', 'title', 'abstract', 'purpose',
                      'is_approved', 'is_published',)
     filter_horizontal = ('contacts',)
