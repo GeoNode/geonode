@@ -789,7 +789,7 @@ Upgrade Development Environment
                 ------------------------------------------------------------------------
                 30       <filter>anonymous</filter>                                                                                                                                                                                                                                            +-
                 31     </filters>
-                32     <filters name="geofence-rest" class="org.geoserver.security.ServiceLoginFilterChain" interceptorName="restInterceptor" exceptionTranslationName="exception" path="/geofence/rest/**" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
+                32     <filters name="geofence-rest" class="org.geoserver.security.ServiceLoginFilterChain" interceptorName="restInterceptor" exceptionTranslationName="exception" path="/rest/geofence/**" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
                 33       <filter>basic</filter>
                 34       <filter>geonode-oauth2</filter>
                 35       <filter>anonymous</filter>
@@ -821,7 +821,7 @@ Upgrade Development Environment
                 18 /rest/monitor/*;GET=ROLE_ADMINISTRATOR                                                             +-
                 19 /rest/security/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
                 20 /rest/br/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
-                21 /geofence/rest/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
+                21 /rest/geofence/*;GET,POST,DELETE,PUT=ROLE_ADMINISTRATOR
                 ------------------------------------------------------------------------
                 ------------------------------------------------------------------------
                 23 /**;POST,DELETE,PUT=ROLE_AUTHENTICATED                                                             <> 4 /**;POST,DELETE,PUT=ROLE_ADMINISTRATOR
