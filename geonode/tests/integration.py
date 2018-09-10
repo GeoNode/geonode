@@ -1127,6 +1127,10 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
         layer.delete()
     """
 
+    def setUp(self):
+        super(GeoNodeLiveTestSupport, self).setUp()
+        settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
+
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_unpublished(self):
@@ -1153,10 +1157,10 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
             str_to_check = '<Name>geonode:san_andres_y_providencia_highway</Name>'
             request = urllib2.Request(url)
             response = urllib2.urlopen(request)
-            self.assertTrue(any(str_to_check in s for s in response.readlines()))
 
-            # by default the uploaded layer is
+            # by default the uploaded layer is published
             self.assertTrue(layer.is_published, True)
+            self.assertTrue(any(str_to_check in s for s in response.readlines()))
         finally:
             # Clean up and completely delete the layer
             layer.delete()
@@ -1363,6 +1367,10 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
     """
     port = 8005
 
+    def setUp(self):
+        super(GeoNodeLiveTestSupport, self).setUp()
+        settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
+
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_set_attributes_from_geoserver(self):
@@ -1416,6 +1424,10 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
     Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
     """
     port = 8006
+
+    def setUp(self):
+        super(GeoNodeLiveTestSupport, self).setUp()
+        settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
