@@ -201,8 +201,10 @@ class PermissionLevelMixin(object):
                             'change_layer_data', 'change_layer_style',
                             'add_layer', 'change_layer', 'delete_layer',):
                         assign_perm(perm, user, self.layer)
+                        assign_perm(perm, get_anonymous_user(), self.layer)
                     else:
                         assign_perm(perm, user, self.get_self_resource())
+                        assign_perm(perm, get_anonymous_user(), self.get_self_resource())
                 if GEOFENCE_SECURITY_ENABLED:
                     sync_geofence_with_guardian(self.layer, perms, user=user)
 
