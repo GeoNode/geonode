@@ -223,7 +223,6 @@ def map_view_wm(request, mapid, snapshot=None, layer_name=None, template='wm_ext
         config = map_obj.viewer_json(request)
     else:
         config = snapshot_config(snapshot, map_obj, request)
-
     if layer_name:
         config = add_layers_to_map_config(request, map_obj, (layer_name, ), False)
 
@@ -712,10 +711,12 @@ def gxp2wm(config, map_obj=None):
 
     # let's detect WM or HH layers and alter configuration as needed
     bbox = [-180, -90, 180, 90]
+    count = 0
     for layer_config in config['map']['layers']:
         is_wm = False
         is_hh = False
         if not 'source' in layer_config:
+            del config['map']['layers'][count]
             print 'Skipping this layer as it is missing source... %s' % layer_config
         else:
             source_id = layer_config['source']
@@ -736,26 +737,30 @@ def gxp2wm(config, map_obj=None):
                 layer_config['local'] = True
                 layer_config['queryable'] = True
                 alternate = layer_config['name']
-                layer = Layer.objects.get(alternate=alternate)
-                layer_config['attributes'] = (get_layer_attributes(layer))
-                # layer_config['url'] = layer.ows_url
-                layer_config['url'] = layer.ows_url.replace('ows', 'wms')
-                if 'styles' not in layer_config:
-                    if layer.default_style:
-                        layer_config['styles'] = [layer.default_style.name, ] # OK
-                    else:
-                        layer_config['styles'] = [layer.styles.all()[0].name, ]
-                else: # now styles is a list
-                    layer_config['styles'] = ast.literal_eval(layer_config['styles']) #[0]
-                if layer.category:
-                    group = layer.category.gn_description
-                layer_config["srs"] = getattr(
-                    settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
-                bbox = layer.bbox[:-1]
-                # WorldMap GXP use a different bbox representation than GeoNode
-                bbox = [bbox[0], bbox[2], bbox[1], bbox[3]]
-                layer_config["bbox"] = [float(coord) for coord in bbox] if layer_config["srs"] != 'EPSG:900913' \
-                    else llbbox_to_mercator([float(coord) for coord in bbox])
+                try:
+                    layer = Layer.objects.get(alternate=alternate)
+                    layer_config['attributes'] = (get_layer_attributes(layer))
+                    # layer_config['url'] = layer.ows_url
+                    layer_config['url'] = layer.ows_url.replace('ows', 'wms')
+                    if 'styles' not in layer_config:
+                        if layer.default_style:
+                            layer_config['styles'] = [layer.default_style.name, ] # OK
+                        else:
+                            layer_config['styles'] = [layer.styles.all()[0].name, ]
+                    else: # now styles is a list
+                        layer_config['styles'] = ast.literal_eval(layer_config['styles']) #[0]
+                    if layer.category:
+                        group = layer.category.gn_description
+                    layer_config["srs"] = getattr(
+                        settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
+                    bbox = layer.bbox[:-1]
+                    # WorldMap GXP use a different bbox representation than GeoNode
+                    bbox = [bbox[0], bbox[2], bbox[1], bbox[3]]
+                    layer_config["bbox"] = [float(coord) for coord in bbox] if layer_config["srs"] != 'EPSG:900913' \
+                        else llbbox_to_mercator([float(coord) for coord in bbox])
+                except Layer.DoesNotExist:
+                    del config['map']['layers'][count]
+                    print 'Skipping this layer as it is not existing in GeoNode... %s' % layer_config
             if is_hh:
                 layer_config['local'] = False
                 layer_config['styles'] = ''
@@ -781,9 +786,8 @@ def gxp2wm(config, map_obj=None):
                         is_in_topicarray = True
                 if not is_in_topicarray:
                     topicArray.append([group, group])
-
-                # ml = layers.filter(name=layer_config['name'])
-                #     layer_config['url'] = ml[0].ows_url
+        # next layer
+        count += 1
 
     config['map']['groups'] = []
     for group in groups:
