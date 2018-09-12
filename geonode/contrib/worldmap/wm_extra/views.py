@@ -711,19 +711,23 @@ def gxp2wm(config, map_obj=None):
 
     # let's detect WM or HH layers and alter configuration as needed
     bbox = [-180, -90, 180, 90]
-    count = 0
+    valid_layers = []
     for layer_config in config['map']['layers']:
+        is_valid = True
         is_wm = False
         is_hh = False
         if not 'source' in layer_config:
-            del config['map']['layers'][count]
+            is_valid = False
             print 'Skipping this layer as it is missing source... %s' % layer_config
         else:
             source_id = layer_config['source']
             source = config['sources'][source_id]
             if 'url' in source:
                 source_url = source['url']
+                # hack
+                source_url = source_url.replace('https', 'http')
                 if settings.GEOSERVER_PUBLIC_LOCATION in source_url:
+                    config['sources'][source_id]['url'] = source_url
                     if 'name' in layer_config:
                         is_wm = True
                 if 'registry/hypermap' in source_url:
@@ -737,18 +741,30 @@ def gxp2wm(config, map_obj=None):
                 layer_config['local'] = True
                 layer_config['queryable'] = True
                 alternate = layer_config['name']
+                layer = None
                 try:
                     layer = Layer.objects.get(alternate=alternate)
+                except Layer.DoesNotExist:
+                    is_valid = False
+                    print 'Skipping this layer as it is not existing in GeoNode... %s' % layer_config
+                if layer:
                     layer_config['attributes'] = (get_layer_attributes(layer))
-                    # layer_config['url'] = layer.ows_url
                     layer_config['url'] = layer.ows_url.replace('ows', 'wms')
                     if 'styles' not in layer_config:
                         if layer.default_style:
-                            layer_config['styles'] = [layer.default_style.name, ] # OK
+                            layer_config['styles'] = layer.default_style.name
+                            # layer_config['styles'] = [layer.default_style.name, ]
                         else:
-                            layer_config['styles'] = [layer.styles.all()[0].name, ]
-                    else: # now styles is a list
-                        layer_config['styles'] = ast.literal_eval(layer_config['styles']) #[0]
+                            if layer.styles.all().count() > 0:
+                                layer_config['styles'] = layer.styles.all()[0].name
+                                # layer_config['styles'] = [layer.styles.all()[0].name, ]
+                    else: # styles can be a list or a string
+                        if not type(layer_config['styles']) == unicode:
+                            layer_config['styles'] = ast.literal_eval(layer_config['styles'])
+                    print layer_config
+                    if 'styles' not in layer_config:
+                        is_valid = False
+                        print 'Skipping this layer as it has not a style... %s' % layer_config
                     if layer.category:
                         group = layer.category.gn_description
                     layer_config["srs"] = getattr(
@@ -758,9 +774,6 @@ def gxp2wm(config, map_obj=None):
                     bbox = [bbox[0], bbox[2], bbox[1], bbox[3]]
                     layer_config["bbox"] = [float(coord) for coord in bbox] if layer_config["srs"] != 'EPSG:900913' \
                         else llbbox_to_mercator([float(coord) for coord in bbox])
-                except Layer.DoesNotExist:
-                    del config['map']['layers'][count]
-                    print 'Skipping this layer as it is not existing in GeoNode... %s' % layer_config
             if is_hh:
                 layer_config['local'] = False
                 layer_config['styles'] = ''
@@ -786,8 +799,11 @@ def gxp2wm(config, map_obj=None):
                         is_in_topicarray = True
                 if not is_in_topicarray:
                     topicArray.append([group, group])
-        # next layer
-        count += 1
+        if is_valid:
+            valid_layers.append(layer_config)
+
+    config['map']['layers'] = valid_layers
+
 
     config['map']['groups'] = []
     for group in groups:
@@ -807,8 +823,9 @@ def gxp2wm(config, map_obj=None):
     # make sure if gnsource is in sources
     add_gnsource = True
     for source in config['sources']:
-        if config['sources'][source]['ptype'] == 'gxp_gnsource':
-            add_gnsource = False
+        if 'ptype' in config['sources'][source]:
+            if config['sources'][source]['ptype'] == 'gxp_gnsource':
+                add_gnsource = False
     if add_gnsource:
         config['sources']['wm'] = {
                                     'url': settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
