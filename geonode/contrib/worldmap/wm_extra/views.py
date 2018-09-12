@@ -752,15 +752,18 @@ def gxp2wm(config, map_obj=None):
                     layer_config['url'] = layer.ows_url.replace('ows', 'wms')
                     if 'styles' not in layer_config:
                         if layer.default_style:
-                            layer_config['styles'] = layer.default_style.name
-                            # layer_config['styles'] = [layer.default_style.name, ]
+                            #layer_config['styles'] = layer.default_style.name
+                            layer_config['styles'] = [layer.default_style.name, ]
                         else:
                             if layer.styles.all().count() > 0:
-                                layer_config['styles'] = layer.styles.all()[0].name
-                                # layer_config['styles'] = [layer.styles.all()[0].name, ]
+                                # layer_config['styles'] = layer.styles.all()[0].name
+                                layer_config['styles'] = [layer.styles.all()[0].name, ]
                     else: # styles can be a list or a string
-                        if not type(layer_config['styles']) == unicode:
-                            layer_config['styles'] = ast.literal_eval(layer_config['styles'])
+                        if type(layer_config['styles']) == unicode:
+                            try:
+                                layer_config['styles'] = ast.literal_eval(layer_config['styles'])
+                            except:
+                                layer_config['styles'] = [layer_config['styles'], ]
                     print layer_config
                     if 'styles' not in layer_config:
                         is_valid = False
