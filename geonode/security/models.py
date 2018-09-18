@@ -170,7 +170,6 @@ class PermissionLevelMixin(object):
         remove_object_permissions(self)
 
         set_owner_permissions(self)
-        print perm_spec
 
         # Anonymous User group
         if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
