@@ -329,7 +329,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
         if allowed:
             if user:
                 logger.debug("Adding to geofence the rule: %s %s %s" % (layer, service, user))
-                _update_geofence_rule(layer.name, layer.workspace, service, user=user.username)
+                _update_geofence_rule(layer.name, layer.workspace, service, user=user)
             else:
                 logger.debug("Adding to geofence the rule: %s %s *" % (layer, service))
                 _update_geofence_rule(layer.name, layer.workspace, service)
