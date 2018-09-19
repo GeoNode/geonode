@@ -17,7 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import six
+import ast
 import base64
 import copy
 import datetime
@@ -580,7 +581,8 @@ class GXPLayerBase(object):
         if self.opacity:
             cfg['opacity'] = self.opacity
         if self.styles:
-            cfg['styles'] = self.styles
+            cfg['styles'] = ast.literal_eval(self.styles) \
+                if isinstance(self.styles, six.string_types) else self.styles
         if self.transparent:
             cfg['transparent'] = True
 
