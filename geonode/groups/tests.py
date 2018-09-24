@@ -428,6 +428,24 @@ class SmokeTest(GeoNodeBaseTestSupport):
         response = self.client.get("/groups/group/bar/activity/")
         self.assertEqual(200, response.status_code)
         self.assertContains(response,
+                            'Layers',
+                            count=0,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
+        self.assertContains(response,
+                            'Maps',
+                            count=0,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
+        self.assertContains(response,
+                            'Documents',
+                            count=0,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
+        self.assertContains(response,
                             '<a href="/layers/geonode:CA">CA</a>',
                             count=0,
                             status_code=200,
