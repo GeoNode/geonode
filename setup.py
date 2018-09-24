@@ -46,6 +46,13 @@ setup(name='GeoNode',
       url='http://geonode.org',
       license='GPL',
       packages=find_packages(),
+      package_data = {
+        '': ['*.*'],
+        '': ['static/*.*'],
+        'static': ['*.*'],
+        '': ['templates/*.*'],
+        'templates': ['*.*'],
+      },
       include_package_data=True,
       install_requires=REQUIREMENTS,
       zip_safe=False

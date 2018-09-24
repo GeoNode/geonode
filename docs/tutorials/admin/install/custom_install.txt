@@ -571,8 +571,11 @@ Once edited (if necessary) run the ``./install.sh`` file with the following comm
     # call geonode binary django-admin.py create django super user
     $ geonode createsuperuser
 
-    # create the IP address to your address
-    $ sudo geonode-updateip youraddress
+    # create the IP address to your public address
+    $ sudo geonode-updateip -p yourpublicaddress
+
+    # if geoserver and geonode are not on the same machine then also add the local geonode address
+    $ sudo geonode-updateip -p yourpublicaddress -l yourlocaladdress
 
 
 GeoNode can now be accessed at http://localhost

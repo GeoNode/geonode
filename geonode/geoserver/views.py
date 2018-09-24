@@ -834,7 +834,7 @@ def get_capabilities(request, layerid=None, user=None,
                             "Error occurred creating GetCapabilities for %s: %s" %
                             (layer.typename, str(e)))
                         rootdoc = None
-                else:
+                if not layercap or not rootdoc:
                     # Get the required info from layer model
                     # TODO: store time dimension on DB also
                     tpl = get_template("geoserver/layer.xml")
