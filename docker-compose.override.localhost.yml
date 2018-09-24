@@ -1,0 +1,33 @@
+version: '2.2'
+
+services:
+  django:
+    build: .
+    # Loading the app is defined here to allow for
+    # autoreload on changes it is mounted on top of the
+    # old copy that docker added when creating the image
+    volumes:
+      - '.:/usr/src/app'
+    environment:
+      - DEBUG=True
+      - GEONODE_LB_HOST_IP=localhost
+      - GEONODE_LB_PORT=80
+      - SITEURL=http://localhost/
+      - ALLOWED_HOSTS=['localhost', ]
+      - GEOSERVER_PUBLIC_LOCATION=http://localhost/geoserver/
+
+  # celery:
+  #   build: .
+  #   # Loading the app is defined here to allow for
+  #   # autoreload on changes it is mounted on top of the
+  #   # old copy that docker added when creating the image
+  #   volumes:
+  #     - '.:/usr/src/app'
+  #   environment:
+  #     - DEBUG=True
+
+  geoserver:
+    environment:
+      - GEONODE_LB_HOST_IP=localhost
+      - GEONODE_LB_PORT=80
+  #    - NGINX_BASE_URL=

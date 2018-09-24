@@ -4,8 +4,8 @@ MAINTAINER GeoNode development team
 COPY requirements.txt /usr/src/app/
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt --upgrade
-RUN python manage.py makemigrations --noinput --settings=geonode.settings
-RUN python manage.py migrate --noinput --settings=geonode.settings
+RUN python manage.py makemigrations --settings=geonode.settings
+RUN python manage.py migrate --settings=geonode.settings
 
 EXPOSE 8000
 

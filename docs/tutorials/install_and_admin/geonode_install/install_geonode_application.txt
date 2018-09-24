@@ -76,7 +76,7 @@ First of all we need to prepare a new Python Virtual Environment:
 
 .. code-block:: bash
 
-    $ sudo apt install python-pip
+    $ sudo apt-get install python-pip
     $ pip install --upgrade pip
     $ pip install --user virtualenv
     $ pip install --user virtualenvwrapper

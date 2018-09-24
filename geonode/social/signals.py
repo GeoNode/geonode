@@ -96,6 +96,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
                                       updated_verb=_("updated a comment"),
                                       )
     action_settings['layer'].update(created_verb=_('uploaded'))
+    action_settings['document'].update(created_verb=_('uploaded'))
 
     action = action_settings[obj_type]
     if created:
@@ -150,6 +151,9 @@ if activity:
 
     signals.post_save.connect(activity_post_modify_object, sender=Map)
     signals.post_delete.connect(activity_post_modify_object, sender=Map)
+
+    signals.post_save.connect(activity_post_modify_object, sender=Document)
+    signals.post_delete.connect(activity_post_modify_object, sender=Document)
 
 
 def notification_post_save_resource(instance, sender, created, **kwargs):
