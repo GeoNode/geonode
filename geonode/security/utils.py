@@ -329,13 +329,15 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
         if allowed:
             if user:
                 logger.debug("Adding to geofence the rule: %s %s %s" % (layer, service, user))
-                _update_geofence_rule(layer.name, layer.workspace, service, user=user)
+                _user = user if isinstance(user, basestring) else user.username
+                _update_geofence_rule(layer.name, layer.workspace, service, user=_user)
             else:
                 logger.debug("Adding to geofence the rule: %s %s *" % (layer, service))
                 _update_geofence_rule(layer.name, layer.workspace, service)
             if group:
                 logger.debug("Adding to geofence the rule: %s %s %s" % (layer, service, user))
-                _update_geofence_rule(layer.name, layer.workspace, service, group=group.name)
+                _group = group if isinstance(group, basestring) else group.name
+                _update_geofence_rule(layer.name, layer.workspace, service, group=_group)
     set_geofence_invalidate_cache()
 
 
