@@ -21,7 +21,9 @@
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import json
+import logging
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
@@ -37,11 +39,26 @@ from geonode.layers.populate_layers_data import create_layer_data
 from geonode.groups.models import Group
 from geonode.utils import check_ogc_backend
 
+from .utils import (purge_geofence_all,
+                    get_users_with_perms,
+                    get_geofence_rules_count,
+                    set_geofence_all,
+                    sync_geofence_with_guardian)
+
+
+logger = logging.getLogger(__name__)
+
+
+def _log(msg, *args):
+    logger.info(msg, *args)
+
 
 class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(BulkPermissionsTests, self).setUp()
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
 
         self.user = 'admin'
         self.passwd = 'admin'
@@ -59,8 +76,16 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """Test that after restrict view permissions on two layers
         bobby is unable to see them"""
 
+        geofence_rules_count = 0
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            purge_geofence_all()
+            # Reset GeoFence Rules
+            geofence_rules_count = get_geofence_rules_count()
+            self.assertTrue(geofence_rules_count == 0)
+
         layers = Layer.objects.all()[:2].values_list('id', flat=True)
         layers_id = map(lambda x: str(x), layers)
+        test_perm_layer = Layer.objects.get(id=layers[0])
 
         self.client.login(username='admin', password='admin')
         resp = self.client.get(self.list_url)
@@ -71,11 +96,39 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         }
         resp = self.client.post(self.bulk_perms_url, data)
         self.assertHttpOK(resp)
+
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            # Check GeoFence Rules have been correctly created
+            geofence_rules_count = get_geofence_rules_count()
+            _log("1. geofence_rules_count: %s " % geofence_rules_count)
+            self.assertTrue(geofence_rules_count == 8)
+            set_geofence_all(test_perm_layer)
+            geofence_rules_count = get_geofence_rules_count()
+            _log("2. geofence_rules_count: %s " % geofence_rules_count)
+            self.assertTrue(geofence_rules_count == 9)
+
         self.client.logout()
 
         self.client.login(username='bobby', password='bob')
         resp = self.client.get(self.list_url)
         self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            perms = get_users_with_perms(test_perm_layer)
+            _log("3. perms: %s " % perms)
+            sync_geofence_with_guardian(test_perm_layer, perms, user='bobby')
+
+            # Check GeoFence Rules have been correctly created
+            geofence_rules_count = get_geofence_rules_count()
+            _log("4. geofence_rules_count: %s " % geofence_rules_count)
+            self.assertTrue(geofence_rules_count == 10)
+
+        geofence_rules_count = 0
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            purge_geofence_all()
+            # Reset GeoFence Rules
+            geofence_rules_count = get_geofence_rules_count()
+            self.assertTrue(geofence_rules_count == 0)
 
     def test_bobby_cannot_set_all(self):
         """Test that Bobby can set the permissions only only on the ones
@@ -117,6 +170,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(PermissionsTest, self).setUp()
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
 
         self.user = 'admin'
         self.passwd = 'admin'
@@ -197,7 +252,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # FIXME Test a comprehensive set of permissions specifications
 
         # Set the Permissions
-
         layer.set_permissions(self.perm_spec)
 
         # Test that the Permissions for anonymous user is are set
@@ -317,6 +371,13 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
     def test_not_superuser_permissions(self):
 
+        geofence_rules_count = 0
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            purge_geofence_all()
+            # Reset GeoFence Rules
+            geofence_rules_count = get_geofence_rules_count()
+            self.assertTrue(geofence_rules_count == 0)
+
         # grab bobby
         bob = get_user_model().objects.get(username='bobby')
 
@@ -420,6 +481,13 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                     layer))
             response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
             self.assertEquals(response.status_code, 200)
+
+        geofence_rules_count = 0
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            purge_geofence_all()
+            # Reset GeoFence Rules
+            geofence_rules_count = get_geofence_rules_count()
+            self.assertTrue(geofence_rules_count == 0)
 
     def test_anonymus_permissions(self):
 
