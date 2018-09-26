@@ -390,6 +390,12 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                 'change_resourcebase_permissions',
                 layer.get_self_resource()))
 
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            # Check GeoFence Rules have been correctly created
+            geofence_rules_count = get_geofence_rules_count()
+            _log("1. geofence_rules_count: %s " % geofence_rules_count)
+            self.assertTrue(geofence_rules_count == 1)
+
         self.assertTrue(self.client.login(username='bobby', password='bob'))
 
         # 1. view_resourcebase
@@ -454,6 +460,16 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                 layer.get_self_resource()))
         response = self.client.get(reverse('layer_metadata', args=(layer.alternate,)))
         self.assertEquals(response.status_code, 200)
+
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            perms = get_users_with_perms(layer)
+            _log("2. perms: %s " % perms)
+            sync_geofence_with_guardian(layer, perms, user=bob, group=anonymous_group)
+
+            # Check GeoFence Rules have been correctly created
+            geofence_rules_count = get_geofence_rules_count()
+            _log("3. geofence_rules_count: %s " % geofence_rules_count)
+            self.assertTrue(geofence_rules_count == 3)
 
         # 5. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions
