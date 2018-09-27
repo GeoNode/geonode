@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('geonode_client', '0001_initial'),
+        ('geonode_themes', '0001_initial'),
     ]
 
     operations = [
@@ -33,6 +33,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='partners',
-            field=models.ManyToManyField(related_name='partners', to='geonode_client.Partner', blank=True),
+            field=models.ManyToManyField(related_name='partners', to='geonode_themes.Partner', blank=True),
         ),
     ]

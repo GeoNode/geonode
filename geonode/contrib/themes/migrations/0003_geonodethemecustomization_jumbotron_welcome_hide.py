@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('geonode_client', '0002_auto_20180412_1039'),
+        ('geonode_themes', '0002_auto_20180412_1039'),
     ]
 
     operations = [
