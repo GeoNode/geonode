@@ -18,4 +18,5 @@
 #
 #########################################################################
 
+
 default_app_config = "geonode.contrib.themes.apps.AppConfig"
