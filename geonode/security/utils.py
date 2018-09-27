@@ -203,7 +203,6 @@ def purge_geofence_all():
             r = requests.get(url + 'rest/geofence/rules.json',
                              headers=headers,
                              auth=HTTPBasicAuth(user, passwd))
-
             if (r.status_code < 200 or r.status_code > 201):
                 logger.warning("Could not Retrieve GeoFence Rules")
             else:
@@ -211,7 +210,7 @@ def purge_geofence_all():
                     rules_objs = json.loads(r.text)
                     rules_count = rules_objs['count']
                     rules = rules_objs['rules']
-                    if rules_count > 1:
+                    if rules_count > 0:
                         # Delete GeoFence Rules associated to the Layer
                         # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
                         for i, rule in enumerate(rules):
@@ -329,13 +328,15 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
         if allowed:
             if user:
                 logger.debug("Adding to geofence the rule: %s %s %s" % (layer, service, user))
-                _update_geofence_rule(layer.name, layer.workspace, service, user=user)
+                _user = user if isinstance(user, basestring) else user.username
+                _update_geofence_rule(layer.name, layer.workspace, service, user=_user)
             else:
                 logger.debug("Adding to geofence the rule: %s %s *" % (layer, service))
                 _update_geofence_rule(layer.name, layer.workspace, service)
             if group:
                 logger.debug("Adding to geofence the rule: %s %s %s" % (layer, service, user))
-                _update_geofence_rule(layer.name, layer.workspace, service, group=group.name)
+                _group = group if isinstance(group, basestring) else group.name
+                _update_geofence_rule(layer.name, layer.workspace, service, group=_group)
     set_geofence_invalidate_cache()
 
 
