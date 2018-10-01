@@ -161,7 +161,7 @@ def get_users_with_perms(obj):
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def get_geofence_rules_count():
-    """invalidate GeoFence Cache Rules"""
+    """Get the number of available GeoFence Cache Rules"""
     try:
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
@@ -181,6 +181,36 @@ def get_geofence_rules_count():
         rules_objs = json.loads(r.text)
         rules_count = rules_objs['count']
         return int(rules_count)
+    except BaseException:
+        tb = traceback.format_exc()
+        logger.debug(tb)
+        return -1
+
+
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
+def get_highest_priority():
+    """Get the highest Rules priority"""
+    try:
+        rules_count = get_geofence_rules_count()
+
+        url = settings.OGC_SERVER['default']['LOCATION']
+        user = settings.OGC_SERVER['default']['USER']
+        passwd = settings.OGC_SERVER['default']['PASSWORD']
+        # Check first that the rules does not exist already
+        """
+        curl -X GET -u admin:geoserver \
+              http://<host>:<port>/geoserver/rest/geofence/rules.json?page=(count-1)&entries=1
+        """
+        headers = {'Content-type': 'application/json'}
+        r = requests.get(url + 'rest/geofence/rules.json?page=' + str(rules_count-1) + '&entries=1',
+                         headers=headers,
+                         auth=HTTPBasicAuth(user, passwd))
+        if (r.status_code < 200 or r.status_code > 201):
+            logger.warning("Could not retrieve GeoFence Rules count.")
+
+        rules_objs = json.loads(r.text)
+        highest_priority = rules_objs['rules'][0]['priority']
+        return int(highest_priority)
     except BaseException:
         tb = traceback.format_exc()
         logger.debug(tb)
@@ -455,13 +485,13 @@ def _get_layer_workspace(layer):
 
 def _get_geofence_payload(layer, workspace, access, user=None, group=None,
                           service=None):
-    rules_count = get_geofence_rules_count()
+    highest_priority = get_highest_priority()
     root_el = etree.Element("Rule")
     if user is not None:
         username_el = etree.SubElement(root_el, "userName")
         username_el.text = user
     priority_el = etree.SubElement(root_el, "priority")
-    priority_el.text = str(rules_count - 1 if rules_count > 0 else 0)
+    priority_el.text = str(highest_priority if highest_priority >= 0 else 0)
     if group is not None:
         role_el = etree.SubElement(root_el, "roleName")
         role_el.text = "ROLE_{}".format(group.upper())
