@@ -37,6 +37,7 @@ from tastypie import http
 from tastypie.exceptions import BadRequest
 
 from geonode import qgis_server, geoserver
+from geonode.api.paginator import CrossSiteXHRPaginator
 from geonode.api.authorization import GeoNodeStyleAuthorization
 from geonode.qgis_server.models import QGISServerStyle
 from guardian.shortcuts import get_objects_for_user
@@ -520,6 +521,7 @@ class QGISStyleResource(ModelResource):
     type = fields.CharField(attribute='type')
 
     class Meta:
+        paginator_class = CrossSiteXHRPaginator
         queryset = QGISServerStyle.objects.all()
         resource_name = 'styles'
         detail_uri_name = 'id'
@@ -699,6 +701,7 @@ class GeoserverStyleResource(ModelResource):
     type = fields.CharField(attribute='type')
 
     class Meta:
+        paginator_class = CrossSiteXHRPaginator
         queryset = Style.objects.all()
         resource_name = 'styles'
         detail_uri_name = 'id'
