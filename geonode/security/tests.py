@@ -42,6 +42,7 @@ from geonode.utils import check_ogc_backend
 from .utils import (purge_geofence_all,
                     get_users_with_perms,
                     get_geofence_rules_count,
+                    get_highest_priority,
                     set_geofence_all,
                     sync_geofence_with_guardian)
 
@@ -122,6 +123,11 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             geofence_rules_count = get_geofence_rules_count()
             _log("4. geofence_rules_count: %s " % geofence_rules_count)
             self.assertTrue(geofence_rules_count == 10)
+
+            # Validate maximum priority
+            geofence_rules_highest_priority = get_highest_priority()
+            _log("5. geofence_rules_highest_priority: %s " % geofence_rules_highest_priority)
+            self.assertTrue(geofence_rules_highest_priority == (geofence_rules_count - 1))
 
         geofence_rules_count = 0
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
