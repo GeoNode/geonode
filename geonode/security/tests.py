@@ -359,9 +359,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                 'change_resourcebase',
                 layer.get_self_resource()))
 
-        # TODO Much more to do here once jj0hns0n understands the ACL system
-        # better
-
         # Test with a Map object
         # TODO
 
