@@ -183,7 +183,9 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             r = requests.get(url + 'gwc/rest/seed/%s.json' % saved_layer.alternate,
                              auth=HTTPBasicAuth(user, passwd))
             self.assertEquals(r.status_code, 200)
-            self.assertEquals(r.text, '{"long-array-array":[]}')
+            o = json.loads(r.text)
+            self.assertTrue('long-array-array' in o)
+            self.assertTrue(len(o['long-array-array']) > 0)
         try:
             saved_layer.set_default_permissions()
             url = reverse('layer_metadata', args=[saved_layer.service_typename])
