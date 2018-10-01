@@ -323,6 +323,7 @@ GEONODE_CONTRIB_APPS = (
     'geonode.contrib.metadataxsl',
     'geonode.contrib.api_basemaps',
     'geonode.contrib.ows_api',
+    'geonode.contrib.themes',
 )
 
 # Uncomment the following line to enable contrib apps

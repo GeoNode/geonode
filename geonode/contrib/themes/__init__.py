@@ -17,15 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.apps import AppConfig as BaseAppConfig
-from django.utils.translation import ugettext_lazy as _
 
 
-class AppConfig(BaseAppConfig):
-
-    name = "geonode.client"
-    label = "geonode_client"
-    verbose_name = _("GeoNode Client Library")
-
-    def ready(self):
-        super(AppConfig, self).ready()
+default_app_config = "geonode.contrib.themes.apps.AppConfig"

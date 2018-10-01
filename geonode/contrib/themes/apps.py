@@ -23,9 +23,11 @@ from django.utils.translation import ugettext_lazy as _
 
 class AppConfig(BaseAppConfig):
 
-    name = "geonode.client"
-    label = "geonode_client"
-    verbose_name = _("GeoNode Client Library")
+    name = "geonode.contrib.themes"
+    label = "geonode_themes"
+    verbose_name = _("GeoNode Client Library - Themes")
 
     def ready(self):
+        """Connect relevant signals to their corresponding handlers"""
+        from .signals import (deactivate_theme_signal)  # noqa
         super(AppConfig, self).ready()
