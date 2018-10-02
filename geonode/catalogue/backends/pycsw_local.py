@@ -52,7 +52,8 @@ CONFIGURATION = {
     },
     'repository': {
         'source': 'geonode.catalogue.backends.pycsw_plugin.GeoNodeRepository',
-        'filter': 'is_published = %s and dirty_state = %s ' % (true_value, false_value),
+        # 'filter': 'is_published = %s and dirty_state = %s ' % (true_value, false_value),
+        'filter': 'is_published = %s' % true_value,
         'mappings': os.path.join(os.path.dirname(__file__), 'pycsw_local_mappings.py')
     }
 }

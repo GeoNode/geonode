@@ -1392,8 +1392,7 @@ if DELAYED_SECURITY_SIGNALS:
     CELERY_BEAT_SCHEDULE = {
         'send-summary-every-hour': {
             'task': 'geonode.security.tasks.synch_guardian',
-            # 'schedule': crontab(minute='*/6'),
-            'schedule': crontab(minute='*/1'),
+            'schedule': crontab(minute='*/10'),
         }
     }
 
