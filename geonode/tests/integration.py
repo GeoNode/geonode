@@ -1501,7 +1501,8 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             layernode = layernodes[0]
 
             self.assertEquals(1, len(layernodes))
-            self.assertEquals(layernode.find('wms:Name', namespaces).text, layer1.name)
+            self.assertEquals(layernode.find('wms:Name', namespaces).text,
+                              '%s:%s' % ('geonode', layer1.name))
 
             # 1. test capabilities_user
             url = reverse('capabilities_user', args=[norman.username])
@@ -1516,9 +1517,9 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             # the norman two layers are named layer1 and layer2
             count = 0
             for layernode in layernodes:
-                if layernode.find('wms:Name', namespaces).text == layer1.name:
+                if layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer1.name):
                     count += 1
-                elif layernode.find('wms:Name', namespaces).text == layer2.name:
+                elif layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer2.name):
                     count += 1
             self.assertEquals(1, count)
 
@@ -1535,9 +1536,9 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             # the layers for category are named layer1 and layer3
             count = 0
             for layernode in layernodes:
-                if layernode.find('wms:Name', namespaces).text == layer1.name:
+                if layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer1.name):
                     count += 1
-                elif layernode.find('wms:Name', namespaces).text == layer3.name:
+                elif layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer3.name):
                     count += 1
             self.assertEquals(1, count)
 
