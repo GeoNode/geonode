@@ -22,6 +22,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
 import math
+from django.conf import settings
 from django.test import override_settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
@@ -48,6 +49,37 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
 
     def tearDown(self):
         pass
+
+    # Contrib Apps #
+
+    def test_default_contrib_apps_loaded(self):
+        if 'geonode.contrib.metadataxsl' in settings.INSTALLED_APPS:
+            try:
+                import geonode.contrib.metadataxsl  # noqa
+                self.assertTrue(True)
+            except BaseException:
+                self.assertTrue(False)
+
+        if 'geonode.contrib.api_basemaps' in settings.INSTALLED_APPS:
+            try:
+                import geonode.contrib.api_basemaps  # noqa
+                self.assertTrue(True)
+            except BaseException:
+                self.assertTrue(False)
+
+        if 'geonode.contrib.ows_api' in settings.INSTALLED_APPS:
+            try:
+                import geonode.contrib.ows_api  # noqa
+                self.assertTrue(True)
+            except BaseException:
+                self.assertTrue(False)
+
+        if 'geonode.contrib.themes' in settings.INSTALLED_APPS:
+            try:
+                import geonode.contrib.themes  # noqa
+                self.assertTrue(True)
+            except BaseException:
+                self.assertTrue(False)
 
     # Basic Pages #
 

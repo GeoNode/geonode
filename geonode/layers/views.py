@@ -211,7 +211,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 else:
                     saved_layer = Layer.objects.get(alternate=title)
                     if not saved_layer:
-                        msg = 'Failed to process.  Could not find matching layer.'
+                        msg = 'Failed to process. Could not find matching layer.'
                         raise Exception(msg)
                     sld = open(base_file).read()
                     set_layer_style(saved_layer, title, base_file, sld)

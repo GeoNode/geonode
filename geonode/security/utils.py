@@ -114,7 +114,7 @@ def get_visible_resources(queryset,
                     Q(is_published=False) & ~(
                         Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
             else:
-                filter_set = filter_set.exclude(is_published=False)
+                filter_set = filter_set.exclude(Q(is_published=False))
 
     if private_groups_not_visibile:
         if not is_admin:
@@ -125,6 +125,15 @@ def get_visible_resources(queryset,
                         Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
             else:
                 filter_set = filter_set.exclude(group__in=private_groups)
+
+    # Hide Dirty State Resources
+    if not is_admin:
+        if user:
+            filter_set = filter_set.exclude(
+                Q(dirty_state=True) & ~(
+                    Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
+        else:
+            filter_set = filter_set.exclude(Q(dirty_state=True))
 
     return filter_set
 
@@ -277,9 +286,39 @@ def set_geofence_invalidate_cache():
 
             if (r.status_code < 200 or r.status_code > 201):
                 logger.warning("Could not Invalidate GeoFence Rules.")
+                return False
+            return True
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
+            return False
+
+
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
+def set_geowebcache_invalidate_cache(layer_alternate):
+    """invalidate GeoWebCache Cache Rules"""
+    try:
+        url = settings.OGC_SERVER['default']['LOCATION']
+        user = settings.OGC_SERVER['default']['USER']
+        passwd = settings.OGC_SERVER['default']['PASSWORD']
+        # Check first that the rules does not exist already
+        """
+        curl -v -u admin:geoserver \
+            -H "Content-type: text/xml" \
+            -d "<truncateLayer><layerName>{layer_alternate}</layerName></truncateLayer>" \
+            http://localhost:8080/geoserver/gwc/rest/masstruncate
+        """
+        headers = {'Content-type': 'text/xml'}
+        payload = "<truncateLayer><layerName>%s</layerName></truncateLayer>" % layer_alternate
+        r = requests.post(url + 'gwc/rest/masstruncate',
+                          headers=headers,
+                          data=payload,
+                          auth=HTTPBasicAuth(user, passwd))
+        if (r.status_code < 200 or r.status_code > 201):
+            logger.warning("Could not Truncate GWC Cache for Layer '%s'." % layer_alternate)
+    except Exception:
+        tb = traceback.format_exc()
+        logger.debug(tb)
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -337,7 +376,10 @@ def set_geofence_all(instance):
         tb = traceback.format_exc()
         logger.debug(tb)
     finally:
-        set_geofence_invalidate_cache()
+        if not settings.DELAYED_SECURITY_SIGNALS:
+            set_geofence_invalidate_cache()
+        else:
+            resource.set_dirty_state()
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -367,7 +409,10 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
                 logger.debug("Adding to geofence the rule: %s %s %s" % (layer, service, user))
                 _group = group if isinstance(group, basestring) else group.name
                 _update_geofence_rule(layer.name, layer.workspace, service, group=_group)
-    set_geofence_invalidate_cache()
+    if not settings.DELAYED_SECURITY_SIGNALS:
+        set_geofence_invalidate_cache()
+    else:
+        layer.set_dirty_state()
 
 
 def set_owner_permissions(resource):
@@ -444,7 +489,10 @@ def remove_object_permissions(instance):
             tb = traceback.format_exc()
             logger.debug(tb)
         finally:
-            set_geofence_invalidate_cache()
+            if not settings.DELAYED_SECURITY_SIGNALS:
+                set_geofence_invalidate_cache()
+            else:
+                resource.set_dirty_state()
 
     UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
                                         object_pk=instance.id).delete()
