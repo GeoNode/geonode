@@ -722,14 +722,13 @@ def layer_acls(request):
 
 
 # capabilities
-def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=False):
+def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=False):
     """
     Retrieve a layer-specific GetCapabilities document
     """
     workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
     if not layer.remote_service:
-        # TODO implement this for 1.3.0 too
-        wms_url = '%s%s/%s/ows?service=wms&version=%s&request=GetCapabilities'\
+        wms_url = '%s%s/%s/wms?service=wms&version=%s&request=GetCapabilities'\
             % (ogc_server_settings.LOCATION, workspace, layername, version)
         if access_token:
             wms_url += ('&access_token=%s' % access_token)
@@ -739,7 +738,6 @@ def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=F
 
     http = httplib2.Http()
     response, getcap = http.request(wms_url)
-    # TODO this is to bypass an actual bug of GeoServer 2.12.x
     if tolerant and ('ServiceException' in getcap or response.status == 404):
         # WARNING Please make sure to have enabled DJANGO CACHE as per
         # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
@@ -754,18 +752,19 @@ def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=F
     return getcap
 
 
-def format_online_resource(workspace, layer, element):
+def format_online_resource(workspace, layer, element, namespaces):
     """
     Replace workspace/layer-specific OnlineResource links with the more
     generic links returned by a site-wide GetCapabilities document
     """
-    layerName = element.find('.//Name')
-    if not layerName:
+    layerName = element.find('.//wms:Capability/wms:Layer/wms:Layer/wms:Name',
+                             namespaces)
+    if layerName is None:
         return
 
     layerName.text = workspace + ":" + layer if workspace else layer
-    layerresources = element.findall('.//OnlineResource')
-    if not layerresources:
+    layerresources = element.findall('.//wms:OnlineResource', namespaces)
+    if layerresources is None:
         return
 
     for resource in layerresources:
@@ -820,13 +819,16 @@ def get_capabilities(request, layerid=None, user=None,
                                                   tolerant=tolerant)
                 if layercap:  # 1st one, seed with real GetCapabilities doc
                     try:
+                        namespaces = {'wms': 'http://www.opengis.net/wms',
+                                      'xlink': 'http://www.w3.org/1999/xlink',
+                                      'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
                         layercap = etree.fromstring(layercap)
                         rootdoc = etree.ElementTree(layercap)
-                        format_online_resource(workspace, layername, rootdoc)
-                        service_name = rootdoc.find('.//Service/Name')
+                        format_online_resource(workspace, layername, rootdoc, namespaces)
+                        service_name = rootdoc.find('.//wms:Service/wms:Name', namespaces)
                         if service_name:
                             service_name.text = cap_name
-                        rootdoc = rootdoc.find('.//Capability/Layer/Layer')
+                        rootdoc = rootdoc.find('.//wms:Capability/wms:Layer/wms:Layer', namespaces)
                     except Exception as e:
                         import traceback
                         traceback.print_exc()
