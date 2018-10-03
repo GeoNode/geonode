@@ -44,6 +44,7 @@ from .utils import (purge_geofence_all,
                     get_geofence_rules_count,
                     get_highest_priority,
                     set_geofence_all,
+                    set_geowebcache_invalidate_cache,
                     sync_geofence_with_guardian)
 
 
@@ -128,6 +129,19 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             geofence_rules_highest_priority = get_highest_priority()
             _log("5. geofence_rules_highest_priority: %s " % geofence_rules_highest_priority)
             self.assertTrue(geofence_rules_highest_priority == (geofence_rules_count - 1))
+
+            # Try GWC Invalidation
+            # - it should not work here since the layer has not been uploaded to GeoServer
+            set_geowebcache_invalidate_cache(test_perm_layer.alternate)
+            url = settings.OGC_SERVER['default']['LOCATION']
+            user = settings.OGC_SERVER['default']['USER']
+            passwd = settings.OGC_SERVER['default']['PASSWORD']
+
+            import requests
+            from requests.auth import HTTPBasicAuth
+            r = requests.get(url + 'gwc/rest/seed/%s.json' % test_perm_layer.alternate,
+                             auth=HTTPBasicAuth(user, passwd))
+            self.assertEquals(r.status_code, 400)
 
         geofence_rules_count = 0
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -358,9 +372,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             layer.owner.has_perm(
                 'change_resourcebase',
                 layer.get_self_resource()))
-
-        # TODO Much more to do here once jj0hns0n understands the ACL system
-        # better
 
         # Test with a Map object
         # TODO

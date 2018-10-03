@@ -33,10 +33,12 @@ env:
     ON_TRAVIS: 'True'
     TEST_RUN_CORE: 'True'
     MONITORING_ENABLED: 'False'
+    CODECOV_TOKEN: 2c0e7780-1640-45f0-93a3-e103b057d8c8
   - BACKEND: 'geonode.geoserver'
     ON_TRAVIS: 'True'
     TEST_RUN_INTERNAL_APPS: 'True'
     MONITORING_ENABLED: 'False'
+    CODECOV_TOKEN: 2c0e7780-1640-45f0-93a3-e103b057d8c8
   - BACKEND: 'geonode.geoserver'
     DOCKER_COMPOSE_VERSION: 1.19.0
     # This is GeoServer server address
@@ -46,6 +48,7 @@ env:
     TEST_RUN_INTEGRATION: 'True'
     MONITORING_ENABLED: 'False'
     CELERY_ALWAYS_EAGER: 'True'
+    CODECOV_TOKEN: 2c0e7780-1640-45f0-93a3-e103b057d8c8
   - BACKEND: 'geonode.qgis_server'
     DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
     DOCKER_COMPOSE_VERSION: 1.19.0
@@ -59,6 +62,7 @@ env:
     TEST_RUN_CORE: 'True'
     MONITORING_ENABLED: 'False'
     CELERY_ALWAYS_EAGER: 'True'
+    CODECOV_TOKEN: 2c0e7780-1640-45f0-93a3-e103b057d8c8
   - BACKEND: 'geonode.qgis_server'
     DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
     DOCKER_COMPOSE_VERSION: 1.19.0
@@ -72,6 +76,7 @@ env:
     TEST_RUN_INTERNAL_APPS: 'True'
     MONITORING_ENABLED: 'False'
     CELERY_ALWAYS_EAGER: 'True'
+    CODECOV_TOKEN: 2c0e7780-1640-45f0-93a3-e103b057d8c8
   - BACKEND: 'geonode.qgis_server'
     DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
     DOCKER_COMPOSE_VERSION: 1.19.0
@@ -85,6 +90,7 @@ env:
     TEST_RUN_INTEGRATION: 'True'
     MONITORING_ENABLED: 'False'
     CELERY_ALWAYS_EAGER: 'True'
+    CODECOV_TOKEN: 2c0e7780-1640-45f0-93a3-e103b057d8c8
 
 branches:
   only:
@@ -148,6 +154,7 @@ after_script:
 
 after_success:
   - codecov
+  - bash <(curl -s https://codecov.io/bash)
 
 notifications:
   irc:
