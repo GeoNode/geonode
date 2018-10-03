@@ -60,6 +60,10 @@ from .populate_layers_data import create_layer_data
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers import LayersAppConfig
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class LayersTest(GeoNodeBaseTestSupport):
 
@@ -167,6 +171,7 @@ class LayersTest(GeoNodeBaseTestSupport):
     def test_layer_bbox(self):
         lyr = Layer.objects.all().first()
         layer_bbox = lyr.bbox[0:4]
+        logger.info(layer_bbox)
 
         def decimal_encode(bbox):
             import decimal
@@ -181,11 +186,16 @@ class LayersTest(GeoNodeBaseTestSupport):
         from geonode.utils import bbox_to_projection
         projected_bbox = decimal_encode(
             bbox_to_projection([float(coord) for coord in layer_bbox] + [lyr.srid, ],
-                               target_srid=3857))
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.info(layer_bbox)
+                               target_srid=4326)[:4])
         logger.info(projected_bbox)
+        self.assertEquals(projected_bbox, [-180.0, -90.0, 180.0,90.0])
+        logger.info(lyr.ll_bbox)
+        self.assertEquals(lyr.ll_bbox, [-180.0, 180.0, -90.0, 90.0, u'EPSG:4326'])
+        projected_bbox = decimal_encode(
+            bbox_to_projection([float(coord) for coord in layer_bbox] + [lyr.srid, ],
+                               target_srid=3857)[:4])
+        logger.info(projected_bbox)
+        self.assertEquals(projected_bbox, [-19926188.852, -30240971.9584, 19926188.852, 30240971.9584])
 
     def test_layer_attributes_feature_catalogue(self):
         """ Test layer feature catalogue functionality
