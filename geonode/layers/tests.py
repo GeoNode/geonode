@@ -60,6 +60,10 @@ from .populate_layers_data import create_layer_data
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers import LayersAppConfig
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class LayersTest(GeoNodeBaseTestSupport):
 
@@ -123,6 +127,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         # Test redirection to login form when not logged in
         response = self.client.get(reverse('layer_upload'))
         self.assertEquals(response.status_code, 302)
+
         # Test return of upload form when logged in
         self.client.login(username="bobby", password="bob")
         response = self.client.get(reverse('layer_upload'))
@@ -162,6 +167,35 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(custom_attributes[1].stddev, "NA")
         self.assertEqual(custom_attributes[1].sum, "NA")
         self.assertEqual(custom_attributes[1].unique_values, "NA")
+
+    def test_layer_bbox(self):
+        lyr = Layer.objects.all().first()
+        layer_bbox = lyr.bbox[0:4]
+        logger.info(layer_bbox)
+
+        def decimal_encode(bbox):
+            import decimal
+            _bbox = []
+            for o in [float(coord) for coord in bbox]:
+                if isinstance(o, decimal.Decimal):
+                    o = (str(o) for o in [o])
+                _bbox.append(o)
+            # Must be in the form : [x0, x1, y0, y1
+            return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
+
+        from geonode.utils import bbox_to_projection
+        projected_bbox = decimal_encode(
+            bbox_to_projection([float(coord) for coord in layer_bbox] + [lyr.srid, ],
+                               target_srid=4326)[:4])
+        logger.info(projected_bbox)
+        self.assertEquals(projected_bbox, [-180.0, -90.0, 180.0,90.0])
+        logger.info(lyr.ll_bbox)
+        self.assertEquals(lyr.ll_bbox, [-180.0, 180.0, -90.0, 90.0, u'EPSG:4326'])
+        projected_bbox = decimal_encode(
+            bbox_to_projection([float(coord) for coord in layer_bbox] + [lyr.srid, ],
+                               target_srid=3857)[:4])
+        logger.info(projected_bbox)
+        self.assertEquals(projected_bbox, [-19926188.852, -30240971.9584, 19926188.852, 30240971.9584])
 
     def test_layer_attributes_feature_catalogue(self):
         """ Test layer feature catalogue functionality
