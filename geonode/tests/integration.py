@@ -168,6 +168,24 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             user=norman,
             overwrite=True,
         )
+
+        # Test that layer owner can wipe GWC Cache
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            from geonode.security.utils import set_geowebcache_invalidate_cache
+            set_geowebcache_invalidate_cache(saved_layer.alternate)
+
+            url = settings.OGC_SERVER['default']['LOCATION']
+            user = settings.OGC_SERVER['default']['USER']
+            passwd = settings.OGC_SERVER['default']['PASSWORD']
+
+            import requests
+            from requests.auth import HTTPBasicAuth
+            r = requests.get(url + 'gwc/rest/seed/%s.json' % saved_layer.alternate,
+                             auth=HTTPBasicAuth(user, passwd))
+            self.assertEquals(r.status_code, 200)
+            o = json.loads(r.text)
+            self.assertTrue('long-array-array' in o)
+            self.assertTrue(len(o['long-array-array']) > 0)
         try:
             saved_layer.set_default_permissions()
             url = reverse('layer_metadata', args=[saved_layer.service_typename])
