@@ -188,7 +188,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             bbox_to_projection([float(coord) for coord in layer_bbox] + [lyr.srid, ],
                                target_srid=4326)[:4])
         logger.info(projected_bbox)
-        self.assertEquals(projected_bbox, [-180.0, -90.0, 180.0,90.0])
+        self.assertEquals(projected_bbox, [-180.0, -90.0, 180.0, 90.0])
         logger.info(lyr.ll_bbox)
         self.assertEquals(lyr.ll_bbox, [-180.0, 180.0, -90.0, 90.0, u'EPSG:4326'])
         projected_bbox = decimal_encode(

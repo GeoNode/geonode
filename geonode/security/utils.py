@@ -322,33 +322,6 @@ def set_geowebcache_invalidate_cache(layer_alternate):
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def set_geowebcache_invalidate_cache(layer_alternate):
-    """invalidate GeoWebCache Cache Rules"""
-    try:
-        url = settings.OGC_SERVER['default']['LOCATION']
-        user = settings.OGC_SERVER['default']['USER']
-        passwd = settings.OGC_SERVER['default']['PASSWORD']
-        # Check first that the rules does not exist already
-        """
-        curl -v -u admin:geoserver \
-            -H "Content-type: text/xml" \
-            -d "<truncateLayer><layerName>{layer_alternate}</layerName></truncateLayer>" \
-            http://localhost:8080/geoserver/gwc/rest/masstruncate
-        """
-        headers = {'Content-type': 'text/xml'}
-        payload = "<truncateLayer><layerName>%s</layerName></truncateLayer>" % layer_alternate
-        r = requests.post(url + 'gwc/rest/masstruncate',
-                          headers=headers,
-                          data=payload,
-                          auth=HTTPBasicAuth(user, passwd))
-        if (r.status_code < 200 or r.status_code > 201):
-            logger.warning("Could not Truncate GWC Cache for Layer '%s'." % layer_alternate)
-    except Exception:
-        tb = traceback.format_exc()
-        logger.debug(tb)
-
-
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def set_geofence_all(instance):
     """assign access permissions to all users
 
