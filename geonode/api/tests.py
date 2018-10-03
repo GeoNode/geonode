@@ -111,7 +111,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             self.api_client.client.login(username='bobby', password='bob')
             resp = self.api_client.get(self.list_url)
-            self.assertEquals(len(self.deserialize(resp)['objects']), 2)
+            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
 
             self.api_client.client.login(username=self.user, password=self.passwd)
             resp = self.api_client.get(self.list_url)

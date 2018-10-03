@@ -164,6 +164,29 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(custom_attributes[1].sum, "NA")
         self.assertEqual(custom_attributes[1].unique_values, "NA")
 
+    def test_layer_bbox(self):
+        lyr = Layer.objects.all().first()
+        layer_bbox = lyr.bbox[0:4]
+
+        def decimal_encode(bbox):
+            import decimal
+            _bbox = []
+            for o in [float(coord) for coord in bbox]:
+                if isinstance(o, decimal.Decimal):
+                    o = (str(o) for o in [o])
+                _bbox.append(o)
+            # Must be in the form : [x0, x1, y0, y1
+            return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
+
+        from geonode.utils import bbox_to_projection
+        projected_bbox = decimal_encode(
+            bbox_to_projection([float(coord) for coord in layer_bbox] + [lyr.srid, ],
+                               target_srid=3857))
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(layer_bbox)
+        logger.info(projected_bbox)
+
     def test_layer_attributes_feature_catalogue(self):
         """ Test layer feature catalogue functionality
         """
