@@ -1385,16 +1385,15 @@ from celery.schedules import crontab
 #          'schedule': crontab(hour=16, day_of_week=5),
 #     },
 # }
-DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'True'))
-if DELAYED_SECURITY_SIGNALS:
-    CELERY_ENABLE_UTC = True
-    CELERY_TIMEZONE = TIME_ZONE
-    CELERY_BEAT_SCHEDULE = {
-        'send-summary-every-hour': {
-            'task': 'geonode.security.tasks.synch_guardian',
-            'schedule': crontab(minute='*/10'),
-        }
+DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
+CELERY_ENABLE_UTC = True
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULE = {
+    'send-summary-every-hour': {
+        'task': 'geonode.security.tasks.synch_guardian',
+        'schedule': crontab(minute='*/10'),
     }
+}
 
 # Half a day is enough
 CELERY_TASK_RESULT_EXPIRES = 43200

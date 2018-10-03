@@ -83,3 +83,4 @@ geonode\.tests\.bdd\.e2e\.test_login/
 *.log
 
 /celerybeat.pid
+/celerybeat-schedule
