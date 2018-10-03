@@ -29,4 +29,6 @@ urlpatterns = [  # 'geonode.security.views',
         views.set_bulk_permissions, name='bulk_permissions'),
     url(r'^request-permissions/?$',
         views.request_permissions, name='request_permissions'),
+    url(r'^invalidate_tiledlayer_cache/?$',
+        views.invalidate_tiledlayer_cache, name='invalidate_tiledlayer_cache'),
 ]

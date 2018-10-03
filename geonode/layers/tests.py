@@ -123,6 +123,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         # Test redirection to login form when not logged in
         response = self.client.get(reverse('layer_upload'))
         self.assertEquals(response.status_code, 302)
+
         # Test return of upload form when logged in
         self.client.login(username="bobby", password="bob")
         response = self.client.get(reverse('layer_upload'))
