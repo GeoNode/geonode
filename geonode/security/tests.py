@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.info(msg, *args)
+    logger.debug(msg, *args)
 
 
 class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
@@ -644,8 +644,62 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertEquals(len(test_perm_layer.link_set.all()), 7)
 
             # Layer Manipulation
-            from geonode.geoserver.helpers import check_geoserver_is_up
+            import os
+            import gisdata
+            from geonode.geoserver.upload import geoserver_upload
+            from geonode.geoserver.signals import gs_catalog
+            from geonode.geoserver.helpers import (check_geoserver_is_up,
+                                                   get_sld_for,
+                                                   fixup_style,
+                                                   set_layer_style,
+                                                   get_store,
+                                                   set_attributes_from_geoserver,
+                                                   set_styles,
+                                                   create_gs_thumbnail,
+                                                   cleanup)
             check_geoserver_is_up()
+
+            admin_user = get_user_model().objects.get(username="admin")
+            saved_layer = geoserver_upload(
+                test_perm_layer,
+                os.path.join(
+                    gisdata.VECTOR_DATA,
+                    "san_andres_y_providencia_poi.shp"),
+                admin_user,
+                test_perm_layer.name,
+                overwrite=True
+            )
+
+            self.assertIsNotNone(saved_layer)
+            _log(saved_layer)
+            workspace, name = test_perm_layer.alternate.split(':')
+            self.assertIsNotNone(workspace)
+            self.assertIsNotNone(name)
+            ws = gs_catalog.get_workspace(workspace)
+            self.assertIsNotNone(ws)
+            store = get_store(gs_catalog, name, workspace=ws)
+            _log("1. ------------ %s " % store)
+            self.assertIsNotNone(store)
+
+            # Save layer attributes
+            set_attributes_from_geoserver(test_perm_layer)
+
+            # Save layer styles
+            set_styles(test_perm_layer, gs_catalog)
+
+            # set SLD
+            sld = test_perm_layer.default_style.sld_body if test_perm_layer.default_style else None
+            if sld:
+                _log("2. ------------ %s " % sld)
+                set_layer_style(test_perm_layer, test_perm_layer.alternate, sld)
+
+            fixup_style(gs_catalog, test_perm_layer.alternate, None)
+            self.assertIsNone(get_sld_for(gs_catalog, test_perm_layer))
+            _log("3. ------------ %s " % get_sld_for(gs_catalog, test_perm_layer))
+
+            create_gs_thumbnail(test_perm_layer, overwrite=True)
+            self.assertIsNotNone(test_perm_layer.get_thumbnail_url())
+            self.assertTrue(test_perm_layer.has_thumbnail())
 
             # Handle Layer Delete Signals
             geoserver_pre_delete(test_perm_layer, sender=Layer)
@@ -653,3 +707,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check instance has been removed from GeoServer also
             from geonode.geoserver.views import get_layer_capabilities
             self.assertIsNone(get_layer_capabilities(test_perm_layer))
+
+            # Cleaning Up
+            test_perm_layer.delete()
+            cleanup(test_perm_layer.name, test_perm_layer.uuid)
