@@ -82,6 +82,11 @@ LOGIN_URL = "/accounts/login/"
 
 logger = logging.getLogger(__name__)
 
+
+def _log(msg, *args):
+    logger.debug(msg, *args)
+
+
 # Reconnect post_save signals that is disconnected by populate_test_data
 reconnect_signals()
 
@@ -186,6 +191,45 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             o = json.loads(r.text)
             self.assertTrue('long-array-array' in o)
             self.assertTrue(len(o['long-array-array']) > 0)
+
+            from geonode.geoserver.helpers import (get_sld_for,
+                                                   fixup_style,
+                                                   set_layer_style,
+                                                   get_store,
+                                                   set_attributes_from_geoserver,
+                                                   set_styles,
+                                                   create_gs_thumbnail)
+
+            _log("0. ------------ %s " % saved_layer)
+            self.assertIsNotNone(saved_layer)
+            workspace, name = saved_layer.alternate.split(':')
+            self.assertIsNotNone(workspace)
+            self.assertIsNotNone(name)
+            ws = gs_catalog.get_workspace(workspace)
+            self.assertIsNotNone(ws)
+            store = get_store(gs_catalog, saved_layer.store, workspace=ws)
+            _log("1. ------------ %s " % store)
+            self.assertIsNotNone(store)
+
+            # Save layer attributes
+            set_attributes_from_geoserver(saved_layer)
+
+            # Save layer styles
+            set_styles(saved_layer, gs_catalog)
+
+            # set SLD
+            sld = saved_layer.default_style.sld_body if saved_layer.default_style else None
+            self.assertIsNotNone(sld)
+            _log("2. ------------ %s " % sld)
+            set_layer_style(saved_layer, saved_layer.alternate, sld)
+
+            fixup_style(gs_catalog, saved_layer.alternate, None)
+            self.assertIsNone(get_sld_for(gs_catalog, saved_layer))
+            _log("3. ------------ %s " % get_sld_for(gs_catalog, saved_layer))
+
+            create_gs_thumbnail(saved_layer, overwrite=True)
+            _log(saved_layer.get_thumbnail_url())
+            _log(saved_layer.has_thumbnail())
         try:
             saved_layer.set_default_permissions()
             url = reverse('layer_metadata', args=[saved_layer.service_typename])
@@ -194,6 +238,9 @@ class NormalUserTest(GeoNodeLiveTestSupport):
         finally:
             # Clean up and completely delete the layer
             saved_layer.delete()
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                from geonode.geoserver.helpers import cleanup
+                cleanup(saved_layer.name, saved_layer.uuid)
 
 
 @override_settings(SITEURL='http://localhost:8001/')

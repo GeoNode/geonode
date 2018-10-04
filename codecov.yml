@@ -31,3 +31,4 @@ ignore:
   - */test*
   - */wsgi*
   - */middleware*
+  - geonode/qgis_server/*

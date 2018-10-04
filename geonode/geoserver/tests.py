@@ -42,6 +42,9 @@ from geonode.geoserver.helpers import OGC_Servers_Handler, extract_name_from_sld
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.layers.models import Layer
 
+import logging
+logger = logging.getLogger(__name__)
+
 san_andres_y_providencia_sld = """<?xml version="1.0" encoding="UTF-8"?>
 <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -900,6 +903,99 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         # Make sure we get None vs a KeyError when the key does not exist
         self.assertIsNone(ogc_settings.SFDSDFDSF)
+
+        # Testing OWS endpoints
+        from urlparse import urljoin
+        from django.core.urlresolvers import reverse
+        from .ows import _wcs_get_capabilities, _wfs_get_capabilities, _wms_get_capabilities
+        wcs = _wcs_get_capabilities()
+        logger.debug(wcs)
+        self.assertIsNotNone(wcs)
+
+        try:
+            wcs_url = urljoin(settings.SITEURL, reverse('wcs_endpoint'))
+        except BaseException:
+            wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
+        self.assertEquals(wcs,
+                          '%s?version=2.0.1&request=GetCapabilities&service=WCS' % wcs_url)
+
+        wfs = _wfs_get_capabilities()
+        logger.debug(wfs)
+        self.assertIsNotNone(wfs)
+
+        try:
+            wfs_url = urljoin(settings.SITEURL, reverse('wfs_endpoint'))
+        except BaseException:
+            wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
+        self.assertEquals(wfs,
+                          '%s?version=1.1.0&request=GetCapabilities&service=WFS' % wfs_url)
+
+        wms = _wms_get_capabilities()
+        logger.debug(wms)
+        self.assertIsNotNone(wms)
+
+        try:
+            wms_url = urljoin(settings.SITEURL, reverse('wms_endpoint'))
+        except BaseException:
+            wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
+        self.assertEquals(wms,
+                          '%s?version=1.1.1&request=GetCapabilities&service=WMS' % wms_url)
+
+        # Test OWS Download Links
+        import urllib
+        from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
+        instance = Layer.objects.all()[0]
+        bbox = instance.bbox
+        srid = instance.srid
+        height = 512
+        width = 512
+
+        # WMS Links
+        wms_links = wms_links(ogc_settings.public_url + 'wms?',
+                              instance.alternate.encode('utf-8'),
+                              bbox,
+                              srid,
+                              height,
+                              width)
+        self.assertIsNotNone(wms_links)
+        self.assertEquals(len(wms_links), 3)
+        wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wms')
+        identifier = urllib.urlencode({'layers': instance.alternate.encode('utf-8')})
+        for _link in wms_links:
+            logger.debug('%s --> %s' % (wms_url, _link[3]))
+            self.assertTrue(wms_url in _link[3])
+            logger.debug('%s --> %s' % (identifier, _link[3]))
+            self.assertTrue(identifier in _link[3])
+
+        # WFS Links
+        wfs_links = wfs_links(ogc_settings.public_url + 'wfs?',
+                              instance.alternate.encode('utf-8'),
+                              bbox,
+                              srid)
+        self.assertIsNotNone(wfs_links)
+        self.assertEquals(len(wfs_links), 6)
+        wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wfs')
+        identifier = urllib.urlencode({'typename': instance.alternate.encode('utf-8')})
+        for _link in wfs_links:
+            logger.debug('%s --> %s' % (wfs_url, _link[3]))
+            self.assertTrue(wfs_url in _link[3])
+            logger.debug('%s --> %s' % (identifier, _link[3]))
+            self.assertTrue(identifier in _link[3])
+
+        # WCS Links
+        wcs_links = wcs_links(ogc_settings.public_url + 'wcs?',
+                              instance.alternate.encode('utf-8'),
+                              bbox,
+                              srid)
+        self.assertIsNotNone(wcs_links)
+        self.assertEquals(len(wcs_links), 2)
+        wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wcs')
+        identifier = urllib.urlencode({'coverageid': instance.alternate.encode('utf-8')})
+        for _link in wcs_links:
+            logger.debug('%s --> %s' % (wcs_url, _link[3]))
+            self.assertTrue(wcs_url in _link[3])
+            logger.debug('%s --> %s' % (identifier, _link[3]))
+            self.assertTrue(identifier in _link[3])
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_importer_configuration(self):
