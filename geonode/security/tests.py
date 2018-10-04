@@ -600,3 +600,56 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
         response = self.client.get(reverse('map_download', args=(the_map.id,)))
         self.assertTrue('Could not find downloadable layers for this map' in response.content)
+
+
+class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super(GisBackendSignalsTests, self).setUp()
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
+
+        self.user = 'admin'
+        self.passwd = 'admin'
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
+        self.bulk_perms_url = reverse('bulk_permissions')
+        all_public()
+        self.perm_spec = {
+            "users": {"admin": ["view_resourcebase"]}, "groups": {}}
+
+    def test_save_and_delete_signals(self):
+        """Test that GeoServer Signals methods work as espected"""
+
+        layers = Layer.objects.all()[:2].values_list('id', flat=True)
+        test_perm_layer = Layer.objects.get(id=layers[0])
+
+        self.client.login(username='admin', password='admin')
+
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            from geonode.geoserver.signals import (geoserver_pre_delete,
+                                                   geoserver_post_save,
+                                                   geoserver_post_save_local)
+            # Handle Layer Save and Upload Signals
+            geoserver_post_save(test_perm_layer, sender=Layer)
+            geoserver_post_save_local(test_perm_layer)
+
+            # Check instance bbox and links
+            self.assertIsNotNone(test_perm_layer.bbox)
+            self.assertIsNotNone(test_perm_layer.srid)
+            self.assertIsNotNone(test_perm_layer.link_set)
+            self.assertEquals(len(test_perm_layer.link_set.all()), 7)
+
+            # Layer Manipulation
+            from geonode.geoserver.helpers import check_geoserver_is_up
+            check_geoserver_is_up()
+
+            # Handle Layer Delete Signals
+            geoserver_pre_delete(test_perm_layer, sender=Layer)
+
+            # Check instance has been removed from GeoServer also
+            from geonode.geoserver.views import get_layer_capabilities
+            self.assertIsNone(get_layer_capabilities(test_perm_layer))
