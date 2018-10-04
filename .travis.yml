@@ -146,9 +146,9 @@ after_script:
   # Cleanup
   - paver reset_hard
 
-after_success:
-  - codecov
-  - bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8
+# after_success:
+  # - codecov
+  # - bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8
 
 notifications:
   # irc:
