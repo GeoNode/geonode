@@ -619,6 +619,15 @@ DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = strtobool(
     os.getenv('DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', 'True')
 )
 
+# Whether the remote resources should be public and downloadable by default
+# or not
+DEFAULT_ANONYMOUS_VIEW_PERMISSION_REMOTE = strtobool(
+    os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION_REMOTE', 'True')
+)
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION_REMOTE = strtobool(
+    os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION_REMOTE', 'True')
+)
+
 #
 # Settings for default search size
 #

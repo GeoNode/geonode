@@ -135,8 +135,16 @@ class PermissionLevelMixin(object):
             assign_perm('view_resourcebase',
                         anonymous_group, self.get_self_resource())
 
+        anonymous_can_view_remote = \
+            settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION_REMOTE
+        if anonymous_can_view_remote and hasattr(self, 'service'):
+            if self.service:
+                assign_perm('view_resourcebase',
+                            anonymous_group, self.get_self_resource())
+
         if self.__class__.__name__ == 'Layer':
-            if anonymous_can_view and settings.OGC_SERVER['default'].get(
+            if (anonymous_can_view or anonymous_can_view_remote)\
+                    and settings.OGC_SERVER['default'].get(
                     "GEOFENCE_SECURITY_ENABLED", False):
                 set_geofence_all(self)
             # only for layer owner
@@ -146,6 +154,12 @@ class PermissionLevelMixin(object):
         if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
             assign_perm('download_resourcebase',
                         anonymous_group, self.get_self_resource())
+
+        if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION_REMOTE \
+            and hasattr(self, 'service'):
+            if self.service:
+                assign_perm('download_resourcebase',
+                            anonymous_group, self.get_self_resource()
 
     def set_permissions(self, perm_spec):
         """
