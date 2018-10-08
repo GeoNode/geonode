@@ -87,7 +87,7 @@ def grab(src, dest, name):
             import requests
             import math
             # Streaming, so we can iterate over the response.
-            r = requests.get(str(src), stream=True, timeout=10)
+            r = requests.get(str(src), stream=True, timeout=10, verify=False)
             # Total size in bytes.
             total_size = int(r.headers.get('content-length', 0))
             print("Requesting %s" % str(src))
