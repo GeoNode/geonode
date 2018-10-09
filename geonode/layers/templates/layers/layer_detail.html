@@ -493,7 +493,7 @@
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                 {% endif %}
                 {% if resource.storeType == 'dataStore' and "change_layer_data" in layer_perms and OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
-                <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}">{% trans "Edit data" %}</a>
+                <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}&storeType={{resource.storeType}}">{% trans "Edit data" %}</a>
                 {% endif %}
                 {% if "delete_resourcebase" in perms_list %}
                 <a class="btn btn-danger btn-block btn-xs" href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove" %}</a>
@@ -653,6 +653,16 @@
         {% endif %}
       </ul>
     </li>
+    {% endif %}
+
+    {% if OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
+        {% if "change_resourcebase" in perms_list %}
+        <li class="list-group-item">
+          <h4>{% trans "Clear the Server Cache of this layer" %}</h4>
+          <p>{% trans "Click the button below to wipe the tile-cache of this layer." %}</p>
+            <a href="#" class="btn btn-primary btn-block" data-dismiss="modal" id="tiledlayer_refresh">{% trans "Empty Tiled-Layer Cache" %}</a>
+        </li>
+        {% endif %}
     {% endif %}
 
     {% if GEONODE_SECURITY_ENABLED %}

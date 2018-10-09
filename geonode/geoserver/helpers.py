@@ -66,6 +66,7 @@ from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.security.views import _perms_info_json
 from geonode.utils import set_attributes
+from geonode.security.utils import set_geowebcache_invalidate_cache
 import xml.etree.ElementTree as ET
 from django.utils.module_loading import import_string
 
@@ -84,10 +85,11 @@ def check_geoserver_is_up():
     """Verifies all geoserver is running,
        this is needed to be able to upload.
     """
-    url = "%sweb/" % ogc_server_settings.LOCATION
+    url = "%s" % ogc_server_settings.LOCATION
     resp, content = http_client.request(url, "GET")
     msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-           'have started it.' % ogc_server_settings.LOCATION)
+           'have started it.' % url)
+    logger.debug(resp)
     assert resp['status'] == '200', msg
 
 
@@ -345,6 +347,7 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
                 layer.default_style = style
                 cat.save(layer)
                 saved_layer.default_style = save_style(style)
+                set_geowebcache_invalidate_cache(saved_layer.alternate)
         except Exception as e:
             logger.exception(e)
     else:
@@ -360,6 +363,7 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
                 layer.default_style = style
                 cat.save(layer)
                 saved_layer.default_style = save_style(style)
+                set_geowebcache_invalidate_cache(saved_layer.alternate)
         except Exception as e:
             logger.exception(e)
 
