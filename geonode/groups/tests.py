@@ -429,19 +429,19 @@ class SmokeTest(GeoNodeBaseTestSupport):
         self.assertEqual(200, response.status_code)
         self.assertContains(response,
                             'Layers',
-                            count=3,
+                            count=0,
                             status_code=200,
                             msg_prefix='',
                             html=False)
         self.assertContains(response,
                             'Maps',
-                            count=5,
+                            count=0,
                             status_code=200,
                             msg_prefix='',
                             html=False)
         self.assertContains(response,
                             'Documents',
-                            count=3,
+                            count=0,
                             status_code=200,
                             msg_prefix='',
                             html=False)
