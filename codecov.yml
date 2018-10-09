@@ -27,8 +27,10 @@ comment:
 
 ignore:
   - */management/*
-  - geonode/contrib/*
   - */test*
   - */wsgi*
   - */middleware*
+  - */context_processors*
   - geonode/qgis_server/*
+  - geonode/contrib/*
+  - geonode/upload/*
