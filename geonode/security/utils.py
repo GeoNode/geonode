@@ -199,10 +199,10 @@ def get_highest_priority():
         # Check first that the rules does not exist already
         """
         curl -X GET -u admin:geoserver \
-              http://<host>:<port>/geoserver/rest/geofence/rules.json?page=(count-1)&entries=1
+              http://<host>:<port>/geoserver/geofence/rest/rules.json?page=(count-1)&entries=1
         """
         headers = {'Content-type': 'application/json'}
-        r = requests.get(url + 'rest/geofence/rules.json?page=' + str(rules_count-1) + '&entries=1',
+        r = requests.get(url + 'geofence/rest/rules.json?page=' + str(rules_count-1) + '&entries=1',
                          headers=headers,
                          auth=HTTPBasicAuth(user, passwd))
         if (r.status_code < 200 or r.status_code > 201):
