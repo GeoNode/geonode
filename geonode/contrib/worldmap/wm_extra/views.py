@@ -809,9 +809,6 @@ def gxp2wm(config, map_obj=None):
 
 
     config['map']['groups'] = []
-    for group in groups:
-        if group not in json.dumps(config['map']['groups']):
-            config['map']['groups'].append({"expanded": "true", "group": group})
 
     # about and groups from existing map
     if map_obj:
@@ -822,6 +819,10 @@ def gxp2wm(config, map_obj=None):
     else:
         # TODO check if this works with different languages
         config['about']['introtext'] = unicode(settings.DEFAULT_MAP_ABSTRACT)
+
+    for group in groups:
+        if group not in json.dumps(config['map']['groups']):
+            config['map']['groups'].append({"expanded": "true", "group": group})
 
     # make sure if gnsource is in sources
     add_gnsource = True
