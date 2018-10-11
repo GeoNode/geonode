@@ -1754,11 +1754,11 @@ _esri_types = {
     "esriFieldTypeXML": "xsd:anyType"}
 
 
-def _render_thumbnail(req_body):
+def _render_thumbnail(req_body, width=240, height=180):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
     hostname = urlparse(settings.SITEURL).hostname
-    params = dict(width=240, height=180, auth="%s,%s,%s" % (hostname, _user, _password))
+    params = dict(width=width, height=height, auth="%s,%s,%s" % (hostname, _user, _password))
     url = url + "?" + urllib.urlencode(params)
 
     # @todo annoying but not critical

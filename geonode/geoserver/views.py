@@ -545,7 +545,7 @@ def _response_callback(**kwargs):
             logger.debug(
                 'Updating thumbnail for layer with uuid %s' %
                 layer.uuid)
-            create_gs_thumbnail(layer, True)
+            create_gs_thumbnail(layer, overwrite=True)
 
     # Replace Proxy URL
     if content_type in ('application/xml', 'text/xml', 'text/plain'):

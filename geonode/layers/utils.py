@@ -63,6 +63,11 @@ logger = logging.getLogger('geonode.layers.utils')
 
 _separator = '\n' + ('-' * 100) + '\n'
 
+_img_src_template = """<img src='{ogc_location}'
+style='width: {width}px; height: {height}px;
+left: {left}px; top: {top}px;
+opacity: 1; visibility: inherit; position: absolute;'/>\n"""
+
 
 def _clean_string(
         str,
@@ -880,7 +885,10 @@ def upload(incoming, user=None, overwrite=False,
 
 
 def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
-                     check_bbox=False, ogc_client=None, overwrite=False):
+                     check_bbox=False, ogc_client=None, overwrite=False,
+                     width=240, height=200, smurl=None):
+    if not smurl and getattr(settings, 'THUMBNAIL_GENERATOR_DEFAULT_BG', None):
+        smurl = settings.THUMBNAIL_GENERATOR_DEFAULT_BG
     thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
     if not os.path.exists(thumbnail_dir):
         os.makedirs(thumbnail_dir)
@@ -890,9 +898,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
     elif isinstance(instance, Map):
         thumbnail_name = 'map-%s-thumb.png' % instance.uuid
     thumbnail_path = os.path.join(thumbnail_dir, thumbnail_name)
-    if overwrite is True or storage.exists(thumbnail_path) is False:
-        if not ogc_client:
-            ogc_client = http_client
+    if overwrite or not storage.exists(thumbnail_path):
         BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
         if not thumbnail_create_url:
@@ -930,21 +936,106 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 .update(thumbnail_url=thumbnail_remote_url)
 
             # Download thumbnail and save it locally.
-            try:
-                resp, image = ogc_client.request(thumbnail_create_url)
-                if 'ServiceException' in image or \
-                   resp.status < 200 or resp.status > 299:
-                    msg = 'Unable to obtain thumbnail: %s' % image
-                    raise Exception(msg)
-            except BaseException:
-                import traceback
-                logger.debug(traceback.format_exc())
+            if not ogc_client and not check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                ogc_client = http_client
 
-                # Replace error message with None.
-                image = None
+            if ogc_client:
+                try:
+                    params = {
+                        'width': width,
+                        'height': height
+                    }
+                    # Add the bbox param only if the bbox is different to [None, None,
+                    # None, None]
+                    if None not in instance.bbox:
+                        params['bbox'] = instance.bbox_string
+                        params['crs'] = instance.srid
 
-        if image is not None:
-            instance.save_thumbnail(thumbnail_name, image=image)
+                    _p = "&".join("%s=%s" % item for item in params.items())
+                    resp, image = ogc_client.request(thumbnail_create_url + '&' + _p)
+                    if 'ServiceException' in image or \
+                       resp.status < 200 or resp.status > 299:
+                        msg = 'Unable to obtain thumbnail: %s' % image
+                        raise Exception(msg)
+                except BaseException:
+                    import traceback
+                    logger.debug(traceback.format_exc())
+
+                    # Replace error message with None.
+                    image = None
+            elif check_ogc_backend(geoserver.BACKEND_PACKAGE) and instance.bbox:
+                import mercantile
+                from geonode.geoserver.helpers import _render_thumbnail
+                from geonode.utils import (_v,
+                                           bbox_to_projection,
+                                           bounds_to_zoom_level)
+
+                def decimal_encode(bbox):
+                    import decimal
+                    _bbox = []
+                    for o in [float(coord) for coord in bbox]:
+                        if isinstance(o, decimal.Decimal):
+                            o = (str(o) for o in [o])
+                        _bbox.append(o)
+                    # Must be in the form : [x0, x1, y0, y1
+                    return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
+
+                layer_bbox = instance.bbox[0:4]
+                # Sanity Checks
+                for coord in layer_bbox:
+                    if not coord:
+                        return
+
+                wgs84_bbox = decimal_encode(
+                    bbox_to_projection([float(coord) for coord in layer_bbox] + [instance.srid, ],
+                                       target_srid=4326)[:4])
+
+                # Build Image Request Template
+                _img_request_template = "<div style='overflow: hidden; position:absolute; \
+                    top:0px; left:0px; height: {height}px; width: {width}px;'> \
+                    \n".format(height=height, width=width)
+
+                # Fetch XYZ tiles
+                bounds = wgs84_bbox[0:4]
+                zoom = bounds_to_zoom_level(bounds, width, height)
+
+                t_ll = mercantile.tile(_v(bounds[0], x=True), _v(bounds[1], x=False), zoom, truncate=True)
+                t_ur = mercantile.tile(_v(bounds[2], x=True), _v(bounds[3], x=False), zoom, truncate=True)
+                xmin, ymax = t_ll.x, t_ll.y
+                xmax, ymin = t_ur.x, t_ur.y
+
+                for xtile in range(xmin, xmax+1):
+                    for ytile in range(ymin, ymax+1):
+                        box = [(xtile-xmin)*256, (ytile-ymin)*255]
+                        if smurl:
+                            imgurl = smurl.format(z=zoom, x=xtile, y=ytile)
+                            _img_request_template += _img_src_template.format(ogc_location=imgurl,
+                                                                              height=256, width=256,
+                                                                              left=box[0], top=box[1])
+
+                        xy_bounds = mercantile.xy_bounds(mercantile.Tile(xtile, ytile, zoom))
+                        params = {
+                            'width': 256,
+                            'height': 256,
+                            'transparent': True,
+                            'bbox': ",".join([str(xy_bounds.left), str(xy_bounds.bottom),
+                                              str(xy_bounds.right), str(xy_bounds.top)]),
+                            'crs': 'EPSG:3857'
+                        }
+                        _p = "&".join("%s=%s" % item for item in params.items())
+
+                        _img_request_template += \
+                            _img_src_template.format(ogc_location=(thumbnail_create_url + '&' + _p),
+                                                     height=256, width=256,
+                                                     left=box[0], top=box[1])
+                _img_request_template += "</div>"
+                image = _render_thumbnail(_img_request_template, width=width, height=height)
+
+            if image is not None:
+                instance.save_thumbnail(thumbnail_name, image=image)
+            else:
+                msg = 'Unable to obtain thumbnail for: %s' % instance
+                raise Exception(msg)
 
 
 # this is the original implementation of create_gs_thumbnail()
@@ -971,16 +1062,8 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
         'request': 'GetMap',
         'layers': layers,
         'format': wms_format,
-        'width': 200,
-        'height': 150
         # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
     }
-
-    # Add the bbox param only if the bbox is different to [None, None,
-    # None, None]
-    if None not in instance.bbox:
-        params['bbox'] = instance.bbox_string
-        params['crs'] = instance.srid
 
     # Avoid using urllib.urlencode here because it breaks the url.
     # commas and slashes in values get encoded and then cause trouble
@@ -995,7 +1078,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
         ogc_server_settings.LOCATION,
         wms_endpoint) + "?" + _p
     create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
-                     ogc_client=http_client, overwrite=overwrite, check_bbox=check_bbox)
+                     overwrite=overwrite, check_bbox=check_bbox)
 
 
 def delete_orphaned_layers():
@@ -1004,8 +1087,8 @@ def delete_orphaned_layers():
     for filename in os.listdir(layer_path):
         fn = os.path.join(layer_path, filename)
         if LayerFile.objects.filter(file__icontains=filename).count() == 0:
-            print 'Removing orphan layer file %s' % fn
+            logger.info('Removing orphan layer file %s' % fn)
             try:
                 os.remove(fn)
             except OSError:
-                print 'Could not delete file %s' % fn
+                logger.info('Could not delete file %s' % fn)

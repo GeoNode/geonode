@@ -496,7 +496,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if not ('update_fields' in kwargs and kwargs['update_fields'] is not None and
             'thumbnail_url' in kwargs['update_fields']):
         logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
-        create_gs_thumbnail(instance, overwrite=True)
+        create_gs_thumbnail(instance, overwrite=False)
 
     legend_url = ogc_server_settings.PUBLIC_LOCATION + \
         'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
