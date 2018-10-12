@@ -51,7 +51,8 @@ from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.layers.metadata import set_metadata
 from geonode.utils import (http_client, check_ogc_backend,
                            unzip_file, extract_tarfile)
-from ..geoserver.helpers import ogc_server_settings  # set_layer_style
+from ..geoserver.helpers import (ogc_server_settings,
+                                 _prepare_thumbanil_body_from_opts)
 
 import tarfile
 
@@ -62,11 +63,6 @@ from datetime import datetime
 logger = logging.getLogger('geonode.layers.utils')
 
 _separator = '\n' + ('-' * 100) + '\n'
-
-_img_src_template = """<img src='{ogc_location}'
-style='width: {width}px; height: {height}px;
-left: {left}px; top: {top}px;
-opacity: 1; visibility: inherit; position: absolute;'/>\n"""
 
 
 def _clean_string(
@@ -886,9 +882,7 @@ def upload(incoming, user=None, overwrite=False,
 
 def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                      check_bbox=False, ogc_client=None, overwrite=False,
-                     width=240, height=200, smurl=None):
-    if not smurl and getattr(settings, 'THUMBNAIL_GENERATOR_DEFAULT_BG', None):
-        smurl = settings.THUMBNAIL_GENERATOR_DEFAULT_BG
+                     width=240, height=200):
     thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
     if not os.path.exists(thumbnail_dir):
         os.makedirs(thumbnail_dir)
@@ -964,72 +958,20 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                     # Replace error message with None.
                     image = None
             elif check_ogc_backend(geoserver.BACKEND_PACKAGE) and instance.bbox:
-                import mercantile
-                from geonode.geoserver.helpers import _render_thumbnail
-                from geonode.utils import (_v,
-                                           bbox_to_projection,
-                                           bounds_to_zoom_level)
+                instance_bbox = instance.bbox[0:4]
+                request_body = {
+                    'bbox': [str(coord) for coord in instance_bbox],
+                    'srid': instance.srid,
+                    'width': width,
+                    'height': height
+                }
 
-                def decimal_encode(bbox):
-                    import decimal
-                    _bbox = []
-                    for o in [float(coord) for coord in bbox]:
-                        if isinstance(o, decimal.Decimal):
-                            o = (str(o) for o in [o])
-                        _bbox.append(o)
-                    # Must be in the form : [x0, x1, y0, y1
-                    return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
+                if thumbnail_create_url:
+                    request_body['thumbnail_create_url'] = thumbnail_create_url
+                elif instance.alternate:
+                    request_body['layers'] = instance.alternate,
 
-                layer_bbox = instance.bbox[0:4]
-                # Sanity Checks
-                for coord in layer_bbox:
-                    if not coord:
-                        return
-
-                wgs84_bbox = decimal_encode(
-                    bbox_to_projection([float(coord) for coord in layer_bbox] + [instance.srid, ],
-                                       target_srid=4326)[:4])
-
-                # Build Image Request Template
-                _img_request_template = "<div style='overflow: hidden; position:absolute; \
-                    top:0px; left:0px; height: {height}px; width: {width}px;'> \
-                    \n".format(height=height, width=width)
-
-                # Fetch XYZ tiles
-                bounds = wgs84_bbox[0:4]
-                zoom = bounds_to_zoom_level(bounds, width, height)
-
-                t_ll = mercantile.tile(_v(bounds[0], x=True), _v(bounds[1], x=False), zoom, truncate=True)
-                t_ur = mercantile.tile(_v(bounds[2], x=True), _v(bounds[3], x=False), zoom, truncate=True)
-                xmin, ymax = t_ll.x, t_ll.y
-                xmax, ymin = t_ur.x, t_ur.y
-
-                for xtile in range(xmin, xmax+1):
-                    for ytile in range(ymin, ymax+1):
-                        box = [(xtile-xmin)*256, (ytile-ymin)*255]
-                        if smurl:
-                            imgurl = smurl.format(z=zoom, x=xtile, y=ytile)
-                            _img_request_template += _img_src_template.format(ogc_location=imgurl,
-                                                                              height=256, width=256,
-                                                                              left=box[0], top=box[1])
-
-                        xy_bounds = mercantile.xy_bounds(mercantile.Tile(xtile, ytile, zoom))
-                        params = {
-                            'width': 256,
-                            'height': 256,
-                            'transparent': True,
-                            'bbox': ",".join([str(xy_bounds.left), str(xy_bounds.bottom),
-                                              str(xy_bounds.right), str(xy_bounds.top)]),
-                            'crs': 'EPSG:3857'
-                        }
-                        _p = "&".join("%s=%s" % item for item in params.items())
-
-                        _img_request_template += \
-                            _img_src_template.format(ogc_location=(thumbnail_create_url + '&' + _p),
-                                                     height=256, width=256,
-                                                     left=box[0], top=box[1])
-                _img_request_template += "</div>"
-                image = _render_thumbnail(_img_request_template, width=width, height=height)
+                image = _prepare_thumbanil_body_from_opts(request_body)
 
             if image is not None:
                 instance.save_thumbnail(thumbnail_name, image=image)

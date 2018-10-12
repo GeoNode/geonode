@@ -985,6 +985,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.bbox_x1 = lon + distance_x_degrees
         self.bbox_y0 = lat - distance_y_degrees
         self.bbox_y1 = lat + distance_y_degrees
+        self.srid = 'EPSG:4326'
 
     def set_bounds_from_bbox(self, bbox, srid):
         """
@@ -1009,24 +1010,28 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.bbox_y1 = bbox[3]
         self.srid = srid
 
-        minx, maxx, miny, maxy = [float(c) for c in bbox]
-        x = (minx + maxx) / 2
-        y = (miny + maxy) / 2
-        (center_x, center_y) = forward_mercator((x, y))
+        if srid == "EPSG:4326":
+            minx, maxx, miny, maxy = [float(c) for c in bbox]
+            x = (minx + maxx) / 2
+            y = (miny + maxy) / 2
+            (center_x, center_y) = forward_mercator((x, y))
 
-        xdiff = maxx - minx
-        ydiff = maxy - miny
+            xdiff = maxx - minx
+            ydiff = maxy - miny
 
-        zoom = 0
+            zoom = 0
 
-        if xdiff > 0 and ydiff > 0:
-            width_zoom = math.log(360 / xdiff, 2)
-            height_zoom = math.log(360 / ydiff, 2)
-            zoom = math.ceil(min(width_zoom, height_zoom))
+            if xdiff > 0 and ydiff > 0:
+                width_zoom = math.log(360 / xdiff, 2)
+                height_zoom = math.log(360 / ydiff, 2)
+                zoom = math.ceil(min(width_zoom, height_zoom))
 
-        self.zoom = zoom
-        self.center_x = center_x
-        self.center_y = center_y
+            try:
+                self.zoom = zoom
+                self.center_x = center_x
+                self.center_y = center_y
+            except BaseException:
+                pass
 
     def download_links(self):
         """assemble download links for pycsw"""

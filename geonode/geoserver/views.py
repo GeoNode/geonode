@@ -496,11 +496,16 @@ def geoserver_proxy(request,
                               posixpath.join(workspace, layername, downstream_path, path))
 
         if downstream_path in ('rest/styles') and len(request.body) > 0:
-            # Lets try
-            # http://localhost:8080/geoserver/rest/workspaces/<ws>/styles/<style>.xml
-            _url = str("".join([ogc_server_settings.LOCATION,
-                                'rest/workspaces/', ws, '/styles',
-                                path]))
+            if ws:
+                # Lets try
+                # http://localhost:8080/geoserver/rest/workspaces/<ws>/styles/<style>.xml
+                _url = str("".join([ogc_server_settings.LOCATION,
+                                    'rest/workspaces/', ws, '/styles',
+                                    path]))
+            else:
+                _url = str("".join([ogc_server_settings.LOCATION,
+                                    'rest/styles',
+                                    path]))
             raw_url = _url
 
     if downstream_path in 'ows' and (
