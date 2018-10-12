@@ -1783,7 +1783,7 @@ def _render_thumbnail(req_body, width=240, height=180):
     return content
 
 
-def _prepare_thumbanil_body_from_opts(request_body):
+def _prepare_thumbnail_body_from_opts(request_body):
     import mercantile
     from geonode.utils import (_v,
                                bbox_to_projection,
