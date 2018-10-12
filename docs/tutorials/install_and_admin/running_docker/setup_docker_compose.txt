@@ -40,7 +40,7 @@ Clone the repository::
 
 Launch the stack with the build of GeoNode so any changes you did will be immediately available::
 
-    docker-compose up -f docker-compose.override.localhost.yml --build
+    docker-compose -f docker-compose.override.localhost.yml up --build
 
 .. note::
    **docker-compose.override.localhost.yml** containse environment variables to allow you run the instances on *localhost*. You can use this file as template in order to run on other public addresses.
