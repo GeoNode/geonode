@@ -493,7 +493,7 @@
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                 {% endif %}
                 {% if resource.storeType == 'dataStore' and "change_layer_data" in layer_perms and OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
-                <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}">{% trans "Edit data" %}</a>
+                <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}&storeType={{resource.storeType}}">{% trans "Edit data" %}</a>
                 {% endif %}
                 {% if "delete_resourcebase" in perms_list %}
                 <a class="btn btn-danger btn-block btn-xs" href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove" %}</a>
