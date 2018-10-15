@@ -78,7 +78,7 @@ else:
 try:
     # try to parse python notation, default in dockerized env
     ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
-except:
+except ValueError:
     # fallback to regular list of values separated with misc chars
     ALLOWED_HOSTS = ['localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
@@ -454,13 +454,6 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-        'celery': {
-            'level': 'ERROR',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'celery.log',
-            'formatter': 'simple',
-            'maxBytes': 1024 * 1024 * 10,  # 10 mb
-        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
@@ -481,7 +474,7 @@ LOGGING = {
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
         "celery": {
-            'handlers': ['celery', 'console'], 'level': 'ERROR', },
+            "handlers": ["console"], "level": "ERROR", },
     },
 }
 
@@ -580,12 +573,33 @@ AUTHENTICATION_BACKENDS = (
 
 OAUTH2_PROVIDER = {
     'SCOPES': {
+        'openid': 'Default to OpenID',
         'read': 'Read scope',
         'write': 'Write scope',
         'groups': 'Access to your groups'
     },
 
     'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
+    # 'OAUTH2_VALIDATOR_CLASS': 'geonode.security.oauth2_validators.OIDCValidator',
+
+    # OpenID Connect
+    # "OIDC_ISS_ENDPOINT": "http://localhost:8000",
+    # "OIDC_USERINFO_ENDPOINT": "http://localhost:8000/api/o/v4/tokeninfo/",
+    "OIDC_RSA_PRIVATE_KEY": b"""-----BEGIN RSA PRIVATE KEY-----
+MIICXQIBAAKBgQCIThjbTwpYu4Lwqp8oA7PqD6Ij/GwpLFJuPbWVaeCDaX6T7mh8
+mJMIEgl/VIZasLH8SwU5mZ4sPeiqk7NgJq1XDo97q5mlFoNVHMCH38KQzSIBWtbq
+WnEEnQdiqBbCmmIebLd4OcfpbIVUI89cnCq7U0M1ie0KOopWSHWOP6/35QIDAQAB
+AoGBAIdwmtBotM5A3LaJxAY9z6uXhzSc4Vj0OqBiXymtgDL0Q5t4/Yg5D3ioe5lz
+guFgzCr23KVEmOA7UBMXGtlC9V+iizVSbF4g2GqPLBKk+IYcAhfbSCg5rbbtQ5m2
+PZxKZlJOQnjFLeh4sxitd84GfX16RfAhsvIiaN4d4CG+RAlhAkEA1Vitep0aHKmA
+KRIGvZrgfH7uEZh2rRsCoo9lTxCT8ocCU964iEUxNH050yKdqYzVnNyFysY7wFgL
+gsVzPROE6QJBAKOOWj9mN7uxhjRv2L4iYJ/rZaloVA49KBZEhvI+PgC5kAIrNVaS
+n1kbJtFg54IS8HsYIP4YxONLqmDuhZL2rZ0CQQDId9wCo85eclMPxHV7AiXANdDj
+zbxt6jxunYlXYr9yG7RvNI921HVo2eZU42j8YW5zR6+cGusYUGL4jSo8kLPJAkAG
+SLPi97Rwe7OiVCHJvFxmCI9RYPbJzUO7B0sAB7AuKvMDglF8UAnbTJXDOavrbXrb
+3+N0n9MAwKl9K+zp5pxpAkBSEUlYA0kDUqRgfuAXrrO/JYErGzE0UpaHxq5gCvTf
+g+gp5fQ4nmDrSNHjakzQCX2mKMsx/GLWZzoIDd7ECV9f
+-----END RSA PRIVATE KEY-----"""
 }
 # authorized exempt urls needed for oauth when GeoNode is set to lockdown
 AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users',)
@@ -647,14 +661,19 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 #
 
 on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
+core_tests = ast.literal_eval(os.environ.get('TEST_RUN_CORE', 'False'))
+internal_apps_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTERNAL_APPS', 'False'))
 integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'False'))
 
 # Setting a custom test runner to avoid running the tests for
 # some problematic 3rd party apps
 # Default Nose Test Suite
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Django 1.11 ParallelTestSuite
+TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
 TEST_RUNNER_KEEPDB = 0
-TEST_RUNNER_PARALLEL = 0
+TEST_RUNNER_PARALLEL = 1
 
 # GeoNode test suite
 # TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
@@ -738,8 +757,8 @@ OGC_SERVER = {
         'PASSWORD': OGC_SERVER_DEFAULT_PASSWORD,
         'MAPFISH_PRINT_ENABLED': True,
         'PRINT_NG_ENABLED': True,
+        'GEONODE_SECURITY_ENABLED': True,
         'GEOFENCE_SECURITY_ENABLED': GEOFENCE_SECURITY_ENABLED,
-        'GEOFENCE_URL': os.getenv('GEOFENCE_URL', 'internal:/'),
         'GEOGIG_ENABLED': False,
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
@@ -1591,41 +1610,10 @@ GEOTIFF_IO_BASE_URL = os.getenv(
     'GEOTIFF_IO_BASE_URL', 'https://app.geotiff.io'
 )
 
-# Enable this if you want direct access to geofence (much faster) than via API
-# GEOFENCE_URL = 'postgresql://user:password@host:5432/geofence_db'
-
 # WorldMap settings
 USE_WORLDMAP = strtobool(os.getenv('USE_WORLDMAP', 'False'))
 
 if USE_WORLDMAP:
-    # WorldMap requirest PostgreSQL and PostGIS
-    PG_HOST = os.getenv('PG_HOST', 'localhost')
-    PG_USERNAME = os.getenv('PG_USERNAME', 'worldmap')
-    PG_PASSWORD = os.getenv('PG_PASSWORD', 'worldmap')
-    PG_WORLDMAP_DJANGO_DB = os.getenv('PG_WORLDMAP_DJANGO_DB', 'geonode')
-    PG_WORLDMAP_UPLOADS_DB = os.getenv('PG_WORLDMAP_UPLOADS_DB', 'geonode_data')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': PG_WORLDMAP_DJANGO_DB,
-            'USER': PG_USERNAME,
-            'PASSWORD': PG_PASSWORD,
-            'HOST': PG_HOST,
-            'PORT': '5432',
-            'CONN_TOUT': 900,
-        },
-        # vector datastore for uploads
-        'datastore': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            # 'ENGINE': '', # Empty ENGINE name disables
-            'NAME': PG_WORLDMAP_UPLOADS_DB,
-            'USER': PG_USERNAME,
-            'PASSWORD': PG_PASSWORD,
-            'HOST': PG_HOST,
-            'PORT': '5432',
-            'CONN_TOUT': 900,
-        }
-    }
     GEONODE_CLIENT_LOCATION = '/static/worldmap_client/'
     GAZETTEER_DB_ALIAS = 'default'
     INSTALLED_APPS += (

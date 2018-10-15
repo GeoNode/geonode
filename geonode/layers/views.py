@@ -211,7 +211,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 else:
                     saved_layer = Layer.objects.get(alternate=title)
                     if not saved_layer:
-                        msg = 'Failed to process.  Could not find matching layer.'
+                        msg = 'Failed to process. Could not find matching layer.'
                         raise Exception(msg)
                     sld = open(base_file).read()
                     set_layer_style(saved_layer, title, base_file, sld)
@@ -316,7 +316,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             if isinstance(o, decimal.Decimal):
                 o = (str(o) for o in [o])
             _bbox.append(o)
-        return _bbox
+        # Must be in the form : [x0, x1, y0, y1
+        return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
 
     def sld_definition(style):
         from urllib import quote

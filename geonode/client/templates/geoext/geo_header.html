@@ -9,8 +9,7 @@
 <link rel="stylesheet" type="text/css" href="{% static "geoexplorer/theme/app/geoexplorer.css" %}?v={{ VERSION }}" />
 <!--[if IE]><link rel="stylesheet" type="text/css" href="{% static "geoexplorer/theme/app/ie.css" %}"/><![endif]-->
 
-
-<script src="http://maps.google.com/maps/api/js&key={% google_api_key %}&sensor=false" type="text/javascript"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={% google_api_key %}" type="text/javascript"></script>
 
 <script src="{% static "geoexplorer/script/GeoExplorer.js" %}?v={{ VERSION }}" type="text/javascript"></script>
 <!-- script type="text/javascript" src="{% static "geonode/js/extjs/GeoExplorer-debug.js"></script -->

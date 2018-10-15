@@ -58,10 +58,7 @@ class Command(BaseCommand):
                         geofence_user = str(profile)
                         if "AnonymousUser" in geofence_user:
                             geofence_user = None
-                        utils.set_geofence_owner(
-                            layer, geofence_user,
-                            view_perms=True,
-                            download_perms=True
-                        )
+                        utils.sync_geofence_with_guardian(
+                            layer, perms, user=geofence_user)
                 except:
                     print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)

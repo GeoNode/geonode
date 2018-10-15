@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-geonode.settings}
+DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-geonode.local_settings}
 
 if [ -n "$WORKON_HOME" ]; then
     DJANGO_ADMIN_CMD=$WORKON_HOME/bin/django-admin >/dev/null 2>/dev/null

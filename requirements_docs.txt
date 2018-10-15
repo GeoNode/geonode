@@ -1,4 +1,4 @@
-Django==1.8.19
+Django==1.11.15
 six==1.10.0
 amqp==2.2.2
 anyjson==0.3.3
@@ -82,7 +82,7 @@ geolinks==0.2.0
 geonode-agon-ratings==0.3.8
 geonode-announcements==1.0.13
 geonode-avatar==2.1.8
-geonode-dialogos==0.9
+geonode-dialogos==1.2
 geonode-user-messages==0.1.14
 gisdata==0.5.4
 glob2==0.6

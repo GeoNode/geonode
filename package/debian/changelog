@@ -1,4 +1,703 @@
-geonode (2.8.0+thefinal1) xenial; urgency=high 
+
+geonode (2.10.0+rc3) bionic; urgency=high
+
+  * [dfa999fdb] 2018-07-31 - (afabiani         )   - #3180 restoring angular 1.4.0
+  * [573a6a9c3] 2018-07-31 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [0403b8f32] 2018-07-31 - (Alessio Fabiani  )  Merge pull request #3866 from t-book/master
+  * [c509aa1d7] 2018-07-31 - (Toni Schönbuchner)  allow long item titles to break without whitespace
+  * [5d53e7152] 2018-07-31 - (afabiani         )   - #3180 restoring angular 1.4.0
+  * [576cf8677] 2018-07-30 - (Alessio Fabiani  )  Merge pull request #3864 from t-book/master
+  * [9c5035f5b] 2018-07-28 - (Toni Schönbuchner)  prevent change of height on cart item hover
+  * [8734dfe8d] 2018-07-27 - (afabiani         )   - Fix typo
+  * [2a17f205d] 2018-07-27 - (afabiani         )   - Minor hardening on Map configuration stuff
+  * [ae30503c2] 2018-07-26 - (afabiani         )   - Fix QGis integration tests
+  * [b5dac894d] 2018-07-26 - (afabiani         )   - Fix QGis integration tests
+  * [bd18aac33] 2018-07-25 - (afabiani         )   - Fix QGis Server Integration Tests
+  * [cf28e267d] 2018-07-26 - (Alessio Fabiani  )  Merge pull request #3863 from t-book/master
+  * [32edbf515] 2018-07-25 - (Toni Schönbuchner)  changed readme to rst with extension and changed setup.py
+  * [8fd79f941] 2018-07-25 - (Toni Schönbuchner)  submission of new readme for github
+  * [fef4dfff2] 2018-07-25 - (afabiani         )   - Fix QGis Server Integration Tests
+  * [7d8655708] 2018-07-25 - (Alessio Fabiani  )  Merge pull request #3860 from geosolutions-it/master
+  * [64b223107] 2018-07-25 - (afabiani         )   - Updating ElasticSearch dependencies
+  * [f36c050ed] 2018-07-25 - (Alessio Fabiani  )  Merge branch 'master' into master
+  * [2c40bdbc4] 2018-07-25 - (Alessio Fabiani  )  Merge pull request #3862 from boney-bun/master
+  * [1e854d4b6] 2018-07-25 - (Boney Bun        )  fix a srid bug when uploading vector layers
+  * [0f43f323c] 2018-07-24 - (afabiani         )   - Updating ElasticSearch dependencies
+  * [c1a49147f] 2018-07-24 - (afabiani         )   - Remove circular local_settings import
+  * [92ffeafec] 2018-07-24 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [7feb3a8ff] 2018-07-24 - (Alessio Fabiani  )  Merge pull request #3859 from t-book/master
+  * [2a1c59b4f] 2018-07-24 - (Toni Schönbuchner)  centered magnifier in big search and aligned metadata checkbox
+  * [1bc9f4e47] 2018-07-24 - (afabiani         )   - Tentative fix geoserver docker compose
+  * [d1de73b16] 2018-07-24 - (afabiani         )   - Tentative fix geoserver docker compose
+  * [0ad5706bc] 2018-07-24 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [3708c3183] 2018-07-24 - (Alessio Fabiani  )  Merge pull request #3856 from francbartoli/master
+  * [ef3e1acc0] 2018-07-24 - (Alessio Fabiani  )  Merge branch 'master' into master
+  * [ac3cfa5cf] 2018-07-24 - (Alessio Fabiani  )  Merge pull request #3858 from hishamkaram/patch-9
+  * [2decdaae4] 2018-07-23 - (Hisham waleed k..)  Update settings.py
+  * [c97413196] 2018-07-23 - (afabiani         )   - Add storeType to Layers Capabilities response
+  * [1fa7f25cf] 2018-07-23 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [b958ce4a5] 2018-07-22 - (Francesco Bartoli)  Merge remote-tracking branch 'origin/master'
+  * [3a4076281] 2018-07-22 - (Francesco Bartoli)  Add variable to set geoserver JAVA_OPTS
+  * [02ae1b863] 2018-07-21 - (Alessio Fabiani  )  Merge pull request #3852 from t-book/master
+  * [6dce23623] 2018-07-21 - (Alessio Fabiani  )  Merge branch 'master' into master
+  * [9708bfed6] 2018-07-21 - (Alessio Fabiani  )  Merge pull request #3854 from francbartoli/master
+  * [9353e37db] 2018-07-21 - (Francesco Bartoli)  Fix #3853
+  * [cd5addc4e] 2018-07-21 - (Alessio Fabiani  )   - MapLoom GIS client hooksets (#3851)
+  * [8cd181006] 2018-07-21 - (Toni Schönbuchner)  Added explanations regarding pygdal install #3784
+  * [ac7a0292e] 2018-07-20 - (afabiani         )  - MapLoom GIS client hooksets
+  * [821beb2b6] 2018-07-20 - (afabiani         )  - MapLoom GIS client hooksets
+  * [b745808de] 2018-07-20 - (afabiani         )   - Fix JS vulnerability
+  * [cf6965b36] 2018-07-20 - (afabiani         )   - MapLoom GIS client hooksets
+  * [2af6c077f] 2018-07-20 - (afabiani         )   - Fixing test-cases
+  * [97d7dd07a] 2018-07-19 - (afabiani         )  Update gsconfig and gsimporter versions
+  * [1009131c1] 2018-07-19 - (afabiani         )   - Remove ws prefixed URL from links in order to publish a full DescribeLayer on Links
+  * [ceda54816] 2018-07-19 - (afabiani         )   - Update gnimporter version
+  * [a5ed83ce4] 2018-07-19 - (afabiani         )   - Update gnimporter version
+  * [a944a4244] 2018-07-19 - (Alessio Fabiani  )  Merge pull request #3845 from geosolutions-it/master
+  * [ebb162796] 2018-07-18 - (Alessio Fabiani  )  Merge branch 'master' into master
+  * [7be86215a] 2018-07-16 - (Giovanni Allegri )  Merge pull request #3848 from giohappy/fix_docker_geonode_db
+  * [d71cc4ac1] 2018-07-16 - (giohappy         )  fix GeoNode DB name in docker env
+  * [dff13c96c] 2018-07-15 - (Giovanni Allegri )  Merge pull request #3847 from giohappy/master
+  * [a7f5b0319] 2018-07-15 - (giohappy         )  note on docker-compose up for Windows users (see #3709)
+  * [e80319885] 2018-07-13 - (afabiani         )   - Minor Layout improvements
+  * [edbfa648c] 2018-07-13 - (afabiani         )   - Minor Layout improvements
+  * [47af05841] 2018-07-13 - (afabiani         )   - Exclude public-invite groups from metadata choices
+  * [77c1c24c3] 2018-07-13 - (Alessio Fabiani  )  Merge branch 'master' into master
+  * [ed4ce3acc] 2018-07-13 - (afabiani         )  [Fixes #3834] STATIC_URL vs static template tag
+  * [f54419382] 2018-07-13 - (Alessio Fabiani  )  Merge pull request #3844 from geosolutions-it/master
+  * [f6bcae545] 2018-07-12 - (afabiani         )   - Fixes issue #3843 - Fix vulnerability with Pillow dependency
+  * [0129b3364] 2018-07-11 - (Alessio Fabiani  )  Merge pull request #3842 from t-book/master
+  * [9ca793131] 2018-07-11 - (Alessio Fabiani  )  Merge branch 'master' into master
+  * [be78df272] 2018-07-11 - (Toni Schönbuchner)  Restrict use of Edit Document Button
+  * [297697a72] 2018-07-10 - (Alessio Fabiani  )  Merge pull request #3841 from t-book/master
+  * [9a10a8df3] 2018-07-10 - (Toni Schönbuchner)  corrected Ubuntu 14.04 to 16.04 in documentation
+  * [78f1d477b] 2018-07-10 - (Toni Schönbuchner)  added search input for styles to manage page
+  * [5761b91e3] 2018-07-07 - (afabiani         )   - Fix max zoom issue
+  * [c5164506b] 2018-07-05 - (geo              )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [3b23fca25] 2018-07-05 - (geo              )   - Packagind scripts updates
+  * [7afb2fdb2] 2018-07-05 - (Alessio Fabiani  )  Merge pull request #3839 from geosolutions-it/master
+  * [c44fe29fd] 2018-07-05 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [cc4bbe671] 2018-07-05 - (geo              )   - Packagin scripts updates
+  * [706971057] 2018-07-05 - (afabiani         )   - Improving French translations
+  * [d413250ef] 2018-07-04 - (afabiani         )   - Allow portal contributors to invite users
+  * [55e234a84] 2018-07-04 - (Alessio Fabiani  )  Merge pull request #3836 from geosolutions-it/master
+  * [866b7aaa6] 2018-07-04 - (Alessio Fabiani  )  Merge branch 'master' into master
+  * [63518ec96] 2018-07-04 - (Alessio Fabiani  )  Merge pull request #3838 from glennvorhes/add_ast_import
+  * [fc4008c39] 2018-07-03 - (Glenn Vorhes     )  add missing ast import
+  * [a0279938b] 2018-07-03 - (afabiani         )   - Fixes layer replace
+  * [0dfe7941e] 2018-07-02 - (afabiani         )   - Fixes layer replace
+  * [de7078339] 2018-06-28 - (afabiani         )   - Fix kombu/messaging initialization
+  * [85ec5112a] 2018-06-28 - (afabiani         )  pep8 fixes
+  * [c67e5b8ff] 2018-06-28 - (afabiani         )  - Fix celery initialization when using GeoNode ad a depenency
+  * [532bfbd33] 2018-06-28 - (afabiani         )  - Fix celery initialization when using GeoNode ad a depenency
+  * [f6d61ff2a] 2018-06-28 - (afabiani         )  - Fix celery initialization when using GeoNode ad a depenency
+  * [5a4db3d10] 2018-06-27 - (afabiani         )  pep8 issues
+  * [a74a0ddc6] 2018-06-27 - (afabiani         )   - Fix celery initialization when using GeoNode ad a depenency
+  * [5af259064] 2018-06-27 - (Alessio Fabiani  )  Externalize OGC TIMEOUT setting as ENV var
+  * [49ce37c72] 2018-06-25 - (afabiani         )   - Docker make use of GeoServer Importer Uploader
+  * [be9a7a401] 2018-06-25 - (afabiani         )   - minor improvements geoserver helper
+  * [dd002d4a7] 2018-06-25 - (afabiani         )   - Fix localhost docker compose var
+  * [5e289017e] 2018-06-25 - (afabiani         )   - Tentative fix doscker-compose vars
+  * [22bbdbff8] 2018-06-22 - (afabiani         )  Merge branch 'master' of https://github.com/geosolutions-it/geonode
+  * [87c41c473] 2018-06-22 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [35cec0b54] 2018-06-21 - (afabiani         )   - Improve Map Embed Template and allow it passing through client hooksets
+  * [0756f0e9b] 2018-06-21 - (afabiani         )   - Improve Map Embed Template and allow it passing through client hooksets
+  * [0df60c913] 2018-06-21 - (afabiani         )   - Updating the oauth2 toolkit dep version
+  * [58f9d7b83] 2018-06-21 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [983d2e648] 2018-06-19 - (afabiani         )   - GeoNode Client Hooksets: allow client configuration tweaking from pluggable client library
+  * [ebcddc869] 2018-06-17 - (Giovanni Allegri )  Merge pull request #3832 from GeoNode/datastore-var-patch
+  * [4da10180a] 2018-06-17 - (Francesco Bartoli)  Don't raise an exception if variable is missing
+  * [9df16c60b] 2018-06-14 - (afabiani         )   - Update requirements: adding openssl deps
+  * [f195a0c53] 2018-06-14 - (afabiani         )   - Update requirements: adding openssl deps
+  * [65ab0d7a8] 2018-06-13 - (afabiani         )  [Fixes #3800] Uploading shapefiles without a datefield and time-enabled is False in importer settings fails in 2.7.x
+  * [f4ff4c80e] 2018-06-12 - (afabiani         )   - SITEURL rstrip (/) consistently
+  * [d6689fa5a] 2018-06-12 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [03e972ab5] 2018-06-11 - (afabiani         )  Improvements to PyCSW Constraints and Local Mappings
+  * [ce79021bb] 2018-06-11 - (afabiani         )  Improvements to PyCSW Constraints and Local Mappings
+  * [d4a875954] 2018-06-07 - (giohappy         )  Set default datastore from env for OGC server settings
+  * [d1ffcaf00] 2018-06-08 - (Alessio Fabiani  )  Merge pull request #3827 from GeoNode/ogc_datastore_from_env
+  * [e2dc1df67] 2018-06-07 - (afabiani         )  Improvements to PyCSW Constraints and Local Mappings
+  * [e1b838608] 2018-06-07 - (giohappy         )  value should be datastores key name, not value
+  * [56943548d] 2018-06-07 - (giohappy         )  Set default datastore from env for OGC server settings
+  * [30a7c9b23] 2018-06-07 - (Alessio Fabiani  )  Merge pull request #3825 from geosolutions-it/master
+  * [b2c2789a4] 2018-06-06 - (afabiani         )  [Fw-port #3817] Implements GNIP #3718 (Worldmap contrib application)
+  * [abd6ac97c] 2018-06-06 - (afabiani         )  [Fixes #3824] Manage style page show style name instead of title
+  * [117bbdccc] 2018-06-06 - (afabiani         )   - OIDC 1.0 compliancy / notifications fixes
+  * [e7ddf9a56] 2018-06-04 - (afabiani         )   - OIDC 1.0 compliancy preparation: add api > UserInfo method
+  * [73b949f1e] 2018-06-04 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [f5dde59ef] 2018-06-04 - (Alessio Fabiani  )  Merge pull request #3822 from timlinux/master
+  * [096dc1029] 2018-06-02 - (Tim Sutton       )  Fix issues where docker client may be incompatible with docker server API by forcing to APV version 1.24
+  * [ed6f97690] 2018-05-29 - (afabiani         )   - Add iso8961 time rules (yyyy/yyyy-mm/yyyy-mm-dd) on Templates also
+  * [990aa4b7f] 2018-05-28 - (Alessio Fabiani  )  Merge pull request #3812 from geosolutions-it/master
+  * [5541329b0] 2018-05-28 - (Giovanni Allegri )  DATETIME_INPUT_FORMATS switched to list since Django 1.9
+  * [06ef25456] 2018-05-28 - (afabiani         )  [geoext client] - Zoom To Data and not to nearest Scale
+  * [ae4821318] 2018-05-24 - (Alessio Fabiani  )  Merge branch 'master' into master
+  * [be6f92bd8] 2018-05-24 - (afabiani         )   - pep8 issues
+  * [b21a0b887] 2018-05-24 - (afabiani         )   - Update pip install instructions on docs and README
+  * [914ccb200] 2018-05-24 - (afabiani         )   - Include django-celery-mon dep on requirements.txt
+  * [5b854c5ff] 2018-05-24 - (afabiani         )   - ASYNC MODE uses ASYNC CELERY TASKS
+  * [e4774bf26] 2018-05-23 - (afabiani         )   - ImageMosaics refactoring: first step - support ZIP archives with granules and .properties files
+  * [4a346bd57] 2018-05-23 - (afabiani         )   - Update dependencies versions
+  * [2a16bf00d] 2018-05-23 - (afabiani         )   - Fix Map Detail page structure issue and errors with GetCapabilities
+  * [df12893ce] 2018-05-22 - (Alessio Fabiani  )  Merge pull request #3807 from geosolutions-it/master
+  * [6c0e8ca5e] 2018-05-21 - (afabiani         )   - Restored the possibility of sending multiple uploads
+  * [15123a540] 2018-05-21 - (afabiani         )   - Translations and minor refactoring of upload validator
+  * [fc9f14c91] 2018-05-16 - (afabiani         )   - Reduced size of layer-upload tooltips square
+  * [bdf662488] 2018-05-16 - (afabiani         )   - Allow registered users to manage Remote Services
+  * [c46fcc5a0] 2018-05-16 - (afabiani         )  Merge branch 'master' of https://github.com/geosolutions-it/geonode
+  * [ddeebf561] 2018-05-16 - (afabiani         )   - Correct management of SLDs / Add GWC filterParameter to SLDs
+  * [d87b19040] 2018-05-16 - (Alessio Fabiani  )  Merge branch 'master' into master
+  * [7b32bb1dc] 2018-05-15 - (afabiani         )   - Correct management of SLDs / Add GWC filterParameter to SLDs
+  * [df941093f] 2018-05-15 - (Alessio Fabiani  )  Merge pull request #3805 from geosolutions-it/master
+  * [57f8e6f74] 2018-05-15 - (afabiani         )  Merge branch 'master' of https://github.com/geosolutions-it/geonode
+  * [4c10a8561] 2018-05-15 - (afabiani         )   - Increase Test Coverage
+  * [c358f24bf] 2018-05-15 - (afabiani         )  Merge
+  * [f44471237] 2018-05-15 - (afabiani         )   - Allow unapproved layers to be published on maps
+  * [07ebfeee3] 2018-05-15 - (afabiani         )   - Fix for issue Map Composer Menu not show complete #3804
+  * [dbde9664d] 2018-05-14 - (afabiani         )   - Test GeoServer Integration Tests running with Docker Compose
+  * [cf3247af8] 2018-05-14 - (afabiani         )   - Test GeoServer Integration Tests running with Docker Compose
+  * [83976d8b7] 2018-05-14 - (afabiani         )  Merge branch 'master' of https://github.com/geosolutions-it/geonode
+  * [325b27246] 2018-05-14 - (afabiani         )   - Fix ResponseNotReady issue
+  * [d32f11f18] 2018-05-14 - (afabiani         )   - Test GeoServer Integration Tests running with Docker Compose
+  * [bbaef20b2] 2018-05-14 - (afabiani         )   - Test GeoServer Integration Tests running with Docker Compose
+  * [02fbe2043] 2018-05-14 - (Alessio Fabiani  )  Merge pull request #3802 from ADB-SPADE/master
+  * [c9e396634] 2018-05-14 - (Alessio Fabiani  )  Merge branch 'master' into master
+  * [6c3b2b997] 2018-05-14 - (afabiani         )   - Fix celery tasks hanging forever
+  * [959219b06] 2018-05-14 - (afabiani         )   - Minor improvements
+  * [872e36631] 2018-05-14 - (Alessio Fabiani  )  Merge branch 'master' into master
+  * [d6f784faf] 2018-05-11 - (erwin            )  Generalize logo-urls in profile-detail template.
+  * [b0bb69926] 2018-05-11 - (Alessio Fabiani  )  Merge pull request #3798 from geosolutions-it/docker-compose
+  * [5ec88bc1c] 2018-05-11 - (afabiani         )   - Docker Compose improvs
+  * [38177424d] 2018-05-10 - (afabiani         )   - minor tweak on settings for Docker
+  * [ac173fcc0] 2018-05-09 - (afabiani         )   - Dockerfile: update pip install
+  * [f74ab0731] 2018-05-09 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [a01de4b0a] 2018-05-09 - (Alessio Fabiani  )  Merge pull request #3795 from geosolutions-it/monitoring_geoip2
+  * [0b0c2b794] 2018-05-09 - (afabiani         )   - Travis pip cache
+  * [695695082] 2018-05-09 - (afabiani         )  Merge branch 'master' of https://github.com/geosolutions-it/geonode into monitoring_geoip2
+  * [2e548df4c] 2018-05-09 - (afabiani         )   - Test coverage
+  * [a8e67f6ab] 2018-05-09 - (afabiani         )   - Integration test coverage
+  * [edf804405] 2018-05-09 - (Alessio Fabiani  )  Merge branch 'master' into monitoring_geoip2
+  * [35af12476] 2018-05-09 - (Alessio Fabiani  )  Merge pull request #3796 from geosolutions-it/twisted_requirements
+  * [7e9c14d8e] 2018-05-09 - (afabiani         )   - Integration test coverage
+  * [eb5de195a] 2018-05-09 - (afabiani         )   - pep8 issues
+  * [659b23ada] 2018-05-09 - (afabiani         )  Merge branch 'master' of https://github.com/geosolutions-it/geonode
+  * [8d8cb5453] 2018-05-09 - (afabiani         )   - Minor fixes to backup & restore commands
+  * [7ca44cd19] 2018-05-09 - (Alessio Fabiani  )  Merge branch 'master' into monitoring_geoip2
+  * [463e971d9] 2018-05-09 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [0ac411c2a] 2018-05-08 - (Cezary Statkiew..)  Merge remote-tracking branch 'geonode/master' into monitoring_geoip2
+  * [8e87da4d0] 2018-05-08 - (Cezary Statkiew..)  test-specific requirements: twisted
+  * [05e2a1b4e] 2018-05-08 - (afabiani         )   - Legend links for remote services
+  * [669b816ec] 2018-05-08 - (afabiani         )   - Legend links for remote services
+  * [f0366b2e4] 2018-05-08 - (Cezary Statkiew..)  monitoring: resolve 2-letter codes to 3-letter codes
+  * [0dcca888b] 2018-05-08 - (Cezary Statkiew..)  monitoring support for geoip2
+  * [360f7ddfd] 2018-05-08 - (afabiani         )   - Fix updatelayers mgmt command
+  * [4e1563ac6] 2018-05-08 - (Cezary Statkiew..)  monitoring support for geoip2
+  * [799f049aa] 2018-05-08 - (Cezary Statkiew..)  monitoring support for geoip2
+  * [501edfac6] 2018-05-08 - (afabiani         )   - Monitoring GeoIP error management
+  * [92f8e9235] 2018-05-08 - (Alessio Fabiani  )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [d9d8e84ef] 2018-05-08 - (afabiani         )  Merge branch 'master' of https://github.com/geosolutions-it/geonode
+  * [6382e3bab] 2018-05-08 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [d4ebe63ef] 2018-05-08 - (Cezary Statkiew..)  Monitoring geoip2 (#286)
+  * [6044d0a39] 2018-05-08 - (Alessio Fabiani  )  Merge pull request #3794 from geosolutions-it/monitoring_geoip2
+  * [f6658e1c6] 2018-05-08 - (afabiani         )   - Disabling synchronous remote services probe from model
+  * [98b752904] 2018-05-08 - (Cezary Statkiew..)  handle new geoip format properly
+  * [9dba9c2fa] 2018-05-08 - (Cezary Statkiew..)  Merge remote-tracking branch 'geonode/master' into monitoring_geoip2
+  * [38db65e3a] 2018-05-08 - (Cezary Statkiew..)  use maxmind v2 db format if needed
+  * [25d4f3f1f] 2018-05-07 - (afabiani         )   - Improve Test Coverage
+  * [b97f23b5b] 2018-05-07 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [d61720936] 2018-05-07 - (Alessio Fabiani  )  Merge pull request #3780 from GeoNode/ISSUE_3662
+  * [44ec68869] 2018-05-07 - (Alessio Fabiani  )  Update helpers.py
+  * [27efde124] 2018-05-07 - (afabiani         )   - Test coverage improvements
+  * [bc5992a32] 2018-05-07 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [d762796e0] 2018-05-04 - (giohappy         )  included default settings for social providers
+  * [2e4bd5ad7] 2018-04-29 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3662
+  * [2a0d06f5a] 2018-04-29 - (Alessio Fabiani  )  Merge pull request #3750 from cartologic/add-geometry-type-to-layer
+  * [7b37cb1bb] 2018-04-29 - (Alessio Fabiani  )  Merge branch 'master' into add-geometry-type-to-layer
+  * [835068825] 2018-04-28 - (Alessio Fabiani  )  Update helpers.py
+  * [8652c27cc] 2018-04-26 - (Alessio Fabiani  )  Merge with master
+  * [6af5f5155] 2018-04-26 - (afabiani         )   - fixes and improvements to Layer replase functionalities
+  * [06166fe5f] 2018-04-26 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [c33701ef8] 2018-04-26 - (Alessio Fabiani  )  Merge pull request #3781 from GeoNode/MINOR_IMPROVS_TMP
+  * [172c79cb0] 2018-04-26 - (Alessio Fabiani  )  Merge pull request #3782 from geosolutions-it/messaging_error_handling
+  * [7881606f5] 2018-04-26 - (Ahmed Nour Eldeen)  Merge branch 'master' into add-geometry-type-to-layer
+  * [fe14d724a] 2018-04-26 - (Ahmed Nour Eldeen)  check geometry type
+  * [401ad5b13] 2018-04-26 - (afabiani         )   - Fix layer replase
+  * [c47b75a94] 2018-04-26 - (afabiani         )   - Fix remote services layout
+  * [3b94ba24b] 2018-04-26 - (Cezary Statkiew..)  catch geoserver error in messaging, to avoid looped delivery
+  * [c085b83c0] 2018-04-26 - (Alessio Fabiani  )  Update utils.py
+  * [ae62bfd86] 2018-04-26 - (afabiani         )   - Fix test cases
+  * [5753b664c] 2018-04-26 - (afabiani         )   - Fix test cases
+  * [db24fe3e1] 2018-04-26 - (Alessio Fabiani  )   - Fix test cases
+  * [c01462323] 2018-04-26 - (afabiani         )   - Fix test cases
+  * [6c1d60eab] 2018-04-26 - (Alessio Fabiani  )  Updated changelog for version 2.8
+  * [95e91b7b3] 2018-04-26 - (Alessio Fabiani  )  Constrain pip to 9.0.3
+  * [419d2e1fa] 2018-04-26 - (afabiani         )   - Restore production/docker requirements
+  * [65bcf7461] 2018-04-26 - (afabiani         )   - DB consistency checks
+  * [07271fa5b] 2018-04-26 - (Alessio Fabiani  )  Update utils.py
+  * [b996b4b63] 2018-04-26 - (Alessio Fabiani  )  Update utils.py
+  * [32ddf3c33] 2018-04-26 - (afabiani         )   - Update avatar version
+  * [7d8d53c58] 2018-04-26 - (Alessio Fabiani  )  Update utils.py
+  * [4a66e0891] 2018-04-26 - (afabiani         )  Merge branch 'MINOR_IMPROVS_TMP' of https://github.com/GeoNode/geonode
+  * [991ac09e5] 2018-04-26 - (afabiani         )  Merge branch 'ISSUE_3662' of https://github.com/GeoNode/geonode
+  * [ba3fb4b54] 2018-04-26 - (Alessio Fabiani  )  Update utils.py
+  * [e25f154d3] 2018-04-24 - (afabiani         )  Just fix requirements versions for GeoNode modules in order to avoid compatibility issues
+  * [2e77def04] 2018-04-24 - (afabiani         )  Minor improvement to custom_theme_html template
+  * [4e14df5a8] 2018-04-24 - (afabiani         )  [Closes #3662] GNIP: Improvements to GeoNode Layers download links
+  * [9af820274] 2018-04-24 - (afabiani         )  Just fix requirements versions for GeoNode modules in order to avoid compatibility issues
+  * [1dd9e0264] 2018-04-24 - (afabiani         )  Minor improvement to custom_theme_html template
+  * [8d6f5379f] 2018-04-24 - (afabiani         )  [Closes #3662] GNIP: Improvements to GeoNode Layers download links
+  * [77f046fce] 2018-04-24 - (Alessio Fabiani  )  Merge pull request #3779 from geosolutions-it/monitoring_geoip2
+  * [602e1a06b] 2018-04-24 - (Cezary Statkiew..)  use geoip2 for monitoring
+  * [8a7818cfb] 2018-04-24 - (Alessio Fabiani  )  Merge pull request #3776 from PacificCommunity/fix-slow-login
+  * [def7df173] 2018-04-24 - (olivierdalang    )  fix slow login/logout on certain circumstances
+  * [dee03ba92] 2018-04-23 - (afabiani         )   - Fix reproj issue on bbox_to_projection
+  * [4bce2e53b] 2018-04-23 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [50705bba9] 2018-04-23 - (Alessio Fabiani  )  Merge pull request #3757 from GeoNode/ISSUE_3661
+  * [36467bc57] 2018-04-23 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3661
+  * [68d28f119] 2018-04-23 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [7f6e0ee63] 2018-04-23 - (Alessio Fabiani  )  Merge pull request #3770 from GeoNode/ISSUE_3769
+  * [cef3301cf] 2018-04-23 - (afabiani         )  Merge with master
+  * [f8864cf75] 2018-04-23 - (afabiani         )  Merge branch 'master' of https://github.com/geosolutions-it/geonode
+  * [3817491d9] 2018-04-23 - (afabiani         )  Merge with master
+  * [0aa2f644d] 2018-04-23 - (Alessio Fabiani  )   - Support for pip >= 10
+  * [e379122b3] 2018-04-23 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3769
+  * [531bd0bc2] 2018-04-23 - (Alessio Fabiani  )  Merge pull request #3766 from PacificCommunity/reuse_requirements_in_setup
+  * [86fed383c] 2018-04-23 - (Alessio Fabiani  )  Merge pull request #3773 from PacificCommunity/fix-3643
+  * [205823abb] 2018-04-23 - (Olivier          )  [FIX #3643] better display for discover section on homepage
+  * [634630164] 2018-04-23 - (Olivier          )  missing dep for integrations test
+  * [152b33631] 2018-04-18 - (Olivier          )  use same deps for requirements.txt and setup.txt
+  * [db57dd3c7] 2018-04-21 - (Alessio Fabiani  )  Update settings.py
+  * [f50b2402e] 2018-04-21 - (Alessio Fabiani  )  Merge branch 'ISSUE_3769' of https://github.com/GeoNode/geonode into ISSUE_3769
+  * [ef7666172] 2018-04-21 - (Alessio Fabiani  )  Merge branch 'master' of https://github.com/GeoNode/geonode into ISSUE_3769
+  * [ca856e148] 2018-04-21 - (afabiani         )  Merge branch 'ISSUE_3661' of https://github.com/GeoNode/geonode into ISSUE_3661
+  * [d1aff2871] 2018-04-21 - (afabiani         )  Merge with master
+  * [8d80a6f46] 2018-04-21 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode into ISSUE_3661
+  * [ceee3d0a4] 2018-04-21 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3661
+  * [4fbbaf63a] 2018-04-21 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3769
+  * [6a8984734] 2018-04-21 - (Alessio Fabiani  )  Merge pull request #3772 from GeoNode/IMPORTER_TIME_DIM_FIXES
+  * [efd2441a0] 2018-04-21 - (Alessio Fabiani  )  Merge pull request #3767 from GeoNode/remove-rtd-patch
+  * [1a4453e6c] 2018-04-21 - (Alessio Fabiani  )   - Fix settings test cases
+  * [7d3350ab1] 2018-04-21 - (Alessio Fabiani  )  Merge branch 'master' of https://github.com/GeoNode/geonode into ISSUE_3769
+  * [901054654] 2018-04-20 - (Alessio Fabiani  )   - Fix Importer Time Dimensions Transform and KMZ vx KML overlays
+  * [4f244436d] 2018-04-20 - (Alessio Fabiani  )  Merge branch 'master' into remove-rtd-patch
+  * [0d49c5a55] 2018-04-20 - (Alessio Fabiani  )  Merge pull request #3771 from geosolutions-it/monitoring_gs_check
+  * [16c9fc96d] 2018-04-20 - (Alessio Fabiani  )   - Fix bdd tests
+  * [7e5ebbf11] 2018-04-20 - (Cezary Statkiew..)  do not check url from gs in monitoring
+  * [d6622b147] 2018-04-20 - (Alessio Fabiani  )  [Fixes #3769] - Pip install geonode complains about Celery
+  * [52d5650e6] 2018-04-20 - (Alessio Fabiani  )   - Reload uploaded layer from catalog
+  * [95391f8c4] 2018-04-20 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode into ISSUE_3661
+  * [1a03e7279] 2018-04-20 - (Alessio Fabiani  )  Update setup.py
+  * [5adacc647] 2018-04-20 - (Alessio Fabiani  )  Merge pull request #3762 from GeoNode/ISSUE_3710
+  * [928465e37] 2018-04-20 - (Alessio Fabiani  )  Merge pull request #3764 from geosolutions-it/monitoring_autoconfigure_service_last_check
+  * [64778d23a] 2018-04-20 - (Cezary Statkiew..)  service.last_check default value in model
+  * [4427f9b19] 2018-04-20 - (Cezary Statkiew..)  Merge remote-tracking branch 'geonode/master' into monitoring_autoconfigure_service_last_check
+  * [89b75e754] 2018-04-20 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode into ISSUE_3661
+  * [e7a45e619] 2018-04-20 - (afabiani         )   - Restoring Live Server port settings on integration tests in order to avoid address conflicts
+  * [8de19bd43] 2018-04-20 - (Giovanni Allegri )  remove fix for readthedocs
+  * [07e40e5a4] 2018-04-20 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3710
+  * [c3a2405ac] 2018-04-20 - (Alessio Fabiani  )  Merge pull request #3765 from PacificCommunity/pin-autocomplete-light-dep
+  * [ed8f1a704] 2018-04-20 - (Olivier          )  pin lxml to 3.6.2
+  * [04a5bfa40] 2018-04-20 - (Olivier          )  pin django-autocomplete-light to 2.3.3
+  * [67972eaf5] 2018-04-19 - (Cezary Statkiew..)  populate service.last_check in monitoring in autoconfigure
+  * [8b93fa24b] 2018-04-19 - (afabiani         )   - Split test cases on travis
+  * [cf61164bd] 2018-04-19 - (afabiani         )   - Split test cases on travis
+  * [4be6c0d65] 2018-04-19 - (Alessio Fabiani  )   - Fixes: allow raster zip files also
+  * [36452db1b] 2018-04-19 - (Alessio Fabiani  )   - Fixes KML upload issue
+  * [f2bb89318] 2018-04-19 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode into ISSUE_3661
+  * [e7a1dd75b] 2018-04-19 - (Alessio Fabiani  )   - Fix test cases and minor improvements to monitoring plugin
+  * [3d0e064c2] 2018-04-19 - (Alessio Fabiani  )   - Re-enable LOGGER handlers on settings
+  * [b4935651d] 2018-04-19 - (afabiani         )  Merge branch 'master' of https://github.com/geosolutions-it/geonode into ISSUE_3661
+  * [91d284ef2] 2018-04-19 - (Alessio Fabiani  )   - Minor improvements to remote services
+  * [cab688e77] 2018-04-19 - (afabiani         )   - Align with master
+  * [0db74dea3] 2018-04-19 - (Alessio Fabiani  )   - Minor fixes and cleanup
+  * [23c25cede] 2018-04-19 - (afabiani         )  Merge branch 'ISSUE_3661' of https://github.com/GeoNode/geonode into ISSUE_3661
+  * [68c833e56] 2018-04-19 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3661
+  * [39a404b48] 2018-04-19 - (Alessio Fabiani  )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [c0c290bb4] 2018-04-19 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode into ISSUE_3661
+  * [e92165d2c] 2018-04-18 - (afabiani         )   - cleanup
+  * [c7edb2234] 2018-04-18 - (afabiani         )   - align with master branch
+  * [74e4b46cf] 2018-04-18 - (Alessio Fabiani  )  Merge pull request #3760 from t-book/master
+  * [b59d00fd5] 2018-04-18 - (afabiani         )  Merge branch 'master' of https://github.com/geosolutions-it/geonode into ISSUE_3661
+  * [2bf2a48f6] 2018-04-18 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode into ISSUE_3661
+  * [9af3354ea] 2018-04-18 - (Alessio Fabiani  )   - Typo in Remote Services Handlers
+  * [f73b843d6] 2018-04-18 - (Alessio Fabiani  )   - Fixes for GeoServer Importer Uploader
+  * [e0cdcfb2a] 2018-04-18 - (Toni Schönbuchner)  aligned lines in code block
+  * [3e39bfd9a] 2018-04-18 - (Alessio Fabiani  )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [9b680c559] 2018-04-18 - (Alessio Fabiani  )  Merge pull request #3759 from GeoNode/PR_3758
+  * [e37f2d454] 2018-04-18 - (Alessio Fabiani  )   - Disabling synchronous Remote Services probe
+  * [b4558f944] 2018-04-18 - (Alessio Fabiani  )  [Rebased] Changed pattern for user name in capabilities url (added +@)
+  * [61e776fe0] 2018-04-18 - (Alessio Fabiani  )  Merge branch 'master' of https://github.com/geosolutions-it/geonode into geosolutions_master
+  * [26345e2e7] 2018-04-18 - (Alessio Fabiani  )   - Improvements and fixes to Remote Services
+  * [2519f3fc0] 2018-04-18 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3661
+  * [67206f799] 2018-04-17 - (Alessio Fabiani  )  Better alignment of jumbotron image
+  * [c20fd2166] 2018-04-17 - (afabiani         )   - Fix integration test cases
+  * [d05ba3f8a] 2018-04-17 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3661
+  * [c0b298f69] 2018-04-16 - (afabiani         )  [Closes #3661] django 1.11 LTS support on master
+  * [d66e89da7] 2018-04-17 - (afabiani         )  Merge branch 'master' of https://github.com/geosolutions-it/geonode
+  * [ef8fcd21b] 2018-04-17 - (Alessio Fabiani  )  Better alignment of jumbotron image
+  * [5972d18a8] 2018-04-16 - (afabiani         )  [Closes #3661] django 1.11 LTS support on master
+  * [b17b40a19] 2018-04-16 - (afabiani         )  [Fixes #3753] GeoExt Maps: thumbnail is not correctly saved the first time I save the map / [Fixes #3752] GeoExt Maps do not preserve the saved zoom level
+  * [dba64dc22] 2018-04-16 - (afabiani         )  Fix GeoNode test framework timeouts on Travis
+  * [a12447fb7] 2018-04-16 - (afabiani         )  [Closes] Top margin for jumbotron backgroung image / Option to hide message overlaid on jumbotron
+  * [4a4b865f9] 2018-04-16 - (afabiani         )  Fix GeoNode test framework timeouts on Travis
+  * [c222d06be] 2018-04-16 - (afabiani         )  Fix GeoNode test framework timeouts on Travis
+  * [32873ce39] 2018-04-16 - (afabiani         )  Fix GeoNode test framework timeouts on Travis
+  * [95154907c] 2018-04-16 - (afabiani         )  Fix GeoNode test framework timeouts on Travis
+  * [848f0eb88] 2018-04-16 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [cb46b66bf] 2018-04-16 - (Alessio Fabiani  )  Merge pull request #3756 from t-book/master
+  * [5b798f08f] 2018-04-15 - (Toni Schönbuchner)  #3754: corrected geonode Version. Fixed tomcat reference
+  * [0a3c05e1a] 2018-04-14 - (afabiani         )  Trying to speed up tests
+  * [413e8d836] 2018-04-14 - (afabiani         )  Fix pinax notifications namespace
+  * [af0fedffb] 2018-04-14 - (afabiani         )  Faster test cases
+  * [bf16f43e1] 2018-04-14 - (afabiani         )  Fix UI html template
+  * [f767b281d] 2018-04-13 - (afabiani         )  Fix ui customization template: email field
+  * [942abb826] 2018-04-13 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [ee8eb2883] 2018-04-13 - (afabiani         )  Trying to revert to sequential nose test suite (until Django upgrade)
+  * [3897847fd] 2018-04-13 - (afabiani         )  GeoNode Test Suite: minor improvements
+  * [9f34d4919] 2018-04-13 - (afabiani         )  Monitoring: pep8 fixes
+  * [7d31e6ff1] 2018-04-13 - (afabiani         )  [Monitoring] collect metrics api url exposed
+  * [1987172b3] 2018-04-13 - (Alessio Fabiani  )  Merge pull request #3725 from GeoNode/ISSUE_3711
+  * [097829014] 2018-04-13 - (afabiani         )  Monitoring auto_configure hosts
+  * [42ea0d74c] 2018-04-13 - (afabiani         )  GeoNode test case refactoring
+  * [baff1ab5b] 2018-04-13 - (afabiani         )  GeoNode test case refactoring
+  * [9d545611c] 2018-04-13 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [e09df84b1] 2018-04-13 - (afabiani         )  GeoNode test case refactoring
+  * [7b5f71ad4] 2018-04-12 - (afabiani         )  [Closes #3743] [GNIP] GeoNode UI customization from admin - add partners management
+  * [2b68db2df] 2018-04-13 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [410f0b0e5] 2018-04-13 - (Alessio Fabiani  )  Merge pull request #3744 from GeoNode/ISSUE_3743
+  * [a0dc1aeaa] 2018-04-13 - (Alessio Fabiani  )  Merge pull request #3751 from ADB-SPADE/master
+  * [6e84a81ad] 2018-04-13 - (Alessio Fabiani  )  Merge pull request #3729 from GeoNode/ISSUE_3719
+  * [006ea7294] 2018-04-13 - (Alessio Fabiani  )  Merge pull request #3724 from GeoNode/ISSUE_3705
+  * [8afe731e2] 2018-04-12 - (afabiani         )  GeoNode test case refactoring
+  * [d3bb449a2] 2018-04-12 - (Unknown          )  Add .shp file to file_paths for validate_shapefile_components
+  * [9a841476b] 2018-04-12 - (afabiani         )  [Closes #3743] [GNIP] GeoNode UI customization from admin
+  * [7c9de6bb2] 2018-04-12 - (afabiani         )  Merge branch 'master' of https://github.com/geosolutions-it/geonode
+  * [f5c026cc9] 2018-04-12 - (afabiani         )  [Closes #3743] [GNIP] GeoNode UI customization from admin
+  * [9e7a9e89e] 2018-04-12 - (afabiani         )  Merge
+  * [7120a8ee6] 2018-04-11 - (afabiani         )  GeoNode test case refactoring
+  * [ad798d0b2] 2018-04-11 - (afabiani         )  [Fixes #3747] Gxp time-slider not showing up after recent bbox adjustments
+  * [7fbe00405] 2018-04-11 - (giohappy         )  Reference GeoExplorer's github repo in docs
+  * [9c87dcb2a] 2018-04-11 - (giohappy         )  Reference GeoExplorer's github repo in docs
+  * [10e97f399] 2018-04-11 - (afabiani         )  GeoNode test case refactoring
+  * [bb9696b9c] 2018-04-11 - (afabiani         )  GeoNode test case refactoring
+  * [62d7ad950] 2018-04-11 - (afabiani         )  GeoNode test case refactoring
+  * [aad557f92] 2018-04-11 - (Ahmed Nour Eldeen)  get geometry type for layers
+  * [9a91decf6] 2018-04-11 - (Alessio Fabiani  )  fix READTHEDOCS
+  * [34db45a71] 2018-04-11 - (afabiani         )  fix READTHEDOCS
+  * [935fa2dea] 2018-04-11 - (afabiani         )  fix READTHEDOCS
+  * [b8f818952] 2018-04-11 - (Alessio Fabiani  )  Delete .readthedocs.yml
+  * [6d174f38f] 2018-04-11 - (afabiani         )  fix READTHEDOCS
+  * [53e79e30b] 2018-04-11 - (afabiani         )  fix READTHEDOCS
+  * [c7aa4cbff] 2018-04-11 - (afabiani         )  fix READTHEDOCS
+  * [15c41fa0b] 2018-04-11 - (afabiani         )  [Fixes #3747] Gxp time-slider not showing up after recent bbox adjustments
+  * [79b92e74c] 2018-04-11 - (afabiani         )  [Fixes #3745] Adding linked document deletes all other linked documents
+  * [024caa25e] 2018-04-11 - (afabiani         )  fix READTHEDOCS
+  * [68c5cd426] 2018-04-11 - (Alessio Fabiani  )  Fix READTHEDOCS
+  * [63cd88ca7] 2018-04-11 - (giohappy         )  Reference GeoExplorer's github repo in docs
+  * [6d9cacd57] 2018-04-11 - (afabiani         )  [Fixes #3747] Gxp time-slider not showing up after recent bbox adjustments
+  * [46c37163c] 2018-04-11 - (afabiani         )  [Fixes #3745] Adding linked document deletes all other linked documents
+  * [58e923377] 2018-04-10 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3719
+  * [804e140c8] 2018-04-09 - (Alessio Fabiani  )  Merge branch 'master' of https://github.com/GeoNode/geonode into ISSUE_3711
+  * [e6e1aa7a0] 2018-04-09 - (afabiani         )  - Refreshing static files compiled with updated versions of bower and grunt
+  * [f46c398ef] 2018-04-09 - (afabiani         )  [Closes #3743] [GNIP] GeoNode UI customization from admin
+  * [5589619ca] 2018-04-09 - (afabiani         )   - Refreshing static files compiled with updated versions of bower and grunt
+  * [53c68a9c0] 2018-04-09 - (Alessio Fabiani  )  Update setup.py
+  * [b4e00d119] 2018-04-09 - (afabiani         )  [Closes #3743] [GNIP] GeoNode UI customization from admin
+  * [fcbf7d36f] 2018-04-09 - (afabiani         )  Merge with master
+  * [d35c19718] 2018-04-09 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3705
+  * [093e72ed5] 2018-04-09 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3719
+  * [46ae4acda] 2018-04-09 - (Alessio Fabiani  )  Merge pull request #3741 from t-book/master
+  * [8f4e4462c] 2018-04-09 - (Alessio Fabiani  )  Merge pull request #3734 from GeoNode/ISSUE_3703
+  * [c83e4cee1] 2018-04-09 - (Toni Schönbuchner)  Updated vagrant tutorial for Ubuntu 16.04
+  * [d2def7e10] 2018-04-09 - (Alessio Fabiani  )  Update requirements.txt
+  * [24c077c29] 2018-04-09 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [47b1219b0] 2018-04-09 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3719
+  * [47d4a5d62] 2018-04-09 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3705
+  * [638deda3a] 2018-04-09 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3703
+  * [1ea789cbe] 2018-04-09 - (Alessio Fabiani  )  Merge pull request #3728 from GeoNode/ISSUE_3715
+  * [e55f5be78] 2018-04-08 - (afabiani         )  Merge
+  * [0a2528589] 2018-04-08 - (Alessio Fabiani  )  Merge pull request #3666 from cartologic/update_layers
+  * [29fb0cd83] 2018-04-08 - (Alessio Fabiani  )  Update setup.py
+  * [41b474d27] 2018-04-08 - (Alessio Fabiani  )  Update setup.py
+  * [7273c78d8] 2018-04-08 - (Alessio Fabiani  )  Update requirements.txt
+  * [43c2e6c84] 2018-04-08 - (Alessio Fabiani  )  Fix pep8
+  * [007d12ed0] 2018-04-08 - (Alessio Fabiani  )  Merge branch 'master' into update_layers
+  * [ed0e94723] 2018-04-08 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3705
+  * [6338e39fb] 2018-04-08 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3715
+  * [6fe5c05e0] 2018-04-08 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3719
+  * [a99d1d760] 2018-04-08 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3703
+  * [045c0366e] 2018-04-08 - (Alessio Fabiani  )  Merge pull request #3730 from GeoNode/ISSUE_3720
+  * [cc2938369] 2018-04-08 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3719
+  * [d841f0a43] 2018-04-08 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3715
+  * [a8c4887e4] 2018-04-07 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3705
+  * [d070707af] 2018-04-07 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3720
+  * [a4618c33d] 2018-04-07 - (Alessio Fabiani  )  Merge pull request #3726 from GeoNode/ISSUE_3712
+  * [a25c10108] 2018-04-07 - (Alessio Fabiani  )  Merge pull request #3733 from GeoNode/ISSUE_3702
+  * [2a3b7e7e4] 2018-04-07 - (Alessio Fabiani  )  Merge branch 'master' into ISSUE_3712
+  * [170b63dc2] 2018-04-07 - (Alessio Fabiani  )  Merge pull request #3737 from geosolutions-it/allowed_hosts_parsing
+  * [54e678509] 2018-04-07 - (Alessio Fabiani  )  Merge branch 'master' into allowed_hosts_parsing
+  * [c0313590b] 2018-04-07 - (Alessio Fabiani  )  Merge pull request #3736 from geosolutions-it/requirements_no_sqlalchemy
+  * [182ffabcc] 2018-04-07 - (Alessio Fabiani  )  Merge branch 'master' into requirements_no_sqlalchemy
+  * [c5bfc9181] 2018-04-07 - (Alessio Fabiani  )  Merge pull request #3731 from GeoNode/ISSUE_3721
+  * [81ff840c6] 2018-04-07 - (Alessio Fabiani  )  Merge pull request #3732 from GeoNode/ISSUE_3700
+  * [58e5e62c1] 2018-04-07 - (Alessio Fabiani  )  Merge branch 'master' into requirements_no_sqlalchemy
+  * [ff44ceffb] 2018-04-06 - (Paolo Corti      )  Merge branch 'master' into ISSUE_3721
+  * [12bbb1ad9] 2018-04-06 - (Paolo Corti      )  Merge branch 'master' into ISSUE_3700
+  * [8fa626967] 2018-04-06 - (Alessio Fabiani  )  [Fixes #3704] Protect and hide views and pages accessible to superuser only (#3735)
+  * [95aff5c9b] 2018-04-06 - (Cezary Statkiew..)  support for different notations of allowed_hosts env var
+  * [63b10610a] 2018-04-06 - (Cezary Statkiew..)  removed unused sqlalchemy
+  * [32d04ac13] 2018-04-06 - (Paolo Corti      )  Merge branch 'master' into ISSUE_3700
+  * [c9dfd2803] 2018-04-06 - (Alessio Fabiani  )  [Closes #3713] Update settings password hashers (#3727)
+  * [dd52d8324] 2018-04-03 - (afabiani         )  [Fixes #3703] Upgrade pycsw to the new version 2.2.0
+  * [6d96f9aa9] 2018-04-03 - (Alessio Fabiani  )  [Fixes #3702] Improve settings and documentation accordingly for CELERY and MAP DEFAULT CRS
+  * [9b06f066b] 2018-04-03 - (afabiani         )  [Fixes #3700] Map detail page wrong zoom
+  * [0ec01c4c1] 2018-04-06 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [052a6d0d6] 2018-04-05 - (afabiani         )  [Closes #3721] Align contrib apps with Django improvements and remove print statements
+  * [d3f68ae7e] 2018-04-05 - (afabiani         )  [Closes #3720] Improve Base Regions Form Widget: remove deprecated stuff and use region IDs consistently
+  * [adeaeff19] 2018-04-05 - (afabiani         )  [Fixes #3719] Complete amqp configuration for ASYNC messaging system
+  * [fecf8adf8] 2018-04-05 - (afabiani         )  [Fixes #3719] Complete amqp configuration for ASYNC messaging system
+  * [45a9d8fa4] 2018-04-05 - (afabiani         )  [Closes #3715] Remove deprecated BaseCommand.option_list from management commands
+  * [1ba384666] 2018-04-04 - (afabiani         )  [Fixes #3712] Fix Layer getFeatureInfo Property Labels
+  * [b687c0e0d] 2018-04-04 - (afabiani         )  [Closes #3711] Update GeoServer to 2.13 version
+  * [6b6ebddcb] 2018-04-04 - (afabiani         )  [Fixes #3705] Add GeoNode (OWS) and ArcGIS Endpoints to Remote Services
+  * [07c0a9590] 2018-04-06 - (Alessio Fabiani  )  Merge pull request #3723 from lucernae/fix_qgis_server
+  * [76c0403a0] 2018-04-03 - (Rizky Maulana N..)  Fix QGIS Server settings sample
+  * [27c00e402] 2018-04-05 - (afabiani         )  [Fixes #3719] Complete amqp configuration for ASYNC messaging system
+  * [4a93ee546] 2018-04-05 - (afabiani         )  [Closes #3721] Align contrib apps with Django improvements and remove print statements
+  * [19efe55a6] 2018-04-05 - (afabiani         )  [Closes #3720] Improve Base Regions Form Widget: remove deprecated stuff and use region IDs consistently
+  * [def176524] 2018-04-05 - (afabiani         )  [Fixes #3719] Complete amqp configuration for ASYNC messaging system
+  * [4e91c60dc] 2018-04-05 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [b48e34731] 2018-04-05 - (Alessio Fabiani  )  Merge pull request #3717 from sharon-tickell/geoserver-datastore-fix
+  * [5510dba6c] 2018-04-05 - (tic016           )  Use the correct datastore name in _create_db_featurestore The datastore-name is not necessarily the same as the datastore-database-name, and other upload/create datastore functions all use ogc_server_settings.DATASTORE
+  * [08c09552f] 2018-04-05 - (afabiani         )  [Closes #3715] Remove deprecated BaseCommand.option_list from management commands
+  * [98d496055] 2018-04-04 - (afabiani         )  [Closes #3713] Update settings password hashers
+  * [f557aec98] 2018-04-04 - (afabiani         )  [Fixes #3712] Fix Layer getFeatureInfo Property Labels
+  * [753e98cac] 2018-04-04 - (afabiani         )  [Closes #3711] Update GeoServer to 2.13 version
+  * [864db65bd] 2018-04-04 - (afabiani         )  [Fixes #3705] Add GeoNode (OWS) and ArcGIS Endpoints to Remote Services
+  * [eb7dace92] 2018-04-04 - (afabiani         )  Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [f67a81d87] 2018-04-04 - (Alessio Fabiani  )  Merge pull request #3706 from ADB-SPADE/master
+  * [afca6e2ee] 2018-04-03 - (Unknown          )  Documentation on Google & Bing basemaps
+  * [34f0f8535] 2018-04-03 - (afabiani         )  [Fixes #3704] Protect and hide views and pages accessible to superuser only
+  * [741c871d9] 2018-04-03 - (afabiani         )  [Fixes #3703] Upgrade pycsw to the new version 2.2.0
+  * [ba0e2f845] 2018-04-03 - (Alessio Fabiani  )  [Fixes #3702] Improve settings and documentation accordingly for CELERY and MAP DEFAULT CRS
+  * [6e112d5a9] 2018-04-03 - (afabiani         )  [Fixes #3700] Map detail page wrong zoom
+  * [683adc0f7] 2018-04-03 - (Alessio Fabiani  )  Update README
+  * [1169fd3e6] 2018-04-03 - (afabiani         )  Forward port 2.8.0 stable fixes
+  * [de4eaae8a] 2018-04-03 - (afabiani         )   - Adding minor fixes as identified by @capooti review of PR #3698
+  * [577097a98] 2018-04-03 - (Alessio Fabiani  )  Merge pull request #3698 from GeoNode/ISSUE_3684_27X
+  * [055191022] 2018-03-30 - (afabiani         )  [Fixes #3684] Keep original projection and BBOX / general cleanup of resource models and logs
+  * [1669a8819] 2018-03-30 - (Alessio Fabiani  )  Bump GeoServer debian package version to 2.12.2-4
+  * [c1b350b30] 2018-03-30 - (afabiani         )  - Preparing for RELEASE 2.8.0 : fixing tomcat dependency issues
+  * [e6dae340b] 2018-03-30 - (Alessio Fabiani  )   - geoserver debian package version update
+  * [79d148042] 2018-03-30 - (Alessio Fabiani  )  Merge branch '2.7.x' of https://github.com/GeoNode/geonode into 2.7.x
+  * [9f55c45a7] 2018-03-30 - (afabiani         )  - Preparing for RELEASE RC13
+  * [7b6ea8d65] 2018-03-30 - (Alessio Fabiani  )   - preparing for release 2.8.0
+  * [dfff96887] 2018-03-30 - (Alessio Fabiani  )  Merge branch '2.7.x' of https://github.com/GeoNode/geonode into 2.7.x
+  * [cc48eb028] 2018-03-30 - (afabiani         )  - Preparing for RELEASE RC13
+  * [e762a709d] 2018-03-30 - (Alessio Fabiani  )  Merge branch '1.7.x' of https://github.com/GeoNode/geonode into 2.7.x
+  * [ac806569f] 2018-03-30 - (afabiani         )  - Preparing for RELEASE RC13
+  * [2f69c5ef5] 2018-03-30 - (Alessio Fabiani  )  Updated changelog for version 2.8rc12
+  * [8debdec49] 2018-03-30 - (afabiani         )  - Preparing for RELEASE RC12
+  * [664dd5cc0] 2018-03-30 - (afabiani         )   - Preparing for RELEASE RC12
+  * [39b5c9095] 2018-03-30 - (afabiani         )  [fixes #3644] Zoom to layer extent zooms to whole world instead #3644
+  * [2e28e4b72] 2018-03-30 - (afabiani         )  [fixes #3690] Maps metadata is broken
+  * [33ad61dbf] 2018-03-30 - (afabiani         )  [fixes #3690] Maps metadata is brfoken
+  * [3790b8bab] 2018-03-29 - (afabiani         )   - updating deps ppa checks on setup.py
+  * [6e1a0d14f] 2018-03-28 - (Alessio Fabiani  )  Merge pull request #3680 from DanielJDufour/geotiff-io
+  * [ec51ff60b] 2018-03-28 - (Alessio Fabiani  )  Docs update (#3689)
+  * [f91483f25] 2018-03-28 - (Alessio Fabiani  )  Merge pull request #3688 from francbartoli/2.7.x
+  * [62899c090] 2018-03-28 - (DanielJDufour    )  Merge branch 'master' of github.com:GeoNode/geonode into geotiff-io
+  * [8fc3cf31d] 2018-03-28 - (Francesco Bartoli)  Merge remote-tracking branch 'origin/2.7.x' into 2.7.x
+  * [02ef697e3] 2018-03-28 - (Francesco Bartoli)  Fix nginx service as allowed host (#3687)
+  * [0bdb10f9f] 2018-03-28 - (DanielJDufour    )  added integration tests for geotiff.io
+  * [8a819c252] 2018-03-28 - (DanielJDufour    )  [geotiff.io integration] don't add access token param to url if none
+  * [cb5b82978] 2018-03-28 - (Alessio Fabiani  )  Merge branch '2.7.x' of https://github.com/GeoNode/geonode into 2.7.x
+  * [e5a8a98f3] 2018-03-28 - (afabiani         )   - docs update
+  * [827a02d4a] 2018-03-28 - (Alessio Fabiani  )  Merge pull request #3685 from GeoNode/ALIGN_WITH_RC
+  * [6f766aefc] 2018-03-28 - (Francesco Bartoli)  Fix nginx service as allowed host
+  * [15125a2a6] 2018-03-28 - (Simone Dalmasso  )  remove nowrap to fix right columns css issues in detail pages
+  * [e439c2a3e] 2018-03-28 - (Alessio Fabiani  )  Merge pull request #3686 from simod/2.7.x
+  * [3b1e50564] 2018-03-28 - (Simone Dalmasso  )  remove nowrap to fix right columns css issues in detail pages
+  * [fe1c7259a] 2018-03-28 - (DanielJDufour    )  fixed flake8 issues to align with style guide
+  * [df303bdf2] 2018-03-28 - (afabiani         )   - Fix pub geoserver endpoint
+  * [1d6a5c606] 2018-03-28 - (Alessio Fabiani  )   - Fix test cases
+  * [e4fa47072] 2018-03-28 - (Alessio Fabiani  )   - Fix test cases
+  * [1ce13c6bf] 2018-03-28 - (afabiani         )   - Fix pub geoserver endpoint
+  * [7b0708500] 2018-03-28 - (afabiani         )   - Fix csw test cases
+  * [4f7d82a92] 2018-03-27 - (afabiani         )   - Align with Release Candidate
+  * [6421943bf] 2018-03-27 - (afabiani         )  [Before Release 2.7.6] Updating settings and docs
+  * [517fa4801] 2018-03-27 - (afabiani         )   - ReadTheDocs fix
+  * [d02dec0cd] 2018-03-27 - (afabiani         )  [Deps] geoserver-geonode-ext-2.12.2
+  * [640b9bdf1] 2018-03-27 - (afabiani         )  [Before Release 2.7.5] Updating JS assets
+  * [e42d0e480] 2018-03-27 - (afabiani         )  [Before Release 2.7.5] Updating documentation and version
+  * [d771fc6d8] 2018-03-27 - (Alessio Fabiani  )  Merge pull request #3683 from GeoNode/BKPORT_STABLE_FIXES
+  * [529daaf0e] 2018-03-27 - (afabiani         )   - Backport stable fixes from master branch
+  * [041d609ca] 2018-03-27 - (afabiani         )  Merge branch '2.7.x' of https://github.com/GeoNode/geonode into 2.7.x
+  * [110ca29fe] 2018-03-27 - (Alessio Fabiani  )  Merge pull request #3682 from lucernae/fix_js_assets
+  * [e46ef1cf7] 2018-03-27 - (Rizky Maulana N..)  Fix typo in a variable in search.js
+  * [9e9c8dce6] 2018-03-26 - (Daniel J. Dufour )  Merge branch 'master' into geotiff-io
+  * [50da9663c] 2018-03-26 - (DanielJDufour    )  added integration with geotiff.io
+  * [e215cf4a2] 2018-03-26 - (Alessio Fabiani  )  Merge pull request #3677 from vasuse7en/2.7.x
+  * [dcce0f1fb] 2018-03-26 - (Vasu Babu Kandi..)  Merge branch '2.7.x' into 2.7.x
+  * [16fd4fde1] 2018-03-22 - (Vasu Babu Kandi..)  remove duplicate logs. This will resolve kartoza/docker-geosafe#98
+  * [1e53f9779] 2018-03-20 - (Cezary Statkiew..)  Merge pull request #3669 from GeoNode/ISSUE_#3668
+  * [ea3cc7443] 2018-03-20 - (Cezary Statkiew..)  Merge pull request #3667 from GeoNode/ISSUE_#3665
+  * [41cf4ecf3] 2018-03-20 - (Cezary Statkiew..)  Merge pull request #3670 from GeoNode/MISC_UTILITIES
+  * [6301c6779] 2018-03-16 - (Alessio Fabiani  )  Merge pull request #3673 from marlowp/ISSUE_#3672
+  * [ee01117f7] 2018-03-16 - (Peter Marlow     )  Retrieve correct workspace for layer when managing geofence rules
+  * [26ce5444c] 2018-03-15 - (afabiani         )  A bunch of .sh scripts misc utilities
+  * [3404ec138] 2018-03-15 - (Alessio Fabiani  )  Update metadata_form_js.html
+  * [91895c372] 2018-03-15 - (afabiani         )  [Fixes #3668] Metadata Advanced and Wizard return links broken
+  * [14224842b] 2018-03-15 - (Alessio Fabiani  )  [Fixes #3665] http request bad keyword argument layers=
+  * [c1d4f6ca6] 2018-03-15 - (Alessio Fabiani  )  [Ready] Refactor remote services 27x (#3657)
+  * [d2062f5c8] 2018-03-15 - (Ahmed Nour Eldeen)  use layer name and workspace name to update layers
+  * [b060a873e] 2018-03-15 - (Ahmed Nour Eldeen)  handle geofence rules based on layer name and workspace
+  * [f565571ec] 2018-03-15 - (Alessio Fabiani  )  Merge pull request #3660 from GeoNode/3531_celery_module
+  * [9479604cd] 2018-03-14 - (Alessio Fabiani  )  Improve Remote Services URLs on Map Config
+  * [18fe093e4] 2018-03-14 - (Ahmed Nour Eldeen)  use layer name and workspace name to update layers
+  * [b4f5a2535] 2018-03-13 - (Alessio Fabiani  )  GeoNode WMS Remote Services Bindings
+  * [5e854bcdf] 2018-03-13 - (Alessio Fabiani  )  Make use of Remote Services Proxified URL
+  * [018beb214] 2018-03-13 - (Alessio Fabiani  )  Fix keywrods slugs insert and filtering
+  * [fed2d795c] 2018-03-13 - (Alessio Fabiani  )  Fix keywrods slugs insert and filtering
+  * [ad4c92ae5] 2018-03-13 - (Alessio Fabiani  )  fixed tabbed content on map detail page (#3645)
+  * [17772e55c] 2017-12-15 - (capooti          )  Align with Refactor remote services 27x #3657 / restored geonode.celery to geonode.celery_app #3531
+  * [debb1181f] 2018-03-12 - (afabiani         )  Merge branch '2.7.x' of https://github.com/GeoNode/geonode into 2.7.x
+  * [d19a73cc4] 2018-03-07 - (Alessio Fabiani  )  Merge pull request #3610 from francbartoli/porting-docker
+  * [c1a13fe97] 2018-03-07 - (Francesco Bartoli)  Fix celery start process
+  * [b825977c9] 2018-03-02 - (Alessio Fabiani  )  Merge pull request #3655 from GeoNode/2.7.x-patch-fixture
+  * [43c2ddeb7] 2018-03-02 - (Francesco Bartoli)  Update oauth2 fixture with new redirect uri
+  * [1c4387057] 2018-02-27 - (Francesco Bartoli)  Fix redirect_uri link
+  * [906f05a44] 2018-02-27 - (Francesco Bartoli)  Fix broken list for allowed host variable
+  * [1bef9bb9f] 2018-02-27 - (Francesco Bartoli)  Fix missing comma
+  * [74787018f] 2018-02-26 - (Francesco Bartoli)  Add more variables to stdout
+  * [213b65d05] 2018-02-26 - (Francesco Bartoli)  Fix escaping single quotes and invalid identifier
+  * [d03c0feed] 2018-02-26 - (Francesco Bartoli)  Update allowed_host with occurrence wthout port
+  * [606b13dc0] 2018-02-26 - (Francesco Bartoli)  Fix celery command with correct broker uri
+  * [c6af19815] 2018-02-26 - (Francesco Bartoli)  Fix issue with COMPOSE_HTTP_TIMEOUT value
+  * [b5743f14e] 2018-02-26 - (Francesco Bartoli)  Merge branch 'master' into porting-docker
+  * [069482f85] 2018-02-26 - (Alessio Fabiani  )  [Fixes #3636][Fixes #3639] - Replaces PRs for #3636 and #3639 along with test fixes (#3646)
+  * [faef3ed70] 2018-02-22 - (Francesco Bartoli)  Merge branch 'master' into porting-docker
+  * [596f1ee26] 2018-02-22 - (Alessio Fabiani  )  Merge pull request #3642 from JonDHo/2.7.x-map-detail-fix
+  * [5e9454da3] 2018-02-21 - (Alessio Fabiani  )   - Minor improvements to Backup/Restore settings (#3635)
+  * [0a5cc8442] 2018-02-21 - (Alessio Fabiani  )   - Added few safety checks around; cleaning up a bit settings making it a bit clearer (#3634)
+  * [1d60418dc] 2018-02-21 - (Alessio Fabiani  )   - Minor improvements to monitoring collectors and date parser; few updates to the documentation (#3633)
+  * [73f551880] 2018-02-21 - (NEXUS\hod135     )  fixed tabbed content on map detail page
+  * [374a1c369] 2018-02-19 - (Alessio Fabiani  )  Merge pull request #3631 from GeoNode/TRAVIS_EMAILS
+  * [8d247561d] 2018-02-19 - (Alessio Fabiani  )   - Adding alessio.fabiani@gmail.com to Travis targets
+  * [1c3cbea4d] 2018-02-19 - (Francesco Bartoli)  Add documention for Docker and Rancher (#3629)
+  * [4ead9e7ac] 2018-02-16 - (Francesco Bartoli)  Merge branch 'master' into porting-docker
+  * [ed62b6b88] 2018-02-16 - (Alessio Fabiani  )  [Fixes #3593] Thumbnail generation issue for layer in non EPSG:4326 projection (#3626)
+  * [1dad3c984] 2018-02-16 - (Alessio Fabiani  )   - Add OAuth2 Headers to Proxy (#3625)
+  * [32c7d9c2f] 2018-02-16 - (Alessio Fabiani  )  [Fixes #3619] Password reset error with 'people' adapter (#3620)
+  * [ec1f16764] 2018-02-16 - (Alessio Fabiani  )  [Fixes #3588] [Monitoring] Protect GeoServer REST endpoint and make requests pass through GeoNode Proxy (#3618)
+  * [e5e293c5d] 2018-02-15 - (Francesco Bartoli)  Merge branch 'master' into porting-docker
+  * [9da89bf80] 2018-02-15 - (Alessio Fabiani  )  Merge pull request #3622 from GeoNode/ISSUE_3621
+  * [a80e8e40c] 2018-02-14 - (DBlasby          )  Add ability to control thumbnail generation implementation (#3623)
+  * [c5d7ea5bc] 2018-02-14 - (Alessio Fabiani  )  [Fixes #3621] Improve Documents Thumbnail generation...
+  * [d2c875838] 2018-02-14 - (Francesco Bartoli)  Merge branch 'master' into porting-docker
+  * [459c0ce80] 2018-02-14 - (Alessio Fabiani  )  Merge pull request #3617 from DBlasby/thumbnail_different_impls
+  * [03bf69cfa] 2018-02-14 - (Francesco Bartoli)  Merge branch 'master' into porting-docker
+  * [6a4938496] 2018-02-13 - (dblasby          )  Add ability to control thumbnail generation implementation
+  * [ff260e247] 2018-02-13 - (Alessio Fabiani  )  Merge pull request #3616 from tomtl/patch-3
+  * [5cee66370] 2018-02-13 - (Tom Lee          )  Fix readability
+  * [52352932a] 2018-02-13 - (Alessio Fabiani  )  Merge pull request #3615 from tomtl/patch-2
+  * [b71055ab7] 2018-02-13 - (Alessio Fabiani  )  [Fixes #3609] Download filter not working (#3611)
+  * [12dcab9dc] 2018-02-13 - (Alessio Fabiani  )  [Fixes #3600] [GNIP] APIs to decouple import and load of GeoNode Client Libraries (#3602)
+  * [66223abf7] 2018-02-13 - (Tom Lee          )  Fix typos
+  * [eabf6abe6] 2018-02-11 - (Francesco Bartoli)  Merge branch 'master' into porting-docker
+  * [3d142c116] 2018-02-11 - (Alessio Fabiani  )   - Instroctions on how to configure GeoNode to login throguh LinkedIn and Facebook (#3607)
+  * [3be168e8a] 2018-02-11 - (Francesco Bartoli)  Fix missing volume for docker socket
+  * [c4296e687] 2018-02-11 - (Francesco Bartoli)  Move geoserver and data dir version to latest
+  * [af2790853] 2018-02-11 - (Francesco Bartoli)  Add container name and restart policy
+  * [d700b8163] 2018-02-11 - (Francesco Bartoli)  Add labels for consumers
+  * [740dab6ae] 2018-02-11 - (Francesco Bartoli)  Replace links with depends_on
+  * [97cd22c2b] 2018-02-11 - (Francesco Bartoli)  Set latest image for geonode
+  * [11040384b] 2018-02-11 - (Francesco Bartoli)  Add support for pdb debug
+  * [e6ed38862] 2018-01-31 - (Francesco Bartoli)  Set LB variables empty for all .env files
+  * [a98b6d5cf] 2018-01-30 - (Francesco Bartoli)  Update makefile with LB logic
+  * [c62ddf780] 2018-01-30 - (Francesco Bartoli)  Add logic to control LB variables
+  * [85ada3eb6] 2018-01-30 - (Francesco Bartoli)  Add control for multiple docker host ip addresses
+  * [4aa86c4b5] 2018-01-28 - (Francesco Bartoli)  Add restart policy for configuration service
+  * [0fe960a0f] 2018-01-28 - (Francesco Bartoli)  Remove useless port directive
+  * [7347f5e15] 2018-01-28 - (Francesco Bartoli)  Replace deprecated volume_from with named volume
+  * [e26425f4f] 2018-01-25 - (Francesco Bartoli)  Add uwsgi timeout lower than default nginx
+  * [2dfba7004] 2018-01-24 - (Francesco Bartoli)  Add log to uwsgi configuration
+  * [ba2a3017e] 2018-01-21 - (Francesco Bartoli)  Add control for celery command
+  * [784aa216e] 2018-02-11 - (Francesco Bartoli)  Add uswgi server for production
+  * [3a7e9b4a8] 2018-01-20 - (Francesco Bartoli)  Fix new function name
+  * [2627946a9] 2018-02-11 - (Francesco Bartoli)  Add restart strategy
+  * [9ec16d53f] 2018-01-20 - (Francesco Bartoli)  Use labels to filter containers
+  * [33f464c33] 2018-01-20 - (Francesco Bartoli)  Introducing labels for filtering
+  * [45b90cebf] 2018-01-19 - (Francesco Bartoli)  Fix replacing underscore with dash
+  * [5798e8b50] 2018-01-19 - (Francesco Bartoli)  Replace deprecated links with depends_on
+  * [5bd3ecd8e] 2018-01-19 - (Francesco Bartoli)  Replace underscore with dash for service name
+  * [f08ee7331] 2018-01-15 - (Francesco Bartoli)  Keep docker start scripts for build command
+  * [76681378a] 2018-01-15 - (Francesco Bartoli)  Remove tasks and entrypoint from history
+  * [c11bb5d3c] 2018-02-11 - (Francesco Bartoli)  Adapt settings for handling datastore and geodata
+  * [4b56d9e5b] 2018-01-11 - (Francesco Bartoli)  Retain default postgres db url
+  * [f7cae317b] 2018-01-11 - (Francesco Bartoli)  Move geonode db variables into .env file
+  * [d9b7770df] 2018-01-10 - (Francesco Bartoli)  Add env variables for geonode databases
+  * [fc5324c66] 2018-01-10 - (Francesco Bartoli)  Add variables for postgres configuration
+  * [56f8aef5e] 2018-01-10 - (Francesco Bartoli)  Format compose syntax
+  * [8c648989a] 2018-01-09 - (Francesco Bartoli)  Add named volumes for db services
+  * [958f7fbe0] 2018-01-09 - (Francesco Bartoli)  Change postgres service name
+  * [f86884ff3] 2018-01-08 - (Francesco Bartoli)  Update siteurl and allowed_host with docker host ip
+  * [eb2be6d61] 2018-01-08 - (Francesco Bartoli)  Fix support for named container
+  * [b74f68644] 2018-02-11 - (Francesco Bartoli)  Use named containers by compose prj variable
+  * [a30948da4] 2018-02-11 - (Francesco Bartoli)  Make docker-compose override happy
+  * [0603e795e] 2018-02-11 - (Francesco Bartoli)  Use new renamed image
+  * [9d8ece89b] 2018-01-03 - (Francesco Bartoli)  Add docker sock also to celery service
+  * [d8b0bdbc2] 2017-12-30 - (Francesco Bartoli)  Fix #3539
+  * [bdcd7aef8] 2017-12-30 - (Francesco Bartoli)  Get access to docker daemon from api
+  * [19b3a9a66] 2017-12-30 - (Francesco Bartoli)  Remove vars unuseful for geoserver
+  * [03cfe62c0] 2017-12-28 - (Francesco Bartoli)  Split commands for injecting docker host ip address
+  * [397893f46] 2017-12-26 - (Francesco Bartoli)  Add variables with dynamic docker ip address from makefile
+  * [5ee414684] 2018-02-10 - (Alessio Fabiani  )  [Fixes #3591] [Map Client - GeoExplorer] Zoom level seems not to be respected the first time (#3595)
+  * [d0d167cba] 2018-02-10 - (Alessio Fabiani  )  [Fixes #3596] [OWS] GetCapabilities local cache on DJango (#3597)
+  * [ea322f13c] 2018-02-09 - (Alessio Fabiani  )  Merge pull request #3608 from UNSW-CFRC/master
+  * [909c52418] 2018-02-09 - (Jonathan Doig    )  Change IHP-WINS to Geonode on home page
+  * [63ac2c0bf] 2018-02-09 - (Jonathan Doig    )  Merge remote-tracking branch 'refs/remotes/GeoNode/master'
+  * [9981a1137] 2018-02-08 - (Alessio Fabiani  )  Merge pull request #3604 from GFDRR/sort_styles
+  * [d7694e1f9] 2018-02-08 - (Alessio Fabiani  )  Merge pull request #3605 from hishamkaram/patch-5
+  * [7f26df88e] 2018-02-08 - (Hisham waleed k..)  fix for AttributeError: 'module' object has no attribute 'BASEMAP'
+  * [65e73458f] 2018-02-08 - (François Van De..)  Sort available layer styles
+  * [d89fe308d] 2018-02-07 - (Alessio Fabiani  )  [Fixes #3598] [Pinax Notifications] Upgrade to version 4.1.0 (#3599)
+  * [b965607fb] 2018-02-02 - (Alessio Fabiani  )  Merge pull request #3558 from GeoNode/GNIP_3485_2
+  * [80a9dd149] 2018-02-02 - (Alessio Fabiani  )  [Foward Port from 2.7.x] - Align on master fixes and improvements for 2.8.0rc11 release (#3584)
+  * [6441de107] 2018-02-02 - (Alessio Fabiani  )  [Foward Port from 2.7.x] - Align on master fixes and improvements for 2.8.0rc10 release (#3583)
+  * [85c657425] 2018-01-30 - (Alessio Fabiani  )   - Cumulative fixes (see list of issues below)
+  * [1e07581fc] 2018-01-30 - (Alessio Fabiani  )   - Cumulative fixes (see list of issues below)
+  * [b3b71eb73] 2018-01-30 - (Ricardo Garcia ..)  made shapefile validation robust to uppercase names
+  * [7dcc9a4bf] 2018-01-30 - (Ricardo Garcia ..)  Restored upload of zip and csv files
+  * [fa9a892ac] 2018-01-29 - (Alessio Fabiani  )  Merge with Social Account
+  * [16d8d6586] 2018-01-29 - (Alessio Fabiani  )  Merge branch 'master' of https://github.com/GeoNode/geonode into GNIP_3485_2
+  * [71f22f111] 2018-01-29 - (Alessio Fabiani  )  Merge pull request #3585 from cartologic/master
+  * [ed84688f5] 2018-01-29 - (Ahmed Nour Eldeen)  solve issue of not setting download perms .["WFS", "WCS", "WPS"]
+  * [b8b674bcd] 2018-01-28 - (Ahmed Nour Eldeen)  Merge pull request #1 from GeoNode/master
+  * [37be056f9] 2018-01-15 - (Ricardo Garcia ..)  added support for KML and KMZ with GroundOverlay
+  * [103d82558] 2017-12-20 - (Ricardo Garcia ..)  removed group invitations to non users
+  * [247f5bb58] 2018-01-26 - (Alessio Fabiani  )  Merge branch 'master' of https://github.com/GeoNode/geonode into GNIP_3485_2
+  * [af8b4ceb4] 2018-01-25 - (Alessio Fabiani  )   - GeoNode-2.7.5.dev20180125135927
+  * [f3970dcc0] 2018-01-25 - (Alessio Fabiani  )  Updated changelog for version 2.7.5.dev20180124154147
+  * [253f5bed6] 2018-01-25 - (Alessio Fabiani  )  Merge pull request #3578 from GeoNode/FWPORT_280_RELEASE_STUFF
+  * [00d0df8ba] 2018-01-24 - (Alessio Fabiani  )  Merge pull request #3581 from sebclarke/master
+  * [a90328597] 2018-01-24 - (Alessio Fabiani  )  Updated changelog for version 2.8rc10
+  * [8d9e45f93] 2018-01-24 - (sebastianclarke  )  Update the DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION setting to query the correct environment variable
+  * [c8abc48df] 2018-01-23 - (Alessio Fabiani  )  GeoNode 2.7.5.dev20180123130714
+  * [d60e7a04e] 2018-01-23 - (Alessio Fabiani  )  Updated changelog for version 2.7.5.dev20180123112419
+  * [c8bd212df] 2018-01-16 - (Alessio Fabiani  )  [Fixes #3565 #3566] Topic Category is no more visible on the Layer summary list / If a Resource belongs to a Group, it should be also visible on the summary list
+  * [dd4a1975c] 2018-01-16 - (Alessio Fabiani  )  [Fixes #3568] - Fix, improve and adapt Backup/Restore Scripts to GeoNode 2.6+ (#3571)
+  * [4b9a32850] 2018-01-22 - (Alessio Fabiani  )  Merge branch 'FWPORT_280_RELEASE_STUFF' of https://github.com/GeoNode/geonode into GNIP_3485_2
+  * [9f0525cc9] 2018-01-22 - (Alessio Fabiani  )  Merge branch 'master' of https://github.com/GeoNode/geonode into GNIP_3485_2
+  * [908199613] 2018-01-08 - (Alessio Fabiani  )   - Fix GeoNode 2.6.3 to 2.7.x+ Migration (#3547)
+  * [a93b6195d] 2018-01-08 - (Alessio Fabiani  )   - Fix GeoNode 2.6.3 to 2.7.x+ Migration (#3547)
+  * [259dffd8b] 2018-01-18 - (Alessio Fabiani  )   - Update BR settings.init app modules
+  * [07549481d] 2018-01-16 - (Alessio Fabiani  )  [Fixes #3568] - Fix, improve and adapt Backup/Restore Scripts to GeoNode 2.6+ (#3571)
+  * [da4b12b92] 2018-01-15 - (Ricardo Garcia ..)  added support for KML and KMZ with GroundOverlay
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Tue, 21 Aug 2018 16:47:18 +0200
+
+geonode (2.8.0+thefinal1) xenial; urgency=high
   * [514196] Update README
   * [f6dd15] Constrain pip to 9.0.3
 

@@ -44,18 +44,25 @@ except ImportError:
     from paver.easy import pushd
 
 from geonode.settings import (on_travis,
+                              core_tests,
+                              internal_apps_tests,
                               integration_tests,
                               INSTALLED_APPS,
                               GEONODE_CORE_APPS,
+                              GEONODE_INTERNAL_APPS,
                               GEONODE_APPS,
                               OGC_SERVER,
-                              ASYNC_SIGNALS,
-                              TEST_RUNNER_KEEPDB,
-                              TEST_RUNNER_PARALLEL)
+                              ASYNC_SIGNALS)
 
 _django_11 = django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2
-_keepdb = '-k' if TEST_RUNNER_KEEPDB else ''
-_parallel = ('--parallel=%s' % TEST_RUNNER_PARALLEL) if TEST_RUNNER_PARALLEL else ''
+
+try:
+    from geonode.settings import TEST_RUNNER_KEEPDB, TEST_RUNNER_PARALLEL
+    _keepdb = '-k' if TEST_RUNNER_KEEPDB else ''
+    _parallel = ('--parallel=%s' % TEST_RUNNER_PARALLEL) if TEST_RUNNER_PARALLEL else ''
+except:
+    _keepdb = ''
+    _parallel = ''
 
 assert sys.version_info >= (2, 6), \
     SystemError("GeoNode Build requires python 2.6 or better")
@@ -87,7 +94,7 @@ def grab(src, dest, name):
             import requests
             import math
             # Streaming, so we can iterate over the response.
-            r = requests.get(str(src), stream=True, timeout=10)
+            r = requests.get(str(src), stream=True, timeout=10, verify=False)
             # Total size in bytes.
             total_size = int(r.headers.get('content-length', 0))
             print("Requesting %s" % str(src))
@@ -495,6 +502,10 @@ def stop_geoserver():
     """
     Stop GeoServer
     """
+    # we use docker-compose for integration tests
+    if integration_tests:
+        return
+
     # only start if using Geoserver backend
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
     if _backend == 'geonode.qgis_server' or 'geonode.geoserver' not in INSTALLED_APPS:
@@ -617,6 +628,10 @@ def start_geoserver(options):
     """
     Start GeoServer with GeoNode extensions
     """
+    # we use docker-compose for integration tests
+    if integration_tests:
+        return
+
     # only start if using Geoserver backend
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
     if _backend == 'geonode.qgis_server' or 'geonode.geoserver' not in INSTALLED_APPS:
@@ -754,7 +769,10 @@ def test(options):
     Run GeoNode's Unit Test Suite
     """
     if on_travis:
-        _apps = [app for app in tuple(GEONODE_APPS) if 'contrib' not in app] if _django_11 else tuple(GEONODE_CORE_APPS)
+        if core_tests:
+            _apps = tuple(GEONODE_CORE_APPS)
+        if internal_apps_tests:
+            _apps = tuple(GEONODE_INTERNAL_APPS)
     else:
         _apps = tuple(GEONODE_APPS)
 
@@ -887,7 +905,8 @@ def run_tests(options):
     Executes the entire test suite.
     """
     if options.get('coverage'):
-        prefix = 'coverage run --branch --source=geonode --omit="*/management/*,geonode/contrib/*,*/test*,*/wsgi*,*/middleware*"'
+        prefix = 'coverage run --branch --source=geonode \
+            --omit="*/management/*,*/test*,*/wsgi*,*/middleware*,*/context_processors*,geonode/qgis_server/*,geonode/contrib/*,geonode/upload/*"'
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
@@ -1005,9 +1024,9 @@ def deb(options):
         #  use the following line instead:
         # sh(('gbp dch --spawn-editor=snapshot --git-author --new-version=%s'
         #    ' --id-length=6 --ignore-branch --release' % (simple_version)))
-        distribution = "xenial"
-        sh(('gbp dch --distribution=%s --force-distribution --spawn-editor=snapshot --git-author --new-version=%s'
-           ' --id-length=6 --ignore-branch --release' % (distribution, simple_version)))
+        distribution = "bionic"
+        # sh(('gbp dch --distribution=%s --force-distribution --spawn-editor=snapshot --git-author --new-version=%s'
+        #    ' --id-length=6 --ignore-branch --release' % (distribution, simple_version)))
 
         deb_changelog = path('debian') / 'changelog'
         for idx, line in enumerate(fileinput.input([deb_changelog], inplace=True)):
@@ -1020,16 +1039,16 @@ def deb(options):
         sh('rm -rf .git')
 
         if key is None and ppa is None:
-            # A local installable package
+            print("A local installable package")
             sh('debuild -uc -us -A')
         elif key is None and ppa is not None:
-                # A sources package, signed by daemon
+            print("A sources package, signed by daemon")
             sh('debuild -S')
         elif key is not None and ppa is None:
-            # A signed installable package
+            print("A signed installable package")
             sh('debuild -k%s -A' % key)
         elif key is not None and ppa is not None:
-            # A signed, source package
+            print("A signed, source package")
             sh('debuild -k%s -S' % key)
 
     if ppa is not None:
@@ -1044,21 +1063,28 @@ def publish():
         print "You need to set the GPG_KEY_GEONODE environment variable"
         return
 
+    if 'PPA_GEONODE' in os.environ:
+        ppa = os.environ['PPA_GEONODE']
+    else:
+        ppa = None
+
     call_task('deb', options={
         'key': key,
+        'ppa': ppa,
         # 'ppa': 'geonode/testing',
-        'ppa': 'geonode/unstable',
+        # 'ppa': 'geonode/unstable',
     })
 
     version, simple_version = versions()
-    sh('git add package/debian/changelog')
-    sh('git commit -m "Updated changelog for version %s"' % version)
-    sh('git tag -f %s' % version)
-    sh('git push origin %s' % version)
-    sh('git tag -f debian/%s' % simple_version)
-    sh('git push origin debian/%s' % simple_version)
-    # sh('git push origin master')
-    sh('python setup.py sdist upload -r pypi')
+    if ppa:
+        sh('git add package/debian/changelog')
+        sh('git commit -m "Updated changelog for version %s"' % version)
+        sh('git tag -f %s' % version)
+        sh('git push origin %s' % version)
+        sh('git tag -f debian/%s' % simple_version)
+        sh('git push origin debian/%s' % simple_version)
+        # sh('git push origin master')
+        sh('python setup.py sdist upload -r pypi')
 
 
 def versions():

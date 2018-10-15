@@ -1,4 +1,4 @@
-include README README.rst LICENSE
+include README README.rst LICENSE requirements.txt
 recursive-exclude geonode/static/.components
 recursive-include geonode *.css *.eot *.gif *.html *.ico *.ini *.jpg *.js *.json *.less *.md *.mo *.po *.otf *.png *.rst *.sample *.svg *.swf *.ttf *.txt *.woff *.woff2 *.xml *.xsl README
 recursive-include geonode/contrib/geosites gunicorn nginx

@@ -35,22 +35,34 @@ def update(ctx):
         "geodburl": geodb_url,
         "override_fn": override_env
     }
-    if not os.environ.get('GEOSERVER_PUBLIC_LOCATION'):
+    if os.environ.get(
+        'GEONODE_LB_HOST_IP'
+    ) and os.environ.get(
+        'GEONODE_LB_PORT'
+    ):
         ctx.run("echo export GEOSERVER_PUBLIC_LOCATION=\
 http://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
-    if not os.environ.get('SITEURL'):
         ctx.run("echo export SITEURL=\
 http://{public_fqdn}/ >> {override_fn}".format(**envs), pty=True)
 
     try:
-        current_allowed = ast.literal_eval(os.getenv('ALLOWED_HOSTS') or \
-                                           "['{public_fqdn}', '{public_host}', 'localhost', 'django', 'geonode',]".format(**envs))
+        current_allowed = ast.literal_eval(
+            os.getenv('ALLOWED_HOSTS') or "[\
+'{public_fqdn}', '{public_host}', 'localhost', 'django', 'geonode',\
+]".format(**envs))
     except ValueError:
         current_allowed = []
-    current_allowed.extend(['{}'.format(pub_ip), '{}:{}'.format(pub_ip, pub_port)])
-    allowed_hosts = ['"{}"'.format(c) for c in current_allowed] + ['"geonode"', '"django"']
+    current_allowed.extend(
+        ['{}'.format(pub_ip), '{}:{}'.format(pub_ip, pub_port)]
+    )
+    allowed_hosts = ['"{}"'.format(c) for c in current_allowed]
+    for host in ['django', 'geonode']:
+        if host not in allowed_hosts:
+            allowed_hosts.extend(['{}'.format(host)])
 
-    ctx.run('echo export ALLOWED_HOSTS="\\"{}\\"" >> {}'.format(allowed_hosts, override_env), pty=True)
+    ctx.run('echo export ALLOWED_HOSTS="\\"{}\\"" >> {}'.format(
+        allowed_hosts, override_env
+    ), pty=True)
 
     if not os.environ.get('DATABASE_URL'):
         ctx.run("echo export DATABASE_URL=\
@@ -181,6 +193,9 @@ def _prepare_oauth_fixture():
             "pk": 1001,
             "fields": {
                 "skip_authorization": True,
+                "created": "2018-05-31T10:00:31.661Z",
+                "updated": "2018-05-31T11:30:31.245Z",
+                "algorithm": "RS256",
                 "redirect_uris": "http://{0}:{1}/geoserver/index.html".format(
                     pub_ip, pub_port
                 ),
