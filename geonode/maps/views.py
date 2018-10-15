@@ -81,7 +81,9 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
 
     # Use the http_client with one that knows the username
     # and password for GeoServer's management user.
-    from geonode.geoserver.helpers import http_client, _render_thumbnail
+    from geonode.geoserver.helpers import (http_client,
+                                           _render_thumbnail,
+                                           _prepare_thumbnail_body_from_opts)
 elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.helpers import ogc_server_settings
     from geonode.utils import http_client
@@ -430,6 +432,11 @@ def map_embed_widget(request, mapid,
                            'base.view_resourcebase',
                            _PERMISSION_MSG_VIEW)
     map_bbox = map_obj.bbox_string.split(',')
+
+    # Sanity Checks
+    for coord in map_bbox:
+        if not coord:
+            return
 
     map_layers = MapLayer.objects.filter(
         map_id=mapid).order_by('stack_order')
@@ -1350,7 +1357,11 @@ def map_thumbnail(request, mapid):
     if request.method == 'POST':
         map_obj = _resolve_map(request, mapid)
         try:
-            image = _render_thumbnail(request.body)
+            image = None
+            try:
+                image = _prepare_thumbnail_body_from_opts(request.body)
+            except BaseException:
+                image = _render_thumbnail(request.body)
 
             if not image:
                 return
