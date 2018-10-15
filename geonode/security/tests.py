@@ -152,7 +152,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Validate maximum priority
             geofence_rules_highest_priority = get_highest_priority()
             _log("5. geofence_rules_highest_priority: %s " % geofence_rules_highest_priority)
-            self.assertEquals(geofence_rules_highest_priority, (geofence_rules_count - 1))
+            self.assertEquals(geofence_rules_highest_priority, 7)
 
             # Try GWC Invalidation
             # - it should not work here since the layer has not been uploaded to GeoServer
@@ -304,7 +304,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             geofence_rules_count = get_geofence_rules_count()
             _log("0. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertTrue(geofence_rules_count == 2)
+            self.assertEquals(geofence_rules_count, 2)
 
             # Set the layer private for not authenticated users
             layer.set_permissions({'users': {'AnonymousUser': []}})
