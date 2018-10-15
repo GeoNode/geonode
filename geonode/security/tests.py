@@ -107,7 +107,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             purge_geofence_all()
             # Reset GeoFence Rules
             geofence_rules_count = get_geofence_rules_count()
-            self.assertTrue(geofence_rules_count == 0)
+            self.assertEquals(geofence_rules_count, 0)
 
         layers = Layer.objects.all()[:2].values_list('id', flat=True)
         layers_id = map(lambda x: str(x), layers)
@@ -127,11 +127,11 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("1. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertTrue(geofence_rules_count == 8)
+            self.assertEquals(geofence_rules_count, 8)
             set_geofence_all(test_perm_layer)
             geofence_rules_count = get_geofence_rules_count()
             _log("2. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertTrue(geofence_rules_count == 9)
+            self.assertEquals(geofence_rules_count, 9)
 
         self.client.logout()
 
@@ -147,12 +147,12 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("4. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertTrue(geofence_rules_count == 10)
+            self.assertEquals(geofence_rules_count, 5)
 
             # Validate maximum priority
             geofence_rules_highest_priority = get_highest_priority()
             _log("5. geofence_rules_highest_priority: %s " % geofence_rules_highest_priority)
-            self.assertTrue(geofence_rules_highest_priority == (geofence_rules_count - 1))
+            self.assertEquals(geofence_rules_highest_priority, (geofence_rules_count - 1))
 
             # Try GWC Invalidation
             # - it should not work here since the layer has not been uploaded to GeoServer
@@ -172,7 +172,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             purge_geofence_all()
             # Reset GeoFence Rules
             geofence_rules_count = get_geofence_rules_count()
-            self.assertTrue(geofence_rules_count == 0)
+            self.assertEquals(geofence_rules_count, 0)
 
     def test_bobby_cannot_set_all(self):
         """Test that Bobby can set the permissions only only on the ones
@@ -728,7 +728,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("3. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertTrue(geofence_rules_count == 3)
+            self.assertEquals(geofence_rules_count, 2)
 
         # 5. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions
@@ -762,7 +762,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             purge_geofence_all()
             # Reset GeoFence Rules
             geofence_rules_count = get_geofence_rules_count()
-            self.assertTrue(geofence_rules_count == 0)
+            self.assertEquals(geofence_rules_count, 0)
 
     def test_anonymus_permissions(self):
 
