@@ -535,9 +535,11 @@ def _get_geofence_payload(layer, workspace, access, user=None, group=None,
                           service=None):
     highest_priority = get_highest_priority()
     root_el = etree.Element("Rule")
+    username_el = etree.SubElement(root_el, "userName")
     if user is not None:
-        username_el = etree.SubElement(root_el, "userName")
         username_el.text = user
+    else:
+        username_el.text = ''
     priority_el = etree.SubElement(root_el, "priority")
     priority_el.text = str(highest_priority if highest_priority >= 0 else 0)
     if group is not None:
