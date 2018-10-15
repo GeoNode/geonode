@@ -562,5 +562,9 @@ def _update_geofence_rule(layer, workspace, service, user=None, group=None):
     logger.debug("response status_code: {}".format(response.status_code))
     if response.status_code not in (200, 201):
         msg = ("Could not ADD GeoServer User {!r} Rule for "
-               "Layer {!r}".format(user, layer))
-        raise RuntimeError(msg)
+               "Layer {!r}: '{!r}'".format(user, layer, response.text))
+        if 'Duplicate Rule' in response.text:
+            # Skipping Duplicate Rule
+            logger.warn(msg)
+        else:
+            raise RuntimeError(msg)
