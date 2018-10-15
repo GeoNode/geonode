@@ -83,7 +83,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # and password for GeoServer's management user.
     from geonode.geoserver.helpers import (http_client,
                                            _render_thumbnail,
-                                           _prepare_thumbanil_body_from_opts)
+                                           _prepare_thumbnail_body_from_opts)
 elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.helpers import ogc_server_settings
     from geonode.utils import http_client
@@ -1359,7 +1359,7 @@ def map_thumbnail(request, mapid):
         try:
             image = None
             try:
-                image = _prepare_thumbanil_body_from_opts(request.body)
+                image = _prepare_thumbnail_body_from_opts(request.body)
             except BaseException:
                 image = _render_thumbnail(request.body)
 

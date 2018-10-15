@@ -52,7 +52,7 @@ from geonode.layers.metadata import set_metadata
 from geonode.utils import (http_client, check_ogc_backend,
                            unzip_file, extract_tarfile)
 from ..geoserver.helpers import (ogc_server_settings,
-                                 _prepare_thumbanil_body_from_opts)
+                                 _prepare_thumbnail_body_from_opts)
 
 import tarfile
 
@@ -969,9 +969,9 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 if thumbnail_create_url:
                     request_body['thumbnail_create_url'] = thumbnail_create_url
                 elif instance.alternate:
-                    request_body['layers'] = instance.alternate,
+                    request_body['layers'] = instance.alternate
 
-                image = _prepare_thumbanil_body_from_opts(request_body)
+                image = _prepare_thumbnail_body_from_opts(request_body)
 
             if image is not None:
                 instance.save_thumbnail(thumbnail_name, image=image)
