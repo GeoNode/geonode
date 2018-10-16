@@ -3,6 +3,7 @@ from django.core.cache import cache
 
 from .models import GeoNodeThemeCustomization, THEME_CACHE_KEY
 
+
 def custom_theme(request):
     theme = cache.get(THEME_CACHE_KEY)
     if theme is None:
@@ -11,4 +12,4 @@ def custom_theme(request):
         except GeoNodeThemeCustomization.DoesNotExist:
             theme = {}
         cache.set(THEME_CACHE_KEY, theme)
-    return {'custom_theme':theme}
+    return {'custom_theme': theme}
