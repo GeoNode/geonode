@@ -21,6 +21,7 @@
 import fileinput
 import glob
 import os
+import ssl
 import re
 import shutil
 import sys
@@ -71,6 +72,9 @@ def grab(src, dest, name):
                 print "Copying local file from %s" % str(src2)
                 shutil.copyfile(str(src2), str(dest))
         else:
+            if (not os.environ.get('PYTHONHTTPSVERIFY', '') and
+                getattr(ssl, '_create_unverified_context', None)): 
+                ssl._create_default_https_context = ssl._create_unverified_context
             urllib.urlretrieve(str(src), str(dest))
 
 
