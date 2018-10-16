@@ -429,18 +429,24 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     gf_services["WCS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
         and not layer.is_vector()
     gf_services["WPS"] = 'download_resourcebase' or 'change_layer_data' in perms
+
+    _user = None
+    if user:
+        _user = user if isinstance(user, basestring) else user.username
+    _group = None
+    if group:
+        _group = group if isinstance(group, basestring) else group.name
     for service, allowed in gf_services.iteritems():
         if allowed:
-            if user:
-                logger.debug("Adding to geofence the rule: %s %s %s" % (layer, service, user))
-                _user = user if isinstance(user, basestring) else user.username
+            if _user:
+                logger.debug("Adding 'user' to geofence the rule: %s %s %s" % (layer, service, _user))
                 _update_geofence_rule(layer.name, layer.workspace, service, user=_user)
-            else:
+            elif not _group:
                 logger.debug("Adding to geofence the rule: %s %s *" % (layer, service))
                 _update_geofence_rule(layer.name, layer.workspace, service)
-            if group:
-                logger.debug("Adding to geofence the rule: %s %s %s" % (layer, service, user))
-                _group = group if isinstance(group, basestring) else group.name
+
+            if _group:
+                logger.debug("Adding 'group' to geofence the rule: %s %s %s" % (layer, service, _group))
                 _update_geofence_rule(layer.name, layer.workspace, service, group=_group)
     set_geofence_invalidate_cache()
 
