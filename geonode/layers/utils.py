@@ -51,7 +51,8 @@ from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.layers.metadata import set_metadata
 from geonode.utils import (http_client, check_ogc_backend,
                            unzip_file, extract_tarfile)
-from ..geoserver.helpers import ogc_server_settings  # set_layer_style
+from ..geoserver.helpers import (ogc_server_settings,
+                                 _prepare_thumbnail_body_from_opts)
 
 import tarfile
 
@@ -880,7 +881,8 @@ def upload(incoming, user=None, overwrite=False,
 
 
 def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
-                     check_bbox=False, ogc_client=None, overwrite=False):
+                     check_bbox=False, ogc_client=None, overwrite=False,
+                     width=240, height=200):
     thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
     if not os.path.exists(thumbnail_dir):
         os.makedirs(thumbnail_dir)
@@ -890,9 +892,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
     elif isinstance(instance, Map):
         thumbnail_name = 'map-%s-thumb.png' % instance.uuid
     thumbnail_path = os.path.join(thumbnail_dir, thumbnail_name)
-    if overwrite is True or storage.exists(thumbnail_path) is False:
-        if not ogc_client:
-            ogc_client = http_client
+    if overwrite or not storage.exists(thumbnail_path):
         BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
         if not thumbnail_create_url:
@@ -930,21 +930,55 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 .update(thumbnail_url=thumbnail_remote_url)
 
             # Download thumbnail and save it locally.
-            try:
-                resp, image = ogc_client.request(thumbnail_create_url)
-                if 'ServiceException' in image or \
-                   resp.status < 200 or resp.status > 299:
-                    msg = 'Unable to obtain thumbnail: %s' % image
-                    raise Exception(msg)
-            except BaseException:
-                import traceback
-                logger.debug(traceback.format_exc())
+            if not ogc_client and not check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                ogc_client = http_client
 
-                # Replace error message with None.
-                image = None
+            if ogc_client:
+                try:
+                    params = {
+                        'width': width,
+                        'height': height
+                    }
+                    # Add the bbox param only if the bbox is different to [None, None,
+                    # None, None]
+                    if None not in instance.bbox:
+                        params['bbox'] = instance.bbox_string
+                        params['crs'] = instance.srid
 
-        if image is not None:
-            instance.save_thumbnail(thumbnail_name, image=image)
+                    _p = "&".join("%s=%s" % item for item in params.items())
+                    resp, image = ogc_client.request(thumbnail_create_url + '&' + _p)
+                    if 'ServiceException' in image or \
+                       resp.status < 200 or resp.status > 299:
+                        msg = 'Unable to obtain thumbnail: %s' % image
+                        raise Exception(msg)
+                except BaseException:
+                    import traceback
+                    logger.debug(traceback.format_exc())
+
+                    # Replace error message with None.
+                    image = None
+            elif check_ogc_backend(geoserver.BACKEND_PACKAGE) and instance.bbox:
+                instance_bbox = instance.bbox[0:4]
+                request_body = {
+                    'bbox': [str(coord) for coord in instance_bbox],
+                    'srid': instance.srid,
+                    'width': width,
+                    'height': height
+                }
+
+                if thumbnail_create_url:
+                    request_body['thumbnail_create_url'] = thumbnail_create_url
+                elif instance.alternate:
+                    request_body['layers'] = instance.alternate
+
+                image = _prepare_thumbnail_body_from_opts(request_body)
+
+            if image is not None:
+                instance.save_thumbnail(thumbnail_name, image=image)
+            else:
+                msg = 'Unable to obtain thumbnail for: %s' % instance
+                logger.error(msg)
+                # raise Exception(msg)
 
 
 # this is the original implementation of create_gs_thumbnail()
@@ -971,16 +1005,8 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
         'request': 'GetMap',
         'layers': layers,
         'format': wms_format,
-        'width': 200,
-        'height': 150
         # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
     }
-
-    # Add the bbox param only if the bbox is different to [None, None,
-    # None, None]
-    if None not in instance.bbox:
-        params['bbox'] = instance.bbox_string
-        params['crs'] = instance.srid
 
     # Avoid using urllib.urlencode here because it breaks the url.
     # commas and slashes in values get encoded and then cause trouble
@@ -995,7 +1021,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
         ogc_server_settings.LOCATION,
         wms_endpoint) + "?" + _p
     create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
-                     ogc_client=http_client, overwrite=overwrite, check_bbox=check_bbox)
+                     overwrite=overwrite, check_bbox=check_bbox)
 
 
 def delete_orphaned_layers():
@@ -1004,8 +1030,8 @@ def delete_orphaned_layers():
     for filename in os.listdir(layer_path):
         fn = os.path.join(layer_path, filename)
         if LayerFile.objects.filter(file__icontains=filename).count() == 0:
-            print 'Removing orphan layer file %s' % fn
+            logger.info('Removing orphan layer file %s' % fn)
             try:
                 os.remove(fn)
             except OSError:
-                print 'Could not delete file %s' % fn
+                logger.info('Could not delete file %s' % fn)
