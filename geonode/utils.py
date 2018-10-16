@@ -192,6 +192,20 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return wkt
 
 
+def _v(coord, x, source_srid=4326, target_srid=3857):
+    if source_srid == 4326 and target_srid != 4326:
+        if x and coord >= 180.0:
+            return 179.0
+        elif x and coord <= -180.0:
+            return -179.0
+
+        if not x and coord >= 90.0:
+            return 89.0
+        elif not x and coord <= -90.0:
+            return -89.0
+    return coord
+
+
 def bbox_to_projection(native_bbox, target_srid=4326):
     """
         native_bbox must be in the form
@@ -204,19 +218,6 @@ def bbox_to_projection(native_bbox, target_srid=4326):
         source_srid = int(proj.split(":")[1]) if proj and ':' in proj else int(proj)
     except BaseException:
         source_srid = target_srid
-
-    def _v(coord, x, source_srid=4326, target_srid=3857):
-        if source_srid == 4326 and target_srid != 4326:
-            if x and coord >= 180.0:
-                return 179.0
-            elif x and coord <= -180.0:
-                return -179.0
-
-            if not x and coord >= 90.0:
-                return 89.0
-            elif not x and coord <= -90.0:
-                return -89.0
-        return coord
 
     if source_srid != target_srid:
         try:
@@ -236,6 +237,35 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             logger.debug(tb)
 
     return native_bbox
+
+
+def bounds_to_zoom_level(bounds, width, height):
+    WORLD_DIM = {'height': float(256), 'width': float(256)}
+    ZOOM_MAX = 21
+
+    def latRad(lat):
+        sin = math.sin(lat * math.pi / 180.0)
+        if abs(sin) != 1.0:
+            radX2 = math.log((1.0 + sin) / (1.0 - sin)) / 2.0
+        else:
+            radX2 = math.log(1.0) / 2.0
+        return max(min(radX2, math.pi), -math.pi) / 2.0
+
+    def zoom(mapPx, worldPx, fraction):
+        try:
+            return math.floor(math.log(mapPx / worldPx / fraction) / math.log(2.0))
+        except BaseException:
+            return 0
+
+    ne = [float(bounds[2]), float(bounds[3])]
+    sw = [float(bounds[0]), float(bounds[1])]
+    latFraction = (latRad(ne[1]) - latRad(sw[1])) / math.pi
+    lngDiff = ne[0] - sw[0]
+    lngFraction = ((lngDiff + 360.0) if (lngDiff < 0) else lngDiff) / 360.0
+    latZoom = zoom(float(height), WORLD_DIM['height'], latFraction)
+    lngZoom = zoom(float(width), WORLD_DIM['width'], lngFraction)
+    zoom = int(min(latZoom, lngZoom, ZOOM_MAX) - 1)
+    return max(zoom, 0)
 
 
 def llbbox_to_mercator(llbbox):
