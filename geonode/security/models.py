@@ -170,7 +170,7 @@ class PermissionLevelMixin(object):
         """
         remove_object_permissions(self)
         if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-            purge_geofence_layer_rules(self)
+            purge_geofence_layer_rules(self.get_self_resource())
 
         # default permissions for resource owner
         set_owner_permissions(self)
