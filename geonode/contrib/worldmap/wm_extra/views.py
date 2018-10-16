@@ -390,7 +390,6 @@ def new_map_json_wm(request):
                 content_type="text/plain",
                 status=401
             )
-
         map_obj = Map(owner=request.user, zoom=0,
                       center_x=0, center_y=0)
         map_obj.save()
