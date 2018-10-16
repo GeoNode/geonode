@@ -7131,11 +7131,11 @@ article.tab-pane {
 .home #showcase p {
   font-size: 18px;
 }
-.home .partner_logo {
+.partner_logo {
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  height: 250px;
+  height: 150px;
 }
 /* autocomplete
 ------------------------*/
