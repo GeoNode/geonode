@@ -56,12 +56,14 @@ class GeoNodeThemeCustomization(models.Model):
     name = models.CharField(max_length=100, help_text="This will not appear anywhere.")
     date = models.DateTimeField(auto_now_add=True, blank=True, help_text="This will not appear anywhere.")
     description = models.TextField(null=True, blank=True, help_text="This will not appear anywhere.")
-    is_enabled = models.BooleanField(default=False,
+    is_enabled = models.BooleanField(
+        default=False,
         help_text="Enabling this theme will disable the current enabled theme (if any)")
     logo = models.ImageField(upload_to='img/%Y/%m', null=True, blank=True)
     jumbotron_bg = models.ImageField(
         upload_to='img/%Y/%m', null=True, blank=True, verbose_name="Jumbotron background")
-    jumbotron_welcome_hide = models.BooleanField(default=False,
+    jumbotron_welcome_hide = models.BooleanField(
+        default=False,
         verbose_name="Hide text in the jumbotron",
         help_text="Check this if the jumbotron backgroud image already contains text")
     jumbotron_welcome_title = models.CharField(max_length=255, null=True, blank=True, verbose_name="Jumbotron title")
@@ -122,7 +124,7 @@ def disable_other(sender, instance, **kwargs):
 # Invalidate the cached theme if a partner or a theme is updated.
 @receiver(post_save, sender=GeoNodeThemeCustomization)
 @receiver(post_save, sender=Partner)
-# @receiver(post_delete, sender=GeoNodeThemeCustomization)
-# @receiver(post_delete, sender=Partner)
+@receiver(post_delete, sender=GeoNodeThemeCustomization)
+@receiver(post_delete, sender=Partner)
 def invalidate_cache(sender, instance, **kwargs):
     cache.delete(THEME_CACHE_KEY)

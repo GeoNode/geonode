@@ -27,26 +27,26 @@ class ThemeLibraryTest(GeoNodeBaseTestSupport):
 
     def test_theme_customization(self):
         # By default, the homepage should use default welcome text
-        response = self.client.get(reverse('home'))
+        response = self.client.get('/')
         self.assertContains(response, "GeoNode is an open source platform for sharing geospatial data and maps.")
 
         # Creating a theme should change the welcome text
-        theme_1 = GeoNodeThemeCustomization.objects.create(
+        GeoNodeThemeCustomization.objects.create(
             name='theme_1',
             jumbotron_welcome_content='welcome_1',
             is_enabled=True,
         )
-        response = self.client.get(reverse('home'))
+        response = self.client.get('/')
         self.assertNotContains(response, "GeoNode is an open source platform for sharing geospatial data and maps.")
         self.assertContains(response, "welcome_1")
 
         # Creating another theme should replace the welcome text
-        theme_2 = GeoNodeThemeCustomization.objects.create(
+        GeoNodeThemeCustomization.objects.create(
             name='theme_2',
             jumbotron_welcome_content='welcome_2',
             is_enabled=True,
         )
-        response = self.client.get(reverse('home'))
+        response = self.client.get('/')
         self.assertNotContains(response, "welcome_1")
         self.assertContains(response, "welcome_2")
 
@@ -56,14 +56,14 @@ class ThemeLibraryTest(GeoNodeBaseTestSupport):
             jumbotron_welcome_content='welcome_3',
             is_enabled=False,
         )
-        response = self.client.get(reverse('home'))
+        response = self.client.get('/')
         self.assertNotContains(response, "welcome_3")
         self.assertContains(response, "welcome_2")
 
         # Enabling that theme afterwards should replace the welcome text
         theme_3.is_enabled = True
         theme_3.save()
-        response = self.client.get(reverse('home'))
+        response = self.client.get('/')
         self.assertNotContains(response, "welcome_2")
         self.assertContains(response, "welcome_3")
 
@@ -73,6 +73,6 @@ class ThemeLibraryTest(GeoNodeBaseTestSupport):
 
         # Deleting that theme should revert to default
         theme_3.delete()
-        response = self.client.get(reverse('home'))
+        response = self.client.get('/')
         self.assertNotContains(response, "welcome_3")
         self.assertContains(response, "GeoNode is an open source platform for sharing geospatial data and maps.")
