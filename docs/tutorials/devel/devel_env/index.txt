@@ -122,7 +122,7 @@ Summary of the installation steps
 
         .. code-block:: console
 
-    $ sudo apt-get install -y --force-yes openjdk-7-jdk --no-install-recommends
+    $ sudo apt-get install -y --allow openjdk-7-jdk --no-install-recommends
 
    *Supporting tools*
 
