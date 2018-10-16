@@ -53,7 +53,6 @@ class Partner(models.Model):
 
 
 class GeoNodeThemeCustomization(models.Model):
-    identifier = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=100, help_text="This will not appear anywhere.")
     date = models.DateTimeField(auto_now_add=True, blank=True, help_text="This will not appear anywhere.")
     description = models.TextField(null=True, blank=True, help_text="This will not appear anywhere.")
