@@ -417,9 +417,6 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     """
     Sync Guardian permissions to GeoFence.
     """
-    # Cleanup old rules first
-    purge_geofence_layer_rules(layer.get_self_resource())
-
     # Create new rule-set
     gf_services = {}
     gf_services["*"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
