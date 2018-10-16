@@ -104,7 +104,8 @@ setup(name='GeoNode',
           "awesome-slugify>=1.6.2",
           "dj-database-url >=0.4.0",
           "pinax-theme-bootstrap>=3.0a11",
-          "pinax-theme-bootstrap-account>=1.0b2",
+          "Pinax<=0.9a2",
+          #"pinax-theme-bootstrap-account>=1.0b2",
           "django-forms-bootstrap>=3.0.1",
           "django-friendly-tag-loader>=1.2.1",
           "django-activity-stream>=0.6.1",
@@ -119,7 +120,7 @@ setup(name='GeoNode',
           "geonode-avatar>=2.1.6",  # (2.1.5 in ppa) FIXME
           "geonode-announcements>=1.0.8",
           "geonode-agon-ratings>=0.3.5",  # (0.3.1 in ppa) FIXME
-          "geonode-user-accounts==1.0.13",  # (1.0.11 in ppa) FIXME
+          "geonode-user-accounts==1.0.15",  # (1.0.11 in ppa) FIXME
           "geonode-arcrest>=10.2",
           "geonode-notification>=1.1.1",
           "geonode-dialogos>=0.5",
@@ -129,8 +130,7 @@ setup(name='GeoNode',
 
           # haystack/elasticsearch, uncomment to use
           "django-haystack>=2.4.1",  # missing from ppa FIXME
-          "elasticsearch>=2.4.0",
-          "pyelasticsearch>=0.6.1",
+          "elasticsearch<2.0.0,>=1.3.0",
 
           # datetimepicker widget
           "django-bootstrap3-datetimepicker>=2.2.3",
