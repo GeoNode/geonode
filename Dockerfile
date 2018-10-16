@@ -1,4 +1,4 @@
-FROM geonode/geonode:2.7.x
+FROM geonode/geonode:latest
 MAINTAINER GeoNode development team
 
 COPY requirements.txt /usr/src/app/
@@ -12,4 +12,3 @@ EXPOSE 8000
 # CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 # CMD ["paver", "start_django", "-b", "0.0.0.0:8000"]
 CMD ["uwsgi", "--ini", "uwsgi.ini"]
-
