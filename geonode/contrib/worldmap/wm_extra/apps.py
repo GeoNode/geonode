@@ -6,4 +6,4 @@ class WMExtraConfig(AppConfig):
     verbose_name = 'WM Extras'
 
     def ready(self):
-        from geonode.contrib.worldmap.wm_extra import signals
+        from geonode.contrib.worldmap.wm_extra import signals # noqa

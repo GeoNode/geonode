@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.contrib.auth.models import Group
 
 from geonode.layers.models import Layer
@@ -31,6 +31,7 @@ def add_ext_map(sender, instance, created, **kwargs):
     if created:
         from .models import ExtMap
         ExtMap.objects.create(map=instance)
+
 
 def validate_wm_map(sender, instance, **kwargs):
     """

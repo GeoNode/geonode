@@ -715,7 +715,7 @@ def gxp2wm(config, map_obj=None):
         is_valid = True
         is_wm = False
         is_hh = False
-        if not 'source' in layer_config:
+        if 'source' not in layer_config:
             is_valid = False
             print 'Skipping this layer as it is missing source... %s' % layer_config
         else:
@@ -751,19 +751,16 @@ def gxp2wm(config, map_obj=None):
                     layer_config['url'] = layer.ows_url.replace('ows', 'wms')
                     if 'styles' not in layer_config:
                         if layer.default_style:
-                            #layer_config['styles'] = layer.default_style.name
                             layer_config['styles'] = [layer.default_style.name, ]
                         else:
                             if layer.styles.all().count() > 0:
-                                # layer_config['styles'] = layer.styles.all()[0].name
                                 layer_config['styles'] = [layer.styles.all()[0].name, ]
-                    else: # styles can be a list or a string
+                    else:
                         if type(layer_config['styles']) == unicode:
                             try:
                                 layer_config['styles'] = ast.literal_eval(layer_config['styles'])
-                            except:
+                            except: # noqa
                                 layer_config['styles'] = [layer_config['styles'], ]
-                    print layer_config
                     if 'styles' not in layer_config:
                         is_valid = False
                         print 'Skipping this layer as it has not a style... %s' % layer_config
@@ -805,8 +802,6 @@ def gxp2wm(config, map_obj=None):
             valid_layers.append(layer_config)
 
     config['map']['layers'] = valid_layers
-
-
     config['map']['groups'] = []
 
     # about and groups from existing map
