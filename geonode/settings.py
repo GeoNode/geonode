@@ -331,7 +331,6 @@ INSTALLED_APPS = (
     'storages',
 
     # Theme
-    "pinax_theme_bootstrap_account",
     "pinax_theme_bootstrap",
     'django_forms_bootstrap',
 
