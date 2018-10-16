@@ -38,7 +38,7 @@ services:
 
   celery:
     restart: unless-stopped
-    image: geonode/geonode:2.7.x
+    image: geonode/geonode:2.8.x
     container_name: celery4${COMPOSE_PROJECT_NAME}
     stdin_open: true
     # tty: true
@@ -88,7 +88,7 @@ services:
 
   django:
     restart: unless-stopped
-    image: geonode/geonode:2.7.x
+    image: geonode/geonode:2.8.x
     container_name: django4${COMPOSE_PROJECT_NAME}
     stdin_open: true
     # tty: true
