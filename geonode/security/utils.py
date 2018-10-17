@@ -236,7 +236,6 @@ def purge_geofence_all():
             r = requests.get(url + 'geofence/rest/rules.json',
                              headers=headers,
                              auth=HTTPBasicAuth(user, passwd))
-
             if (r.status_code < 200 or r.status_code > 201):
                 logger.warning("Could not Retrieve GeoFence Rules")
             else:
