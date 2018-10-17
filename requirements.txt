@@ -70,7 +70,7 @@ djangorestframework==3.8.2
 # django-rest-swagger==2.1.2 # python-django-rest-swagger (2.1.2 in our ppa)
 # drf-nested-routers==0.90.0 # python-drf-nested-routers (0.90.0 in our ppa)
 # drf-openapi==1.3.0 # python-drf-openapi (1.3.0 in our ppa)
-geonode-oauth-toolkit>=1.1.2c0 # python-django-oauth-toolkit (0.12.0 in our ppa)
+geonode-oauth-toolkit>=1.1.2rc0 # python-django-oauth-toolkit (0.12.0 in our ppa)
 oauthlib==2.1.0 # python-oauthlib (2.0.6 in our ppa) FIXME
 requests-oauthlib==1.0.0
 asn1crypto==0.24.0

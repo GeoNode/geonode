@@ -17,3 +17,5 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+# this file is a placeholder as paver tasks expect a tests.py module for each app
