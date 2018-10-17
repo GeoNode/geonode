@@ -122,7 +122,7 @@ Summary of the installation steps
 
         .. code-block:: console
 
-    $ sudo apt-get install -y --force-yes openjdk-7-jdk --no-install-recommends
+    $ sudo apt-get install -y openjdk-7-jdk --no-install-recommends
 
    *Supporting tools*
 
@@ -374,7 +374,7 @@ Summary of the installation steps
 Start working on Geonode the next day after install
 ===================================================
 
-   With every restart of your machine, you have to restart GeoNode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use GeoNode now, you have to activate your virtualenv and to start the development servers. 
+   With every restart of your machine, you have to restart GeoNode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use GeoNode now, you have to activate your virtualenv and to start the development servers.
 
    .. note:: *username* is the name of your machine and personal folder!
 

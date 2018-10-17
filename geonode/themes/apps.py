@@ -17,23 +17,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-import logging
-
-from django.dispatch import receiver
-from django.db.models import signals
-from django.core.management import call_command
-
-from .models import GeoNodeThemeCustomization
-from .utils import deactivate_theme
-
-logger = logging.getLogger(__name__)
+from django.apps import AppConfig as BaseAppConfig
+from django.utils.translation import ugettext_lazy as _
 
 
-@receiver(signals.post_delete, sender=GeoNodeThemeCustomization)
-def deactivate_theme_signal(sender, **kwargs):
-    theme = kwargs["instance"]
-    deactivate_theme(theme)
-    call_command(
-        'collectstatic',
-        '--noinput')
+class AppConfig(BaseAppConfig):
+
+    name = "geonode.themes"
+    label = "geonode_themes"
+    verbose_name = _("GeoNode Themes Library")

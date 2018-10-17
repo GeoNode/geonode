@@ -1788,6 +1788,9 @@ def _prepare_thumbnail_body_from_opts(request_body):
     from geonode.utils import (_v,
                                bbox_to_projection,
                                bounds_to_zoom_level)
+    if isinstance(request_body, basestring):
+        request_body = json.loads(request_body)
+
     # Defaults
     _img_src_template = """<img src='{ogc_location}'
     style='width: {width}px; height: {height}px;

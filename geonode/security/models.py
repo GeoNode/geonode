@@ -28,6 +28,7 @@ from guardian.shortcuts import assign_perm, get_groups_with_perms
 from .utils import (get_users_with_perms,
                     set_owner_permissions,
                     set_geofence_all,
+                    purge_geofence_layer_rules,
                     sync_geofence_with_guardian,
                     remove_object_permissions)
 
@@ -168,6 +169,8 @@ class PermissionLevelMixin(object):
         }
         """
         remove_object_permissions(self)
+        if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+            purge_geofence_layer_rules(self.get_self_resource())
 
         # default permissions for resource owner
         set_owner_permissions(self)
