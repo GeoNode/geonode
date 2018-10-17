@@ -1754,11 +1754,11 @@ _esri_types = {
     "esriFieldTypeXML": "xsd:anyType"}
 
 
-def _render_thumbnail(req_body):
+def _render_thumbnail(req_body, width=240, height=180):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
     hostname = urlparse(settings.SITEURL).hostname
-    params = dict(width=240, height=180, auth="%s,%s,%s" % (hostname, _user, _password))
+    params = dict(width=width, height=height, auth="%s,%s,%s" % (hostname, _user, _password))
     url = url + "?" + urllib.urlencode(params)
 
     # @todo annoying but not critical
@@ -1781,6 +1781,122 @@ def _render_thumbnail(req_body):
         logging.warning('Error generating thumbnail')
         return
     return content
+
+
+def _prepare_thumbnail_body_from_opts(request_body):
+    import mercantile
+    from geonode.utils import (_v,
+                               bbox_to_projection,
+                               bounds_to_zoom_level)
+    # Defaults
+    _img_src_template = """<img src='{ogc_location}'
+    style='width: {width}px; height: {height}px;
+    left: {left}px; top: {top}px;
+    opacity: 1; visibility: inherit; position: absolute;'/>\n"""
+
+    def decimal_encode(bbox):
+        import decimal
+        _bbox = []
+        for o in [float(coord) for coord in bbox]:
+            if isinstance(o, decimal.Decimal):
+                o = (str(o) for o in [o])
+            _bbox.append(o)
+        # Must be in the form : [x0, x1, y0, y1
+        return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
+
+    # Sanity Checks
+    if 'bbox' not in request_body:
+        return None
+    if 'srid' not in request_body:
+        return None
+    for coord in request_body['bbox']:
+        if not coord:
+            return None
+
+    width = 240
+    if 'width' in request_body:
+        width = request_body['width']
+    height = 200
+    if 'height' in request_body:
+        height = request_body['height']
+    smurl = None
+    if 'smurl' in request_body:
+        smurl = request_body['smurl']
+    if not smurl and getattr(settings, 'THUMBNAIL_GENERATOR_DEFAULT_BG', None):
+        smurl = settings.THUMBNAIL_GENERATOR_DEFAULT_BG
+
+    layers = None
+    thumbnail_create_url = None
+    if 'thumbnail_create_url' in request_body:
+        thumbnail_create_url = request_body['thumbnail_create_url']
+    elif 'layers' in request_body:
+        layers = request_body['layers']
+
+        wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'ows'
+        wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.1'
+        wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png8'
+
+        params = {
+            'service': 'WMS',
+            'version': wms_version,
+            'request': 'GetMap',
+            'layers': layers,
+            'format': wms_format,
+            # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
+        }
+        _p = "&".join("%s=%s" % item for item in params.items())
+
+        import posixpath
+        thumbnail_create_url = posixpath.join(
+            ogc_server_settings.LOCATION,
+            wms_endpoint) + "?" + _p
+
+    # Compute Bounds
+    wgs84_bbox = decimal_encode(
+        bbox_to_projection([float(coord) for coord in request_body['bbox']] + [request_body['srid'], ],
+                           target_srid=4326)[:4])
+
+    # Build Image Request Template
+    _img_request_template = "<div style='overflow: hidden; position:absolute; \
+        top:0px; left:0px; height: {height}px; width: {width}px;'> \
+        \n".format(height=height, width=width)
+
+    # Fetch XYZ tiles
+    bounds = wgs84_bbox[0:4]
+    zoom = bounds_to_zoom_level(bounds, width, height)
+
+    t_ll = mercantile.tile(_v(bounds[0], x=True), _v(bounds[1], x=False), zoom, truncate=True)
+    t_ur = mercantile.tile(_v(bounds[2], x=True), _v(bounds[3], x=False), zoom, truncate=True)
+    xmin, ymax = t_ll.x, t_ll.y
+    xmax, ymin = t_ur.x, t_ur.y
+
+    for xtile in range(xmin, xmax+1):
+        for ytile in range(ymin, ymax+1):
+            box = [(xtile-xmin)*256, (ytile-ymin)*255]
+            if smurl:
+                imgurl = smurl.format(z=zoom, x=xtile, y=ytile)
+                _img_request_template += _img_src_template.format(ogc_location=imgurl,
+                                                                  height=256, width=256,
+                                                                  left=box[0], top=box[1])
+
+            xy_bounds = mercantile.xy_bounds(mercantile.Tile(xtile, ytile, zoom))
+            params = {
+                'width': 256,
+                'height': 256,
+                'transparent': True,
+                'bbox': ",".join([str(xy_bounds.left), str(xy_bounds.bottom),
+                                  str(xy_bounds.right), str(xy_bounds.top)]),
+                'crs': 'EPSG:3857'
+            }
+            _p = "&".join("%s=%s" % item for item in params.items())
+
+            _img_request_template += \
+                _img_src_template.format(ogc_location=(thumbnail_create_url + '&' + _p),
+                                         height=256, width=256,
+                                         left=box[0], top=box[1])
+    _img_request_template += "</div>"
+    image = _render_thumbnail(_img_request_template, width=width, height=height)
+    return image
 
 
 def _fixup_ows_url(thumb_spec):

@@ -28,6 +28,7 @@ from guardian.shortcuts import assign_perm, get_groups_with_perms
 from .utils import (get_users_with_perms,
                     set_owner_permissions,
                     set_geofence_all,
+                    purge_geofence_layer_rules,
                     sync_geofence_with_guardian,
                     remove_object_permissions)
 
@@ -168,6 +169,8 @@ class PermissionLevelMixin(object):
         }
         """
         remove_object_permissions(self)
+        if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+            purge_geofence_layer_rules(self.get_self_resource())
 
         # default permissions for resource owner
         set_owner_permissions(self)
@@ -198,7 +201,8 @@ class PermissionLevelMixin(object):
                 if "AnonymousUser" in geofence_user:
                     geofence_user = None
                 if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                    sync_geofence_with_guardian(self.layer, perms, user=geofence_user)
+                    if self.polymorphic_ctype.name == 'layer':
+                        sync_geofence_with_guardian(self.layer, perms, user=geofence_user)
 
         # All the other groups
         if 'groups' in perm_spec:
@@ -213,4 +217,5 @@ class PermissionLevelMixin(object):
                         assign_perm(perm, group, self.get_self_resource())
                 # Set the GeoFence Owner Rules
                 if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                    sync_geofence_with_guardian(self.layer, perms, group=group)
+                    if self.polymorphic_ctype.name == 'layer':
+                        sync_geofence_with_guardian(self.layer, perms, group=group)
