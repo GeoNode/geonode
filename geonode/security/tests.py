@@ -147,12 +147,12 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("4. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertEquals(geofence_rules_count, 10)
+            self.assertEquals(geofence_rules_count, 5)
 
             # Validate maximum priority
             geofence_rules_highest_priority = get_highest_priority()
             _log("5. geofence_rules_highest_priority: %s " % geofence_rules_highest_priority)
-            self.assertEquals(geofence_rules_highest_priority, 9)
+            self.assertTrue(geofence_rules_highest_priority > 0)
 
             # Try GWC Invalidation
             # - it should not work here since the layer has not been uploaded to GeoServer
@@ -728,7 +728,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("3. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertEquals(geofence_rules_count, 3)
+            self.assertEquals(geofence_rules_count, 2)
 
         # 5. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions
