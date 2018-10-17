@@ -147,7 +147,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("4. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertEquals(geofence_rules_count, 5)
+            self.assertEquals(geofence_rules_count, 10)
 
             # Validate maximum priority
             geofence_rules_highest_priority = get_highest_priority()
@@ -728,7 +728,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("3. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertEquals(geofence_rules_count, 2)
+            self.assertEquals(geofence_rules_count, 3)
 
         # 5. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions
