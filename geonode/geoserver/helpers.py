@@ -85,10 +85,11 @@ def check_geoserver_is_up():
     """Verifies all geoserver is running,
        this is needed to be able to upload.
     """
-    url = "%sweb/" % ogc_server_settings.LOCATION
+    url = "%s" % ogc_server_settings.LOCATION
     resp, content = http_client.request(url, "GET")
     msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-           'have started it.' % ogc_server_settings.LOCATION)
+           'have started it.' % url)
+    logger.debug(resp)
     assert resp['status'] == '200', msg
 
 

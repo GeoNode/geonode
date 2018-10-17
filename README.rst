@@ -1,7 +1,7 @@
 .. raw:: html
 
 	<div align="right">
-	<a href="http://travis-ci.org/GeoNode/geonode"><img src="https://secure.travis-ci.org/GeoNode/geonode.png"></a> <a href="https://coveralls.io/github/GeoNode/geonode?branch=master"><img src="https://coveralls.io/repos/github/GeoNode/geonode/badge.svg?branch=master"></a> <a href="https://codecov.io/gh/GeoNode/geonode)
+	<a href="http://travis-ci.org/GeoNode/geonode"><img src="https://secure.travis-ci.org/GeoNode/geonode.png"></a> <a href="https://codecov.io/gh/GeoNode/geonode)
 	[![travis-ci.org"><img src="https://codecov.io/gh/GeoNode/geonode/branch/master/graph/badge.svg"></a> <a href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="docs/img/gpl.png" alt="GPL badge"></a></div><img src="docs/img/geonode-logo_for_readme.gif" alt="GeoNode Logo" width="450px"/><div style="text-align:center"><hr><b>A powerful yet easy to use web-based application and platform for deploying spatial data infrastructures (SDI).</b><hr></div>
 
 	
