@@ -29,7 +29,7 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
-
+from django.utils.encoding import python_2_unicode_compatible
 from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
 from geonode.people.utils import get_valid_user
 from agon_ratings.models import OverallRating
@@ -66,6 +66,7 @@ _DEFAULT_CASCADE_WORKSPACE = "cascaded-services"
 _DEFAULT_WORKSPACE = "cascaded-services"
 
 
+@python_2_unicode_compatible
 class Style(models.Model, PermissionLevelMixin):
 
     """Model for storing styles.
@@ -118,6 +119,7 @@ class LayerManager(ResourceBaseManager):
         models.Manager.__init__(self)
 
 
+@python_2_unicode_compatible
 class Layer(ResourceBase):
 
     """
@@ -270,7 +272,8 @@ class Layer(ResourceBase):
         return cfg
 
     def __str__(self):
-        return self.alternate
+        from django.utils.encoding import force_bytes
+        return force_bytes(self.alternate)
         # if self.alternate is not None:
         #     return "%s Layer" % self.service_typename.encode('utf-8')
         # elif self.name is not None:
@@ -334,6 +337,7 @@ class Layer(ResourceBase):
                          .update(popular_count=models.F('popular_count') + 1)
 
 
+@python_2_unicode_compatible
 class UploadSession(models.Model):
 
     """Helper class to keep track of uploads.
@@ -350,7 +354,12 @@ class UploadSession(models.Model):
         return self.processed and self.errors is None
 
     def __str__(self):
-        return u'%s' % self.resource or self.date
+        from django.utils.encoding import force_bytes
+        try:
+            _s = '%s' % self.resource or self.date
+        except BaseException:
+            _s = '%s' % self.date
+        return force_bytes(_s)
 
 
 class LayerFile(models.Model):
@@ -377,6 +386,7 @@ class AttributeManager(models.Manager):
             visible=True).order_by('display_order')
 
 
+@python_2_unicode_compatible
 class Attribute(models.Model):
 
     """
