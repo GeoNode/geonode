@@ -1,2 +1,0 @@
-    {% endblock partners %}
-{% endblock extra_mainbody %}

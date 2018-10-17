@@ -17,5 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from pkgutil import extend_path
 
-# this file is a placeholder as paver tasks expect a tests.py module for each app
+
+default_app_config = "geonode.themes.apps.AppConfig"
+__path__ = extend_path(__path__, __name__)  # noqa

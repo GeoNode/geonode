@@ -21,10 +21,6 @@
 from django.contrib import admin
 
 from .models import Partner, GeoNodeThemeCustomization
-from .forms import GeoNodeThemeCustomizationAdminForm
-from .admin_actions import (enable_theme,
-                            disable_theme,
-                            refresh_theme,)
 
 
 @admin.register(Partner)
@@ -36,8 +32,3 @@ class PartnerAdmin(admin.ModelAdmin):
 class GeoNodeThemeCustomizationAdmin(admin.ModelAdmin):
     list_display = ('id', 'is_enabled', 'name', 'date', 'description')
     list_display_links = ('id', 'name',)
-    date_hierarchy = 'date'
-    readonly_fields = ('is_enabled',)
-    filter_horizontal = ('partners',)
-    form = GeoNodeThemeCustomizationAdminForm
-    actions = [enable_theme, disable_theme, refresh_theme]
