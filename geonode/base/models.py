@@ -48,7 +48,6 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
 from django.contrib.gis.geos import GEOSGeometry
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
 
 from mptt.models import MPTTModel, TreeForeignKey
@@ -124,7 +123,6 @@ class ContactRole(models.Model):
         unique_together = (("contact", "resource", "role"),)
 
 
-@python_2_unicode_compatible
 class TopicCategory(models.Model):
     """
     Metadata about high-level geographic data thematic classification.
@@ -142,16 +140,11 @@ class TopicCategory(models.Model):
     def __unicode__(self):
         return u"{0}".format(self.gn_description)
 
-    def __str__(self):
-        from django.utils.encoding import force_bytes
-        return force_bytes(self.gn_description)
-
     class Meta:
         ordering = ("identifier",)
         verbose_name_plural = 'Metadata Topic Categories'
 
 
-@python_2_unicode_compatible
 class SpatialRepresentationType(models.Model):
     """
     Metadata information about the spatial representation type.
@@ -167,10 +160,6 @@ class SpatialRepresentationType(models.Model):
     def __unicode__(self):
         return u"{0}".format(self.gn_description)
 
-    def __str__(self):
-        from django.utils.encoding import force_bytes
-        return force_bytes(self.gn_description)
-
     class Meta:
         ordering = ("identifier",)
         verbose_name_plural = 'Metadata Spatial Representation Types'
@@ -181,7 +170,6 @@ class RegionManager(models.Manager):
         return self.get(code=code)
 
 
-@python_2_unicode_compatible
 class Region(MPTTModel):
     # objects = RegionManager()
 
@@ -225,10 +213,6 @@ class Region(MPTTModel):
     def __unicode__(self):
         return u"{0}".format(self.name)
 
-    def __str__(self):
-        from django.utils.encoding import force_bytes
-        return force_bytes(self.name)
-
     @property
     def bbox(self):
         """BBOX is in the format: [x0,x1,y0,y1]."""
@@ -263,7 +247,6 @@ class Region(MPTTModel):
         order_insertion_by = ['name']
 
 
-@python_2_unicode_compatible
 class RestrictionCodeType(models.Model):
     """
     Metadata information about the spatial representation type.
@@ -278,10 +261,6 @@ class RestrictionCodeType(models.Model):
 
     def __unicode__(self):
         return u"{0}".format(self.gn_description)
-
-    def __str__(self):
-        from django.utils.encoding import force_bytes
-        return force_bytes(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -301,7 +280,6 @@ class Backup(models.Model):
         verbose_name_plural = 'Backups'
 
 
-@python_2_unicode_compatible
 class License(models.Model):
     identifier = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=100)
@@ -312,10 +290,6 @@ class License(models.Model):
 
     def __unicode__(self):
         return u"{0}".format(self.name)
-
-    def __str__(self):
-        from django.utils.encoding import force_bytes
-        return force_bytes(self.name)
 
     @property
     def name_long(self):
@@ -518,7 +492,6 @@ class ResourceBaseManager(PolymorphicManager):
         return super(ResourceBaseManager, self).get_queryset()
 
 
-@python_2_unicode_compatible
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     """
     Base Resource Object loosely based on ISO 19115:2003
@@ -1307,7 +1280,6 @@ class LinkManager(models.Manager):
             link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
 
 
-@python_2_unicode_compatible
 class Link(models.Model):
     """Auxiliary model for storing links for resources.
 
