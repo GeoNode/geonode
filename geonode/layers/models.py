@@ -350,9 +350,9 @@ class UploadSession(models.Model):
 
     def __unicode__(self):
         try:
-            _s = '%s' % self.resource or self.date
+            _s = '[Upload session-id: {}] - {}'.format(self.id, self.resource.title)
         except BaseException:
-            _s = '%s' % self.date
+            _s = '[Upload session-id: {}]'.format(self.id)
         return u"{0}".format(_s)
 
 
