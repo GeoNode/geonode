@@ -6,7 +6,7 @@ Customize the look and feel
 
 .. warning:: These instructions are only valid if you've installed GeoNode following the guide at :ref:`setup_configure_httpd` !!
 
-You might want to change the look of GeoNode, editing the colors and the logo of the website and adjust the templates for your needs. To do so, you first have to set up your own geonode project from a template. If you've successfully done this, you can go further and start theming your geonode project.
+Since version 2.8.1, it is possible to do change some elements of look and feel (such as colors, logo, etc.) using the Geonode Theme application from the administration. For more advanced changes, you first have to set up your own geonode project from a template. If you've successfully done this, you can go further and start theming your geonode project.
 
 .. toctree::
    :hidden:
