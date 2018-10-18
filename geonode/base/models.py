@@ -158,7 +158,7 @@ class SpatialRepresentationType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.gn_description
+        return u"{0}".format(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -211,7 +211,7 @@ class Region(MPTTModel):
         default='EPSG:4326')
 
     def __unicode__(self):
-        return self.name
+        return u"{0}".format(self.name)
 
     @property
     def bbox(self):
@@ -260,7 +260,7 @@ class RestrictionCodeType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.gn_description
+        return u"{0}".format(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -289,7 +289,7 @@ class License(models.Model):
     license_text = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.name
+        return u"{0}".format(self.name)
 
     @property
     def name_long(self):
@@ -763,7 +763,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     rating = models.IntegerField(default=0, null=True, blank=True)
 
     def __unicode__(self):
-        return self.title
+        return u"{0}".format(self.title)
 
     def get_upload_session(self):
         raise NotImplementedError()
@@ -1310,8 +1310,8 @@ class Link(models.Model):
 
     objects = LinkManager()
 
-    def __str__(self):
-        return '%s link' % self.link_type
+    def __unicode__(self):
+        return u"{0} link".format(self.link_type)
 
 
 def resourcebase_post_save(instance, *args, **kwargs):
