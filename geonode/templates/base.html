@@ -46,6 +46,9 @@
         {% if custom_theme.logo %}
         .navbar-brand {
           background-image: url({{ custom_theme.logo.url }});
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: contain;
         }
         {% endif %}
 
@@ -65,7 +68,7 @@
         .home .jumbotron .container {
           position: relative;
           z-index: 1;
-        }        
+        }
         .home .jumbotron:after {
           content: "";
           background-image: url({{ custom_theme.jumbotron_bg.url }});
