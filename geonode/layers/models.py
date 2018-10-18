@@ -81,7 +81,7 @@ class Style(models.Model, PermissionLevelMixin):
     workspace = models.CharField(max_length=255, null=True, blank=True)
 
     def __unicode__(self):
-        return "%s" % self.name.encode('utf-8')
+        return u"%s" % self.name
 
     def absolute_url(self):
         if self.sld_url:

@@ -91,7 +91,7 @@ Ubuntu development build instructions using an isolated virtual environment (tes
     # Install Java 8 (needed by latest GeoServer 2.9)
     sudo apt-add-repository ppa:webupd8team/java
     sudo apt-get update
-    sudo apt-get install oracle-java8-set-default
+    sudo apt-get install oracle-java8-installer
 
     # Create and activate the virtualenv
     virtualenv --no-site-packages venv
