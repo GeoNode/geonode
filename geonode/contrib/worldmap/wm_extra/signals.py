@@ -33,6 +33,18 @@ def add_ext_map(sender, instance, created, **kwargs):
         ExtMap.objects.create(map=instance)
 
 
+def validate_wm_map(sender, instance, **kwargs):
+    """
+    Validate a map instance.
+    """
+    if instance.bbox_y0 > instance.bbox_y1:
+        y0 = instance.bbox_y1
+        y1 = instance.bbox_y0
+        instance.bbox_y0 = y0
+        instance.bbox_y1 = y1
+
+
 post_save.connect(save_profile, sender=Profile)
 post_save.connect(add_ext_layer, sender=Layer)
 post_save.connect(add_ext_map, sender=Map)
+post_save.connect(validate_wm_map, sender=Map)
