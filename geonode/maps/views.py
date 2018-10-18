@@ -1359,7 +1359,8 @@ def map_thumbnail(request, mapid):
         try:
             image = None
             try:
-                image = _prepare_thumbnail_body_from_opts(request.body)
+                image = _prepare_thumbnail_body_from_opts(request.body,
+                                                          request=request)
             except BaseException:
                 image = _render_thumbnail(request.body)
 

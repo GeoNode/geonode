@@ -1783,7 +1783,7 @@ def _render_thumbnail(req_body, width=240, height=180):
     return content
 
 
-def _prepare_thumbnail_body_from_opts(request_body):
+def _prepare_thumbnail_body_from_opts(request_body, request=None):
     import mercantile
     from geonode.utils import (_v,
                                bbox_to_projection,
@@ -1847,6 +1847,10 @@ def _prepare_thumbnail_body_from_opts(request_body):
             'format': wms_format,
             # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
         }
+
+        if request and 'access_token' in request.session:
+            params['access_token'] = request.session['access_token']
+
         _p = "&".join("%s=%s" % item for item in params.items())
 
         import posixpath
@@ -1860,18 +1864,21 @@ def _prepare_thumbnail_body_from_opts(request_body):
                            target_srid=4326)[:4])
 
     # Build Image Request Template
-    _img_request_template = "<div style='overflow: hidden; position:absolute; \
-        top:0px; left:0px; height: {height}px; width: {width}px;'> \
+    _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
+        <div style='position: absolute; z-index: 749; \
+        transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
         \n".format(height=height, width=width)
 
     # Fetch XYZ tiles
     bounds = wgs84_bbox[0:4]
     zoom = bounds_to_zoom_level(bounds, width, height)
 
-    t_ll = mercantile.tile(_v(bounds[0], x=True), _v(bounds[1], x=False), zoom, truncate=True)
-    t_ur = mercantile.tile(_v(bounds[2], x=True), _v(bounds[3], x=False), zoom, truncate=True)
-    xmin, ymax = t_ll.x, t_ll.y
-    xmax, ymin = t_ur.x, t_ur.y
+    t_ll = mercantile.tile(_v(bounds[0], x=True), _v(bounds[1], x=False), zoom)
+    t_ur = mercantile.tile(_v(bounds[2], x=True), _v(bounds[3], x=False), zoom)
+    ratio = float(max(width, height)) / float(min(width, height))
+    y_offset = 1 if ratio >= 1.5 else 0
+    xmin, ymax = t_ll.x, t_ll.y+y_offset
+    xmax, ymin = t_ur.x, t_ur.y+y_offset
 
     for xtile in range(xmin, xmax+1):
         for ytile in range(ymin, ymax+1):
@@ -1889,7 +1896,8 @@ def _prepare_thumbnail_body_from_opts(request_body):
                 'transparent': True,
                 'bbox': ",".join([str(xy_bounds.left), str(xy_bounds.bottom),
                                   str(xy_bounds.right), str(xy_bounds.top)]),
-                'crs': 'EPSG:3857'
+                'crs': 'EPSG:3857',
+
             }
             _p = "&".join("%s=%s" % item for item in params.items())
 
@@ -1897,7 +1905,7 @@ def _prepare_thumbnail_body_from_opts(request_body):
                 _img_src_template.format(ogc_location=(thumbnail_create_url + '&' + _p),
                                          height=256, width=256,
                                          left=box[0], top=box[1])
-    _img_request_template += "</div>"
+    _img_request_template += "</div></div>"
     image = _render_thumbnail(_img_request_template, width=width, height=height)
     return image
 

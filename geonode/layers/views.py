@@ -1387,7 +1387,8 @@ def layer_thumbnail(request, layername):
             else:
                 image = None
                 try:
-                    image = _prepare_thumbnail_body_from_opts(request.body)
+                    image = _prepare_thumbnail_body_from_opts(request.body,
+                                                              request=request)
                 except BaseException:
                     image = _render_thumbnail(request.body)
 
