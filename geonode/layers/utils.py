@@ -988,6 +988,9 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     """
     if isinstance(instance, Map):
         local_layers = []
+        # a map could be empty!
+        if not instance.layers:
+            return
         for layer in instance.layers:
             if layer.local:
                 local_layers.append(layer.name)
