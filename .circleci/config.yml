@@ -1,0 +1,78 @@
+version: 2
+
+jobs:
+  build:
+    machine: true
+    steps:
+
+      - checkout
+
+      - run:
+          name: Install Docker Compose
+          command: |
+            sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+
+      - run:
+          name: Build and start the stack
+          command: docker-compose -f docker-compose.yml up -d --build
+          working_directory: scripts/spcgeonode/
+
+      - run:
+          name: Wait for everything to start...
+          command: |
+            n=1
+            m=60
+            until [ $n -gt $m ]
+            do
+              echo "Waiting 60 seconds..."
+              sleep 60
+              DJANGO_STATUS=$(docker inspect --format="{{json .State.Health.Status}}" spcgeonode_django_1)
+              GEOSERVER_STATUS=$(docker inspect --format="{{json .State.Health.Status}}" spcgeonode_geoserver_1)
+              echo "Waited $n min (out of $m min)"
+              echo "Django: $DJANGO_STATUS"
+              echo "Geoserver: $GEOSERVER_STATUS"
+              if [[ $DJANGO_STATUS == '"healthy"' ]] && [[ $GEOSERVER_STATUS == '"healthy"' ]]; then
+                break
+              fi
+              echo "Not healthy yet..."
+              docker ps
+              n=$[$n+1]
+            done
+            [[ $DJANGO_STATUS == '"healthy"' ]] && [[ $GEOSERVER_STATUS == '"healthy"' ]];
+
+      - run:
+          name: Show state (debug)
+          command: docker ps
+          when: always
+
+      - run:
+          name: Geoserver logs (debug)
+          command: docker logs spcgeonode_geoserver_1 --tail 500
+          when: always
+
+      - run:
+          name: Django logs (debug)
+          command: docker logs spcgeonode_django_1 --tail 500
+          when: always
+
+      # - run: Run the Geonode integration test suite # TODO : reenable this if we manage to have them pass
+      # - run: docker-compose -f docker-compose.yml exec postgres psql -U postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity;"
+      # - run: docker-compose -f docker-compose.yml exec postgres psql -U postgres -c "CREATE DATABASE test_postgres WITH TEMPLATE postgres;"
+      # - run: docker-compose -f docker-compose.yml exec django python manage.py test geonode.tests.integration
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - spcgeonode-release
+    jobs:
+      - build

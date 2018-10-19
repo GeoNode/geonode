@@ -1,0 +1,159 @@
+version: '3.4'
+
+# Common Django template for Geonode, Celery and Celerycam services below
+x-common-django:
+  &default-common-django
+  image: olivierdalang/spcgeonode:django-latest
+  build:
+    context: ../../
+    dockerfile: scripts/spcgeonode/django/Dockerfile
+  environment:
+    - HTTPS_HOST=${HTTPS_HOST}
+    - HTTPS_PORT=${HTTPS_PORT}
+    - HTTP_HOST=${HTTP_HOST}
+    - HTTP_PORT=${HTTP_PORT}
+    - ADMIN_EMAIL=${ADMIN_EMAIL}
+    - DEBUG=False
+    - REGISTRATION_OPEN=${REGISTRATION_OPEN}
+    - TIME_ZONE=${TIME_ZONE}
+  volumes:
+    - static:/spcgeonode-static/
+    - media:/spcgeonode-media/
+  secrets:
+    - admin_username
+    - admin_password
+  restart: on-failure
+    
+services:
+
+  # Our custom django application. It includes Geonode.
+  django:
+    << : *default-common-django
+    healthcheck:
+      test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8001/"
+      interval: 60s
+      timeout: 10s
+      retries: 1
+      start_period: 60s
+    entrypoint: ["/spcgeonode/scripts/spcgeonode/django/docker-entrypoint.sh"]
+    command: "uwsgi --chdir=/spcgeonode --module=geonode.wsgi --socket=:8000 --http=127.0.0.1:8001 --processes=5"
+    
+  # Celery worker that executes celery tasks created by Django.
+  celery:
+    << : *default-common-django
+    entrypoint: []
+    command: 'celery worker --app=geonode.celery_app:app -l info'
+
+  # Celery beat that triggers scheduled tasks
+  celerybeat:
+    << : *default-common-django
+    entrypoint: []
+    command: 'celery beat --app=geonode.celery_app:app --pidfile="/celerybeat.pid" -l info'
+
+  # Celery camera that monitors celery tasks and populate the djcelery django admin interface
+  celerycam:
+    << : *default-common-django
+    entrypoint: []
+    command: 'celery events --app=geonode.celery_app:app --pidfile="/celeryev.pid" --camera=django_celery_monitor.camera.Camera --frequency=2.0 -l info'
+  
+  # Nginx is serving django static and media files and proxies to django and geonode
+  nginx:
+    image: olivierdalang/spcgeonode:nginx-latest
+    build: ./nginx/
+    environment:
+      - HTTPS_HOST=${HTTPS_HOST}
+      - HTTP_HOST=${HTTP_HOST}
+      - LETSENCRYPT_MODE=${LETSENCRYPT_MODE}
+      - RESOLVER=127.0.0.11
+    ports:
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
+    volumes:
+      - static:/spcgeonode-static/
+      - media:/spcgeonode-media/
+      - certificates:/spcgeonode-certificates/
+    restart: on-failure
+
+  # Geoserver backend
+  geoserver:
+    image: olivierdalang/spcgeonode:geoserver-latest
+    build: ./geoserver/
+    healthcheck:
+      test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8080/geoserver/rest/workspaces/geonode.html"
+      interval: 60s
+      timeout: 10s
+      retries: 1
+      start_period: 60s
+    environment:
+      - HTTPS_HOST=${HTTPS_HOST}
+      - HTTPS_PORT=${HTTPS_PORT}
+      - HTTP_HOST=${HTTP_HOST}
+      - HTTP_PORT=${HTTP_PORT}
+    volumes:
+      - geodatadir:/spcgeonode-geodatadir/
+    secrets:
+      - admin_username
+      - admin_password 
+    restart: on-failure
+
+  # Gets and installs letsencrypt certificates
+  letsencrypt:
+    image: olivierdalang/spcgeonode:letsencrypt-latest
+    build: ./letsencrypt/
+    environment:
+      - HTTPS_HOST=${HTTPS_HOST}
+      - HTTP_HOST=${HTTP_HOST}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - LETSENCRYPT_MODE=${LETSENCRYPT_MODE}
+    volumes:
+      - certificates:/spcgeonode-certificates/
+    restart: on-failure
+   
+  pgdumper:
+    image: olivierdalang/spcgeonode:pgdumper-latest
+    build: ./pgdumper/
+    volumes:
+      - pgdumps:/spcgeonode-pgdumps/ 
+    restart: on-failure
+
+  rclone:
+    image: olivierdalang/spcgeonode:rclone-latest
+    build: ./rclone/
+    secrets:
+      - rclone_backup_conf
+    volumes:
+      - pgdumps:/spcgeonode-pgdumps/
+      - media:/spcgeonode-media/
+      - geodatadir:/spcgeonode-geodatadir/
+    restart: on-failure
+    
+  # PostGIS database.
+  postgres:
+    image: mdillon/postgis:9.6-alpine
+    volumes:
+      - database:/var/lib/postgresql/data/ 
+    restart: on-failure
+
+  # Vanilla RabbitMQ service. This is needed by celery
+  rabbitmq:
+    image: rabbitmq:3.7-alpine 
+    restart: on-failure
+
+volumes:
+  static:
+  media:
+  database:
+  geodatadir:
+  certificates:
+  pgdumps:
+
+secrets:
+  admin_username:
+    file: _secrets/admin_username
+    external: false
+  admin_password:
+    file: _secrets/admin_password
+    external: false
+  rclone_backup_conf:
+    file: _secrets/rclone.backup.conf
+    external: false

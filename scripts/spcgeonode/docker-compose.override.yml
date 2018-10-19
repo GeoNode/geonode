@@ -1,0 +1,60 @@
+version: '3.4'
+
+
+# Common Django template for Geonode, Celery and Celerycam services below
+x-common-django:
+  &default-common-django
+  image: olivierdalang/spcgeonode:django-dev
+  environment:
+    - DEBUG=True
+  volumes:
+    - ../../:/spcgeonode/
+    - ./_volume_static:/spcgeonode-static/
+    - ./_volume_media:/spcgeonode-media/
+
+services:
+  django:
+    << : *default-common-django
+    command: "uwsgi --chdir=/spcgeonode --module=geonode.wsgi --socket=:8000 --http=127.0.0.1:8001 --processes=5 --py-autoreload=2"
+  celery:
+    << : *default-common-django
+    command: 'celery worker --app=geonode.celery_app:app -l debug'
+  celerybeat:
+    << : *default-common-django
+    command: 'celery beat --app=geonode.celery_app:app --pidfile="/celerybeat.pid" -l debug'
+  celerycam:
+    << : *default-common-django
+    command: 'celery events --app=geonode.celery_app:app --pidfile="/celeryev.pid" --camera=django_celery_monitor.camera.Camera --frequency=2.0 -l debug'
+
+  nginx:
+    image: olivierdalang/spcgeonode:nginx-dev
+    volumes:
+      - ./_volume_static:/spcgeonode-static/
+      - ./_volume_media:/spcgeonode-media/
+      - ./_volume_certificates:/spcgeonode-certificates/
+
+  geoserver:
+    image: olivierdalang/spcgeonode:geoserver-dev
+    volumes:
+      - ./_volume_geodatadir:/spcgeonode-geodatadir/
+
+  letsencrypt:
+    image: olivierdalang/spcgeonode:letsencrypt-dev
+    volumes:
+      - ./_volume_certificates:/spcgeonode-certificates/
+
+  pgdumper:
+    image: olivierdalang/spcgeonode:pgdumper-dev
+    volumes:
+      - ./_volume_pgdumps:/spcgeonode-pgdumps/
+
+  rclone:
+    image: olivierdalang/spcgeonode:rclone-dev
+    volumes:
+      - ./_volume_pgdumps:/spcgeonode-pgdumps/
+      - ./_volume_media:/spcgeonode-media/
+      - ./_volume_geodatadir:/spcgeonode-geodatadir/
+
+  postgres:
+    ports:
+      - "5432:5432"
