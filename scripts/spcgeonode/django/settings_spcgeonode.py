@@ -7,8 +7,8 @@ from geonode.settings import *
 # Geoserver fix admin password
 ##################################
 
-OGC_SERVER['default']['USER'] = open('/run/secrets/admin_username','r').read().strip()
-OGC_SERVER['default']['PASSWORD'] = open('/run/secrets/admin_password','r').read().strip()
+OGC_SERVER['default']['USER'] = os.getenv('ADMIN_USERNAME')
+OGC_SERVER['default']['PASSWORD'] = os.getenv('ADMIN_PASSWORD')
 
 ##################################
 # Misc / debug / hack
@@ -22,7 +22,7 @@ CELERY_BROKER_URL = 'amqp://rabbitmq:5672'
 CELERY_RESULT_BACKEND = 'django-db'
 
 # We randomize the secret key (based on admin login)
-SECRET_KEY = hashlib.sha512(open('/run/secrets/admin_username','r').read().strip() + open('/run/secrets/admin_password','r').read().strip()).hexdigest()
+SECRET_KEY = hashlib.sha512(os.getenv('ADMIN_USERNAME') + os.getenv('ADMIN_PASSWORD')).hexdigest()
 
 # We define ALLOWED_HOSTS
 ALLOWED_HOSTS = ['nginx','127.0.0.1'] # We need this for internal api calls from geoserver and for healthchecks

@@ -1,7 +1,7 @@
 FROM alpine:3.6
 
 # Install deps
-RUN apk add --no-cache libressl ca-certificates
+RUN apk add --no-cache libressl ca-certificates gettext
 
 # Install rclone
 RUN wget https://downloads.rclone.org/v1.40/rclone-v1.40-linux-amd64.zip
@@ -22,6 +22,7 @@ ADD crontab crontab
 RUN /usr/bin/crontab crontab
 RUN rm crontab
 
+ADD rclone.s3.conf.envsubst rclone.s3.conf.envsubst
 
 # We run cron in foreground to update the certificates
 ENTRYPOINT ["/docker-entrypoint.sh"]

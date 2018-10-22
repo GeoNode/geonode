@@ -2,6 +2,11 @@
 
 ## Version 2.x
 
+### 2.10rc4.1
+
+- use env var instead of secrets (small benefit in terms of security not worth complexity)
+- hardcode rclone S3 configuration (other provider would have to be hardcoded too)
+
 ### 2.10rc4.0
 
 - adopted Geonode's versions number (with an additionnal level for subreleases)

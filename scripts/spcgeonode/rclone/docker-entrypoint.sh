@@ -26,11 +26,21 @@ else
 fi
 
 ############################
-# 2. Running once to ensure config works
+# 2. Replacing environment variables
 ############################
 
 echo "-----------------------------------------------------"
-echo "2. Running once to ensure config works"
+echo "2. Replacing environment variables"
+envsubst ' \$S3_ACCESS_KEY \$S3_SECRET_KEY \$S3_REGION \$S3_BUCKET' < /rclone.s3.conf.envsubst > /rclone.s3.conf
+# TODO : remove this
+cat /rclone.s3.conf
+
+############################
+# 3. Running once to ensure config works
+############################
+
+echo "-----------------------------------------------------"
+echo "3. Running once to ensure config works"
 /root/sync.sh
 
 echo "-----------------------------------------------------"

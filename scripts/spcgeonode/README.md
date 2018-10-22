@@ -37,17 +37,10 @@ If not familiar with Docker, read below to know how to see what's happening. On 
 
 ### Production (using composer)
 
-Using a text editor, edit the follow files :
+Using a text editor, edit the `.env` file (you can also override those with environment variables) :
 ```
 # General configuration
-.env
-
-# Admin username and password
-_secrets/admin_username
-_secrets/admin_password
-
-# Backup (optional)
-_secrets/rclone.backup.conf
+nano .env
 ```
 
 When ready, start the stack using this commands :
@@ -130,11 +123,11 @@ In short, Django will restart until Postgres is up so it can migrate the databas
 
 *Backups* are made using [RClone](https://rclone.org/docs/). RClone is a flexible file syncing tool that supports all commons cloud provider, regular file transfer protocols as well as local filesystem. It should be able to accomodate almost any setup.
 
-The default configuration provided with the setup assumes Amazon S3 is being used, in which case you need to replace the following parts of the `rclone.backup.config` file : `YOUR_S3_ACCESS_KEY_HERE`,`YOUR_S3_SECRET_KEY_HERE`,`YOUR_S3_REGION_HERE` and `THE_NAME_OF_YOUR_BUCKET_HERE` (watch [this](https://www.youtube.com/watch?v=BLTy2tQXQLY) to learn how to get these keys).
+The only available configuration provided with the setup assumes Amazon S3 is being used, in which case you need to replace the following parts of the `rclone.backup.config` file : `YOUR_S3_ACCESS_KEY_HERE`,`YOUR_S3_SECRET_KEY_HERE`,`YOUR_S3_REGION_HERE` and `THE_NAME_OF_YOUR_BUCKET_HERE` (watch [this](https://www.youtube.com/watch?v=BLTy2tQXQLY) to learn how to get these keys).
 
 Also consider enabling *versionning* on the Bucket, so that if data won't get lost if deleted accidentally in GeoNode.
 
-If you want to stup backups using another provider, check the [RClone documentation](https://rclone.org/docs/).
+If you want to setup backups using another provider, check the [RClone documentation](https://rclone.org/docs/). It should be easy to add any RClone supported provider to SPCgeonode.
 
 ### How to migrate from an existing standard Geonode install
 

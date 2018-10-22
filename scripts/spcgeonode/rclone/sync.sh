@@ -3,9 +3,12 @@
 # Exit script in case of error
 set -e
 
-rclone sync -v --config /run/secrets/rclone_backup_conf /spcgeonode-geodatadir/ spcgeonode:geodatadir/
-rclone sync -v --config /run/secrets/rclone_backup_conf /spcgeonode-media/ spcgeonode:media/
-rclone sync -v --config /run/secrets/rclone_backup_conf /spcgeonode-pgdumps/ spcgeonode:pgdumps/
+if [ ! -z "${S3_ACCESS_KEY}" ]; then
+    rclone sync -v --config /rclone.s3.conf /spcgeonode-geodatadir/ spcgeonode:geodatadir/
+    rclone sync -v --config /rclone.s3.conf /spcgeonode-media/ spcgeonode:media/
+    rclone sync -v --config /rclone.s3.conf /spcgeonode-pgdumps/ spcgeonode:pgdumps/
 
-echo "-----------------------------------------------------"
-echo "Sync successful !!"
+    echo "S3 sync successful !!"
+fi
+
+echo "Finished syncing"

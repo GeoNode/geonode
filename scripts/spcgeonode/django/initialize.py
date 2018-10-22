@@ -19,8 +19,9 @@ from oauth2_provider.models import Application
 from django.conf import settings
 
 # Getting the secrets
-admin_username = open('/run/secrets/admin_username','r').read().strip()
-admin_password = open('/run/secrets/admin_password','r').read().strip()
+admin_username = os.getenv('ADMIN_USERNAME')
+admin_password = os.getenv('ADMIN_PASSWORD')
+admin_email = os.getenv('ADMIN_EMAIL')
 
 
 #########################################################
@@ -42,13 +43,13 @@ try:
     superuser = Profile.objects.get(username=admin_username)
     superuser.set_password(admin_password)
     superuser.is_active = True
-    superuser.email = os.getenv('ADMIN_EMAIL')
+    superuser.email = admin_email
     superuser.save()
     print('superuser successfully updated')
 except Profile.DoesNotExist:
     superuser = Profile.objects.create_superuser(
         admin_username,
-        os.getenv('ADMIN_EMAIL'),
+        admin_email,
         admin_password
     )
     print('superuser successfully created')  
