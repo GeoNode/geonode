@@ -92,10 +92,11 @@ setup(name='GeoNode',
           "oauthlib==2.0.1",
 
           # geopython dependencies
-          "pyproj>=1.9.3",  # python-pyproj (1.9.5)
-          "OWSLib>=0.11.0",  # python-owslib (0.10.3) FIXME
+          "pyproj>=1.9.3, <1.9.5",  # python-pyproj (1.9.5)
+          "OWSLib==0.10.3",  # python-owslib (0.10.3) FIXME
           "pycsw>=2.0.2",  # python-pycsw (1.10.1, 2.0.0 in ppa) FIXME
-          "%s" % shapely_dep,  # python-shapely (1.5.13)
+          # "%s" % shapely_dep,  # python-shapely (1.5.13)
+          "Shapely>=1.3.1, <1.5"
 
 
           # # Apps with packages provided in GeoNode's PPA on Launchpad.
