@@ -150,7 +150,7 @@ def _robust_rmtree(path, logger=None, max_retries=5):
     shutil.rmtree(path)
 
 
-def _install_data_dir():
+def _reset_data_dir():
     target_data_dir = path('geoserver/data')
     if target_data_dir.exists():
         try:
@@ -158,17 +158,26 @@ def _install_data_dir():
         except OSError:
             _robust_rmtree(target_data_dir, logger=True)
 
+
+def _install_data_dir():
+    target_data_dir = path('geoserver/data')
+    if target_data_dir.exists():
+        _reset_data_dir()
+
     original_data_dir = path('geoserver/geoserver/data')
     justcopy(original_data_dir, target_data_dir)
 
-    config = path(
-        'geoserver/data/security/auth/geonodeAuthProvider/config.xml')
-    with open(config) as f:
-        xml = f.read()
-        m = re.search('baseUrl>([^<]+)', xml)
-        xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
-        with open(config, 'w') as f:
-            f.write(xml)
+    try:
+        config = path(
+            'geoserver/data/security/auth/geonodeAuthProvider/config.xml')
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('baseUrl>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
+            with open(config, 'w') as f:
+                f.write(xml)
+    except Exception as e:
+        print(e)
 
     try:
         config = path(
@@ -192,6 +201,8 @@ def _install_data_dir():
                 1)] + "http://localhost:8000/account/logout/" + xml[m.end(1):]
             with open(config, 'w') as f:
                 f.write(xml)
+    except IOError as io:
+        print("This data dir version doesn't have geonode oauth2 configuration!")
     except Exception as e:
         print(e)
 
@@ -204,6 +215,8 @@ def _install_data_dir():
             xml = xml[:m.start(1)] + "http://localhost:8000" + xml[m.end(1):]
             with open(config, 'w') as f:
                 f.write(xml)
+    except IOError as io:
+        print("This data dir version doesn't have geonode REST role service!")
     except Exception as e:
         print(e)
 
@@ -611,7 +624,7 @@ def reset():
 def _reset():
     sh("rm -rf geonode/development.db")
     sh("rm -rf geonode/uploaded/*")
-    _install_data_dir()
+    _reset_data_dir()
 
 
 @needs(['reset'])
