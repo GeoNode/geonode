@@ -1865,9 +1865,10 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
 
     # Fetch XYZ tiles
     bounds = wgs84_bbox[0:4]
-
-    bounds[0] = _v(bounds[0], x=True, target_srid=4326)
-    bounds[2] = _v(bounds[2], x=True, target_srid=4326)
+    bounds[0] = _v(bounds[0], x=True, target_srid=3857)
+    bounds[2] = _v(bounds[2], x=True, target_srid=3857)
+    bounds[1] = _v(bounds[1], x=False, target_srid=3857)
+    bounds[3] = _v(bounds[3], x=False, target_srid=3857)
 
     if 'zoom' in request_body:
         zoom = request_body['zoom']

@@ -193,7 +193,7 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 
 
 def _v(coord, x, source_srid=4326, target_srid=3857):
-    if source_srid == 4326 and x and abs(coord) > 180.0:
+    if source_srid == 4326 and x and abs(coord) != 180.0:
         coord = coord - (round(coord / 360.0) * 360.0)
     if source_srid == 4326 and target_srid != 4326:
         if x and coord >= 180.0:
