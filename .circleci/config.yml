@@ -7,19 +7,65 @@ jobs:
       - image: circleci/buildpack-deps:trusty
 
     parameters:
-      cache_layers:
-        default: false
+      load_docker_cache:
         type: boolean
+      save_docker_cache:
+        type: boolean
+      run_tests_smoke:
+        type: boolean
+        default: false
+      run_tests_core:
+        type: boolean
+        default: false
+      run_tests_internal:
+        type: boolean
+        default: false
+      run_tests_contrib:
+        type: boolean
+        default: false
+      run_tests_integration:
+        type: boolean
+        default: false
 
     steps:
 
       - checkout
 
-      - setup_remote_docker:
-          docker_layer_caching: << parameters.cache_layers >>
+      - setup_remote_docker
+
+      - when:
+          condition: <<parameters.load_docker_cache>>
+          steps:
+            - restore_cache:
+                keys:
+                  - v1-docker-images
+            - run:
+                name: Load Docker layers cache
+                command: |
+                  docker load -i ~/docker-layers-cache.tar || true
 
       - run:
-          name: Build and start the stack
+          name: Build the stack
+          command: docker-compose -f docker-compose.yml build
+          working_directory: scripts/spcgeonode/
+
+      - when:
+          condition: <<parameters.save_docker_cache>>
+          steps:
+            - run:
+                name: Save Docker layers cache
+                command: |
+                  rm -f ~/docker-layers-cache.tar
+                  docker save -o ~/docker-layers-cache.tar $(docker images -a --format "{{.ID}}")
+                when: always
+            - save_cache:
+                key: v1-docker-images-{{ epoch }}
+                paths:
+                  - ~/docker-layers-cache.tar
+                when: always
+
+      - run:
+          name: Start the stack
           command: docker-compose -f docker-compose.yml up -d --build
           working_directory: scripts/spcgeonode/
 
@@ -35,8 +81,6 @@ jobs:
               GEOSERVER_STATUS=$(docker inspect --format="{{json .State.Health.Status}}" spcgeonode_geoserver_1)
               echo ""
               echo "Waited $n min (out of $m min)"
-              echo "Django: $DJANGO_STATUS"
-              echo "Geoserver: $GEOSERVER_STATUS"
               if [[ $DJANGO_STATUS == '"healthy"' ]] && [[ $GEOSERVER_STATUS == '"healthy"' ]]; then
                 break
               fi
@@ -61,20 +105,88 @@ jobs:
           command: docker logs spcgeonode_django_1 --tail 500
           when: on_fail
 
-      - run:
-          name: Run test suite
-          command: |
-            docker-compose exec django bash -c 'python manage.py test $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a for a in settings.GEONODE_APPS]))")'
-          working_directory: scripts/spcgeonode/
+      - when:
+          condition: <<parameters.run_tests_smoke>>
+          steps:
+            - run:
+                name: Run smoke tests
+                command: |
+                  docker-compose exec django bash -c 'python manage.py test geonode.tests.smoke'
+                working_directory: scripts/spcgeonode/
 
-      # TODO : run integration tests too
+      - when:
+          condition: <<parameters.run_tests_core>>
+          steps:
+            - run:
+                name: Run core applications tests
+                command: |
+                  docker-compose exec django bash -c 'python manage.py test $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a for a in settings.GEONODE_CORE_APPS]))")'
+                working_directory: scripts/spcgeonode/
+
+      - when:
+          condition: <<parameters.run_tests_internal>>
+          steps:
+            - run:
+                name: Run internal applications tests
+                command: |
+                  docker-compose exec django bash -c 'python manage.py test $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a for a in settings.GEONODE_INTERNAL_APPS]))")'
+                working_directory: scripts/spcgeonode/
+
+      - when:
+          condition: <<parameters.run_tests_contrib>>
+          steps:
+            - run:
+                name: Run contrib applications tests
+                command: |
+                  docker-compose exec django bash -c 'python manage.py test $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a for a in settings.GEONODE_CONTRIB_APPS]))")'
+                working_directory: scripts/spcgeonode/
+
+      - when:
+          condition: <<parameters.run_tests_integration>>
+          steps:
+            - run:
+                name: Run integrations tests
+                command: |
+                  docker-compose exec django bash -c 'python manage.py test geonode.tests.integration'
+                working_directory: scripts/spcgeonode/
 
 workflows:
 
   commit:
     jobs:
       - build:
-          cache_layers: true
+          name: setup
+          load_docker_cache: true
+          save_docker_cache: true
+          run_tests_smoke: true
+      - build:
+          name: tests_integration
+          load_docker_cache: true
+          save_docker_cache: false
+          run_tests_integration: true
+          requires:
+            - setup
+      - build:
+          name: tests_core
+          load_docker_cache: true
+          save_docker_cache: false
+          run_tests_core: true
+          requires:
+            - setup
+      - build:
+          name: tests_internal
+          load_docker_cache: true
+          save_docker_cache: false
+          run_tests_internal: true
+          requires:
+            - setup
+      - build:
+          name: tests_contrib
+          load_docker_cache: true
+          save_docker_cache: false
+          run_tests_contrib: true
+          requires:
+            - setup
 
   nightly:
     triggers:
@@ -86,4 +198,10 @@ workflows:
                 - spcgeonode-release
     jobs:
       - build:
-          cache_layers: false
+          load_docker_cache: false
+          save_docker_cache: true
+          run_tests_smoke: true
+          run_tests_core: true
+          run_tests_internal: true
+          run_tests_contrib: true
+          run_tests_integration: true

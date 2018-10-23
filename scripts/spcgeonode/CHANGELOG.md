@@ -6,12 +6,13 @@
 
 - use env var instead of secrets (small benefit in terms of security not worth complexity)
 - hardcode rclone S3 configuration (other provider would have to be hardcoded too)
+- complete CI tests
 
 ### 2.10rc4.0
 
 - adopted Geonode's versions number (with an additionnal level for subreleases)
 - moved the setup to the main Geonode repo under `scripts/spcgeonode`, this makes it easier to use as developement setup for Geonode
-- use CirclCI (mostly to avoid interfering with existing travis setup)
+- use CircleCI (mostly to avoid interfering with existing travis setup)
 
 ## Version 0.1.x (Geonode 2.10)
 
