@@ -1863,33 +1863,58 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         bbox_to_projection([float(coord) for coord in request_body['bbox']] + [request_body['srid'], ],
                            target_srid=4326)[:4])
 
-    # Build Image Request Template
-    _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
-        <div style='position: absolute; z-index: 749; \
-        transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
-        \n".format(height=height, width=width)
-
     # Fetch XYZ tiles
     bounds = wgs84_bbox[0:4]
-    zoom = bounds_to_zoom_level(bounds, width, height)
 
-    t_ll = mercantile.tile(_v(bounds[0], x=True), _v(bounds[1], x=False), zoom)
-    t_ur = mercantile.tile(_v(bounds[2], x=True), _v(bounds[3], x=False), zoom)
-    ratio = float(max(width, height)) / float(min(width, height))
-    y_offset = 1 if ratio >= 1.5 else 0
-    xmin, ymax = t_ll.x, t_ll.y+y_offset
-    xmax, ymin = t_ur.x, t_ur.y+y_offset
+    bounds[0] = _v(bounds[0], x=True, target_srid=4326)
+    bounds[2] = _v(bounds[2], x=True, target_srid=4326)
 
-    for xtile in range(xmin, xmax+1):
-        for ytile in range(ymin, ymax+1):
-            box = [(xtile-xmin)*256, (ytile-ymin)*255]
+    if 'zoom' in request_body:
+        zoom = request_body['zoom']
+    else:
+        zoom = bounds_to_zoom_level(bounds, width, height)
+
+    t_ll = mercantile.tile(bounds[0], bounds[1], zoom)
+    t_ur = mercantile.tile(bounds[2], bounds[3], zoom)
+    tiles = mercantile.tiles(bounds[0], bounds[1], bounds[2], bounds[3], zoom)
+    cols = {}
+    f_col = t_ll.x
+    for tile in tiles:
+        if tile.x in cols:
+            cols[tile.x].append(tile)
+        else:
+            cols[tile.x] = [tile]
+
+    ordered_cols = cols.values()
+    i = 0
+    while ordered_cols[i][0].x != f_col and i < len(ordered_cols):
+        i = i+1
+    ordered_cols = ordered_cols[i:] + ordered_cols[:i]
+
+    bounds_ll = mercantile.bounds(t_ll)
+    bounds_ur = mercantile.bounds(t_ur)
+
+    lat_res = abs(256 / (bounds_ur.north - bounds_ur.south))
+    lng_res = abs(256 / (bounds_ll.east - bounds_ll.west))
+    top = round(abs(bounds_ur.north - bounds[3]) * -lat_res)
+    left = round(abs(bounds_ll.west - bounds[0]) * -lng_res)
+
+    # Build Image Request Template
+    _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
+        <div style='position: absolute; top:{top}px; left:{left}px; z-index: 749; \
+        transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
+        \n".format(height=height, width=width, top=top, left=left)
+
+    for col in range(0, len(ordered_cols)):
+        for row in range(0, len(ordered_cols[col])):
+            box = [col * 256, row * 256]
+            t = ordered_cols[col][row]
             if smurl:
-                imgurl = smurl.format(z=zoom, x=xtile, y=ytile)
+                imgurl = smurl.format(z=t.z, x=t.x, y=t.y)
                 _img_request_template += _img_src_template.format(ogc_location=imgurl,
                                                                   height=256, width=256,
                                                                   left=box[0], top=box[1])
-
-            xy_bounds = mercantile.xy_bounds(mercantile.Tile(xtile, ytile, zoom))
+            xy_bounds = mercantile.xy_bounds(t)
             params = {
                 'width': 256,
                 'height': 256,
