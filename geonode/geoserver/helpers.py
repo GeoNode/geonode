@@ -1863,33 +1863,63 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         bbox_to_projection([float(coord) for coord in request_body['bbox']] + [request_body['srid'], ],
                            target_srid=4326)[:4])
 
+    # Fetch XYZ tiles - we are assuming Mercatore here
+    bounds = wgs84_bbox[0:4]
+    # Fixes bounds to tiles system
+    bounds[0] = _v(bounds[0], x=True, target_srid=4326)
+    bounds[2] = _v(bounds[2], x=True, target_srid=4326)
+    if bounds[3] > 85.051:
+        bounds[3] = 85.0
+    if bounds[1] < -85.051:
+        bounds[1] = -85.0
+    if 'zoom' in request_body:
+        zoom = request_body['zoom']
+    else:
+        zoom = bounds_to_zoom_level(bounds, width, height)
+
+    t_ll = mercantile.tile(bounds[0], bounds[1], zoom)
+    t_ur = mercantile.tile(bounds[2], bounds[3], zoom)
+
+    numberOfRows = t_ll.y - t_ur.y + 1
+
+    bounds_ll = mercantile.bounds(t_ll)
+    bounds_ur = mercantile.bounds(t_ur)
+
+    lat_res = abs(256 / (bounds_ur.north - bounds_ur.south))
+    lng_res = abs(256 / (bounds_ll.east - bounds_ll.west))
+    top = round(abs(bounds_ur.north - bounds[3]) * -lat_res)
+    left = round(abs(bounds_ll.west - bounds[0]) * -lng_res)
+
+    tmp_tile = mercantile.tile(bounds[0], bounds[3], zoom)
+    width_acc = 256 + left
+    first_row = [tmp_tile]
+    # Add tiles to fill image width
+    while width > width_acc:
+        c = mercantile.ul(tmp_tile.x + 1, tmp_tile.y, zoom)
+        lng = _v(c.lng, x=True, target_srid=4326)
+        if lng == 180.0:
+            lng = -180.0
+        tmp_tile = mercantile.tile(lng, bounds[3], zoom)
+        first_row.append(tmp_tile)
+        width_acc = width_acc + 256
+
     # Build Image Request Template
     _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
-        <div style='position: absolute; z-index: 749; \
+        <div style='position: absolute; top:{top}px; left:{left}px; z-index: 749; \
         transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
-        \n".format(height=height, width=width)
+        \n".format(height=height, width=width, top=top, left=left)
 
-    # Fetch XYZ tiles
-    bounds = wgs84_bbox[0:4]
-    zoom = bounds_to_zoom_level(bounds, width, height)
-
-    t_ll = mercantile.tile(_v(bounds[0], x=True), _v(bounds[1], x=False), zoom)
-    t_ur = mercantile.tile(_v(bounds[2], x=True), _v(bounds[3], x=False), zoom)
-    ratio = float(max(width, height)) / float(min(width, height))
-    y_offset = 1 if ratio >= 1.5 else 0
-    xmin, ymax = t_ll.x, t_ll.y+y_offset
-    xmax, ymin = t_ur.x, t_ur.y+y_offset
-
-    for xtile in range(xmin, xmax+1):
-        for ytile in range(ymin, ymax+1):
-            box = [(xtile-xmin)*256, (ytile-ymin)*255]
+    for row in range(0, numberOfRows):
+        for col in range(0, len(first_row)):
+            box = [col * 256, row * 256]
+            t = first_row[col]
+            y = t.y + row
             if smurl:
-                imgurl = smurl.format(z=zoom, x=xtile, y=ytile)
+                imgurl = smurl.format(z=t.z, x=t.x, y=y)
                 _img_request_template += _img_src_template.format(ogc_location=imgurl,
                                                                   height=256, width=256,
                                                                   left=box[0], top=box[1])
-
-            xy_bounds = mercantile.xy_bounds(mercantile.Tile(xtile, ytile, zoom))
+            xy_bounds = mercantile.xy_bounds(t.x, y, t.z)
             params = {
                 'width': 256,
                 'height': 256,
