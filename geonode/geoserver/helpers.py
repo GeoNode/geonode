@@ -1863,7 +1863,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         bbox_to_projection([float(coord) for coord in request_body['bbox']] + [request_body['srid'], ],
                            target_srid=4326)[:4])
 
-    # Fetch XYZ tiles
+    # Fetch XYZ tiles - we are assuming Mercatore here
     bounds = wgs84_bbox[0:4]
     # Fixes bounds to tiles system
     bounds[0] = _v(bounds[0], x=True, target_srid=4326)
@@ -1901,7 +1901,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             lng = -180.0
         tmp_tile = mercantile.tile(lng, bounds[3], zoom)
         first_row.append(tmp_tile)
-        width_acc = width_acc + 256 
+        width_acc = width_acc + 256
 
     # Build Image Request Template
     _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
