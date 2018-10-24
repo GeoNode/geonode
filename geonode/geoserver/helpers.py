@@ -1865,11 +1865,13 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
 
     # Fetch XYZ tiles
     bounds = wgs84_bbox[0:4]
-    bounds[0] = _v(bounds[0], x=True, target_srid=3857)
-    bounds[2] = _v(bounds[2], x=True, target_srid=3857)
-    bounds[1] = _v(bounds[1], x=False, target_srid=3857)
-    bounds[3] = _v(bounds[3], x=False, target_srid=3857)
-
+    # Fixes bounds to tiles system
+    bounds[0] = _v(bounds[0], x=True, target_srid=4326)
+    bounds[2] = _v(bounds[2], x=True, target_srid=4326)
+    if bounds[3] > 85.051:
+        bounds[3] = 85.0
+    if bounds[1] < -85.051:
+        bounds[1] = -85.0
     if 'zoom' in request_body:
         zoom = request_body['zoom']
     else:
@@ -1877,20 +1879,8 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
 
     t_ll = mercantile.tile(bounds[0], bounds[1], zoom)
     t_ur = mercantile.tile(bounds[2], bounds[3], zoom)
-    tiles = mercantile.tiles(bounds[0], bounds[1], bounds[2], bounds[3], zoom)
-    cols = {}
-    f_col = t_ll.x
-    for tile in tiles:
-        if tile.x in cols:
-            cols[tile.x].append(tile)
-        else:
-            cols[tile.x] = [tile]
 
-    ordered_cols = cols.values()
-    i = 0
-    while ordered_cols[i][0].x != f_col and i < len(ordered_cols):
-        i = i+1
-    ordered_cols = ordered_cols[i:] + ordered_cols[:i]
+    numberOfRows = t_ll.y - t_ur.y + 1
 
     bounds_ll = mercantile.bounds(t_ll)
     bounds_ur = mercantile.bounds(t_ur)
@@ -1900,22 +1890,36 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
     top = round(abs(bounds_ur.north - bounds[3]) * -lat_res)
     left = round(abs(bounds_ll.west - bounds[0]) * -lng_res)
 
+    tmp_tile = mercantile.tile(bounds[0], bounds[3], zoom)
+    width_acc = 256 + left
+    first_row = [tmp_tile]
+    # Add tiles to fill image width
+    while width > width_acc:
+        c = mercantile.ul(tmp_tile.x + 1, tmp_tile.y, zoom)
+        lng = _v(c.lng, x=True, target_srid=4326)
+        if lng == 180.0:
+            lng = -180.0
+        tmp_tile = mercantile.tile(lng, bounds[3], zoom)
+        first_row.append(tmp_tile)
+        width_acc = width_acc + 256 
+
     # Build Image Request Template
     _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
         <div style='position: absolute; top:{top}px; left:{left}px; z-index: 749; \
         transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
         \n".format(height=height, width=width, top=top, left=left)
 
-    for col in range(0, len(ordered_cols)):
-        for row in range(0, len(ordered_cols[col])):
+    for row in range(0, numberOfRows):
+        for col in range(0, len(first_row)):
             box = [col * 256, row * 256]
-            t = ordered_cols[col][row]
+            t = first_row[col]
+            y = t.y + row
             if smurl:
-                imgurl = smurl.format(z=t.z, x=t.x, y=t.y)
+                imgurl = smurl.format(z=t.z, x=t.x, y=y)
                 _img_request_template += _img_src_template.format(ogc_location=imgurl,
                                                                   height=256, width=256,
                                                                   left=box[0], top=box[1])
-            xy_bounds = mercantile.xy_bounds(t)
+            xy_bounds = mercantile.xy_bounds(t.x, y, t.z)
             params = {
                 'width': 256,
                 'height': 256,
