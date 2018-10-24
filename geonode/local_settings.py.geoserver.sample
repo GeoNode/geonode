@@ -51,7 +51,19 @@ if not SITEURL.endswith('/'):
 
 ALLOWED_HOSTS = [HOSTNAME, 'localhost']
 
-# TIME_ZONE = 'Europe/Paris'
+#Define email service on GeoNode
+EMAIL_ENABLE = True
+
+if EMAIL_ENABLE:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = False
+    DEFAULT_FROM_EMAIL = '{{ project_name }} <no-reply@{{ project_name }}>'
+
+TIME_ZONE = 'UTC'
 
 DATABASES = {
     'default': {
