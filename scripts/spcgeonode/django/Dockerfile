@@ -48,19 +48,4 @@ RUN chmod +x scripts/spcgeonode/django/docker-entrypoint.sh
 # Export ports
 EXPOSE 8000
 
-# Set environnment variables
-ENV PYTHONPATH=/spcgeonode/scripts/spcgeonode/django:$PYTHONPATH
-ENV DJANGO_SETTINGS_MODULE=settings_spcgeonode
-ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
-ENV BROKER_URL=amqp://guest:guest@rabbitmq:5672/
-ENV STATIC_ROOT=/spcgeonode-static/
-ENV MEDIA_ROOT=/spcgeonode-media/
-ENV STATIC_URL=/static/
-ENV MEDIA_URL=/uploaded/
-# TODO : we should probably remove this and set Celery to use JSON serialization instead of pickle
-ENV C_FORCE_ROOT=True
-
-# We get an exception after migrations on startup (it seems the monitoring app tries to resolve the geoserver domain name after it's migration, which can happen before oauth migrations on which geoserver startup depends...)
-ENV MONITORING_ENABLED=False
-
 # We provide no command or entrypoint as this image can be used to serve the django project or run celery tasks

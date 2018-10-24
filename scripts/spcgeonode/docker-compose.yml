@@ -8,6 +8,7 @@ x-common-django:
     context: ../../
     dockerfile: scripts/spcgeonode/django/Dockerfile
   environment:
+    # editable in .env
     - HTTPS_HOST=${HTTPS_HOST}
     - HTTPS_PORT=${HTTPS_PORT}
     - HTTP_HOST=${HTTP_HOST}
@@ -15,9 +16,27 @@ x-common-django:
     - ADMIN_USERNAME=${ADMIN_USERNAME}
     - ADMIN_PASSWORD=${ADMIN_PASSWORD}
     - ADMIN_EMAIL=${ADMIN_EMAIL}
-    - DEBUG=False
+    - GEOSERVER_ADMIN_USER=${ADMIN_USERNAME}
+    - GEOSERVER_ADMIN_PASSWORD=${ADMIN_PASSWORD}
     - REGISTRATION_OPEN=${REGISTRATION_OPEN}
     - TIME_ZONE=${TIME_ZONE}
+    - ALLOWED_HOSTS=['nginx','127.0.0.1','localhost','$HTTPS_HOST','$HTTP_HOST']
+    - SECRET_KEY=${SECRET_KEY}
+    # hardcoded
+    - DEBUG=False
+    - DJANGO_SETTINGS_MODULE=geonode.settings
+    - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
+    - BROKER_URL=amqp://rabbitmq:5672
+    - STATIC_ROOT=/spcgeonode-static/
+    - MEDIA_ROOT=/spcgeonode-media/
+    - STATIC_URL=/static/
+    - MEDIA_URL=/uploaded/
+    - GEOSERVER_LOCATION=http://nginx/geoserver/
+    - ASYNC_SIGNALS=True
+    # TODO : we should probably remove this and set Celery to use JSON serialization instead of pickle
+    - C_FORCE_ROOT=True
+    # We get an exception after migrations on startup (it seems the monitoring app tries to resolve the geoserver domain name after it's migration, which can happen before oauth migrations on which geoserver startup depends...)
+    - MONITORING_ENABLED=False
   volumes:
     - static:/spcgeonode-static/
     - media:/spcgeonode-media/
@@ -41,7 +60,7 @@ services:
   celery:
     << : *default-common-django
     entrypoint: []
-    command: 'celery worker --app=geonode.celery_app:app -l info'
+    command: 'celery worker --app=geonode.celery_app:app -l info -E'
 
   # Celery beat that triggers scheduled tasks
   celerybeat:

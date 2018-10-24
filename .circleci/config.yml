@@ -11,21 +11,9 @@ jobs:
         type: boolean
       save_docker_cache:
         type: boolean
-      run_tests_smoke:
-        type: boolean
-        default: false
-      run_tests_core:
-        type: boolean
-        default: false
-      run_tests_internal:
-        type: boolean
-        default: false
-      run_tests_contrib:
-        type: boolean
-        default: false
-      run_tests_integration:
-        type: boolean
-        default: false
+      test_suite:
+        type: string
+        default: ""
 
     steps:
 
@@ -38,7 +26,7 @@ jobs:
           steps:
             - restore_cache:
                 keys:
-                  - v1-docker-images
+                  - v1-docker-images-{{ .Branch }}
             - run:
                 name: Load Docker layers cache
                 command: |
@@ -59,7 +47,7 @@ jobs:
                   docker save -o ~/docker-layers-cache.tar $(docker images -a --format "{{.ID}}")
                 when: always
             - save_cache:
-                key: v1-docker-images-{{ epoch }}
+                key: v1-docker-images-{{ .Branch }}-{{ epoch }}
                 paths:
                   - ~/docker-layers-cache.tar
                 when: always
@@ -106,48 +94,15 @@ jobs:
           when: on_fail
 
       - when:
-          condition: <<parameters.run_tests_smoke>>
+          condition: <<parameters.test_suite>>
           steps:
             - run:
-                name: Run smoke tests
+                name: Run test suite
                 command: |
-                  docker-compose exec django bash -c 'python manage.py test geonode.tests.smoke'
-                working_directory: scripts/spcgeonode/
-
-      - when:
-          condition: <<parameters.run_tests_core>>
-          steps:
-            - run:
-                name: Run core applications tests
-                command: |
-                  docker-compose exec django bash -c 'python manage.py test $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a for a in settings.GEONODE_CORE_APPS]))")'
-                working_directory: scripts/spcgeonode/
-
-      - when:
-          condition: <<parameters.run_tests_internal>>
-          steps:
-            - run:
-                name: Run internal applications tests
-                command: |
-                  docker-compose exec django bash -c 'python manage.py test $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a for a in settings.GEONODE_INTERNAL_APPS]))")'
-                working_directory: scripts/spcgeonode/
-
-      - when:
-          condition: <<parameters.run_tests_contrib>>
-          steps:
-            - run:
-                name: Run contrib applications tests
-                command: |
-                  docker-compose exec django bash -c 'python manage.py test $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a for a in settings.GEONODE_CONTRIB_APPS]))")'
-                working_directory: scripts/spcgeonode/
-
-      - when:
-          condition: <<parameters.run_tests_integration>>
-          steps:
-            - run:
-                name: Run integrations tests
-                command: |
-                  docker-compose exec django bash -c 'python manage.py test geonode.tests.integration'
+                  docker-compose -f docker-compose.yml exec django bash -c 'echo "Running <<parameters.test_suite>>"'
+                  docker-compose -f docker-compose.yml exec postgres psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
+                  docker-compose -f docker-compose.yml exec postgres createdb -U postgres -T postgres test_postgres
+                  docker-compose -f docker-compose.yml run --rm django bash -c 'ASYNC_SIGNALS=False python manage.py test -v 3 --keepdb <<parameters.test_suite>>'
                 working_directory: scripts/spcgeonode/
 
 workflows:
@@ -158,33 +113,33 @@ workflows:
           name: setup
           load_docker_cache: true
           save_docker_cache: true
-          run_tests_smoke: true
+          test_suite: 'geonode.tests.smoke'
       - build:
           name: tests_integration
           load_docker_cache: true
           save_docker_cache: false
-          run_tests_integration: true
+          test_suite: 'geonode.tests.integration'
           requires:
             - setup
       - build:
           name: tests_core
           load_docker_cache: true
           save_docker_cache: false
-          run_tests_core: true
+          test_suite: $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_CORE_APPS]))")
           requires:
             - setup
       - build:
           name: tests_internal
           load_docker_cache: true
           save_docker_cache: false
-          run_tests_internal: true
+          test_suite: $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_INTERNAL_APPS]))")
           requires:
             - setup
       - build:
           name: tests_contrib
           load_docker_cache: true
           save_docker_cache: false
-          run_tests_contrib: true
+          test_suite: $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_CONTRIB_APPS]))")
           requires:
             - setup
 
@@ -196,12 +151,9 @@ workflows:
             branches:
               only:
                 - spcgeonode-release
+                - spcgeonode
     jobs:
       - build:
           load_docker_cache: false
           save_docker_cache: true
-          run_tests_smoke: true
-          run_tests_core: true
-          run_tests_internal: true
-          run_tests_contrib: true
-          run_tests_integration: true
+          test_suite: geonode.tests.smoke geonode.tests.integration $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS]))")
