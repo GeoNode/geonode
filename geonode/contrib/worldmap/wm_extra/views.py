@@ -814,9 +814,8 @@ def gxp2wm(config, map_obj=None):
         # TODO check if this works with different languages
         config['about']['introtext'] = unicode(settings.DEFAULT_MAP_ABSTRACT)
 
-    for group in groups:
-        if group not in json.dumps(config['map']['groups']):
-            config['map']['groups'].append({"expanded": "true", "group": group})
+    if not [d for d in config['map']['groups'] if d['group'] == group]:
+        config['map']['groups'].append({"expanded": "true", "group": group})
 
     # make sure if gnsource is in sources
     add_gnsource = True
