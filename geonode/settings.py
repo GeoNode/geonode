@@ -1235,10 +1235,12 @@ CORS_ORIGIN_WHITELIST = (
 """
 
 # To enable the WorldMap based Client enable those
+"""
 GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.WorldMapHookSet"
 CORS_ORIGIN_WHITELIST = (
     HOSTNAME
 )
+"""
 
 SERVICE_UPDATE_INTERVAL = 0
 
