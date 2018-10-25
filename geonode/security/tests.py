@@ -62,7 +62,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.info(msg, *args)
+    logger.debug(msg, *args)
 
 
 class StreamToLogger(object):
@@ -240,6 +240,225 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEquals(geofence_rules_count, 0)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_layer_upload_with_time(self):
+        """ Try uploading a layer and verify that the user can administrate
+        his own layer despite not being a site administrator.
+        """
+        try:
+            # user without change_layer_style cannot edit it
+            self.assertTrue(self.client.login(username='bobby', password='bob'))
+
+            # grab bobby
+            bobby = get_user_model().objects.get(username="bobby")
+            anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+
+            # Upload to GeoServer
+            saved_layer = geoserver_upload(
+                Layer(),
+                os.path.join(
+                    gisdata.GOOD_DATA,
+                    'time/'
+                    "boxes_with_date.shp"),
+                bobby,
+                'boxes_with_date_by_bobby',
+                overwrite=True
+            )
+
+            # Test that layer owner can wipe GWC Cache
+            ignore_errors = False
+            skip_unadvertised = False
+            skip_geonode_registered = False
+            remove_deleted = True
+            verbosity = 2
+            owner = bobby
+            workspace = 'geonode'
+            filter = None
+            store = None
+            permissions = {
+                'users': {"bobby": ['view_resourcebase', 'change_layer_data']},
+                'groups': {anonymous_group: ['view_resourcebase']},
+            }
+            gs_slurp(
+                ignore_errors,
+                verbosity=verbosity,
+                owner=owner,
+                workspace=workspace,
+                store=store,
+                filter=filter,
+                skip_unadvertised=skip_unadvertised,
+                skip_geonode_registered=skip_geonode_registered,
+                remove_deleted=remove_deleted,
+                permissions=permissions,
+                execute_signals=True)
+
+            saved_layer = Layer.objects.get(title='boxes_with_date_by_bobby')
+            check_layer(saved_layer)
+
+            from lxml import etree
+            from geonode.geoserver.helpers import get_store
+            from geonode.geoserver.signals import gs_catalog
+
+            self.assertIsNotNone(saved_layer)
+            workspace, name = saved_layer.alternate.split(':')
+            self.assertIsNotNone(workspace)
+            self.assertIsNotNone(name)
+            ws = gs_catalog.get_workspace(workspace)
+            self.assertIsNotNone(ws)
+            store = get_store(gs_catalog, saved_layer.store, workspace=ws)
+            self.assertIsNotNone(store)
+
+            url = settings.OGC_SERVER['default']['LOCATION']
+            user = settings.OGC_SERVER['default']['USER']
+            passwd = settings.OGC_SERVER['default']['PASSWORD']
+
+            rest_path = 'rest/workspaces/geonode/datastores/{lyr_name}/featuretypes/{lyr_name}.xml'.\
+                format(lyr_name=name)
+            import requests
+            from requests.auth import HTTPBasicAuth
+            r = requests.get(url + rest_path,
+                             auth=HTTPBasicAuth(user, passwd))
+            self.assertEquals(r.status_code, 200)
+            _log(r.text)
+
+            featureType = etree.ElementTree(etree.fromstring(r.text))
+            metadata = featureType.findall('./[metadata]')
+            self.assertEquals(len(metadata), 0)
+
+            payload = """<featureType>
+            <metadata>
+                <entry key="elevation">
+                    <dimensionInfo>
+                        <enabled>false</enabled>
+                    </dimensionInfo>
+                </entry>
+                <entry key="time">
+                    <dimensionInfo>
+                        <enabled>true</enabled>
+                        <attribute>date</attribute>
+                        <presentation>LIST</presentation>
+                        <units>ISO8601</units>
+                        <defaultValue/>
+                        <nearestMatchEnabled>false</nearestMatchEnabled>
+                    </dimensionInfo>
+                </entry>
+            </metadata></featureType>"""
+
+            r = requests.put(url + rest_path,
+                             data=payload,
+                             headers={
+                                 'Content-type': 'application/xml'
+                             },
+                             auth=HTTPBasicAuth(user, passwd))
+            self.assertEquals(r.status_code, 200)
+
+            r = requests.get(url + rest_path,
+                             auth=HTTPBasicAuth(user, passwd))
+            self.assertEquals(r.status_code, 200)
+            _log(r.text)
+
+            featureType = etree.ElementTree(etree.fromstring(r.text))
+            metadata = featureType.findall('./[metadata]')
+            _log(etree.tostring(metadata[0], encoding='utf8', method='xml'))
+            self.assertEquals(len(metadata), 1)
+
+            saved_layer.set_default_permissions()
+
+            from geonode.geoserver.views import get_layer_capabilities
+            capab = get_layer_capabilities(saved_layer, tolerant=True)
+            self.assertIsNotNone(capab)
+            wms_capabilities_url = reverse('capabilities_layer', args=[saved_layer.id])
+            wms_capabilities_resp = self.client.get(wms_capabilities_url)
+            self.assertTrue(wms_capabilities_resp.status_code, 200)
+
+            all_times = None
+
+            if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
+                wms_capabilities = wms_capabilities_resp.getvalue()
+                if wms_capabilities:
+                    namespaces = {'wms': 'http://www.opengis.net/wms',
+                                  'xlink': 'http://www.w3.org/1999/xlink',
+                                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+
+                    e = etree.fromstring(wms_capabilities)
+                    for atype in e.findall(
+                            "./[wms:Name='%s']/wms:Dimension[@name='time']" % (saved_layer.alternate), namespaces):
+                        dim_name = atype.get('name')
+                        if dim_name:
+                            dim_name = str(dim_name).lower()
+                            if dim_name == 'time':
+                                dim_values = atype.text
+                                if dim_values:
+                                    all_times = dim_values.split(",")
+                                    break
+
+            self.assertIsNotNone(all_times)
+            self.assertEquals(all_times,
+                              ['2000-03-01T00:00:00.000Z', '2000-03-02T00:00:00.000Z',
+                               '2000-03-03T00:00:00.000Z', '2000-03-04T00:00:00.000Z',
+                               '2000-03-05T00:00:00.000Z', '2000-03-06T00:00:00.000Z',
+                               '2000-03-07T00:00:00.000Z', '2000-03-08T00:00:00.000Z',
+                               '2000-03-09T00:00:00.000Z', '2000-03-10T00:00:00.000Z',
+                               '2000-03-11T00:00:00.000Z', '2000-03-12T00:00:00.000Z',
+                               '2000-03-13T00:00:00.000Z', '2000-03-14T00:00:00.000Z',
+                               '2000-03-15T00:00:00.000Z', '2000-03-16T00:00:00.000Z',
+                               '2000-03-17T00:00:00.000Z', '2000-03-18T00:00:00.000Z',
+                               '2000-03-19T00:00:00.000Z', '2000-03-20T00:00:00.000Z',
+                               '2000-03-21T00:00:00.000Z', '2000-03-22T00:00:00.000Z',
+                               '2000-03-23T00:00:00.000Z', '2000-03-24T00:00:00.000Z',
+                               '2000-03-25T00:00:00.000Z', '2000-03-26T00:00:00.000Z',
+                               '2000-03-27T00:00:00.000Z', '2000-03-28T00:00:00.000Z',
+                               '2000-03-29T00:00:00.000Z', '2000-03-30T00:00:00.000Z',
+                               '2000-03-31T00:00:00.000Z', '2000-04-01T00:00:00.000Z',
+                               '2000-04-02T00:00:00.000Z', '2000-04-03T00:00:00.000Z',
+                               '2000-04-04T00:00:00.000Z', '2000-04-05T00:00:00.000Z',
+                               '2000-04-06T00:00:00.000Z', '2000-04-07T00:00:00.000Z',
+                               '2000-04-08T00:00:00.000Z', '2000-04-09T00:00:00.000Z',
+                               '2000-04-10T00:00:00.000Z', '2000-04-11T00:00:00.000Z',
+                               '2000-04-12T00:00:00.000Z', '2000-04-13T00:00:00.000Z',
+                               '2000-04-14T00:00:00.000Z', '2000-04-15T00:00:00.000Z',
+                               '2000-04-16T00:00:00.000Z', '2000-04-17T00:00:00.000Z',
+                               '2000-04-18T00:00:00.000Z', '2000-04-19T00:00:00.000Z',
+                               '2000-04-20T00:00:00.000Z', '2000-04-21T00:00:00.000Z',
+                               '2000-04-22T00:00:00.000Z', '2000-04-23T00:00:00.000Z',
+                               '2000-04-24T00:00:00.000Z', '2000-04-25T00:00:00.000Z',
+                               '2000-04-26T00:00:00.000Z', '2000-04-27T00:00:00.000Z',
+                               '2000-04-28T00:00:00.000Z', '2000-04-29T00:00:00.000Z',
+                               '2000-04-30T00:00:00.000Z', '2000-05-01T00:00:00.000Z',
+                               '2000-05-02T00:00:00.000Z', '2000-05-03T00:00:00.000Z',
+                               '2000-05-04T00:00:00.000Z', '2000-05-05T00:00:00.000Z',
+                               '2000-05-06T00:00:00.000Z', '2000-05-07T00:00:00.000Z',
+                               '2000-05-08T00:00:00.000Z', '2000-05-09T00:00:00.000Z',
+                               '2000-05-10T00:00:00.000Z', '2000-05-11T00:00:00.000Z',
+                               '2000-05-12T00:00:00.000Z', '2000-05-13T00:00:00.000Z',
+                               '2000-05-14T00:00:00.000Z', '2000-05-15T00:00:00.000Z',
+                               '2000-05-16T00:00:00.000Z', '2000-05-17T00:00:00.000Z',
+                               '2000-05-18T00:00:00.000Z', '2000-05-19T00:00:00.000Z',
+                               '2000-05-20T00:00:00.000Z', '2000-05-21T00:00:00.000Z',
+                               '2000-05-22T00:00:00.000Z', '2000-05-23T00:00:00.000Z',
+                               '2000-05-24T00:00:00.000Z', '2000-05-25T00:00:00.000Z',
+                               '2000-05-26T00:00:00.000Z', '2000-05-27T00:00:00.000Z',
+                               '2000-05-28T00:00:00.000Z', '2000-05-29T00:00:00.000Z',
+                               '2000-05-30T00:00:00.000Z', '2000-05-31T00:00:00.000Z',
+                               '2000-06-01T00:00:00.000Z', '2000-06-02T00:00:00.000Z',
+                               '2000-06-03T00:00:00.000Z', '2000-06-04T00:00:00.000Z',
+                               '2000-06-05T00:00:00.000Z', '2000-06-06T00:00:00.000Z',
+                               '2000-06-07T00:00:00.000Z', '2000-06-08T00:00:00.000Z'])
+
+            saved_layer.set_default_permissions()
+            url = reverse('layer_metadata', args=[saved_layer.service_typename])
+            resp = self.client.get(url)
+            self.assertEquals(resp.status_code, 200)
+        finally:
+            # Clean up and completely delete the layer
+            try:
+                saved_layer.delete()
+                if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                    from geonode.geoserver.helpers import cleanup
+                    cleanup(saved_layer.name, saved_layer.uuid)
+            except BaseException:
+                pass
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_permissions(self):
         try:
             # Test permissions on a layer
@@ -260,9 +479,6 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 overwrite=True
             )
             self.assertIsNotNone(layer)
-            _log(" ------------------------------------------------------------- ")
-            _log(layer)
-            _log(" ------------------------------------------------------------- ")
 
             # Reset GeoFence Rules
             purge_geofence_all()
