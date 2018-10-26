@@ -418,7 +418,8 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     """
     # Create new rule-set
     gf_services = {}
-    gf_services["*"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
+    gf_services["*"] = 'download_resourcebase' in perms and \
+        ('view_resourcebase' in perms or 'change_layer_style' in perms)
     gf_services["WMS"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
     gf_services["GWC"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
     gf_services["WFS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
