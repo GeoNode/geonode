@@ -199,10 +199,10 @@ cd /path/to/SPCgeonode
 docker exec -i spcgeonode_postgres_1 psql -U postgres -c "ALTER TABLE public.layers_layer DROP COLUMN service_id;"
 
 # Migrate with fake initial
-docker-compose -f docker-compose.yml run --rm --entrypoint "" django python manage.py migrate --fake-initial
+docker-compose -f docker-compose.yml run --rm --entrypoint "python manage.py migrate --fake-initial" django
 
 # Create the SQL diff to fix the schema # TODO : upstream some changes to django-extensions for this to work directly
-docker-compose -f docker-compose.yml run --rm --entrypoint "" django /bin/sh -c "DJANGO_COLORS="nocolor" python manage.py sqldiff -ae" >> fix.sql
+docker-compose -f docker-compose.yml run --rm --entrypoint '/bin/sh -c "DJANGO_COLORS=nocolor python manage.py sqldiff -ae"' django >> fix.sql
 
 # Manually fix the SQL command until it runs (you can also drop the tables that have no model)
 nano fix.sql
