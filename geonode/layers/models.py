@@ -495,7 +495,7 @@ class Attribute(models.Model):
 
     def __unicode__(self):
         return "%s" % self.attribute_label.encode(
-            "utf-8") if self.attribute_label else self.attribute.encode("utf-8")
+            "utf-8", "replace") if self.attribute_label else self.attribute.encode("utf-8", "replace")
 
     def unique_values_as_list(self):
         return self.unique_values.split(',')

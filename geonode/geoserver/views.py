@@ -851,7 +851,7 @@ def get_capabilities(request, layerid=None, user=None,
                         'catalogue_url': settings.CATALOGUE['default']['URL'],
                     }
                     gc_str = tpl.render(ctx)
-                    gc_str = gc_str.encode("utf-8")
+                    gc_str = gc_str.encode("utf-8", "replace")
                     layerelem = etree.XML(gc_str)
                     rootdoc = etree.ElementTree(layerelem)
             except Exception as e:
