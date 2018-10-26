@@ -210,11 +210,14 @@ nano fix.sql
 # Apply the SQL diff (review the sql file first as this may delete some important tables)
 cat fix.sql | docker exec -i spcgeonode_postgres_1 psql -U postgres
 
+# Set all layers as approved
+docker exec -i spcgeonode_postgres_1 psql -U postgres -c 'UPDATE base_resourcebase SET is_approved = TRUE;'
+
 # This time start the stack
 docker-compose -f docker-compose.yml up -d
 ```
 
-One last step was to connect to the GeoServer administration and change the PostGIS store host to ‘postgres’ instead of localhost.
+One last step was to connect to the GeoServer administration and change the PostGIS store host, user and password to 'postgres'.
 
 ### On windows, I have error like `standard_init_linux.go:190: exec user process caused "no such file or directory"`
 
