@@ -1,4 +1,4 @@
-<Layer queryable="{% if layer.storeType == 'dataStore' %}1{% else %}0{% endif %}">
+<Layer xmlns="http://www.opengis.net/wms" xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" queryable="{% if layer.storeType == 'dataStore' %}1{% else %}0{% endif %}" opaque="0">
 <Name>{{ layer.name }}</Name>
 <Title>{{ layer.title }}</Title>
 <Abstract>{{ layer.abstract }}</Abstract>
@@ -7,9 +7,14 @@
     <Keyword>{{ kw }}</Keyword>
     {% endfor %}
 </KeywordList>
-<SRS>{{ layer.srid }}</SRS>
-<LatLonBoundingBox minx="{{ layer.bbox_x0 }}" miny="{{layer.bbox_y0 }}" maxx="{{ layer.bbox_x1 }}" maxy="{{ layer.bbox_y1 }}"/>
-<BoundingBox SRS="{{ layer.srid }}" minx="{{ layer.bbox_x0 }}" miny="{{ layer.bbox_y0 }}" maxx="{{ layer.bbox_x1 }}" maxy="{{ layer.bbox_y1 }}"/>
+<CRS>{{ layer.srid }}</CRS>
+<EX_GeographicBoundingBox>
+    <westBoundLongitude>{{ layer.bbox_x0 }}</westBoundLongitude>
+    <eastBoundLongitude>{{ layer.bbox_x1 }}</eastBoundLongitude>
+    <southBoundLatitude>{{layer.bbox_y0 }}</southBoundLatitude>
+    <northBoundLatitude>{{ layer.bbox_y1 }}</northBoundLatitude>
+</EX_GeographicBoundingBox>
+<BoundingBox CRS="{{ layer.srid }}" minx="{{ layer.bbox_x0 }}" miny="{{ layer.bbox_y0 }}" maxx="{{ layer.bbox_x1 }}" maxy="{{ layer.bbox_y1 }}"/>
 <Attribution>
 <Title>{{ layer.owner.username }}</Title>
 </Attribution>

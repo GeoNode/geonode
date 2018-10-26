@@ -195,7 +195,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             bbox_to_projection([float(coord) for coord in layer_bbox] + [lyr.srid, ],
                                target_srid=3857)[:4])
         logger.info(projected_bbox)
-        self.assertEquals(projected_bbox, [-19926188.852, -30240971.9584, 19926188.852, 30240971.9584])
+        self.assertEquals(projected_bbox, [-20037397.0233, -74299743.4007, 20037397.0233, 74299743.4006])
 
     def test_layer_attributes_feature_catalogue(self):
         """ Test layer feature catalogue functionality

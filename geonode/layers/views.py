@@ -427,9 +427,13 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             wms_capabilities = wms_capabilities_resp.getvalue()
             if wms_capabilities:
                 import xml.etree.ElementTree as ET
+                namespaces = {'wms': 'http://www.opengis.net/wms',
+                              'xlink': 'http://www.w3.org/1999/xlink',
+                              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+
                 e = ET.fromstring(wms_capabilities)
                 for atype in e.findall(
-                        "./[Name='%s']/Extent[@name='time']" % (layername)):
+                        "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
                     dim_name = atype.get('name')
                     if dim_name:
                         dim_name = str(dim_name).lower()
@@ -536,9 +540,13 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             wms_capabilities = wms_capabilities_resp.getvalue()
             if wms_capabilities:
                 import xml.etree.ElementTree as ET
+                namespaces = {'wms': 'http://www.opengis.net/wms',
+                              'xlink': 'http://www.w3.org/1999/xlink',
+                              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+
                 e = ET.fromstring(wms_capabilities)
                 for atype in e.findall(
-                        "./[Name='%s']/Extent[@name='time']" % (layername)):
+                        "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
                     dim_name = atype.get('name')
                     if dim_name:
                         dim_name = str(dim_name).lower()
