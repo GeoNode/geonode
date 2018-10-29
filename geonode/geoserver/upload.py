@@ -185,7 +185,7 @@ def geoserver_upload(
         _native_bbox = gs_resource.native_bbox
     except BaseException:
         pass
-    if _native_bbox:
+    if _native_bbox and len(_native_bbox) >= 5 and _native_bbox[4:5][0] == 'EPSG:4326':
         box = _native_bbox[:4]
         minx, maxx, miny, maxy = [float(a) for a in box]
         if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
