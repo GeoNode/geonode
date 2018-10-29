@@ -7,7 +7,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <meta Http-Equiv="Cache-Control" Content="no-cache">
     <meta Http-Equiv="Pragma" Content="no-cache">
     <meta Http-Equiv="Expires" Content="0">
@@ -107,7 +106,12 @@
         }
       </style>
     <![endif]-->
-    <link rel="search" type="application/opensearchdescription+xml" href="/catalogue/opensearch" title="GeoNode Search"/>
+    <link rel="search" type="application/opensearchdescription+xml" href="{{SITEURL}}catalogue/opensearch" title="GeoNode Search"/>
+
+    <script>
+        var siteUrl = '{{ SITEURL }}';
+    </script>
+
   </head>
 
   <body class="{% block body_class %}{% endblock %}">
@@ -166,7 +170,7 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
                 {% if user.is_superuser %}
-                <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
+                <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
                 <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                 {% endif %}
               </ul>
@@ -223,7 +227,7 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="/account/logout/">{% trans "Log out" %}</a></li>
+                <li><a href="{{SITEURL}}account/logout/">{% trans "Log out" %}</a></li>
                 </ul>
               </li>
           {% else %}
@@ -311,7 +315,7 @@
             {% endif %}
             <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
             {% if user.is_superuser %}
-            <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
+            <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
             <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
             {% endif %}
           </ul>

@@ -1,17 +1,14 @@
 /*global $:true, define: true  */
 
-
 define(['jquery', 'status/UploadSession'], function ($, UploadSession) {
     'use strict';
 
     var initialize, get_session, load_sessions;
 
-
     get_session = function (element) {
         var tr = $(element).parent().parent();
         return tr.data('session');
     };
-
 
     load_sessions = function (url) {
         var tbody = $('#session-table').find('tbody').first();
@@ -31,7 +28,6 @@ define(['jquery', 'status/UploadSession'], function ($, UploadSession) {
         var delete_sessions,
             set_permissions,
             find_selected_layers;
-
 
         find_selected_layers = function (table) {
             var inputs = table.find('input:checkbox:checked'),
@@ -59,7 +55,6 @@ define(['jquery', 'status/UploadSession'], function ($, UploadSession) {
         set_permissions = function (event) {
         };
 
-
         load_sessions(options.status_url);
 
         $(options.delete_selector).on('click', delete_sessions);
@@ -69,5 +64,4 @@ define(['jquery', 'status/UploadSession'], function ($, UploadSession) {
     return {
         initialize: initialize
     };
-
 });

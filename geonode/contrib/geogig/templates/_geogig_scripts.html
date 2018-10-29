@@ -24,7 +24,7 @@
   });
   angular.bootstrap(document, ['g']);
 
-  ZeroClipboard.config( { swfPath: '/static/lib/img/ZeroClipboard.swf' } );
+  ZeroClipboard.config( { swfPath: '{% static "lib/img/ZeroClipboard.swf" %}' } );
     var client = new ZeroClipboard( document.getElementById("copy-button") );
 
     client.on( 'ready', function( readyEvent ) {
