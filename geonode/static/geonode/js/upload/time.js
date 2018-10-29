@@ -1,7 +1,7 @@
 /*globals define: true, requirejs: true */
 
 requirejs.config({
-    baseUrl: '/static/lib/js',
+    baseUrl: siteUrl + 'static/lib/js',
     shim: {
         'underscore': { exports: '_'}
     },
@@ -167,7 +167,7 @@ define(['upload/upload','upload/common', 'upload/LayerInfo'], function (upload, 
         };
 
       var params = common.parseQueryString(document.location.search);
-      var url = '/upload/time'
+      var url = siteUrl + 'upload/time'
       if ('id' in params){
         url = updateUrl(url, 'id', params.id);
       }

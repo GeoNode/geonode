@@ -1,5 +1,6 @@
 {% extends "geonode_base.html" %}
 {% load i18n %}
+{% load static from staticfiles %}
 
 {% block title %} {% trans "Monitoring" %} - {{ block.super }} {% endblock %}
 
@@ -21,7 +22,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $(document.body).append(
-          '<script src="/static/monitoring/bundle.js"'+ '>'+'</s'+'cript>'
+          '<script src="{% static "monitoring/bundle.js" %}"'+ '>'+'</s'+'cript>'
         );
     })
 </script>
