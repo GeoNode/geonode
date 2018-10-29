@@ -180,8 +180,13 @@ def geoserver_upload(
     # Step 6. Make sure our data always has a valid projection
     # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 6. Making sure [%s] has a valid projection' % name)
-    if gs_resource.native_bbox is None:
-        box = gs_resource.native_bbox[:4]
+    _native_bbox = None
+    try:
+        _native_bbox = gs_resource.native_bbox
+    except BaseException:
+        pass
+    if _native_bbox:
+        box = _native_bbox[:4]
         minx, maxx, miny, maxy = [float(a) for a in box]
         if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
            - 90 <= miny <= 90 and -90 <= maxy <= 90:
@@ -190,7 +195,7 @@ def geoserver_upload(
             # If GeoServer couldn't figure out the projection, we just
             # assume it's lat/lon to avoid a bad GeoServer configuration
 
-            gs_resource.latlon_bbox = gs_resource.native_bbox
+            gs_resource.latlon_bbox = _native_bbox
             gs_resource.projection = "EPSG:4326"
             cat.save(gs_resource)
         else:
