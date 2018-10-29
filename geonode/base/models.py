@@ -1048,11 +1048,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             elif url.link_type in ('OGC:WMS', 'OGC:WFS', 'OGC:WCS'):
                 links.append((self.title, url.name, url.link_type, url.url))
             else:
+                _link_type = 'WWW:DOWNLOAD-1.0-http--download'
+                if self.storeType == 'remoteStore':
+                    _link_type = 'WWW:DOWNLOAD-%s' % self.remote_service.type
                 description = '%s (%s Format)' % (self.title, url.name)
                 links.append(
                     (self.title,
                      description,
-                     'WWW:DOWNLOAD-1.0-http--download',
+                     _link_type,
                      url.url))
         return links
 

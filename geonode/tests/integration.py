@@ -512,13 +512,8 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             # layer have projection file, but has no valid srid
             self.assertEqual(
                 str(e),
-                "Invalid Layers. "
-                "Needs an authoritative SRID in its CRS to be accepted")
-        # except:
-        #     # Sometimes failes with the message:
-        #     # UploadError: Could not save the layer air_runways,
-        #     # there was an upload error: Error occured unzipping file
-        #     pass
+                "GeoServer failed to detect the projection for layer [air_runways]. "
+                "It doesn't look like EPSG:4326, so backing out the layer.")
         finally:
             # Clean up and completely delete the layer
             if uploaded:
