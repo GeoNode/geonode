@@ -166,14 +166,14 @@ python-gnupg<=0.4.1 # (0.4.1 in our ppa)
 python-mimeparse<=1.6.0 # (1.6.0 in our ppa)
 pytz<=2018.3 # python-pytz (2018.3 in our ppa)
 regex<=2016.7.21 # (0.1.20160110 in ppa)
-requests==2.18.4 # (2.18.4 in our ppa) FIXME
+requests>=2.20.0 # (2.18.4 in our ppa) FIXME
 simplejson<=3.13.2 # (3.13.2 in our ppa)
 tablib<=0.12.1 # (0.12.1 in our ppa)
 timeout-decorator==0.4.0 # TODO
 typing<=3.6.4 # python-typing (3.6.4 in our ppa)
 
 # required by monitoring
-psutil # (3.4.2 in ppa)
+psutil==5.4.8 # (3.4.2 in ppa)
 django-cors-headers<=2.2.0 # python-django-cors-headers (2.2.0 in our ppa)
 django-cuser==2017.3.16 # python-django-cuser (2017.3.16 in our ppa)
 django-multi-email-field<=0.5.1 # python-django-multi-email-field (0.5.1 in our ppa)
