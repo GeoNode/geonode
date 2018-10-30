@@ -299,7 +299,7 @@ def fixup_style(cat, resource, style):
     for lyr in layers:
         if lyr.default_style.name in _style_templates:
             logger.info("%s uses a default style, generating a new one", lyr)
-            name = _style_name(resource)
+            name = _style_name(lyr)
             if style is None:
                 sld = get_sld_for(cat, lyr)
             else:

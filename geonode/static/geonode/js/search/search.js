@@ -328,7 +328,6 @@
     };
     query_api($scope.query);
 
-
     /*
     * Pagination
     */
@@ -369,7 +368,6 @@
     /*
     * End pagination
     */
-
 
     if (!Configs.hasOwnProperty("disableQuerySync")) {
         // Keep in sync the page location with the query object

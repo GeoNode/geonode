@@ -97,8 +97,8 @@
                     <td>{% if feature.properties.time %}{{ feature.properties.time }}{% endif %}</td>
                     <!-- td>{% if feature.properties.elevation %}{{ feature.properties.elevation }}{% endif %}</td -->
                     <td>
-                        <a class="btn btn-xs" href="#" onclick="doPreview('{{ resource.service_typename }}', '{{ feature.id }}', '{{ granules.crs.properties.name }}', '{{ feature.geometry.coordinates }}', {% if feature.properties.time %}'{{ feature.properties.time }}'{% else %}null{% endif %});"><img alt="Granule Preview" title="Granule Preview" src="/static/lib/img/map_go.png"/></a>
-                        <a class="btn btn-xs" href="{% url "layer_granule_remove" feature.id resource.service_typename %}"><img alt="Granule Remove" title="Granule Remove" src="/static/lib/img/cancel-on.png"/></a>
+                        <a class="btn btn-xs" href="#" onclick="doPreview('{{ resource.service_typename }}', '{{ feature.id }}', '{{ granules.crs.properties.name }}', '{{ feature.geometry.coordinates }}', {% if feature.properties.time %}'{{ feature.properties.time }}'{% else %}null{% endif %});"><img alt="Granule Preview" title="Granule Preview" src="{% static 'lib/img/map_go.png' %}"/></a>
+                        <a class="btn btn-xs" href="{% url "layer_granule_remove" feature.id resource.service_typename %}"><img alt="Granule Remove" title="Granule Remove" src="{% static 'lib/img/cancel-on.png' %}"/></a>
                         <script language="Javascript">
                             function doPreview(layer_name, feature_id, srs, the_geom, time) {
                                 var map = app.mapPanel.map;

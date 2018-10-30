@@ -219,7 +219,7 @@ define(['underscore',
     doDelete = function(event) {
         var target = event.target || event.srcElement;
         var id = target.id.split("-")[1];
-        var target = "/upload/delete/" + id;
+        var target = siteUrl + "upload/delete/" + id;
         $.ajaxQueue({
             url: target,
             async: false,
@@ -240,7 +240,7 @@ define(['underscore',
     doResume = function(event) {
         var target = event.target || event.srcElement;
         var id = target.id.split("-")[1];
-        var target = "/upload/?id=" + id;
+        var target = siteUrl + "upload/?id=" + id;
         $.ajaxQueue({
             url: target,
             async: false,
@@ -271,7 +271,7 @@ define(['underscore',
         var form = $("#srsForm")
         $.ajaxQueue({
            type: "POST",
-           url: '/upload/srs',
+           url: siteUrl + 'upload/srs',
            data: form.serialize(), // serializes the form's elements.
            success: function(data)
            {
@@ -325,7 +325,7 @@ define(['underscore',
      */
     init_geogig_stores = function() {
         $.ajax({
-            url: '/gs/rest/stores/geogig/',
+            url: siteUrl + 'gs/rest/stores/geogig/',
             async: true,
             contentType: false,
         }).done(function (resp) {
