@@ -19,4 +19,6 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?key={% google_api_key %}" type="text/javascript"></script>
 
-<script type="text/javascript" src="/static/geonode/js/utils/thumbnail.js"></script>
+<script type="text/javascript" src="{% static 'geonode/js/utils/thumbnail.js' %}"></script>
+<script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
+<script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>

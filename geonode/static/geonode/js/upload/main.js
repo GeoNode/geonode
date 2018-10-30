@@ -1,7 +1,7 @@
 /*globals define: true, requirejs: true */
 
 requirejs.config({
-    baseUrl: '/static/lib/js',
+    baseUrl: siteUrl + 'static/lib/js',
     shim: {
         'underscore': { exports: '_'}
     },

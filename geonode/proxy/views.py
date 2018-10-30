@@ -29,7 +29,7 @@ import traceback
 
 from slugify import Slugify
 from httplib import HTTPConnection, HTTPSConnection
-from urlparse import urlsplit, urljoin
+from urlparse import urlparse, urlsplit, urljoin
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils.http import is_safe_url
@@ -159,7 +159,13 @@ def proxy(request, url=None, response_callback=None,
     if request and 'access_token' in request.session:
         access_token = request.session['access_token']
 
-    if access_token:
+    if 'HTTP_AUTHORIZATION' in request.META:
+        auth = request.META.get(
+            'HTTP_AUTHORIZATION',
+            request.META.get('HTTP_AUTHORIZATION2'))
+        if auth:
+            headers['Authorization'] = auth
+    elif access_token:
         # TODO: Bearer is currently cutted of by Djano / GeoServer
         if request.method in ("POST", "PUT"):
             headers['Authorization'] = 'Bearer %s' % access_token
@@ -167,12 +173,6 @@ def proxy(request, url=None, response_callback=None,
             query_separator = '&' if '?' in locator else '?'
             locator = ('%s%saccess_token=%s' %
                        (locator, query_separator, access_token))
-    elif 'HTTP_AUTHORIZATION' in request.META:
-        auth = request.META.get(
-            'HTTP_AUTHORIZATION',
-            request.META.get('HTTP_AUTHORIZATION2'))
-        if auth:
-            headers['Authorization'] = auth
 
     site_url = urlsplit(settings.SITEURL)
 
@@ -191,7 +191,9 @@ def proxy(request, url=None, response_callback=None,
         conn = HTTPSConnection(url.hostname, url.port)
     else:
         conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator.encode('utf8'), request.body, headers)
+    parsed = urlparse(raw_url)
+    parsed._replace(path=locator.encode('utf8'))
+    conn.request(request.method, parsed.geturl(), request.body, headers)
     response = conn.getresponse()
     content = response.read()
     status = response.status
