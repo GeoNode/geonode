@@ -257,5 +257,12 @@ class WorldMapHookSet(object):
 
     def update_from_viewer(self, conf, context=None):
         conf = self.viewer_json(conf, context=context)
+        # now styles must be a list
+        for layer in conf['map']['layers']:
+            if 'local' in layer:
+                if 'styles' in layer:
+                    styles = layer['styles']
+                    if not isinstance(styles, list):
+                        layer['styles'] = [styles]
         context['config'] = conf
         return 'geoext/maps/map_geoexplorer.js'
