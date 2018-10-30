@@ -519,7 +519,7 @@ def geoserver_proxy(request,
                 logger.info(
                     "[geoserver_proxy] Updating Style to ---> url %s" %
                     url.geturl())
-                affected_layers = style_update(request, url.geturl())
+                affected_layers = style_update(request, raw_url)
 
     kwargs = {'affected_layers': affected_layers}
     return proxy(request, url=raw_url, response_callback=_response_callback, **kwargs)
