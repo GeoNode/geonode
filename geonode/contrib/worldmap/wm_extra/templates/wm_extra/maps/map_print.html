@@ -3,9 +3,9 @@
 {% block title %} {% trans "Map Viewer" %} - {{ block.super }} {% endblock %}
 
 {% block head %}
-{% include "wm_extra/maps/ext_header.html" %}
-{% include "wm_extra/maps/app_header.html" %}
-{% include "wm_extra/maps/geo_header.html" %}
+{% include "worldmap/ext_header.html" %}
+{% include "worldmap/app_header.html" %}
+{% include "worldmap/geo_header.html" %}
 {{ block.super }}
 {% if "gme-" in GOOGLE_API_KEY %}
 <script src="https://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
