@@ -988,6 +988,7 @@ def snapshot_config(snapshot, map_obj, request):
         for ordering, layer in enumerate(layers):
             maplayers.append(
                 layer_from_viewer_config(
+                    map_obj.id,
                     MapLayer,
                     layer,
                     config["sources"][
