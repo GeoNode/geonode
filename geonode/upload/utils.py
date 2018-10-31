@@ -523,20 +523,17 @@ def _get_layer_values(layer, upload_session, expand=0):
         lyr = inDataSource.GetLayer(str(layer.name))
         limit = 100
         for feat in islice(lyr, 0, limit):
-            try:
-                feat_values = json_loads_byteified(feat.ExportToJson()).get('properties')
-                for k in feat_values.keys():
-                    type_code = feat.GetFieldDefnRef(k).GetType()
-                    binding = feat.GetFieldDefnRef(k).GetFieldTypeName(type_code)
-                    feat_value = feat_values[k] if str(feat_values[k]) != 'None' else 0
-                    if expand > 0:
-                        ff = {'value': feat_value, 'binding': binding}
-                        feat_values[k] = ff
-                    else:
-                        feat_values[k] = feat_value
-                layer_values.append(feat_values)
-            except BaseException:
-                pass
+            feat_values = json_loads_byteified(feat.ExportToJson()).get('properties')
+            for k in feat_values.keys():
+                type_code = feat.GetFieldDefnRef(k).GetType()
+                binding = feat.GetFieldDefnRef(k).GetFieldTypeName(type_code)
+                feat_value = feat_values[k] if str(feat_values[k]) != 'None' else 0
+                if expand > 0:
+                    ff = {'value': feat_value, 'binding': binding}
+                    feat_values[k] = ff
+                else:
+                    feat_values[k] = feat_value
+            layer_values.append(feat_values)
     return layer_values
 
 
