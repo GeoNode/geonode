@@ -61,7 +61,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import timezone
 
-from geonode import geoserver, qgis_server  # noqa
+from geonode import geoserver, qgis_server, GeoNodeException  # noqa
 
 try:
     import json
@@ -965,14 +965,21 @@ def check_shp_columnnames(layer):
     """ Check if shapefile for a given layer has valid column names.
         If not, try to fix column names and warn the user
     """
-
     # TODO we may add in a better location this method
     inShapefile = ''
     for f in layer.upload_session.layerfile_set.all():
         if os.path.splitext(f.file.name)[1] == '.shp':
             inShapefile = f.file.path
+    if inShapefile:
+        return fixup_shp_columnnames(inShapefile, layer.charset)
 
-    tempdir = tempfile.mkdtemp()
+
+def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
+    """ Try to fix column names and warn the user
+    """
+
+    if not tempdir:
+        tempdir = tempfile.mkdtemp()
     if is_zipfile(inShapefile):
         inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
 
@@ -1004,46 +1011,49 @@ def check_shp_columnnames(layer):
 
         if a.match(field_name):
             list_col_original.append(field_name)
-    try:
-        for i in range(0, inLayerDefn.GetFieldCount()):
-            charset = layer.charset if layer.charset and 'undefined' not in layer.charset \
-                else 'UTF-8'
-            field_name = unicode(
-                inLayerDefn.GetFieldDefn(i).GetName(),
-                charset)
 
-            if not a.match(field_name):
-                # once the field_name contains Chinese, to use slugify_zh
-                has_ch = False
-                for ch in field_name:
-                    if u'\u4e00' <= ch <= u'\u9fff':
+    for i in range(0, inLayerDefn.GetFieldCount()):
+        charset = charset if charset and 'undefined' not in charset \
+            else 'UTF-8'
+
+        field_name = inLayerDefn.GetFieldDefn(i).GetName()
+        if not a.match(field_name):
+            # once the field_name contains Chinese, to use slugify_zh
+            has_ch = False
+            for ch in field_name:
+                try:
+                    if u'\u4e00' <= ch.decode("utf-8", "replace") <= u'\u9fff':
                         has_ch = True
                         break
-                if has_ch:
-                    new_field_name = slugify_zh(field_name, separator='_')
-                else:
-                    new_field_name = custom_slugify(field_name)
-                if not b.match(new_field_name):
-                    new_field_name = '_' + new_field_name
-                j = 0
-                while new_field_name in list_col_original or new_field_name in list_col.values():
-                    if j == 0:
-                        new_field_name += '_0'
-                    if new_field_name.endswith('_' + str(j)):
-                        j += 1
-                        new_field_name = new_field_name[:-2] + '_' + str(j)
-                list_col.update({field_name: new_field_name})
-    except UnicodeDecodeError as e:
-        logger.error(str(e))
-        return False, None, None
+                except UnicodeDecodeError:
+                    has_ch = True
+                    break
+            if has_ch:
+                new_field_name = slugify_zh(field_name, separator='_')
+            else:
+                new_field_name = custom_slugify(field_name)
+            if not b.match(new_field_name):
+                new_field_name = '_' + new_field_name
+            j = 0
+            while new_field_name in list_col_original or new_field_name in list_col.values():
+                if j == 0:
+                    new_field_name += '_0'
+                if new_field_name.endswith('_' + str(j)):
+                    j += 1
+                    new_field_name = new_field_name[:-2] + '_' + str(j)
+            list_col.update({field_name: new_field_name})
 
     if len(list_col) == 0:
         return True, None, None
     else:
-        for key in list_col.keys():
-            qry = u"ALTER TABLE {0} RENAME COLUMN \"{1}\" TO \"{2}\"".format(
-                inLayer.GetName(), key, list_col[key])
-            inDataSource.ExecuteSQL(qry.encode(layer.charset))
+        try:
+            for key in list_col.keys():
+                qry = u"ALTER TABLE {} RENAME COLUMN \"".format(inLayer.GetName())
+                qry = qry + key.decode(charset) + u"\" TO \"{}\"".format(list_col[key])
+                inDataSource.ExecuteSQL(qry.encode(charset))
+        except UnicodeDecodeError:
+            raise GeoNodeException(
+                "Could not decode SHAPEFILE attributes by using the specified charset '{}'.".format(charset))
     return True, None, list_col
 
 

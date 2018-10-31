@@ -799,7 +799,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def group_name(self):
         if self.group:
-            return str(self.group)
+            return str(self.group).encode("utf-8", "replace")
         return None
 
     @property
@@ -902,13 +902,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return '{}%'.format(len(filled_fields) * 100 / len(required_fields))
 
     def keyword_list(self):
-        return [kw.name for kw in self.keywords.all()]
+        return [kw.name.encode("utf-8", "replace") for kw in self.keywords.all()]
 
     def keyword_slug_list(self):
-        return [kw.slug for kw in self.keywords.all()]
+        return [kw.slug.encode("utf-8", "replace") for kw in self.keywords.all()]
 
     def region_name_list(self):
-        return [region.name for region in self.regions.all()]
+        return [region.name.encode("utf-8", "replace") for region in self.regions.all()]
 
     def spatial_representation_type_string(self):
         if hasattr(self.spatial_representation_type, 'identifier'):
