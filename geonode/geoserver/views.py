@@ -469,15 +469,6 @@ def geoserver_proxy(request,
 
     path = strip_prefix(request.get_full_path(), proxy_path)
 
-    access_token = None
-    if request and 'access_token' in request.session:
-        access_token = request.session['access_token']
-
-    if access_token and 'access_token' not in path:
-        query_separator = '&' if '?' in path else '?'
-        path = ('%s%saccess_token=%s' %
-                (path, query_separator, access_token))
-
     raw_url = str(
         "".join([ogc_server_settings.LOCATION, downstream_path, path]))
 
@@ -494,7 +485,6 @@ def geoserver_proxy(request,
             import posixpath
             raw_url = urljoin(ogc_server_settings.LOCATION,
                               posixpath.join(workspace, layername, downstream_path, path))
-
         if downstream_path in ('rest/styles') and len(request.body) > 0:
             if ws:
                 # Lets try
@@ -514,9 +504,7 @@ def geoserver_proxy(request,
             re.match(r'/(ows).*$', path, re.IGNORECASE)):
         _url = str("".join([ogc_server_settings.LOCATION, '', path[1:]]))
         raw_url = _url
-
     url = urlsplit(raw_url)
-
     affected_layers = None
     if request.method in ("POST", "PUT"):
         if downstream_path in ('rest/styles', 'rest/layers',
@@ -530,7 +518,7 @@ def geoserver_proxy(request,
             elif downstream_path == 'rest/styles':
                 logger.info(
                     "[geoserver_proxy] Updating Style to ---> url %s" %
-                    url.path)
+                    url.geturl())
                 affected_layers = style_update(request, raw_url)
 
     kwargs = {'affected_layers': affected_layers}

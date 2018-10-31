@@ -938,8 +938,8 @@ GeoNode.Composer = window.GeoExplorer && Ext.extend(GeoExplorer.Composer, {
         // add catalog source
         config.sources['search'] = {
             ptype: "gxp_geonodeapicataloguesource",
-            restUrl: "/gs/rest",
-            url: "/api/layers/"
+            restUrl: siteUrl + "gs/rest",
+            url: siteUrl + "api/layers/"
         };
 
         config.tools.push({

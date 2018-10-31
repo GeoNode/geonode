@@ -23,7 +23,7 @@ import signal
 from urlparse import urljoin
 
 import pytest
-from geonode import settings as gn_settings
+# from geonode import settings as gn_settings
 from geonode.tests.bdd import __file__ as bdd_path
 from splinter import Browser
 
@@ -41,7 +41,7 @@ def en_browser(browser, bdd_server):
     """Browser login page from live server."""
     browser = Browser('phantomjs')
     en_browser = browser
-    en_browser.visit(urljoin(bdd_server.url, gn_settings.LOGIN_URL))
+    en_browser.visit(urljoin(bdd_server.url, '/account/login/'))
     yield en_browser
     try:
         # kill the specific phantomjs child proc
