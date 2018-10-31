@@ -631,7 +631,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 if os.path.exists(thelayer_zip):
                     uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258')
                     self.assertEquals(uploaded.title, 'Zhejiang Yangcan Yanyu')
-                    self.assertEquals(len(uploaded.keyword_list()), 0)
+                    self.assertEquals(len(uploaded.keyword_list()), 2)
                     self.assertEquals(uploaded.constraints_other, None)
         finally:
             # Clean up and completely delete the layer
@@ -654,7 +654,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 if os.path.exists(thelayer_zip):
                     uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258')
                     self.assertEquals(uploaded.title, 'Ming Female 1')
-                    self.assertEquals(len(uploaded.keyword_list()), 0)
+                    self.assertEquals(len(uploaded.keyword_list()), 2)
                     self.assertEquals(uploaded.constraints_other, None)
         finally:
             # Clean up and completely delete the layer
