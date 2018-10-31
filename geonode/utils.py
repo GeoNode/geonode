@@ -965,14 +965,21 @@ def check_shp_columnnames(layer):
     """ Check if shapefile for a given layer has valid column names.
         If not, try to fix column names and warn the user
     """
-
     # TODO we may add in a better location this method
     inShapefile = ''
     for f in layer.upload_session.layerfile_set.all():
         if os.path.splitext(f.file.name)[1] == '.shp':
             inShapefile = f.file.path
+    if inShapefile:
+        return fixup_shp_columnnames(inShapefile, layer.charset)
 
-    tempdir = tempfile.mkdtemp()
+
+def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
+    """ Try to fix column names and warn the user
+    """
+
+    if not tempdir:
+        tempdir = tempfile.mkdtemp()
     if is_zipfile(inShapefile):
         inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
 
@@ -1006,7 +1013,7 @@ def check_shp_columnnames(layer):
             list_col_original.append(field_name)
 
     for i in range(0, inLayerDefn.GetFieldCount()):
-        charset = layer.charset if layer.charset and 'undefined' not in layer.charset \
+        charset = charset if charset and 'undefined' not in charset \
             else 'UTF-8'
 
         field_name = inLayerDefn.GetFieldDefn(i).GetName()
@@ -1046,7 +1053,7 @@ def check_shp_columnnames(layer):
                 inDataSource.ExecuteSQL(qry.encode(charset))
         except UnicodeDecodeError:
             raise GeoNodeException(
-                "Could not decode layer attributes by using the specified charset '{}'.".format(charset))
+                "Could not decode SHAPEFILE attributes by using the specified charset '{}'.".format(charset))
     return True, None, list_col
 
 

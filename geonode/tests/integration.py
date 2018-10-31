@@ -629,7 +629,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             if os.path.exists(thelayer_path) and not os.path.exists(thelayer_zip):
                 zip_dir(thelayer_path, thelayer_zip)
                 if os.path.exists(thelayer_zip):
-                    uploaded = file_upload(thelayer_zip, overwrite=True)
+                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258')
                     self.assertEquals(uploaded.title, 'Zhejiang Yangcan Yanyu')
                     self.assertEquals(len(uploaded.keyword_list()), 0)
                     self.assertEquals(uploaded.constraints_other, None)
@@ -652,7 +652,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             if os.path.exists(thelayer_path) and not os.path.exists(thelayer_zip):
                 zip_dir(thelayer_path, thelayer_zip)
                 if os.path.exists(thelayer_zip):
-                    uploaded = file_upload(thelayer_zip, overwrite=True)
+                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258')
                     self.assertEquals(uploaded.title, 'Ming Female 1')
                     self.assertEquals(len(uploaded.keyword_list()), 0)
                     self.assertEquals(uploaded.constraints_other, None)
