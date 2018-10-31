@@ -675,6 +675,9 @@ def gxp2wm(config, map_obj=None):
         config = json.loads(config)
         config_is_string = True
 
+    if map_obj:
+        config['id'] = map_obj.id
+
     topics = TopicCategory.objects.all()
     topicArray = []
     for topic in topics:
