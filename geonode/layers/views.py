@@ -27,7 +27,7 @@ import traceback
 import uuid
 import decimal
 import re
-
+import cPickle as pickle
 from django.db.models import Q
 from celery.exceptions import TimeoutError
 
@@ -239,7 +239,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     user=request.user).order_by('-date')
                 if latest_uploads.count() > 0:
                     upload_session = latest_uploads[0]
-                    upload_session.error = str(error)
+                    upload_session.error = pickle.dumps(error).decode("utf-8", "replace")
                     upload_session.traceback = traceback.format_exc(tb)
                     upload_session.context = log_snippet(CONTEXT_LOG_FILE)
                     upload_session.save()
@@ -286,6 +286,16 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 layer_name = saved_layer.alternate if hasattr(
                     saved_layer, 'alternate') else name
                 request.add_resource('layer', layer_name)
+        _keys = ['info', 'errors']
+        for _k in _keys:
+            if _k in out:
+                if isinstance(out[_k], unicode) or isinstance(
+                        out[_k], str):
+                        out[_k] = out[_k].decode(saved_layer.charset).encode("utf-8")
+                elif isinstance(out[_k], dict):
+                    for key, value in out[_k].iteritems():
+                        out[_k][key] = out[_k][key].decode(saved_layer.charset).encode("utf-8")
+                        out[_k][key.decode(saved_layer.charset).encode("utf-8")] = out[_k].pop(key)
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',

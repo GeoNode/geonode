@@ -512,13 +512,8 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             # layer have projection file, but has no valid srid
             self.assertEqual(
                 str(e),
-                "Invalid Layers. "
-                "Needs an authoritative SRID in its CRS to be accepted")
-        # except:
-        #     # Sometimes failes with the message:
-        #     # UploadError: Could not save the layer air_runways,
-        #     # there was an upload error: Error occured unzipping file
-        #     pass
+                "GeoServer failed to detect the projection for layer [air_runways]. "
+                "It doesn't look like EPSG:4326, so backing out the layer.")
         finally:
             # Clean up and completely delete the layer
             if uploaded:
@@ -610,11 +605,57 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     uploaded.metadata_xml = thelayer_metadata
                     regions_resolved, regions_unresolved = resolve_regions(regions)
                     self.assertIsNotNone(regions_resolved)
-        # except:
-        #     # Sometimes failes with the message:
-        #     # UploadError: Could not save the layer air_runways,
-        #     # there was an upload error: Error occured unzipping file
-        #     pass
+        finally:
+            # Clean up and completely delete the layer
+            if uploaded:
+                uploaded.delete()
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    def test_layer_zip_upload_non_utf8(self):
+        """Test uploading a layer with non UTF-8 attributes names"""
+        uploaded = None
+        PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+        thelayer_path = os.path.join(
+            PROJECT_ROOT,
+            'data/zhejiang_yangcan_yanyu')
+        thelayer_zip = os.path.join(
+            PROJECT_ROOT,
+            'data/',
+            'zhejiang_yangcan_yanyu.zip')
+        try:
+            if os.path.exists(thelayer_zip):
+                os.remove(thelayer_zip)
+            if os.path.exists(thelayer_path) and not os.path.exists(thelayer_zip):
+                zip_dir(thelayer_path, thelayer_zip)
+                if os.path.exists(thelayer_zip):
+                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258')
+                    self.assertEquals(uploaded.title, 'Zhejiang Yangcan Yanyu')
+                    self.assertEquals(len(uploaded.keyword_list()), 2)
+                    self.assertEquals(uploaded.constraints_other, None)
+        finally:
+            # Clean up and completely delete the layer
+            if uploaded:
+                uploaded.delete()
+
+        uploaded = None
+        thelayer_path = os.path.join(
+            PROJECT_ROOT,
+            'data/ming_female_1')
+        thelayer_zip = os.path.join(
+            PROJECT_ROOT,
+            'data/',
+            'ming_female_1.zip')
+        try:
+            if os.path.exists(thelayer_zip):
+                os.remove(thelayer_zip)
+            if os.path.exists(thelayer_path) and not os.path.exists(thelayer_zip):
+                zip_dir(thelayer_path, thelayer_zip)
+                if os.path.exists(thelayer_zip):
+                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258')
+                    self.assertEquals(uploaded.title, 'Ming Female 1')
+                    self.assertEquals(len(uploaded.keyword_list()), 2)
+                    self.assertEquals(uploaded.constraints_other, None)
         finally:
             # Clean up and completely delete the layer
             if uploaded:
