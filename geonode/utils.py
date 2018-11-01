@@ -317,7 +317,7 @@ def inverse_mercator(xy):
     return (lon, lat)
 
 
-def layer_from_viewer_config(map_id, model, layer, source, ordering):
+def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=True):
     """
     Parse an object out of a parsed layer configuration from a GXP
     viewer.
@@ -326,6 +326,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering):
     ``layer`` is the parsed dict for the layer
     ``source`` is the parsed dict for the layer's source
     ``ordering`` is the index of the layer within the map's layer list
+    ``save_map`` if map should be saved (default: True)
     """
     layer_cfg = dict(layer)
     for k in ["format", "name", "opacity", "styles", "transparent",
@@ -377,7 +378,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering):
         layer_params=json.dumps(layer_cfg),
         source_params=json.dumps(source_cfg)
     )
-    if map_id:
+    if map_id and save_map:
         _model.save()
 
     return _model
