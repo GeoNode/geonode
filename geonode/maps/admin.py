@@ -57,6 +57,10 @@ class MapLayerAdmin(admin.ModelAdmin):
     form = modelform_factory(MapLayer, fields='__all__')
 
 
+class MapSnapshotAdmin(admin.ModelAdmin):
+    list_display = ('map', 'user', 'created_dttm', )
+
+
 admin.site.register(Map, MapAdmin)
 admin.site.register(MapLayer, MapLayerAdmin)
-admin.site.register(MapSnapshot)
+admin.site.register(MapSnapshot, MapSnapshotAdmin)
