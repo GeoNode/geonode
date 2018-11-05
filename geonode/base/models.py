@@ -775,6 +775,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         raise NotImplementedError()
 
     @property
+    def site_url(self):
+        return settings.SITEURL
+
+    @property
     def creator(self):
         return self.owner.get_full_name() or self.owner.username
 
