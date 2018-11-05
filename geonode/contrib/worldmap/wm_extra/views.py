@@ -675,6 +675,9 @@ def gxp2wm(config, map_obj=None):
         config = json.loads(config)
         config_is_string = True
 
+    if map_obj:
+        config['id'] = map_obj.id
+
     topics = TopicCategory.objects.all()
     topicArray = []
     for topic in topics:
@@ -916,9 +919,9 @@ def snapshot_config(snapshot, map_obj, request):
         if maplayer.name is not None and maplayer.source_params.find("gxp_gnsource") > -1:
             # Get parameters from GeoNode instead of WMS GetCapabilities
             try:
-                gnLayer = Layer.objects.get(typename=maplayer.name)
-                if gnLayer.srs:
-                    cfg['srs'] = gnLayer.srs
+                gnLayer = Layer.objects.get(alternate=maplayer.name)
+                if gnLayer.srid:
+                    cfg['srs'] = gnLayer.srid
                 if gnLayer.bbox:
                     cfg['bbox'] = json.loads(gnLayer.bbox)
                 if gnLayer.llbbox:
@@ -993,7 +996,8 @@ def snapshot_config(snapshot, map_obj, request):
                     layer,
                     config["sources"][
                         layer["source"]],
-                    ordering))
+                    ordering,
+                    False))
 #             map_obj.map.layer_set.from_viewer_config(
 # map_obj, layer, config["sources"][layer["source"]], ordering))
         config['map']['layers'] = [
@@ -1003,7 +1007,6 @@ def snapshot_config(snapshot, map_obj, request):
                 request) for l in maplayers]
     else:
         config = map_obj.viewer_json(request)
-
     return config
 
 
