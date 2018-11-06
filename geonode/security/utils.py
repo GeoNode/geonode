@@ -426,7 +426,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
         and layer.is_vector()
     gf_services["WCS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
         and not layer.is_vector()
-    gf_services["WPS"] = 'download_resourcebase' or 'change_layer_data' in perms
+    gf_services["WPS"] = 'download_resourcebase' in perms or 'change_layer_data' in perms
 
     _user = None
     if user:
