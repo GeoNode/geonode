@@ -146,6 +146,24 @@ def ajax_layer_edit_style_check(request, layername):
     )
 
 
+def ajax_layer_download_check(request, layername):
+    """
+    Check if the the layer is downloadable.
+    """
+
+    can_download = False
+    layer = get_object_or_404(Layer, typename=layername)
+    if request.user.is_authenticated():
+        if layer.owner == request.user:
+            can_download = True
+        else:
+            can_download = request.user.has_perm('download_resourcebase', layer.resourcebase_ptr)
+
+    return HttpResponse(
+        str(can_download).lower()
+    )
+
+
 @login_required
 def ajax_layer_update(request, layername):
     """
