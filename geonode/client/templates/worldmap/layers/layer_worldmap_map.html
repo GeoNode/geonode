@@ -18,7 +18,7 @@ Ext.onReady(function() {
           outputConfig: {width: 400, height: 200, panIn: false}
       }],
       proxy: "/proxy/?url=",
-      siteUrl: "{{ SITE_URL }}",
+      siteUrl: "{{ SITE_URL }}".replace(/\/?$/, '/'),
       localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
       rest: "/maps/",
       portalConfig: {
