@@ -23,7 +23,6 @@ import base64
 import copy
 import datetime
 import logging
-import math
 import os
 import re
 import uuid
@@ -41,6 +40,7 @@ import gc
 import weakref
 import traceback
 
+from math import atan, exp, log, pi, sin, tan, floor
 from contextlib import closing
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from StringIO import StringIO
@@ -61,7 +61,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import timezone
 
-from geonode import geoserver, qgis_server  # noqa
+from geonode import geoserver, qgis_server, GeoNodeException  # noqa
 
 try:
     import json
@@ -192,6 +192,22 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return wkt
 
 
+def _v(coord, x, source_srid=4326, target_srid=3857):
+    if source_srid == 4326 and x and abs(coord) != 180.0:
+        coord = coord - (round(coord / 360.0) * 360.0)
+    if source_srid == 4326 and target_srid != 4326:
+        if x and coord >= 180.0:
+            return 179.999
+        elif x and coord <= -180.0:
+            return -179.999
+
+        if not x and coord >= 90.0:
+            return 89.999
+        elif not x and coord <= -90.0:
+            return -89.999
+    return coord
+
+
 def bbox_to_projection(native_bbox, target_srid=4326):
     """
         native_bbox must be in the form
@@ -205,19 +221,6 @@ def bbox_to_projection(native_bbox, target_srid=4326):
     except BaseException:
         source_srid = target_srid
 
-    def _v(coord, x, source_srid=4326, target_srid=3857):
-        if source_srid == 4326 and target_srid != 4326:
-            if x and coord >= 180.0:
-                return 179.0
-            elif x and coord <= -180.0:
-                return -179.0
-
-            if not x and coord >= 90.0:
-                return 89.0
-            elif not x and coord <= -90.0:
-                return -89.0
-        return coord
-
     if source_srid != target_srid:
         try:
             wkt = bbox_to_wkt(_v(minx, x=True, source_srid=source_srid, target_srid=target_srid),
@@ -227,12 +230,47 @@ def bbox_to_projection(native_bbox, target_srid=4326):
                               srid=source_srid)
             poly = GEOSGeometry(wkt, srid=source_srid)
             poly.transform(target_srid)
-            return tuple([str(x) for x in poly.extent]) + ("EPSG:%s" % poly.srid,)
+            projected_bbox = [str(x) for x in poly.extent]
+            # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
+            return tuple([projected_bbox[0], projected_bbox[2], projected_bbox[1], projected_bbox[3]]) + \
+                ("EPSG:%s" % poly.srid,)
         except BaseException:
             tb = traceback.format_exc()
             logger.debug(tb)
 
     return native_bbox
+
+
+def bounds_to_zoom_level(bounds, width, height):
+    WORLD_DIM = {'height': 256., 'width': 256.}
+    ZOOM_MAX = 21
+
+    def latRad(lat):
+        _sin = sin(lat * pi / 180.0)
+        if abs(_sin) != 1.0:
+            radX2 = log((1.0 + _sin) / (1.0 - _sin)) / 2.0
+        else:
+            radX2 = log(1.0) / 2.0
+        return max(min(radX2, pi), -pi) / 2.0
+
+    def zoom(mapPx, worldPx, fraction):
+        try:
+            return floor(log(mapPx / worldPx / fraction) / log(2.0))
+        except BaseException:
+            return 0
+
+    ne = [float(bounds[2]), float(bounds[3])]
+    sw = [float(bounds[0]), float(bounds[1])]
+    latFraction = (latRad(ne[1]) - latRad(sw[1])) / pi
+    lngDiff = ne[0] - sw[0]
+    lngFraction = ((lngDiff + 360.0) if (lngDiff < 0) else lngDiff) / 360.0
+    latZoom = zoom(float(height), WORLD_DIM['height'], latFraction)
+    lngZoom = zoom(float(width), WORLD_DIM['width'], lngFraction)
+    ratio = float(max(width, height)) / float(min(width, height))
+    z_offset = 0 if ratio >= 1.5 else -1
+    zoom = int(max(latZoom, lngZoom) + z_offset)
+    zoom = int(min(zoom, ZOOM_MAX))
+    return max(zoom, 0)
 
 
 def llbbox_to_mercator(llbbox):
@@ -258,13 +296,13 @@ def forward_mercator(lonlat):
         # With data sets that only have one point the value of this
         # expression becomes negative infinity. In order to continue,
         # we wrap this in a try catch block.
-        n = math.tan((90 + lonlat[1]) * math.pi / 360)
+        n = tan((90 + lonlat[1]) * pi / 360)
     except ValueError:
         n = 0
     if n <= 0:
         y = float("-inf")
     else:
-        y = math.log(n) / math.pi * 20037508.34
+        y = log(n) / pi * 20037508.34
     return (x, y)
 
 
@@ -274,12 +312,12 @@ def inverse_mercator(xy):
     """
     lon = (xy[0] / 20037508.34) * 180
     lat = (xy[1] / 20037508.34) * 180
-    lat = 180 / math.pi * \
-        (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
+    lat = 180 / pi * \
+        (2 * atan(exp(lat * pi / 180)) - pi / 2)
     return (lon, lat)
 
 
-def layer_from_viewer_config(map_id, model, layer, source, ordering):
+def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=True):
     """
     Parse an object out of a parsed layer configuration from a GXP
     viewer.
@@ -288,6 +326,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering):
     ``layer`` is the parsed dict for the layer
     ``source`` is the parsed dict for the layer's source
     ``ordering`` is the index of the layer within the map's layer list
+    ``save_map`` if map should be saved (default: True)
     """
     layer_cfg = dict(layer)
     for k in ["format", "name", "opacity", "styles", "transparent",
@@ -339,7 +378,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering):
         layer_params=json.dumps(layer_cfg),
         source_params=json.dumps(source_cfg)
     )
-    if map_id:
+    if map_id and save_map:
         _model.save()
 
     return _model
@@ -927,14 +966,21 @@ def check_shp_columnnames(layer):
     """ Check if shapefile for a given layer has valid column names.
         If not, try to fix column names and warn the user
     """
-
     # TODO we may add in a better location this method
     inShapefile = ''
     for f in layer.upload_session.layerfile_set.all():
         if os.path.splitext(f.file.name)[1] == '.shp':
             inShapefile = f.file.path
+    if inShapefile:
+        return fixup_shp_columnnames(inShapefile, layer.charset)
 
-    tempdir = tempfile.mkdtemp()
+
+def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
+    """ Try to fix column names and warn the user
+    """
+
+    if not tempdir:
+        tempdir = tempfile.mkdtemp()
     if is_zipfile(inShapefile):
         inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
 
@@ -966,46 +1012,49 @@ def check_shp_columnnames(layer):
 
         if a.match(field_name):
             list_col_original.append(field_name)
-    try:
-        for i in range(0, inLayerDefn.GetFieldCount()):
-            charset = layer.charset if layer.charset and 'undefined' not in layer.charset \
-                else 'UTF-8'
-            field_name = unicode(
-                inLayerDefn.GetFieldDefn(i).GetName(),
-                charset)
 
-            if not a.match(field_name):
-                # once the field_name contains Chinese, to use slugify_zh
-                has_ch = False
-                for ch in field_name:
-                    if u'\u4e00' <= ch <= u'\u9fff':
+    for i in range(0, inLayerDefn.GetFieldCount()):
+        charset = charset if charset and 'undefined' not in charset \
+            else 'UTF-8'
+
+        field_name = inLayerDefn.GetFieldDefn(i).GetName()
+        if not a.match(field_name):
+            # once the field_name contains Chinese, to use slugify_zh
+            has_ch = False
+            for ch in field_name:
+                try:
+                    if u'\u4e00' <= ch.decode("utf-8", "replace") <= u'\u9fff':
                         has_ch = True
                         break
-                if has_ch:
-                    new_field_name = slugify_zh(field_name, separator='_')
-                else:
-                    new_field_name = custom_slugify(field_name)
-                if not b.match(new_field_name):
-                    new_field_name = '_' + new_field_name
-                j = 0
-                while new_field_name in list_col_original or new_field_name in list_col.values():
-                    if j == 0:
-                        new_field_name += '_0'
-                    if new_field_name.endswith('_' + str(j)):
-                        j += 1
-                        new_field_name = new_field_name[:-2] + '_' + str(j)
-                list_col.update({field_name: new_field_name})
-    except UnicodeDecodeError as e:
-        logger.error(str(e))
-        return False, None, None
+                except UnicodeDecodeError:
+                    has_ch = True
+                    break
+            if has_ch:
+                new_field_name = slugify_zh(field_name, separator='_')
+            else:
+                new_field_name = custom_slugify(field_name)
+            if not b.match(new_field_name):
+                new_field_name = '_' + new_field_name
+            j = 0
+            while new_field_name in list_col_original or new_field_name in list_col.values():
+                if j == 0:
+                    new_field_name += '_0'
+                if new_field_name.endswith('_' + str(j)):
+                    j += 1
+                    new_field_name = new_field_name[:-2] + '_' + str(j)
+            list_col.update({field_name: new_field_name})
 
     if len(list_col) == 0:
         return True, None, None
     else:
-        for key in list_col.keys():
-            qry = u"ALTER TABLE {0} RENAME COLUMN \"{1}\" TO \"{2}\"".format(
-                inLayer.GetName(), key, list_col[key])
-            inDataSource.ExecuteSQL(qry.encode(layer.charset))
+        try:
+            for key in list_col.keys():
+                qry = u"ALTER TABLE {} RENAME COLUMN \"".format(inLayer.GetName())
+                qry = qry + key.decode(charset) + u"\" TO \"{}\"".format(list_col[key])
+                inDataSource.ExecuteSQL(qry.encode(charset))
+        except UnicodeDecodeError:
+            raise GeoNodeException(
+                "Could not decode SHAPEFILE attributes by using the specified charset '{}'.".format(charset))
     return True, None, list_col
 
 

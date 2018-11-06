@@ -94,7 +94,7 @@ def grab(src, dest, name):
             import requests
             import math
             # Streaming, so we can iterate over the response.
-            r = requests.get(str(src), stream=True, timeout=10)
+            r = requests.get(str(src), stream=True, timeout=10, verify=False)
             # Total size in bytes.
             total_size = int(r.headers.get('content-length', 0))
             print("Requesting %s" % str(src))
@@ -905,7 +905,8 @@ def run_tests(options):
     Executes the entire test suite.
     """
     if options.get('coverage'):
-        prefix = 'coverage run --branch --source=geonode --omit="*/management/*,geonode/contrib/*,*/test*,*/wsgi*,*/middleware*"'
+        prefix = 'coverage run --branch --source=geonode \
+            --omit="*/management/*,*/test*,*/wsgi*,*/middleware*,*/context_processors*,geonode/qgis_server/*,geonode/contrib/*,geonode/upload/*"'
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false

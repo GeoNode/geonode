@@ -66,6 +66,7 @@ from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.security.views import _perms_info_json
 from geonode.utils import set_attributes
+from geonode.security.utils import set_geowebcache_invalidate_cache
 import xml.etree.ElementTree as ET
 from django.utils.module_loading import import_string
 
@@ -84,10 +85,11 @@ def check_geoserver_is_up():
     """Verifies all geoserver is running,
        this is needed to be able to upload.
     """
-    url = "%sweb/" % ogc_server_settings.LOCATION
+    url = "%s" % ogc_server_settings.LOCATION
     resp, content = http_client.request(url, "GET")
     msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-           'have started it.' % ogc_server_settings.LOCATION)
+           'have started it.' % url)
+    logger.debug(resp)
     assert resp['status'] == '200', msg
 
 
@@ -297,7 +299,7 @@ def fixup_style(cat, resource, style):
     for lyr in layers:
         if lyr.default_style.name in _style_templates:
             logger.info("%s uses a default style, generating a new one", lyr)
-            name = _style_name(resource)
+            name = _style_name(lyr)
             if style is None:
                 sld = get_sld_for(cat, lyr)
             else:
@@ -345,6 +347,7 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
                 layer.default_style = style
                 cat.save(layer)
                 saved_layer.default_style = save_style(style)
+                set_geowebcache_invalidate_cache(saved_layer.alternate)
         except Exception as e:
             logger.exception(e)
     else:
@@ -360,6 +363,7 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
                 layer.default_style = style
                 cat.save(layer)
                 saved_layer.default_style = save_style(style)
+                set_geowebcache_invalidate_cache(saved_layer.alternate)
         except Exception as e:
             logger.exception(e)
 
@@ -1582,14 +1586,24 @@ def style_update(request, url):
         sld_body = '<?xml version="1.0" encoding="UTF-8"?>%s' % request.body
         # add style in GN and associate it to layer
         if request.method == 'POST':
-            style = Style(name=style_name, sld_body=sld_body, sld_url=url)
+            style, created = Style.objects.get_or_create(name=style_name)
+            style.sld_body = sld_body
+            style.sld_url = url
             style.save()
-            layer = Layer.objects.get(alternate=layer_name)
-            style.layer_styles.add(layer)
-            style.save()
-            affected_layers.append(layer)
+            layer = None
+            try:
+                layer = Layer.objects.get(name=layer_name)
+            except BaseException:
+                try:
+                    layer = Layer.objects.get(alternate=layer_name)
+                except BaseException:
+                    pass
+            if layer:
+                style.layer_styles.add(layer)
+                style.save()
+                affected_layers.append(layer)
         elif request.method == 'PUT':  # update style in GN
-            style = Style.objects.get(name=style_name)
+            style, created = Style.objects.get_or_create(name=style_name)
             style.sld_body = sld_body
             style.sld_url = url
             if len(elm_user_style_title.text) > 0:
@@ -1750,11 +1764,11 @@ _esri_types = {
     "esriFieldTypeXML": "xsd:anyType"}
 
 
-def _render_thumbnail(req_body):
+def _render_thumbnail(req_body, width=240, height=180):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
     hostname = urlparse(settings.SITEURL).hostname
-    params = dict(width=240, height=180, auth="%s,%s,%s" % (hostname, _user, _password))
+    params = dict(width=width, height=height, auth="%s,%s,%s" % (hostname, _user, _password))
     url = url + "?" + urllib.urlencode(params)
 
     # @todo annoying but not critical
@@ -1777,6 +1791,163 @@ def _render_thumbnail(req_body):
         logging.warning('Error generating thumbnail')
         return
     return content
+
+
+def _prepare_thumbnail_body_from_opts(request_body, request=None):
+    import mercantile
+    from geonode.utils import (_v,
+                               bbox_to_projection,
+                               bounds_to_zoom_level)
+    if isinstance(request_body, basestring):
+        request_body = json.loads(request_body)
+
+    # Defaults
+    _img_src_template = """<img src='{ogc_location}'
+    style='width: {width}px; height: {height}px;
+    left: {left}px; top: {top}px;
+    opacity: 1; visibility: inherit; position: absolute;'/>\n"""
+
+    def decimal_encode(bbox):
+        import decimal
+        _bbox = []
+        for o in [float(coord) for coord in bbox]:
+            if isinstance(o, decimal.Decimal):
+                o = (str(o) for o in [o])
+            _bbox.append(o)
+        # Must be in the form : [x0, x1, y0, y1
+        return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
+
+    # Sanity Checks
+    if 'bbox' not in request_body:
+        return None
+    if 'srid' not in request_body:
+        return None
+    for coord in request_body['bbox']:
+        if not coord:
+            return None
+
+    width = 240
+    if 'width' in request_body:
+        width = request_body['width']
+    height = 200
+    if 'height' in request_body:
+        height = request_body['height']
+    smurl = None
+    if 'smurl' in request_body:
+        smurl = request_body['smurl']
+    if not smurl and getattr(settings, 'THUMBNAIL_GENERATOR_DEFAULT_BG', None):
+        smurl = settings.THUMBNAIL_GENERATOR_DEFAULT_BG
+
+    layers = None
+    thumbnail_create_url = None
+    if 'thumbnail_create_url' in request_body:
+        thumbnail_create_url = request_body['thumbnail_create_url']
+    elif 'layers' in request_body:
+        layers = request_body['layers']
+
+        wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'ows'
+        wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.1'
+        wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png8'
+
+        params = {
+            'service': 'WMS',
+            'version': wms_version,
+            'request': 'GetMap',
+            'layers': layers,
+            'format': wms_format,
+            # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
+        }
+
+        if request and 'access_token' in request.session:
+            params['access_token'] = request.session['access_token']
+
+        _p = "&".join("%s=%s" % item for item in params.items())
+
+        import posixpath
+        thumbnail_create_url = posixpath.join(
+            ogc_server_settings.LOCATION,
+            wms_endpoint) + "?" + _p
+
+    # Compute Bounds
+    wgs84_bbox = decimal_encode(
+        bbox_to_projection([float(coord) for coord in request_body['bbox']] + [request_body['srid'], ],
+                           target_srid=4326)[:4])
+
+    # Fetch XYZ tiles - we are assuming Mercatore here
+    bounds = wgs84_bbox[0:4]
+    # Fixes bounds to tiles system
+    bounds[0] = _v(bounds[0], x=True, target_srid=4326)
+    bounds[2] = _v(bounds[2], x=True, target_srid=4326)
+    if bounds[3] > 85.051:
+        bounds[3] = 85.0
+    if bounds[1] < -85.051:
+        bounds[1] = -85.0
+    if 'zoom' in request_body:
+        zoom = request_body['zoom']
+    else:
+        zoom = bounds_to_zoom_level(bounds, width, height)
+
+    t_ll = mercantile.tile(bounds[0], bounds[1], zoom)
+    t_ur = mercantile.tile(bounds[2], bounds[3], zoom)
+
+    numberOfRows = t_ll.y - t_ur.y + 1
+
+    bounds_ll = mercantile.bounds(t_ll)
+    bounds_ur = mercantile.bounds(t_ur)
+
+    lat_res = abs(256 / (bounds_ur.north - bounds_ur.south))
+    lng_res = abs(256 / (bounds_ll.east - bounds_ll.west))
+    top = round(abs(bounds_ur.north - bounds[3]) * -lat_res)
+    left = round(abs(bounds_ll.west - bounds[0]) * -lng_res)
+
+    tmp_tile = mercantile.tile(bounds[0], bounds[3], zoom)
+    width_acc = 256 + left
+    first_row = [tmp_tile]
+    # Add tiles to fill image width
+    while width > width_acc:
+        c = mercantile.ul(tmp_tile.x + 1, tmp_tile.y, zoom)
+        lng = _v(c.lng, x=True, target_srid=4326)
+        if lng == 180.0:
+            lng = -180.0
+        tmp_tile = mercantile.tile(lng, bounds[3], zoom)
+        first_row.append(tmp_tile)
+        width_acc = width_acc + 256
+
+    # Build Image Request Template
+    _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
+        <div style='position: absolute; top:{top}px; left:{left}px; z-index: 749; \
+        transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
+        \n".format(height=height, width=width, top=top, left=left)
+
+    for row in range(0, numberOfRows):
+        for col in range(0, len(first_row)):
+            box = [col * 256, row * 256]
+            t = first_row[col]
+            y = t.y + row
+            if smurl:
+                imgurl = smurl.format(z=t.z, x=t.x, y=y)
+                _img_request_template += _img_src_template.format(ogc_location=imgurl,
+                                                                  height=256, width=256,
+                                                                  left=box[0], top=box[1])
+            xy_bounds = mercantile.xy_bounds(t.x, y, t.z)
+            params = {
+                'width': 256,
+                'height': 256,
+                'transparent': True,
+                'bbox': ",".join([str(xy_bounds.left), str(xy_bounds.bottom),
+                                  str(xy_bounds.right), str(xy_bounds.top)]),
+                'crs': 'EPSG:3857',
+
+            }
+            _p = "&".join("%s=%s" % item for item in params.items())
+
+            _img_request_template += \
+                _img_src_template.format(ogc_location=(thumbnail_create_url + '&' + _p),
+                                         height=256, width=256,
+                                         left=box[0], top=box[1])
+    _img_request_template += "</div></div>"
+    image = _render_thumbnail(_img_request_template, width=width, height=height)
+    return image
 
 
 def _fixup_ows_url(thumb_spec):

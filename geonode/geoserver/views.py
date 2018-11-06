@@ -469,15 +469,6 @@ def geoserver_proxy(request,
 
     path = strip_prefix(request.get_full_path(), proxy_path)
 
-    access_token = None
-    if request and 'access_token' in request.session:
-        access_token = request.session['access_token']
-
-    if access_token and 'access_token' not in path:
-        query_separator = '&' if '?' in path else '?'
-        path = ('%s%saccess_token=%s' %
-                (path, query_separator, access_token))
-
     raw_url = str(
         "".join([ogc_server_settings.LOCATION, downstream_path, path]))
 
@@ -494,13 +485,17 @@ def geoserver_proxy(request,
             import posixpath
             raw_url = urljoin(ogc_server_settings.LOCATION,
                               posixpath.join(workspace, layername, downstream_path, path))
-
         if downstream_path in ('rest/styles') and len(request.body) > 0:
-            # Lets try
-            # http://localhost:8080/geoserver/rest/workspaces/<ws>/styles/<style>.xml
-            _url = str("".join([ogc_server_settings.LOCATION,
-                                'rest/workspaces/', ws, '/styles',
-                                path]))
+            if ws:
+                # Lets try
+                # http://localhost:8080/geoserver/rest/workspaces/<ws>/styles/<style>.xml
+                _url = str("".join([ogc_server_settings.LOCATION,
+                                    'rest/workspaces/', ws, '/styles',
+                                    path]))
+            else:
+                _url = str("".join([ogc_server_settings.LOCATION,
+                                    'rest/styles',
+                                    path]))
             raw_url = _url
 
     if downstream_path in 'ows' and (
@@ -509,9 +504,7 @@ def geoserver_proxy(request,
             re.match(r'/(ows).*$', path, re.IGNORECASE)):
         _url = str("".join([ogc_server_settings.LOCATION, '', path[1:]]))
         raw_url = _url
-
     url = urlsplit(raw_url)
-
     affected_layers = None
     if request.method in ("POST", "PUT"):
         if downstream_path in ('rest/styles', 'rest/layers',
@@ -525,7 +518,7 @@ def geoserver_proxy(request,
             elif downstream_path == 'rest/styles':
                 logger.info(
                     "[geoserver_proxy] Updating Style to ---> url %s" %
-                    url.path)
+                    url.geturl())
                 affected_layers = style_update(request, raw_url)
 
     kwargs = {'affected_layers': affected_layers}
@@ -545,7 +538,7 @@ def _response_callback(**kwargs):
             logger.debug(
                 'Updating thumbnail for layer with uuid %s' %
                 layer.uuid)
-            create_gs_thumbnail(layer, True)
+            create_gs_thumbnail(layer, overwrite=True)
 
     # Replace Proxy URL
     if content_type in ('application/xml', 'text/xml', 'text/plain'):
@@ -722,14 +715,13 @@ def layer_acls(request):
 
 
 # capabilities
-def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=False):
+def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=False):
     """
     Retrieve a layer-specific GetCapabilities document
     """
     workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
     if not layer.remote_service:
-        # TODO implement this for 1.3.0 too
-        wms_url = '%s%s/%s/ows?service=wms&version=%s&request=GetCapabilities'\
+        wms_url = '%s%s/%s/wms?service=wms&version=%s&request=GetCapabilities'\
             % (ogc_server_settings.LOCATION, workspace, layername, version)
         if access_token:
             wms_url += ('&access_token=%s' % access_token)
@@ -739,7 +731,6 @@ def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=F
 
     http = httplib2.Http()
     response, getcap = http.request(wms_url)
-    # TODO this is to bypass an actual bug of GeoServer 2.12.x
     if tolerant and ('ServiceException' in getcap or response.status == 404):
         # WARNING Please make sure to have enabled DJANGO CACHE as per
         # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
@@ -754,18 +745,19 @@ def get_layer_capabilities(layer, version='1.1.0', access_token=None, tolerant=F
     return getcap
 
 
-def format_online_resource(workspace, layer, element):
+def format_online_resource(workspace, layer, element, namespaces):
     """
     Replace workspace/layer-specific OnlineResource links with the more
     generic links returned by a site-wide GetCapabilities document
     """
-    layerName = element.find('.//Name')
-    if not layerName:
+    layerName = element.find('.//wms:Capability/wms:Layer/wms:Layer/wms:Name',
+                             namespaces)
+    if layerName is None:
         return
 
     layerName.text = workspace + ":" + layer if workspace else layer
-    layerresources = element.findall('.//OnlineResource')
-    if not layerresources:
+    layerresources = element.findall('.//wms:OnlineResource', namespaces)
+    if layerresources is None:
         return
 
     for resource in layerresources:
@@ -820,13 +812,16 @@ def get_capabilities(request, layerid=None, user=None,
                                                   tolerant=tolerant)
                 if layercap:  # 1st one, seed with real GetCapabilities doc
                     try:
+                        namespaces = {'wms': 'http://www.opengis.net/wms',
+                                      'xlink': 'http://www.w3.org/1999/xlink',
+                                      'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
                         layercap = etree.fromstring(layercap)
                         rootdoc = etree.ElementTree(layercap)
-                        format_online_resource(workspace, layername, rootdoc)
-                        service_name = rootdoc.find('.//Service/Name')
+                        format_online_resource(workspace, layername, rootdoc, namespaces)
+                        service_name = rootdoc.find('.//wms:Service/wms:Name', namespaces)
                         if service_name:
                             service_name.text = cap_name
-                        rootdoc = rootdoc.find('.//Capability/Layer/Layer')
+                        rootdoc = rootdoc.find('.//wms:Capability/wms:Layer/wms:Layer', namespaces)
                     except Exception as e:
                         import traceback
                         traceback.print_exc()
@@ -844,7 +839,7 @@ def get_capabilities(request, layerid=None, user=None,
                         'catalogue_url': settings.CATALOGUE['default']['URL'],
                     }
                     gc_str = tpl.render(ctx)
-                    gc_str = gc_str.encode("utf-8")
+                    gc_str = gc_str.encode("utf-8", "replace")
                     layerelem = etree.XML(gc_str)
                     rootdoc = etree.ElementTree(layerelem)
             except Exception as e:

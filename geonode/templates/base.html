@@ -7,7 +7,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <meta Http-Equiv="Cache-Control" Content="no-cache">
     <meta Http-Equiv="Pragma" Content="no-cache">
     <meta Http-Equiv="Expires" Content="0">
@@ -29,7 +28,71 @@
       <link href="{% static "geonode/css/ux-all.css" %}?v={{ VERSION }}" rel="stylesheet" />
       <link href="{% static "geonode/css/base.css" %}?v={{ VERSION }}" rel="stylesheet" />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
+      <style type="text/css">
+        /* Additional styles by custom themes */
+        {% if custom_theme.body_color %}
+        body {
+          background: {{ custom_theme.body_color }};
+        }
+        {% endif %}
 
+        {% if custom_theme.navbar_color %}
+        .home .navbar-inverse , .navbar-inverse {
+          background-color: {{ custom_theme.navbar_color }};
+        }
+        {% endif %}
+
+        {% if custom_theme.logo %}
+        .navbar-brand {
+          background-image: url({{ custom_theme.logo.url }});
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: contain;
+        }
+        {% endif %}
+
+        {% if custom_theme.jumbotron_color %}
+        .home .jumbotron {
+          background-color: {{ custom_theme.jumbotron_color }}
+        }
+        {% endif %}
+
+        {% if custom_theme.jumbotron_welcome_hide %}
+        .home .jumbotron .container {
+          visibility: hidden;
+        }
+        {% endif %}
+
+        {% if custom_theme.jumbotron_bg %}
+        .home .jumbotron .container {
+          position: relative;
+          z-index: 1;
+        }
+        .home .jumbotron:after {
+          content: "";
+          background-image: url({{ custom_theme.jumbotron_bg.url }});
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: cover;
+          {% if not custom_theme.jumbotron_welcome_hide %}
+          opacity: 0.5;
+          {% endif %}
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          position: absolute;
+          z-index: 0;
+        }
+        {% endif %}
+
+        {% if custom_theme.copyright_color %}
+        .footer-copyright {
+          background-color: {{ custom_theme.copyright_color }};
+        }
+        {% endif %}
+
+      </style>
       {% block extra_head %}
       {% endblock %}
     {% endblock %}
@@ -43,24 +106,29 @@
         }
       </style>
     <![endif]-->
-    <link rel="search" type="application/opensearchdescription+xml" href="/catalogue/opensearch" title="GeoNode Search"/>
+    <link rel="search" type="application/opensearchdescription+xml" href="{{SITEURL}}catalogue/opensearch" title="GeoNode Search"/>
+
+    <script>
+        var siteUrl = '{{ SITEURL }}';
+    </script>
+
   </head>
 
   <body class="{% block body_class %}{% endblock %}">
     <!-- Navbar -->
     {% block header %}
-	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-	  <div class="container">
+  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
         <div class="navbar-header">
-	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-	        <i class="fa fa-navicon fa-lg"></i>
-	      </button>
-	      <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
-	    </div>
-	    <div id="navbar" class="navbar-collapse collapse">
-	      <ul class="nav navbar-nav toolbar">
-	        {% block tabs %}
-	        <li id="nav_layers">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <i class="fa fa-navicon fa-lg"></i>
+        </button>
+        <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav toolbar">
+          {% block tabs %}
+          <li id="nav_layers">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
                 <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
@@ -79,7 +147,7 @@
                 {% endif %}
               </ul>
             </li>
-	        <li id="nav_maps">
+          <li id="nav_maps">
               {% if user.is_authenticated %}
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
@@ -91,7 +159,7 @@
               {% endif %}
             </li>
             <li>
-	      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
                 <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
                 <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
@@ -102,17 +170,17 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
                 {% if user.is_superuser %}
-                <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
+                <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
                 <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                 {% endif %}
               </ul>
             </li>
 
-	    {% block extra_tab %}
+      {% block extra_tab %}
             {% endblock %}
             {% endblock %}
           </ul>
-	      <ul class="nav navbar-nav navbar-right">
+        <ul class="nav navbar-nav navbar-right">
             <li>
               <div class="search">
                 <form id="search" action="{% url "search" %}" >
@@ -124,7 +192,7 @@
                   {% endif %}
                 </form>
               </div>
-	        </li>
+          </li>
             {% if not user.is_authenticated and ACCOUNT_OPEN_SIGNUP %}
             <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
             {% endif %}
@@ -147,7 +215,7 @@
                 <li><a href="{% url "messages_inbox" %}">{% trans "Inbox" %}</a></li>
                 {% if user.is_superuser or user.is_staff %}
                     <li role="separator" class="divider"></li>
-                    <li><a href="{% url "admin:index" %}">Admin</a></li>
+                    <li><a href="{% url "admin:index" %}">{% trans "Admin" %}</a></li>
                     {% if 'geonode.geoserver' in INSTALLED_APPS %}
                     <li><a href="{% url "proxy" %}?url={{ OGC_SERVER.default.LOCATION }}">GeoServer</a></li>
                     {% endif %}
@@ -159,11 +227,11 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="/account/logout/">Logout</a></li>
+                <li><a href="{{SITEURL}}account/logout/">{% trans "Log out" %}</a></li>
                 </ul>
               </li>
-		      {% else %}
-		      <li><a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >{% trans "Sign in" %} </a></li>
+          {% else %}
+          <li><a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >{% trans "Sign in" %} </a></li>
               {% endif %}
             </ul>
           </div> <!--/.nav-collapse -->
@@ -174,8 +242,8 @@
 
     <div class="alert alert-danger alert-dismissible" role="alert" id="ieflag" style="display:none">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h1>You are using an outdated browser that is not supported by GeoNode.</h1>
-      <p>Please use a <strong>modern browser</strong> like Mozilla Firefox, Google Chrome or Safari.</p>
+      <h1>{% trans "You are using an outdated browser that is not supported by GeoNode." %}</h1>
+      <p>{% trans "Please use a <strong>modern browser</strong> like Mozilla Firefox, Google Chrome or Safari." %}</p>
     </div>
 
   <div id="wrap">
@@ -211,17 +279,17 @@
       <div class="row">
         <div class="col-md-2">
           <ul class="list-unstyled">
-            <li>Data</li>
+            <li>{% trans "Data" %}</li>
             <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
             {% if user.is_authenticated %}
                 <li role="separator" class="divider"></li>
-                <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
+                <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
                 {% if 'geonode.contrib.createlayer' in INSTALLED_APPS %}
                     <li><a href="{% url "layer_create" %}">{% trans "Create Layer" %}</a></li>
                 {% endif %}
-                <li><a href="{% url "document_upload" %}">Upload Document</a></li>
+                <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
             {% endif %}
             {% if user.is_superuser or user.is_staff %}
                 <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
@@ -230,16 +298,16 @@
         </div>
         <div class="col-md-2">
           <ul class="list-unstyled">
-            <li>Maps</li>
+            <li>{% trans "Maps" %}</li>
             <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
             {% if user.is_authenticated %}
             <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
             {% endif %}
           </ul>
         </div>
-		<div class="col-md-2">
+    <div class="col-md-2">
           <ul class="list-unstyled">
-            <li>About</li>
+            <li>{% trans "About" %}</li>
             <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
             <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
             {% if perms.announcements.can_manage %}
@@ -247,7 +315,7 @@
             {% endif %}
             <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
             {% if user.is_superuser %}
-            <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
+            <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
             <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
             {% endif %}
           </ul>
@@ -255,6 +323,22 @@
 
         <div class="col-md-6 text-right">
           {% block contactus %}
+          {% if custom_theme.contactus %}
+          <ul class="list-unstyled">
+              <li style="text-align: left;"><h2 style="margin-top: 0px;">Contact Us </h2> </li>
+              {% if custom_theme.contact_name %}<li style="text-align: left;">{{ custom_theme.contact_name }}</li>{% endif %}
+              {% if custom_theme.contact_position %}<li style="text-align: left;">{{ custom_theme.contact_position }}</li>{% endif %}
+              {% if custom_theme.contact_administrative_area %}<li style="text-align: left;">{{ custom_theme.contact_administrative_area }}</li>{% endif %}
+              {% if custom_theme.contact_city %}<li style="text-align: left;">{{ custom_theme.contact_city }}</li>{% endif %}
+              {% if custom_theme.contact_street %}<li style="text-align: left;">{{ custom_theme.contact_street }}</li>{% endif %}
+              {% if custom_theme.contact_postal_code %}<li style="text-align: left;">{{ custom_theme.contact_postal_code }}</li>{% endif %}
+              {% if custom_theme.contact_country %}<li style="text-align: left;">{{ custom_theme.contact_country }}</li>{% endif %}
+              {% if custom_theme.contact_delivery_point %}<li style="text-align: left;">{{ custom_theme.contact_delivery_point }}</li>{% endif %}
+              {% if custom_theme.contact_voice %}<li style="text-align: left;">Tel: {{ custom_theme.contact_voice }}</li>{% endif %}
+              {% if custom_theme.contact_facsimile %}<li style="text-align: left;">Fax: {{ custom_theme.contact_facsimile }}</li>{% endif %}
+              {% if custom_theme.contact_email %}<li style="text-align: left;">E-mail: {{ custom_theme.contact_email }}</li>{% endif %}
+          </ul>
+          {% endif %}
           {% endblock contactus %}
           <ul class="list-unstyled">
             <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em></li>
@@ -278,6 +362,21 @@
       </div>
     </div>
   </footer>
+
+  {% if custom_theme.copyright %}
+    <section class="footer-copyright">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 copyright ">
+            <div class="module">
+              <small>{{ custom_theme.copyright }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
   {% endblock footer %}
 
 
@@ -287,7 +386,7 @@
       <div class="modal-dialog modal-sm">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>
             <h4 class="modal-title" id="myModalLabel">{% trans "Sign in" %}</h4>
           </div>
           <form class="form-signin" role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
@@ -382,12 +481,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1>Uploading...</h1>
+                    <h1>{% trans "Uploading..." %}</h1>
                 </div>
                 <div class="modal-body">
                     <div class="progress">
                       <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                        Upload in progress...
+                        {% trans "Upload in progress..." %}
                       </div>
                     </div>
                 </div>
@@ -399,12 +498,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1>Processing...</h1>
+                    <h1>{% trans "Processing..." %}</h1>
                 </div>
                 <div class="modal-body">
                     <div class="progress">
                       <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                        Updating Thumbnail...
+                        {% trans "Updating Thumbnail..." %}
                       </div>
                     </div>
                 </div>
@@ -417,13 +516,13 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="exampleModalLabel">Message box</h4>
+            <h4 class="modal-title" id="exampleModalLabel">{% trans "Message box" %}</h4>
           </div>
           <div class="modal-body">
             ...
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "OK" %}</button>
           </div>
         </div>
       </div>

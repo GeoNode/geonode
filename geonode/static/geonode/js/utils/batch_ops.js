@@ -1,7 +1,7 @@
 /*globals define: true, requirejs: true */
 
 requirejs.config({
-    baseUrl: '/static/libs/js'
+    baseUrl: siteUrl + 'static/libs/js'
 });
 
 define(['jquery'],function($){
@@ -46,7 +46,6 @@ define(['jquery'],function($){
             batch_perms_submit: function() {
                 var form = $(this);
                 var action = form.attr("action");
-
                 var postdata = {
                 layers: [],
                 maps: [],

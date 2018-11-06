@@ -36,6 +36,7 @@ from django.conf.global_settings import DATETIME_INPUT_FORMATS
 from geonode import get_version
 from kombu import Queue, Exchange
 
+
 # GeoNode Version
 VERSION = get_version()
 
@@ -270,12 +271,6 @@ LOCALE_PATHS = os.getenv('LOCALE_PATHS', _DEFAULT_LOCALE_PATHS)
 # Location of url mappings
 ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'geonode.urls')
 
-# Login and logout urls override
-LOGIN_URL = os.getenv('LOGIN_URL', '/account/login/')
-LOGOUT_URL = os.getenv('LOGOUT_URL', '/account/logout/')
-
-LOGIN_REDIRECT_URL = '/'
-
 GEONODE_CORE_APPS = (
     # GeoNode internal apps
     'geonode.api',
@@ -291,6 +286,7 @@ GEONODE_INTERNAL_APPS = (
     # GeoNode internal apps
     'geonode.people',
     'geonode.client',
+    'geonode.themes',
     'geonode.proxy',
     'geonode.social',
     'geonode.groups',
@@ -508,6 +504,7 @@ TEMPLATES = [
                 # 'django.core.context_processors.request',
                 'geonode.context_processors.resource_urls',
                 'geonode.geoserver.context_processors.geoserver_urls',
+                'geonode.themes.context_processors.custom_theme'
             ],
             # Either remove APP_DIRS or remove the 'loaders' option.
             # 'loaders': [
@@ -705,7 +702,14 @@ HOSTNAME = _surl.hostname
 if not SITEURL.endswith('/'):
     SITEURL = '{}/'.format(SITEURL)
 
+# Login and logout urls override
+LOGIN_URL = os.getenv('LOGIN_URL', '{}account/login/'.format(SITEURL))
+LOGOUT_URL = os.getenv('LOGOUT_URL', '{}account/logout/'.format(SITEURL))
 
+ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
+ACCOUNT_LOGOUT_REDIRECT_URL =  os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
+
+# Backend
 DEFAULT_WORKSPACE = os.getenv('DEFAULT_WORKSPACE', 'geonode')
 CASCADE_WORKSPACE = os.getenv('CASCADE_WORKSPACE', 'geonode')
 
@@ -759,6 +763,7 @@ OGC_SERVER = {
         'PRINT_NG_ENABLED': True,
         'GEONODE_SECURITY_ENABLED': True,
         'GEOFENCE_SECURITY_ENABLED': GEOFENCE_SECURITY_ENABLED,
+        'GEOFENCE_URL': os.getenv('GEOFENCE_URL', 'internal:/'),
         'GEOGIG_ENABLED': False,
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
@@ -1230,6 +1235,14 @@ CORS_ORIGIN_WHITELIST = (
 )
 """
 
+# To enable the WorldMap based Client enable those
+"""
+GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.WorldMapHookSet"
+CORS_ORIGIN_WHITELIST = (
+    HOSTNAME
+)
+"""
+
 SERVICE_UPDATE_INTERVAL = 0
 
 SEARCH_FILTERS = {
@@ -1597,7 +1610,7 @@ INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 
 # Choose thumbnail generator -- this is the default generator
 THUMBNAIL_GENERATOR = "geonode.layers.utils.create_gs_thumbnail_geonode"
-
+THUMBNAIL_GENERATOR_DEFAULT_BG = r"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
 GEOTIFF_IO_ENABLED = strtobool(
     os.getenv('GEOTIFF_IO_ENABLED', 'False')

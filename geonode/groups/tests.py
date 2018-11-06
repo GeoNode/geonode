@@ -21,6 +21,7 @@
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import json
+import logging
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -35,6 +36,12 @@ from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.security.views import _perms_info_json
+
+logger = logging.getLogger(__name__)
+
+
+def _log(msg, *args):
+    logger.debug(msg, *args)
 
 
 class SmokeTest(GeoNodeBaseTestSupport):
@@ -428,6 +435,24 @@ class SmokeTest(GeoNodeBaseTestSupport):
         response = self.client.get("/groups/group/bar/activity/")
         self.assertEqual(200, response.status_code)
         self.assertContains(response,
+                            'Layers',
+                            count=3,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
+        self.assertContains(response,
+                            'Maps',
+                            count=5,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
+        self.assertContains(response,
+                            'Documents',
+                            count=3,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
+        self.assertContains(response,
                             '<a href="/layers/geonode:CA">CA</a>',
                             count=0,
                             status_code=200,
@@ -462,8 +487,9 @@ class SmokeTest(GeoNodeBaseTestSupport):
 
             response = self.client.get("/groups/group/bar/activity/")
             self.assertEqual(200, response.status_code)
+            _log(response)
             self.assertContains(response,
-                                '<a href="/layers/geonode:CA">CA</a>',
+                                '<a href="/layers/geonode:CA">geonode:CA</a>',
                                 count=2,
                                 status_code=200,
                                 msg_prefix='',

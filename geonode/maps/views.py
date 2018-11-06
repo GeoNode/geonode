@@ -81,7 +81,9 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
 
     # Use the http_client with one that knows the username
     # and password for GeoServer's management user.
-    from geonode.geoserver.helpers import http_client, _render_thumbnail
+    from geonode.geoserver.helpers import (http_client,
+                                           _render_thumbnail,
+                                           _prepare_thumbnail_body_from_opts)
 elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.helpers import ogc_server_settings
     from geonode.utils import http_client
@@ -430,6 +432,11 @@ def map_embed_widget(request, mapid,
                            'base.view_resourcebase',
                            _PERMISSION_MSG_VIEW)
     map_bbox = map_obj.bbox_string.split(',')
+
+    # Sanity Checks
+    for coord in map_bbox:
+        if not coord:
+            return
 
     map_layers = MapLayer.objects.filter(
         map_id=mapid).order_by('stack_order')
@@ -794,7 +801,8 @@ def add_layers_to_map_config(
                 if isinstance(o, decimal.Decimal):
                     o = (str(o) for o in [o])
                 _bbox.append(o)
-            return _bbox
+            # Must be in the form : [x0, x1, y0, y1
+            return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
 
         def sld_definition(style):
             from urllib import quote
@@ -903,9 +911,13 @@ def add_layers_to_map_config(
                 wms_capabilities = wms_capabilities_resp.getvalue()
                 if wms_capabilities:
                     import xml.etree.ElementTree as ET
+                    namespaces = {'wms': 'http://www.opengis.net/wms',
+                                  'xlink': 'http://www.w3.org/1999/xlink',
+                                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+
                     e = ET.fromstring(wms_capabilities)
                     for atype in e.findall(
-                            "./[Name='%s']/Extent[@name='time']" % (layername)):
+                            "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
                         dim_name = atype.get('name')
                         if dim_name:
                             dim_name = str(dim_name).lower()
@@ -1349,17 +1361,22 @@ def map_thumbnail(request, mapid):
     if request.method == 'POST':
         map_obj = _resolve_map(request, mapid)
         try:
-            image = _render_thumbnail(request.body)
+            image = None
+            try:
+                image = _prepare_thumbnail_body_from_opts(request.body,
+                                                          request=request)
+            except BaseException:
+                image = _render_thumbnail(request.body)
 
             if not image:
                 return
             filename = "map-%s-thumb.png" % map_obj.uuid
             map_obj.save_thumbnail(filename, image)
 
-            return HttpResponse('Thumbnail saved')
+            return HttpResponse(_('Thumbnail saved'))
         except BaseException:
             return HttpResponse(
-                content='error saving thumbnail',
+                content=_('error saving thumbnail'),
                 status=500,
                 content_type='text/plain'
             )

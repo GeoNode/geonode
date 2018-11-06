@@ -1,0 +1,200 @@
+{% extends "wm_extra/maps/mobile.html" %}
+{% load i18n %}
+{% block title %} {% trans "Map Viewer" %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "wm_extra/maps/mobile/ext_header.html" %}
+{% include "wm_extra/maps/mobile/app_header.html" %}
+{% include "wm_extra/maps/mobile/geo_mobile_header.html" %}
+{{ block.super }}
+{% if "gme-" in GOOGLE_API_KEY %}
+<script src="https://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
+{% else %}
+<script src="https://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
+{% endif %}
+
+
+<script type="text/javascript">
+var originalConfigureLayerNode =  GeoExt.WMSLegend.prototype.getLegendUrl;
+GeoExt.WMSLegend.prototype.getLegendUrl = function(layerName,layerNames) {
+    var rec = this.layerRecord;
+    var layer = rec.getLayer();
+    if (OpenLayers.Layer.WMS && layer instanceof OpenLayers.Layer.WMS && layer.getVisibility() === false) {
+        return "";
+    } else {
+        return originalConfigureLayerNode.apply(this, arguments);
+    }
+};
+
+var touchNav = new OpenLayers.Control.TouchNavigation({
+	id: "touchNavControl",
+    dragPanOptions: {
+        enableKinetic: false
+    }
+});
+
+/*
+ * Deactivate navigation control when FeatureEditor's draw and select controls
+ are active - conflicts with touch actions.
+ */
+gxp.plugins.TouchFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor, {
+	addActions: function() {
+		actions = gxp.plugins.FeatureEditor.prototype.addActions.apply(this, arguments);
+
+		this.drawControl.events.register("activate", this.drawControl, function(evt){
+			touchNav.deactivate();
+		});
+
+		this.drawControl.events.register("deactivate", this.drawControl,  function(evt){
+			touchNav.activate();
+		});
+
+
+
+		this.selectControl.events.register("activate", this.selectControl, function() {
+			touchNav.deactivate();
+		});
+		this.selectControl.events.register("deactivate", this.selectControl, function() {
+			touchNav.activate();
+		});
+
+		return actions;
+	}
+});
+
+/*
+ * Deactivate navigation control when feature editing is occurring.
+ */
+var featureEditStartEditing = gxp.FeatureEditPopup.prototype.startEditing;
+gxp.FeatureEditPopup.prototype.startEditing = function() {
+    touchNav.deactivate();
+    featureEditStartEditing.apply(this, arguments);
+}
+
+var featureEditStopEditing = gxp.FeatureEditPopup.prototype.stopEditing;
+gxp.FeatureEditPopup.prototype.stopEditing = function() {
+	featureEditStopEditing.apply(this, arguments);
+	touchNav.activate();
+}
+
+
+var app;
+Ext.onReady(function() {
+{% autoescape off %}
+
+/*
+ * Don't use default symbolizer; causes difficulty in draggoing vertices
+ */
+var featureManager = new gxp.plugins.FeatureManager({
+    ptype: "gxp_featuremanager",
+    id: "feature_manager",
+    paging: false,
+    autoSetLayer: true,
+    autoLoadFeatures: true,
+    listeners: {
+        'layerchange': function (mgr, layer, schema) {
+            app.checkLayerPermissions(layer);
+        }
+    },
+    actionTarget: "main.tbar",
+    toggleGroup: 'featureGroup',
+    symbolizer: {
+        "Point": {
+            fillColor: "#EF9E0F",
+            strokeColor: "#EF9E0F",
+            strokeWidth: 2,
+            fillOpacity: 1,
+            strokeOpacity: 1,
+            pointRadius: 5,
+            labelAlign: 'cm'
+        },
+        "Line": {
+            strokeWidth: 4,
+            strokeOpacity: 1,
+            strokeColor: "#ff9933"
+        },
+        "Polygon": {
+            strokeWidth: 2,
+            strokeOpacity: 1,
+            strokeColor: "#ff6633",
+            fillColor: "white",
+            fillOpacity: 0.3
+        }
+    }
+});
+
+
+var featureEditor = new gxp.plugins.TouchFeatureEditor({
+        id: "gn_layer_editor",
+        featureManager: "feature_manager",
+        autoLoadFeature: true,
+        actionTarget: "main.tbar",
+        toggleGroup: 'featureGroup'
+    });
+
+
+
+
+   var config = {
+        useCapabilities: false,
+        tools: [{
+            ptype: "gxp_geonodequerytool",
+            id: "worldmap_query_tool",
+            actionTarget:  {target: "main.tbar"},
+            outputConfig: {autoHeight:true, autoWidth: true,panIn: false},
+            featurePanel: 'queryPanel',
+            attributePanel: 'gridWinPanel',
+            toggleGroup: 'featureGroup'
+        },{
+                    ptype: "gxp_geolocator",
+                    maxZoom: 15,
+                    actionTarget: "main.tbar"
+        }{% if user.is_authenticated   %},
+        featureManager,
+        featureEditor{% endif %}],
+        proxy: "/proxy/?url=",
+        localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
+
+        /* The URL to a REST map configuration service.  This service
+         * provides listing and, with an authenticated user, saving of
+         * maps on the server for sharing and editing.
+         */
+        rest: "/maps/",
+        createTools: function() {
+        }
+    };
+    Ext.apply(config, {{ config }});
+
+
+
+    config.map.controls = [
+                           touchNav,
+                           new OpenLayers.Control.Zoom(),
+                           new OpenLayers.Control.Attribution()];
+
+    app = new GeoExplorer.ViewerMobile(config);
+{% endautoescape %}
+});
+</script>
+<div style="display:none" id="mobile_intro">
+{% blocktrans %}
+<h1>Mobile Map Tips</h1>
+<ul>
+<li>Click the <strong>Layers</strong> sidebar on the left to see a list of all the map's layers and legends</li>
+<li>Use the <strong>Identify</strong>  <img style="vertical-align:middle" src="{{ GEONODE_CLIENT_LOCATION }}theme/app/img/silk/information.png" />  tool to retrieve information on active layers at any point where you click on the map</li>
+<li>Use the <strong>Geolocate</strong>  <img style="vertical-align:middle" src="{{ GEONODE_CLIENT_LOCATION }}externals/gxp/theme/img/geolocate.png" />  tool to zoom to and display your location on the map</li>
+</ul>
+{% endblocktrans %}
+{% if user.is_authenticated   %}
+{% blocktrans %}
+<h1>Feature Creation/Editing</h1>
+<ul>
+<li>Click on a layer in the layer panel to select it for feature creation/editing.  You must have edit permission for the layer.</li>
+<li>The highlighted layer in the list is the target of edits when using the Edit feature   <img style="vertical-align:middle" src="{{ GEONODE_CLIENT_LOCATION }}theme/app/img/silk/map_edit.png" />    tool or the New Feature    <img style="vertical-align:middle" src="{{ GEONODE_CLIENT_LOCATION }}externals/gxp/theme/img/silk/pencil_add.png" />   tool.</li>
+<li>Map panning will be disabled when the 'Edit feature'  <img style="vertical-align:middle" src="{{ GEONODE_CLIENT_LOCATION }}theme/app/img/silk/map_edit.png" />   tool is enabled or when drawing a new feature   <img style="vertical-align:middle" src="{{ GEONODE_CLIENT_LOCATION }}externals/gxp/theme/img/silk/pencil_add.png" />  .  Deactivate the tool to re-enable panning.
+</ul>
+{% endblocktrans %}
+{% endif  %}
+</div>
+
+{% endblock %}

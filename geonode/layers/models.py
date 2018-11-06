@@ -29,7 +29,6 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
-
 from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
 from geonode.people.utils import get_valid_user
 from agon_ratings.models import OverallRating
@@ -81,8 +80,8 @@ class Style(models.Model, PermissionLevelMixin):
     sld_url = models.CharField(_('sld url'), null=True, max_length=1000)
     workspace = models.CharField(max_length=255, null=True, blank=True)
 
-    def __str__(self):
-        return "%s" % self.name.encode('utf-8')
+    def __unicode__(self):
+        return u"%s" % self.name
 
     def absolute_url(self):
         if self.sld_url:
@@ -269,8 +268,8 @@ class Layer(ResourceBase):
             }
         return cfg
 
-    def __str__(self):
-        return self.alternate
+    def __unicode__(self):
+        return u"{0}".format(self.alternate)
         # if self.alternate is not None:
         #     return "%s Layer" % self.service_typename.encode('utf-8')
         # elif self.name is not None:
@@ -349,8 +348,12 @@ class UploadSession(models.Model):
     def successful(self):
         return self.processed and self.errors is None
 
-    def __str__(self):
-        return u'%s' % self.resource or self.date
+    def __unicode__(self):
+        try:
+            _s = '[Upload session-id: {}] - {}'.format(self.id, self.resource.title)
+        except BaseException:
+            _s = '[Upload session-id: {}]'.format(self.id)
+        return u"{0}".format(_s)
 
 
 class LayerFile(models.Model):
@@ -490,9 +493,9 @@ class Attribute(models.Model):
 
     objects = AttributeManager()
 
-    def __str__(self):
+    def __unicode__(self):
         return "%s" % self.attribute_label.encode(
-            "utf-8") if self.attribute_label else self.attribute.encode("utf-8")
+            "utf-8", "replace") if self.attribute_label else self.attribute.encode("utf-8", "replace")
 
     def unique_values_as_list(self):
         return self.unique_values.split(',')

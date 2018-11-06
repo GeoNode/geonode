@@ -243,14 +243,17 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     instance.workspace = gs_resource.store.workspace.name
     instance.store = gs_resource.store.name
 
-    bbox = gs_resource.native_bbox
+    try:
+        bbox = gs_resource.native_bbox
 
-    # Set bounding box values
-    instance.bbox_x0 = bbox[0]
-    instance.bbox_x1 = bbox[1]
-    instance.bbox_y0 = bbox[2]
-    instance.bbox_y1 = bbox[3]
-    instance.srid = bbox[4]
+        # Set bounding box values
+        instance.bbox_x0 = bbox[0]
+        instance.bbox_x1 = bbox[1]
+        instance.bbox_y0 = bbox[2]
+        instance.bbox_y1 = bbox[3]
+        instance.srid = bbox[4]
+    except BaseException:
+        pass
 
     if instance.srid:
         instance.srid_url = "http://www.spatialreference.org/ref/" + \
@@ -271,14 +274,17 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                 gs_catalog.save(gs_resource)
 
     if not settings.FREETEXT_KEYWORDS_READONLY:
-        if len(instance.keyword_list()) == 0 and gs_resource.keywords:
-            for keyword in gs_resource.keywords:
-                if keyword not in instance.keyword_list():
-                    instance.keywords.add(keyword)
+        try:
+            if len(instance.keyword_list()) == 0 and gs_resource.keywords:
+                for keyword in gs_resource.keywords:
+                    if keyword not in instance.keyword_list():
+                        instance.keywords.add(keyword)
+        except BaseException:
+            pass
 
     if any(instance.keyword_list()):
         keywords = instance.keyword_list()
-        gs_resource.keywords = list(set(keywords))
+        gs_resource.keywords = [kw.decode("utf-8", "replace") for kw in list(set(keywords))]
 
         # gs_resource should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
@@ -321,7 +327,10 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # store the resource to avoid another geoserver call in the post_save
     instance.gs_resource = gs_resource
 
-    bbox = gs_resource.native_bbox
+    try:
+        bbox = gs_resource.native_bbox
+    except BaseException:
+        bbox = instance.bbox
     dx = float(bbox[1]) - float(bbox[0])
     dy = float(bbox[3]) - float(bbox[2])
 
@@ -337,7 +346,10 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                          instance.bbox_x1, instance.bbox_y1])
 
     # Create Raw Data download link
-    path = gs_resource.dom.findall('nativeName')
+    try:
+        path = gs_resource.dom.findall('nativeName')
+    except BaseException:
+        path = instance.alternate
     download_url = urljoin(settings.SITEURL,
                            reverse('download', args=[instance.id]))
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,
@@ -397,7 +409,10 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                 url=ogc_server_settings.public_url,
                 repo_name=geogig_repo_name)
 
-            path = gs_resource.dom.findall('nativeName')
+            try:
+                path = gs_resource.dom.findall('nativeName')
+            except BaseException:
+                path = instance.alternate
 
             if path:
                 path = 'path={path}'.format(path=path[0].text)

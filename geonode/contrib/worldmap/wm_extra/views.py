@@ -1,3 +1,4 @@
+import ast
 import json
 import math
 import re
@@ -222,7 +223,6 @@ def map_view_wm(request, mapid, snapshot=None, layer_name=None, template='wm_ext
         config = map_obj.viewer_json(request)
     else:
         config = snapshot_config(snapshot, map_obj, request)
-
     if layer_name:
         config = add_layers_to_map_config(request, map_obj, (layer_name, ), False)
 
@@ -235,6 +235,54 @@ def map_view_wm(request, mapid, snapshot=None, layer_name=None, template='wm_ext
             settings,
             'LAYER_PREVIEW_LIBRARY',
             '')
+    })
+
+
+def map_view_wm_mobile(request, mapid=None, snapshot=None):
+    """
+    The view that returns the map composer opened to
+    the mobile version for the map with the given map ID.
+    """
+    map_obj = _resolve_map(
+        request,
+        mapid,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
+
+    # TODO check if it is a new map
+    # if mapid is None:
+    #    return newmap(request);
+
+    # TODO check if it is a mapid or suffix
+    # if mapid.isdigit():
+    #    map_obj = Map.objects.get(pk=mapid)
+    # else:
+    #    map_obj = Map.objects.get(urlsuffix=mapid)
+
+    if snapshot is None:
+        config = map_obj.viewer_json(request)
+    else:
+        config = snapshot_config(snapshot, map_obj, request)
+
+    config = gxp2wm(config, map_obj)
+
+    first_visit_mobile = True
+    if request.session.get('visit_mobile' + str(map_obj.id), False):
+        first_visit_mobile = False
+    else:
+        request.session['visit_mobile' + str(map_obj.id)] = True
+    config['first_visit_mobile'] = first_visit_mobile
+
+    template = 'wm_extra/maps/mobilemap.html'
+
+    return render(request, template, {
+        'config': json.dumps(config),
+        # 'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        # 'GEONETWORK_BASE_URL' : settings.GEONETWORK_BASE_URL,
+        # 'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        # 'DB_DATASTORE' : settings.DB_DATASTORE,
+        'maptitle': map_obj.title,
+        # 'urlsuffix': get_suffix_if_custom(map_obj),
     })
 
 
@@ -342,7 +390,6 @@ def new_map_json_wm(request):
                 content_type="text/plain",
                 status=401
             )
-
         map_obj = Map(owner=request.user, zoom=0,
                       center_x=0, center_y=0)
         map_obj.save()
@@ -461,6 +508,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
             else llbbox_to_mercator([float(coord) for coord in bbox])
 
+        access_token = request.session['access_token'] if request and 'access_token' in request.session else None
         if layer.storeType == "remoteStore":
             service = layer.service
             # Probably not a good idea to send the access token to every remote service.
@@ -470,7 +518,6 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
                 ogc_server_settings.PUBLIC_LOCATION).netloc
             service_url = urlparse.urlsplit(service.base_url).netloc
 
-            access_token = request.session['access_token'] if request and 'access_token' in request.session else None
             if access_token and ogc_server_url == service_url and 'access_token' not in service.base_url:
                 url = service.base_url + '?access_token=' + access_token
             else:
@@ -628,6 +675,9 @@ def gxp2wm(config, map_obj=None):
         config = json.loads(config)
         config_is_string = True
 
+    if map_obj:
+        config['id'] = map_obj.id
+
     topics = TopicCategory.objects.all()
     topicArray = []
     for topic in topics:
@@ -663,78 +713,99 @@ def gxp2wm(config, map_obj=None):
 
     # let's detect WM or HH layers and alter configuration as needed
     bbox = [-180, -90, 180, 90]
+    valid_layers = []
     for layer_config in config['map']['layers']:
+        is_valid = True
         is_wm = False
         is_hh = False
-        source_id = layer_config['source']
-        source = config['sources'][source_id]
-        if 'url' in source:
-            source_url = source['url']
-            if settings.GEOSERVER_PUBLIC_LOCATION in source_url:
-                if 'name' in layer_config:
-                    is_wm = True
-            if 'registry/hypermap' in source_url:
-                is_hh = True
-        group = 'General'
-        layer_config['tiled'] = True
-        if is_wm:
-            source = layer_config['source']
-            config['sources'][source]['ptype'] = 'gxp_gnsource'
-            config['sources'][source]['url'] = config['sources'][source]['url'].replace('ows', 'wms')
-            layer_config['local'] = True
-            layer_config['queryable'] = True
-            alternate = layer_config['name']
-            layer = Layer.objects.get(alternate=alternate)
-            layer_config['attributes'] = (get_layer_attributes(layer))
-            # layer_config['url'] = layer.ows_url
-            layer_config['url'] = layer.ows_url.replace('ows', 'wms')
-            if 'styles' not in layer_config:
-                if layer.default_style:
-                    layer_config['styles'] = layer.default_style.name
+        if 'source' not in layer_config:
+            is_valid = False
+            print 'Skipping this layer as it is missing source... %s' % layer_config
+        else:
+            source_id = layer_config['source']
+            source = config['sources'][source_id]
+            if 'url' in source:
+                source_url = source['url']
+                # hack
+                source_url = source_url.replace('https', 'http')
+                if settings.GEOSERVER_PUBLIC_LOCATION in source_url:
+                    config['sources'][source_id]['url'] = source_url
+                    if 'name' in layer_config:
+                        is_wm = True
+                if 'registry/hypermap' in source_url:
+                    is_hh = True
+            group = 'General'
+            layer_config['tiled'] = True
+            if is_wm:
+                source = layer_config['source']
+                config['sources'][source]['ptype'] = 'gxp_gnsource'
+                config['sources'][source]['url'] = config['sources'][source]['url'].replace('ows', 'wms')
+                layer_config['local'] = True
+                layer_config['queryable'] = True
+                alternate = layer_config['name']
+                layer = None
+                try:
+                    layer = Layer.objects.get(alternate=alternate)
+                except Layer.DoesNotExist:
+                    is_valid = False
+                    print 'Skipping this layer as it is not existing in GeoNode... %s' % layer_config
+                if layer:
+                    layer_config['attributes'] = (get_layer_attributes(layer))
+                    layer_config['url'] = layer.ows_url.replace('ows', 'wms')
+                    if 'styles' not in layer_config:
+                        if layer.default_style:
+                            layer_config['styles'] = [layer.default_style.name, ]
+                        else:
+                            if layer.styles.all().count() > 0:
+                                layer_config['styles'] = [layer.styles.all()[0].name, ]
+                    else:
+                        if type(layer_config['styles']) == unicode:
+                            try:
+                                layer_config['styles'] = ast.literal_eval(layer_config['styles'])
+                            except: # noqa
+                                layer_config['styles'] = [layer_config['styles'], ]
+                    if 'styles' not in layer_config:
+                        is_valid = False
+                        print 'Skipping this layer as it has not a style... %s' % layer_config
+                    if layer.category:
+                        group = layer.category.gn_description
+                    layer_config["srs"] = getattr(
+                        settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
+                    bbox = layer.bbox[:-1]
+                    # WorldMap GXP use a different bbox representation than GeoNode
+                    bbox = [bbox[0], bbox[2], bbox[1], bbox[3]]
+                    layer_config["bbox"] = [float(coord) for coord in bbox] if layer_config["srs"] != 'EPSG:900913' \
+                        else llbbox_to_mercator([float(coord) for coord in bbox])
+            if is_hh:
+                layer_config['local'] = False
+                layer_config['styles'] = ''
+                hh_url = (
+                            '%smap/wmts/%s/default_grid/${z}/${x}/${y}.png' %
+                            (layer_config['detail_url'], layer_config['name'])
+                )
+                layer_config['url'] = hh_url
+            if is_wm or is_hh:
+                # bbox
+                layer_config['llbbox'] = [float(coord) for coord in bbox]
+                # group
+                if 'group' not in layer_config:
+                    layer_config['group'] = group
                 else:
-                    layer_config['styles'] = layer.styles.all()[0].name
-            if layer.category:
-                group = layer.category.gn_description
-            layer_config["srs"] = getattr(
-                settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
-            bbox = layer.bbox[:-1]
-            # WorldMap GXP use a different bbox representation than GeoNode
-            bbox = [bbox[0], bbox[2], bbox[1], bbox[3]]
-            layer_config["bbox"] = [float(coord) for coord in bbox] if layer_config["srs"] != 'EPSG:900913' \
-                else llbbox_to_mercator([float(coord) for coord in bbox])
-        if is_hh:
-            layer_config['local'] = False
-            layer_config['styles'] = ''
-            hh_url = (
-                        '%smap/wmts/%s/default_grid/${z}/${x}/${y}.png' %
-                        (layer_config['detail_url'], layer_config['name'])
-            )
-            layer_config['url'] = hh_url
-        if is_wm or is_hh:
-            # bbox
-            layer_config['llbbox'] = [float(coord) for coord in bbox]
-            # group
-            if 'group' not in layer_config:
-                layer_config['group'] = group
-            else:
-                group = layer_config['group']
-            if group not in groups:
-                groups.add(group)
-            # let's make sure the group exists in topicArray (it could be a custom group create from user in GXP)
-            is_in_topicarray = False
-            for cat in topicArray:
-                if group == cat[1]:
-                    is_in_topicarray = True
-            if not is_in_topicarray:
-                topicArray.append([group, group])
+                    group = layer_config['group']
+                if group not in groups:
+                    groups.add(group)
+                # let's make sure the group exists in topicArray (it could be a custom group create from user in GXP)
+                is_in_topicarray = False
+                for cat in topicArray:
+                    if group == cat[1]:
+                        is_in_topicarray = True
+                if not is_in_topicarray:
+                    topicArray.append([group, group])
+        if is_valid:
+            valid_layers.append(layer_config)
 
-            # ml = layers.filter(name=layer_config['name'])
-            #     layer_config['url'] = ml[0].ows_url
-
+    config['map']['layers'] = valid_layers
     config['map']['groups'] = []
-    for group in groups:
-        if group not in json.dumps(config['map']['groups']):
-            config['map']['groups'].append({"expanded": "true", "group": group})
 
     # about and groups from existing map
     if map_obj:
@@ -746,11 +817,15 @@ def gxp2wm(config, map_obj=None):
         # TODO check if this works with different languages
         config['about']['introtext'] = unicode(settings.DEFAULT_MAP_ABSTRACT)
 
+    if not [d for d in config['map']['groups'] if d['group'] == group]:
+        config['map']['groups'].append({"expanded": "true", "group": group})
+
     # make sure if gnsource is in sources
     add_gnsource = True
     for source in config['sources']:
-        if config['sources'][source]['ptype'] == 'gxp_gnsource':
-            add_gnsource = False
+        if 'ptype' in config['sources'][source]:
+            if config['sources'][source]['ptype'] == 'gxp_gnsource':
+                add_gnsource = False
     if add_gnsource:
         config['sources']['wm'] = {
                                     'url': settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
@@ -844,9 +919,9 @@ def snapshot_config(snapshot, map_obj, request):
         if maplayer.name is not None and maplayer.source_params.find("gxp_gnsource") > -1:
             # Get parameters from GeoNode instead of WMS GetCapabilities
             try:
-                gnLayer = Layer.objects.get(typename=maplayer.name)
-                if gnLayer.srs:
-                    cfg['srs'] = gnLayer.srs
+                gnLayer = Layer.objects.get(alternate=maplayer.name)
+                if gnLayer.srid:
+                    cfg['srs'] = gnLayer.srid
                 if gnLayer.bbox:
                     cfg['bbox'] = json.loads(gnLayer.bbox)
                 if gnLayer.llbbox:
@@ -916,11 +991,13 @@ def snapshot_config(snapshot, map_obj, request):
         for ordering, layer in enumerate(layers):
             maplayers.append(
                 layer_from_viewer_config(
+                    map_obj.id,
                     MapLayer,
                     layer,
                     config["sources"][
                         layer["source"]],
-                    ordering))
+                    ordering,
+                    False))
 #             map_obj.map.layer_set.from_viewer_config(
 # map_obj, layer, config["sources"][layer["source"]], ordering))
         config['map']['layers'] = [
@@ -930,7 +1007,6 @@ def snapshot_config(snapshot, map_obj, request):
                 request) for l in maplayers]
     else:
         config = map_obj.viewer_json(request)
-
     return config
 
 

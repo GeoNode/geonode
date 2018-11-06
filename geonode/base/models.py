@@ -158,7 +158,7 @@ class SpatialRepresentationType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.gn_description
+        return u"{0}".format(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -211,7 +211,7 @@ class Region(MPTTModel):
         default='EPSG:4326')
 
     def __unicode__(self):
-        return self.name
+        return u"{0}".format(self.name)
 
     @property
     def bbox(self):
@@ -260,7 +260,7 @@ class RestrictionCodeType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.gn_description
+        return u"{0}".format(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -289,7 +289,7 @@ class License(models.Model):
     license_text = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.name
+        return u"{0}".format(self.name)
 
     @property
     def name_long(self):
@@ -763,7 +763,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     rating = models.IntegerField(default=0, null=True, blank=True)
 
     def __unicode__(self):
-        return self.title
+        return u"{0}".format(self.title)
 
     def get_upload_session(self):
         raise NotImplementedError()
@@ -799,7 +799,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def group_name(self):
         if self.group:
-            return str(self.group)
+            return str(self.group).encode("utf-8", "replace")
         return None
 
     @property
@@ -902,13 +902,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return '{}%'.format(len(filled_fields) * 100 / len(required_fields))
 
     def keyword_list(self):
-        return [kw.name for kw in self.keywords.all()]
+        return [kw.name.encode("utf-8", "replace") for kw in self.keywords.all()]
 
     def keyword_slug_list(self):
-        return [kw.slug for kw in self.keywords.all()]
+        return [kw.slug.encode("utf-8", "replace") for kw in self.keywords.all()]
 
     def region_name_list(self):
-        return [region.name for region in self.regions.all()]
+        return [region.name.encode("utf-8", "replace") for region in self.regions.all()]
 
     def spatial_representation_type_string(self):
         if hasattr(self.spatial_representation_type, 'identifier'):
@@ -969,6 +969,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.bbox_x1 = lon + distance_x_degrees
         self.bbox_y0 = lat - distance_y_degrees
         self.bbox_y1 = lat + distance_y_degrees
+        self.srid = 'EPSG:4326'
 
     def set_bounds_from_bbox(self, bbox, srid):
         """
@@ -993,24 +994,28 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.bbox_y1 = bbox[3]
         self.srid = srid
 
-        minx, maxx, miny, maxy = [float(c) for c in bbox]
-        x = (minx + maxx) / 2
-        y = (miny + maxy) / 2
-        (center_x, center_y) = forward_mercator((x, y))
+        if srid == "EPSG:4326":
+            minx, maxx, miny, maxy = [float(c) for c in bbox]
+            x = (minx + maxx) / 2
+            y = (miny + maxy) / 2
+            (center_x, center_y) = forward_mercator((x, y))
 
-        xdiff = maxx - minx
-        ydiff = maxy - miny
+            xdiff = maxx - minx
+            ydiff = maxy - miny
 
-        zoom = 0
+            zoom = 0
 
-        if xdiff > 0 and ydiff > 0:
-            width_zoom = math.log(360 / xdiff, 2)
-            height_zoom = math.log(360 / ydiff, 2)
-            zoom = math.ceil(min(width_zoom, height_zoom))
+            if xdiff > 0 and ydiff > 0:
+                width_zoom = math.log(360 / xdiff, 2)
+                height_zoom = math.log(360 / ydiff, 2)
+                zoom = math.ceil(min(width_zoom, height_zoom))
 
-        self.zoom = zoom
-        self.center_x = center_x
-        self.center_y = center_y
+            try:
+                self.zoom = zoom
+                self.center_x = center_x
+                self.center_y = center_y
+            except BaseException:
+                pass
 
     def download_links(self):
         """assemble download links for pycsw"""
@@ -1027,11 +1032,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             elif url.link_type in ('OGC:WMS', 'OGC:WFS', 'OGC:WCS'):
                 links.append((self.title, url.name, url.link_type, url.url))
             else:
+                _link_type = 'WWW:DOWNLOAD-1.0-http--download'
+                if self.storeType == 'remoteStore':
+                    _link_type = 'WWW:DOWNLOAD-%s' % self.remote_service.type
                 description = '%s (%s Format)' % (self.title, url.name)
                 links.append(
                     (self.title,
                      description,
-                     'WWW:DOWNLOAD-1.0-http--download',
+                     _link_type,
                      url.url))
         return links
 
@@ -1305,8 +1313,8 @@ class Link(models.Model):
 
     objects = LinkManager()
 
-    def __str__(self):
-        return '%s link' % self.link_type
+    def __unicode__(self):
+        return u"{0} link".format(self.link_type)
 
 
 def resourcebase_post_save(instance, *args, **kwargs):

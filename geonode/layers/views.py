@@ -27,7 +27,7 @@ import traceback
 import uuid
 import decimal
 import re
-
+import cPickle as pickle
 from django.db.models import Q
 from celery.exceptions import TimeoutError
 
@@ -91,7 +91,8 @@ from geonode.geoserver.helpers import (gs_catalog,
 from .tasks import delete_layer
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    from geonode.geoserver.helpers import _render_thumbnail
+    from geonode.geoserver.helpers import (_render_thumbnail,
+                                           _prepare_thumbnail_body_from_opts)
 if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.models import QGISServerLayer
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
@@ -211,7 +212,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 else:
                     saved_layer = Layer.objects.get(alternate=title)
                     if not saved_layer:
-                        msg = 'Failed to process.  Could not find matching layer.'
+                        msg = 'Failed to process. Could not find matching layer.'
                         raise Exception(msg)
                     sld = open(base_file).read()
                     set_layer_style(saved_layer, title, base_file, sld)
@@ -238,7 +239,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     user=request.user).order_by('-date')
                 if latest_uploads.count() > 0:
                     upload_session = latest_uploads[0]
-                    upload_session.error = str(error)
+                    upload_session.error = pickle.dumps(error).decode("utf-8", "replace")
                     upload_session.traceback = traceback.format_exc(tb)
                     upload_session.context = log_snippet(CONTEXT_LOG_FILE)
                     upload_session.save()
@@ -285,6 +286,16 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 layer_name = saved_layer.alternate if hasattr(
                     saved_layer, 'alternate') else name
                 request.add_resource('layer', layer_name)
+        _keys = ['info', 'errors']
+        for _k in _keys:
+            if _k in out:
+                if isinstance(out[_k], unicode) or isinstance(
+                        out[_k], str):
+                        out[_k] = out[_k].decode(saved_layer.charset).encode("utf-8")
+                elif isinstance(out[_k], dict):
+                    for key, value in out[_k].iteritems():
+                        out[_k][key] = out[_k][key].decode(saved_layer.charset).encode("utf-8")
+                        out[_k][key.decode(saved_layer.charset).encode("utf-8")] = out[_k].pop(key)
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',
@@ -316,7 +327,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             if isinstance(o, decimal.Decimal):
                 o = (str(o) for o in [o])
             _bbox.append(o)
-        return _bbox
+        # Must be in the form : [x0, x1, y0, y1
+        return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
 
     def sld_definition(style):
         from urllib import quote
@@ -425,9 +437,13 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             wms_capabilities = wms_capabilities_resp.getvalue()
             if wms_capabilities:
                 import xml.etree.ElementTree as ET
+                namespaces = {'wms': 'http://www.opengis.net/wms',
+                              'xlink': 'http://www.w3.org/1999/xlink',
+                              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+
                 e = ET.fromstring(wms_capabilities)
                 for atype in e.findall(
-                        "./[Name='%s']/Extent[@name='time']" % (layername)):
+                        "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
                     dim_name = atype.get('name')
                     if dim_name:
                         dim_name = str(dim_name).lower()
@@ -534,9 +550,13 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             wms_capabilities = wms_capabilities_resp.getvalue()
             if wms_capabilities:
                 import xml.etree.ElementTree as ET
+                namespaces = {'wms': 'http://www.opengis.net/wms',
+                              'xlink': 'http://www.w3.org/1999/xlink',
+                              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+
                 e = ET.fromstring(wms_capabilities)
                 for atype in e.findall(
-                        "./[Name='%s']/Extent[@name='time']" % (layername)):
+                        "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
                     dim_name = atype.get('name')
                     if dim_name:
                         dim_name = str(dim_name).lower()
@@ -1383,7 +1403,12 @@ def layer_thumbnail(request, layername):
                     request.body)['image'].split(';base64,')
                 image = base64.b64decode(image)
             else:
-                image = _render_thumbnail(request.body)
+                image = None
+                try:
+                    image = _prepare_thumbnail_body_from_opts(request.body,
+                                                              request=request)
+                except BaseException:
+                    image = _render_thumbnail(request.body)
 
             if not image:
                 return

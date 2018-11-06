@@ -51,8 +51,16 @@ if not SITEURL.endswith('/'):
 
 ALLOWED_HOSTS = [HOSTNAME, 'localhost']
 
-# TIME_ZONE = 'Europe/Paris'
+TIME_ZONE = 'UTC'
 
+# Login and logout urls override
+LOGIN_URL = os.getenv('LOGIN_URL', '{}account/login/'.format(SITEURL))
+LOGOUT_URL = os.getenv('LOGOUT_URL', '{}account/logout/'.format(SITEURL))
+
+ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
+ACCOUNT_LOGOUT_REDIRECT_URL =  os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
+
+# Backend
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -463,13 +471,6 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-        'celery': {
-            'level': 'ERROR',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'celery.log',
-            'formatter': 'simple',
-            'maxBytes': 1024 * 1024 * 10,  # 10 mb
-        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
@@ -490,7 +491,7 @@ LOGGING = {
         "pycsw": {
             "handlers": ["console"], "level": "INFO", },
         "celery": {
-            'handlers': ['celery', 'console'], 'level': 'ERROR', },
+            'handlers': ["console"], 'level': 'ERROR', },
     },
 }
 
@@ -532,7 +533,8 @@ if UNOCONV_ENABLE:
     UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
 
 # Advanced Security Workflow Settings
-ACCOUNT_APPROVAL_REQUIRED = False
+ACCOUNT_OPEN_SIGNUP = True
+ACCOUNT_APPROVAL_REQUIRED = True
 CLIENT_RESULTS_LIMIT = 20
 API_LIMIT_PER_PAGE = 1000
 FREETEXT_KEYWORDS_READONLY = False
