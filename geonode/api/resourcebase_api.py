@@ -575,9 +575,10 @@ class CommonModelApi(ModelResource):
         """
         Format the objects for output in a response.
         """
-        if 'has_time' in self.VALUES:
-            idx = self.VALUES.index('has_time')
-            del self.VALUES[idx]
+        for key in ('site_url', 'has_time'):
+            if key in self.VALUES:
+                idx = self.VALUES.index(key)
+                del self.VALUES[idx]
         objects_json = objects.values(*self.VALUES)
 
         # hack needed because dehydrate does not seem to work in CommonModelApi
