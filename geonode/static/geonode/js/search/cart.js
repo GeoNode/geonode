@@ -96,7 +96,9 @@
                 try {
                   var obj = JSON.parse(geonodeCart[key]);
                   obj['$$hashKey'] = "object:" + index;
-                  cartSession.push(obj);
+                  if('alternate' in obj) {
+                      cartSession.push(obj);
+                  }
                 } catch(err) {
                   console.log("Cart Session Issue: " + err.message);
                 }
