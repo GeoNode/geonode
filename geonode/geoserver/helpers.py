@@ -2009,6 +2009,6 @@ def set_time_dimension(cat, name, workspace, time_presentation, time_presentatio
 
 # main entry point to create a thumbnail - will use implementation
 # defined in settings.THUMBNAIL_GENERATOR (see settings.py)
-def create_gs_thumbnail(instance, overwrite=False):
+def create_gs_thumbnail(instance, overwrite=False, check_bbox=False):
     implementation = import_string(settings.THUMBNAIL_GENERATOR)
-    return implementation(instance, overwrite)
+    return implementation(instance, overwrite, check_bbox)
