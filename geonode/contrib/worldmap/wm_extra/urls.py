@@ -5,7 +5,7 @@ from geonode.maps.views import snapshot_create
 
 from .views import (ajax_snapshot_history, layer_searchable_fields,
                     ajax_layer_update, ajax_layer_edit_check,
-                    ajax_layer_edit_style_check, upload_layer,
+                    ajax_layer_edit_style_check, ajax_layer_download_check, upload_layer,
                     ajax_increment_layer_stats, add_layer_wm,
                     new_map_wm, new_map_json_wm, map_view_wm, map_json_wm,
                     map_detail_wm, map_view_wm_mobile, add_endpoint, printmap, )
@@ -64,6 +64,10 @@ urlpatterns = [
         r'^data/(?P<layername>[^/]*)/ajax-edit-style-check/?$',
         ajax_layer_edit_style_check,
         name='ajax_layer_edit_style_check'),
+    url(
+        r'^data/(?P<layername>[^/]*)/ajax-download-check/?$',
+        ajax_layer_download_check,
+        name='ajax_layer_download_check'),
     url(
         r'^data/(?P<layername>[^/]*)/ajax_layer_update/?$',
         ajax_layer_update,

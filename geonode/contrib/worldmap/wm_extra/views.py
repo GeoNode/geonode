@@ -146,6 +146,24 @@ def ajax_layer_edit_style_check(request, layername):
     )
 
 
+def ajax_layer_download_check(request, layername):
+    """
+    Check if the the layer is downloadable.
+    """
+
+    can_download = False
+    layer = get_object_or_404(Layer, typename=layername)
+    if request.user.is_authenticated():
+        if layer.owner == request.user:
+            can_download = True
+        else:
+            can_download = request.user.has_perm('download_resourcebase', layer.resourcebase_ptr)
+
+    return HttpResponse(
+        str(can_download).lower()
+    )
+
+
 @login_required
 def ajax_layer_update(request, layername):
     """
@@ -843,7 +861,7 @@ def get_layer_attributes(layer):
     Return a dictionary of attributes for a layer.
     """
     attribute_fields = []
-    attributes = layer.attribute_set.filter(visible=True).order_by('display_order')
+    attributes = layer.attribute_set.order_by('display_order')
     for la in attributes:
         searchable = False
         if hasattr(la, 'extlayerattribute'):
