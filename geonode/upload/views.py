@@ -506,8 +506,6 @@ def time_step_view(request, upload_session):
     upload_session.import_session = import_session.reload()
 
     if start_attribute_and_type:
-        upload_session.completed_step = 'check'
-
         def tx(type_name):
             # return None if type_name is None or type_name == 'Date' \
             return None if type_name is None \
@@ -525,9 +523,8 @@ def time_step_view(request, upload_session):
             precision_value=cleaned['precision_value'],
             precision_step=cleaned['precision_step'],
         )
-    else:
-        upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
 
+    upload_session.completed_step = 'check'
     return next_step_response(request, upload_session)
 
 
