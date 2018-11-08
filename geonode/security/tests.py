@@ -1099,7 +1099,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertIsNotNone(test_perm_layer.bbox)
             self.assertIsNotNone(test_perm_layer.srid)
             self.assertIsNotNone(test_perm_layer.link_set)
-            self.assertEquals(len(test_perm_layer.link_set.all()), 7)
+            self.assertEquals(len(test_perm_layer.link_set.all()), 9)
 
             # Layer Manipulation
             from geonode.geoserver.upload import geoserver_upload
