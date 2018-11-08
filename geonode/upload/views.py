@@ -414,7 +414,7 @@ def check_step_view(request, upload_session):
                     layer_eligible_for_time_dimension(request,
                                                       import_session.tasks[0].layer, upload_session=upload_session)
                 if has_time_dim:
-                    upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
+                    upload_session.completed_step = 'check'
                 else:
                     # This command skip completely 'time' configuration
                     upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
@@ -465,6 +465,7 @@ def time_step_view(request, upload_session):
                     'layer_attributes': layer_values[0].keys(),
                     'async_upload': is_async_step(upload_session)
                 }
+                upload_session.completed_step = 'check'
                 return render(request, 'upload/layer_upload_time.html', context=context)
             else:
                 upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
