@@ -414,7 +414,7 @@ def check_step_view(request, upload_session):
                     layer_eligible_for_time_dimension(request,
                                                       import_session.tasks[0].layer, upload_session=upload_session)
                 if has_time_dim:
-                    upload_session.completed_step = 'check'
+                    upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
                 else:
                     # This command skip completely 'time' configuration
                     upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
