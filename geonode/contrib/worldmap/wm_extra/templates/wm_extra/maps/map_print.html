@@ -39,7 +39,7 @@ Ext.onReady(function() {
             },
             proxy: "/proxy/?url=",
             useToolbar: false,
-            siteUrl: "{{ SITE_URL }}",
+            siteUrl: "{{ SITE_URL }}".replace(/\/?$/, '/'),
             rest: "/maps/",
             // tell the map viewer where and how to be rendered
             portalConfig: {
