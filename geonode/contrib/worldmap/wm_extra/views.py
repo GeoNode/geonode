@@ -861,7 +861,7 @@ def get_layer_attributes(layer):
     Return a dictionary of attributes for a layer.
     """
     attribute_fields = []
-    attributes = layer.attribute_set.filter(visible=True).order_by('display_order')
+    attributes = layer.attribute_set.order_by('display_order')
     for la in attributes:
         searchable = False
         if hasattr(la, 'extlayerattribute'):
