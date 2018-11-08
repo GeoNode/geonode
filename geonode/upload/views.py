@@ -472,7 +472,7 @@ def time_step_view(request, upload_session):
                 return next_step_response(request, upload_session)
         else:
             # TODO: Error
-            upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
+            upload_session.completed_step = 'check'
             return next_step_response(request, upload_session)
     elif request.method != 'POST':
         raise Exception()
