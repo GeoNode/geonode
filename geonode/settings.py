@@ -390,6 +390,7 @@ INSTALLED_APPS = (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'bootstrap_toolkit',
 
     # Django REST Framework
     'rest_framework',
@@ -1117,14 +1118,6 @@ LEAFLET_CONFIG = {
         # http://leaflet-extras.github.io/leaflet-providers/preview/
 
         # Stamen toner lite.
-        ('Watercolor',
-         'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
-         'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
-         &mdash; Map data &copy; \
-         <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-         <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
-         CC-BY-SA</a>'),
         ('Toner Lite',
          'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
          'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
@@ -1133,6 +1126,15 @@ LEAFLET_CONFIG = {
          <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
          <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
          CC-BY-SA</a>'),
+        ('Watercolor',
+         'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
+         'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+         &mdash; Map data &copy; \
+         <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+         <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+         CC-BY-SA</a>'),
+
     ],
     'PLUGINS': {
         'esri-leaflet': {
@@ -1157,6 +1159,11 @@ LEAFLET_CONFIG = {
         'leaflet-measure': {
             'css': 'lib/css/leaflet-measure.css',
             'js': 'lib/js/leaflet-measure.js',
+            'auto-include': True,
+        },
+        'leaflet.draw': {
+            'css': 'lib/css/leaflet.draw.css',
+            'js': 'lib/js/leaflet.draw.js',
             'auto-include': True,
         },
     },

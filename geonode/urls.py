@@ -196,6 +196,13 @@ if "geonode.contrib.createlayer" in settings.INSTALLED_APPS:
             include('geonode.contrib.createlayer.urls')),
     ]
 
+if "geonode.contrib.edit_data" in settings.INSTALLED_APPS:
+    urlpatterns += [  # '',
+        url(r'^edit_data/',
+            include('geonode.contrib.edit_data.urls')),
+    ]
+
+
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.views import get_capabilities
     # GeoServer Helper Views

@@ -22,16 +22,17 @@ from owslib.wfs import WebFeatureService
 from geoserver.catalog import Catalog
 from collections import OrderedDict
 import requests
+import json
 import re
 import operator
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+#from django.http import HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.utils.translation import ugettext as _
-from django.utils import simplejson as json
 from django.shortcuts import render_to_response
-from django.template import Context, RequestContext
+from django.template import Context
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.conf import settings
@@ -128,7 +129,7 @@ def edit_data(request, layername, template='edit_data/edit_data.html'):
     context_dict["site_url"] = json.dumps(settings.SITEURL)
     context_dict["default_workspace"] = json.dumps(settings.DEFAULT_WORKSPACE)
     print("--- %s secondsssss ---" % (time.time() - start_time))
-    return render_to_response(template, RequestContext(request, context_dict))
+    return render(request, template, context_dict )
 
 
 
@@ -140,9 +141,9 @@ def delete_edits(request, template='edit_data/edit_data.html'):
     layer_name = data_dict['layer_name']
 
     xml_path = "edit_data/wfs_delete_row.xml"
-    xmlstr = get_template(xml_path).render(Context({
+    xmlstr = get_template(xml_path).render({
             'layer_name': layer_name,
-            'feature_id': feature_id})).strip()
+            'feature_id': feature_id}).strip()
 
     url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
     headers = {'Content-Type': 'application/xml'}  # set what your server accepts
@@ -151,13 +152,13 @@ def delete_edits(request, template='edit_data/edit_data.html'):
     if (status_code != 200):
         message = "Failed to delete row."
         success = False
-        return HttpResponse(json.dumps({'success': success, 'message': message}), mimetype="application/json")
+        return JsonResponse({'success': success, 'message': message})
     else:
         message = "Row was deleted successfully."
         success = True
-        return HttpResponse(json.dumps({'success': success, 'message': message}), mimetype="application/json")
+        return JsonResponse({'success': success, 'message': message})
 
-    return HttpResponse(json.dumps({'success': success, 'message': message}), mimetype="application/json")
+    return JsonResponse({'success': success, 'message': message})
 
 
 
@@ -183,10 +184,10 @@ def save_edits(request, template='edit_data/edit_data.html'):
         property_element = property_element + property_element_1
     # build the update wfs-t request
     xml_path = "edit_data/wfs_edit_data.xml"
-    xmlstr = get_template(xml_path).render(Context({
+    xmlstr = get_template(xml_path).render({
             'layer_name': layer_name,
             'feature_id': feature_id,
-            'property_element': mark_safe(property_element)})).strip()
+            'property_element': mark_safe(property_element)}).strip()
 
     headers = {'Content-Type': 'application/xml'}  # set what your server accepts
 
@@ -195,11 +196,11 @@ def save_edits(request, template='edit_data/edit_data.html'):
     if (status_code != 200):
         message = "Failed to save edited data."
         success = False
-        return HttpResponse(json.dumps({'success': success, 'message': message}), mimetype="application/json")
+        return JsonResponse({'success': success, 'message': message})
     else:
         message = "Edits were saved successfully."
         success = True
-        return HttpResponse(json.dumps({'success': success, 'message': message}), mimetype="application/json")
+        return JsonResponse({'success': success, 'message': message})
 
 
 @login_required
@@ -217,11 +218,11 @@ def save_geom_edits(request, template='edit_data/edit_data.html'):
 
     store_name, geometry_clm = get_store_name(layer_name)
     xml_path = "edit_data/wfs_edit_point_geom.xml"
-    xmlstr = get_template(xml_path).render(Context({
+    xmlstr = get_template(xml_path).render({
             'layer_name': layer_name,
             'coords': coords,
             'feature_id': feature_id,
-            'geometry_clm': geometry_clm})).strip()
+            'geometry_clm': geometry_clm}).strip()
 
     url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
     headers = {'Content-Type': 'application/xml'} # set what your server accepts
@@ -233,12 +234,12 @@ def save_geom_edits(request, template='edit_data/edit_data.html'):
     if (status_code != 200):
         message = "Error saving the geometry."
         success = False
-        return HttpResponse(json.dumps({'success': success, 'message': message}), mimetype="application/json")
+        return JsonResponse({'success': success, 'message': message})
     else:
         message = "Edits were saved successfully."
         success = True
         update_bbox_in_CSW(layer, layer_name)
-        return HttpResponse(json.dumps({'success': success,  'message': message}), mimetype="application/json")
+        return JsonResponse({'success': success,  'message': message})
 
 
 @login_required
@@ -269,8 +270,8 @@ def save_added_row(request, template='edit_data/edit_data.html'):
 
     # Make a Describe Feature request to get the correct link for the xmlns:geonode
     xml_path = "edit_data/wfs_describe_feature.xml"
-    xmlstr = get_template(xml_path).render(Context({
-            'layer_name': layer_name})).strip()
+    xmlstr = get_template(xml_path).render({
+            'layer_name': layer_name}).strip()
     url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
     describe_feature_response = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).text
 
@@ -299,12 +300,12 @@ def save_added_row(request, template='edit_data/edit_data.html'):
         xml_path = "edit_data/wfs_add_new_polygon.xml"
 
     store_name, geometry_clm = get_store_name(layer_name)
-    xmlstr = get_template(xml_path).render(Context({
+    xmlstr = get_template(xml_path).render({
             'geonode_url': geonode_url,
             'layer_name': layer_name,
             'coords': coords,
             'property_element': mark_safe(property_element),
-            'geometry_clm': geometry_clm})).strip()
+            'geometry_clm': geometry_clm}).strip()
 
     url = settings.OGC_SERVER['default']['LOCATION'] + 'geonode/wfs'
     status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
@@ -315,12 +316,12 @@ def save_added_row(request, template='edit_data/edit_data.html'):
     if (status_code != 200):
         message = "Error adding data."
         success = False
-        return HttpResponse(json.dumps({'success': success, 'message': message}), mimetype="application/json")
+        return JsonResponse({'success': success, 'message': message})
     else:
         message = "New data were added succesfully."
         success = True
         update_bbox_in_CSW(layer, layer_name)
-        return HttpResponse(json.dumps({'success': success,  'message': message}), mimetype="application/json")
+        return JsonResponse({'success': success,  'message': message})
 
 
 # Used to update the BBOX of geoserver and send a see request
@@ -341,10 +342,10 @@ def update_bbox_and_seed(headers, layer_name, store_name):
         'layer_name': layer_name
     })
     xml_path = "edit_data/seedRequest_geom.xml"
-    xmlstr = get_template(xml_path).render(Context({
+    xmlstr = get_template(xml_path).render({
             'workspace': 'geonode',
             'layer_name': layer_name
-            }))
+            })
     status_code_seed = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
     return status_code_bbox, status_code_seed
 
