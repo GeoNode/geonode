@@ -91,7 +91,10 @@ def geoserver_post_save(instance, sender, **kwargs):
         payload = json_serializer_producer(instance_dict)
         producer.geoserver_upload_layer(payload)
         logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
-        create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
+        try:
+            create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
+        except BaseException:
+            logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance.alternate))
 
 
 def geoserver_post_save_local(instance, *args, **kwargs):
