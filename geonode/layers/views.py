@@ -1513,6 +1513,13 @@ def layer_sld_upload(
     })
 
 
+def layer_sld_edit(
+        request,
+        layername,
+        template='layers/layer_style_edit.html'):
+    return layer_detail(request, layername, template)
+
+
 @login_required
 def layer_batch_metadata(request, ids):
     return batch_modify(request, ids, 'Layer')

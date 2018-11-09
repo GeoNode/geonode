@@ -60,6 +60,8 @@ urlpatterns = [
         views.layer_metadata_upload, name='layer_metadata_upload'),
     url(r'^(?P<layername>[^/]*)/style_upload$',
         views.layer_sld_upload, name='layer_sld_upload'),
+    url(r'^(?P<layername>[^/]*)/style_edit$',
+        views.layer_sld_edit, name='layer_sld_edit'),
     url(r'^(?P<layername>[^/]*)/feature_catalogue$',
         views.layer_feature_catalogue, name='layer_feature_catalogue'),
     url(r'^metadata/batch/(?P<ids>[^/]*)/$',
