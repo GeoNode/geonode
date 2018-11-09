@@ -47,6 +47,9 @@ class GeoExtHookSet(object):
     def layer_download_template(self, context=None):
         return 'geoext/layers/layer_geoext_map.html'
 
+    def layer_style_edit_template(self, context=None):
+        return 'geoext/layers/layer_geoext_map.html'
+
     # Maps
     def map_detail_template(self, context=None):
         return 'geoext/maps/map_include.html'
@@ -108,6 +111,9 @@ class LeafletHookSet(GeoExtHookSet):
     def layer_download_template(self, context=None):
         return 'leaflet/layers/layer_leaflet_map.html'
 
+    def layer_style_edit_template(self, context=None):
+        return 'leaflet/layers/layer_leaflet_map.html'
+
     # Maps
     def map_detail_template(self, context=None):
         return 'leaflet/maps/map_view.html'
@@ -153,6 +159,9 @@ class ReactHookSet(GeoExtHookSet):
         return 'geonode-client/layer_map.html'
 
     def layer_download_template(self, context=None):
+        return 'geonode-client/layer_map.html'
+
+    def layer_style_edit_template(self, context=None):
         return 'geonode-client/layer_map.html'
 
     # Maps
@@ -223,6 +232,9 @@ class WorldMapHookSet(object):
 
     def layer_download_template(self, context=None):
         return 'geoext/layers/layer_geoext_map.html'
+
+    def layer_style_edit_template(self, context=None):
+        return 'worldmap/layers/layer_worldmap_map.html'
 
     # Maps
     def map_detail_template(self, context=None):
