@@ -1178,6 +1178,12 @@ if not DEBUG_STATIC:
             'js': 'lib/js/leaflet-plugins.min.js',
             'css': 'lib/css/leaflet-plugins.min.css',
             'auto-include': True,
+        },
+        # added temporary till I merge everything in the .min files
+        'leaflet.draw': {
+            'css': 'lib/css/leaflet.draw.css',
+            'js': 'lib/js/leaflet.draw.js',
+            'auto-include': True,
         }
     }
 

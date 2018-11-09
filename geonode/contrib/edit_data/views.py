@@ -300,12 +300,15 @@ def save_added_row(request, template='edit_data/edit_data.html'):
         xml_path = "edit_data/wfs_add_new_polygon.xml"
 
     store_name, geometry_clm = get_store_name(layer_name)
+    print geometry_clm
+
     xmlstr = get_template(xml_path).render({
             'geonode_url': geonode_url,
             'layer_name': layer_name,
             'coords': coords,
             'property_element': mark_safe(property_element),
-            'geometry_clm': geometry_clm}).strip()
+            'geometry_clm': 'the_geom'}).strip()
+            #'geometry_clm': geometry_clm}).strip()
 
     url = settings.OGC_SERVER['default']['LOCATION'] + 'geonode/wfs'
     status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
