@@ -1,0 +1,21 @@
+<wfs:Transaction service="WFS" version="1.1.0"
+  xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:geonode="{{ geonode_url }}">
+  <wfs:Insert>
+    <geonode:{{ layer_name }}>
+    <{{ geometry_clm }}>
+      <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+        <gml:lineStringMember>
+          <gml:LineString>
+            <gml:coordinates decimal="." cs="," ts=" ">
+              {{ coords }}
+            </gml:coordinates>
+          </gml:LineString>
+        </gml:lineStringMember>
+      </gml:MultiLineString>
+    </{{ geometry_clm }}>
+    {{ property_element }}
+    </geonode:{{ layer_name }}>
+  </wfs:Insert>
+</wfs:Transaction>

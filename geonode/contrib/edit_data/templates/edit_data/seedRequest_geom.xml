@@ -1,0 +1,11 @@
+<seedRequest>
+  <name>{{ workspace }}:{{ layer_name }}.xml</name>
+  <srs>
+    <number>4326</number>
+  </srs>
+  <zoomStart>1</zoomStart>
+  <zoomStop>20</zoomStop>
+  <format>image/png</format>
+  <type>truncate</type>
+  <threadCount>2</threadCount>
+</seedRequest>

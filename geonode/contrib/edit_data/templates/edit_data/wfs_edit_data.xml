@@ -1,0 +1,10 @@
+<wfs:Transaction service="WFS" version="1.0.0"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:wfs="http://www.opengis.net/wfs">
+  <wfs:Update typeName="geonode:{{ layer_name }}">
+    {% autoescape off %}{{ property_element }}{% endautoescape %}
+    <ogc:Filter>
+      <ogc:FeatureId fid="{{ layer_name }}.{{ feature_id }}"/>
+    </ogc:Filter>
+  </wfs:Update>
+</wfs:Transaction>

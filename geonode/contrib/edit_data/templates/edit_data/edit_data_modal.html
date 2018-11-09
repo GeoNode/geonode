@@ -1,0 +1,464 @@
+{% load leaflet_tags %}
+
+{% leaflet_js %}
+{% leaflet_js  plugins="leaflet.draw" %}
+{% leaflet_map "preview_add_geom_modal" creatediv=False %}
+
+
+<script type="text/javascript">
+    $(function() {
+      // cache jquery selectors
+      var status_msg = $("#status_msg");
+      add_geometry = $("#add_geometry");
+      save_added_data = $("#_save_added_data");
+      ok_added_data = $("#_ok_added_data");
+      close_added_data = $("#_close_added_data");
+      // functionality to add spatial and non spatial values
+      ok_added_data.on("click",function(e){
+        var coords = add_geometry.data("coords");
+        if (coords != null && coords.length > 0) {
+          // get the added non spatial data
+          var tdArray = $("#_add_data").closest('td').siblings().map(function(){
+             return this.textContent;
+          }).get();
+
+          // get the names and variable type of the columns
+          var thArray = [];
+          var th_data_type = [];
+          $('#layer_data > thead > tr > th').each(function(){
+              thArray.push($(this).text())
+              th_data_type.push($(this).attr('data-attributes'))
+          })
+          thArray.shift();
+          th_data_type.shift();
+
+          // perform check that passed values are of the right variable type (e.g.not passing strings in int field)
+          var data_validation = false;
+          for (i = 0; i < tdArray.length; i++) {
+
+            if (th_data_type[i] == 'string'){
+              if (isNaN(tdArray[i])){
+                data_validation = true;
+              } else {
+                data_validation = true;
+              }
+            } else if (th_data_type[i] !== 'string' && !isNaN(tdArray[i])){
+              data_validation = true;
+            } else{
+              data_validation = false;
+              data_type = th_data_type[i];
+              column_name = thArray[i];
+              var value = tdArray[i];
+              break;
+            }
+          }
+
+          if (data_validation == false){
+            status_msg.empty();
+            status_msg.append( "<p id='wrong-data-type' class='alert alert-warning'> Error saving data. Column " + column_name + " is " + data_type + ". Value " + value + " is not " + data_type + ".</p>");
+
+          } else {
+
+            //Build data to send
+            data_to_send = ''
+            for (i = 0; i < thArray.length; i++) {
+                data_to_send = data_to_send + thArray[i] + '=' + tdArray[i] + ','
+            }
+            data_to_send = data_to_send.slice(0, -1); // remove last character
+
+            // build whole url
+            whole_url = "{% url 'save_added_row' %}";
+            $.ajax({
+              type: "POST",
+              url: whole_url,
+              data: { json_data: JSON.stringify({ data: data_to_send, feature_type: feature_type, layer_name: layer_name, coords:coords }) },
+              beforeSend: function(){
+                msg = "Saving...";
+                $("#icon_load_msg").text(msg);
+                $( ".icon_load" ).show();
+                $('#_ok_added_data').prop('disabled', true);
+              },
+              success: function(data) {
+                $( ".icon_load" ).hide();
+                $('#_ok_added_data').prop('disabled', false);
+                status_msg.empty();
+                if (data['success'] == true){
+                  status_msg.append("<p class='alert alert-success'>" + data['message'] + "</p></br>");
+                  location.reload(); // show the new row is displayed in the table
+                } else {
+                  status_msg.append("<p class='alert alert-warning'>" + data['message'] + "</p></br>");
+                }
+              }
+            });
+            add_geometry.data("coords", null);
+          }
+        } else {
+          status_msg.append("<p class='alert alert-warning'> Please add a geometry by clicking Add Geometry button.</p></br>");
+        }
+      });
+
+      save_added_data.on("click",function(e){
+        //if (add_geometry.data("clicked_btn") == '_add_data') {
+        //} else {
+        var coords = add_geometry.data("coords");
+        var feature_id = $("#"+ add_geometry.data("clicked_btn")).data('fid');
+        if (coords != null && coords.length > 0) {
+          whole_url = "{% url 'save_geom_edits' %}";
+          $.ajax({
+            type: "POST",
+            url: whole_url,
+            data: { json_data: JSON.stringify({ feature_id: feature_id, layer_name: layer_name, coords:coords }) },
+            dataType: "json",
+            beforeSend: function(){
+              msg = "Saving...";
+              $("#icon_load_msg").text(msg);
+              $( ".icon_load" ).show();
+            },
+            success: function(data) {
+              $( ".icon_load" ).hide();
+              status_msg.empty();
+              if (data['success'] == true){
+                status_msg.append("<p class='alert alert-success'>" + data['message'] + "</p></br>");
+                //location.reload();
+              } else {
+                status_msg.append("<p class='alert alert-warning'>" + data['message'] + "</p></br>");
+              }
+            }
+          });
+          add_geometry.data("coords", null);
+        }
+        //}
+      });
+
+      // close window without saving anything
+      close_added_data.on("click",function(e){
+        add_geometry.data("coords", null);
+      });
+    });
+
+    window.addEventListener("map:init", function (e) {
+
+      if (e.detail.map._container.id == "preview_add_geom_modal") {
+        var map = e.detail.map;
+
+        add_geometry.on('shown.bs.modal', function (e) {
+
+          map.invalidateSize();
+
+          /*
+          {% if resource.bbox_string %}
+            zoom_to_box(map, [{{ resource.bbox_string }}]);
+          {% endif %}
+          */
+          //https://staging.geonode.wfp.org:80/geoserver/wms
+          base_url = {{ url | safe }};
+          context_path = 'wms/'
+          url_string = base_url + context_path
+
+          tile_layer = L.tileLayer.wms(url_string, {
+             layers: 'geonode:' + layer_name,
+             format: 'image/png',
+             transparent: true,
+             version: '1.1.0'
+           });
+
+          if (tile_layer != null) {
+            map.addLayer(tile_layer);
+            tile_layer.setZIndex(99);
+          }
+
+          var drawnItems = new L.FeatureGroup();
+          map.addLayer(drawnItems);
+
+          layer_geom = {{ layer_geom | safe }};
+
+          if (add_geometry.data("clicked_btn") == '_add_data'){
+            $("._modal_save").hide();
+            $("._modal_ok").show();
+            $("#instructions_msg").text("Click the button on the map to add features.");
+            map.setView([0,0], 1);
+            if (layer_geom == 'Polygon'){
+              draw_values = [false, true, false, false, false, false]
+            } else if (layer_geom == 'Linestring'){
+              draw_values = [false, false, true, false, false, false]
+            } else if (layer_geom == 'Point'){
+              draw_values = [true, false, false, false, false, false]
+            } else if (layer_geom == 'unknown'){
+              draw_values = [true, true, true, false, false, false]
+            }
+
+            drawControl = new L.Control.Draw({
+                draw : {
+                    position : 'topleft',
+                    marker: draw_values[0],
+                    polygon : draw_values[1],
+                    polyline : draw_values[2],
+                    rectangle : draw_values[3],
+                    circle : draw_values[4],
+                    circlemarker: draw_values[5]
+                },
+                edit : {
+                  featureGroup: drawnItems
+                }
+            });
+
+  		      map.addControl(drawControl);
+
+            // disables the Save and Close btns when user is adding
+            $('.leaflet-draw-draw-marker, .leaflet-draw-draw-polyline, .leaflet-draw-draw-polygon').click(function() {
+               $('._modal_ok').attr("disabled", true);
+               $('#_close_added_data').attr("disabled", true);
+            });
+            // enables the Save and Close btns when user is editing and press cancell btn
+            map.on('draw:drawstop', function (e) {
+              $('._modal_ok').attr("disabled", false);
+              $('#_close_added_data').attr("disabled", false);
+            });
+            var numbers_of_features = 0;
+
+            map.on('draw:edited', function (e) {
+
+
+              var coords = [];
+              var layer = e.layers;
+              var type = e.layerType;
+              layer.eachLayer(function (layer) {
+                  if (layer instanceof L.Marker){
+                    var lat_long = layer.getLatLng();
+                    coords = [lat_long['lat'], lat_long['lng']]
+                    console.log(layer)
+                  } else if (layer instanceof L.Polygon) {
+                    coords = []
+                    var lat_long = layer.getLatLngs();
+                    for (i=0;i<lat_long.length;i++){
+                      coords.push(lat_long[i]['lat'])
+                      coords.push(lat_long[i]['lng'])
+                    }
+                    // close polygon
+                    coords.push(lat_long[0]['lat'])
+                    coords.push(lat_long[0]['lng'])
+                  } else if (layer instanceof L.Path) {
+                    coords = []
+                    var lat_long = layer.getLatLngs();
+                    for (i=0;i<lat_long.length;i++){
+                      coords.push(lat_long[i]['lat'])
+                      coords.push(lat_long[i]['lng'])
+                    }
+                  }
+                  added_geometry = JSON.stringify(layer.toGeoJSON());
+                  added_geometry = JSON.parse(added_geometry);
+                  feature_type = added_geometry["geometry"]["type"]
+                  coords = added_geometry["geometry"]["coordinates"]
+                  coords = $.map(coords, function(n) {
+                     return n;
+                  });
+                  drawnItems.addLayer(layer);
+                  add_geometry.data("coords", coords);
+              });
+            });
+
+
+        		map.on('draw:created', function (e) {
+              // enables the Save and Close btns when user has added a new feature
+              $('._modal_ok').attr("disabled", false);
+              $('#_close_added_data').attr("disabled", false);
+              $("#status_modal_msg").empty();
+
+              var coords = [];
+              // allow to add only one feature
+              if (numbers_of_features<1){
+
+                numbers_of_features = numbers_of_features + 1
+          			var type = e.layerType,
+          				  layer = e.layer;
+
+                // build the arrays with constructed geometry for the add_geometry fucntionality.
+                if (type == 'marker'){
+                  var lat_long = layer.getLatLng();
+                  coords = [lat_long['lat'], lat_long['lng']]
+                } else if (type == 'polyline'){
+                  coords = []
+                  var lat_long = layer.getLatLngs();
+                  for (i=0;i<lat_long.length;i++){
+                    coords.push(lat_long[i]['lat'])
+                    coords.push(lat_long[i]['lng'])
+                  }
+                } else if (type == 'polygon'){
+                  coords = []
+                  var lat_long = layer.getLatLngs();
+                  for (i=0;i<lat_long.length;i++){
+                    coords.push(lat_long[i]['lat'])
+                    coords.push(lat_long[i]['lng'])
+                  }
+                  // close polygon
+                  coords.push(lat_long[0]['lat'])
+                  coords.push(lat_long[0]['lng'])
+                }
+                added_geometry = JSON.stringify(layer.toGeoJSON());
+                added_geometry = JSON.parse(added_geometry);
+                feature_type = added_geometry["geometry"]["type"]
+                coords = added_geometry["geometry"]["coordinates"]
+                coords = $.map(coords, function(n) {
+                   return n;
+                });
+          			drawnItems.addLayer(layer);
+                add_geometry.data("coords", coords);
+              } else {
+                $("#status_modal_msg").append("<p class='alert alert-warning'>You can add only one feature</p></br>");
+                //add_geometry.data("coords", null);
+              }
+        		});
+
+            map.on('draw:deleted', function (e) {
+              add_geometry.data("coords", null);
+        		});
+
+            save_added_data.click(function() {
+              map.removeLayer(drawnItems);
+              $( ".leaflet-draw" ).remove();
+            });
+
+            $("._modal_ok").click(function() {
+              $( ".leaflet-draw" ).remove();
+            });
+
+            close_added_data.click(function() {
+              map.removeLayer(drawnItems);
+              $( ".leaflet-draw" ).remove();
+            });
+
+          } else {
+            $("._modal_save").show();
+            $("._modal_ok").hide();
+            $("#instructions_msg").text("Click the button on the map to edit features.");
+            layer_name = {{ layer_name | safe }};
+            base_url = {{ url | safe }};
+
+            var feature_id = $("#" + add_geometry.data("clicked_btn")).data('fid');
+
+            // make a WFS request
+            var geoJsonUrl = data_from_view_url + 'geonode/ows';
+
+            var defaultParameters = {
+              service: 'WFS',
+              version: '1.1.0',
+              request: 'getFeature',
+              typeName: 'geonode:' + layer_name,
+              maxFeatures: 300,
+              outputFormat: 'application/json',
+              SrsName : 'EPSG:4326',
+              featureId: feature_id,
+              //propertyName: "the_geom"
+            };
+            var parameters = L.Util.extend(defaultParameters);
+            // url to be used when on staging/production
+            var context_path = "geonode/ows"
+            var url_string = base_url + context_path + L.Util.getParamString(parameters);
+            //var url_string = 'https://staging.geonode.wfp.org:80/cors/geoserver/geonode/ows' + L.Util.getParamString(parameters);
+            var drawnItems = new L.FeatureGroup().addTo(map);
+            if (layer_geom == 'Point'){
+              var drawControl = new L.Control.Draw({
+                draw: false,
+                edit: {
+                  featureGroup: drawnItems,
+                  edit: {
+                      selectedPathOptions: {
+                          color: '#FF5500',
+                          opacity: 1,
+                          weight: 2
+                      }
+                  },
+                  remove: false
+                }
+              });
+            } else {
+              var drawControl = new L.Control.Draw({
+                  draw: false,
+                  edit: false
+              });
+            }
+
+            map.addControl(drawControl);
+            // make WFS request
+            var geojson = $.ajax({
+              type: "GET",
+              dataType: "json",
+              url: url_string,
+              success: function (response) {
+                L.geoJson(response, {
+                  onEachFeature: function (feature, layer) {
+                    if (layer_geom == 'Point'){
+                      map.setView([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], 10);
+                      //console.log(feature.geometry.coordinates)
+                    } else {
+                      {% if resource.bbox_string %}
+                        zoom_to_box(map, [{{ resource.bbox_string }}]);
+                      {% endif %}
+                      //console.log(feature.geometry.coordinates)
+                    }
+
+
+                    drawnItems.addLayer(layer);
+
+                   }
+                });
+              },
+              error: function(response) {
+              },
+            });
+            map.on('draw:created', function (e) {
+                drawnItems.addLayer(e.layer);
+            });
+
+            // disables the Save and Close btns when user is editing
+            $('.leaflet-draw-edit-edit').click(function() {
+               $('#_save_added_data').attr("disabled", true);
+               $('#_close_added_data').attr("disabled", true);
+            });
+            // enables the Save and Close btns when user is editing and press cancell btn
+            map.on('draw:editstop', function (e) {
+              $('#_save_added_data').attr("disabled", false);
+              $('#_close_added_data').attr("disabled", false);
+            });
+
+            map.on('draw:edited', function (e) {
+              // enables the Save and Close btns when user has edited the point
+              $('#_save_added_data').attr("disabled", false);
+              $('#_close_added_data').attr("disabled", false);
+              var layer = e.layers;
+              var type = e.layerType;
+              layer.eachLayer(function (layer) {
+                  if (layer instanceof L.Marker){
+                    var lat_long = layer.getLatLng();
+                    coords = [lat_long['lat'], lat_long['lng']]
+                  }
+              });
+              add_geometry.data("coords", coords);
+
+            });
+
+            save_added_data.click(function() {
+              map.removeLayer(drawnItems);
+              $( ".leaflet-draw" ).remove();
+            });
+
+            close_added_data.click(function() {
+              map.removeLayer(drawnItems);
+              $( ".leaflet-draw" ).remove();
+            });
+          }
+        });
+        $(".modal").on("hide.bs.modal", function(){
+          $(".modal-bodydata").html("");
+        });
+      }
+    });
+
+    function zoom_to_box(map, bbox){
+        var bounds = [
+            [bbox[1], bbox[0]],
+            [bbox[3], bbox[2]]
+        ];
+        map.fitBounds(bounds);
+    }
+</script>

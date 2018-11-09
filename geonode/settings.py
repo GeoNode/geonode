@@ -319,6 +319,7 @@ GEONODE_CONTRIB_APPS = (
     'geonode.contrib.metadataxsl',
     'geonode.contrib.api_basemaps',
     'geonode.contrib.ows_api',
+    'geonode.contrib.edit_data',
 )
 
 # Uncomment the following line to enable contrib apps
@@ -1634,6 +1635,7 @@ if USE_WORLDMAP:
             'geonode.contrib.worldmap.gazetteer',
             'geonode.contrib.worldmap.wm_extra',
             'geonode.contrib.createlayer',
+
         )
     GAZETTEER_FULLTEXTSEARCH = False
     WM_COPYRIGHT_URL = "http://gis.harvard.edu/"

@@ -1,0 +1,25 @@
+<wfs:Transaction service="WFS" version="1.1.0"
+  xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:geonode="{{ geonode_url }}">
+  <wfs:Insert>
+    <geonode:{{ layer_name }}>
+      <{{ geometry_clm }}>
+        <gml:MultiSurface srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+          <gml:surfaceMember>
+            <gml:Polygon srsDimension="2">
+              <gml:exterior>
+                <gml:LinearRing srsDimension="2">
+                  <gml:posList>
+                    {{ coords }}
+                  </gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:Polygon>
+          </gml:surfaceMember>
+        </gml:MultiSurface>
+      </{{ geometry_clm }}>
+      {{ property_element }}
+    </geonode:{{ layer_name }}>
+  </wfs:Insert>
+</wfs:Transaction>
