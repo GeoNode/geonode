@@ -286,6 +286,12 @@
             {% endif %}
 
             authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
+
+            // here we localize some strings
+            worldmapDataText: "{% trans 'Search' %}",
+            externalDataText: "{% trans 'Layers List' %}",
+            infoBtnText: "{% trans 'About' %}",
+
         }, {{ config }});
 
         app = new GeoExplorer(config, true);
