@@ -1564,7 +1564,7 @@ def style_update(request, url):
     request.body, which is in this format:
     """
     affected_layers = []
-    if request.method in ('POST', 'PUT'):  # we need to parse xml
+    if request.method in ('POST', 'PUT', 'DELETE'):  # we need to parse xml
         # Need to remove NSx from IE11
         if "HTTP_USER_AGENT" in request.META:
             if ('Trident/7.0' in request.META['HTTP_USER_AGENT'] and
@@ -1572,46 +1572,69 @@ def style_update(request, url):
                 txml = re.sub(r'xmlns:NS[0-9]=""', '', request.body)
                 txml = re.sub(r'NS[0-9]:', '', txml)
                 request._body = txml
-        tree = ET.ElementTree(ET.fromstring(request.body))
-        elm_namedlayer_name = tree.findall(
-            './/{http://www.opengis.net/sld}Name')[0]
-        elm_user_style_name = tree.findall(
-            './/{http://www.opengis.net/sld}Name')[1]
-        elm_user_style_title = tree.find(
-            './/{http://www.opengis.net/sld}Title')
-        if not elm_user_style_title:
-            elm_user_style_title = elm_user_style_name
-        layer_name = elm_namedlayer_name.text
-        style_name = elm_user_style_name.text
-        sld_body = '<?xml version="1.0" encoding="UTF-8"?>%s' % request.body
-        # add style in GN and associate it to layer
-        if request.method == 'POST':
-            style, created = Style.objects.get_or_create(name=style_name)
-            style.sld_body = sld_body
-            style.sld_url = url
-            style.save()
-            layer = None
+        style_name = os.path.basename(request.path)
+        elm_user_style_title = style_name
+        sld_body = None
+        layer_name = None
+        if 'name' in request.GET:
+            style_name = request.GET['name']
+            sld_body = request.body
+        elif request.method == 'DELETE':
+            style_name = os.path.basename(request.path)
+        else:
             try:
-                layer = Layer.objects.get(name=layer_name)
+                tree = ET.ElementTree(ET.fromstring(request.body))
+                elm_namedlayer_name = tree.findall(
+                    './/{http://www.opengis.net/sld}Name')[0]
+                elm_user_style_name = tree.findall(
+                    './/{http://www.opengis.net/sld}Name')[1]
+                elm_user_style_title = tree.find(
+                    './/{http://www.opengis.net/sld}Title')
+                if not elm_user_style_title:
+                    elm_user_style_title = elm_user_style_name.text
+                layer_name = elm_namedlayer_name.text
+                style_name = elm_user_style_name.text
+                sld_body = '<?xml version="1.0" encoding="UTF-8"?>%s' % request.body
             except BaseException:
+                logger.warn("Could not recognize Style and Layer name from Request!")
+        # add style in GN and associate it to layer
+        if request.method == 'DELETE':
+            if style_name:
                 try:
-                    layer = Layer.objects.get(alternate=layer_name)
+                    style = Style.objects.get(name=style_name)
+                    style.delete()
                 except BaseException:
                     pass
+        if request.method == 'POST':
+            if style_name:
+                style, created = Style.objects.get_or_create(name=style_name)
+                style.sld_body = sld_body
+                style.sld_url = url
+                style.save()
+            layer = None
+            if layer_name:
+                try:
+                    layer = Layer.objects.get(name=layer_name)
+                except BaseException:
+                    try:
+                        layer = Layer.objects.get(alternate=layer_name)
+                    except BaseException:
+                        pass
             if layer:
                 style.layer_styles.add(layer)
                 style.save()
                 affected_layers.append(layer)
         elif request.method == 'PUT':  # update style in GN
-            style, created = Style.objects.get_or_create(name=style_name)
-            style.sld_body = sld_body
-            style.sld_url = url
-            if len(elm_user_style_title.text) > 0:
-                style.sld_title = elm_user_style_title.text
-            style.save()
-            for layer in style.layer_styles.all():
-                layer.save()
-                affected_layers.append(layer)
+            if style_name:
+                style, created = Style.objects.get_or_create(name=style_name)
+                style.sld_body = sld_body
+                style.sld_url = url
+                if elm_user_style_title and len(elm_user_style_title) > 0:
+                    style.sld_title = elm_user_style_title
+                style.save()
+                for layer in style.layer_styles.all():
+                    layer.save()
+                    affected_layers.append(layer)
 
         # Invalidate GeoWebCache so it doesn't retain old style in tiles
         try:
