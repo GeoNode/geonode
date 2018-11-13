@@ -519,7 +519,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         create_gs_thumbnail(instance, overwrite=True)
 
     try:
-        Link.objects.filter(resource=instance.resourcebase_ptr).delete()
+        Link.objects.filter(resource=instance.resourcebase_ptr, name='Legend').delete()
     except BaseException:
         pass
 
