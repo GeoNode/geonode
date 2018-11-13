@@ -1061,15 +1061,19 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """Return Link for legend or None if it does not exist.
         """
         try:
-            legends_link = self.link_set.get(name='Legend')
+            legends_link = self.link_set.filter(name='Legend')
         except Link.DoesNotExist:
+            tb = traceback.format_exc()
+            logger.debug(tb)
             return None
         except Link.MultipleObjectsReturned:
+            tb = traceback.format_exc()
+            logger.debug(tb)
             return None
         else:
             return legends_link
 
-    def get_legend_url(self):
+    def get_legend_url(self, style_name=None):
         """Return URL for legend or None if it does not exist.
 
            The legend can be either an image (for Geoserver's WMS)
@@ -1080,6 +1084,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if legend is None:
             return None
 
+        if legend.count() > 0:
+            if not style_name:
+                return legend[0].url
+            else:
+                for _legend in legend:
+                    if style_name in _legend.url:
+                        return _legend.url
         return legend.url
 
     def get_ows_url(self):
