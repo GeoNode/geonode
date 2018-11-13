@@ -9,7 +9,7 @@
 {% load static from staticfiles %}
 
 <script type="text/javascript">
-    OpenLayers.ImgPath = "{% static "worldmap_client/externals/openlayers/theme/default/img" %}";
+    OpenLayers.ImgPath = "{% static "worldmap_client/externals/openlayers/img/" %}";
     OpenLayers.Util.onImageLoadErrorColor = 1;
     OpenLayers.Util.onImageLoadErrorColor = 'transparent';
     OpenLayers.Util.onImageLoadError = function() {
@@ -194,7 +194,8 @@
                         title: '<span class="x-btn-text">{% trans 'Find Place' %}</span>',
                         iconCls: null,
                         toggleGroup: 'featureGroup',
-                        pressed: false
+                        pressed: false,
+                        services: '{{ GAZETTEER_SERVICES }}'
                     }
                     {% endif %}
                     {% if user.is_authenticated and DB_DATASTORE  %},
@@ -303,6 +304,7 @@
                 id: id
             })
         };
+
         {% endautoescape %}
     }
     $(document).ready(init);

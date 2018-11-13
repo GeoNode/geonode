@@ -80,7 +80,6 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
         end_date: return only matches with an end date <= this value
         project: only return matches within the specified project
     """
-
     layers = []
     if map:
         mapObject = get_object_or_404(Map, pk=map)
@@ -426,7 +425,7 @@ def getConnection(layer_store=None):
 
 
 def getGeonamesResults(place_name):
-    g = geocoders.GeoNames(username=settings.GEONAMES_USER)
+    g = geocoders.GeoNames(username=settings.GAZETTEER_GEONAMES_USER)
     try:
         results = g.geocode(place_name, False)
         formatted_results = []
