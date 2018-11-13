@@ -24,10 +24,12 @@ def search(request, place_name, map=None, layer=None,
     if out_format not in ('xml', 'json'):
         out_format = 'json'
 
-    if place_name.isdigit():
-        posts = getGazetteerEntry(place_name)
-    else:
-        posts = getGazetteerResults(place_name, map, layer, start_date, end_date, project, user)
+    posts = []
+    if 'worldmap' in services:
+        if place_name.isdigit():
+            posts = getGazetteerEntry(place_name)
+        else:
+            posts = getGazetteerResults(place_name, map, layer, start_date, end_date, project, user)
     if services is not None:
         posts.extend(getExternalServiceResults(place_name, services))
     if out_format == 'json':
