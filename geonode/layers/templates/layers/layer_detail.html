@@ -560,16 +560,20 @@
     {% if resource.get_legend %}
     <li class="list-group-item">
       <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
-      <p>{{ style.sld_title }}</p>
-      {% if resource.get_legend.link_type == 'image' %}
-        {% if request.user.is_authenticated and 'access_token' in request.session %}
-            <p><img id="legend_icon" src="{{ resource.get_legend.url }}&access_token={{ request.session.access_token }}"></p>
-        {% else %}
-            <p><img id="legend_icon" src="{{ resource.get_legend.url }}"></p>
-        {% endif %}
-      {% else %}
-      <div id='legend_placeholder'></div>
-      {% endif %}
+      {% for style in resource.styles.all %}
+          {% for legend in resource.get_legend %}
+              {% if legend.link_type == 'image' and style.name in legend.url %}
+                <p>{{ style.sld_title|default:style.name }}</p>
+                {% if request.user.is_authenticated and 'access_token' in request.session %}
+                    <p><img id="legend_icon" src="{{ legend.url }}&access_token={{ request.session.access_token }}"></p>
+                {% else %}
+                    <p><img id="legend_icon" src="{{ legend.url }}"></p>
+                {% endif %}
+              {% else %}
+              <div id='legend_placeholder'></div>
+              {% endif %}
+          {% endfor %}
+      {% endfor %}
     </li>
     {% endif %}
     <li class="list-group-item">
@@ -619,7 +623,6 @@
     </li>
     {% endif %}
 
-    {% if user.is_authenticated %}
     <li class="list-group-item">
       <h4>{% trans "Styles" %}</h4>
        <p>{% trans "The following styles are associated with this layer. Choose a style to view it in the preview map." %}</p>
@@ -655,7 +658,6 @@
         {% endif %}
       </ul>
     </li>
-    {% endif %}
 
     {% if OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
         {% if "change_resourcebase" in perms_list %}
@@ -736,7 +738,7 @@
           });
 
     {% if resource.get_legend.link_type == 'json' %}
-    $.getJSON('{{resource.get_legend_url}}', function (data) {
+    $.getJSON('{{ resource.get_legend_url }}', function (data) {
         var legend = data.layers[0].legend;
         var items = [];
         $.each(legend, function (key, dvalue) {

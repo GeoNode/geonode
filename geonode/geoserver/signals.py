@@ -518,20 +518,27 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
         create_gs_thumbnail(instance, overwrite=True)
 
-    legend_url = ogc_server_settings.PUBLIC_LOCATION + \
-        'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
-        instance.alternate + '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+    try:
+        Link.objects.filter(resource=instance.resourcebase_ptr).delete()
+    except BaseException:
+        pass
 
-    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                               url=legend_url,
-                               defaults=dict(
-                                   extension='png',
-                                   name='Legend',
+    for style in instance.styles.all():
+        legend_url = ogc_server_settings.PUBLIC_LOCATION + \
+            'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+            instance.alternate + '&STYLE=' + style.name + \
+            '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+
+        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=legend_url,
-                                   mime='image/png',
-                                   link_type='image',
-                               )
-                               )
+                                   defaults=dict(
+                                       extension='png',
+                                       name='Legend',
+                                       url=legend_url,
+                                       mime='image/png',
+                                       link_type='image',
+                                   )
+                                   )
 
     # ogc_wms_path = '%s/ows' % instance.workspace
     ogc_wms_path = 'ows'
