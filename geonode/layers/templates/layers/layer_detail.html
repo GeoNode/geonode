@@ -561,18 +561,20 @@
     <li class="list-group-item">
       <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
       {% for style in resource.styles.all %}
-          {% for legend in resource.get_legend %}
-              {% if legend.link_type == 'image' and style.name in legend.url %}
-                <p>{{ style.sld_title|default:style.name }}</p>
-                {% if request.user.is_authenticated and 'access_token' in request.session %}
-                    <p><img id="legend_icon" src="{{ legend.url }}&access_token={{ request.session.access_token }}"></p>
-                {% else %}
-                    <p><img id="legend_icon" src="{{ legend.url }}"></p>
-                {% endif %}
-              {% else %}
-              <div id='legend_placeholder'></div>
-              {% endif %}
-          {% endfor %}
+          {% if resource.default_style == style %}
+              {% for legend in resource.get_legend %}
+                  {% if legend.link_type == 'image' and style.name in legend.url %}
+                    <!-- p>{{ style.sld_title|default:style.name }}</p -->
+                    {% if request.user.is_authenticated and 'access_token' in request.session %}
+                        <p><img id="legend_icon" src="{{ legend.url }}&access_token={{ request.session.access_token }}"></p>
+                    {% else %}
+                        <p><img id="legend_icon" src="{{ legend.url }}"></p>
+                    {% endif %}
+                  {% else %}
+                  <div id='legend_placeholder'></div>
+                  {% endif %}
+              {% endfor %}
+          {% endif %}
       {% endfor %}
     </li>
     {% endif %}
