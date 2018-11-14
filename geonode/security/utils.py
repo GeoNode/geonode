@@ -266,7 +266,7 @@ def purge_geofence_all():
                                 raise e
                 except Exception:
                     logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-        except Exception:
+        except BaseException:
             tb = traceback.format_exc()
             logger.debug(tb)
 
@@ -332,7 +332,7 @@ def set_geofence_invalidate_cache():
                 logger.warning("Could not Invalidate GeoFence Rules.")
                 return False
             return True
-        except Exception:
+        except BaseException:
             tb = traceback.format_exc()
             logger.debug(tb)
             return False
@@ -360,7 +360,7 @@ def set_geowebcache_invalidate_cache(layer_alternate):
                           auth=HTTPBasicAuth(user, passwd))
         if (r.status_code < 200 or r.status_code > 201):
             logger.warning("Could not Truncate GWC Cache for Layer '%s'." % layer_alternate)
-    except Exception:
+    except BaseException:
         tb = traceback.format_exc()
         logger.debug(tb)
 
@@ -416,7 +416,7 @@ def set_geofence_all(instance):
                 "Response {!r} : {}".format(response.status_code, response.text))
             raise RuntimeError("Could not ADD GeoServer ANONYMOUS Rule "
                                "for Layer {}".format(resource.layer.name))
-    except Exception:
+    except BaseException:
         tb = traceback.format_exc()
         logger.debug(tb)
     finally:
@@ -502,7 +502,7 @@ def remove_object_permissions(instance):
                 purge_geofence_layer_rules(resource)
         except (ObjectDoesNotExist, RuntimeError):
             pass  # This layer is not manageable by geofence
-        except Exception:
+        except BaseException:
             tb = traceback.format_exc()
             logger.debug(tb)
         finally:
