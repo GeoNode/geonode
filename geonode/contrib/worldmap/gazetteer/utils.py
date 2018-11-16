@@ -307,7 +307,7 @@ def add_to_gazetteer(layer, name_attributes, start_attribute=None,
         """
         updateQuery = updateTemplate.format(
             table=GAZETTEER_TABLE,
-            attribute=attribute.attribute,
+            attribute=attribute.attribute.encode('utf-8'),
             geom=geom_query,
             username=username,
             type=layer_type,
@@ -329,7 +329,7 @@ def add_to_gazetteer(layer, name_attributes, start_attribute=None,
         """
         insertQuery = insertTemplate.format(
             table=GAZETTEER_TABLE,
-            attribute=attribute.attribute,
+            attribute=attribute.attribute.encode('utf-8'),
             geom=geom_query,
             username=username,
             type=layer_type,
