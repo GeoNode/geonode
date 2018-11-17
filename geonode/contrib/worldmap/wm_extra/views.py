@@ -838,17 +838,11 @@ def gxp2wm(config, map_obj=None):
     if not [d for d in config['map']['groups'] if d['group'] == group]:
         config['map']['groups'].append({"expanded": "true", "group": group})
 
-    # make sure if gnsource is in sources
-    add_gnsource = True
-    for source in config['sources']:
-        if 'ptype' in config['sources'][source]:
-            if config['sources'][source]['ptype'] == 'gxp_gnsource':
-                add_gnsource = False
-    if add_gnsource:
-        config['sources']['wm'] = {
-                                    'url': settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
-                                    'restUrl': '/gs/rest', 'ptype': 'gxp_gnsource'
-                                  }
+    # make sure we have the wm source in config
+    config['sources']['wm'] = {
+                                'url': settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+                                'restUrl': '/gs/rest', 'ptype': 'gxp_wmscsource'
+                              }
 
     if config_is_string:
         config = json.dumps(config)
@@ -1094,20 +1088,20 @@ def layer_searchable_fields(
         status_message = ''
         for attribute in layer.attributes:
             ext_att, created = ExtLayerAttribute.objects.get_or_create(attribute=attribute)
-            if attribute.attribute in attributes_list:
+            ext_att.searchable = False
+            if attribute.attribute in attributes_list and attribute.attribute_type == 'xsd:string':
                 ext_att.searchable = True
                 status_message += ' %s' % attribute.attribute
-            else:
-                ext_att.searchable = False
             ext_att.save()
 
     searchable_attributes = []
     for attribute in layer.attributes:
-        if hasattr(attribute, 'extlayerattribute'):
-            attribute.searchable = attribute.extlayerattribute.searchable
-        else:
-            attribute.searchable = False
-        searchable_attributes.append(attribute)
+        if attribute.attribute_type == 'xsd:string':
+            if hasattr(attribute, 'extlayerattribute'):
+                attribute.searchable = attribute.extlayerattribute.searchable
+            else:
+                attribute.searchable = False
+            searchable_attributes.append(attribute)
 
     template = 'wm_extra/layers/edit_searchable_fields.html'
 

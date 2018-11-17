@@ -988,6 +988,8 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     try:
         inDataSource = inDriver.Open(inShapefile, 1)
     except BaseException:
+        tb = traceback.format_exc()
+        logger.debug(tb)
         inDataSource = None
     if inDataSource is None:
         logger.warning('Could not open %s' % (inShapefile))
