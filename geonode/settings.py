@@ -1628,17 +1628,22 @@ USE_WORLDMAP = strtobool(os.getenv('USE_WORLDMAP', 'False'))
 
 if USE_WORLDMAP:
     GEONODE_CLIENT_LOCATION = '/static/worldmap_client/'
-    GAZETTEER_DB_ALIAS = 'default'
     INSTALLED_APPS += (
             'geoexplorer-worldmap',
             'geonode.contrib.worldmap.gazetteer',
             'geonode.contrib.worldmap.wm_extra',
             'geonode.contrib.createlayer',
         )
+    # WorldMap Gazetter settings
+    USE_GAZETTEER = True
+    GAZETTEER_DB_ALIAS = 'default'
     GAZETTEER_FULLTEXTSEARCH = False
+    # external services to be used by the gazetteer
+    GAZETTEER_SERVICES = 'worldmap,geonames,nominatim'
+    # this is the GeoNames key which is needed by the WorldMap Gazetteer
+    GAZETTEER_GEONAMES_USER = os.getenv('GEONAMES_USER', 'your-key-here')
     WM_COPYRIGHT_URL = "http://gis.harvard.edu/"
     WM_COPYRIGHT_TEXT = "Center for Geographic Analysis"
-    USE_GAZETTEER = True
     DEFAULT_MAP_ABSTRACT = """
         <h3>The Harvard WorldMap Project</h3>
         <p>WorldMap is an open source web mapping system that is currently

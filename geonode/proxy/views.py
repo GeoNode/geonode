@@ -167,9 +167,9 @@ def proxy(request, url=None, response_callback=None,
             headers['Authorization'] = auth
     elif access_token:
         # TODO: Bearer is currently cutted of by Djano / GeoServer
-        if request.method in ("POST", "PUT"):
+        if request.method in ("POST", "PUT", "DELETE"):
             headers['Authorization'] = 'Bearer %s' % access_token
-        if access_token and 'access_token' not in locator:
+        if 'access_token' not in locator:
             query_separator = '&' if '?' in locator else '?'
             locator = ('%s%saccess_token=%s' %
                        (locator, query_separator, access_token))

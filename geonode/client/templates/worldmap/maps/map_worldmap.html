@@ -9,7 +9,31 @@
 {% load static from staticfiles %}
 
 <script type="text/javascript">
-    OpenLayers.ImgPath = "{% static "worldmap_client/externals/openlayers/theme/default/img" %}";
+var isMobile = {
+    Android: function() {
+        return navigator.userAgent.match(/Android/i);
+    },
+    BlackBerry: function() {
+        return navigator.userAgent.match(/BlackBerry/i);
+    },
+    iOS: function() {
+        return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+    },
+    Opera: function() {
+        return navigator.userAgent.match(/Opera Mini/i);
+    },
+    Windows: function() {
+        return navigator.userAgent.match(/IEMobile/i);
+    },
+    any: function() {
+        return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+    }
+};
+
+</script>
+
+<script type="text/javascript">
+    OpenLayers.ImgPath = "{% static "worldmap_client/externals/openlayers/img/" %}";
     OpenLayers.Util.onImageLoadErrorColor = 1;
     OpenLayers.Util.onImageLoadErrorColor = 'transparent';
     OpenLayers.Util.onImageLoadError = function() {
@@ -194,7 +218,8 @@
                         title: '<span class="x-btn-text">{% trans 'Find Place' %}</span>',
                         iconCls: null,
                         toggleGroup: 'featureGroup',
-                        pressed: false
+                        pressed: false,
+                        services: '{{ GAZETTEER_SERVICES }}'
                     }
                     {% endif %}
                     {% if user.is_authenticated and DB_DATASTORE  %},
@@ -286,7 +311,20 @@
             {% endif %}
 
             authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
+
+            // here we localize some strings
+            worldmapDataText: "{% trans 'Search' %}",
+            externalDataText: "{% trans 'Layers List' %}",
+            infoBtnText: "{% trans 'About' %}",
+
         }, {{ config }});
+
+        if (isMobile.any() && config.id) {
+            	redirect=confirm("Would you like to view the alpha mobile version of this map?");
+            	if (redirect===true){
+            		window.location = document.URL.replace('view', 'mobile');
+            	}
+            }
 
         app = new GeoExplorer(config, true);
         var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
@@ -297,6 +335,7 @@
                 id: id
             })
         };
+
         {% endautoescape %}
     }
     $(document).ready(init);

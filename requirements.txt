@@ -31,7 +31,8 @@ awesome-slugify<=1.6.5 # python-awesome-slugify (1.6.5)
 django-floppyforms<=1.7.0 # python-django-floppyforms (1.7.0 in our ppa)
 chardet<=3.0.4 # python-chardet (3.0.4 in our ppa)
 decorator<=4.1.2 # python-decorator (4.1.2 in our ppa)
-celery>4.0a0c,<=4.1.0 # python-celery (4.1.0)
+celery==4.2.1 # python-celery (4.1.0)
+kombu==4.2.1 # python-kombu (4.1.0 in our ppa)
 certifi<=2018.1.18 # depends on python-elasticsearch - python-certifi (2018.1.18 in our ppa)
 click==6.7 # python-click (6.7 in our ppa)
 coreapi==2.3.3 # python-coreapi (2.3.3 in our ppa)
@@ -154,7 +155,6 @@ geolinks<=0.2.0 # python-geolinks (0.2.0 in ppa)
 inflection<=0.3.1  # python-inflection (0.3.1 in our ppa)
 ipaddress<=1.0.18 # (1.0.18 in our ppa)
 jdcal<=1.3 # (1.3 in our ppa)
-kombu==4.1.0 # python-kombu (4.1.0 in our ppa)
 mccabe>=0.5.3,<=0.6.1 # (0.4.0 in our ppa) FIXME
 mock<=2.0.0 # (1.3.0 in ppa) FIXME
 numpy<=1.13.1 # (1.11.0 in ppa) FIXME
@@ -188,7 +188,7 @@ pycountry
 # required by worldmap
 datautil==0.4
 dicttoxml==1.7.4
-django-geoexplorer-worldmap==4.0.51
+django-geoexplorer-worldmap==4.0.53
 geopy==1.14.0
 
 #production

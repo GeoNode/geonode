@@ -140,7 +140,7 @@ def ident_json(request):
     json_data['counts'] = facets({'request': request, 'facet_type': 'home'})
 
     return HttpResponse(content=json.dumps(json_data),
-                        mimetype='application/json')
+                        content_type='application/json')
 
 
 def h_keywords(request):

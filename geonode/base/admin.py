@@ -245,6 +245,7 @@ class LinkAdmin(admin.ModelAdmin):
 
 
 class HierarchicalKeywordAdmin(TreeAdmin):
+    search_fields = ('name', )
     form = movenodeform_factory(HierarchicalKeyword)
 
 
