@@ -38,6 +38,7 @@ from django.utils.safestring import mark_safe
 from django.conf import settings
 
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
+from .utils import *
 
 @login_required
 def edit_data(request, layername, template='edit_data/edit_data.html'):
@@ -320,65 +321,3 @@ def save_added_row(request, template='edit_data/edit_data.html'):
         success = True
         update_bbox_in_CSW(layer, layer_name)
         return JsonResponse({'success': success,  'message': message})
-
-
-# Used to update the BBOX of geoserver and send a see request
-# Takes as input the headers and the layer_name
-# Returns status_code of each request
-def update_bbox_and_seed(headers, layer_name, store_name):
-    # Update the BBOX of layer in geoserver (use of recalculate)
-    url = settings.OGC_SERVER['default']['LOCATION'] + "rest/workspaces/geonode/datastores/{store_name}/featuretypes/{layer_name}.xml?recalculate=nativebbox,latlonbbox".format(** {
-        'store_name': store_name.strip(),
-        'layer_name': layer_name
-    })
-
-    xmlstr = """<featureType><enabled>true</enabled></featureType>"""
-    status_code_bbox = requests.put(url, headers=headers, data=xmlstr, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
-
-    # Seed the cache for this layer
-    url = settings.OGC_SERVER['default']['LOCATION'] + "gwc/rest/seed/geonode:{layer_name}.xml".format(** {
-        'layer_name': layer_name
-    })
-    xml_path = "edit_data/seedRequest_geom.xml"
-    xmlstr = get_template(xml_path).render({
-            'workspace': 'geonode',
-            'layer_name': layer_name
-            })
-    status_code_seed = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
-    return status_code_bbox, status_code_seed
-
-
-# Update the values for BBOX in CSW with the values calculated in geoserver layer
-def update_bbox_in_CSW(layer, layer_name):
-
-    # Get the coords from geoserver layer and update the base_resourceBase table
-    from geoserver.catalog import Catalog
-    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
-    resource = cat.get_resource(layer_name, workspace="geonode")
-    # use bbox_to_wkt to convert the BBOX coords to the wkt format
-    from geonode.utils import bbox_to_wkt
-    r = bbox_to_wkt(resource.latlon_bbox[0], resource.latlon_bbox[1], resource.latlon_bbox[2], resource.latlon_bbox[3], "4326")
-    csw_wkt_geometry = r.split(";", 1)[1]
-    # update the base_resourceBase
-    from geonode.base.models import ResourceBase
-    resources = ResourceBase.objects.filter(pk=layer.id)
-    resources.update(bbox_x0=resource.latlon_bbox[0], bbox_x1=resource.latlon_bbox[1], bbox_y0=resource.latlon_bbox[2], bbox_y1=resource.latlon_bbox[3], csw_wkt_geometry=csw_wkt_geometry)
-
-    return csw_wkt_geometry
-
-
-#  Returns the store name based on the workspace and the layer name
-def get_store_name(layer_name):
-    # get the name of the store
-    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
-    resource = cat.get_resource(layer_name, workspace='geonode')
-    store_name = resource.store.name
-
-    # select the name of the geometry column based on the store type
-    if (store_name == "uploaded"):
-        geometry_clm = "the_geom"
-    else:
-        geometry_clm = "shape"
-
-
-    return store_name, geometry_clm
