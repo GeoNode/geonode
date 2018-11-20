@@ -217,6 +217,7 @@ def save_geom_edits(request, template='edit_data/edit_data.html'):
         full_layer_name)
 
     store_name, geometry_clm = get_store_name(layer_name)
+    geometry_clm = "the_geom"
     xml_path = "edit_data/wfs_edit_point_geom.xml"
     xmlstr = get_template(xml_path).render({
             'layer_name': layer_name,
@@ -227,8 +228,6 @@ def save_geom_edits(request, template='edit_data/edit_data.html'):
     url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
     headers = {'Content-Type': 'application/xml'} # set what your server accepts
     status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
-
-    store_name, geometry_clm = get_store_name(layer_name)
 
     status_code_bbox, status_code_seed = update_bbox_and_seed(headers, layer_name, store_name)
     if (status_code != 200):
@@ -300,20 +299,16 @@ def save_added_row(request, template='edit_data/edit_data.html'):
         xml_path = "edit_data/wfs_add_new_polygon.xml"
 
     store_name, geometry_clm = get_store_name(layer_name)
-    print geometry_clm
-
+    geometry_clm = "the_geom"
     xmlstr = get_template(xml_path).render({
             'geonode_url': geonode_url,
             'layer_name': layer_name,
             'coords': coords,
             'property_element': mark_safe(property_element),
-            'geometry_clm': 'the_geom'}).strip()
-            #'geometry_clm': geometry_clm}).strip()
+            'geometry_clm': geometry_clm}).strip()
 
     url = settings.OGC_SERVER['default']['LOCATION'] + 'geonode/wfs'
     status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
-
-    store_name, geometry_clm = get_store_name(layer_name)
 
     status_code_bbox, status_code_seed = update_bbox_and_seed(headers, layer_name, store_name)
     if (status_code != 200):
