@@ -31,17 +31,12 @@ from guardian.shortcuts import get_anonymous_user
 from geonode.geoserver.signals import gs_catalog
 from geonode import GeoNodeException
 from geonode.layers.models import Layer
-from geonode.layers.populate_layers_data import create_layer_data
 
+#from geonode.contrib.createlayer.utils import create_layer
+from geonode.contrib.edit_data import *
 
 
 
 class EditDataCoreTest(GeoNodeBaseTestSupport):
 
-    def setUp(self):
-        super(EditDataCoreTest, self).setUp()
-
-        create_layer_data()
-        self.user = 'admin'
-        self.passwd = 'admin'
-        self.anonymous_user = get_anonymous_user()
+    def test_edit_data(self):

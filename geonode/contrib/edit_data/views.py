@@ -18,13 +18,13 @@
 #
 #########################################################################
 
-from owslib.wfs import WebFeatureService
+
 from geoserver.catalog import Catalog
+
 from collections import OrderedDict
 import requests
-import json
 import re
-import operator
+import time
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -40,96 +40,41 @@ from django.conf import settings
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 from .utils import *
 
-@login_required
-def edit_data(request, layername, template='edit_data/edit_data.html'):
-    import time
-    start_time = time.time()
 
-    context_dict = {}
+@login_required
+def display_data(request, layername, template='edit_data/edit_data.html'):
+
+    #start_time = time.time()
     layer = _resolve_layer(
         request,
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_MODIFY)
-
-    layers_names = layer.typename
-    workspace, name = layers_names.split(':')
-
-    location = "{location}{service}".format(** {
-        'location': settings.OGC_SERVER['default']['LOCATION'],
-        'service': 'wms',
-    })
+    workspace, name = layer.typename.split(':')
+    #initialize context_dict
+    context_dict = {}
+    context_dict["resource"] = layer
     # get layer's attributes with display_order gt 0
-    attr_to_display = layer.attribute_set.filter(display_order__gt=0)
     layers_attributes = []
+    attr_to_display = layer.attribute_set.filter(display_order__gt=0)
     for values in attr_to_display.values('attribute'):
         layers_attributes.append(values['attribute'])
-
-    username = settings.OGC_SERVER['default']['USER']
-    password = settings.OGC_SERVER['default']['PASSWORD']
-
-    wfs = WebFeatureService(location, version='1.1.0', username=username, password=password)
-
-    from owslib.feature.schema import get_schema
-    schema = get_schema(location, name, username=username, password=password)
-
-    # acquire the geometry of layer - requires improvement
-    geom_dict = {
-        'Point': 'Point',
-        'MultiPoint': 'Point',
-        'MultiSurfacePropertyType': 'Polygon',
-        'MultiPolygon': 'Polygon',
-        'MultiLineString': 'Linestring'
-    }
-    geom_type = schema.get('geometry') or schema['properties'].get('the_geom')
-    context_dict["layer_geom"] = json.dumps(geom_dict.get(geom_type, 'unknown'))
-    schema.pop("geometry")
-    # remove the_geom/geom parameter
-    if 'the_geom' in schema['properties']:
-        schema['properties'].pop('the_geom', None)
-
-    # filter the schema dict based on the values of layers_attributes
-    layer_attributes_schema = []
-    for key in schema['properties'].keys():
-        if key in layers_attributes:
-            layer_attributes_schema.append(key)
-        else:
-            schema['properties'].pop(key, None)
-
-    filtered_attributes = list(set(layers_attributes).intersection(layer_attributes_schema))
 
     # get the metadata description
     attribute_description = {}
     display_order_dict = {}
+
+    wfs, filtered_attributes, context_dict = data_display_schema( name, layers_attributes, context_dict )
+
     for idx, value in enumerate(filtered_attributes):
         description = layer.attribute_set.values('description').filter(attribute=value)
         display_order = layer.attribute_set.values('display_order').filter(attribute=value)
         attribute_description[value] = description[0]['description']
         display_order_dict[value] = display_order[0]['display_order']
 
-    context_dict["schema"] = schema
+    context_dict = data_display( name, wfs, layers_attributes, attribute_description, display_order_dict, filtered_attributes, context_dict )
 
-    response = wfs.getfeature(typename=name, propertyname=filtered_attributes, outputFormat='application/json')
-
-    features_response = json.dumps(json.loads(response.read()))
-    decoded = json.loads(features_response)
-    decoded_features = decoded['features']
-
-    # order the list and create ordered dictionary
-    display_order_list_sorted = sorted(display_order_dict.items(), key=operator.itemgetter(1))
-    display_order_dict_sorted = OrderedDict(display_order_list_sorted)
-
-    # display_order_dict_sorted = dict(display_order_list_sorted)
-    context_dict["feature_properties"] = json.dumps(decoded_features)
-    context_dict["attribute_description"] = json.dumps(attribute_description)
-    context_dict["display_order_dict_sorted"] = json.dumps(display_order_dict_sorted)
-    context_dict["resource"] = layer
-    context_dict["layer_name"] = json.dumps(name)
-    context_dict["name"] = name
-    context_dict["url"] = json.dumps(settings.OGC_SERVER['default']['LOCATION'])
-    context_dict["site_url"] = json.dumps(settings.SITEURL)
-    context_dict["default_workspace"] = json.dumps(settings.DEFAULT_WORKSPACE)
-    print("--- %s secondsssss ---" % (time.time() - start_time))
+    #print("--- %s seconds ---" % (time.time() - start_time))
     return render(request, template, context_dict )
 
 

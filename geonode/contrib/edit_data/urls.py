@@ -26,7 +26,7 @@ from geonode.contrib.edit_data import views as edit_data
 
 
 urlpatterns = [
-    url(r'^(?P<layername>[^/]*)/edit_data$', edit_data.edit_data, name="edit_data"),
+    url(r'^(?P<layername>[^/]*)/display_data$', edit_data.display_data, name="display_data"),
     url(r'^save_edits$', edit_data.save_edits, name='save_edits'),
     url(r'^delete_edits$', edit_data.delete_edits, name='delete_edits'),
     url(r'^save_geom_edits$', edit_data.save_geom_edits, name='save_geom_edits'),

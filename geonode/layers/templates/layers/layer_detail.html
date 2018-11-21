@@ -496,7 +496,7 @@
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                 {% endif %}
                 {% if 'geonode.contrib.edit_data' in INSTALLED_APPS and resource.storeType == 'dataStore' and "change_layer_data" in layer_perms %}
-                <a class="btn btn-danger btn-block btn-xs" href="{% url "edit_data" resource.service_typename %}">{% trans "Edit data" %}</a>
+                <a class="btn btn-danger btn-block btn-xs" href="{% url "display_data" resource.service_typename %}">{% trans "Edit data" %}</a>
                 {% elif 'geonode.contrib.edit_data' not in INSTALLED_APPS and resource.storeType == 'dataStore' and "change_layer_data" in layer_perms and OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
                 <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}&storeType={{resource.storeType}}">{% trans "Edit data" %}</a>
                 {% endif %}
