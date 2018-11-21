@@ -30,6 +30,7 @@ from owslib.feature.schema import get_schema
 
 from django.conf import settings
 from django.template.loader import get_template
+from django.utils.safestring import mark_safe
 
 from geonode.base.models import ResourceBase
 from geonode.utils import bbox_to_wkt
@@ -100,6 +101,75 @@ def data_display(name, wfs, layers_attributes, attribute_description, display_or
     context_dict["default_workspace"] = json.dumps(settings.DEFAULT_WORKSPACE)
 
     return context_dict
+
+
+def add_row(layer_name, feature_type, data, data_dict):
+
+    # concatenate all the properties
+    property_element = ""
+    for i, val in enumerate(data):
+        attribute, value = data[i].split("=")
+        if value == "":
+            continue
+        # xml string with property element
+        property_element_1 = """<{}>{}</{}>\n\t\t""".format(attribute, value, attribute)
+        property_element = property_element + property_element_1
+
+
+    # Make a Describe Feature request to get the correct link for the xmlns:geonode
+    headers = {'Content-Type': 'application/xml'} # set what your server accepts
+    xml_path = "edit_data/wfs_describe_feature.xml"
+    xmlstr = get_template(xml_path).render({
+            'layer_name': layer_name}).strip()
+    url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
+    describe_feature_response = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).text
+
+    from lxml import etree
+    xml = bytes(bytearray(describe_feature_response, encoding='utf-8'))  # encode it and force the same encoder in the parser
+    doc = etree.XML(xml)
+    nsmap = {}
+    for ns in doc.xpath('//namespace::*'):
+        nsmap[ns[0]] = ns[1]
+    if nsmap['geonode']:
+        geonode_url = nsmap['geonode']
+
+    # Prepare the WFS-T insert request depending on the geometry
+    if feature_type == 'Point':
+        coords = ','.join(map(str, data_dict['coords']))
+        coords = coords.replace(",", " ")
+        xml_path = "edit_data/wfs_add_new_point.xml"
+    elif feature_type == 'LineString':
+        coords = ','.join(map(str, data_dict['coords']))
+        coords = re.sub('(,[^,]*),', r'\1 ', coords)
+        xml_path = "edit_data/wfs_add_new_line.xml"
+    elif feature_type == 'Polygon':
+        coords = [item for sublist in data_dict['coords'] for item in sublist]
+        coords = ','.join(map(str, coords))
+        coords = coords.replace(",", " ")
+        xml_path = "edit_data/wfs_add_new_polygon.xml"
+
+    store_name, geometry_clm = get_store_name(layer_name)
+    geometry_clm = "the_geom"
+    xmlstr = get_template(xml_path).render({
+            'geonode_url': geonode_url,
+            'layer_name': layer_name,
+            'coords': coords,
+            'property_element': mark_safe(property_element),
+            'geometry_clm': geometry_clm}).strip()
+
+    url = settings.OGC_SERVER['default']['LOCATION'] + 'geonode/wfs'
+    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
+
+    status_code_bbox, status_code_seed = update_bbox_and_seed(headers, layer_name, store_name)
+
+    if (status_code != 200):
+        message = "Error adding data."
+        success = False
+        return success, message, status_code
+    else:
+        message = "New data were added succesfully."
+        success = True
+        return success, message, status_code
 
 
 # Used to update the BBOX of geoserver and send a see request
