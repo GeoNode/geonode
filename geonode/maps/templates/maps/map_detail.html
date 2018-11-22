@@ -131,14 +131,14 @@
         </div>
         {% if "change_resourcebase" in perms_list  or "change_resourcebase_metadata" in perms_list %}
         <li class="list-group-item">
-          <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-map">{% trans "Edit Map" %}</button>
+          <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-map">{% trans "Editing Tools" %}</button>
         </li>
         <div class="modal fade" id="edit-map" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">{% trans "Edit Map" %}</h4>
+                <h4 class="modal-title" id="myModalLabel">{% trans "Editing Tools" %}</h4>
               </div>
               <div class="modal-body">
                 <div class="row edit-modal">
@@ -178,6 +178,8 @@
         <li class="list-group-item">
           <a href="{% url "map_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
         </li>
+        {% else %}
+          <a href="{% url "map_edit" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
         {% endif %}
         {% comment %}
         <li class="list-group-item">
