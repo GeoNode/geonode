@@ -174,13 +174,13 @@
           </div>
         </div>
         {% endif %}
-        {% if "change_resourcebase" not in perms_list and "change_resourcebase_metadata" not in perms_list %}
         <li class="list-group-item">
+        {% if "change_resourcebase" not in perms_list and "change_resourcebase_metadata" not in perms_list %}
           <a href="{% url "map_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
-        </li>
         {% else %}
           <a href="{% url "map_edit" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
         {% endif %}
+        </li>
         {% comment %}
         <li class="list-group-item">
           <a href="#" class="btn btn-default btn-md btn-block">{% trans "Print Map" %}</a>
