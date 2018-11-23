@@ -103,7 +103,7 @@ def data_display(name, wfs, layers_attributes, attribute_description, display_or
     return context_dict
 
 
-def add_row(layer_name, feature_type, data, data_dict):
+def save_added_row(layer_name, feature_type, data, data_dict):
 
     # concatenate all the properties
     property_element = ""
@@ -172,6 +172,91 @@ def add_row(layer_name, feature_type, data, data_dict):
         return success, message, status_code
 
 
+def save_edits(layer_name, feature_id, data_dict):
+    data = data_dict['data'].split(",")
+    data = [x.encode('ascii', 'ignore').decode('ascii') for x in data]
+
+    url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
+    property_element = ""
+    # concatenate all the properties
+    for i, val in enumerate(data):
+        attribute, value = data[i].split("=")
+        # xml string with property element
+        property_element_1 = """<wfs:Property>
+          <wfs:Name>{}</wfs:Name>
+          <wfs:Value>{}</wfs:Value>
+        </wfs:Property>\n""".format(attribute, value)
+        property_element = property_element + property_element_1
+    # build the update wfs-t request
+    xml_path = "edit_data/wfs_edit_data.xml"
+    xmlstr = get_template(xml_path).render({
+            'layer_name': layer_name,
+            'feature_id': feature_id,
+            'property_element': mark_safe(property_element)}).strip()
+
+    headers = {'Content-Type': 'application/xml'}  # set what your server accepts
+
+    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
+
+    if (status_code != 200):
+        message = "Error adding data."
+        success = False
+        return success, message, status_code
+    else:
+        message = "New data were added succesfully."
+        success = True
+        return success, message, status_code
+
+
+def save_geom_edits(layer_name, feature_id, coords):
+
+    store_name, geometry_clm = get_store_name(layer_name)
+    geometry_clm = "the_geom"
+    xml_path = "edit_data/wfs_edit_point_geom.xml"
+    xmlstr = get_template(xml_path).render({
+            'layer_name': layer_name,
+            'coords': coords,
+            'feature_id': feature_id,
+            'geometry_clm': geometry_clm}).strip()
+
+    url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
+    headers = {'Content-Type': 'application/xml'} # set what your server accepts
+    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
+
+    status_code_bbox, status_code_seed = update_bbox_and_seed(headers, layer_name, store_name)
+
+    if (status_code != 200):
+        message = "Error adding data."
+        success = False
+        return success, message, status_code
+    else:
+        message = "New data were added succesfully."
+        success = True
+        return success, message, status_code
+
+
+def delete_selected_row(layer_name, feature_id):
+
+    xml_path = "edit_data/wfs_delete_row.xml"
+    xmlstr = get_template(xml_path).render({
+            'layer_name': layer_name,
+            'feature_id': feature_id}).strip()
+
+    url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
+    headers = {'Content-Type': 'application/xml'}  # set what your server accepts
+    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
+
+    if (status_code != 200):
+        message = "Error adding data."
+        success = False
+        return success, message, status_code
+    else:
+        message = "New data were added succesfully."
+        success = True
+        return success, message, status_code
+
+    return success, message, status_code
+
 # Used to update the BBOX of geoserver and send a see request
 # Takes as input the headers and the layer_name
 # Returns status_code of each request
@@ -226,6 +311,5 @@ def get_store_name(layer_name):
         geometry_clm = "the_geom"
     else:
         geometry_clm = "shape"
-
 
     return store_name, geometry_clm

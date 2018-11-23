@@ -77,119 +77,8 @@ def display_data(request, layername, template='edit_data/edit_data.html'):
     #print("--- %s seconds ---" % (time.time() - start_time))
     return render(request, template, context_dict )
 
-
-
 @login_required
-def delete_edits(request, template='edit_data/edit_data.html'):
-
-    data_dict = json.loads(request.POST.get('json_data'))
-    feature_id = data_dict['feature_id']
-    layer_name = data_dict['layer_name']
-
-    xml_path = "edit_data/wfs_delete_row.xml"
-    xmlstr = get_template(xml_path).render({
-            'layer_name': layer_name,
-            'feature_id': feature_id}).strip()
-
-    url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
-    headers = {'Content-Type': 'application/xml'}  # set what your server accepts
-    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
-
-    if (status_code != 200):
-        message = "Failed to delete row."
-        success = False
-        return JsonResponse({'success': success, 'message': message})
-    else:
-        message = "Row was deleted successfully."
-        success = True
-        return JsonResponse({'success': success, 'message': message})
-
-    return JsonResponse({'success': success, 'message': message})
-
-
-
-@login_required
-def save_edits(request, template='edit_data/edit_data.html'):
-
-    data_dict = json.loads(request.POST.get('json_data'))
-    feature_id = data_dict['feature_id']
-    layer_name = data_dict['layer_name']
-    data = data_dict['data']
-    data = data.split(",")
-    data = [x.encode('ascii', 'ignore').decode('ascii') for x in data]
-    url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
-    property_element = ""
-    # concatenate all the properties
-    for i, val in enumerate(data):
-        attribute, value = data[i].split("=")
-        # xml string with property element
-        property_element_1 = """<wfs:Property>
-          <wfs:Name>{}</wfs:Name>
-          <wfs:Value>{}</wfs:Value>
-        </wfs:Property>\n""".format(attribute, value)
-        property_element = property_element + property_element_1
-    # build the update wfs-t request
-    xml_path = "edit_data/wfs_edit_data.xml"
-    xmlstr = get_template(xml_path).render({
-            'layer_name': layer_name,
-            'feature_id': feature_id,
-            'property_element': mark_safe(property_element)}).strip()
-
-    headers = {'Content-Type': 'application/xml'}  # set what your server accepts
-
-    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
-
-    if (status_code != 200):
-        message = "Failed to save edited data."
-        success = False
-        return JsonResponse({'success': success, 'message': message})
-    else:
-        message = "Edits were saved successfully."
-        success = True
-        return JsonResponse({'success': success, 'message': message})
-
-
-@login_required
-def save_geom_edits(request, template='edit_data/edit_data.html'):
-
-    data_dict = json.loads(request.POST.get('json_data'))
-    feature_id = data_dict['feature_id']
-    layer_name = data_dict['layer_name']
-    coords = ' '.join(map(str, data_dict['coords']))
-
-    full_layer_name = "geonode:" + layer_name
-    layer = _resolve_layer(
-        request,
-        full_layer_name)
-
-    store_name, geometry_clm = get_store_name(layer_name)
-    geometry_clm = "the_geom"
-    xml_path = "edit_data/wfs_edit_point_geom.xml"
-    xmlstr = get_template(xml_path).render({
-            'layer_name': layer_name,
-            'coords': coords,
-            'feature_id': feature_id,
-            'geometry_clm': geometry_clm}).strip()
-
-    url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
-    headers = {'Content-Type': 'application/xml'} # set what your server accepts
-    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
-
-    status_code_bbox, status_code_seed = update_bbox_and_seed(headers, layer_name, store_name)
-    if (status_code != 200):
-        message = "Error saving the geometry."
-        success = False
-        return JsonResponse({'success': success, 'message': message})
-    else:
-        message = "Edits were saved successfully."
-        success = True
-        update_bbox_in_CSW(layer, layer_name)
-        return JsonResponse({'success': success,  'message': message})
-
-
-
-@login_required
-def save_added_row(request, template='edit_data/edit_data.html'):
+def add_row(request, template='edit_data/edit_data.html'):
 
     data_dict = json.loads(request.POST.get('json_data'))
     feature_type = data_dict['feature_type']
@@ -201,8 +90,49 @@ def save_added_row(request, template='edit_data/edit_data.html'):
         request,
         full_layer_name)
 
-    success, message, status_code = add_row(layer_name, feature_type, data, data_dict)
+    success, message, status_code = save_added_row(layer_name, feature_type, data, data_dict)
 
     if (status_code == 200):
         update_bbox_in_CSW(layer, layer_name)
     return JsonResponse({'success': success,  'message': message})
+
+
+@login_required
+def edits(request, template='edit_data/edit_data.html'):
+
+    data_dict = json.loads(request.POST.get('json_data'))
+    feature_id = data_dict['feature_id']
+    layer_name = data_dict['layer_name']
+
+    success, message, status_code = save_edits(layer_name, feature_id, data_dict)
+    return JsonResponse({'success': success,  'message': message})
+
+@login_required
+def geom_edits(request, template='edit_data/edit_data.html'):
+
+    data_dict = json.loads(request.POST.get('json_data'))
+    coords = ' '.join(map(str, data_dict['coords']))
+    feature_id = data_dict['feature_id']
+    layer_name = data_dict['layer_name']
+    full_layer_name = "geonode:" + layer_name
+
+    layer = _resolve_layer(
+        request,
+        full_layer_name)
+
+    success, message, status_code = save_geom_edits(layer_name, feature_id, coords)
+
+    if (status_code == 200):
+        update_bbox_in_CSW(layer, layer_name)
+    return JsonResponse({'success': success,  'message': message})
+
+@login_required
+def delete_row(request, template='edit_data/edit_data.html'):
+
+    data_dict = json.loads(request.POST.get('json_data'))
+    feature_id = data_dict['feature_id']
+    layer_name = data_dict['layer_name']
+
+    success, message, status_code = delete_selected_row(layer_name, feature_id)
+
+    return JsonResponse({'success': success, 'message': message})

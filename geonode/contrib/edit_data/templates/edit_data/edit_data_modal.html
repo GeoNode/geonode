@@ -67,7 +67,7 @@
             data_to_send = data_to_send.slice(0, -1); // remove last character
 
             // build whole url
-            whole_url = "{% url 'save_added_row' %}";
+            whole_url = "{% url 'add_row' %}";
             $.ajax({
               type: "POST",
               url: whole_url,
@@ -103,7 +103,7 @@
         var coords = add_geometry.data("coords");
         var feature_id = $("#"+ add_geometry.data("clicked_btn")).data('fid');
         if (coords != null && coords.length > 0) {
-          whole_url = "{% url 'save_geom_edits' %}";
+          whole_url = "{% url 'geom_edits' %}";
           $.ajax({
             type: "POST",
             url: whole_url,

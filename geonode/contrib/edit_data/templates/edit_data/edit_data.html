@@ -239,7 +239,7 @@
       var clicked_btn = $(this);
       if (confirm("Are you sure you want to delete this row?")){
         var feature_id = $(clicked_btn).data('fid');
-        whole_url = "{% url 'delete_edits' %}";
+        whole_url = "{% url 'delete_row' %}";
         $.ajax({
           type: "POST",
           url: whole_url,
@@ -346,7 +346,7 @@
              }
 
              data_to_send = data_to_send.slice(0, -1); // remove last character
-             whole_url = "{% url 'save_edits' %}";
+             whole_url = "{% url 'edits' %}";
              id_selector.attr("href", whole_url);
              $.ajax({
                type: "POST",

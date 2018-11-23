@@ -32,11 +32,46 @@ from geonode.geoserver.signals import gs_catalog
 from geonode import GeoNodeException
 from geonode.layers.models import Layer
 
-#from geonode.contrib.createlayer.utils import create_layer
+from geonode.contrib.edit_data.utils import *
 from geonode.contrib.edit_data import *
 
 
 
 class EditDataCoreTest(GeoNodeBaseTestSupport):
 
-    def test_edit_data(self):
+
+    def test_add_row(self):
+
+        layer_name = 'test_1'
+        feature_id = 16
+        feature_type = 'Point'
+
+        data = ['Name=I am a test','Status=I am a test']
+        data_dict = {'coords': [-4.570312500000001, 40.44694705960048], 'data': 'Name=I am a test,Status=I am a test', 'feature_type': feature_type, 'layer_name': layer_name}
+        save_added_row(layer_name, feature_type, data, data_dict)
+
+    def test_edits(self):
+
+        layer_name = 'test_1'
+        feature_id = 16
+        feature_type = 'Point'
+
+        data_dict = {"data":"Name=I am a test,Status=Modified","feature_id":feature_id,"layer_name":layer_name}
+        save_edits(layer_name, feature_type, data_dict)
+
+    def geom_edits(self):
+
+        layer_name = 'test_1'
+        feature_id = 16
+        feature_type = 'Point'
+
+        coords = [12.612991333007812,41.73237975329554]
+        save_geom_edits(layer_name, feature_id, coords)
+
+    def test_delete(self):
+
+        layer_name = 'test_1'
+        feature_id = 16
+        feature_type = 'Point'
+
+        delete_selected_row(layer_name, feature_id)
