@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <div class="modal fade" id="_permissions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% url "resource_permissions" resource.id %}">
+  <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% url 'resource_permissions' api_name='api' resource_name='base' resource_id=resource.id %}">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">

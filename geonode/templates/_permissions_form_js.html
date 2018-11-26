@@ -76,10 +76,12 @@
   $(function() {
     $('#permissions-body').ready(function(){
       {% if resource %}
-      $.ajax(
-        "{% url "resource_permissions" resource.id %}",
-        {
+      
+      $.ajax({
+          url:'{% url "resource_permissions" api_name="api" resource_name="base" resource_id=resource.id %}',
+          dataType:'json',
           success: function(data){
+            
             var users = {
               view_resourcebase: [],
               download_resourcebase: [],
@@ -97,7 +99,7 @@
             /*
             * Compile the users fields after receiving the current permissions status from the server
             */
-            var perms = $.parseJSON($.parseJSON(data).permissions);
+            var perms = data.permissions;
 
             var perms_users = perms.users;
 
@@ -305,10 +307,14 @@
           data: JSON.stringify(permissions),
           success: function(data) {
             $("#modal_perms").modal("hide");
-            message = JSON.parse(data);
+            if(data.error){
+              message = data.error
+            }else{
+              message = data.message
+            }
             title = "";
-            body = message.message;
-            if (message.success) {
+            body = message;
+            if (data.success) {
                 title = "OK";
             } else {
                 title = "Warning";
@@ -323,7 +329,11 @@
             // Handle error here
             $("#modal_perms").modal("hide");
             message = JSON.parse(jqXHR.responseText);
-            body = message.message;
+            if(message.error){
+              body = message.error;
+            }else{
+              body = message.message
+            }
             title = "Error";
             $("#_permissions_feedbacks").find('.modal-title').text(title);
             $("#_permissions_feedbacks").find('.modal-body').text(body);
