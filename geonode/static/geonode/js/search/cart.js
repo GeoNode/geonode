@@ -38,13 +38,13 @@
         $.ajax(
          {
            type: "POST",
-           url: siteUrl + "security/bulk-permissions",
+           url: siteUrl + "api/base/bulk-permissions/",
            data: {
              permissions: JSON.stringify(permissions),
              resources: selected_ids
            },
            success: function(data) {
-             var not_changed = $.parseJSON(data).not_changed;
+             var not_changed = data.not_changed;
              if (not_changed.length > 0){
                message.find('.message').html('Permissions correctly registered, although the following resources were'+
                    ' skipped because you don\'t have the rights to edit their permissions:');
@@ -57,7 +57,7 @@
              }
            },
            error: function(data){
-             message.find('.message').html($.parseJSON(data).error);
+             message.find('.message').html(data.error);
              message.addClass('alert-danger').removeClass('alert-success alert-warning hidden');
            }
          }
