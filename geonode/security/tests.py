@@ -26,7 +26,7 @@ import base64
 import urllib2
 import logging
 import gisdata
-
+from geonode.api import API_NAME
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCaseMixin
@@ -92,7 +92,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
-                'api_name': 'api',
+                'api_name': API_NAME,
                 'resource_name': 'layers'})
         self.bulk_perms_url = reverse('bulk_permissions')
         all_public()
@@ -1066,7 +1066,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
-                'api_name': 'api',
+                'api_name': API_NAME,
                 'resource_name': 'layers'})
         self.bulk_perms_url = reverse('bulk_permissions')
         all_public()

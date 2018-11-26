@@ -368,8 +368,8 @@ community."
             data=json.dumps(self.perm_spec),
             content_type="application/json")
 
-        # Test that the method returns 200
-        self.assertEquals(response.status_code, 200)
+        # Test that the method returns 202
+        self.assertEquals(response.status_code, 202)
 
         # Test that the permissions specification is applied
 
