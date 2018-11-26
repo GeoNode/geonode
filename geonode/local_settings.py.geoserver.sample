@@ -51,6 +51,18 @@ if not SITEURL.endswith('/'):
 
 ALLOWED_HOSTS = [HOSTNAME, 'localhost']
 
+# Define email service on GeoNode
+EMAIL_ENABLE = True
+
+if EMAIL_ENABLE:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = False
+    DEFAULT_FROM_EMAIL = 'Example.com <no-reply@localhost>'
+
 TIME_ZONE = 'UTC'
 
 # Login and logout urls override
@@ -63,7 +75,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL =  os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
 # Backend
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'geonode',
         'USER': 'geonode',
         'PASSWORD': 'geonode',
@@ -375,7 +387,7 @@ LOGGING = {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "DEBUG", },
+            "handlers": ["console"], "level": "INFO", },
         "geonode.qgis_server": {
             "handlers": ["console"], "level": "ERROR", },
         "gsconfig.catalog": {
@@ -407,17 +419,6 @@ if MONITORING_ENABLED:
     MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
     MONITORING_SERVICE_NAME = 'geonode'
 
-# Define email service on GeoNode
-EMAIL_ENABLE = False
-
-if EMAIL_ENABLE:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'localhost'
-    EMAIL_PORT = 25
-    EMAIL_HOST_USER = ''
-    EMAIL_HOST_PASSWORD = ''
-    EMAIL_USE_TLS = False
-    DEFAULT_FROM_EMAIL = 'Example.com <no-reply@localhost>'
 
 # Documents Thumbnails
 UNOCONV_ENABLE = True
