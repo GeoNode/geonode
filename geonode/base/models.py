@@ -765,6 +765,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def __unicode__(self):
         return u"{0}".format(self.title)
 
+    # fields controlling security state
+    dirty_state = models.BooleanField(
+        _("Dirty State"),
+        default=False,
+        help_text=_('Security Rules Are Not Synched with GeoServer!'))
+
     def get_upload_session(self):
         raise NotImplementedError()
 
@@ -924,6 +930,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 return 'vector'
             else:
                 return None
+
+    def set_dirty_state(self):
+        if not self.dirty_state:
+            self.dirty_state = True
+            self.save()
+
+    def clear_dirty_state(self):
+        if self.dirty_state:
+            self.dirty_state = False
+            self.save()
 
     @property
     def keyword_csv(self):

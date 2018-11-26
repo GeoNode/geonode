@@ -53,9 +53,10 @@
             <span ng-if="item.online == false"><i class="fa fa-power-off text-danger"></i> {% trans "Service is" %} {% trans "offline" %}</span>
             {% verbatim %}
           </em>
-          {% endverbatim %}
-          <div class="alert alert-warning" ng-if="item.is_approved == false">{% trans "PENDING APPROVAL" %}</div>
-          <div class="alert alert-danger" ng-if="item.is_approved == true && item.is_published == false">{% trans "UNPUBLISHED" %}</div>
+		  {% endverbatim %}
+          <div class="alert alert-danger" ng-if="item.dirty_state == true">{% trans "SECURITY NOT YET SYNCHRONIZED" %}</div>
+          <div class="alert alert-warning" ng-if="item.dirty_state == false && item.is_approved == false">{% trans "PENDING APPROVAL" %}</div>
+          <div class="alert alert-danger" ng-if="item.dirty_state == false && item.is_approved == true && item.is_published == false">{% trans "UNPUBLISHED" %}</div>
           {% verbatim %}
 
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
