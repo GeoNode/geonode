@@ -24,7 +24,7 @@ from datetime import datetime
 from lxml import etree
 
 from django.core.urlresolvers import reverse
-
+from geonode.api import API_NAME
 try:
     import json
 except ImportError:
@@ -325,8 +325,11 @@ community."
         invalid_mapid = "42"
 
         def url(id):
-            return reverse('resource_permissions', args=[id])
-
+            return reverse(
+                'resource_permissions', kwargs={
+                'resource_id': id,
+                'resource_name': 'base',
+                'api_name': API_NAME})
         # Test that an invalid layer.alternate is handled for properly
         response = self.client.post(
             url(invalid_mapid),

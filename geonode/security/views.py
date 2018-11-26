@@ -54,64 +54,6 @@ def _perms_info_json(obj):
     return json.dumps(info)
 
 
-def resource_permissions(request, resource_id):
-    try:
-        resource = resolve_object(
-            request, ResourceBase, {
-                'id': resource_id}, 'base.change_resourcebase_permissions')
-
-    except PermissionDenied:
-        # we are handling this in a non-standard way
-        return HttpResponse(
-            'You are not allowed to change permissions for this resource',
-            status=401,
-            content_type='text/plain')
-
-    if request.method == 'POST':
-        success = True
-        message = "Permissions successfully updated!"
-        try:
-            permission_spec = json.loads(request.body)
-            resource.set_permissions(permission_spec)
-
-            # Check Users Permissions Consistency
-            info = _perms_info(resource)
-            info_users = dict([(u.username, perms) for u, perms in info['users'].items()])
-            for user, perms in info_users.items():
-                if 'download_resourcebase' in perms and 'view_resourcebase' not in perms:
-                    success = False
-                    message = 'User ' + str(user) + ' has Download permissions but ' \
-                              'cannot access the resource. ' \
-                              'Please update permissions consistently!'
-
-            return HttpResponse(
-                json.dumps({'success': success, 'message': message}),
-                status=200,
-                content_type='text/plain'
-            )
-        except BaseException:
-            success = False
-            message = "Error updating permissions :("
-            return HttpResponse(
-                json.dumps({'success': success, 'message': message}),
-                status=500,
-                content_type='text/plain'
-            )
-
-    elif request.method == 'GET':
-        permission_spec = _perms_info_json(resource)
-        return HttpResponse(
-            json.dumps({'success': True, 'permissions': permission_spec}),
-            status=200,
-            content_type='text/plain'
-        )
-    else:
-        return HttpResponse(
-            'No methods other than get and post are allowed',
-            status=401,
-            content_type='text/plain')
-
-
 @require_POST
 def invalidate_tiledlayer_cache(request):
     from .utils import set_geowebcache_invalidate_cache

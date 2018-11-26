@@ -659,6 +659,16 @@ class ResourceBaseResource(CommonModelApi):
 
     """ResourceBase api"""
 
+    def get_err_response(self,
+                         request,
+                         message,
+                         response_class=http.HttpApplicationError):
+        data = {
+            'error_message': message,
+        }
+        return self.error_response(
+            request, data, response_class=response_class)
+
     def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/(?P<resource_id>[\d]+)/permissions%s$"
@@ -713,7 +723,7 @@ class ResourceBaseResource(CommonModelApi):
             permission_spec = _perms_info_json(resource)
             return self.create_response(request,
                                         {'success': True,
-                                            'permissions': permission_spec},
+                                            'permissions': json.loads(permission_spec)},
                                         http.HttpAccepted)
         else:
             return self.get_err_response(request,

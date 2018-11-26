@@ -28,7 +28,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
 from django.test import override_settings
 from django.conf import settings
-
+from geonode.api import API_NAME
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.groups.models import GroupProfile, GroupCategory
@@ -197,12 +197,14 @@ class SmokeTest(GeoNodeBaseTestSupport):
 
         objects = layer, document, map_obj
 
+        def get_resource_permissions_url(resource_id):
+            return reverse(
+                'resource_permissions', kwargs={
+                'resource_id': resource_id,
+                'resource_name': 'base',
+                'api_name': API_NAME})
         for obj in objects:
-            response = self.client.get(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(
-                        resource_id=obj.id)))
+            response = self.client.get(get_resource_permissions_url(obj.id))
             self.assertEqual(response.status_code, 200)
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
@@ -234,20 +236,13 @@ class SmokeTest(GeoNodeBaseTestSupport):
             }
 
             # Give the bar group permissions
-            response = self.client.post(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(resource_id=obj.id)),
-                data=json.dumps(permissions),
-                content_type="application/json")
+            response = self.client.post(get_resource_permissions_url(obj.id),
+                                        data=json.dumps(permissions),
+                                        content_type="application/json")
 
             self.assertEqual(response.status_code, 200)
 
-            response = self.client.get(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(
-                        resource_id=obj.id)))
+            response = self.client.get(get_resource_permissions_url(obj.id))
 
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
@@ -265,20 +260,13 @@ class SmokeTest(GeoNodeBaseTestSupport):
             permissions = {"users": {"admin": ['change_resourcebase']}}
 
             # Update the object's permissions to remove the bar group
-            response = self.client.post(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(resource_id=obj.id)),
-                data=json.dumps(permissions),
-                content_type="application/json")
+            response = self.client.post(get_resource_permissions_url(obj.id),
+                                        data=json.dumps(permissions),
+                                        content_type="application/json")
 
             self.assertEqual(response.status_code, 200)
 
-            response = self.client.get(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(
-                        resource_id=obj.id)))
+            response = self.client.get(get_resource_permissions_url(obj.id))
 
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())

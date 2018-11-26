@@ -69,6 +69,7 @@ class StreamToLogger(object):
     """
     Fake file-like stream object that redirects writes to a logger instance.
     """
+
     def __init__(self, logger, log_level=logging.INFO):
         self.logger = logger
         self.log_level = log_level
@@ -752,35 +753,32 @@ class PermissionsTest(GeoNodeBaseTestSupport):
     def test_ajax_layer_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
         """
-
+        def get_resource_permissions_url(resource_id):
+            return reverse(
+                'resource_permissions', kwargs={
+                'resource_id': resource_id,
+                'resource_name': 'base',
+                'api_name': API_NAME})
         # Setup some layer names to work with
         valid_layer_typename = Layer.objects.all()[0].id
         invalid_layer_id = 9999999
 
         # Test that an invalid layer.alternate is handled for properly
         response = self.client.post(
-            reverse(
-                'resource_permissions', args=(
-                    invalid_layer_id,)), data=json.dumps(
+            get_resource_permissions_url(invalid_layer_id), data=json.dumps(
                 self.perm_spec), content_type="application/json")
         self.assertEquals(response.status_code, 404)
 
         # Test that GET returns permissions
         response = self.client.get(
-            reverse(
-                'resource_permissions',
-                args=(
-                    valid_layer_typename,
-                )))
+            get_resource_permissions_url(valid_layer_typename))
         assert('permissions' in response.content)
 
         # Test that a user is required to have maps.change_layer_permissions
 
         # First test un-authenticated
         response = self.client.post(
-            reverse(
-                'resource_permissions', args=(
-                    valid_layer_typename,)), data=json.dumps(
+            get_resource_permissions_url(valid_layer_typename), data=json.dumps(
                 self.perm_spec), content_type="application/json")
         self.assertEquals(response.status_code, 401)
 
@@ -788,9 +786,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         logged_in = self.client.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
         response = self.client.post(
-            reverse(
-                'resource_permissions', args=(
-                    valid_layer_typename,)), data=json.dumps(
+            get_resource_permissions_url(valid_layer_typename), data=json.dumps(
                 self.perm_spec), content_type="application/json")
         self.assertEquals(response.status_code, 200)
 
@@ -799,9 +795,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         self.assertEquals(logged_in, True)
 
         response = self.client.post(
-            reverse(
-                'resource_permissions', args=(
-                    valid_layer_typename,)), data=json.dumps(
+            get_resource_permissions_url(valid_layer_typename), data=json.dumps(
                 self.perm_spec), content_type="application/json")
 
         # Test that the method returns 200

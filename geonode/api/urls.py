@@ -19,7 +19,7 @@
 #########################################################################
 
 from tastypie.api import Api
-
+from . import API_NAME
 from geonode.api.api import StyleResource
 from .api import TagResource, TopicCategoryResource, ProfileResource, \
     GroupResource, RegionResource, OwnersResource, ThesaurusKeywordResource, \
@@ -27,7 +27,7 @@ from .api import TagResource, TopicCategoryResource, ProfileResource, \
 from .resourcebase_api import LayerResource, MapResource, DocumentResource, \
     ResourceBaseResource, FeaturedResourceBaseResource
 
-api = Api(api_name='api')
+api = Api(api_name=API_NAME)
 
 api.register(LayerResource())
 api.register(MapResource())
