@@ -685,6 +685,7 @@ class ResourceBaseResource(CommonModelApi):
         self.method_check(request, allowed=['get', 'post'])
         self.is_authenticated(request)
         self.throttle_check(request)
+        resource = None
         try:
             resource = resolve_object(
                 request, ResourceBase, {
@@ -696,11 +697,11 @@ class ResourceBaseResource(CommonModelApi):
                                              'You are not allowed to change' +
                                              'permissions for this resource',
                                              http.HttpUnauthorized)
-            else:
+        finally:
+            if not resource:
                 return self.get_err_response(request,
-                                             e.message,
+                                             "Resource Not Found",
                                              http.HttpNotFound)
-
         if request.method == 'POST':
             success = True
             message = "Permissions successfully updated!"
