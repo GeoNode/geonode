@@ -103,8 +103,9 @@ def data_display(name, wfs, layers_attributes, attribute_description, display_or
     return context_dict
 
 
-def save_added_row(layer_name, feature_type, data, data_dict):
+def save_added_row(layer_name, feature_type, data_dict):
 
+    data = data_dict['data'].split(",")
     # concatenate all the properties
     property_element = ""
     for i, val in enumerate(data):
@@ -123,7 +124,7 @@ def save_added_row(layer_name, feature_type, data, data_dict):
             'layer_name': layer_name}).strip()
     url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
     describe_feature_response = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).text
-
+    
     from lxml import etree
     xml = bytes(bytearray(describe_feature_response, encoding='utf-8'))  # encode it and force the same encoder in the parser
     doc = etree.XML(xml)
@@ -199,11 +200,11 @@ def save_edits(layer_name, feature_id, data_dict):
     status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
 
     if (status_code != 200):
-        message = "Error adding data."
+        message = "Failed to save edited data."
         success = False
         return success, message, status_code
     else:
-        message = "New data were added succesfully."
+        message = "Edits were saved successfully."
         success = True
         return success, message, status_code
 
@@ -226,11 +227,11 @@ def save_geom_edits(layer_name, feature_id, coords):
     status_code_bbox, status_code_seed = update_bbox_and_seed(headers, layer_name, store_name)
 
     if (status_code != 200):
-        message = "Error adding data."
+        message = "Error saving the geometry."
         success = False
         return success, message, status_code
     else:
-        message = "New data were added succesfully."
+        message = "Edits were saved successfully."
         success = True
         return success, message, status_code
 
@@ -247,11 +248,11 @@ def delete_selected_row(layer_name, feature_id):
     status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
 
     if (status_code != 200):
-        message = "Error adding data."
+        message = "Failed to delete row."
         success = False
         return success, message, status_code
     else:
-        message = "New data were added succesfully."
+        message = "Row was deleted successfully."
         success = True
         return success, message, status_code
 

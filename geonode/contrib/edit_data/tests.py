@@ -43,35 +43,33 @@ class EditDataCoreTest(GeoNodeBaseTestSupport):
     def test_add_row(self):
 
         layer_name = 'test_1'
-        feature_id = 16
         feature_type = 'Point'
 
-        data = ['Name=I am a test','Status=I am a test']
-        data_dict = {'coords': [-4.570312500000001, 40.44694705960048], 'data': 'Name=I am a test,Status=I am a test', 'feature_type': feature_type, 'layer_name': layer_name}
-        save_added_row(layer_name, feature_type, data, data_dict)
+        data_dict = {"data":"OID_=,Name=carribean6,Status=,ADM1_NAME=","feature_type":"Point","layer_name":"test_1","coords":[-69.06250000000001, 8.407168163601076]}
 
+        save_added_row(layer_name, feature_type, data_dict)
+    '''
     def test_edits(self):
 
         layer_name = 'test_1'
-        feature_id = 16
-        feature_type = 'Point'
+        feature_id = 24
 
-        data_dict = {"data":"Name=I am a test,Status=Modified","feature_id":feature_id,"layer_name":layer_name}
-        save_edits(layer_name, feature_type, data_dict)
+        data_dict = {"data":"Name=I am a test,Status=Modified3","feature_id":feature_id,"layer_name":layer_name}
+        save_edits(layer_name, feature_id, data_dict)
 
-    def geom_edits(self):
+    def test_geom_edits(self):
 
         layer_name = 'test_1'
-        feature_id = 16
-        feature_type = 'Point'
+        feature_id = 'test_1.22'
 
-        coords = [12.612991333007812,41.73237975329554]
+        coords = '23.5624423119 -83.6654376984'
         save_geom_edits(layer_name, feature_id, coords)
+
 
     def test_delete(self):
 
         layer_name = 'test_1'
-        feature_id = 16
-        feature_type = 'Point'
+        feature_id = 'test_1.23'
 
         delete_selected_row(layer_name, feature_id)
+    '''

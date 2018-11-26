@@ -84,13 +84,12 @@ def add_row(request, template='edit_data/edit_data.html'):
     feature_type = data_dict['feature_type']
     layer_name = data_dict['layer_name']
     full_layer_name = "geonode:" + layer_name
-    data = data_dict['data'].split(",")
 
     layer = _resolve_layer(
         request,
         full_layer_name)
 
-    success, message, status_code = save_added_row(layer_name, feature_type, data, data_dict)
+    success, message, status_code = save_added_row(layer_name, feature_type, data_dict)
 
     if (status_code == 200):
         update_bbox_in_CSW(layer, layer_name)
