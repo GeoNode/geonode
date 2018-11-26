@@ -57,7 +57,9 @@ from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
 
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
-
+from django.core.exceptions import PermissionDenied
+from geonode.utils import resolve_object
+from geonode.security.views import _perms_info, _perms_info_json
 from .api import (TagResource,
                   RegionResource,
                   OwnersResource,
@@ -657,13 +659,75 @@ class ResourceBaseResource(CommonModelApi):
 
     """ResourceBase api"""
 
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/(?P<resource_id>[\d]+)/permissions%s$"
+                % (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('resource_permissions'),
+                name="resource_permissions"),
+        ]
+
+    def resource_permissions(self, request, resource_id, **kwargs):
+        self.method_check(request, allowed=['get', 'post'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+        try:
+            resource = resolve_object(
+                request, ResourceBase, {
+                    'id': resource_id}, 'base.change_resourcebase_permissions')
+
+        except PermissionDenied:
+            return self.get_err_response(request,
+                                         'You are not allowed to change permissions for this resource',
+                                         http.HttpUnauthorized)
+
+        if request.method == 'POST':
+            success = True
+            message = "Permissions successfully updated!"
+            try:
+                permission_spec = json.loads(request.body)
+                resource.set_permissions(permission_spec)
+
+                # Check Users Permissions Consistency
+                info = _perms_info(resource)
+                info_users = dict([(u.username, perms)
+                                   for u, perms in info['users'].items()])
+                for user, perms in info_users.items():
+                    if 'download_resourcebase' in perms and 'view_resourcebase' not in perms:
+                        success = False
+                        message = 'User ' + str(user) + ' has Download permissions but ' \
+                            'cannot access the resource. ' \
+                            'Please update permissions consistently!'
+            except BaseException:
+                success = False
+                message = "Error updating permissions :("
+                return self.create_response(request,
+                                            {'success': success,
+                                                'message': message},
+                                            http.HttpApplicationError)
+            response_class = http.HttpApplicationError if not success else http.HttpAccepted
+            return self.create_response(request, {'success': success, 'message': message},
+                                        response_class)
+
+        elif request.method == 'GET':
+            permission_spec = _perms_info_json(resource)
+            return self.create_response(request,
+                                        {'success': True,
+                                            'permissions': permission_spec},
+                                        http.HttpAccepted)
+        else:
+            return self.get_err_response(request,
+                                         'No methods other than get and post are allowed',
+                                         http.HttpMethodNotAllowed)
+
     class Meta(CommonMetaApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = ResourceBase.objects.polymorphic_queryset() \
             .distinct().order_by('-date')
         resource_name = 'base'
         excludes = ['csw_anytext', 'metadata_xml']
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = MultiAuthentication(
+            SessionAuthentication(), GeonodeApiKeyAuthentication())
 
 
 class FeaturedResourceBaseResource(CommonModelApi):
