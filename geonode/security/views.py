@@ -102,35 +102,6 @@ def invalidate_tiledlayer_cache(request):
 
 
 @require_POST
-def set_bulk_permissions(request):
-    permission_spec = json.loads(request.POST.get('permissions', None))
-    resource_ids = request.POST.getlist('resources', [])
-    if permission_spec is not None:
-        not_permitted = []
-        for resource_id in resource_ids:
-            try:
-                resource = resolve_object(
-                    request, ResourceBase, {
-                        'id': resource_id
-                    },
-                    'base.change_resourcebase_permissions')
-                resource.set_permissions(permission_spec)
-            except PermissionDenied:
-                not_permitted.append(ResourceBase.objects.get(id=resource_id).title)
-
-        return HttpResponse(
-            json.dumps({'success': 'ok', 'not_changed': not_permitted}),
-            status=200,
-            content_type='text/plain'
-        )
-    else:
-        return HttpResponse(
-            json.dumps({'error': 'Wrong permissions specification'}),
-            status=400,
-            content_type='text/plain')
-
-
-@require_POST
 def request_permissions(request):
     """ Request permission to download a resource.
     """

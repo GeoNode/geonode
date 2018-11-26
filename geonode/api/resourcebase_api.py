@@ -29,7 +29,6 @@ from tastypie.authentication import MultiAuthentication, SessionAuthentication
 from django.template.response import TemplateResponse
 from tastypie import http
 from tastypie.bundle import Bundle
-
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
 from tastypie import fields
@@ -665,7 +664,7 @@ class ResourceBaseResource(CommonModelApi):
                          message,
                          response_class=http.HttpApplicationError):
         data = {
-            'error_message': message,
+            'error': message,
         }
         return self.error_response(
             request, data, response_class=response_class)
@@ -676,6 +675,10 @@ class ResourceBaseResource(CommonModelApi):
                 % (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('resource_permissions'),
                 name="resource_permissions"),
+            url(r"^(?P<resource_name>%s)/bulk-permissions%s$"
+                % (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('set_bulk_permissions'),
+                name="bulk_permissions"),
         ]
 
     def resource_permissions(self, request, resource_id, **kwargs):
@@ -687,10 +690,16 @@ class ResourceBaseResource(CommonModelApi):
                 request, ResourceBase, {
                     'id': resource_id}, 'base.change_resourcebase_permissions')
 
-        except PermissionDenied:
-            return self.get_err_response(request,
-                                         'You are not allowed to change permissions for this resource',
-                                         http.HttpUnauthorized)
+        except (PermissionDenied, ObjectDoesNotExist) as e:
+            if isinstance(e, PermissionDenied):
+                return self.get_err_response(request,
+                                             'You are not allowed to change' +
+                                             'permissions for this resource',
+                                             http.HttpUnauthorized)
+            else:
+                return self.get_err_response(request,
+                                             e.message,
+                                             http.HttpNotFound)
 
         if request.method == 'POST':
             success = True
@@ -730,6 +739,34 @@ class ResourceBaseResource(CommonModelApi):
             return self.get_err_response(request,
                                          'No methods other than get and post are allowed',
                                          http.HttpMethodNotAllowed)
+
+    def set_bulk_permissions(self, request, **kwargs):
+        self.method_check(request, allowed=['post'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+        permission_spec = json.loads(request.POST.get('permissions', None))
+        resource_ids = request.POST.getlist('resources', [])
+        if permission_spec is not None:
+            not_permitted = []
+            for resource_id in resource_ids:
+                try:
+                    resource = resolve_object(
+                        request, ResourceBase, {
+                            'id': resource_id
+                        },
+                        'base.change_resourcebase_permissions')
+                    resource.set_permissions(permission_spec)
+                except (PermissionDenied, ObjectDoesNotExist) as e:
+                    if isinstance(e, PermissionDenied):
+                        resource = ResourceBase.objects.get(id=resource_id)
+                        not_permitted.append(resource.title)
+            return self.create_response(request,
+                                        {'success': 'ok', 'not_changed': not_permitted},
+                                        http.HttpAccepted)
+        else:
+            return self.create_response(request,
+                                        {'error': 'Wrong permissions specification'},
+                                        http.HttpBadRequest)
 
     class Meta(CommonMetaApi):
         paginator_class = CrossSiteXHRPaginator

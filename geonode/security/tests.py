@@ -94,7 +94,10 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             kwargs={
                 'api_name': API_NAME,
                 'resource_name': 'layers'})
-        self.bulk_perms_url = reverse('bulk_permissions')
+        self.bulk_perms_url = reverse('bulk_permissions',
+                                      kwargs={
+                                    'resource_name': 'base',
+                                    'api_name': API_NAME})
         all_public()
         self.perm_spec = {
             "users": {"admin": ["view_resourcebase"]}, "groups": {}}
@@ -1068,7 +1071,10 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             kwargs={
                 'api_name': API_NAME,
                 'resource_name': 'layers'})
-        self.bulk_perms_url = reverse('bulk_permissions')
+        self.bulk_perms_url = reverse('bulk_permissions',
+                                      kwargs={
+                                    'resource_name': 'base',
+                                    'api_name': API_NAME})
         all_public()
         self.perm_spec = {
             "users": {"admin": ["view_resourcebase"]}, "groups": {}}

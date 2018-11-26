@@ -23,8 +23,6 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [  # 'geonode.security.views',
-    url(r'^bulk-permissions/?$',
-        views.set_bulk_permissions, name='bulk_permissions'),
     url(r'^request-permissions/?$',
         views.request_permissions, name='request_permissions'),
     url(r'^invalidate-permissions-cache/?$',
