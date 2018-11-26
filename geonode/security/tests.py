@@ -125,7 +125,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'resources': layers_id
         }
         resp = self.client.post(self.bulk_perms_url, data)
-        self.assertHttpOK(resp)
+        self.assertHttpAccepted(resp)
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # Check GeoFence Rules have been correctly created
