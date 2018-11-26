@@ -791,7 +791,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         response = self.client.post(
             get_resource_permissions_url(valid_layer_typename), data=json.dumps(
                 self.perm_spec), content_type="application/json")
-        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.status_code, 202)
 
         # Login as a user with the proper permission and test the endpoint
         logged_in = self.client.login(username='admin', password='admin')
@@ -801,8 +801,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             get_resource_permissions_url(valid_layer_typename), data=json.dumps(
                 self.perm_spec), content_type="application/json")
 
-        # Test that the method returns 200
-        self.assertEquals(response.status_code, 200)
+        # Test that the method returns 202
+        self.assertEquals(response.status_code, 202)
 
         # Test that the permissions specification is applied
 
