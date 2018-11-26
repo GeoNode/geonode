@@ -13,6 +13,9 @@
         </div>
         <div class="modal-footer">
           <a href="#" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</a>
+          {% if USE_GEOSERVER %}
+            <a href="#" class="btn btn-primary" data-dismiss="modal" id="security_refresh">{% trans "Sync Security Cache" %}</a>
+          {% endif %}
           <a href="#" class="btn btn-primary" data-dismiss="modal" id="perms_submit">{% trans "Apply Changes" %}</a>
         </div>
       </div>

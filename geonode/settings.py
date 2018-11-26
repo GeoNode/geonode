@@ -1390,14 +1390,37 @@ if USE_GEOSERVER:
         Queue("geonode.layer.viewer", GEOSERVER_EXCHANGE, routing_key="geonode.viewer"),
     )
 
-# CELERYBEAT_SCHEDULE = {
+from celery.schedules import crontab
+# EXAMPLES
+# CELERY_BEAT_SCHEDULE = {
 #     ...
 #     'update_feeds': {
 #         'task': 'arena.social.tasks.Update',
 #         'schedule': crontab(minute='*/6'),
 #     },
 #     ...
+#     'send-summary-every-hour': {
+#        'task': 'summary',
+#         # There are 4 ways we can handle time, read further
+#        'schedule': 3600.0,
+#         # If you're using any arguments
+#        'args': (‘We don’t need any’,),
+#     },
+#     # Executes every Friday at 4pm
+#     'send-notification-on-friday-afternoon': {
+#          'task': 'my_app.tasks.send_notification',
+#          'schedule': crontab(hour=16, day_of_week=5),
+#     },
 # }
+DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
+CELERY_ENABLE_UTC = True
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULE = {
+    'send-summary-every-hour': {
+        'task': 'geonode.security.tasks.synch_guardian',
+        'schedule': crontab(minute='*/10'),
+    }
+}
 
 # Half a day is enough
 CELERY_TASK_RESULT_EXPIRES = 43200

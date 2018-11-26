@@ -150,6 +150,7 @@ class CommonModelApi(ModelResource):
         'has_time',
         'is_approved',
         'is_published',
+        'dirty_state',
     ]
 
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):

@@ -29,8 +29,10 @@ from geonode.catalogue.backends.generic import METADATA_FORMATS
 from shapely.geometry.base import ReadingError
 
 true_value = 'true'
+false_value = 'false'
 if settings.DATABASES['default']['ENGINE'].endswith(('sqlite', 'sqlite3', 'spatialite',)):
     true_value = '1'
+    false_value = '0'
 
 # pycsw settings that the user shouldn't have to worry about
 CONFIGURATION = {
@@ -50,6 +52,7 @@ CONFIGURATION = {
     },
     'repository': {
         'source': 'geonode.catalogue.backends.pycsw_plugin.GeoNodeRepository',
+        # 'filter': 'is_published = %s and dirty_state = %s ' % (true_value, false_value),
         'filter': 'is_published = %s' % true_value,
         'mappings': os.path.join(os.path.dirname(__file__), 'pycsw_local_mappings.py')
     }
