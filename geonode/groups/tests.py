@@ -205,7 +205,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
                 'api_name': API_NAME})
         for obj in objects:
             response = self.client.get(get_resource_permissions_url(obj.id))
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 202)
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
 
@@ -240,7 +240,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
                                         data=json.dumps(permissions),
                                         content_type="application/json")
 
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 202)
 
             response = self.client.get(get_resource_permissions_url(obj.id))
 
@@ -264,7 +264,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
                                         data=json.dumps(permissions),
                                         content_type="application/json")
 
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 202)
 
             response = self.client.get(get_resource_permissions_url(obj.id))
 
