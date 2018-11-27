@@ -124,7 +124,7 @@ def save_added_row(layer_name, feature_type, data_dict):
             'layer_name': layer_name}).strip()
     url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
     describe_feature_response = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).text
-    
+
     from lxml import etree
     xml = bytes(bytearray(describe_feature_response, encoding='utf-8'))  # encode it and force the same encoder in the parser
     doc = etree.XML(xml)
@@ -210,7 +210,9 @@ def save_edits(layer_name, feature_id, data_dict):
 
 
 def save_geom_edits(layer_name, feature_id, coords):
-
+    print(layer_name)
+    print(feature_id)
+    print(type(coords))
     store_name, geometry_clm = get_store_name(layer_name)
     geometry_clm = "the_geom"
     xml_path = "edit_data/wfs_edit_point_geom.xml"
