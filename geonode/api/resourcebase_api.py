@@ -53,7 +53,7 @@ from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
-from .constants import API_AUTHENTICTION
+from .constants import API_AUTHENTICATION
 from .authorization import GeoNodeAuthorization
 from django.core.exceptions import PermissionDenied
 from geonode.utils import resolve_object
@@ -809,7 +809,7 @@ class ResourceBaseResource(CommonModelApi):
             .distinct().order_by('-date')
         resource_name = 'base'
         excludes = ['csw_anytext', 'metadata_xml']
-        authentication = API_AUTHENTICTION
+        authentication = API_AUTHENTICATION
 
 
 class FeaturedResourceBaseResource(CommonModelApi):
@@ -820,7 +820,7 @@ class FeaturedResourceBaseResource(CommonModelApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = ResourceBase.objects.filter(featured=True).order_by('-date')
         resource_name = 'featured'
-        authentication = API_AUTHENTICTION
+        authentication = API_AUTHENTICATION
 
 
 class LayerResource(CommonModelApi):
@@ -1030,7 +1030,7 @@ class LayerResource(CommonModelApi):
         include_resource_uri = True
         allowed_methods = ['get', 'patch']
         excludes = ['csw_anytext', 'metadata_xml']
-        authentication = API_AUTHENTICTION
+        authentication = API_AUTHENTICATION
         filtering = CommonMetaApi.filtering
         # Allow filtering using ID
         filtering.update({
@@ -1107,7 +1107,7 @@ class MapResource(CommonModelApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = Map.objects.distinct().order_by('-date')
         resource_name = 'maps'
-        authentication = API_AUTHENTICTION
+        authentication = API_AUTHENTICATION
 
 
 class DocumentResource(CommonModelApi):
@@ -1157,4 +1157,4 @@ class DocumentResource(CommonModelApi):
         filtering.update({'doc_type': ALL})
         queryset = Document.objects.distinct().order_by('-date')
         resource_name = 'documents'
-        authentication = API_AUTHENTICTION
+        authentication = API_AUTHENTICATION
