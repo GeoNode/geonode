@@ -25,7 +25,6 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
-from tastypie.authentication import MultiAuthentication, SessionAuthentication
 from django.template.response import TemplateResponse
 from tastypie import http
 from tastypie.bundle import Bundle
@@ -54,8 +53,8 @@ from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
-
-from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
+from .constants import API_AUTHENTICTION
+from .authorization import GeoNodeAuthorization
 from django.core.exceptions import PermissionDenied
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info, _perms_info_json
@@ -810,8 +809,7 @@ class ResourceBaseResource(CommonModelApi):
             .distinct().order_by('-date')
         resource_name = 'base'
         excludes = ['csw_anytext', 'metadata_xml']
-        authentication = MultiAuthentication(
-            SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = API_AUTHENTICTION
 
 
 class FeaturedResourceBaseResource(CommonModelApi):
@@ -822,7 +820,7 @@ class FeaturedResourceBaseResource(CommonModelApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = ResourceBase.objects.filter(featured=True).order_by('-date')
         resource_name = 'featured'
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = API_AUTHENTICTION
 
 
 class LayerResource(CommonModelApi):
@@ -1032,7 +1030,7 @@ class LayerResource(CommonModelApi):
         include_resource_uri = True
         allowed_methods = ['get', 'patch']
         excludes = ['csw_anytext', 'metadata_xml']
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = API_AUTHENTICTION
         filtering = CommonMetaApi.filtering
         # Allow filtering using ID
         filtering.update({
@@ -1109,7 +1107,7 @@ class MapResource(CommonModelApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = Map.objects.distinct().order_by('-date')
         resource_name = 'maps'
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = API_AUTHENTICTION
 
 
 class DocumentResource(CommonModelApi):
@@ -1159,4 +1157,4 @@ class DocumentResource(CommonModelApi):
         filtering.update({'doc_type': ALL})
         queryset = Document.objects.distinct().order_by('-date')
         resource_name = 'documents'
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = API_AUTHENTICTION
