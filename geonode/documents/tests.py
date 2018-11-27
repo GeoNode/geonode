@@ -325,7 +325,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         # Test that GET returns permissions
         response = self.client.get(get_resource_permissions_url(document_id))
-        assert('permissions' in response.content)
+        _perms_dict = json.loads(response.content)
+        assert('permissions' in _perms_dict)
 
         # Test that a user is required to have
         # documents.change_layer_permissions

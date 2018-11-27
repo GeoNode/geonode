@@ -775,7 +775,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # Test that GET returns permissions
         response = self.client.get(
             get_resource_permissions_url(valid_layer_typename))
-        assert('permissions' in response.content)
+        self.assertTrue('permissions' in json.loads(response.content))
 
         # Test that a user is required to have maps.change_layer_permissions
 

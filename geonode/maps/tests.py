@@ -324,10 +324,10 @@ community."
         mapid = Map.objects.all().first().pk
         invalid_mapid = "42"
 
-        def url(id):
+        def url(resource_id):
             return reverse(
                 'resource_permissions', kwargs={
-                'resource_id': id,
+                'resource_id': resource_id,
                 'resource_name': 'base',
                 'api_name': API_NAME})
         # Test that an invalid layer.alternate is handled for properly
@@ -339,7 +339,7 @@ community."
 
         # Test that GET returns permissions
         response = self.client.get(url(mapid))
-        assert('permissions' in response.content)
+        self.assertTrue('permissions' in json.loads(response.content))
 
         # Test that a user is required to have permissions
 
