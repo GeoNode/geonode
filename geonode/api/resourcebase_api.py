@@ -682,7 +682,41 @@ class ResourceBaseResource(CommonModelApi):
                 % (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('invalidate_permissions_cache'),
                 name="invalidate_permissions_cache"),
+            url(r"^(?P<resource_name>%s)/invalidate_tiledlayer_cache%s$"
+                % (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('invalidate_tiledlayer_cache'),
+                name="invalidate_tiledlayer_cache"),
         ]
+
+    def invalidate_tiledlayer_cache(self, request, **kwargs):
+        self.method_check(request, allowed=['post'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+        from geonode.security.utils import set_geowebcache_invalidate_cache
+        uuid = request.POST.get('uuid', None)
+        if not uuid:
+            return self.get_err_response(request, "uuid Required",
+                                         http.HttpBadRequest)
+        resource = None
+        try:
+            resource = ResourceBase.objects.get(uuid=uuid)
+        except ObjectDoesNotExist as e:
+            return self.get_err_response(request, e.message,
+                                         http.HttpNotFound)
+        can_change_data = request.user.has_perm(
+            'change_resourcebase',
+            resource)
+        layer = Layer.objects.get(id=resource.id)
+        if layer and can_change_data:
+            set_geowebcache_invalidate_cache(layer.alternate)
+            return self.create_response(request,
+                                        {'success': 'ok',
+                                         'message': 'GeoWebCache Tiled Layer Emptied!'})
+        else:
+            return self.create_response(request,
+                                        {'success': 'false',
+                                         'message': 'You cannot modify this resource!'},
+                                        http.HttpUnauthorized)
 
     def invalidate_permissions_cache(self, request, **kwargs):
         self.method_check(request, allowed=['post'])

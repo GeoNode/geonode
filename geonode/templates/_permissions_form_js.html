@@ -394,14 +394,19 @@
         $.ajax(
           {
             type: "POST",
-            url: "{% url 'invalidate_tiledlayer_cache' %}",
+            url: '{% url "invalidate_tiledlayer_cache" api_name="api" resource_name="base" %}',
             dataType: 'json',
             data: { uuid: "{{ resource.uuid }}" },
             success: function(data) {
               $("#modal_perms").modal("hide");
               message = data;
               title = "";
-              body = message.message;
+              if(message.error){
+                body = message.error;
+              }else{
+                body = message.message;
+              }
+              
               if (message.success) {
                   title = "OK";
               } else {
@@ -417,7 +422,11 @@
               // Handle error here
               $("#modal_perms").modal("hide");
               message = JSON.parse(jqXHR.responseText);
+              if(message.error){
+              body = message.error;
+              }else{
               body = message.message;
+              }
               title = "Error";
               $("#_permissions_feedbacks").find('.modal-title').text(title);
               $("#_permissions_feedbacks").find('.modal-body').text(body);
