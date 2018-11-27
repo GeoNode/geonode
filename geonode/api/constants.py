@@ -22,6 +22,5 @@ from tastypie.authentication import (BasicAuthentication, MultiAuthentication,
 
 from geonode.api.authorization import GeonodeApiKeyAuthentication
 
-API_AUTHENTICATION = MultiAuthentication(SessionAuthentication(),
-                                        GeonodeApiKeyAuthentication(),
-                                        BasicAuthentication())
+API_AUTHENTICATION = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication(),
+                                         BasicAuthentication())
