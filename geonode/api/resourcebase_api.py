@@ -759,17 +759,11 @@ class ResourceBaseResource(CommonModelApi):
                 request, ResourceBase, {
                     'id': resource_id}, 'base.change_resourcebase_permissions')
 
-        except (PermissionDenied, ObjectDoesNotExist) as e:
-            if isinstance(e, PermissionDenied):
-                return self.get_err_response(request,
-                                             'You are not allowed to change' +
-                                             'permissions for this resource',
-                                             http.HttpUnauthorized)
-        finally:
-            if not resource:
-                return self.get_err_response(request,
-                                             "Resource Not Found",
-                                             http.HttpNotFound)
+        except (PermissionDenied, ObjectDoesNotExist):
+            return self.get_err_response(request,
+                                         'You are not allowed to change' +
+                                         ' permissions for this resource',
+                                         http.HttpUnauthorized)
         if request.method == 'POST':
             success = True
             message = "Permissions successfully updated!"
