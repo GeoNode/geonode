@@ -679,7 +679,42 @@ class ResourceBaseResource(CommonModelApi):
                 % (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('set_bulk_permissions'),
                 name="bulk_permissions"),
+            url(r"^(?P<resource_name>%s)/invalidate-permissions-cache%s$"
+                % (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('invalidate_permissions_cache'),
+                name="invalidate_permissions_cache"),
         ]
+
+    def invalidate_permissions_cache(self, request, **kwargs):
+        self.method_check(request, allowed=['post'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+        from geonode.security.utils import set_geofence_invalidate_cache
+        uuid = request.POST.get('uuid', None)
+        if not uuid:
+            return self.get_err_response(request, "uuid Required",
+                                         http.HttpBadRequest)
+        resource = None
+        try:
+            resource = ResourceBase.objects.get(uuid=uuid)
+        except ObjectDoesNotExist as e:
+            return self.get_err_response(request, e.message,
+                                         http.HttpNotFound)
+        can_change_permissions = request.user.has_perm(
+            'change_resourcebase_permissions',
+            resource)
+        if can_change_permissions:
+            set_geofence_invalidate_cache()
+            return self.create_response(request,
+                                        {'success': 'ok',
+                                         'message':
+                                         'GeoFence Security Rules Cache Refreshed!'},
+                                        http.HttpAccepted)
+        else:
+            return self.create_response(request,
+                                        {'success': 'false',
+                                         'message': 'You cannot modify this resource!'},
+                                        http.HttpUnauthorized)
 
     def resource_permissions(self, request, resource_id, **kwargs):
         self.method_check(request, allowed=['get', 'post'])
