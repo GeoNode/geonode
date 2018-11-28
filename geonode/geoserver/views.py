@@ -263,15 +263,21 @@ def layer_style_manage(request, layername):
                 layer_styles.append((style.name, sld_title))
 
             # Render the form
-            sld_title = layer.default_style.name
-            try:
-                if layer.default_style.sld_title:
-                    sld_title = layer.default_style.sld_title
-            except BaseException:
-                tb = traceback.format_exc()
-                logger.debug(tb)
+            def_sld_name = None
+            def_sld_title = None
+            if layer.default_style:
+                def_sld_name = layer.default_style.name
+                def_sld_title = layer.default_style.name
+                try:
+                    if layer.default_style.sld_title:
+                        def_sld_title = layer.default_style.sld_title
+                except BaseException:
+                    tb = traceback.format_exc()
+                    logger.debug(tb)
+            else:
 
-            default_style = (layer.default_style.name, sld_title)
+
+            default_style = (def_sld_name, def_sld_title)
             return render(
                 request,
                 'layers/layer_style_manage.html',
