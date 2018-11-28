@@ -3,7 +3,7 @@
 'use strict';
 
 define(function (require, exports) {
-        var _      = require('../../lib/js/underscore'),
+        var _      = require('underscore'),
         fileTypes  = require('./FileTypes'),
         path       = require('./path'),
         common     = require('./common'),

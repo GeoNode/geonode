@@ -7,12 +7,12 @@ var layers = {};
 
 var geogig_stores = {};
 
-define(['../../lib/js/underscore',
+define(['underscore',
         './LayerInfo',
         './FileTypes',
         './path',
         './common',
-        '../../lib/js/text!templates/upload.html'], function (_, LayerInfo, fileTypes, path, common, uploadTemplate) {
+        'text!templates/upload.html'], function (_, LayerInfo, fileTypes, path, common, uploadTemplate) {
 
     var templates = {},
         findFileType,
