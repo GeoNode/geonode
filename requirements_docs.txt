@@ -121,7 +121,7 @@ pinax-theme-bootstrap==8.0.1
 poster==0.8.1
 pluggy==0.6.0
 proj==0.1.0
-psutil==5.4.3
+psutil==5.4.8
 psycopg2==2.7.3.1
 py==1.5.3
 # pycsw==2.2.0

@@ -1,6 +1,6 @@
 version: '2.2'
-
 services:
+
   django:
     build: .
     # Loading the app is defined here to allow for
@@ -9,7 +9,7 @@ services:
     volumes:
       - '.:/usr/src/app'
     environment:
-      - DEBUG=True
+      - DEBUG=False
       - GEONODE_LB_HOST_IP=localhost
       - GEONODE_LB_PORT=80
       - SITEURL=http://localhost/
