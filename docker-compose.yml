@@ -17,7 +17,7 @@ services:
       - ./scripts/docker/env/production/db.env
 
   # elasticsearch:
-  #   image: elasticsearch
+  #   image: elasticsearch:2.4.1
   #   restart: unless-stopped
   #   container_name: elasticsearch4${COMPOSE_PROJECT_NAME}
   #   stdin_open: true
