@@ -4,9 +4,9 @@
 
 define(function (require, exports) {
         var _      = require('underscore'),
-        fileTypes  = require('upload/FileTypes'),
-        path       = require('upload/path'),
-        common     = require('upload/common'),
+        fileTypes  = require('./FileTypes'),
+        path       = require('./path'),
+        common     = require('./common'),
         LayerInfo;
 
     /** Creates an instance of a LayerInfo
