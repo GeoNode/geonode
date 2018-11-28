@@ -49,7 +49,7 @@ services:
       - db
       - elasticsearch
       - rabbitmq
-    command: celery worker --app=geonode.celery_app:app -B -l INFO
+    # command: celery worker --app=geonode.celery_app:app -B -l INFO
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - statics:/mnt/volumes/statics
@@ -92,7 +92,7 @@ services:
       - rabbitmq
       - data-dir-conf
     # command: paver start_django -b 0.0.0.0:8000
-    command: uwsgi --ini uwsgi.ini
+    # command: uwsgi --ini uwsgi.ini
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - statics:/mnt/volumes/statics
