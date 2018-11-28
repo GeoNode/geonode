@@ -1,8 +1,32 @@
 /*globals define: true, requirejs: true */
 
-define(['./upload',
-        './common',
-        './LayerInfo'], function (upload, common, LayerInfo) {
+'use strict';
+
+requirejs.config({
+  config: {
+     text: {
+       useXhr: function (url, protocol, hostname, port) {
+          // allow cross-domain requests
+          // remote server allows CORS
+          return true;
+       }
+     },
+     waitSeconds: 5
+  },
+  baseUrl: siteUrl + 'static/lib/js',
+  shim: {
+    'underscore': { exports: '_'}
+  },
+  paths: {
+    'upload': '../../geonode/js/upload',
+    'templates': '../../geonode/js/templates',
+    'progress': 'jquery.ajax-progress'
+  }
+});
+
+define(['upload/upload',
+        'upload/common',
+        'upload/LayerInfo'], function (upload, common, LayerInfo) {
     'use strict';
 
     var doSrs = function (event) {
