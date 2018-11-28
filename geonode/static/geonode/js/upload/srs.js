@@ -22,7 +22,9 @@ requirejs.config({
   }
 });
 
-define(['upload/upload','upload/common', 'upload/LayerInfo'], function (upload, common, LayerInfo) {
+define(['./upload',
+        './common',
+        './LayerInfo'], function (upload, common, LayerInfo) {
     'use strict';
 
     var doSrs = function (event) {

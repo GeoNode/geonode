@@ -22,7 +22,7 @@ requirejs.config({
   }
 });
 
-define(['upload/upload'], function (upload) {
+define(['upload'], function (upload) {
     'use strict';
 
     $(function () {

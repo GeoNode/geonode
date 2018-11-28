@@ -1,31 +1,9 @@
 /*globals define: true, requirejs: true */
 
-requirejs.config({
-  config: {
-     baseUrl: siteUrl + 'static/lib/js',
-     text: {
-       useXhr: function (url, protocol, hostname, port) {
-          // allow cross-domain requests
-          // remote server allows CORS
-          return true;
-       }
-     },
-     shim: {
-        'underscore': { exports: '_'}
-     },
-     paths: {
-         'upload': '../../geonode/js/upload',
-         'templates': '../../geonode/js/templates',
-         'progress': 'jquery.ajax-progress'
-     },
-     waitSeconds: 5
-  }
-});
-
-define(['underscore',
-        'upload/common',
-        'upload/LayerInfo',
-        'text!templates/upload.html'], function (_, common, LayerInfo, csv_template) {
+define(['../../lib/js/underscore',
+        './common',
+        './LayerInfo',
+        '../../lib/js/text!templates/upload.html'], function (_, common, LayerInfo, csv_template) {
 
     'use strict';
     $('body').append(csv_template);
