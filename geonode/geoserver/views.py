@@ -263,11 +263,11 @@ def layer_style_manage(request, layername):
                 layer_styles.append((style.name, sld_title))
 
             # Render the form
-            def_sld_name = None
-            def_sld_title = None
+            def_sld_name = None  # noqa
+            def_sld_title = None  # noqa
             if layer.default_style:
-                def_sld_name = layer.default_style.name
-                def_sld_title = layer.default_style.name
+                def_sld_name = layer.default_style.name  # noqa
+                def_sld_title = layer.default_style.name  # noqa
                 try:
                     if layer.default_style.sld_title:
                         def_sld_title = layer.default_style.sld_title
@@ -276,6 +276,7 @@ def layer_style_manage(request, layername):
                     logger.debug(tb)
 
             default_style = (def_sld_name, def_sld_title)
+
             return render(
                 request,
                 'layers/layer_style_manage.html',
