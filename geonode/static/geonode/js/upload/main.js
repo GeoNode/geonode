@@ -1,5 +1,7 @@
 /*globals define: true, requirejs: true */
 
+'use strict';
+
 requirejs.config({
   config: {
      text: {
@@ -23,7 +25,6 @@ requirejs.config({
 });
 
 define(['upload/upload'], function (upload) {
-    'use strict';
 
     $(function () {
         upload.initialize({

@@ -1,9 +1,9 @@
 /*globals define: true, requirejs: true */
 
-define(['../../lib/js/underscore',
+define(['underscore',
         './common',
         './LayerInfo',
-        '../../lib/js/text!templates/upload.html'], function (_, common, LayerInfo, csv_template) {
+        'text!templates/upload.html'], function (_, common, LayerInfo, csv_template) {
 
     'use strict';
     $('body').append(csv_template);

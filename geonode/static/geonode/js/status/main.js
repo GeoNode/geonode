@@ -1,8 +1,9 @@
 /*global define: true, requirejs:true */
 
+'use strict';
+
 requirejs.config({
   config: {
-     baseUrl: siteUrl + 'static/lib/js',
      text: {
        useXhr: function (url, protocol, hostname, port) {
           // allow cross-domain requests
@@ -10,15 +11,16 @@ requirejs.config({
           return true;
        }
      },
-     shim: {
-        'underscore': { exports: '_'}
-     },
-     paths: {
-         'upload': '../../geonode/js/upload',
-         'templates': '../../geonode/js/templates',
-         'progress': 'jquery.ajax-progress'
-     },
      waitSeconds: 5
+  },
+  baseUrl: siteUrl + 'static/lib/js',
+  shim: {
+    'underscore': { exports: '_'}
+  },
+  paths: {
+    'upload': '../../geonode/js/upload',
+    'templates': '../../geonode/js/templates',
+    'progress': 'jquery.ajax-progress'
   }
 });
 
