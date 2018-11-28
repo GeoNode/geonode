@@ -16,15 +16,15 @@ services:
     env_file:
       - ./scripts/docker/env/production/db.env
 
-  # elasticsearch:
-  #   image: elasticsearch
-  #   restart: unless-stopped
-  #   container_name: elasticsearch4${COMPOSE_PROJECT_NAME}
-  #   stdin_open: true
-  #   # tty: true
-  #   labels:
-  #       org.geonode.component: elasticsearch
-  #       org.geonode.instance.name: geonode
+  elasticsearch:
+    image: elasticsearch:2.4.1
+    restart: unless-stopped
+    container_name: elasticsearch4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    # tty: true
+    labels:
+        org.geonode.component: elasticsearch
+        org.geonode.instance.name: geonode
 
   rabbitmq:
     image: rabbitmq
@@ -47,7 +47,7 @@ services:
         org.geonode.instance.name: geonode
     depends_on:
       - db
-  #     - elasticsearch
+      - elasticsearch
       - rabbitmq
     command: celery worker --app=geonode.celery_app:app -B -l INFO
     volumes:
@@ -77,7 +77,7 @@ services:
         org.geonode.instance.name: geonode
     depends_on:
       - db
-      # - elasticsearch
+      - elasticsearch
       - rabbitmq
       - data-dir-conf
     volumes:
@@ -97,7 +97,7 @@ services:
         org.geonode.instance.name: geonode
     depends_on:
       - db
-      # - elasticsearch
+      - elasticsearch
       - rabbitmq
     # command: paver start_django -b 0.0.0.0:8000
     command: uwsgi --ini uwsgi.ini
