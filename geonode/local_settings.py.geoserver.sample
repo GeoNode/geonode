@@ -51,8 +51,28 @@ if not SITEURL.endswith('/'):
 
 ALLOWED_HOSTS = [HOSTNAME, 'localhost']
 
-# TIME_ZONE = 'Europe/Paris'
+# Define email service on GeoNode
+EMAIL_ENABLE = True
 
+if EMAIL_ENABLE:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = False
+    DEFAULT_FROM_EMAIL = 'Example.com <no-reply@localhost>'
+
+TIME_ZONE = 'UTC'
+
+# Login and logout urls override
+LOGIN_URL = os.getenv('LOGIN_URL', '{}account/login/'.format(SITEURL))
+LOGOUT_URL = os.getenv('LOGOUT_URL', '{}account/logout/'.format(SITEURL))
+
+ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
+ACCOUNT_LOGOUT_REDIRECT_URL =  os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
+
+# Backend
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -160,156 +180,6 @@ UPLOADER = {
     ]
 }
 
-CATALOGUE = {
-    'default': {
-        # The underlying CSW implementation
-        # default is pycsw in local mode (tied directly to GeoNode Django DB)
-        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
-        # pycsw in non-local mode
-        # 'ENGINE': 'geonode.catalogue.backends.pycsw_http',
-        # GeoNetwork opensource
-        # 'ENGINE': 'geonode.catalogue.backends.geonetwork',
-        # deegree and others
-        # 'ENGINE': 'geonode.catalogue.backends.generic',
-
-        # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        'URL': '%scatalogue/csw' % SITEURL,
-        # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
-        # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
-
-        # login credentials (for GeoNetwork)
-        'USER': 'admin',
-        'PASSWORD': 'admin',
-        'ALTERNATES_ONLY': True,
-    }
-}
-
-# pycsw settings
-PYCSW = {
-    # pycsw configuration
-    'CONFIGURATION': {
-        # uncomment / adjust to override server config system defaults
-        # 'server': {
-        #    'maxrecords': '10',
-        #    'pretty_print': 'true',
-        #    'federatedcatalogues': 'http://catalog.data.gov/csw'
-        # },
-        'metadata:main': {
-            'identification_title': 'GeoNode Catalogue',
-            'identification_abstract': 'GeoNode is an open source platform' \
-            ' that facilitates the creation, sharing, and collaborative use' \
-            ' of geospatial data',
-            'identification_keywords': 'sdi, catalogue, discovery, metadata,' \
-            ' GeoNode',
-            'identification_keywords_type': 'theme',
-            'identification_fees': 'None',
-            'identification_accessconstraints': 'None',
-            'provider_name': 'Organization Name',
-            'provider_url': SITEURL,
-            'contact_name': 'Lastname, Firstname',
-            'contact_position': 'Position Title',
-            'contact_address': 'Mailing Address',
-            'contact_city': 'City',
-            'contact_stateorprovince': 'Administrative Area',
-            'contact_postalcode': 'Zip or Postal Code',
-            'contact_country': 'Country',
-            'contact_phone': '+xx-xxx-xxx-xxxx',
-            'contact_fax': '+xx-xxx-xxx-xxxx',
-            'contact_email': 'Email Address',
-            'contact_url': 'Contact URL',
-            'contact_hours': 'Hours of Service',
-            'contact_instructions': 'During hours of service. Off on ' \
-            'weekends.',
-            'contact_role': 'pointOfContact',
-        },
-        'metadata:inspire': {
-            'enabled': 'true',
-            'languages_supported': 'eng,gre',
-            'default_language': 'eng',
-            'date': 'YYYY-MM-DD',
-            'gemet_keywords': 'Utility and governmental services',
-            'conformity_service': 'notEvaluated',
-            'contact_name': 'Organization Name',
-            'contact_email': 'Email Address',
-            'temp_extent': 'YYYY-MM-DD/YYYY-MM-DD',
-        }
-    }
-}
-
-# GeoNode javascript client configuration
-
-# default map projection
-# Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
-DEFAULT_MAP_CRS = "EPSG:3857"
-
-DEFAULT_LAYER_FORMAT = "image/png8"
-
-# Where should newly created maps be focused?
-DEFAULT_MAP_CENTER = (0, 0)
-
-# How tightly zoomed should newly created maps be?
-# 0 = entire world;
-# maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
-DEFAULT_MAP_ZOOM = 0
-
-# Default preview library
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'  # DEPRECATED use HOOKSET instead
-GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
-
-# To enable the REACT based Client enable those
-# INSTALLED_APPS += ('geonode-client', )
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'react'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.ReactHookSet"
-
-# To enable the Leaflet based Client enable those
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
-
-# To enable the MapStore2 based Client enable those
-# INSTALLED_APPS += ('geonode_mapstore_client', )
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'mapstore'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode_mapstore_client.hooksets.MapStoreHookSet"
-
-# LEAFLET_CONFIG = {
-#    'TILES': [
-#        # Find tiles at:
-#        # http://leaflet-extras.github.io/leaflet-providers/preview/
-#
-#        # Map Quest
-#        ('Map Quest',
-#         'http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',
-#         'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> '
-#         '&mdash; Map data &copy; '
-#         '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'),
-#        # Stamen toner lite.
-#        # ('Watercolor',
-#        #  'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
-#        #  'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-#        #  <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
-#        #  <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-#        #  <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
-#        # ('Toner Lite',
-#        #  'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
-#        #  'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-#        #  <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
-#        #  <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-#        #  <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
-#    ],
-#    'PLUGINS': {
-#        'esri-leaflet': {
-#            'js': 'lib/js/esri-leaflet.js',
-#            'auto-include': True,
-#        },
-#        'leaflet-fullscreen': {
-#            'css': 'lib/css/leaflet.fullscreen.css',
-#            'js': 'lib/js/Leaflet.fullscreen.min.js',
-#            'auto-include': True,
-#        },
-#    },
-#    'SRID': 3857,
-#    'RESET_VIEW': False
-# }
-
 ALT_OSM_BASEMAPS = ast.literal_eval(os.environ.get('ALT_OSM_BASEMAPS', 'False'))
 CARTODB_BASEMAPS = ast.literal_eval(os.environ.get('CARTODB_BASEMAPS', 'False'))
 STAMEN_BASEMAPS = ast.literal_eval(os.environ.get('STAMEN_BASEMAPS', 'False'))
@@ -385,7 +255,90 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 # GEONODE_CLIENT_HOOKSET = "geonode_mapstore_client.hooksets.MapStoreHookSet"
 # MAPSTORE_DEBUG = False
 
+def get_geonode_catalogue_service():
+    if PYCSW:
+        pycsw_config = PYCSW["CONFIGURATION"]
+        if pycsw_config:
+                pycsw_catalogue = {
+                    ("%s" % pycsw_config['metadata:main']['identification_title']): {
+                        "url": CATALOGUE['default']['URL'],
+                        "type": "csw",
+                        "title": pycsw_config['metadata:main']['identification_title'],
+                        "autoload": True
+                     }
+                }
+                return pycsw_catalogue
+    return None
 
+GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
+
+MAPSTORE_CATALOGUE_SERVICES = {
+    "Demo WMS Service": {
+        "url": "https://demo.geo-solutions.it/geoserver/wms",
+        "type": "wms",
+        "title": "Demo WMS Service",
+        "autoload": False
+     },
+    "Demo WMTS Service": {
+        "url": "https://demo.geo-solutions.it/geoserver/gwc/service/wmts",
+        "type": "wmts",
+        "title": "Demo WMTS Service",
+        "autoload": False
+    }
+}
+
+MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
+
+if GEONODE_CATALOGUE_SERVICE:
+    MAPSTORE_CATALOGUE_SERVICES[GEONODE_CATALOGUE_SERVICE.keys()[0]] = GEONODE_CATALOGUE_SERVICE[GEONODE_CATALOGUE_SERVICE.keys()[0]]
+    MAPSTORE_CATALOGUE_SELECTED_SERVICE = GEONODE_CATALOGUE_SERVICE.keys()[0]
+
+DEFAULT_MS2_BACKGROUNDS = [{
+        "type": "osm",
+        "title": "Open Street Map",
+        "name": "mapnik",
+        "source": "osm",
+        "group": "background",
+        "visibility": True
+    },
+    {
+        "group": "background",
+        "name": "osm",
+        "source": "mapquest",
+        "title": "MapQuest OSM",
+        "type": "mapquest",
+        "visibility": False
+    },
+    {
+        "type": "wms",
+        "url": "https://demo.geo-solutions.it/geoserver/wms",
+        "visibility": False,
+        "title": "Natural Earth",
+        "name": "sde:NE2_HR_LC_SR_W_DR",
+        "group": "background",
+        "format": "image/png"
+    },
+    {
+        "type": "wms",
+        "url": "https://demo.geo-solutions.it/geoserver/wms",
+        "visibility": False,
+        "title": "Hypsometric",
+        "name": "sde:HYP_HR_SR_OB_DR",
+        "group": "background",
+        "format": "image/png"
+    },
+    {
+        "type": "wms",
+        "url": "https://demo.geo-solutions.it/geoserver/wms",
+        "visibility": False,
+        "title": "Gray Earth",
+        "name": "sde:GRAY_HR_SR_OB_DR",
+        "group": "background",
+        "format": "image/png"
+    }
+]
+
+MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
 
 if 'geonode.geoserver' in INSTALLED_APPS:
     LOCAL_GEOSERVER = {
@@ -400,45 +353,6 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     # baselayers = MAPSTORE_BASELAYERS
     # MAPSTORE_BASELAYERS = [LOCAL_GEOSERVER]
     # MAPSTORE_BASELAYERS.extend(baselayers)
-
-# Use kombu broker by default
-# REDIS_URL = 'redis://localhost:6379/1'
-# BROKER_URL = REDIS_URL
-# CELERY_RESULT_BACKEND = REDIS_URL
-CELERYD_HIJACK_ROOT_LOGGER = True
-CELERYD_CONCURENCY = 1
-# Set this to False to run real async tasks
-CELERY_ALWAYS_EAGER = True
-CELERYD_LOG_FILE = None
-CELERY_REDIRECT_STDOUTS = True
-CELERYD_LOG_LEVEL = 1
-
-# Haystack Search Backend Configuration. To enable,
-# first install the following:
-# - pip install django-haystack
-# - pip install elasticsearch==2.4.0
-# - pip install woosh
-# - pip install pyelasticsearch
-# Set HAYSTACK_SEARCH to True
-# Run "python manage.py rebuild_index"
-# HAYSTACK_SEARCH = False
-# Avoid permissions prefiltering
-SKIP_PERMS_FILTER = False
-# Update facet counts from Haystack
-HAYSTACK_FACET_COUNTS = True
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'haystack',
-    },
-    #    'db': {
-    #        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-    #        'EXCLUDED_INDEXES': ['thirdpartyapp.search_indexes.BarIndex'],
-    #        }
-}
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
-# HAYSTACK_SEARCH_RESULTS_PER_PAGE = 20
 
 LOGGING = {
     'version': 1,
@@ -505,17 +419,6 @@ if MONITORING_ENABLED:
     MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
     MONITORING_SERVICE_NAME = 'geonode'
 
-#Define email service on GeoNode
-EMAIL_ENABLE = True
-
-if EMAIL_ENABLE:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'localhost'
-    EMAIL_PORT = 25
-    EMAIL_HOST_USER = ''
-    EMAIL_HOST_PASSWORD = ''
-    EMAIL_USE_TLS = False
-    DEFAULT_FROM_EMAIL = 'Example.com <no-reply@localhost>'
 
 # Documents Thumbnails
 UNOCONV_ENABLE = True
@@ -525,7 +428,8 @@ if UNOCONV_ENABLE:
     UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
 
 # Advanced Security Workflow Settings
-ACCOUNT_APPROVAL_REQUIRED = False
+ACCOUNT_OPEN_SIGNUP = True
+ACCOUNT_APPROVAL_REQUIRED = True
 CLIENT_RESULTS_LIMIT = 20
 API_LIMIT_PER_PAGE = 1000
 FREETEXT_KEYWORDS_READONLY = False

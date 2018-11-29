@@ -36,6 +36,7 @@ from django.conf.global_settings import DATETIME_INPUT_FORMATS
 from geonode import get_version
 from kombu import Queue, Exchange
 
+
 # GeoNode Version
 VERSION = get_version()
 
@@ -269,12 +270,6 @@ LOCALE_PATHS = os.getenv('LOCALE_PATHS', _DEFAULT_LOCALE_PATHS)
 
 # Location of url mappings
 ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'geonode.urls')
-
-# Login and logout urls override
-LOGIN_URL = os.getenv('LOGIN_URL', '/account/login/')
-LOGOUT_URL = os.getenv('LOGOUT_URL', '/account/logout/')
-
-LOGIN_REDIRECT_URL = '/'
 
 GEONODE_CORE_APPS = (
     # GeoNode internal apps
@@ -681,7 +676,15 @@ HOSTNAME = _surl.hostname
 if not SITEURL.endswith('/'):
     SITEURL = '{}/'.format(SITEURL)
 
+# Login and logout urls override
+LOGIN_URL = os.getenv('LOGIN_URL', '/account/login/')
+LOGOUT_URL = os.getenv('LOGOUT_URL', '/account/logout/')
 
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
+ACCOUNT_LOGOUT_REDIRECT_URL =  os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
+
+# Backend
 DEFAULT_WORKSPACE = os.getenv('DEFAULT_WORKSPACE', 'geonode')
 CASCADE_WORKSPACE = os.getenv('CASCADE_WORKSPACE', 'geonode')
 
@@ -735,6 +738,7 @@ OGC_SERVER = {
         'PRINT_NG_ENABLED': True,
         'GEONODE_SECURITY_ENABLED': True,
         'GEOFENCE_SECURITY_ENABLED': GEOFENCE_SECURITY_ENABLED,
+        'GEOFENCE_URL': os.getenv('GEOFENCE_URL', 'internal:/'),
         'GEOGIG_ENABLED': False,
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
@@ -1206,6 +1210,14 @@ CORS_ORIGIN_WHITELIST = (
 )
 """
 
+# To enable the WorldMap based Client enable those
+"""
+GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.WorldMapHookSet"
+CORS_ORIGIN_WHITELIST = (
+    HOSTNAME
+)
+"""
+
 SERVICE_UPDATE_INTERVAL = 0
 
 SEARCH_FILTERS = {
@@ -1339,13 +1351,27 @@ if USE_GEOSERVER:
         Queue("geonode.layer.viewer", GEOSERVER_EXCHANGE, routing_key="geonode.viewer"),
     )
 
-# CELERYBEAT_SCHEDULE = {
+# from celery.schedules import crontab
+# EXAMPLES
+# CELERY_BEAT_SCHEDULE = {
 #     ...
 #     'update_feeds': {
 #         'task': 'arena.social.tasks.Update',
 #         'schedule': crontab(minute='*/6'),
 #     },
 #     ...
+#     'send-summary-every-hour': {
+#        'task': 'summary',
+#         # There are 4 ways we can handle time, read further
+#        'schedule': 3600.0,
+#         # If you're using any arguments
+#        'args': (‘We don’t need any’,),
+#     },
+#     # Executes every Friday at 4pm
+#     'send-notification-on-friday-afternoon': {
+#          'task': 'my_app.tasks.send_notification',
+#          'schedule': crontab(hour=16, day_of_week=5),
+#     },
 # }
 
 # Half a day is enough
