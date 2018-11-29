@@ -41,7 +41,7 @@ If you want to use Docker you can now::
     docker-compose build
 
     # run the docker container
-    docker-compose up -f docker-compose.override.localhost.yml -d
+    docker-compose up -f docker-compose.yml -f docker-compose.override.localhost.yml -d
 
     # turn it off
     docker-compose down
