@@ -234,20 +234,21 @@ def layer_style_manage(request, layername):
                 logger.warn(
                     'Unable to set the default style.  Ensure Geoserver is running and that this layer exists.')
 
-            # Ahmed Nour:
-            # Get public styles also
-            all_available_gs_styles = cat.get_styles(
-                settings.DEFAULT_WORKSPACE)
-            all_available_gs_styles += cat.get_styles()
             gs_styles = []
-            for style in all_available_gs_styles:
+            for style in Style.objects.all():
                 sld_title = style.name
+                if style.sld_title:
+                    sld_title = style.sld_title
                 try:
-                    if style.sld_title:
-                        sld_title = style.sld_title
+                    gs_sld = cat.get_style(style.name,
+                                           workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(style.name)
+                    if gs_sld:
+                        gs_styles.append((style.name, sld_title))
+                    else:
+                        style.delete()
                 except BaseException:
-                    pass
-                gs_styles.append((style.name, sld_title))
+                    tb = traceback.format_exc()
+                    logger.debug(tb)
 
             current_layer_styles = layer.styles.all()
             layer_styles = []
@@ -257,18 +258,25 @@ def layer_style_manage(request, layername):
                     if style.sld_title:
                         sld_title = style.sld_title
                 except BaseException:
-                    pass
+                    tb = traceback.format_exc()
+                    logger.debug(tb)
                 layer_styles.append((style.name, sld_title))
 
             # Render the form
-            sld_title = layer.default_style.name
-            try:
-                if layer.default_style.sld_title:
-                    sld_title = layer.default_style.sld_title
-            except BaseException:
-                pass
+            def_sld_name = None  # noqa
+            def_sld_title = None  # noqa
+            if layer.default_style:
+                def_sld_name = layer.default_style.name  # noqa
+                def_sld_title = layer.default_style.name  # noqa
+                try:
+                    if layer.default_style.sld_title:
+                        def_sld_title = layer.default_style.sld_title
+                except BaseException:
+                    tb = traceback.format_exc()
+                    logger.debug(tb)
 
-            default_style = (layer.default_style.name, sld_title)
+            default_style = (def_sld_name, def_sld_title)
+
             return render(
                 request,
                 'layers/layer_style_manage.html',
@@ -314,10 +322,9 @@ def layer_style_manage(request, layername):
                     cat.get_style(default_style)
                 styles = []
                 for style in selected_styles:
-                    styles.append(
-                        cat.get_style(
-                            style,
-                            workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(style))
+                    gs_sld = cat.get_style(style, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(style)
+                    if gs_sld:
+                        styles.append(gs_sld)
                 gs_layer.styles = styles
                 cat.save(gs_layer)
 

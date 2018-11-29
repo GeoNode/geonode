@@ -1,19 +1,30 @@
 /*globals define: true, requirejs: true */
 
+'use strict';
+
 requirejs.config({
-    baseUrl: siteUrl + 'static/lib/js',
-    shim: {
-        'underscore': { exports: '_'}
-    },
-    paths: {
-        'upload': '../../geonode/js/upload',
-        'templates': '../../geonode/js/templates',
-        'progress': 'jquery.ajax-progress'
-    }
+  config: {
+     text: {
+       useXhr: function (url, protocol, hostname, port) {
+          // allow cross-domain requests
+          // remote server allows CORS
+          return true;
+       }
+     },
+     waitSeconds: 5
+  },
+  baseUrl: siteUrl + 'static/lib/js',
+  shim: {
+    'underscore': { exports: '_'}
+  },
+  paths: {
+    'upload': '../../geonode/js/upload',
+    'templates': '../../geonode/js/templates',
+    'progress': 'jquery.ajax-progress'
+  }
 });
 
 define(['upload/upload'], function (upload) {
-    'use strict';
 
     $(function () {
         upload.initialize({
