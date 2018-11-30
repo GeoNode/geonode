@@ -567,8 +567,9 @@
       {% for style in resource.styles.all %}
           {% if resource.default_style == style %}
               {% for legend in resource.get_legend %}
-                  {% if legend.link_type == 'image' and style.name in legend.url %}
-                    <!-- p>{{ style.sld_title|default:style.name }}</p -->
+                  {% with "STYLE="|add:style.name as style_name %}
+                  {% if legend.link_type == 'image' and style_name in legend.url %}
+                    <p id="legend_sld_title" style="font-size:10px">{{ style.sld_title|default:style.name }}</p>
                     {% if request.user.is_authenticated and 'access_token' in request.session %}
                         <p><img id="legend_icon" src="{{ legend.url }}&access_token={{ request.session.access_token }}"></p>
                     {% else %}
@@ -577,6 +578,7 @@
                   {% else %}
                   <div id='legend_placeholder'></div>
                   {% endif %}
+                  {% endwith %}
               {% endfor %}
           {% endif %}
       {% endfor %}
