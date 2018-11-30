@@ -202,7 +202,7 @@ def comment_post_save(instance, sender, created, **kwargs):
     """ Send a notification when a comment to a layer, map or document has
     been submitted
     """
-    notice_type_label = '%s_comment' % instance.content_object.class_name.lower()
+    notice_type_label = '%s_comment' % instance.content_type.model.lower()
     recipients = get_notification_recipients(notice_type_label, instance.author)
     send_notification(recipients, notice_type_label, {"instance": instance})
 

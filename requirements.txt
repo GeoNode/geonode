@@ -190,6 +190,7 @@ datautil==0.4
 dicttoxml==1.7.4
 django-geoexplorer-worldmap==4.0.60
 geopy==1.14.0
+vectorformats==0.1
 
 #production
 uWSGI==2.0.17

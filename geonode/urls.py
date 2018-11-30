@@ -76,6 +76,7 @@ urlpatterns = [
 if settings.USE_WORLDMAP:
     urlpatterns += [url(r'', include('geonode.contrib.worldmap.wm_extra.urls', namespace='worldmap'))]
     urlpatterns += [url(r'', include('geonode.contrib.worldmap.gazetteer.urls', namespace='gazetteer'))]
+    urlpatterns += [url(r'', include('geonode.contrib.worldmap.mapnotes.urls', namespace='mapnotes'))]
 
 urlpatterns += [
 
