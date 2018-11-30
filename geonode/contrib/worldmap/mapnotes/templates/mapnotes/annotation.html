@@ -1,0 +1,71 @@
+{% load i18n %}
+{% load dialogos_tags %}
+<div id="annotation_page_div">
+<script type="text/javascript">
+{% autoescape off %}
+function addComment() {
+	var comment = Ext.get("id_comment").getValue();
+	var path = "{{request.path}}";
+	Ext.Ajax.request({
+		url: "{% comment_target annotation %}",
+		method: "POST",
+		params: {
+			"comment": comment,
+			"next": path
+		},
+		success: function(){
+			Ext.get("annotation_page_div").load({
+				url: "{{ request.path }}",
+				scripts: true
+			});
+		},
+		failure: function(response,opts){
+			Ext.msg("Error", "Could not save comment - are you logged in?");
+		}
+	});
+}
+{% endautoescape %}
+</script>
+
+<h3>{{ annotation.title }}</h3>
+<p>{{ annotation.content|linebreaks }}</p>
+<hr/>
+<p>{% trans "Author" %} : <a href="/profiles/{{ annotation.owner.username }}">{{ annotation.owner.username }}</a></p>
+<p>{% trans "Date" %}: {{ annotation.modified_dttm }}</p>
+
+<h3>{% trans "Comments" %}</h3>
+<div class="comments_container">
+    {% comments annotation as comments %}
+    {% for comment in comments %}
+        <div class="comment">
+            <div class="comment_content">
+                {{ comment.comment|escape|urlize|safe }}
+           </div>
+            <p class="comment_author"><a href="{{ comment.author.get_absolute_url }}">{{ comment.author.get_full_name|default:comment.author|capfirst }}</a>
+                commented <span class="comment_ago">
+                {% blocktrans with comment.submit_date|timesince as age %}
+                {{ age }} ago
+                {% endblocktrans %}
+                </span>
+            </p>
+        </div>
+    {% endfor %}
+
+    {% if request.user.is_authenticated %}
+        <h3>{% trans "Post a comment" %}</h3>
+        {% comment_form annotation as comment_form %}
+        <form method="POST"  id="comment_submission_form" action="{% comment_target annotation %}" onsubmit="addComment();return false;">
+            {% csrf_token %}
+            <div class="comment_box">
+                {{ comment_form.comment }}
+            </div>
+            <div class="comment_post">
+                <input type="submit" value="{% trans "Submit" %}" />
+            </div>
+            <input type="hidden" id="id_next" name="next" value="{{ request.path }}" />
+        </form>
+    {% else %}
+        <p><a href="{% url auth_login %}?next=/maps/{{annotation.map.id}}">{% trans "Login to add a comment" %}</a></p>
+    {% endif %}
+</div>
+</div>
