@@ -33,7 +33,9 @@ from .serviceprocessors import get_service_handler
 logger = logging.getLogger(__name__)
 
 
-@shared_task(bind=True)
+@shared_task(bind=True,
+             name='geonode.services.tasks.update.harvest_resource',
+             queue='update',)
 def harvest_resource(self, harvest_job_id):
     harvest_job = models.HarvestJob.objects.get(pk=harvest_job_id)
     harvest_job.update_status(
