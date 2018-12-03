@@ -1318,7 +1318,7 @@ BROKER_TRANSPORT_OPTIONS = {
     'visibility_timeout': 86400
 }
 
-ASYNC_SIGNALS = ast.literal_eval(os.environ.get('ASYNC_SIGNALS', 'True'))
+ASYNC_SIGNALS = ast.literal_eval(os.environ.get('ASYNC_SIGNALS', 'False'))
 RABBITMQ_SIGNALS_BROKER_URL = 'amqp://localhost:5672'
 REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
 LOCAL_SIGNALS_BROKER_URL = 'memory://'
