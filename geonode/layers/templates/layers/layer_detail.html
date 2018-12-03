@@ -494,7 +494,7 @@
                 {% if "change_resourcebase" in perms_list and resource.storeType != "remoteStore" %}
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                 {% endif %}
-                {% if resource.storeType == 'dataStore' and "change_layer_data" in layer_perms and OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
+                {% if "change_layer_data" in layer_perms and OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
                 <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}&storeType={{resource.storeType}}">{% trans "Edit data" %}</a>
                 {% endif %}
                 {% if "delete_resourcebase" in perms_list %}
@@ -513,7 +513,7 @@
     {% endif %}
 
     <li class="list-group-item">
-      <a href="{% url "new_map" %}?layer={{resource.service_typename}}&storeType={{resource.storeType}}" class="btn btn-default btn-md btn-block">{% trans "View Layer" %}</a>
+      <a href="{% url "new_map" %}?layer={{resource.service_typename}}&view=True" class="btn btn-default btn-md btn-block">{% trans "View Layer" %}</a>
     </li>
 
     <li class="list-group-item">
@@ -567,8 +567,9 @@
       {% for style in resource.styles.all %}
           {% if resource.default_style == style %}
               {% for legend in resource.get_legend %}
-                  {% if legend.link_type == 'image' and style.name in legend.url %}
-                    <!-- p>{{ style.sld_title|default:style.name }}</p -->
+                  {% with "STYLE="|add:style.name as style_name %}
+                  {% if legend.link_type == 'image' and style_name in legend.url %}
+                    <p id="legend_sld_title" style="font-size:10px">{{ style.sld_title|default:style.name }}</p>
                     {% if request.user.is_authenticated and 'access_token' in request.session %}
                         <p><img id="legend_icon" src="{{ legend.url }}&access_token={{ request.session.access_token }}"></p>
                     {% else %}
@@ -577,6 +578,7 @@
                   {% else %}
                   <div id='legend_placeholder'></div>
                   {% endif %}
+                  {% endwith %}
               {% endfor %}
           {% endif %}
       {% endfor %}
