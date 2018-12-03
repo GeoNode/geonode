@@ -1669,6 +1669,7 @@ if USE_WORLDMAP:
             'geoexplorer-worldmap',
             'geonode.contrib.worldmap.gazetteer',
             'geonode.contrib.worldmap.wm_extra',
+            'geonode.contrib.worldmap.mapnotes',
             'geonode.contrib.createlayer',
 
         )
