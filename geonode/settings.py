@@ -37,7 +37,7 @@ from geonode import get_version
 from kombu import Queue, Exchange
 
 
-SILENCED_SYSTEM_CHECKS = ["auth.W004", "urls.W002"]
+SILENCED_SYSTEM_CHECKS = ['1_8.W001', 'fields.W340', 'auth.W004', 'urls.W002']
 
 # GeoNode Version
 VERSION = get_version()

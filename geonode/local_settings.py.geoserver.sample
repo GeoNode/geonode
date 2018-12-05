@@ -39,7 +39,11 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
 
 # SECRET_KEY = '************************'
 
-SITEURL = "http://localhost:8000/"
+# per-deployment settings should go here
+SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'localhost')
+SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', 8000)
+_default_siteurl = "http://%s:%s/" % (SITE_HOST_NAME, SITE_HOST_PORT) if SITE_HOST_PORT else "http://%s/" % SITE_HOST_NAME
+SITEURL = os.getenv('SITEURL', _default_siteurl)
 
 # we need hostname for deployed
 _surl = urlparse(SITEURL)
@@ -106,8 +110,18 @@ GEOSERVER_LOCATION = os.getenv(
     'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
 )
 
+GEOSERVER_PUBLIC_HOST = os.getenv(
+    'GEOSERVER_PUBLIC_HOST', SITE_HOST_NAME
+)
+
+GEOSERVER_PUBLIC_PORT = os.getenv(
+    'GEOSERVER_PUBLIC_PORT', 8080
+)
+
+_default_public_location = 'http://{}:{}/geoserver/'.format(GEOSERVER_PUBLIC_HOST, GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/geoserver/'.format(GEOSERVER_PUBLIC_HOST)
+
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)
+    'GEOSERVER_PUBLIC_LOCATION', _default_public_location
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
