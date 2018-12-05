@@ -839,24 +839,6 @@ def gxp2wm(config, map_obj=None):
     if not [d for d in config['map']['groups'] if d['group'] == group]:
         config['map']['groups'].append({"expanded": "true", "group": group})
 
-    # we need to run this code. It looks like empty map has not the gxp_gnsource
-    add_gnsource = True
-    for source in config['sources']:
-        if 'ptype' in config['sources'][source]:
-            if config['sources'][source]['ptype'] == 'gxp_gnsource':
-                add_gnsource = False
-    if add_gnsource:
-        config['sources']['wm_gnsource'] = {
-                                    'url': settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
-                                    'restUrl': '/gs/rest', 'ptype': 'gxp_gnsource'
-                                  }
-
-    # make sure we have the wm source in config
-    config['sources']['wm'] = {
-                                'url': settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
-                                'restUrl': '/gs/rest', 'ptype': 'gxp_wmscsource'
-                              }
-
     if config_is_string:
         config = json.dumps(config)
 
