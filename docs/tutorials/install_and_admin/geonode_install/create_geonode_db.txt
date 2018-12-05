@@ -120,8 +120,8 @@ In order to do that, rename the ``my_geonode/local_settings.py.sample`` file to 
 
         ...
         # per-deployment settings should go here
-        SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', HOSTNAME)
-        SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', None)
+        SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', "localhost")
+        SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', "8000")
         _default_siteurl = "http://%s:%s/" % (SITE_HOST_NAME, SITE_HOST_PORT) if SITE_HOST_PORT else "http://%s/" % SITE_HOST_NAME
         SITEURL = os.getenv('SITEURL', _default_siteurl)
 
