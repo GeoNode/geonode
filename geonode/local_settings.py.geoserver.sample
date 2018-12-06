@@ -39,7 +39,11 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
 
 # SECRET_KEY = '************************'
 
-SITEURL = "http://localhost:8000/"
+# per-deployment settings should go here
+SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'localhost')
+SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', 8000)
+_default_siteurl = "http://%s:%s/" % (SITE_HOST_NAME, SITE_HOST_PORT) if SITE_HOST_PORT else "http://%s/" % SITE_HOST_NAME
+SITEURL = os.getenv('SITEURL', _default_siteurl)
 
 # we need hostname for deployed
 _surl = urlparse(SITEURL)
@@ -49,7 +53,13 @@ HOSTNAME = _surl.hostname
 if not SITEURL.endswith('/'):
     SITEURL = '{}/'.format(SITEURL)
 
-ALLOWED_HOSTS = [HOSTNAME, 'localhost']
+try:
+    # try to parse python notation, default in dockerized env
+    ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
+except ValueError:
+    # fallback to regular list of values separated with misc chars
+    ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
+        else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
 # Define email service on GeoNode
 EMAIL_ENABLE = True
@@ -100,8 +110,18 @@ GEOSERVER_LOCATION = os.getenv(
     'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
 )
 
+GEOSERVER_PUBLIC_HOST = os.getenv(
+    'GEOSERVER_PUBLIC_HOST', SITE_HOST_NAME
+)
+
+GEOSERVER_PUBLIC_PORT = os.getenv(
+    'GEOSERVER_PUBLIC_PORT', 8080
+)
+
+_default_public_location = 'http://{}:{}/geoserver/'.format(GEOSERVER_PUBLIC_HOST, GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/geoserver/'.format(GEOSERVER_PUBLIC_HOST)
+
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)
+    'GEOSERVER_PUBLIC_LOCATION', _default_public_location
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -178,6 +198,101 @@ UPLOADER = {
         '.gml',
         '.xml'
     ]
+}
+
+# CSW settings
+CATALOGUE = {
+    'default': {
+        # The underlying CSW implementation
+        # default is pycsw in local mode (tied directly to GeoNode Django DB)
+        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+        # pycsw in non-local mode
+        # 'ENGINE': 'geonode.catalogue.backends.pycsw_http',
+        # GeoNetwork opensource
+        # 'ENGINE': 'geonode.catalogue.backends.geonetwork',
+        # deegree and others
+        # 'ENGINE': 'geonode.catalogue.backends.generic',
+
+        # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+        'URL': urljoin(SITEURL, '/catalogue/csw'),
+        # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
+        # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
+
+        # login credentials (for GeoNetwork)
+        # 'USER': 'admin',
+        # 'PASSWORD': 'admin',
+
+        # 'ALTERNATES_ONLY': True,
+    }
+}
+
+# pycsw settings
+PYCSW = {
+    # pycsw configuration
+    'CONFIGURATION': {
+        # uncomment / adjust to override server config system defaults
+        # 'server': {
+        #    'maxrecords': '10',
+        #    'pretty_print': 'true',
+        #    'federatedcatalogues': 'http://catalog.data.gov/csw'
+        # },
+        'server': {
+            'home': '.',
+            'url': CATALOGUE['default']['URL'],
+            'encoding': 'UTF-8',
+            'language': LANGUAGE_CODE,
+            'maxrecords': '20',
+            'pretty_print': 'true',
+            # 'domainquerytype': 'range',
+            'domaincounts': 'true',
+            'profiles': 'apiso,ebrim',
+        },
+        'manager': {
+            # authentication/authorization is handled by Django
+            'transactions': 'false',
+            'allowed_ips': '*',
+            # 'csw_harvest_pagesize': '10',
+        },
+        'metadata:main': {
+            'identification_title': 'GeoNode Catalogue',
+            'identification_abstract': 'GeoNode is an open source platform' \
+            ' that facilitates the creation, sharing, and collaborative use' \
+            ' of geospatial data',
+            'identification_keywords': 'sdi, catalogue, discovery, metadata,' \
+            ' GeoNode',
+            'identification_keywords_type': 'theme',
+            'identification_fees': 'None',
+            'identification_accessconstraints': 'None',
+            'provider_name': 'Organization Name',
+            'provider_url': SITEURL,
+            'contact_name': 'Lastname, Firstname',
+            'contact_position': 'Position Title',
+            'contact_address': 'Mailing Address',
+            'contact_city': 'City',
+            'contact_stateorprovince': 'Administrative Area',
+            'contact_postalcode': 'Zip or Postal Code',
+            'contact_country': 'Country',
+            'contact_phone': '+xx-xxx-xxx-xxxx',
+            'contact_fax': '+xx-xxx-xxx-xxxx',
+            'contact_email': 'Email Address',
+            'contact_url': 'Contact URL',
+            'contact_hours': 'Hours of Service',
+            'contact_instructions': 'During hours of service. Off on ' \
+            'weekends.',
+            'contact_role': 'pointOfContact',
+        },
+        'metadata:inspire': {
+            'enabled': 'true',
+            'languages_supported': 'eng,gre',
+            'default_language': 'eng',
+            'date': 'YYYY-MM-DD',
+            'gemet_keywords': 'Utility and governmental services',
+            'conformity_service': 'notEvaluated',
+            'contact_name': 'Organization Name',
+            'contact_email': 'Email Address',
+            'temp_extent': 'YYYY-MM-DD/YYYY-MM-DD',
+        }
+    }
 }
 
 ALT_OSM_BASEMAPS = ast.literal_eval(os.environ.get('ALT_OSM_BASEMAPS', 'False'))
@@ -293,23 +408,43 @@ if GEONODE_CATALOGUE_SERVICE:
     MAPSTORE_CATALOGUE_SERVICES[GEONODE_CATALOGUE_SERVICE.keys()[0]] = GEONODE_CATALOGUE_SERVICE[GEONODE_CATALOGUE_SERVICE.keys()[0]]
     MAPSTORE_CATALOGUE_SELECTED_SERVICE = GEONODE_CATALOGUE_SERVICE.keys()[0]
 
-DEFAULT_MS2_BACKGROUNDS = [{
-        "type": "osm",
-        "title": "Open Street Map",
-        "name": "mapnik",
-        "source": "osm",
-        "group": "background",
-        "visibility": True
-    },
-    {
-        "group": "background",
-        "name": "osm",
-        "source": "mapquest",
-        "title": "MapQuest OSM",
-        "type": "mapquest",
-        "visibility": False
-    }
-]
+    DEFAULT_MS2_BACKGROUNDS = [
+        {
+            "type": "osm",
+            "title": "Open Street Map",
+            "name": "mapnik",
+            "source": "osm",
+            "group": "background",
+            "visibility": True
+        }, {
+            "type": "tileprovider",
+            "title": "OpenTopoMap",
+            "provider": "OpenTopoMap",
+            "name": "OpenTopoMap",
+            "source": "OpenTopoMap",
+            "group": "background",
+            "visibility": False
+        }, {
+            "type": "wms",
+            "title": "Sentinel2 Cloudless - EOX https://eox.at",
+            "format": "image/png8",
+            "id": "s2cloudless",
+            "name": "s2cloudless:s2cloudless",
+            "url": "https://maps.geo-solutions.it/geoserver/wms",
+            "group": "background",
+            "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
+            "visibility": False
+       }, {
+            "source": "ol",
+            "group": "background",
+            "id": "none",
+            "name": "empty",
+            "title": "Empty Background",
+            "type": "empty",
+            "visibility": False,
+            "args": ["Empty Background", {"visibility": False}]
+        }
+    ]
 
 MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
 

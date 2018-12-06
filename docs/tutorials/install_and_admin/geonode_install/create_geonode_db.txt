@@ -91,7 +91,7 @@ Once the DB has been correctly configured, we can finalize the `GeoNode` setup.
 **If not already active** let's activate the new `geonode` Python Virtual Environment:
 
 .. code-block:: bash
-    
+
     $ workon geonode
 
 Move into the `geonode` home folder
@@ -113,18 +113,20 @@ In order to do that, rename the ``my_geonode/local_settings.py.sample`` file to 
 
         $ cp my_geonode/local_settings.py.sample my_geonode/local_settings.py
         $ vim my_geonode/local_settings.py
-    
+
     Update the following sections at the accordingly to your server configuration
-    
+
     .. code-block:: python
-    
+
         ...
+        # per-deployment settings should go here
         SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', "localhost")
         SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', "8000")
-        SITEURL = os.getenv('SITEURL', "http://%s:%s/" % (SITE_HOST_NAME, SITE_HOST_PORT))
-        
+        _default_siteurl = "http://%s:%s/" % (SITE_HOST_NAME, SITE_HOST_PORT) if SITE_HOST_PORT else "http://%s/" % SITE_HOST_NAME
+        SITEURL = os.getenv('SITEURL', _default_siteurl)
+
         ...
-        
+
         EMAIL_ENABLE = True
 
         if EMAIL_ENABLE:
@@ -135,9 +137,9 @@ In order to do that, rename the ``my_geonode/local_settings.py.sample`` file to 
             EMAIL_HOST_PASSWORD = ''
             EMAIL_USE_TLS = False
             DEFAULT_FROM_EMAIL = '{{ project_name }} <no-reply@{{ project_name }}>'
-        
+
         ...
-        
+
         DATABASES = {
             'default': {
                  'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -158,9 +160,9 @@ In order to do that, rename the ``my_geonode/local_settings.py.sample`` file to 
                 'CONN_TOUT': 900,
             }
         }
-        
+
         ...
-        
+
         OGC_SERVER_DEFAULT_USER = os.getenv(
             'GEOSERVER_ADMIN_USER', 'admin'
         )
@@ -168,7 +170,7 @@ In order to do that, rename the ``my_geonode/local_settings.py.sample`` file to 
         OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
             'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
         )
-        
+
         ...
 
 
@@ -178,25 +180,25 @@ This file inherits `my_geonode` ``local_settings`` and set some GeoNode default 
     .. code-block:: bash
 
         $ vim my_geonode/settings.py
-    
+
     Update the following sections at the accordingly to your server configuration
-    
+
     .. code-block:: python
-    
+
         ...
         # Make sure GeoNode recognizes your servers
-        
+
         ALLOWED_HOSTS = # Add here your hosts
-        
+
         ...
         # Modify time zone accordingly
-        
+
         TIME_ZONE = os.getenv('TIME_ZONE', "America/Chicago")
-        
+
         ...
         # Tweak GeoNode behavior with the following settings
         # (see GeoNode documentation for more details)
-        
+
         CLIENT_RESULTS_LIMIT = 20
         API_LIMIT_PER_PAGE = 1000
         FREETEXT_KEYWORDS_READONLY = False
@@ -216,10 +218,10 @@ This file inherits `my_geonode` ``local_settings`` and set some GeoNode default 
         ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = True
         ACCOUNT_CONFIRM_EMAIL_ON_GET = True
         ACCOUNT_APPROVAL_REQUIRED = True
-        
+
         ...
         # Modify your maps and backgrounds
-        
+
         # default map projection
         # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
         DEFAULT_MAP_CRS = "EPSG:3857"
@@ -241,21 +243,21 @@ This file inherits `my_geonode` ``local_settings`` and set some GeoNode default 
 
         MAP_BASELAYERS = [{
         ...
-        
+
         # Enable/Disable the notification system
         # (see GeoNode documentation for more details)
 
         NOTIFICATION_ENABLED = True
-        
+
         ...
-        
+
         # Enable/Disable the integrated monitoring system
         # (see GeoNode documentation for more details)
-        
+
         MONITORING_ENABLED = False
-        
+
         # Tweak the logging options
-        
+
         LOGGING = {
         ...
             "loggers": {
@@ -275,18 +277,18 @@ This file inherits `my_geonode` ``local_settings`` and set some GeoNode default 
         }
 
 
-        
+
 Finalize GeoNode Setup & Test
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The following Python commands will finalize the setup, configure and create DB tables and download GeoServer.
 
 .. warning::
     Before running the next commands be sure that:
-    
+
     * You have completed all the steps from the beginning of this chapter
-    
+
     * You are located into the ``my_geonode`` custom project base folder
-    
+
     * The `geonode` Python Virtual Environment is enabled
 
 Stop all the services
@@ -325,9 +327,9 @@ Revert to default site settings
         .. code-block:: bash
 
             $ vim my_geonode/local_settings.py
-        
+
         Comment the following pieces
-        
+
         .. code-block:: python
 
             ...
@@ -355,13 +357,13 @@ Setup and start the system in DEV mode
 
     $ paver setup
     # This command downloads and extract the correct GeoServer version
-    
+
     $ paver sync
     # This command prepares the DB tables and loads initial data
-    
+
     $ paver start
     # This command allows you to start GeoNode in development mode
-    
+
 GeoNode and GeoServer in Development mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The ``paver start`` command allows you to start the server in **development (DEV)** mode.
