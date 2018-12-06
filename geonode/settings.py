@@ -37,6 +37,8 @@ from geonode import get_version
 from kombu import Queue, Exchange
 
 
+SILENCED_SYSTEM_CHECKS = ['1_8.W001', 'fields.W340', 'auth.W004', 'urls.W002']
+
 # GeoNode Version
 VERSION = get_version()
 
@@ -1499,14 +1501,19 @@ if os.name == 'nt':
             # maybe it will be found regardless if not it will throw 500 error
             from django.contrib.gis.geos import GEOSGeometry  # flake8: noqa
 
+USE_WORLDMAP = strtobool(os.getenv('USE_WORLDMAP', 'False'))
 
 # define the urls after the settings are overridden
 if USE_GEOSERVER:
+    if USE_WORLDMAP:
+        LOCAL_GXP_PTYPE = 'gxp_gnsource'
+    else:
+        LOCAL_GXP_PTYPE = 'gxp_wmscsource'
     PUBLIC_GEOSERVER = {
         "source": {
             "title": "GeoServer - Public Layers",
             "attribution": "&copy; %s" % SITEURL,
-            "ptype": "gxp_wmscsource",
+            "ptype": LOCAL_GXP_PTYPE,
             "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows",
             "restUrl": "/gs/rest"
         }
@@ -1515,7 +1522,7 @@ if USE_GEOSERVER:
         "source": {
             "title": "GeoServer - Private Layers",
             "attribution": "&copy; %s" % SITEURL,
-            "ptype": "gxp_wmscsource",
+            "ptype": LOCAL_GXP_PTYPE,
             "url": "/gs/ows",
             "restUrl": "/gs/rest"
         }
@@ -1661,8 +1668,6 @@ GEOTIFF_IO_BASE_URL = os.getenv(
 )
 
 # WorldMap settings
-USE_WORLDMAP = strtobool(os.getenv('USE_WORLDMAP', 'False'))
-
 if USE_WORLDMAP:
     GEONODE_CLIENT_LOCATION = '/static/worldmap_client/'
     INSTALLED_APPS += (
