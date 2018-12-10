@@ -1698,6 +1698,7 @@ if USE_WORLDMAP:
         organized spatially and temporally.</p>
     """
     # these are optionals
+    USE_GOOGLE_STREET_VIEW = strtobool(os.getenv('USE_GOOGLE_STREET_VIEW', 'False'))
     GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', 'your-key-here')
     USE_HYPERMAP = strtobool(os.getenv('USE_HYPERMAP', 'False'))
     HYPERMAP_REGISTRY_URL = os.getenv('HYPERMAP_REGISTRY_URL', 'http://localhost:8001')

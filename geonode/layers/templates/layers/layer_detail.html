@@ -725,11 +725,15 @@
     {% include 'rating.html' %}
     {% include 'request_download.html' %}
     {% if DISPLAY_SOCIAL %}
+    <script type="text/javascript">
+    {% autoescape off %}
      (function() {
        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
        po.src = 'https://apis.google.com/js/plusone.js';
        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
      })();
+     {% endautoescape %}
+     </script>
     {% endif %}
     <script type="text/javascript">
        $("#comment_submit_btn").click(function(event) {
