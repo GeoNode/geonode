@@ -477,9 +477,11 @@ def geoserver_proxy(request,
     #         status=401)
 
     def strip_prefix(path, prefix):
-        assert path.startswith(prefix)
+        assert prefix in path
+        prefix_idx = path.index(prefix)
+        _prefix = path[:prefix_idx] + prefix
         full_prefix = "%s/%s/%s" % (
-            prefix, layername, downstream_path) if layername else prefix
+            _prefix, layername, downstream_path) if layername else _prefix
         return path[len(full_prefix):]
 
     path = strip_prefix(request.get_full_path(), proxy_path)
