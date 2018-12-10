@@ -192,11 +192,13 @@ var isMobile = {
                         toggleGroup: 'featureGroup',
                         actionTarget:  {target: "paneltbar", index: 6}
                     },
+                    {% if USE_GOOGLE_STREET_VIEW %}
                     {
                     	ptype: "gxp_streetviewtool",
                     	actionTarget:   {target: "paneltbar", index: 7},
                         toggleGroup: 'featureGroup'
                     },
+                    {% endif %}
                     {
                     	  ptype: "gxp_measure",
                         toggleGroup: 'featureGroup',
