@@ -426,7 +426,7 @@ if GEONODE_CATALOGUE_SERVICE:
             "visibility": False
         }, {
             "type": "wms",
-            "title": "Sentinel2 Cloudless - EOX https://eox.at",
+            "title": "Sentinel-2 cloudless - https://s2maps.eu",
             "format": "image/png8",
             "id": "s2cloudless",
             "name": "s2cloudless:s2cloudless",
