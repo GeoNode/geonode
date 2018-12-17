@@ -52,7 +52,7 @@ dj-pagination<=2.3.2 # python-dj-pagination (2.3.2 in our ppa)
 django-celery-monitor<=1.1.2
 django-crispy-forms==1.7.2
 django-extensions>=1.2.5,<=2.0.7 # python-django-extensions (2.0.3 in our ppa)
-django-filter==2.0.0 # python-django-filter (1.1.0 in our ppa)
+django-filter==1.1.0 # python-django-filter (1.1.0 in our ppa)
 django-jsonfield<=1.0.1 # python-django-jsonfield (0.9.15, 1.0.1 in our ppa)
 django-jsonfield-compat<=0.4.4 # python-django-jsonfield-compat (0.4.4 in our ppa)
 django-leaflet<=0.23.0 # python-django-leaflet (0.23.0 in our ppa)
@@ -82,6 +82,7 @@ pycparser==2.18
 pyopenssl==18.0.0
 
 # geopython dependencies
+proj==0.1.0
 pyproj>=1.9.5,<=1.9.5.1 # python-pyproj (1.9.5.1)
 OWSLib==0.16.0 # python-owslib (0.15.0 in our ppa) FIXME
 pycsw==2.2.0 # python-pycsw (1.10.1, 2.0.0, 2.0.3 in our ppa) FIXME
