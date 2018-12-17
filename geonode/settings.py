@@ -353,6 +353,7 @@ INSTALLED_APPS = (
     'geoexplorer',
     'leaflet',
     'bootstrap3_datetime',
+    'django_filters',
     'django_extensions',
     'django_basic_auth',
     'autocomplete_light',
