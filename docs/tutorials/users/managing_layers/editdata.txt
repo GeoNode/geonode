@@ -1,0 +1,34 @@
+.. _layers.edit_data:
+
+Editing - Modifying Layers
+==========================
+
+In GeoNode it is possible to visualize the data of a layer in a tabular format and search for specific values based on a simple search functionality.
+
+It also possible to edit the non spatial attributes of each row or the location of a point (no line or polygon edit is supported).
+
+Additionally you can add new features (points, lines, polygons) or you can delete features.
+
+This is possible using the *edit_data* application.
+
+Once the application is enabled in GeoNode you will be able to edit data of an empty layer by browsing to "Data > Layers > Select a Layer
+
+> Editing Tools > Edit Data".
+
+You will see a tabular form of the data like this:
+
+.. figure:: img/edit_data_table.png
+
+To add a new row click the button: Add a new entry.
+
+To search for attributes in the table, use the search bar on the right.
+
+To edit existing attributes (non spatial):
+
+* click the button Edit Attributes
+* edit each of the cell in the row and
+* click save
+
+To edit the location of a point, click Edit Geometry.
+
+To delete a row, click the button: Delete Row
