@@ -99,7 +99,7 @@ Pinax<=0.9a2 # python-pinax (0.9a2 in our ppa)
 pinax-notifications==4.1.0 # (4.1.0 in our ppa)
 pinax-theme-bootstrap<=8.0.1 # python-pinax-theme-bootstrap (8.0.1 in our ppa)
 django-forms-bootstrap<=3.1.0 # python-django-forms-bootstrap (3.1.0 in our ppa)
-django-bootstrap-toolkit=2.15.0
+django-bootstrap-toolkit==2.15.0
 django-allauth<=0.34.0 # python-django-allauth (0.34.0 in our ppa)
 django-activity-stream<=0.6.5 # python-django-activity-stream (0.6.5 in our ppa)
 django-appconf<=1.0.2 # (1.0.2 in ppa)
