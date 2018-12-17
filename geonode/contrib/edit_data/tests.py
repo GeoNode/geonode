@@ -63,9 +63,10 @@ Then, as usual, run "paver run_tests"
 
 class EditDataCoreTest(GeoNodeBaseTestSupport):
 
-    layer_name = 'atms_dist_1'
-    layer_feature_id = 'atms_dist_1.118'
-    feature_id = 118
+    layer_name = 'test_layer'
+    feature_id = 1
+    layer_feature_id = '.'.join([layer_name,str(feature_id)])
+
     '''
     # taken from Paolo's createlayer contrib app
     def setUp(self):
@@ -120,36 +121,36 @@ class EditDataCoreTest(GeoNodeBaseTestSupport):
         # check if layer detail page is accessible with client
         response = self.client.get(reverse('layer_detail', args=('geonode:%s' % self.layer_name,)))
         self.assertEqual(response.status_code, 200)
+
     '''
 
     def test_add_row(self):
 
-        layer_name = self.layer_name
+        #layer_name = self.layer_name
         feature_type = 'Point'
 
-        data_dict = {"data":"FID_1=,Name__EN_=papagou,Name__FR_=,Address__E=,Address__A=,Longitude=,Latitude=,Region__EN=,ATM_IDs=,FID_2=,FID_1_1=,objectid=,admin0name=,admin0na_1=,admin0pcod=,admin1name=,admin1na_1=,admin1pcod=,admin2name=,admin2na_1=,admin2pcod=,admin2refn=,admin2altn=,admin2al_1=,admin2al_2=,admin2al_3=,lastupdate=,validon=,validto=,st_area_sh=,st_length_=,Modality=,Count_=","feature_type":"Point","layer_name":self.layername,"coords":[22.930927,40.640600]}
+        data_dict = {"data":"FID_1=,Name__EN_=papagou,Name__FR_=,Address__E=,Address__A=,Longitude=,Latitude=,Region__EN=,ATM_IDs=,FID_2=,FID_1_1=,objectid=,admin0name=,admin0na_1=,admin0pcod=,admin1name=,admin1na_1=,admin1pcod=,admin2name=,admin2na_1=,admin2pcod=,admin2refn=,admin2altn=,admin2al_1=,admin2al_2=,admin2al_3=,lastupdate=,validon=,validto=,st_area_sh=,st_length_=,Modality=,Count_=","feature_type":"Point","layer_name":self.layer_name,"coords":[22.930927,40.640600]}
 
 
         success, message, status_code = save_added_row(self.layer_name, feature_type, data_dict)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(status_code, 200)
 
 
     def test_edits(self):
 
-        data_dict = {"data":"FID_1=,Name__EN_=ioannina,Name__FR_=12,Address__E=,Address__A=,Longitude=,Latitude=,Region__EN=,ATM_IDs=,FID_2=,FID_1_1=,objectid=,admin0name=,admin0na_1=,admin0pcod=,admin1name=,admin1na_1=,admin1pcod=,admin2name=,admin2na_1=,admin2pcod=,admin2refn=,admin2altn=,admin2al_1=,admin2al_2=,admin2al_3=,lastupdate=,validon=,validto=,st_area_sh=,st_length_=,Modality=,Count_=","feature_id":self.feature_id,"layer_name":self.layer_name}
+        data_dict = {"data":"FID_1=,Name__EN_=ioannina,Name__FR_=13,Address__E=,Address__A=,Longitude=,Latitude=,Region__EN=,ATM_IDs=,FID_2=,FID_1_1=,objectid=,admin0name=,admin0na_1=,admin0pcod=,admin1name=,admin1na_1=,admin1pcod=,admin2name=,admin2na_1=,admin2pcod=,admin2refn=,admin2altn=,admin2al_1=,admin2al_2=,admin2al_3=,lastupdate=,validon=,validto=,st_area_sh=,st_length_=,Modality=,Count_=","feature_id":self.feature_id,"layer_name":self.layer_name}
 
         success, message, status_code = save_edits(self.layer_name, self.feature_id, data_dict)
-        self.assertEqual(response.status_code, 200)
-
+        self.assertEqual(status_code, 200)
 
 
     def test_geom_edits(self):
 
         coords = '39.629287 20.886753'
         success, message, status_code = save_geom_edits(self.layer_name, self.layer_feature_id, coords)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(status_code, 200)
 
     def test_delete(self):
 
         success, message, status_code = delete_selected_row(self.layer_name, self.layer_feature_id)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(status_code, 200)
