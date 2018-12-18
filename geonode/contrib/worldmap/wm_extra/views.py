@@ -767,7 +767,8 @@ def gxp2wm(config, map_obj=None):
         config['about']['introtext'] = unicode(settings.DEFAULT_MAP_ABSTRACT)
 
     if not [d for d in config['map']['groups'] if d['group'] == group]:
-        config['map']['groups'].append({"expanded": "true", "group": group})
+        for group in groups:
+            config['map']['groups'].append({"expanded": "true", "group": group})
 
     if config_is_string:
         config = json.dumps(config)
