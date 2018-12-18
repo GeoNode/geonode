@@ -32,7 +32,7 @@ module.exports = function(grunt) {
       },
       production: {
         options: {
-          paths: ['.components/bootstrap/less'],
+          paths: ['node_modules/bootstrap/less'],
           yuicompress: true
         },
         files: [
@@ -49,7 +49,7 @@ module.exports = function(grunt) {
           files: [{
             expand: true,
             flatten: true,
-            cwd: '.components',
+            cwd: 'node_modules',
             dest: 'lib/js',
             src: [
               'bootstrap/dist/js/bootstrap.js',
@@ -76,7 +76,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           flatten: true,
-          cwd: '.components',
+          cwd: 'node_modules',
           dest: 'lib/css',
           src: [
             'datatables/media/css/jquery.dataTables.css',
@@ -103,7 +103,7 @@ module.exports = function(grunt) {
         }, {
           expand: true,
           flatten: true,
-          cwd: '.components',
+          cwd: 'node_modules',
           dest: 'lib/img',
           src: [
             'bootstrap/img/*.png',
@@ -124,7 +124,7 @@ module.exports = function(grunt) {
         }, {
           expand: true,
           flatten: true,
-          cwd: '.components',
+          cwd: 'node_modules',
           dest: 'lib/js',
           src: [
             'jquery/dist/jquery.min.js',
