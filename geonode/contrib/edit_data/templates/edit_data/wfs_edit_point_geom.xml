@@ -2,7 +2,7 @@
   xmlns:ogc="http://www.opengis.net/ogc"
   xmlns:wfs="http://www.opengis.net/wfs"
   xmlns:gml="http://www.opengis.net/gml">
-  <wfs:Update typeName="geonode:{{ layer_name }}">
+  <wfs:Update typeName="{{ workspace }}:{{ layer_name }}">
     <wfs:Property>
       <wfs:Name>{{ geometry_clm }}</wfs:Name>
       <wfs:Value>
