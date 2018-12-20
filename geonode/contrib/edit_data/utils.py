@@ -24,6 +24,7 @@ from collections import OrderedDict
 import requests
 import operator
 import json
+import re
 
 from owslib.wfs import WebFeatureService
 from owslib.feature.schema import get_schema
@@ -120,8 +121,11 @@ def save_added_row(layer_name, feature_type, data_dict):
     # Make a Describe Feature request to get the correct link for the xmlns:geonode
     headers = {'Content-Type': 'application/xml'} # set what your server accepts
     xml_path = "edit_data/wfs_describe_feature.xml"
+    workspace = settings.DEFAULT_WORKSPACE
     xmlstr = get_template(xml_path).render({
-            'layer_name': layer_name}).strip()
+            'layer_name': layer_name,
+            'workspace': workspace
+            }).strip()
     url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
     describe_feature_response = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).text
 
@@ -150,9 +154,11 @@ def save_added_row(layer_name, feature_type, data_dict):
         xml_path = "edit_data/wfs_add_new_polygon.xml"
 
     store_name, geometry_clm = get_store_name(layer_name)
+    workspace = settings.DEFAULT_WORKSPACE
     geometry_clm = "the_geom"
     xmlstr = get_template(xml_path).render({
             'geonode_url': geonode_url,
+            'workspace': workspace,
             'layer_name': layer_name,
             'coords': coords,
             'property_element': mark_safe(property_element),
@@ -190,8 +196,10 @@ def save_edits(layer_name, feature_id, data_dict):
         property_element = property_element + property_element_1
     # build the update wfs-t request
     xml_path = "edit_data/wfs_edit_data.xml"
+    workspace = settings.DEFAULT_WORKSPACE
     xmlstr = get_template(xml_path).render({
             'layer_name': layer_name,
+            'workspace': workspace,
             'feature_id': feature_id,
             'property_element': mark_safe(property_element)}).strip()
 
@@ -210,14 +218,13 @@ def save_edits(layer_name, feature_id, data_dict):
 
 
 def save_geom_edits(layer_name, feature_id, coords):
-    print(layer_name)
-    print(feature_id)
-    print(type(coords))
     store_name, geometry_clm = get_store_name(layer_name)
     geometry_clm = "the_geom"
+    workspace = settings.DEFAULT_WORKSPACE
     xml_path = "edit_data/wfs_edit_point_geom.xml"
     xmlstr = get_template(xml_path).render({
             'layer_name': layer_name,
+            'workspace': workspace,
             'coords': coords,
             'feature_id': feature_id,
             'geometry_clm': geometry_clm}).strip()
@@ -241,8 +248,10 @@ def save_geom_edits(layer_name, feature_id, coords):
 def delete_selected_row(layer_name, feature_id):
 
     xml_path = "edit_data/wfs_delete_row.xml"
+    workspace = settings.DEFAULT_WORKSPACE
     xmlstr = get_template(xml_path).render({
             'layer_name': layer_name,
+            'workspace': workspace,
             'feature_id': feature_id}).strip()
 
     url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
