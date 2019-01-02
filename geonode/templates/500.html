@@ -295,21 +295,8 @@
     {% endif %}
     <!-- End of Modal -->
 
-    {% if DEBUG_STATIC %}
-    <script src="{% static "lib/js/jquery.min.js" %}"></script>
-    <script src="{% static "lib/js/jquery.dataTables.js" %}"></script>
-    <script src="{% static "lib/js/jquery.timeago.js" %}"></script>
-    <script src="{% static "lib/js/jquery.ajaxprogress.js" %}"></script>
-    <script src="{% static "lib/js/jquery.ajaxQueue.js" %}"></script>
-    <script src="{% static "lib/js/jquery-ui.custom.js" %}"></script>
-    <script src="{% static "lib/js/jquery.raty.js" %}"></script>
-    <script src="{% static "lib/js/bootstrap.min.js" %}"></script>
-    <script src="{% static "lib/js/json2.js" %}"></script>
-    <script src="{% static "lib/js/select2.js" %}"></script>
-    <script src="{% static "lib/js/waypoints.js" %}"></script>
-    {% else %}
-    <script src="{% static "lib/js/assets.min.js" %}"></script>
-    {% endif %}
+    <script src="{% static "dist/bundle.js" %}"></script>
+    <script src="{% static "dist/assets.min.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "geonode/js/utils/utils.js" %}"></script>
     <script src="{% static "geonode/js/base/base.js" %}"></script>
     {% include 'autocomplete_light/static.html' %}
