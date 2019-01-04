@@ -1,0 +1,56 @@
+
+{
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+    "ecmaFeatures": {}
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "jasmine": true,
+    "protractor": true,
+    "es6": true
+  },
+  "extends": ["airbnb-base", "prettier", "plugin:react/recommended"],
+  "globals": {
+    "ol": true,
+    "storytools": true,
+    "angular": true,
+    "inject": true,
+    "toastr": true,
+    "goog": true
+  },
+  "plugins": [
+    "import",
+    "prettier",
+    "react"
+  ],
+  "rules": {
+    "camelcase": ["error", {
+      "properties": "always"
+    }],
+    "import/extensions": "off",
+    "import/no-unresolved": "off",
+    "import/no-extraneous-dependencies": "off",
+    "indent": ["error", 2],
+    "no-bitwise": ["error", {
+      "int32Hint": true
+    }],
+    "no-param-reassign": "off",
+    "no-plusplus": ["error", {
+      "allowForLoopAfterthoughts": true
+    }],
+    "no-unused-vars": ["error", {
+      "args": "none"
+    }],
+    "one-var": "off",
+    "prefer-destructuring": "off",
+    "prettier/prettier": "off",
+    "quotes": ["error", "double", {
+      "allowTemplateLiterals": true,
+      "avoidEscape": true
+    }]
+  }
+}
