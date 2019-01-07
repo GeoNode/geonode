@@ -1,2 +1,1 @@
-const msg = "Testing Webpack Bundle";
-module.exports = msg;
+import Cart from "app/search/SearchCart";
