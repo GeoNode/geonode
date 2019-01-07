@@ -34,7 +34,6 @@ At the end of this section you will be able to setup from scratch the whole GeoN
     geonode_install/index
     setup_on_centos/index
     network_conf_issues
-    win_bin_install/win_binary_installer
     geonode_update/index
 
 :ref:`quick_installation`
@@ -53,9 +52,6 @@ At the end of this section you will be able to setup from scratch the whole GeoN
     This section will guide the user through the steps necessary to install GeoNode on CentOS.
 
     Packaging for automatic installation are provided for Ubuntu, so, the only option for installing GeoNode on a CentOS platform is installing it from source.
-
-:ref:`win_binary_installer`
-    Install GeoNode on Windows through the binary installer.
 
 :ref:`network_configuration_issues`
     This section will guide the user through the steps necessary to understand and possibly solve any of the most common configuration issues on communication between Django and GeoServer.
