@@ -1,5 +1,6 @@
-class Cart {
+class Cart extends React.Component {
   constructor(cart) {
+    super(cart);
     this.cart = cart;
   }
 
@@ -11,19 +12,20 @@ class Cart {
 
   fillCart = () => {
     // This will fail if angular<1.4.0
+    let geonodeCart = null;
     try {
-      var geonodeCart = $cookies.getAll();
+      geonodeCart = $cookies.getAll();
     } catch (err) {
-      var geonodeCart = null;
+      geonodeCart = null;
     }
-    var cartSession = [];
+    const cartSession = [];
     if (geonodeCart !== null) {
       if (Object.keys(geonodeCart).length > 1) {
-        Object.keys(geonodeCart).forEach(function(key, index) {
+        Object.keys(geonodeCart).forEach((key, index) => {
           if (key !== "csrftoken") {
             try {
-              var obj = JSON.parse(geonodeCart[key]);
-              obj["$$hashKey"] = "object:" + index;
+              const obj = JSON.parse(geonodeCart[key]);
+              obj.$$hashKey = `object:${index}`;
               if ("alternate" in obj) {
                 cartSession.push(obj);
               }
@@ -48,13 +50,13 @@ class Cart {
     }
   };
 
-  removeItem = item => {
+  removeItem = item => () => {
     if (this.getItemById(item.id) !== null) {
-      var cart = this.getCart();
-      angular.forEach(cart.items, function(cart_item, index) {
-        if (cart_item.id === item.id) {
+      const cart = this.getCart();
+      angular.forEach(cart.items, (cartItem, index) => {
+        if (cartItem.id === item.id) {
           cart.items.splice(index, 1);
-          $cookies.remove(cart_item["uuid"]);
+          $cookies.remove(cartItem["uuid"]);
         }
       });
     }
@@ -88,7 +90,7 @@ class Cart {
     return "fa-remove";
   };
 
-  render() {
+  render = () => {
     return `
     <div id="composerCart" class="panel panel-default">
       <div
@@ -104,7 +106,7 @@ class Cart {
       </ul>
     </div>
     `;
-  }
+  };
 }
 
 (function() {
