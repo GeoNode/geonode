@@ -63,8 +63,6 @@ the offical GeoNode installation documentation:
 - `VM Setup with VirtualBox <http://docs.geonode.org/en/master/tutorials/install_and_admin/vm_setup_virtualbox.html>`__
 - `Ubuntu 16.04 <http://docs.geonode.org/en/master/tutorials/install_and_admin/geonode_install/index.html>`__
 - `CentOS 7 <http://docs.geonode.org/en/master/tutorials/install_and_admin/setup_on_centos/index.html>`__
-- `Windows Binary Installer <http://docs.geonode.org/en/master/tutorials/install_and_admin/win_bin_install/win_binary_installer.html>`__
-- `Installation by deb packages <http://geonode.org>`__
 
 Learn GeoNode
 -------------
