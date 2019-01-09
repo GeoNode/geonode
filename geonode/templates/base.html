@@ -419,9 +419,13 @@
     </div>
     {% endif %}
     <!-- End of Modal -->
-    
+{% if DEBUG_STATIC %}
     <script src="{% static "dist/bundle.js" %}"></script>
     <script src="{% static "dist/assets.min.js" %}?v={{ VERSION }}"></script>
+    {% else %}
+    <script src="{% static "dist/bundle.js" %}"></script>
+    <script src="{% static "lib/js/assets.min.js" %}?v={{ VERSION }}"></script>
+{% endif %}
     <script src="{% static "geonode/js/utils/utils.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "geonode/js/base/base.js" %}?v={{ VERSION }}"></script>
     {% include 'autocomplete_light/static.html' %}

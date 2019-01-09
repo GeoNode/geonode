@@ -10,7 +10,7 @@ export default class Cart extends React.Component {
   getCart = () => {};
 
   getCartStyle = () => ({
-    display: this.getCart().items.length ? "block" : "none"
+    display: this.getCart() && this.getCart().items.length ? "block" : "none"
   });
 
   fillCart = () => {
@@ -93,21 +93,31 @@ export default class Cart extends React.Component {
     return "fa-remove";
   };
 
-  render = () => {
-    return `
-    <div id="composerCart" class="panel panel-default">
+  render = () => (
+    // @TODO: determine how to reconcile Django template syntax with React
+    // components
+    <div id="composerCart" className="panel panel-default">
       <div
-        class="panel-heading"
-        ng-bind="'Selected ' + (facetType | default_if_blank : 'objects') | title "></div>
-      <div
-        style="{this.getCartStyle()}"
-        class="panel-body">
-        <p>Add {{ facetType | default_if_blank : 'objects' }} through the "checkboxes".</p>
+        className="panel-heading"
+        ng-bind="'Selected ' + (facetType | default_if_blank : 'objects') | title "
+      />
+      <div style={this.getCartStyle()} className="panel-body">
+        <p>{`Add objects through the "checkboxes."`}</p>
       </div>
-      <ul class="list-group">
-        <li class="list-group-item clearfix" ng-if="resource && resource.title" ng-repeat="resource in cart.getCart().items">{{ resource.title | limitTo: 25}}{{ resource.title.length > 25 ? '...' : '' }}<button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource)"><i class="fa fa-remove fa-lg"></i></button></li>
+      <ul className="list-group">
+        <li
+          className="list-group-item clearfix"
+          ng-if="resource && resource.title"
+          ng-repeat="resource in cart.getCart().items"
+        >
+          <button
+            className="btn btn-default btn-xs pull-right"
+            ng-click="cart.removeItem(resource)"
+          >
+            <i className="fa fa-remove fa-lg" />
+          </button>
+        </li>
       </ul>
     </div>
-    `;
-  };
+  );
 }
