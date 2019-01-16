@@ -173,7 +173,7 @@ docker-compose -f docker-compose.yml up --no-start
 docker-compose -f docker-compose.yml up -d postgres
 
 # Initialize geoserver (to create the geodatadir - this will fail because Django/Postgres arent started yet - but this is expected)
-docker-compose -f docker-compose.yml run --rm geoserver exit 0
+docker-compose -f docker-compose.yml run --rm geoserver true
 
 # Go to the external drive
 cd /path/to/drive/
