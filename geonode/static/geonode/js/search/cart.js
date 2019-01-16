@@ -1,4 +1,6 @@
-(function() {
+/* eslint-disable */
+
+export default (function() {
   angular
     .module("cart", ["ngCookies"])
     .filter("title", function() {

@@ -3,10 +3,12 @@ const path = require("path");
 
 module.exports = {
   context: __dirname,
-  entry: "./app.js",
+  entry: {
+    search: "./geonode/js/search/index.js"
+  },
   output: {
     path: `${__dirname}/dist`,
-    filename: "bundle.js"
+    filename: "[name].bundle.js"
   },
   module: {
     rules: [
@@ -19,8 +21,8 @@ module.exports = {
           cacheDirectory: true
         }
       }
-    ] //loaders
-  }, //module
+    ]
+  },
   resolve: {
     alias: {
       app: path.resolve(__dirname, "geonode/js")

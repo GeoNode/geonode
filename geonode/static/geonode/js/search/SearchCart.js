@@ -1,6 +1,28 @@
 import React from "react";
 import cookies from "app/utils/cookies";
 
+class CartListItem extends React.Component {
+  render = () => (
+    <li
+      className="list-group-item clearfix"
+      ng-if="resource && resource.title"
+      ng-repeat="resource in cart.getCart().items"
+    >
+      <button
+        className="btn btn-default btn-xs pull-right"
+        ng-click="cart.removeItem(resource)"
+      >
+        <i className="fa fa-remove fa-lg" />
+      </button>
+    </li>
+  );
+}
+
+class CartList extends React.Component {
+  buildList = () => {};
+  render = () => <ul className="list-group" />;
+}
+
 export default class Cart extends React.Component {
   constructor(cart) {
     super(cart);
@@ -33,7 +55,8 @@ export default class Cart extends React.Component {
                 cartSession.push(obj);
               }
             } catch (err) {
-              console.log("Cart Session Issue: " + err.message);
+              // eslint-disable-next-line no-console
+              console.warn(`Cart Session Issue: ${err.message}`);
             }
           }
         });
@@ -59,7 +82,7 @@ export default class Cart extends React.Component {
       angular.forEach(cart.items, (cartItem, index) => {
         if (cartItem.id === item.id) {
           cart.items.splice(index, 1);
-          cookies.remove(cartItem["uuid"]);
+          cookies.remove(cartItem.uuid);
         }
       });
     }
@@ -75,15 +98,7 @@ export default class Cart extends React.Component {
 
   getItemById = itemId => {
     const items = this.getCart().items;
-    let returnItem = null;
-
-    items.map(item => {
-      if (item.id === itemId) {
-        returnItem = item;
-      }
-    });
-
-    return returnItem;
+    return items.filter(item => item.id === itemId)[0];
   };
 
   getFaClass = id => {
@@ -93,9 +108,17 @@ export default class Cart extends React.Component {
     return "fa-remove";
   };
 
+  componentDidMount() {
+    this.cart = {
+      items: this.fillCart()
+    };
+    console.log("!!!THIS CART", this.cart);
+  }
+
   render = () => (
     // @TODO: determine how to reconcile Django template syntax with React
     // components
+
     <div id="composerCart" className="panel panel-default">
       <div
         className="panel-heading"
