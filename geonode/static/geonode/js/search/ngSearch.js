@@ -4,7 +4,6 @@ import Search from "app/search/Search";
 import functional from "app/utils/functional";
 
 const searchInstance = Search.create();
-console.log("!!!SEARCH INSTANCE", searchInstance);
 
 export default (function() {
   var module = angular.module("geonode_main_search", [], function(
@@ -340,51 +339,56 @@ export default (function() {
 
     //Get data from apis and make them available to the page
     function query_api(data) {
-      $http.get(Configs.url, { params: data || {} }).success(function(data) {
-        setTimeout(function() {
-          $('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();
-        }, 0);
-        $scope.results = data.objects;
-        $scope.total_counts = data.meta.total_count;
-        $scope.$root.query_data = data;
-        if (HAYSTACK_SEARCH) {
-          if ($location.search().hasOwnProperty("q")) {
-            $scope.text_query = $location.search()["q"].replace(/\+/g, " ");
+      fetch(Configs.url, { params: data || {} })
+        .then(res => res.json())
+        .then(data => {
+          setTimeout(function() {
+            $('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();
+          }, 0);
+          $scope.results = searchInstance.set("results", data.objects);
+          $scope.total_counts = searchInstance.set(
+            "resultCount",
+            data.meta.total_count
+          );
+          $scope.$root.query_data = data;
+          if (HAYSTACK_SEARCH) {
+            if ($location.search().hasOwnProperty("q")) {
+              $scope.text_query = $location.search()["q"].replace(/\+/g, " ");
+            }
+          } else {
+            if ($location.search().hasOwnProperty("title__icontains")) {
+              $scope.text_query = $location
+                .search()
+                ["title__icontains"].replace(/\+/g, " ");
+            }
           }
-        } else {
-          if ($location.search().hasOwnProperty("title__icontains")) {
-            $scope.text_query = $location
-              .search()
-              ["title__icontains"].replace(/\+/g, " ");
-          }
-        }
 
-        //Update facet/keyword/category counts from search results
-        if (HAYSTACK_FACET_COUNTS) {
-          try {
-            module.haystack_facets($http, $scope.$root, $location);
-            $("#types")
-              .find("a")
-              .each(function() {
-                if ($(this)[0].id in data.meta.facets.subtype) {
-                  $(this)
-                    .find("span")
-                    .text(data.meta.facets.subtype[$(this)[0].id]);
-                } else if ($(this)[0].id in data.meta.facets.type) {
-                  $(this)
-                    .find("span")
-                    .text(data.meta.facets.type[$(this)[0].id]);
-                } else {
-                  $(this)
-                    .find("span")
-                    .text("0");
-                }
-              });
-          } catch (err) {
-            // console.log(err);
+          //Update facet/keyword/category counts from search results
+          if (HAYSTACK_FACET_COUNTS) {
+            try {
+              module.haystack_facets($http, $scope.$root, $location);
+              $("#types")
+                .find("a")
+                .each(function() {
+                  if ($(this)[0].id in data.meta.facets.subtype) {
+                    $(this)
+                      .find("span")
+                      .text(data.meta.facets.subtype[$(this)[0].id]);
+                  } else if ($(this)[0].id in data.meta.facets.type) {
+                    $(this)
+                      .find("span")
+                      .text(data.meta.facets.type[$(this)[0].id]);
+                  } else {
+                    $(this)
+                      .find("span")
+                      .text("0");
+                  }
+                });
+            } catch (err) {
+              // console.log(err);
+            }
           }
-        }
-      });
+        });
     }
     query_api($scope.query);
 
@@ -393,16 +397,11 @@ export default (function() {
     */
     // Control what happens when the total results change
     $scope.$watch("total_counts", function() {
-      functional.pipe(
-        searchInstance.calculateNumberOfPages(
-          $scope.total_counts,
-          $scope.query.limit
-        ),
-        searchInstance.setNumberOfPages
+      let numpages = searchInstance.calculateNumberOfPages(
+        $scope.total_counts,
+        $scope.query.limit
       );
-
-      $scope.numpages = searchInstance.getNumberOfPages;
-
+      $scope.numpages = searchInstance.set("numberOfPages", numpages);
       // In case the user is viewing a page > 1 and a
       // subsequent query returns less pages, then
       // reset the page to one and search again.
