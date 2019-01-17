@@ -1,29 +1,72 @@
 function create() {
-  const state = {
+  const defaultState = {
     currentPage: 0,
     numberOfPages: 1,
     resultCount: 0,
-    results: []
+    results: [],
+    query: {
+      limit: 1,
+      offset: 1
+    }
   };
 
-  return {
+  let state = { ...defaultState };
+
+  const logError = prop => {
+    // eslint-disable-next-line
+    console.warn(`Search.${prop} does not exist.`);
+  };
+
+  const exists = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+  const api = {
     inspect: () => state,
     get: prop => state[prop],
     set: (prop, val) => {
-      if (!Object.prototype.hasOwnProperty.call(state, prop)) {
-        // eslint-disable-next-line
-        console.warn(`Search.${prop} does not exist.`);
+      if (!exists(state, prop)) {
+        logError(prop);
         return false;
       }
       state[prop] = val;
       return state[prop];
     },
+    setQueryProp: (prop, val) => {
+      if (!exists(state.query, prop)) {
+        logError(`query.${prop}`);
+        return false;
+      }
+      state.query[prop] = val;
+      console.log("!!!STATE QUERY PROP", state.query[prop]);
+      return state.query[prop];
+    },
+    getQueryProp: prop => state.query[prop],
     resetNumberOfPages() {
       state.numberOfPages = 1;
     },
-    calculateNumberOfPages: (totalCount, limit) =>
-      Math.round(totalCount / limit + 0.49)
+    reset() {
+      state = { ...defaultState };
+    },
+    getCurrentPage: () => state.currentPage,
+    calculateNumberOfPages: (totalResults, limit) => {
+      console.log("!!!NUMBERS", totalResults, limit);
+      const n = Math.round(totalResults / limit + 0.49);
+      return n === 0 ? 1 : n;
+    },
+    search: (url, params) =>
+      new Promise(res => {
+        fetch(url, { params: params || {} })
+          .then(r => r.json())
+          .then(data => {
+            api.setStateFromData(data);
+            res(data);
+          });
+      }),
+    setStateFromData(data) {
+      console.log("!!!!DATA", data);
+      api.set("results", data.objects);
+      api.set("resultCount", parseInt(data.meta.total_count, 10));
+    }
   };
+  return api;
 }
 
 export default {
