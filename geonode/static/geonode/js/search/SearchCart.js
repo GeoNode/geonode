@@ -112,7 +112,6 @@ export default class Cart extends React.Component {
     this.cart = {
       items: this.fillCart()
     };
-    console.log("!!!THIS CART", this.cart);
   }
 
   render = () => (

@@ -35,7 +35,6 @@ function create() {
         return false;
       }
       state.query[prop] = val;
-      console.log("!!!STATE QUERY PROP", state.query[prop]);
       return state.query[prop];
     },
     getQueryProp: prop => state.query[prop],
@@ -47,13 +46,16 @@ function create() {
     },
     getCurrentPage: () => state.currentPage,
     calculateNumberOfPages: (totalResults, limit) => {
-      console.log("!!!NUMBERS", totalResults, limit);
       const n = Math.round(totalResults / limit + 0.49);
       return n === 0 ? 1 : n;
     },
     search: (url, params) =>
       new Promise(res => {
-        fetch(url, { params: params || {} })
+        var esc = encodeURIComponent;
+        var query = Object.keys(params)
+          .map(k => `${esc(k)}=${esc(params[k])}`)
+          .join("&");
+        fetch(`${url}?${query}`)
           .then(r => r.json())
           .then(data => {
             api.setStateFromData(data);
@@ -61,7 +63,6 @@ function create() {
           });
       }),
     setStateFromData(data) {
-      console.log("!!!!DATA", data);
       api.set("results", data.objects);
       api.set("resultCount", parseInt(data.meta.total_count, 10));
     }

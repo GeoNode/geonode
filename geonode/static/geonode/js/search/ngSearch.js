@@ -347,14 +347,14 @@ export default (function() {
     );
 
     //Get data from apis and make them available to the page
-    function query_api(data) {
-      searchInstance.search(Configs.url, data).then(data => {
+    function query_api(params) {
+      searchInstance.search(Configs.url, params).then(data => {
         setTimeout(function() {
           $('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();
         }, 0);
         $scope.results = searchInstance.get("results");
         $scope.total_counts = searchInstance.get("resultCount");
-        console.log("!!!SEARCH INSTANCE", searchInstance.inspect());
+        $scope.$apply();
         if ($location.search().hasOwnProperty("title__icontains")) {
           $scope.text_query = $location
             .search()
