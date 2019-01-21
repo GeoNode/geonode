@@ -108,10 +108,11 @@ def _resolve_map(request, id, permission='base.change_resourcebase',
     '''
     Resolve the Map by the provided typename and check the optional permission.
     '''
-    if id.isdigit():
-        key = 'pk'
-    else:
+    if Map.objects.filter(urlsuffix=id).count() > 0:
         key = 'urlsuffix'
+    else:
+        key = 'pk'
+
     return resolve_object(request, Map, {key: id}, permission=permission,
                           permission_msg=msg, **kwargs)
 
