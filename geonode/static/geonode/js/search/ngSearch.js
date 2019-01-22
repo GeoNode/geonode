@@ -1,7 +1,9 @@
 /* eslint-disable */
 
 import Search from "app/search/Search";
+import searchHelpers from "app/search/searchHelpers";
 import functional from "app/utils/functional";
+import location from "app/search/location";
 
 const searchInstance = Search.create();
 
@@ -39,70 +41,6 @@ export default (function() {
     return data;
   };
 
-  // Load categories, keywords, and regions
-  module.load_categories = function($http, $rootScope, $location) {
-    var params = typeof FILTER_TYPE == "undefined" ? {} : { type: FILTER_TYPE };
-    if ($location.search().hasOwnProperty("title__icontains")) {
-      params["title__icontains"] = $location.search()["title__icontains"];
-    }
-    $http.get(CATEGORIES_ENDPOINT, { params: params }).success(function(data) {
-      if ($location.search().hasOwnProperty("category__identifier__in")) {
-        data.objects = module.set_initial_filters_from_query(
-          data.objects,
-          $location.search()["category__identifier__in"],
-          "identifier"
-        );
-      }
-      $rootScope.categories = data.objects;
-      if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-        module.haystack_facets($http, $rootScope, $location);
-      }
-    });
-  };
-
-  // Load group categories
-  module.load_group_categories = function($http, $rootScope, $location) {
-    var params = typeof FILTER_TYPE == "undefined" ? {} : { type: FILTER_TYPE };
-    if ($location.search().hasOwnProperty("name__icontains")) {
-      params["name__icontains"] = $location.search()["name__icontains"];
-    }
-    $http
-      .get(GROUP_CATEGORIES_ENDPOINT, { params: params })
-      .success(function(data) {
-        if ($location.search().hasOwnProperty("slug")) {
-          data.objects = module.set_initial_filters_from_query(
-            data.objects,
-            $location.search()["slug"],
-            "identifier"
-          );
-        }
-        $rootScope.categories = data.objects;
-        if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-          module.haystack_facets($http, $rootScope, $location);
-        }
-      });
-  };
-
-  module.load_keywords = function($http, $rootScope, $location) {
-    var params = typeof FILTER_TYPE == "undefined" ? {} : { type: FILTER_TYPE };
-    if ($location.search().hasOwnProperty("title__icontains")) {
-      params["title__icontains"] = $location.search()["title__icontains"];
-    }
-    $http.get(KEYWORDS_ENDPOINT, { params: params }).success(function(data) {
-      if ($location.search().hasOwnProperty("keywords__slug__in")) {
-        data.objects = module.set_initial_filters_from_query(
-          data.objects,
-          $location.search()["keywords__slug__in"],
-          "slug"
-        );
-      }
-      $rootScope.keywords = data.objects;
-      if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-        module.haystack_facets($http, $rootScope, $location);
-      }
-    });
-  };
-
   module.load_h_keywords = function($http, $rootScope, $location) {
     var params = typeof FILTER_TYPE == "undefined" ? {} : { type: FILTER_TYPE };
     $http.get(H_KEYWORDS_ENDPOINT, { params: params }).success(function(data) {
@@ -133,164 +71,83 @@ export default (function() {
     });
   };
 
-  module.load_t_keywords = function($http, $rootScope, $location) {
-    var params = typeof FILTER_TYPE == "undefined" ? {} : { type: FILTER_TYPE };
-    if ($location.search().hasOwnProperty("title__icontains")) {
-      params["title__icontains"] = $location.search()["title__icontains"];
-    }
-    $http.get(T_KEYWORDS_ENDPOINT, { params: params }).success(function(data) {
-      if ($location.search().hasOwnProperty("tkeywords__id__in")) {
-        data.objects = module.set_initial_filters_from_query(
-          data.objects,
-          $location.search()["tkeywords__id__in"],
-          "id"
-        );
-      }
-      $rootScope.tkeywords = data.objects;
-      if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-        module.haystack_facets($http, $rootScope, $location);
-      }
-    });
-  };
-
-  module.load_regions = function($http, $rootScope, $location) {
-    var params = typeof FILTER_TYPE == "undefined" ? {} : { type: FILTER_TYPE };
-    if ($location.search().hasOwnProperty("title__icontains")) {
-      params["title__icontains"] = $location.search()["title__icontains"];
-    }
-    $http.get(REGIONS_ENDPOINT, { params: params }).success(function(data) {
-      if ($location.search().hasOwnProperty("regions__name__in")) {
-        data.objects = module.set_initial_filters_from_query(
-          data.objects,
-          $location.search()["regions__name__in"],
-          "name"
-        );
-      }
-      $rootScope.regions = data.objects;
-      if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-        module.haystack_facets($http, $rootScope, $location);
-      }
-    });
-  };
-
-  module.load_owners = function($http, $rootScope, $location) {
-    var params = typeof FILTER_TYPE == "undefined" ? {} : { type: FILTER_TYPE };
-    if ($location.search().hasOwnProperty("title__icontains")) {
-      params["title__icontains"] = $location.search()["title__icontains"];
-    }
-    $http.get(OWNERS_ENDPOINT, { params: params }).success(function(data) {
-      if ($location.search().hasOwnProperty("owner__username__in")) {
-        data.objects = module.set_initial_filters_from_query(
-          data.objects,
-          $location.search()["owner__username__in"],
-          "identifier"
-        );
-      }
-      $rootScope.owners = data.objects;
-      if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-        module.haystack_facets($http, $rootScope, $location);
-      }
-    });
-  };
-
-  // Update facet counts for categories and keywords
-  module.haystack_facets = function($http, $rootScope, $location) {
-    var data = $rootScope.query_data;
-    if ("categories" in $rootScope) {
-      try {
-        $rootScope.category_counts = data.meta.facets.category;
-        for (var id in $rootScope.categories) {
-          var category = $rootScope.categories[id];
-          if (category.identifier in $rootScope.category_counts) {
-            category.count = $rootScope.category_counts[category.identifier];
-          } else {
-            category.count = 0;
-          }
-        }
-      } catch (err) {
-        // console.log(err);
-      }
-    }
-
-    if ("keywords" in $rootScope) {
-      try {
-        $rootScope.keyword_counts = data.meta.facets.keywords;
-        for (var id in $rootScope.keywords) {
-          var keyword = $rootScope.keywords[id];
-          if (keyword.slug in $rootScope.keyword_counts) {
-            keyword.count = $rootScope.keyword_counts[keyword.slug];
-          } else {
-            keyword.count = 0;
-          }
-        }
-      } catch (err) {
-        // console.log(err);
-      }
-    }
-
-    if ("regions" in $rootScope) {
-      try {
-        $rootScope.regions_counts = data.meta.facets.regions;
-        for (var id in $rootScope.regions) {
-          var region = $rootScope.regions[id];
-          if (region.name in $rootScope.region_counts) {
-            region.count = $rootScope.region_counts[region.name];
-          } else {
-            region.count = 0;
-          }
-        }
-      } catch (err) {
-        // console.log(err);
-      }
-    }
-
-    if ("owners" in $rootScope) {
-      try {
-        $rootScope.owner_counts = data.meta.facets.owners;
-        for (var id in $rootScope.owners) {
-          var owner = $rootScope.owners[id];
-          if (owner.name in $rootScope.owner_counts) {
-            owner.count = $rootScope.owner_counts[owner.name];
-          } else {
-            owner.count = 0;
-          }
-        }
-      } catch (err) {
-        // console.log(err);
-      }
-    }
+  module.load_t_keywords = $rootscope => {
+    searchHelpers
+      .buildRequestFromParam({
+        endpoint: T_KEYWORDS_ENDPOINT,
+        requestParam: "title__icontains",
+        filterParam: "tkeywords__id__in",
+        alias: "id"
+      })
+      .then(data => {
+        $rootScope.tkeywords = data;
+      });
   };
 
   /*
   * Load categories and keywords
   */
   module.run(function($http, $rootScope, $location) {
+    let requestQueue = [];
     /*
     * Load categories and keywords if the filter is available in the page
     * and set active class if needed
     */
     if ($("#categories").length > 0) {
-      module.load_categories($http, $rootScope, $location);
+      requestQueue.push({
+        id: "categories",
+        endpoint: CATEGORIES_ENDPOINT,
+        requestParam: "title__icontains",
+        filterParam: "category__identifier__in",
+        alias: "identifier"
+      });
     }
 
     if ($("#groupcategories").length > 0) {
-      module.load_group_categories($http, $rootScope, $location);
+      requestQueue.push({
+        id: "groupcategories",
+        endpoint: GROUP_CATEGORIES_ENDPOINT,
+        requestParam: "name__icontains",
+        filterParam: "slug",
+        alias: "identifier"
+      });
     }
 
-    //if ($('#keywords').length > 0){
-    //   module.load_keywords($http, $rootScope, $location);
-    //}
     module.load_h_keywords($http, $rootScope, $location);
 
     if ($("#regions").length > 0) {
-      module.load_regions($http, $rootScope, $location);
+      requestQueue.push({
+        id: "regions",
+        endpoint: REGIONS_ENDPOINT,
+        requestParam: "title__icontains",
+        filterParam: "regions__name__in",
+        alias: "name"
+      });
     }
     if ($("#owners").length > 0) {
-      module.load_owners($http, $rootScope, $location);
+      requestQueue.push({
+        id: "owners",
+        endpoint: OWNERS_ENDPOINT,
+        requestParam: "title__icontains",
+        filterParam: "owner__username__in",
+        alias: "identifier"
+      });
     }
     if ($("#tkeywords").length > 0) {
-      module.load_t_keywords($http, $rootScope, $location);
+      requestQueue.push({
+        id: "tkeywords",
+        endpoint: T_KEYWORDS_ENDPOINT,
+        requestParam: "title__icontains",
+        filterParam: "tkeywords__id__in",
+        alias: "id"
+      });
     }
+
+    searchHelpers.buildRequestFromParamQueue(requestQueue).then(data => {
+      for (let i = 0; i < requestQueue.length; i += 1) {
+        $rootScope[requestQueue[i].id] = data[i];
+      }
+    });
 
     // Activate the type filters if in the url
     if ($location.search().hasOwnProperty("type__in")) {
@@ -584,10 +441,7 @@ export default (function() {
     });
 
     $("#text_search_btn").click(function() {
-      if (HAYSTACK_SEARCH) $scope.query["q"] = $("#text_search_input").val();
-      else if (
-        AUTOCOMPLETE_URL_RESOURCEBASE == "/autocomplete/ProfileAutocomplete/"
-      )
+      if (AUTOCOMPLETE_URL_RESOURCEBASE == "/autocomplete/ProfileAutocomplete/")
         // a user profile has no title; if search was triggered from
         // the /people page, filter by username instead
         var query_key = "username__icontains";

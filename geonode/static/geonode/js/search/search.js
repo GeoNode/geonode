@@ -1,3 +1,5 @@
+import searchHelpers from "app/search/searchHelpers";
+
 function create() {
   const defaultState = {
     currentPage: 0,
@@ -18,7 +20,7 @@ function create() {
   };
 
   const exists = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
-  const api = {
+  const module = {
     inspect: () => state,
     get: prop => state[prop],
     set: (prop, val) => {
@@ -51,23 +53,17 @@ function create() {
     },
     search: (url, params) =>
       new Promise(res => {
-        var esc = encodeURIComponent;
-        var query = Object.keys(params)
-          .map(k => `${esc(k)}=${esc(params[k])}`)
-          .join("&");
-        fetch(`${url}?${query}`)
-          .then(r => r.json())
-          .then(data => {
-            api.setStateFromData(data);
-            res(data);
-          });
+        searchHelpers.fetch(url, params).then(data => {
+          module.setStateFromData(data);
+          res(data);
+        });
       }),
     setStateFromData(data) {
-      api.set("results", data.objects);
-      api.set("resultCount", parseInt(data.meta.total_count, 10));
+      module.set("results", data.objects);
+      module.set("resultCount", parseInt(data.meta.total_count, 10));
     }
   };
-  return api;
+  return module;
 }
 
 export default {

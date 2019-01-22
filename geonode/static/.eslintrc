@@ -27,6 +27,11 @@
     "prettier",
     "react"
   ],
+  "settings": {
+    "react": {
+        "version": "latest",
+    },
+  },
   "rules": {
     "camelcase": ["error", {
       "properties": "always"
