@@ -37,6 +37,8 @@ from geonode import get_version
 from kombu import Queue, Exchange
 
 
+SILENCED_SYSTEM_CHECKS = ['1_8.W001', 'fields.W340', 'auth.W004', 'urls.W002']
+
 # GeoNode Version
 VERSION = get_version()
 
@@ -351,6 +353,7 @@ INSTALLED_APPS = (
     'geoexplorer',
     'leaflet',
     'bootstrap3_datetime',
+    'django_filters',
     'django_extensions',
     'django_basic_auth',
     'autocomplete_light',
@@ -598,6 +601,9 @@ SLPi97Rwe7OiVCHJvFxmCI9RYPbJzUO7B0sAB7AuKvMDglF8UAnbTJXDOavrbXrb
 g+gp5fQ4nmDrSNHjakzQCX2mKMsx/GLWZzoIDd7ECV9f
 -----END RSA PRIVATE KEY-----"""
 }
+# 1 day expiration time by default
+ACCESS_TOKEN_EXPIRE_SECONDS = int(os.getenv('ACCESS_TOKEN_EXPIRE_SECONDS', '86400'))
+
 # authorized exempt urls needed for oauth when GeoNode is set to lockdown
 AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users',)
 
@@ -1376,7 +1382,7 @@ if USE_GEOSERVER:
         Queue("geonode.layer.viewer", GEOSERVER_EXCHANGE, routing_key="geonode.viewer"),
     )
 
-from celery.schedules import crontab
+# from celery.schedules import crontab
 # EXAMPLES
 # CELERY_BEAT_SCHEDULE = {
 #     ...
@@ -1404,7 +1410,7 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
     'send-summary-every-hour': {
         'task': 'geonode.security.tasks.synch_guardian',
-        'schedule': crontab(minute='*/10'),
+        'schedule': timedelta(seconds=600),
     }
 }
 
@@ -1485,14 +1491,19 @@ if os.name == 'nt':
             # maybe it will be found regardless if not it will throw 500 error
             from django.contrib.gis.geos import GEOSGeometry  # flake8: noqa
 
+USE_WORLDMAP = strtobool(os.getenv('USE_WORLDMAP', 'False'))
 
 # define the urls after the settings are overridden
 if USE_GEOSERVER:
+    if USE_WORLDMAP:
+        LOCAL_GXP_PTYPE = 'gxp_gnsource'
+    else:
+        LOCAL_GXP_PTYPE = 'gxp_wmscsource'
     PUBLIC_GEOSERVER = {
         "source": {
             "title": "GeoServer - Public Layers",
             "attribution": "&copy; %s" % SITEURL,
-            "ptype": "gxp_wmscsource",
+            "ptype": LOCAL_GXP_PTYPE,
             "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows",
             "restUrl": "/gs/rest"
         }
@@ -1501,7 +1512,7 @@ if USE_GEOSERVER:
         "source": {
             "title": "GeoServer - Private Layers",
             "attribution": "&copy; %s" % SITEURL,
-            "ptype": "gxp_wmscsource",
+            "ptype": LOCAL_GXP_PTYPE,
             "url": "/gs/ows",
             "restUrl": "/gs/rest"
         }
@@ -1647,14 +1658,13 @@ GEOTIFF_IO_BASE_URL = os.getenv(
 )
 
 # WorldMap settings
-USE_WORLDMAP = strtobool(os.getenv('USE_WORLDMAP', 'False'))
-
 if USE_WORLDMAP:
     GEONODE_CLIENT_LOCATION = '/static/worldmap_client/'
     INSTALLED_APPS += (
             'geoexplorer-worldmap',
             'geonode.contrib.worldmap.gazetteer',
             'geonode.contrib.worldmap.wm_extra',
+            'geonode.contrib.worldmap.mapnotes',
             'geonode.contrib.createlayer',
         )
     # WorldMap Gazetter settings
@@ -1677,6 +1687,7 @@ if USE_WORLDMAP:
         organized spatially and temporally.</p>
     """
     # these are optionals
+    USE_GOOGLE_STREET_VIEW = strtobool(os.getenv('USE_GOOGLE_STREET_VIEW', 'False'))
     GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', 'your-key-here')
     USE_HYPERMAP = strtobool(os.getenv('USE_HYPERMAP', 'False'))
     HYPERMAP_REGISTRY_URL = os.getenv('HYPERMAP_REGISTRY_URL', 'http://localhost:8001')

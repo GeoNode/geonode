@@ -8,10 +8,10 @@ var layers = {};
 var geogig_stores = {};
 
 define(['underscore',
-        'upload/LayerInfo',
-        'upload/FileTypes',
-        'upload/path',
-        'upload/common',
+        './LayerInfo',
+        './FileTypes',
+        './path',
+        './common',
         'text!templates/upload.html'], function (_, LayerInfo, fileTypes, path, common, uploadTemplate) {
 
     var templates = {},

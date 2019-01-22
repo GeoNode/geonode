@@ -1,0 +1,43 @@
+{% load i18n %}
+{% load static from staticfiles %}
+
+<html>
+<head>
+
+    <title>{% block title %}{% trans "WorldMap" %}{% endblock %}</title>
+    <link rel="shortcut icon" href="{% static "worldmap/theme/img/favicon.ico" %}"/>
+
+        {% if urlsuffix %}
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}{{urlsuffix}}/site.css" media="screen" />
+        {% else %}
+        <link rel="stylesheet" type="text/css" href="{% static "worldmap_client/theme/site.css" %}" />
+        {% endif %}
+    {% block head %}
+    {% endblock %}
+</head>
+<body style="min-height:600px">
+{% block body %}
+{% block header-wrapper %}
+<div id="header"></div><!-- /#header -->
+{% endblock header-wrapper %}
+{% endblock body %}
+       <div id="langselect" style="display:inline">
+   			<!-- Only show the language form if the csrf_token is present -->
+   			{% if csrf_token != "NOTPROVIDED" %}
+   				{% get_current_language as LANGUAGE %}
+    			<form class="langbar" id="target" action="/i18n/setlang/" method="post">
+      			{% csrf_token %}
+
+         			<select id="langval" name="language" onchange="javascript:form.submit()">
+           			{% for lang in LANGUAGES %}
+            			<option value="{{ lang.0 }}"
+                		{% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                		{{ lang.1 }}
+            			</option>
+           			{% endfor %}
+         			</select>
+     			</form>
+   			{% endif %}
+      </div>
+</body>
+</html>
