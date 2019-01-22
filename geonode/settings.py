@@ -409,11 +409,18 @@ REST_FRAMEWORK = {
 }
 
 # Documents application
-ALLOWED_DOCUMENT_TYPES = [
+try:
+    # try to parse python notation, default in dockerized env
+    ALLOWED_DOCUMENT_TYPES = ast.literal_eval(os.getenv('ALLOWED_DOCUMENT_TYPES'))
+except ValueError:
+    # fallback to regular list of values separated with misc chars
+    ALLOWED_DOCUMENT_TYPES = [
     'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png',
     'ppt', 'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml',
     'zip', 'gz', 'qml'
-]
+] if os.getenv('ALLOWED_DOCUMENT_TYPES') is None \
+else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_DOCUMENT_TYPES'))
+
 MAX_DOCUMENT_SIZE = int(os.getenv('MAX_DOCUMENT_SIZE ', '2'))  # MB
 
 # DOCUMENT_TYPE_MAP and DOCUMENT_MIMETYPE_MAP update enumerations in
