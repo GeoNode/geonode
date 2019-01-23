@@ -1514,7 +1514,7 @@ def do_logout(sender, user, request, **kwargs):
 
             # Lets delete the old one
             try:
-                old = AccessToken.objects.get(user=user, application=app)
+                old = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
             except BaseException:
                 pass
             else:

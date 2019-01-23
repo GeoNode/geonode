@@ -21,6 +21,7 @@
 import os
 import re
 import json
+import base64
 import shutil
 import logging
 import requests
@@ -33,6 +34,7 @@ from urlparse import urlparse, urlsplit, urljoin
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils.http import is_safe_url
+from django.contrib.auth import authenticate
 from django.http.request import validate_host
 from django.views.decorators.csrf import requires_csrf_token
 from django.middleware.csrf import get_token
@@ -55,6 +57,16 @@ custom_slugify = Slugify(separator='_')
 
 ows_regexp = re.compile(
     "^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
+
+
+def header_auth_view(auth_header):
+    encoded_credentials = auth_header.split(' ')[1]  # Removes "Basic " to isolate credentials
+    decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(':')
+    username = decoded_credentials[0]
+    password = decoded_credentials[1]
+    # if the credentials are correct, then the feed_bot is not None, but is a User object.
+    feed_bot = authenticate(username=username, password=password)
+    return feed_bot
 
 
 @requires_csrf_token
@@ -164,9 +176,22 @@ def proxy(request, url=None, response_callback=None,
             'HTTP_AUTHORIZATION',
             request.META.get('HTTP_AUTHORIZATION2'))
         if auth:
-            headers['Authorization'] = auth
-    elif access_token:
-        headers['Authorization'] = 'Bearer %s' % access_token
+            _user = header_auth_view(auth)
+            if not _user:
+                headers['Authorization'] = auth
+            else:
+                try:
+                    from oauth2_provider.models import AccessToken, get_application_model
+                    Application = get_application_model()
+                    app = Application.objects.get(name="GeoServer")
+                    access_token = AccessToken.objects.filter(user=_user, application=app).order_by('-expires').first()
+                except BaseException:
+                    traceback.print_exc()
+                    logger.error("Could retrieve OAuth2 Access Token for user %s" % _user)
+
+    if access_token:
+        if request.method in ("POST", "PUT", "DELETE"):
+            headers['Authorization'] = 'Bearer %s' % access_token
 
     site_url = urlsplit(settings.SITEURL)
 
@@ -187,7 +212,18 @@ def proxy(request, url=None, response_callback=None,
         conn = HTTPConnection(url.hostname, url.port)
     parsed = urlparse(raw_url)
     parsed._replace(path=locator.encode('utf8'))
-    conn.request(request.method, parsed.geturl(), request.body, headers)
+
+    _url = parsed.geturl()
+
+    if access_token and 'access_token' not in _url:
+        query_separator = '&' if '?' in _url else '?'
+        _url = ('%s%saccess_token=%s' %
+                (_url, query_separator, access_token))
+
+    logger.debug(" - REQUEST HEADERS %s " % headers)
+    logger.debug(" - URL %s " % _url)
+
+    conn.request(request.method, _url, request.body, headers)
     response = conn.getresponse()
     content = response.read()
     status = response.status
