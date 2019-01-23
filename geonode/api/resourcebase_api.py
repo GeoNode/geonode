@@ -681,10 +681,11 @@ class FeaturedResourceBaseResource(CommonModelApi):
 class LayerResource(CommonModelApi):
 
     """Layer API"""
+    _use_in = 'all' if getattr(settings, 'API_LAYERS_LIST_WITH_LINKS', True) else 'detail'
     links = fields.ListField(
         attribute='links',
         null=True,
-        use_in='detail',
+        use_in=_use_in,
         default=[])
     if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         default_style = fields.ForeignKey(
