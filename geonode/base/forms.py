@@ -462,7 +462,8 @@ class ResourceBaseForm(TranslationModelForm):
             'thumbnail',
             'charset',
             'rating',
-            'detail_url'
+            'detail_url',
+            'tkeywords',
         )
 
 

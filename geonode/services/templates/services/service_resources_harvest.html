@@ -23,7 +23,7 @@
                     <table class="table table table-hover">
                         <thead>
                         <tr>
-                            <th>{% if not errored_state %}<input type="checkbox" checked="true" id="checkAll" />{% endif %}</th>
+                            <th>{% if not errored_state %}<input type="checkbox" id="checkAll" />{% endif %}</th>
                             <th>{% trans "Id" %}</th>
                             <th>{% trans "Name" %}</th>
                             <th>{% trans "Description" %}</th>
@@ -32,7 +32,11 @@
                         <tbody>
                         {% for resource_meta in resources %}
                             <tr>
-                                <td>{% if not errored_state %}<input type="checkbox" name="resource_list" id="option_{{resource_meta.id}}" value="{{ resource_meta.id }}" checked/>{% endif %}</td>
+                                <td>
+                                    {% if not errored_state %}
+                                    <input {% if resource_meta.id in requested %}checked{% endif %} type="checkbox" name="resource_list" id="option_{{resource_meta.id}}" value="{{ resource_meta.id }}"/>
+                                    {% endif %}
+                                </td>
                                 <td>{{ resource_meta.id }}</td>
                                 <td>{{ resource_meta.title }}</td>
                                 <td>{{ resource_meta.abstract }}</td>
@@ -59,7 +63,7 @@
                                 {% endif %}
                                 <li class="active"><a href="#">{{ resources.number }}/{{ resources.paginator.num_pages }}</a></li>
                                 {% if resources.has_next %}
-                                    <li><a aria-label="Next" href="?page={{ resources.next_page_number }}">next</a></li>
+                                    <li><a id="next" aria-label="Next" href="?page={{ resources.next_page_number }}">next</a></li>
                                 {% else %}
                                     <li class="disabled"><a aria-label="Next" href="#">next</a></li>
                                 {% endif %}
@@ -67,8 +71,6 @@
                         </nav>
                     </div>
                 {% endif %}
-
-
             </div>
         {% else %}
             <p>{% trans "All resources have already been imported" %}</p>
@@ -136,11 +138,46 @@
             $("#rescanService").on('click', function () {
                 $("#progressModal").modal("show");
             });
+            $("#next").on('click', function () {
+                appendResourcesToTheUrl(this);
+            });
+            $("#previous").on('click', function () {
+                appendResourcesToTheUrl(this);
+            });
             {% if is_sync %}
                 $("input[type = submit]").on('click', function () {
                     $("#harvestingResourceSync").modal("show");
                 });
             {% endif %}
         });
+
+        function appendResourcesToTheUrl(element) {
+            $(element).attr('href', function() {
+                var resource_list = "";
+                $(window.location.href.slice(window.location.href.indexOf('?') + 1).split('&')).each(
+                  function()
+                    {
+                        var param = this;
+                        var uncehcked_resource = false;
+                        $('input[name=resource_list]').each(function () {
+                            var sThisVal = (this.checked ? $(this).val() : "");
+                            if (sThisVal && !resource_list.includes(sThisVal)) {
+                                resource_list += "&resource_list="+sThisVal;
+                            } else if ($(this).val() == param.split("=")[1]) {
+                                uncehcked_resource = true;
+                            }
+                        });
+
+                        if (!uncehcked_resource &&
+                                param.split("=")[0] == "resource_list" &&
+                                    !resource_list.includes(param.split("=")[1])) {
+                             resource_list += "&resource_list="+param.split("=")[1];
+                        }
+                    }
+                );
+
+                return element.href + resource_list;
+            });
+        }
     </script>
 {% endblock extra_script %}

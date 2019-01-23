@@ -588,24 +588,25 @@ def start_django():
     foreground = '' if options.get('foreground', False) else '&'
     sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
 
+    celery_queues = [
+        "default",
+        "geonode",
+        "cleanup",
+        "update",
+        "email",
+        # Those queues are directly managed by messages.consumer
+        # "broadcast",
+        # "email.events",
+        # "all.geoserver",
+        # "geoserver.events",
+        # "geoserver.data",
+        # "geoserver.catalog",
+        # "notifications.events",
+        # "geonode.layer.viewer"
+    ]
+    sh('%s celery -A geonode.celery_app:app worker -Q %s -B -E -l INFO %s' % (settings, ",".join(celery_queues),foreground))
+
     if ASYNC_SIGNALS:
-        celery_queues = [
-            "default",
-            "geonode",
-            "cleanup",
-            "update",
-            "email",
-            # Those queues are directly managed by messages.consumer
-            # "broadcast",
-            # "email.events",
-            # "all.geoserver",
-            # "geoserver.events",
-            # "geoserver.data",
-            # "geoserver.catalog",
-            # "notifications.events",
-            # "geonode.layer.viewer"
-        ]
-        sh('%s celery -A geonode worker -Q %s -B -E -l INFO %s' % (settings, ",".join(celery_queues),foreground))
         sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
 
 
@@ -905,7 +906,8 @@ def run_tests(options):
     Executes the entire test suite.
     """
     if options.get('coverage'):
-        prefix = 'coverage run --branch --source=geonode --omit="*/management/*,geonode/contrib/*,*/test*,*/wsgi*,*/middleware*,geonode/qgis_server/*"'
+        prefix = 'coverage run --branch --source=geonode \
+            --omit="*/management/*,*/test*,*/wsgi*,*/middleware*,*/context_processors*,geonode/qgis_server/*,geonode/contrib/*,geonode/upload/*"'
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false

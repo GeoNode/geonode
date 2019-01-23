@@ -1,0 +1,7 @@
+*.pyc
+Thumbs.db
+_volume_*
+_service_*
+*~
+celerybeat-schedule
+celeryev.pid

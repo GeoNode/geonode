@@ -90,6 +90,11 @@ def geoserver_post_save(instance, sender, **kwargs):
         instance_dict = model_to_dict(instance)
         payload = json_serializer_producer(instance_dict)
         producer.geoserver_upload_layer(payload)
+        logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
+        try:
+            create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
+        except BaseException:
+            logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance.alternate))
 
 
 def geoserver_post_save_local(instance, *args, **kwargs):
@@ -243,14 +248,17 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     instance.workspace = gs_resource.store.workspace.name
     instance.store = gs_resource.store.name
 
-    bbox = gs_resource.native_bbox
+    try:
+        bbox = gs_resource.native_bbox
 
-    # Set bounding box values
-    instance.bbox_x0 = bbox[0]
-    instance.bbox_x1 = bbox[1]
-    instance.bbox_y0 = bbox[2]
-    instance.bbox_y1 = bbox[3]
-    instance.srid = bbox[4]
+        # Set bounding box values
+        instance.bbox_x0 = bbox[0]
+        instance.bbox_x1 = bbox[1]
+        instance.bbox_y0 = bbox[2]
+        instance.bbox_y1 = bbox[3]
+        instance.srid = bbox[4]
+    except BaseException:
+        pass
 
     if instance.srid:
         instance.srid_url = "http://www.spatialreference.org/ref/" + \
@@ -271,14 +279,17 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                 gs_catalog.save(gs_resource)
 
     if not settings.FREETEXT_KEYWORDS_READONLY:
-        if len(instance.keyword_list()) == 0 and gs_resource.keywords:
-            for keyword in gs_resource.keywords:
-                if keyword not in instance.keyword_list():
-                    instance.keywords.add(keyword)
+        try:
+            if len(instance.keyword_list()) == 0 and gs_resource.keywords:
+                for keyword in gs_resource.keywords:
+                    if keyword not in instance.keyword_list():
+                        instance.keywords.add(keyword)
+        except BaseException:
+            pass
 
     if any(instance.keyword_list()):
         keywords = instance.keyword_list()
-        gs_resource.keywords = list(set(keywords))
+        gs_resource.keywords = [kw.decode("utf-8", "replace") for kw in list(set(keywords))]
 
         # gs_resource should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
@@ -321,7 +332,10 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # store the resource to avoid another geoserver call in the post_save
     instance.gs_resource = gs_resource
 
-    bbox = gs_resource.native_bbox
+    try:
+        bbox = gs_resource.native_bbox
+    except BaseException:
+        bbox = instance.bbox
     dx = float(bbox[1]) - float(bbox[0])
     dy = float(bbox[3]) - float(bbox[2])
 
@@ -337,7 +351,10 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                          instance.bbox_x1, instance.bbox_y1])
 
     # Create Raw Data download link
-    path = gs_resource.dom.findall('nativeName')
+    try:
+        path = gs_resource.dom.findall('nativeName')
+    except BaseException:
+        path = instance.alternate
     download_url = urljoin(settings.SITEURL,
                            reverse('download', args=[instance.id]))
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,
@@ -397,7 +414,10 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                 url=ogc_server_settings.public_url,
                 repo_name=geogig_repo_name)
 
-            path = gs_resource.dom.findall('nativeName')
+            try:
+                path = gs_resource.dom.findall('nativeName')
+            except BaseException:
+                path = instance.alternate
 
             if path:
                 path = 'path={path}'.format(path=path[0].text)
@@ -493,25 +513,32 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
     # some thumbnail generators will update thumbnail_url.  If so, don't
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
-    if not ('update_fields' in kwargs and kwargs['update_fields'] is not None and
-            'thumbnail_url' in kwargs['update_fields']):
+    if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
+            'thumbnail_url' in kwargs['update_fields']:
         logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
         create_gs_thumbnail(instance, overwrite=True)
 
-    legend_url = ogc_server_settings.PUBLIC_LOCATION + \
-        'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
-        instance.alternate + '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+    try:
+        Link.objects.filter(resource=instance.resourcebase_ptr, name='Legend').delete()
+    except BaseException:
+        pass
 
-    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                               url=legend_url,
-                               defaults=dict(
-                                   extension='png',
-                                   name='Legend',
+    for style in instance.styles.all():
+        legend_url = ogc_server_settings.PUBLIC_LOCATION + \
+            'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+            instance.alternate + '&STYLE=' + style.name + \
+            '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+
+        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=legend_url,
-                                   mime='image/png',
-                                   link_type='image',
-                               )
-                               )
+                                   defaults=dict(
+                                       extension='png',
+                                       name='Legend',
+                                       url=legend_url,
+                                       mime='image/png',
+                                       link_type='image',
+                                   )
+                                   )
 
     # ogc_wms_path = '%s/ows' % instance.workspace
     ogc_wms_path = 'ows'
@@ -617,4 +644,5 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 
 def geoserver_post_save_map(instance, sender, **kwargs):
     instance.set_missing_info()
-    create_gs_thumbnail(instance, overwrite=False)
+    logger.info("... Creating Thumbnail for Map [%s]" % (instance.title))
+    create_gs_thumbnail(instance, overwrite=False, check_bbox=True)

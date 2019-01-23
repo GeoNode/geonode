@@ -313,7 +313,7 @@ def next_step_response(req, upload_session, force_ajax=True):
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': '/upload/check' + "?id=%s" % import_session.id,
+             'redirect_to': settings.SITEURL + 'upload/check' + "?id=%s" % import_session.id,
              }
         )
 
@@ -338,7 +338,7 @@ def next_step_response(req, upload_session, force_ajax=True):
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': '/upload/time' + "?id=%s" % import_session.id,
+             'redirect_to': settings.SITEURL + 'upload/time' + "?id=%s" % import_session.id,
              }
         )
 
@@ -349,7 +349,7 @@ def next_step_response(req, upload_session, force_ajax=True):
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': '/upload/mosaic' + "?id=%s" % import_session.id,
+             'redirect_to': settings.SITEURL + 'upload/mosaic' + "?id=%s" % import_session.id,
              }
         )
 
@@ -360,7 +360,7 @@ def next_step_response(req, upload_session, force_ajax=True):
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': '/upload/srs' + "?id=%s" % import_session.id,
+             'redirect_to': settings.SITEURL + 'upload/srs' + "?id=%s" % import_session.id,
              }
         )
 
@@ -371,7 +371,7 @@ def next_step_response(req, upload_session, force_ajax=True):
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': '/upload/csv' + "?id=%s" % import_session.id,
+             'redirect_to': settings.SITEURL + 'upload/csv' + "?id=%s" % import_session.id,
              }
         )
 

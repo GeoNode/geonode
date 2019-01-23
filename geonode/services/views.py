@@ -165,12 +165,16 @@ def harvest_resources(request, service_id):
                 "service": service,
                 "importable": not_yet_harvested,
                 "resources": harvestable_resources,
+                "requested": request.GET.getlist("resource_list"),
                 "is_sync": is_sync,
                 "errored_state": errored_state,
             }
         )
     elif request.method == "POST":
         requested = request.POST.getlist("resource_list")
+        requested.extend(request.GET.getlist("resource_list"))
+        # Let's remove duplicates
+        requested = list(set(requested))
         resources_to_harvest = []
         for id in _gen_harvestable_ids(requested, available_resources):
             logger.debug("id: {}".format(id))

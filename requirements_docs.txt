@@ -1,4 +1,4 @@
-Django==1.11.15
+Django==1.11.16
 six==1.10.0
 amqp==2.2.2
 anyjson==0.3.3
@@ -11,7 +11,7 @@ backports.functools-lru-cache==1.5
 beautifulsoup4==4.4.1
 billiard==3.5.0.3
 boto==2.38.0
-celery==4.1.0
+celery==4.2.1
 certifi==2018.1.18
 chardet==3.0.4
 click==6.7
@@ -39,7 +39,7 @@ django-cors-headers==2.2.0
 django-cuser==2017.3.16
 django-downloadview==1.9
 django-extensions==2.0.7
-django-filter==2.0.0
+django-filter==1.1.0
 django-floppyforms==1.7.0
 django-forms-bootstrap==3.1.0
 django-geoexplorer==4.0.39
@@ -95,13 +95,12 @@ ipaddress==1.0.18
 itypes==1.1.0
 jdcal==1.3
 Jinja2==2.10
-kombu==4.1.0
+kombu==4.2.1
 lxml==3.6.2
 Mako==1.0.7
 Markdown==2.6.11
 MarkupSafe==1.0
 mccabe==0.4.0
-mock==2.0.0
 MultipartPostHandler==0.1.0
 nose==1.3.7
 numpy==1.13.1
@@ -121,7 +120,7 @@ pinax-theme-bootstrap==8.0.1
 poster==0.8.1
 pluggy==0.6.0
 proj==0.1.0
-psutil==5.4.3
+psutil==5.4.8
 psycopg2==2.7.3.1
 py==1.5.3
 # pycsw==2.2.0
@@ -141,10 +140,10 @@ python-memcached==1.59
 python-mimeparse==1.6.0
 python-openid==2.2.5
 pytz==2018.3
-PyYAML==3.12
+pyyaml>=4.2b1
 redis==2.10.5
 regex==2016.7.21
-requests==2.18.4
+requests>=2.20.0
 requests-oauthlib==0.8.0
 selenium==3.9.0
 simplejson==3.13.2
@@ -160,7 +159,7 @@ ua-parser==0.7.3
 unicodecsv==0.14.1
 Unidecode==0.4.19
 uritemplate==3.0.0
-urllib3==1.22
+urllib3==1.24.1
 user-agents==1.1.0
 vine==1.1.4
 xlrd==1.1.0

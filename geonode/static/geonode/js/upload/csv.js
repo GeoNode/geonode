@@ -1,14 +1,27 @@
 /*globals define: true, requirejs: true */
 
+'use strict';
+
 requirejs.config({
-    baseUrl: '/static/lib/js',
-    shim: {
-        'underscore': { exports: '_'}
-    },
-    paths: {
-        'upload': '../../geonode/js/upload',
-        'templates': '../../geonode/js/templates'
-    }
+  config: {
+     text: {
+       useXhr: function (url, protocol, hostname, port) {
+          // allow cross-domain requests
+          // remote server allows CORS
+          return true;
+       }
+     },
+     waitSeconds: 5
+  },
+  baseUrl: siteUrl + 'static/lib/js',
+  shim: {
+    'underscore': { exports: '_'}
+  },
+  paths: {
+    'upload': '../../geonode/js/upload',
+    'templates': '../../geonode/js/templates',
+    'progress': 'jquery.ajax-progress'
+  }
 });
 
 define(['underscore',
@@ -75,7 +88,7 @@ define(['underscore',
         // Re-use the LayerInfo object to asynchronously save the new csv and present the progress to the user.
         var lyr = new LayerInfo({element:$("#csv-status"), name:"file", type:'csv', files:{csv:{name:'file.csv'}}});
         var params = common.parseQueryString(document.location.search);
-        var url = '/upload/csv'
+        var url = 'upload/csv'
         if ('id' in params){
             lyr.id = params.id;
             url = updateUrl(url, 'id', params.id);

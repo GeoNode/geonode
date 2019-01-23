@@ -1,0 +1,155 @@
+{% include "worldmap/ext_header.html" %}
+{% include "worldmap/app_header.html" %}
+{% include "worldmap/geo_header.html" %}
+{% load static from staticfiles %}
+<script type="text/javascript" src="{% static "geonode/js/extjs/GeoNode-mixin.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/Geonode-CatalogueApiSearch.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/GeoNode-GeoExplorer.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
+<script type="text/javascript">
+
+GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
+
+    loadConfig: function(config) {
+        var source;
+        for (var s in config.sources) {
+            source = config.sources[s];
+            if (!source.ptype || /wmsc?source/.test(source.ptype)) {
+                source.forceLazy = config.useCapabilities === false;
+            }
+            if (config.useToolbar === false) {
+                var remove = true, layer;
+                for (var i=config.map.layers.length-1; i>=0; --i) {
+                    layer = config.map.layers[i];
+                    if (layer.source == s) {
+                        if (layer.visibility === false) {
+                            config.map.layers.remove(layer);
+                        } else {
+                            remove = false;
+                        }
+                    }
+                }
+                if (remove) {
+                    delete config.sources[s];
+                }
+            }
+        }
+        if (config.useToolbar !== false) {
+            config.tools = (config.tools || []).concat({
+                ptype: "gxp_styler",
+                id: "styler",
+                rasterStyling: true,
+                actionTarget: undefined
+            });
+        }
+        // load the super's super, because we don't want the default tools from
+        // GeoExplorer
+        GeoExplorer.superclass.loadConfig.apply(this, arguments);
+    },
+
+    initPortal: function() {
+
+        // TODO: make a proper component out of this
+        if (this.useMapOverlay !== false) {
+            this.mapPanel.add(this.createMapOverlay());
+        }
+
+        if(this.useToolbar !== false) {
+            this.toolbar = new Ext.Toolbar({
+                xtype: "toolbar",
+                region: "north",
+                autoHeight: true,
+                disabled: true,
+                items: this.createTools()
+            });
+            this.on("ready", function() {this.toolbar.enable();}, this);
+        }
+
+        this.mapPanelContainer = new Ext.Panel({
+            layout: "card",
+            region: "center",
+            ref: "../main",
+            tbar: this.toolbar,
+            defaults: {
+                border: false
+            },
+            items: [
+                this.mapPanel
+            ],
+            ref: "../main",
+            activeItem: 0
+        });
+        if (window.google && google.earth) {
+            this.mapPanelContainer.add(
+                new gxp.GoogleEarthPanel({
+                    mapPanel: this.mapPanel,
+                    listeners: {
+                        beforeadd: function(record) {
+                            return record.get("group") !== "background";
+                        }
+                    }
+                })
+            );
+        }
+
+        this.portalItems = [
+            this.mapPanelContainer
+        ];
+
+        GeoExplorer.superclass.initPortal.apply(this, arguments);
+
+    },
+
+    addLayerSource: function(options) {
+        var source = GeoExplorer.superclass.addLayerSource.apply(this, arguments);
+    },
+
+    createTools: function() {
+        var tools = [];
+
+        var layerChooser = new Ext.Button({
+            tooltip: 'Layer Switcher',
+            iconCls: 'icon-layer-switcher',
+            menu: new gxp.menu.LayerMenu({
+                layers: this.mapPanel.layers
+            })
+        });
+
+        tools.unshift("-");
+        tools.unshift(layerChooser);
+
+        return tools;
+    }
+});
+
+var app;
+Ext.onReady(function() {
+{% autoescape off %}
+    GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
+    var config = Ext.apply({
+        tools: [{
+            ptype: "gxp_wmsgetfeatureinfo",
+            format: "grid",
+            actionTarget: "main.tbar",
+            outputConfig: {width: 400, height: 200, panIn: false}
+        }],
+        useToolbar: true,
+        {% if PROXY_URL %}
+        proxy: '{{ PROXY_URL }}',
+        {% endif %}
+        {% if MAPFISH_PRINT_ENABLED %}
+        printService: "{{GEOSERVER_BASE_URL}}pdf/",
+        {% else %}
+        printService: "",
+        {% endif %}
+        rest: "/maps/",
+        // tell the map viewer where and how to be rendered
+        portalConfig: {
+            height: 600,
+            renderTo: "the_map"
+        }
+    }, {{ config }});
+    app = new GeoExplorer.Viewer(config);
+{% endautoescape %}
+});
+</script>

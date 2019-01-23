@@ -512,13 +512,8 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             # layer have projection file, but has no valid srid
             self.assertEqual(
                 str(e),
-                "Invalid Layers. "
-                "Needs an authoritative SRID in its CRS to be accepted")
-        # except:
-        #     # Sometimes failes with the message:
-        #     # UploadError: Could not save the layer air_runways,
-        #     # there was an upload error: Error occured unzipping file
-        #     pass
+                "GeoServer failed to detect the projection for layer [air_runways]. "
+                "It doesn't look like EPSG:4326, so backing out the layer.")
         finally:
             # Clean up and completely delete the layer
             if uploaded:
@@ -610,11 +605,57 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     uploaded.metadata_xml = thelayer_metadata
                     regions_resolved, regions_unresolved = resolve_regions(regions)
                     self.assertIsNotNone(regions_resolved)
-        # except:
-        #     # Sometimes failes with the message:
-        #     # UploadError: Could not save the layer air_runways,
-        #     # there was an upload error: Error occured unzipping file
-        #     pass
+        finally:
+            # Clean up and completely delete the layer
+            if uploaded:
+                uploaded.delete()
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    def test_layer_zip_upload_non_utf8(self):
+        """Test uploading a layer with non UTF-8 attributes names"""
+        uploaded = None
+        PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+        thelayer_path = os.path.join(
+            PROJECT_ROOT,
+            'data/zhejiang_yangcan_yanyu')
+        thelayer_zip = os.path.join(
+            PROJECT_ROOT,
+            'data/',
+            'zhejiang_yangcan_yanyu.zip')
+        try:
+            if os.path.exists(thelayer_zip):
+                os.remove(thelayer_zip)
+            if os.path.exists(thelayer_path) and not os.path.exists(thelayer_zip):
+                zip_dir(thelayer_path, thelayer_zip)
+                if os.path.exists(thelayer_zip):
+                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258')
+                    self.assertEquals(uploaded.title, 'Zhejiang Yangcan Yanyu')
+                    self.assertEquals(len(uploaded.keyword_list()), 2)
+                    self.assertEquals(uploaded.constraints_other, None)
+        finally:
+            # Clean up and completely delete the layer
+            if uploaded:
+                uploaded.delete()
+
+        uploaded = None
+        thelayer_path = os.path.join(
+            PROJECT_ROOT,
+            'data/ming_female_1')
+        thelayer_zip = os.path.join(
+            PROJECT_ROOT,
+            'data/',
+            'ming_female_1.zip')
+        try:
+            if os.path.exists(thelayer_zip):
+                os.remove(thelayer_zip)
+            if os.path.exists(thelayer_path) and not os.path.exists(thelayer_zip):
+                zip_dir(thelayer_path, thelayer_zip)
+                if os.path.exists(thelayer_zip):
+                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258')
+                    self.assertEquals(uploaded.title, 'Ming Female 1')
+                    self.assertEquals(len(uploaded.keyword_list()), 2)
+                    self.assertEquals(uploaded.constraints_other, None)
         finally:
             # Clean up and completely delete the layer
             if uploaded:
@@ -1079,118 +1120,6 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     Tests GeoNode permissions and its integration with GeoServer
     """
     port = 8002
-
-    """
-    AF: This test must be refactored. Opening an issue for that.
-    def test_permissions(self):
-        # Test permissions on a layer
-
-        # grab norman
-        norman = get_user_model().objects.get(username="norman")
-
-        thefile = os.path.join(
-            gisdata.VECTOR_DATA,
-            'san_andres_y_providencia_poi.shp')
-        layer = file_upload(thefile, overwrite=True)
-        check_layer(layer)
-
-        # we need some time to have the service up and running
-        time.sleep(20)
-
-        # Set the layer private for not authenticated users
-        layer.set_permissions({'users': {'AnonymousUser': []}})
-
-        url = 'http://localhost:8080/geoserver/geonode/ows?' \
-            'LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES=' \
-            '&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' \
-            '&SRS=EPSG%3A4326' \
-            '&BBOX=-81.394599749999,13.316009005566,' \
-            '-81.370560451855,13.372728455566' \
-            '&WIDTH=217&HEIGHT=512'
-
-        # test view_resourcebase permission on anonymous user
-        request = urllib2.Request(url)
-        response = urllib2.urlopen(request)
-        self.assertTrue(
-            response.info().getheader('Content-Type'),
-            'application/vnd.ogc.se_xml;charset=UTF-8'
-        )
-
-        # test WMS with authenticated user that has not view_resourcebase:
-        # the layer must be not accessible (response is xml)
-        request = urllib2.Request(url)
-        base64string = base64.encodestring(
-            '%s:%s' % ('norman', 'norman')).replace('\n', '')
-        request.add_header("Authorization", "Basic %s" % base64string)
-        response = urllib2.urlopen(request)
-        self.assertTrue(
-            response.info().getheader('Content-Type'),
-            'application/vnd.ogc.se_xml;charset=UTF-8'
-        )
-
-        # test WMS with authenticated user that has view_resourcebase: the layer
-        # must be accessible (response is image)
-        assign_perm('view_resourcebase', norman, layer.get_self_resource())
-        request = urllib2.Request(url)
-        base64string = base64.encodestring(
-            '%s:%s' % ('norman', 'norman')).replace('\n', '')
-        request.add_header("Authorization", "Basic %s" % base64string)
-        response = urllib2.urlopen(request)
-        self.assertTrue(response.info().getheader('Content-Type'), 'image/png')
-
-        # test change_layer_data
-        # would be nice to make a WFS/T request and test results, but this
-        # would work only on PostGIS layers
-
-        # test change_layer_style
-        url = 'http://localhost:8000/gs/rest/styles/san_andres_y_providencia_poi.xml'
-        sld = ""<?xml version="1.0" encoding="UTF-8"?>
-<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld"
-xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0"
-xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
-   <sld:NamedLayer>
-      <sld:Name>geonode:san_andres_y_providencia_poi</sld:Name>
-      <sld:UserStyle>
-         <sld:Name>san_andres_y_providencia_poi</sld:Name>
-         <sld:Title>san_andres_y_providencia_poi</sld:Title>
-         <sld:IsDefault>1</sld:IsDefault>
-         <sld:FeatureTypeStyle>
-            <sld:Rule>
-               <sld:PointSymbolizer>
-                  <sld:Graphic>
-                     <sld:Mark>
-                        <sld:Fill>
-                           <sld:CssParameter name="fill">#8A7700
-                           </sld:CssParameter>
-                        </sld:Fill>
-                        <sld:Stroke>
-                           <sld:CssParameter name="stroke">#bbffff
-                           </sld:CssParameter>
-                        </sld:Stroke>
-                     </sld:Mark>
-                     <sld:Size>10</sld:Size>
-                  </sld:Graphic>
-               </sld:PointSymbolizer>
-            </sld:Rule>
-         </sld:FeatureTypeStyle>
-      </sld:UserStyle>
-   </sld:NamedLayer>
-</sld:StyledLayerDescriptor>""
-
-        # user without change_layer_style cannot edit it
-        self.client.login(username='norman', password='norman')
-        response = self.client.put(url, sld, content_type='application/vnd.ogc.sld+xml')
-        self.assertEquals(response.status_code, 401)
-
-        # user with change_layer_style can edit it
-        assign_perm('change_layer_style', norman, layer)
-        response = self.client.put(url, sld, content_type='application/vnd.ogc.sld+xml')
-        self.assertEquals(response.status_code, 200)
-
-        # Clean up and completely delete the layer
-        layer.delete()
-    """
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()

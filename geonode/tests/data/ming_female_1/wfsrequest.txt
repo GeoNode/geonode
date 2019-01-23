@@ -1,0 +1,1 @@
+http://amap.zju.edu.cn:8080/geoserver/wfs?access_token=vKa0jUDKSIJVS8mxn3QbeXlNKbxFlO?format_options=charset%3AUTF-8&typename=geonode%3Aming_female_1&outputFormat=SHAPE-ZIP&version=1.0.0&service=WFS&request=GetFeature&access_token=vKa0jUDKSIJVS8mxn3QbeXlNKbxFlO

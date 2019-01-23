@@ -52,6 +52,7 @@ class Command(BaseCommand):
             try:
                 print 'Synchronizing permissions for layer %s/%s: %s' % (count, layers_count, layer.alternate)
                 perm_spec = json.loads(_perms_info_json(layer))
+                layer.set_default_permissions()
                 layer.set_permissions(perm_spec)
             except:
                 print("Unexpected error:", sys.exc_info()[0])

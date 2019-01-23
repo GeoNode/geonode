@@ -17,7 +17,7 @@
     {% include "base/_resourcebase_opengraph.html" %}
   {% endif %}
 
-  {% include "wm_extra/maps/map_include.html" %}
+  {% get_map_detail %}
   {{ block.super }}
 {% endblock %}
 

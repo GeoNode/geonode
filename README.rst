@@ -1,8 +1,7 @@
 .. raw:: html
 
 	<div align="right">
-	<a href="http://travis-ci.org/GeoNode/geonode"><img src="https://secure.travis-ci.org/GeoNode/geonode.png"></a> <a href="https://codecov.io/gh/GeoNode/geonode)
-	[![travis-ci.org"><img src="https://codecov.io/gh/GeoNode/geonode/branch/master/graph/badge.svg"></a> <a href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="docs/img/gpl.png" alt="GPL badge"></a></div><img src="docs/img/geonode-logo_for_readme.gif" alt="GeoNode Logo" width="450px"/><div style="text-align:center"><hr><b>A powerful yet easy to use web-based application and platform for deploying spatial data infrastructures (SDI).</b><hr></div>
+	<a href="http://travis-ci.org/GeoNode/geonode"><img src="https://secure.travis-ci.org/GeoNode/geonode.png"></a> <a href="https://codecov.io/gh/GeoNode/geonode"><img src="https://codecov.io/gh/GeoNode/geonode/branch/master/graph/badge.svg"></a> <a href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="docs/img/gpl.png" alt="GPL badge"></a></div><img src="docs/img/geonode-logo_for_readme.gif" alt="GeoNode Logo" width="450px"/><div style="text-align:center"><hr><b>A powerful yet easy to use web-based application and platform for deploying spatial data infrastructures (SDI).</b><hr></div>
 
 	
 
@@ -64,8 +63,6 @@ the offical GeoNode installation documentation:
 - `VM Setup with VirtualBox <http://docs.geonode.org/en/master/tutorials/install_and_admin/vm_setup_virtualbox.html>`__
 - `Ubuntu 16.04 <http://docs.geonode.org/en/master/tutorials/install_and_admin/geonode_install/index.html>`__
 - `CentOS 7 <http://docs.geonode.org/en/master/tutorials/install_and_admin/setup_on_centos/index.html>`__
-- `Windows Binary Installer <http://docs.geonode.org/en/master/tutorials/install_and_admin/win_bin_install/win_binary_installer.html>`__
-- `Installation by deb packages <http://geonode.org>`__
 
 Learn GeoNode
 -------------

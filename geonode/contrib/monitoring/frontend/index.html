@@ -1,3 +1,4 @@
+{% load static from staticfiles %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,11 +16,11 @@
     <title>GeoNode Monitoring</title>
 
 
-        <link href="/static/lib/css/assets.min.css?v=2.7.dev20170627114636" rel="stylesheet"/>
+        <link href="{% static 'lib/css/assets.min.css' %}?v={{ VERSION }}" rel="stylesheet"/>
 
 
-      <link href="/static/geonode/css/ext-compatibility.css?v=2.7.dev20170627114636" rel="stylesheet" />
-      <link href="/static/geonode/css/base.css?v=2.7.dev20170627114636" rel="stylesheet" />
+      <link href="{% static 'geonode/css/ext-compatibility.css' %}?v={{ VERSION }}" rel="stylesheet" />
+      <link href="{% static 'geonode/css/base.css' %}?v={{ VERSION }}" rel="stylesheet" />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
 
 
@@ -35,7 +36,7 @@
         }
       </style>
     <![endif]-->
-    <link rel="search" type="application/opensearchdescription+xml" href="/catalogue/opensearch" title="GeoNode Search"/>
+    <link rel="search" type="application/opensearchdescription+xml" href="{{ SITEURL }}catalogue/opensearch" title="GeoNode Search"/>
   </head>
 
   <body class="monitoring">
@@ -47,7 +48,7 @@
 	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
 	        <i class="fa fa-navicon fa-lg"></i>
 	      </button>
-	      <a class="navbar-brand" href="/">GeoNode</a>
+	      <a class="navbar-brand" href="{{ SITEURL }}">GeoNode</a>
 	    </div>
 	    <div id="navbar" class="navbar-collapse collapse">
 	      <ul class="nav navbar-nav toolbar">
@@ -55,130 +56,92 @@
 	        <li id="nav_layers">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Data<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
-                <li><a href="/layers/">Layers</a></li>
-                <li><a href="/documents/">Documents</a></li>
-
+                <li><a href="{{ SITEURL }}layers/">Layers</a></li>
+                <li><a href="{{ SITEURL }}documents/">Documents</a></li>
               </ul>
             </li>
 	        <li id="nav_maps">
-
-              <a href="/maps/">Maps</a>
-
+              <a href="{{ SITEURL }}maps/">Maps</a>
             </li>
             <li>
 	          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">About<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
-                <li><a href="/people/">People</a></li>
-                <li><a href="/groups/">Groups</a></li>
-                <li><a href="/groups/categories/">Group Categories</a></li>
-
-
+                <li><a href="{{ SITEURL }}people/">People</a></li>
+                <li><a href="{{ SITEURL }}groups/">Groups</a></li>
+                <li><a href="{{ SITEURL }}groups/categories/">Group Categories</a></li>
               </ul>
             </li>
-
-
-
           </ul>
 	      <ul class="nav navbar-nav navbar-right">
             <li>
               <div class="search">
-                <form id="search" action="/search/" >
+                <form id="search" action="{{ SITEURL }}search/" >
                   <span class="fa fa-search"></span>
-
                   <input id="search_input" type="text" placeholder="Search" name="title__icontains">
-
                 </form>
               </div>
 	        </li>
-
-
 		      <li><a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >Sign in </a></li>
-
             </ul>
           </div> <!--/.nav-collapse -->
         </div>
       </nav>
-
       <!-- End of Navbar -->
-
     <div class="alert alert-danger alert-dismissible" role="alert" id="ieflag" style="display:none">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       <h1>You are using an outdated browser that is not supported by GeoNode.</h1>
       <p>Please use a <strong>modern browser</strong> like Mozilla Firefox, Google Chrome or Safari.</p>
     </div>
-
   <div id="wrap">
-
     <div class="container">
       <div class="alert alert-warn" id="status-message" hidden="hidden">
     <a class="close" onclick="$('.alert').hide()">×</a>
     <strong><p id="status-message-text">Placeholder for status-message</p></strong>
     <p id="status-message-text-body">Placeholder for status-message-body</p>
 </div>
-
-
-
-
-
-
-
-
-
       <div class="row">
         <div class="col-md-8">
-
         </div>
         <div class="col-md-4">
-
-
         </div>
       </div>
-
     </div>
-
   </div>
-
   <div id="spinner">
   </div>
-
   <div id="monitoring">
   </div>
-
   <footer>
     <div class="container">
       <div class="row">
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>Data</li>
-            <li><a href="/layers/">Layers</a></li>
-            <li><a href="/documents/">Documents</a></li>
-
+            <li><a href="{{ SITEURL }}layers/">Layers</a></li>
+            <li><a href="{{ SITEURL }}documents/">Documents</a></li>
           </ul>
         </div>
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>Maps</li>
-            <li><a href="/maps/">Explore Maps</a></li>
-
+            <li><a href="{{ SITEURL }}maps/">Explore Maps</a></li>
           </ul>
         </div>
 		<div class="col-md-2">
           <ul class="list-unstyled">
             <li>About</li>
-            <li><a href="/people/">People</a></li>
-            <li><a href="/groups/">Groups</a></li>
+            <li><a href="{{ SITEURL }}people/">People</a></li>
+            <li><a href="{{ SITEURL }}groups/">Groups</a></li>
 
 
           </ul>
         </div>
         <div class="col-md-6 text-right">
           <ul class="list-unstyled">
-            <li>Powered by <a href="http://geonode.org">GeoNode</a> <em>version 2.7.dev20170627114636</em></li>
-            <li><a href="/developer/">Developers</a> | <a href="/about/">About</a><li>
+            <li>Powered by <a href="http://geonode.org">GeoNode</a> <em>version {{ VERSION }}</em></li>
+            <li><a href="{{ SITEURL }}developer/">Developers</a> | <a href="{{ SITEURL }}about/">About</a><li>
           </ul>
           <label class="hidden">Language</label>
-
-
           <form class="form-inline" action="/i18n/setlang/" method="post">
           <input type='hidden' name='csrfmiddlewaretoken' value='RkQFJyyuw8Jre2PwWXQBk55C8otvt9wM' />
             <select class="col-md-6 pull-right" name="language" onchange="javascript:form.submit()">
@@ -344,15 +307,10 @@
         </div>
       </div>
     </div>
-
     <!-- End of Modal -->
-
-
-    <script src="/static/lib/js/assets.min.js?v=2.7.dev20170627114636"></script>
-
-    <script src="/static/geonode/js/utils/utils.js?v=2.7.dev20170627114636"></script>
-    <script src="/static/geonode/js/base/base.js?v=2.7.dev20170627114636"></script>
-
+    <script src="{% static 'lib/js/assets.min.js' %}?v={{ VERSION }}"></script>
+    <script src="{% static 'geonode/js/utils/utils.js' %}?v={{ VERSION }}"></script>
+    <script src="{% static 'geonode/js/base/base.js' %}?v={{ VERSION }}"></script>
 
 <script type="text/javascript">
 jQuery(function($) {
@@ -402,13 +360,13 @@ $.ajaxSetup({
 </script>
 
 
-    <script type="text/javascript" src="/static/autocomplete_light/django_admin.js"></script>
-    <script type="text/javascript" src="/static/autocomplete_light/autocomplete.js"></script>
-    <script type="text/javascript" src="/static/autocomplete_light/widget.js"></script>
-    <script type="text/javascript" src="/static/autocomplete_light/addanother.js"></script>
-    <script type="text/javascript" src="/static/autocomplete_light/text_widget.js"></script>
-    <script type="text/javascript" src="/static/autocomplete_light/remote.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/autocomplete_light/style.css" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/django_admin.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/widget.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/addanother.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/text_widget.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/remote.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/style.css' %}" />
     <script type="text/javascript">
         var autocomplete = $('#search_input').yourlabsAutocomplete({
             url: '/autocomplete/ResourceBaseAutocomplete/',
@@ -443,6 +401,6 @@ $.ajaxSetup({
         };
     </script>
     <script type="text/javascript" src="/lang.js"></script>
-    <script src="/static/monitoring/bundle.js"></script>
+    <script src="{% static 'monitoring/bundle.js' %}"></script>
   </body>
 </html>

@@ -1,0 +1,15 @@
+############################################
+# Amazon S3 configuration
+############################################
+
+[spcgeonode_base]
+type = s3
+acl = private
+access_key_id = $S3_ACCESS_KEY
+secret_access_key = $S3_SECRET_KEY
+region = $S3_REGION
+env_auth = false
+
+[spcgeonode]
+type = alias
+remote = spcgeonode_base:$S3_BUCKET
