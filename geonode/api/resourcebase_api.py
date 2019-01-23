@@ -681,7 +681,7 @@ class FeaturedResourceBaseResource(CommonModelApi):
 class LayerResource(CommonModelApi):
 
     """Layer API"""
-	_use_in = 'all' if getattr(settings, 'API_INCLUDE_LINKS_IN_LAYERS_LIST', True) else 'detail'
+    _use_in = 'all' if getattr(settings, 'API_INCLUDE_LINKS_IN_LAYERS_LIST', True) else 'detail'
     links = fields.ListField(
         attribute='links',
         null=True,
