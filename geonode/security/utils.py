@@ -420,7 +420,7 @@ def set_geofence_all(instance):
         tb = traceback.format_exc()
         logger.debug(tb)
     finally:
-        if not settings.DELAYED_SECURITY_SIGNALS:
+        if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
             set_geofence_invalidate_cache()
         else:
             resource.set_dirty_state()
@@ -461,7 +461,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
             if _group:
                 logger.debug("Adding 'group' to geofence the rule: %s %s %s" % (layer, service, _group))
                 _update_geofence_rule(layer.name, layer.workspace, service, group=_group)
-    if not settings.DELAYED_SECURITY_SIGNALS:
+    if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         set_geofence_invalidate_cache()
     else:
         layer.set_dirty_state()
@@ -506,7 +506,7 @@ def remove_object_permissions(instance):
             tb = traceback.format_exc()
             logger.debug(tb)
         finally:
-            if not settings.DELAYED_SECURITY_SIGNALS:
+            if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
                 set_geofence_invalidate_cache()
             else:
                 resource.set_dirty_state()
