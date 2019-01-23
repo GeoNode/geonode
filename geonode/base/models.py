@@ -1464,12 +1464,16 @@ def do_login(sender, user, request, **kwargs):
             # Lets create a new one
             token = generate_token()
 
+            # 1 day expiration time by default
+            _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', 86400)
+
+            # Let's create the new AUTH TOKEN
             AccessToken.objects.get_or_create(
                 user=user,
                 application=app,
                 expires=datetime.datetime.now(timezone.get_current_timezone()) +
                 datetime.timedelta(
-                    days=1),
+                    seconds=_expire_seconds),
                 token=token)
         except BaseException:
             u = uuid.uuid1()
