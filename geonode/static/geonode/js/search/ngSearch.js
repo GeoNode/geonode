@@ -4,6 +4,7 @@ import Search from "app/search/Search";
 import searchHelpers from "app/search/searchHelpers";
 import functional from "app/utils/functional";
 import location from "app/search/location";
+import PubSub from "pubsub-js";
 
 const searchInstance = Search.create();
 
@@ -22,25 +23,6 @@ export default (function() {
     }
   });
 
-  // Used to set the class of the filters based on the url parameters
-  module.set_initial_filters_from_query = function(
-    data,
-    url_query,
-    filter_param
-  ) {
-    for (var i = 0; i < data.length; i++) {
-      if (
-        url_query == data[i][filter_param] ||
-        url_query.indexOf(data[i][filter_param]) != -1
-      ) {
-        data[i].active = "active";
-      } else {
-        data[i].active = "";
-      }
-    }
-    return data;
-  };
-
   module.load_h_keywords = function($http, $rootScope, $location) {
     var params = typeof FILTER_TYPE == "undefined" ? {} : { type: FILTER_TYPE };
     $http.get(H_KEYWORDS_ENDPOINT, { params: params }).success(function(data) {
@@ -48,7 +30,7 @@ export default (function() {
         data: data,
         multiSelect: true,
         onNodeSelected: function($event, node) {
-          $rootScope.$broadcast("select_h_keyword", node);
+          PubSub.publish("select_h_keyword", node);
           if (node.nodes) {
             for (var i = 0; i < node.nodes.length; i++) {
               $("#treeview").treeview("selectNode", node.nodes[i]);
@@ -56,7 +38,7 @@ export default (function() {
           }
         },
         onNodeUnselected: function($event, node) {
-          $rootScope.$broadcast("unselect_h_keyword", node);
+          PubSub.publish("unselect_h_keyword", node);
           if (node.nodes) {
             for (var i = 0; i < node.nodes.length; i++) {
               $("#treeview").treeview("unselectNode", node.nodes[i]);
@@ -69,19 +51,6 @@ export default (function() {
         }
       });
     });
-  };
-
-  module.load_t_keywords = $rootscope => {
-    searchHelpers
-      .buildRequestFromParam({
-        endpoint: T_KEYWORDS_ENDPOINT,
-        requestParam: "title__icontains",
-        filterParam: "tkeywords__id__in",
-        alias: "id"
-      })
-      .then(data => {
-        $rootScope.tkeywords = data;
-      });
   };
 
   /*
@@ -277,7 +246,7 @@ export default (function() {
     }
 
     // Hyerarchical keywords listeners
-    $scope.$on("select_h_keyword", function($event, element) {
+    PubSub.subscribe("select_h_keyword", function($event, element) {
       var data_filter = "keywords__slug__in";
       var query_entry = [];
       var value = element.href ? element.href : element.text;
@@ -303,7 +272,7 @@ export default (function() {
       query_api($scope.query);
     });
 
-    $scope.$on("unselect_h_keyword", function($event, element) {
+    PubSub.subscribe("unselect_h_keyword", function($event, element) {
       var data_filter = "keywords__slug__in";
       var query_entry = [];
       var value = element.href ? element.href : element.text;
