@@ -1,4 +1,4 @@
-import searchHelpers from "app/search/searchHelpers";
+import searchHelpers from "app/search/helpers/searchHelpers";
 
 function create() {
   const defaultState = {

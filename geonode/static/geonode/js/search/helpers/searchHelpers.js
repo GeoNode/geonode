@@ -1,4 +1,4 @@
-import location from "app/search/location";
+import locationUtils from "app/utils/locationUtils";
 
 const module = {
   buildRequestFromParamQueue: configs =>
@@ -20,15 +20,15 @@ const module = {
       requestParam = requestParam || "title__icontains";
       const params =
         typeof filterType === "undefined" ? {} : { type: filterType };
-      if (location.getUrlParam(requestParam)) {
+      if (locationUtils.getUrlParam(requestParam)) {
         // eslint-disable-next-line
-        params[requestParam] = location.getUrlParam(requestParam);
+        params[requestParam] = locationUtils.getUrlParam(requestParam);
       }
       module.fetch(endpoint, { params }).then(data => {
-        if (location.getUrlParam(filterParam)) {
+        if (locationUtils.getUrlParam(filterParam)) {
           data.objects = module.setInitialFiltersFromQuery(
             data.objects,
-            location.getUrlParam(filterParam),
+            locationUtils.getUrlParam(filterParam),
             alias
           );
         }

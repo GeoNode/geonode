@@ -1,10 +1,10 @@
 /* eslint-disable */
 
-import Search from "app/search/Search";
-import searchHelpers from "app/search/searchHelpers";
-import functional from "app/utils/functional";
-import location from "app/search/location";
+import Search from "app/search/components/Search";
 import PubSub from "pubsub-js";
+import SelectionTree from "app/search/components/SelectionTree";
+import searchHelpers from "app/search/helpers/searchHelpers";
+import functional from "app/utils/functional";
 
 const searchInstance = Search.create();
 
@@ -23,32 +23,14 @@ export default (function() {
     }
   });
 
-  module.load_h_keywords = function($http, $rootScope, $location) {
-    var params = typeof FILTER_TYPE == "undefined" ? {} : { type: FILTER_TYPE };
-    $http.get(H_KEYWORDS_ENDPOINT, { params: params }).success(function(data) {
-      $("#treeview").treeview({
-        data: data,
-        multiSelect: true,
-        onNodeSelected: function($event, node) {
-          PubSub.publish("select_h_keyword", node);
-          if (node.nodes) {
-            for (var i = 0; i < node.nodes.length; i++) {
-              $("#treeview").treeview("selectNode", node.nodes[i]);
-            }
-          }
-        },
-        onNodeUnselected: function($event, node) {
-          PubSub.publish("unselect_h_keyword", node);
-          if (node.nodes) {
-            for (var i = 0; i < node.nodes.length; i++) {
-              $("#treeview").treeview("unselectNode", node.nodes[i]);
-              $("#treeview").trigger(
-                "nodeUnselected",
-                $.extend(true, {}, node.nodes[i])
-              );
-            }
-          }
-        }
+  module.load_h_keywords = () => {
+    var params =
+      typeof FILTER_TYPE === "undefined" ? {} : { type: FILTER_TYPE };
+    searchHelpers.fetch(H_KEYWORDS_ENDPOINT, { params: params }).then(data => {
+      SelectionTree.init({
+        id: "treeview",
+        data,
+        eventId: "h_keyword"
       });
     });
   };
