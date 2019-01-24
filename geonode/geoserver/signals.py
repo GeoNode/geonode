@@ -527,7 +527,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
     for style in instance.styles.all():
         legend_url = ogc_server_settings.PUBLIC_LOCATION + \
-            'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+            'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
             instance.alternate + '&STYLE=' + style.name + \
             '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
