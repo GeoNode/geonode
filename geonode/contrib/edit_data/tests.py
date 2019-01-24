@@ -20,11 +20,10 @@
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-import dj_database_url
+import dj_database_url # used in first test
 
-from django.conf import settings
-from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.conf import settings # used in first test
+from django.core.urlresolvers import reverse # used in first test
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -32,7 +31,7 @@ from geonode.geoserver.signals import gs_catalog
 from geonode import GeoNodeException
 from geonode.layers.models import Layer
 
-from geonode.contrib.edit_data.utils import *
+from geonode.contrib.edit_data.utils import save_geom_edits, delete_selected_row, save_added_row, save_edits
 from geonode.contrib.edit_data import *
 
 from geonode.contrib.createlayer.utils import create_layer
@@ -61,8 +60,8 @@ Then, as usual, run "paver run_tests"
 
 """
 
-class EditDataCoreTest(GeoNodeBaseTestSupport):
 
+class EditDataCoreTest(GeoNodeBaseTestSupport):
     layer_name = 'test_layer'
     feature_id = 1
     layer_feature_id = '.'.join([layer_name,str(feature_id)])
@@ -125,32 +124,22 @@ class EditDataCoreTest(GeoNodeBaseTestSupport):
     '''
 
     def test_add_row(self):
-
         #layer_name = self.layer_name
         feature_type = 'Point'
-
-        data_dict = {"data":"FID_1=,Name__EN_=papagou,Name__FR_=,Address__E=,Address__A=,Longitude=,Latitude=,Region__EN=,ATM_IDs=,FID_2=,FID_1_1=,objectid=,admin0name=,admin0na_1=,admin0pcod=,admin1name=,admin1na_1=,admin1pcod=,admin2name=,admin2na_1=,admin2pcod=,admin2refn=,admin2altn=,admin2al_1=,admin2al_2=,admin2al_3=,lastupdate=,validon=,validto=,st_area_sh=,st_length_=,Modality=,Count_=","feature_type":"Point","layer_name":self.layer_name,"coords":[22.930927,40.640600]}
-
-
+        data_dict = {"data":"FID_1=,Name__EN_=papagou,Name__FR_=,Address__E=,Address__A=,Longitude=,Latitude=,Region__EN=,ATM_IDs=,FID_2=,FID_1_1=,objectid=,admin0name=,admin0na_1=,admin0pcod=,admin1name=,admin1na_1=,admin1pcod=,admin2name=,admin2na_1=,admin2pcod=,admin2refn=,admin2altn=,admin2al_1=,admin2al_2=,admin2al_3=,lastupdate=,validon=,validto=,st_area_sh=,st_length_=,Modality=,Count_=", "feature_type": "Point", "layer_name" :self.layer_name, "coords": [22.930927, 40.640600]}
         success, message, status_code = save_added_row(self.layer_name, feature_type, data_dict)
         self.assertEqual(status_code, 200)
 
-
     def test_edits(self):
-
-        data_dict = {"data":"FID_1=,Name__EN_=ioannina,Name__FR_=13,Address__E=,Address__A=,Longitude=,Latitude=,Region__EN=,ATM_IDs=,FID_2=,FID_1_1=,objectid=,admin0name=,admin0na_1=,admin0pcod=,admin1name=,admin1na_1=,admin1pcod=,admin2name=,admin2na_1=,admin2pcod=,admin2refn=,admin2altn=,admin2al_1=,admin2al_2=,admin2al_3=,lastupdate=,validon=,validto=,st_area_sh=,st_length_=,Modality=,Count_=","feature_id":self.feature_id,"layer_name":self.layer_name}
-
+        data_dict = {"data": "FID_1=,Name__EN_=ioannina,Name__FR_=13,Address__E=,Address__A=,Longitude=,Latitude=,Region__EN=,ATM_IDs=,FID_2=,FID_1_1=,objectid=,admin0name=,admin0na_1=,admin0pcod=,admin1name=,admin1na_1=,admin1pcod=,admin2name=,admin2na_1=,admin2pcod=,admin2refn=,admin2altn=,admin2al_1=,admin2al_2=,admin2al_3=,lastupdate=,validon=,validto=,st_area_sh=,st_length_=,Modality=,Count_=", "feature_id": self.feature_id, "layer_name": self.layer_name}
         success, message, status_code = save_edits(self.layer_name, self.feature_id, data_dict)
         self.assertEqual(status_code, 200)
 
-
     def test_geom_edits(self):
-
         coords = '39.629287 20.886753'
         success, message, status_code = save_geom_edits(self.layer_name, self.layer_feature_id, coords)
         self.assertEqual(status_code, 200)
 
     def test_delete(self):
-
         success, message, status_code = delete_selected_row(self.layer_name, self.layer_feature_id)
         self.assertEqual(status_code, 200)

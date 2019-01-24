@@ -21,6 +21,7 @@
 """Utilities for managing GeoNode edit data
 """
 from collections import OrderedDict
+from lxml import etree
 import requests
 import operator
 import json
@@ -40,7 +41,7 @@ from geoserver.catalog import Catalog
 
 
 # the data_edit_schema and the data_edit functions are used in edit_data front page in order to display all data
-def data_display_schema(name, layers_attributes, context_dict):
+def data_display_schema(name, layers_attributes, ctx):
     # geoserver parameters
     username = settings.OGC_SERVER['default']['USER']
     password = settings.OGC_SERVER['default']['PASSWORD']
@@ -61,7 +62,7 @@ def data_display_schema(name, layers_attributes, context_dict):
         'MultiLineString': 'Linestring'
     }
     geom_type = schema.get('geometry') or schema['properties'].get('the_geom')
-    context_dict["layer_geom"] = json.dumps(geom_dict.get(geom_type, 'unknown'))
+    ctx["layer_geom"] = json.dumps(geom_dict.get(geom_type, 'unknown'))
     schema.pop("geometry")
     # remove the_geom/geom parameter
     if 'the_geom' in schema['properties']:
@@ -75,13 +76,13 @@ def data_display_schema(name, layers_attributes, context_dict):
         else:
             schema['properties'].pop(key, None)
 
-    context_dict["schema"] = schema
+    ctx["schema"] = schema
     filtered_attributes = list(set(layers_attributes).intersection(layer_attributes_schema))
 
-    return wfs, filtered_attributes, context_dict
+    return wfs, filtered_attributes, ctx
 
 
-def data_display(name, wfs, layers_attributes, attribute_description, display_order_dict, filtered_attributes, context_dict):
+def data_display(name, wfs, layers_attributes, attribute_description, display_order_dict, filtered_attributes, ctx):
     response = wfs.getfeature(typename=name, propertyname=filtered_attributes, outputFormat='application/json')
     features_response = json.dumps(json.loads(response.read()))
     decoded = json.loads(features_response)
@@ -92,16 +93,16 @@ def data_display(name, wfs, layers_attributes, attribute_description, display_or
     display_order_dict_sorted = OrderedDict(display_order_list_sorted)
 
     # display_order_dict_sorted = dict(display_order_list_sorted)
-    context_dict["feature_properties"] = json.dumps(decoded_features)
-    context_dict["attribute_description"] = json.dumps(attribute_description)
-    context_dict["display_order_dict_sorted"] = json.dumps(display_order_dict_sorted)
-    context_dict["layer_name"] = json.dumps(name)
-    context_dict["name"] = name
-    context_dict["url"] = json.dumps(settings.OGC_SERVER['default']['LOCATION'])
-    context_dict["site_url"] = json.dumps(settings.SITEURL)
-    context_dict["default_workspace"] = json.dumps(settings.DEFAULT_WORKSPACE)
+    ctx["feature_properties"] = json.dumps(decoded_features)
+    ctx["attribute_description"] = json.dumps(attribute_description)
+    ctx["display_order_dict_sorted"] = json.dumps(display_order_dict_sorted)
+    ctx["layer_name"] = json.dumps(name)
+    ctx["name"] = name
+    ctx["url"] = json.dumps(settings.OGC_SERVER['default']['LOCATION'])
+    ctx["site_url"] = json.dumps(settings.SITEURL)
+    ctx["default_workspace"] = json.dumps(settings.DEFAULT_WORKSPACE)
 
-    return context_dict
+    return ctx
 
 
 def save_added_row(layer_name, feature_type, data_dict):
@@ -117,20 +118,21 @@ def save_added_row(layer_name, feature_type, data_dict):
         property_element_1 = """<{}>{}</{}>\n\t\t""".format(attribute, value, attribute)
         property_element = property_element + property_element_1
 
-
     # Make a Describe Feature request to get the correct link for the xmlns:geonode
-    headers = {'Content-Type': 'application/xml'} # set what your server accepts
+    headers = {'Content-Type': 'application/xml'}
     xml_path = "edit_data/wfs_describe_feature.xml"
     workspace = settings.DEFAULT_WORKSPACE
     xmlstr = get_template(xml_path).render({
-            'layer_name': layer_name,
-            'workspace': workspace
-            }).strip()
+                'layer_name': layer_name,
+                'workspace': workspace
+                }
+            ).strip()
     url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
-    describe_feature_response = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).text
+    username = settings.OGC_SERVER['default']['USER']
+    password = settings.OGC_SERVER['default']['PASSWORD']
+    describe_feature_response = requests.post(url, data=xmlstr, headers=headers, auth=(username, password)).text
 
-    from lxml import etree
-    xml = bytes(bytearray(describe_feature_response, encoding='utf-8'))  # encode it and force the same encoder in the parser
+    xml = bytes(bytearray(describe_feature_response, encoding='utf-8'))
     doc = etree.XML(xml)
     nsmap = {}
     for ns in doc.xpath('//namespace::*'):
@@ -165,7 +167,7 @@ def save_added_row(layer_name, feature_type, data_dict):
             'geometry_clm': geometry_clm}).strip()
 
     url = settings.OGC_SERVER['default']['LOCATION'] + 'geonode/wfs'
-    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
+    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(username, password)).status_code
 
     status_code_bbox, status_code_seed = update_bbox_and_seed(headers, layer_name, store_name)
 
@@ -269,6 +271,7 @@ def delete_selected_row(layer_name, feature_id):
 
     return success, message, status_code
 
+
 # Used to update the BBOX of geoserver and send a see request
 # Takes as input the headers and the layer_name
 # Returns status_code of each request
@@ -313,7 +316,6 @@ def update_bbox_in_CSW(layer, layer_name):
 
 #  Returns the store name based on the workspace and the layer name
 def get_store_name(layer_name):
-    # get the name of the store
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
     resource = cat.get_resource(layer_name, workspace='geonode')
     store_name = resource.store.name
