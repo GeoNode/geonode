@@ -59,15 +59,15 @@ ows_regexp = re.compile(
     "^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
 
 
-def header_auth_view(auth_header):
+def user_from_basic_auth(auth_header):
     if 'Basic' in auth_header:
         encoded_credentials = auth_header.split(' ')[1]  # Removes "Basic " to isolate credentials
         decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(':')
         username = decoded_credentials[0]
         password = decoded_credentials[1]
         # if the credentials are correct, then the feed_bot is not None, but is a User object.
-        feed_bot = authenticate(username=username, password=password)
-        return feed_bot
+        user = authenticate(username=username, password=password)
+        return user
     return None
 
 
@@ -174,11 +174,10 @@ def proxy(request, url=None, response_callback=None,
             'HTTP_AUTHORIZATION',
             request.META.get('HTTP_AUTHORIZATION2'))
         if auth:
-            _user = header_auth_view(auth)
+            _user = user_from_basic_auth(auth) #
             if not _user:
                 if 'Bearer' in auth:
                     access_token = auth.replace('Bearer ', '')
-                else:
                     headers['Authorization'] = auth
             else:
                 try:
@@ -190,9 +189,9 @@ def proxy(request, url=None, response_callback=None,
                     traceback.print_exc()
                     logger.error("Could retrieve OAuth2 Access Token for user %s" % _user)
 
-    if access_token:
-        if request.method in ("POST", "PUT", "DELETE"):
-            headers['Authorization'] = 'Bearer %s' % access_token
+
+    if access_token and not headers.get('Authorization'):
+        headers['Authorization'] = 'Bearer %s' % access_token
 
     site_url = urlsplit(settings.SITEURL)
 
