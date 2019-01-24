@@ -744,11 +744,10 @@ class LayerResource(CommonModelApi):
             formatted_obj['default_style'] = self.default_style.dehydrate(
                 bundle, for_list=True)
 
-            if self.links.use_in == 'all' or self.links.use_in == 'list':
-                formatted_obj['links'] = self.dehydrate_links(
-                    bundle)
             # Add resource uri
             formatted_obj['resource_uri'] = self.get_resource_uri(bundle)
+
+            formatted_obj['links'] = self.dehydrate_ogc_links(bundle)
 
             if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
                 formatted_obj['site_url'] = settings.SITEURL
@@ -770,7 +769,8 @@ class LayerResource(CommonModelApi):
             formatted_objects.append(formatted_obj)
         return formatted_objects
 
-    def dehydrate_links(self, bundle):
+
+    def _dehydrate_links(self, bundle, link_types = None):
         """Dehydrate links field."""
 
         dehydrated = []
@@ -782,11 +782,21 @@ class LayerResource(CommonModelApi):
             'mime',
             'url'
         ]
-        for l in obj.link_set.all():
+
+        links = obj.link_set.all()
+        if link_types:
+            links = links.filter(link_type__in=link_types)
+        for l in links:
             formatted_link = model_to_dict(l, fields=link_fields)
             dehydrated.append(formatted_link)
 
         return dehydrated
+
+    def dehydrate_links(self, bundle):
+        return self._dehydrate_links(bundle)
+
+    def dehydrate_ogc_links(self, bundle):
+        return self._dehydrate_links(bundle, ['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
 
     def dehydrate_gtype(self, bundle):
         return bundle.obj.gtype
