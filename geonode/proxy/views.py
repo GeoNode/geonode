@@ -93,10 +93,6 @@ def proxy(request, url=None, response_callback=None,
     if url.fragment != "":
         locator += '#' + url.fragment
 
-    access_token = None
-    if request and 'access_token' in request.session:
-        access_token = request.session['access_token']
-
     # White-Black Listing Hosts
     if sec_chk_hosts and not settings.DEBUG:
         site_url = urlsplit(settings.SITEURL)
