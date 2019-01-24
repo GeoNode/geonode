@@ -1464,16 +1464,38 @@ def do_login(sender, user, request, **kwargs):
             # Lets create a new one
             token = generate_token()
 
-            AccessToken.objects.get_or_create(
-                user=user,
-                application=app,
-                expires=datetime.datetime.now(timezone.get_current_timezone()) +
-                datetime.timedelta(
-                    days=1),
-                token=token)
+            # 1 day expiration time by default
+            _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', 86400)
+            _expire_time = datetime.datetime.now(timezone.get_current_timezone())
+            _expire_delta = datetime.timedelta(seconds=_expire_seconds)
+
+            # Let's create the new AUTH TOKEN
+            existing_token = None
+            try:
+                existing_token = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
+                if existing_token and existing_token.expires < _expire_time:
+                    existing_token = None
+                    existing_token.delete()
+            except BaseException:
+                existing_token = None
+                tb = traceback.format_exc()
+                if tb:
+                    logger.debug(tb)
+
+            if not existing_token:
+                (token, created) = AccessToken.objects.get_or_create(
+                    user=user,
+                    application=app,
+                    expires=_expire_time + _expire_delta,
+                    token=token)
+            else:
+                token = existing_token
         except BaseException:
             u = uuid.uuid1()
             token = u.hex
+            tb = traceback.format_exc()
+            if tb:
+                logger.debug(tb)
 
         # Do GeoServer Login
         url = "%s%s&access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
@@ -1508,13 +1530,18 @@ def do_logout(sender, user, request, **kwargs):
             Application = get_application_model()
             app = Application.objects.get(name="GeoServer")
 
+            _expire_time = datetime.datetime.now(timezone.get_current_timezone())
+
             # Lets delete the old one
             try:
-                old = AccessToken.objects.get(user=user, application=app)
+                old_tokens = AccessToken.objects.filter(user=user, application=app).order_by('-expires')
+                for old in old_tokens:
+                    if old.expires < _expire_time:
+                        old.delete()
             except BaseException:
-                pass
-            else:
-                old.delete()
+                tb = traceback.format_exc()
+                if tb:
+                    logger.debug(tb)
         except BaseException:
             pass
 
