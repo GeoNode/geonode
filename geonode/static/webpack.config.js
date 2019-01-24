@@ -28,7 +28,8 @@ module.exports = {
     alias: {
       app: path.resolve(__dirname, "geonode/js")
     }
-  },
+  }
+  /*
   optimization: {
     minimizer: [
       new ConcatPlugin({
@@ -101,4 +102,5 @@ module.exports = {
       })
     ]
   }
+  */
 };

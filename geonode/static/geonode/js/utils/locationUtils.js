@@ -7,7 +7,13 @@ const svc = {
     return params;
   },
   getUrlParam(param) {
-    return svc.getUrlParams[param];
+    return svc.getUrlParams()[param];
+  },
+  paramExists(param) {
+    return (
+      svc.getUrlParams()[param] !== null &&
+      svc.getUrlParams()[param] !== undefined
+    );
   }
 };
 

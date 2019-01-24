@@ -20,12 +20,12 @@ const module = {
       requestParam = requestParam || "title__icontains";
       const params =
         typeof filterType === "undefined" ? {} : { type: filterType };
-      if (locationUtils.getUrlParam(requestParam)) {
+      if (locationUtils.paramExists(requestParam)) {
         // eslint-disable-next-line
         params[requestParam] = locationUtils.getUrlParam(requestParam);
       }
       module.fetch(endpoint, { params }).then(data => {
-        if (locationUtils.getUrlParam(filterParam)) {
+        if (locationUtils.paramExists(filterParam)) {
           data.objects = module.setInitialFiltersFromQuery(
             data.objects,
             locationUtils.getUrlParam(filterParam),

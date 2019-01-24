@@ -3,25 +3,28 @@
 import Search from "app/search/components/Search";
 import PubSub from "pubsub-js";
 import SelectionTree from "app/search/components/SelectionTree";
+import TextSearch from "app/search/components/TextSearch";
 import searchHelpers from "app/search/helpers/searchHelpers";
 import functional from "app/utils/functional";
+import locationUtils from "app/utils/locationUtils";
 
-const searchInstance = Search.create();
+export default (() => {
+  const searchInstance = Search.create();
+  const module = angular.module(
+    "geonode_main_search",
+    [],
+    $locationProvider => {
+      if (window.navigator.userAgent.indexOf("MSIE") == -1) {
+        $locationProvider.html5Mode({
+          enabled: true,
+          requireBase: false
+        });
 
-export default (function() {
-  var module = angular.module("geonode_main_search", [], function(
-    $locationProvider
-  ) {
-    if (window.navigator.userAgent.indexOf("MSIE") == -1) {
-      $locationProvider.html5Mode({
-        enabled: true,
-        requireBase: false
-      });
-
-      // make sure that angular doesn't intercept the page links
-      angular.element("a").prop("target", "_self");
+        // make sure that angular doesn't intercept the page links
+        angular.element("a").prop("target", "_self");
+      }
     }
-  });
+  );
 
   module.load_h_keywords = () => {
     var params =
@@ -38,61 +41,51 @@ export default (function() {
   /*
   * Load categories and keywords
   */
-  module.run(function($http, $rootScope, $location) {
-    let requestQueue = [];
+  module.run(($rootScope, $location) => {
     /*
     * Load categories and keywords if the filter is available in the page
     * and set active class if needed
     */
-    if ($("#categories").length > 0) {
-      requestQueue.push({
+    let requestQueue = [
+      {
         id: "categories",
         endpoint: CATEGORIES_ENDPOINT,
         requestParam: "title__icontains",
         filterParam: "category__identifier__in",
         alias: "identifier"
-      });
-    }
-
-    if ($("#groupcategories").length > 0) {
-      requestQueue.push({
+      },
+      {
         id: "groupcategories",
         endpoint: GROUP_CATEGORIES_ENDPOINT,
         requestParam: "name__icontains",
         filterParam: "slug",
         alias: "identifier"
-      });
-    }
-
-    module.load_h_keywords($http, $rootScope, $location);
-
-    if ($("#regions").length > 0) {
-      requestQueue.push({
+      },
+      {
         id: "regions",
         endpoint: REGIONS_ENDPOINT,
         requestParam: "title__icontains",
         filterParam: "regions__name__in",
         alias: "name"
-      });
-    }
-    if ($("#owners").length > 0) {
-      requestQueue.push({
+      },
+      {
         id: "owners",
         endpoint: OWNERS_ENDPOINT,
         requestParam: "title__icontains",
         filterParam: "owner__username__in",
         alias: "identifier"
-      });
-    }
-    if ($("#tkeywords").length > 0) {
-      requestQueue.push({
+      },
+      {
         id: "tkeywords",
         endpoint: T_KEYWORDS_ENDPOINT,
         requestParam: "title__icontains",
         filterParam: "tkeywords__id__in",
         alias: "id"
-      });
-    }
+      }
+      // Only make the request if a page element possessing the id exists
+    ].filter(req => $(`#${req.id}`).length > 0);
+
+    module.load_h_keywords();
 
     searchHelpers.buildRequestFromParamQueue(requestQueue).then(data => {
       for (let i = 0; i < requestQueue.length; i += 1) {
@@ -101,8 +94,8 @@ export default (function() {
     });
 
     // Activate the type filters if in the url
-    if ($location.search().hasOwnProperty("type__in")) {
-      var types = $location.search()["type__in"];
+    if (locationUtils.paramExists("type__in")) {
+      var types = locationUtils.getUrlParam("type__in");
       if (types instanceof Array) {
         for (var i = 0; i < types.length; i++) {
           $("body")
@@ -137,7 +130,6 @@ export default (function() {
     $injector,
     $scope,
     $location,
-    $http,
     Configs
   ) {
     $scope.query = $location.search();
@@ -157,17 +149,18 @@ export default (function() {
     //Get data from apis and make them available to the page
     function query_api(params) {
       searchInstance.search(Configs.url, params).then(data => {
-        setTimeout(function() {
+        setTimeout(() => {
           $('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();
-        }, 0);
+          if (locationUtils.paramExists("title__icontains")) {
+            $scope.text_query = locationUtils
+              .getUrlParam("title__icontains")
+              .replace(/\+/g, " ");
+          }
+          $scope.$apply();
+        });
         $scope.results = searchInstance.get("results");
         $scope.total_counts = searchInstance.get("resultCount");
         $scope.$apply();
-        if ($location.search().hasOwnProperty("title__icontains")) {
-          $scope.text_query = $location
-            .search()
-            ["title__icontains"].replace(/\+/g, " ");
-        }
       });
     }
     query_api($scope.query);
@@ -227,7 +220,7 @@ export default (function() {
       );
     }
 
-    // Hyerarchical keywords listeners
+    // Hierarchical keywords listeners
     PubSub.subscribe("select_h_keyword", function($event, element) {
       var data_filter = "keywords__slug__in";
       var query_entry = [];
@@ -364,42 +357,15 @@ export default (function() {
     /*
     * Text search management
     */
-    var text_autocomplete = $("#text_search_input").yourlabsAutocomplete({
+
+    TextSearch.init({
       url: AUTOCOMPLETE_URL_RESOURCEBASE,
-      choiceSelector: "span",
-      hideAfter: 200,
-      minimumCharacters: 1,
-      placeholder: gettext("Enter your text here ..."),
-      autoHilightFirst: false
+      id: "text_search"
     });
 
-    $("#text_search_input").keypress(function(e) {
-      if (e.which == 13) {
-        $("#text_search_btn").click();
-        $(".yourlabs-autocomplete").hide();
-      }
-    });
-
-    $("#text_search_input").bind("selectChoice", function(
-      e,
-      choice,
-      text_autocomplete
-    ) {
-      if (choice[0].children[0] == undefined) {
-        $("#text_search_input").val($(choice[0]).text());
-        $("#text_search_btn").click();
-      }
-    });
-
-    $("#text_search_btn").click(function() {
-      if (AUTOCOMPLETE_URL_RESOURCEBASE == "/autocomplete/ProfileAutocomplete/")
-        // a user profile has no title; if search was triggered from
-        // the /people page, filter by username instead
-        var query_key = "username__icontains";
-      else console.log("search key", $("#text_search_input").data());
-      var query_key =
-        $("#text_search_input").data("query-key") || "title__icontains";
-      $scope.query[query_key] = $("#text_search_input").val();
+    PubSub.subscribe("textSearchClick", (event, data) => {
+      console.log("!SEARCH", data);
+      $scope.query[data.key] = data.val;
       query_api($scope.query);
     });
 
