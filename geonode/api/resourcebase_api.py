@@ -769,8 +769,7 @@ class LayerResource(CommonModelApi):
             formatted_objects.append(formatted_obj)
         return formatted_objects
 
-
-    def _dehydrate_links(self, bundle, link_types = None):
+    def _dehydrate_links(self, bundle, link_types=None):
         """Dehydrate links field."""
 
         dehydrated = []
