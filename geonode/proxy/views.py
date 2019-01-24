@@ -176,9 +176,10 @@ def proxy(request, url=None, response_callback=None,
         if auth:
             _user = header_auth_view(auth)
             if not _user:
-                headers['Authorization'] = auth
                 if 'Bearer' in auth:
                     access_token = auth.replace('Bearer ', '')
+                else:
+                    headers['Authorization'] = auth
             else:
                 try:
                     from oauth2_provider.models import AccessToken, get_application_model
