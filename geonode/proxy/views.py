@@ -174,7 +174,7 @@ def proxy(request, url=None, response_callback=None,
             'HTTP_AUTHORIZATION',
             request.META.get('HTTP_AUTHORIZATION2'))
         if auth:
-            _user = user_from_basic_auth(auth) #
+            _user = user_from_basic_auth(auth)
             if not _user:
                 if 'Bearer' in auth:
                     access_token = auth.replace('Bearer ', '')
@@ -188,7 +188,6 @@ def proxy(request, url=None, response_callback=None,
                 except BaseException:
                     traceback.print_exc()
                     logger.error("Could retrieve OAuth2 Access Token for user %s" % _user)
-
 
     if access_token and not headers.get('Authorization'):
         headers['Authorization'] = 'Bearer %s' % access_token
