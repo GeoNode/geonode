@@ -409,7 +409,7 @@ class Catalogue(CatalogueServiceWeb):
             return None
 
         for link_el in rec.distribution.online:
-            if link_el.protocol == 'WWW:DOWNLOAD-1.0-http--download':
+            if 'WWW:DOWNLOAD' in link_el.protocol:
                 try:
                     extension = link_el.name.split('.')[-1]
                     format = format_re.match(link_el.description).groups()[0]

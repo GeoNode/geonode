@@ -25,7 +25,7 @@ from .models import Profile
 
 
 class ProfileAutocomplete(AutocompleteModelTemplate):
-    choice_template = 'autocomplete_response.html'
+    choice_template = 'autocomplete_response_people.html'
 
     def choices_for_request(self):
         self.choices = self.choices.exclude(Q(username='AnonymousUser') | Q(is_active=False))

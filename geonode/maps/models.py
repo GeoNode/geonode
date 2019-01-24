@@ -176,15 +176,20 @@ class Map(ResourceBase, GXPMapBase):
         self.abstract = conf['about']['abstract']
 
         center = conf['map']['center'] if 'center' in conf['map'] else settings.DEFAULT_MAP_CENTER
-        zoom = conf['map']['zoom'] if 'zoom' in conf['map'] else settings.DEFAULT_MAP_ZOOM
-        center_x = center['x'] if isinstance(center, dict) else center[0]
-        center_y = center['y'] if isinstance(center, dict) else center[1]
-        self.set_bounds_from_center_and_zoom(
-            center_x,
-            center_y,
-            zoom)
+        self.zoom = conf['map']['zoom'] if 'zoom' in conf['map'] else settings.DEFAULT_MAP_ZOOM
+        self.center_x = center['x'] if isinstance(center, dict) else center[0]
+        self.center_y = center['y'] if isinstance(center, dict) else center[1]
+        if 'bbox' not in conf['map']:
+            self.set_bounds_from_center_and_zoom(
+                self.center_x,
+                self.center_y,
+                self.zoom)
+        else:
+            # Must be in the form : [x0, x1, y0, y1]
+            self.set_bounds_from_bbox(conf['map']['bbox'], conf['map']['projection'])
 
-        self.projection = conf['map']['projection']
+        if self.projection is None or self.projection == '':
+            self.projection = conf['map']['projection']
 
         if self.uuid is None or self.uuid == '':
             self.uuid = str(uuid.uuid1())
@@ -256,18 +261,13 @@ class Map(ResourceBase, GXPMapBase):
         self.zoom = 0
         self.center_x = 0
         self.center_y = 0
-        bbox = None
-        index = 0
 
         if self.uuid is None or self.uuid == '':
             self.uuid = str(uuid.uuid1())
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(None)
 
-        # Save the map in order to create an id in the database
-        # used below for the maplayers.
-        self.save()
-
+        _layers = []
         for layer in layers:
             if not isinstance(layer, Layer):
                 try:
@@ -281,29 +281,36 @@ class Map(ResourceBase, GXPMapBase):
                     'base.view_resourcebase',
                     obj=layer.resourcebase_ptr):
                 # invisible layer, skip inclusion or raise Exception?
-                raise Exception(
+                logger.error(
                     'User %s tried to create a map with layer %s without having premissions' %
                     (user, layer))
-            MapLayer.objects.create(
-                map=self,
-                name=layer.alternate,
-                ows_url=layer.get_ows_url(),
-                stack_order=index,
-                visibility=True
-            )
-
-            index += 1
+            else:
+                _layers.append(layer)
 
         # Set bounding box based on all layers extents.
         # bbox format: [xmin, xmax, ymin, ymax]
-        bbox = self.get_bbox_from_layers(self.local_layers)
-
+        bbox = self.get_bbox_from_layers(_layers)
         self.set_bounds_from_bbox(bbox, self.projection)
 
-        self.set_missing_info()
+        # Save the map in order to create an id in the database
+        # used below for the maplayers.
+        self.save()
+
+        if _layers and len(_layers) > 0:
+            index = 0
+            for layer in _layers:
+                MapLayer.objects.create(
+                    map=self,
+                    name=layer.alternate,
+                    ows_url=layer.get_ows_url(),
+                    stack_order=index,
+                    visibility=True
+                )
+                index += 1
 
         # Save again to persist the zoom and bbox changes and
         # to generate the thumbnail.
+        self.set_missing_info()
         self.save()
 
     @property

@@ -160,7 +160,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         mock_wms.return_value[1].identification.title = ""
         handler = wms.WmsServiceHandler(self.phony_url)
         self.assertEqual(
-            handler.name, self.phony_url.replace("http://", "")[:40])
+            handler.name, slugify(self.phony_url)[:255])
 
     @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
                 autospec=True)

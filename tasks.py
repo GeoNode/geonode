@@ -84,6 +84,15 @@ def migrations(ctx):
 
 
 @task
+def statics(ctx):
+    print "**************************migrations*******************************"
+    ctx.run('mkdir -p /mnt/volumes/statics/{static,uploads}')
+    ctx.run("python manage.py collectstatic --noinput --clear --settings={0}".format(
+        _localsettings()
+    ), pty=True)
+
+
+@task
 def prepare(ctx):
     print "**********************prepare fixture***************************"
     ctx.run("rm -rf /tmp/default_oauth_apps_docker.json", pty=True)
@@ -99,6 +108,12 @@ def fixtures(ctx):
 --settings={0}".format(_localsettings()), pty=True)
     ctx.run("django-admin.py loaddata geonode/base/fixtures/initial_data.json \
 --settings={0}".format(_localsettings()), pty=True)
+
+
+@task
+def initialized(ctx):
+    print "**************************init file********************************"
+    ctx.run('date > /mnt/volumes/statics/geonode_init.lock')
 
 
 def _docker_host_ip():

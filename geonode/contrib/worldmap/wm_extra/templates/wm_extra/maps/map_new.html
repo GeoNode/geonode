@@ -2,11 +2,12 @@
 
 {% load i18n %}
 {% load base_tags %}
+{% load client_lib_tags %}
 
 {% block title %} {% trans "New Map" %} - {{ block.super }} {% endblock %}
 {% block head %}
 
-	{% include 'wm_extra/maps/worldmap.html' %}
+	{% get_map_new %}
 
 	{{ block.super }}
 {% endblock %}

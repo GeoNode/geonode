@@ -151,8 +151,10 @@ article.tab-pane {
 	}
 }
 .navbar-brand {
-	background: url(../img/logo.png) 0 10px no-repeat;
-	background-size: 100%;
+	background: url(../img/logo.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
 	text-indent: -9999px;
 	height: 65px;
 	width: 200px;
@@ -181,6 +183,7 @@ article.tab-pane {
 	  padding-bottom: 0;
 	}
 	.jumbotron {
+    position: relative;
 		background: @brand-primary;
 		color: white;
 		margin-bottom: 0;
@@ -281,7 +284,7 @@ article.tab-pane {
 			}
 		}
 		p {font-size: 18px;}
-	}
+  }
 }
 /* autocomplete
 ------------------------*/
@@ -328,6 +331,12 @@ article.tab-pane {
       text-decoration: none;
     }
   }
+}
+.partner_logo {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  height: 250px;
 }
 /* Items
 ----------------------- */
@@ -838,6 +847,21 @@ footer {
   }
   form {
 	  color: @text-color;
+  }
+}
+
+/* Copyright
+----------------------- */
+.footer-copyright {
+  padding: 30px 0;
+  .copyright {
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .copyright small {
+    text-transform: uppercase;
+    font-size: 14px;
   }
 }
 

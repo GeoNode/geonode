@@ -74,7 +74,6 @@
   };
 
   $(function() {
-
     $('#permissions-body').ready(function(){
       {% if resource %}
       $.ajax(
@@ -294,7 +293,6 @@
         return group.name;
     }
 
-
     var perms_submit = function() {
       var form = $(this);
       var action = form.attr("action");
@@ -339,8 +337,80 @@
     });
 
     {% if resource %}
-    $("#permission_form").submit(perms_submit);
+        $("#permission_form").submit(perms_submit);
     {% endif %}
+
+    $("#security_refresh").click(function(){
+        $.ajax(
+          {
+            type: "POST",
+            url: "{% url 'invalidate_permissions_cache' %}",
+            dataType: 'json',
+            data: { uuid: "{{ resource.uuid }}" },
+            success: function(data) {
+              $("#modal_perms").modal("hide");
+              message = data;
+              title = "";
+              body = message.message;
+              if (message.success) {
+                  title = "OK";
+              } else {
+                  title = "Warning";
+              }
+              $("#_permissions_feedbacks").find('.modal-title').text(title);
+              $("#_permissions_feedbacks").find('.modal-body').text(body);
+              $("#_permissions_feedbacks").modal("show");
+            },
+            cache: false
+          }
+        ).fail(function (jqXHR, textStatus, error) {
+              // Handle error here
+              $("#modal_perms").modal("hide");
+              message = JSON.parse(jqXHR.responseText);
+              body = message.message;
+              title = "Error";
+              $("#_permissions_feedbacks").find('.modal-title').text(title);
+              $("#_permissions_feedbacks").find('.modal-body').text(body);
+              $("#_permissions_feedbacks").modal("show");
+        });
+        return false;
+    });
+
+    $("#tiledlayer_refresh").click(function(){
+        $.ajax(
+          {
+            type: "POST",
+            url: "{% url 'invalidate_tiledlayer_cache' %}",
+            dataType: 'json',
+            data: { uuid: "{{ resource.uuid }}" },
+            success: function(data) {
+              $("#modal_perms").modal("hide");
+              message = data;
+              title = "";
+              body = message.message;
+              if (message.success) {
+                  title = "OK";
+              } else {
+                  title = "Warning";
+              }
+              $("#_permissions_feedbacks").find('.modal-title').text(title);
+              $("#_permissions_feedbacks").find('.modal-body').text(body);
+              $("#_permissions_feedbacks").modal("show");
+            },
+            cache: false
+          }
+        ).fail(function (jqXHR, textStatus, error) {
+              // Handle error here
+              $("#modal_perms").modal("hide");
+              message = JSON.parse(jqXHR.responseText);
+              body = message.message;
+              title = "Error";
+              $("#_permissions_feedbacks").find('.modal-title').text(title);
+              $("#_permissions_feedbacks").find('.modal-body').text(body);
+              $("#_permissions_feedbacks").modal("show");
+        });
+        return false;
+    });
 
     $("#_bulk_permissions").on('hidden.bs.modal', function (e) {
       $('#bulk_perms_message').addClass("hidden");

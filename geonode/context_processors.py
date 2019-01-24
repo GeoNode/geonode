@@ -195,6 +195,14 @@ def resource_urls(request):
 
         defaults['USE_GAZETTEER'] = settings.USE_GAZETTEER
 
+        defaults['GAZETTEER_SERVICES'] = getattr(
+            settings,
+            'GAZETTEER_SERVICES',
+            'worldmap,geonames,nominatim'
+        )
+
+        defaults['USE_GOOGLE_STREET_VIEW'] = settings.USE_GOOGLE_STREET_VIEW
+
         defaults['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
 
         defaults['GOOGLE_MAPS_API_KEY'] = settings.GOOGLE_MAPS_API_KEY

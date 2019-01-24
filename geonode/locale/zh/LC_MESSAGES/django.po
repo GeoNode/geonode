@@ -1141,13 +1141,6 @@ msgstr "明确"
 msgid "Upload Document"
 msgstr "上传文件"
 
-#: geonode/layers/templates/layers/layer_detail.html:460
-#: geonode/documents/templates/documents/document_upload.html:21
-#, fuzzy
-#| msgid "uploaded"
-msgid "Upload"
-msgstr "上传"
-
 #: geonode/documents/views.py:49
 msgid "You are not permitted to delete this document"
 msgstr "您无权删除此文件"
@@ -1994,6 +1987,10 @@ msgstr "样式"
 #: geonode/maps/templates/maps/map_detail.html:148
 msgid "Edit"
 msgstr "编辑"
+
+#: geonode/layers/templates/layers/layer_detail.html:349
+msgid "Upload"
+msgstr "上传"
 
 #: geonode/layers/templates/layers/layer_detail.html:350
 #: geonode/services/templates/services/service_detail.html:110
@@ -3042,6 +3039,13 @@ msgstr "您无权查看此地图。"
 #: geonode/maps/views.py:88
 msgid "An unknown error has occured."
 msgstr "未知出错。"
+
+#: geonode/maps/views.py:1377 geonode/layers/views.py:1316
+msgid "Thumbnail saved"
+msgstr "缩略图已保存"
+ #: geonode/maps/views.py:1380 geonode/layers/views.py:1319
+msgid "error saving thumbnail"
+msgstr "缩略图保存出错"
 
 #: geonode/people/__init__.py:26
 msgid "User following you"

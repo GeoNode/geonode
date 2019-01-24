@@ -58,10 +58,14 @@ from geonode.security.utils import get_visible_resources
 
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
-from .api import TagResource, RegionResource, OwnersResource
-from .api import ThesaurusKeywordResource
-from .api import TopicCategoryResource, GroupResource
-from .api import FILTER_TYPES
+from .api import (TagResource,
+                  RegionResource,
+                  OwnersResource,
+                  ThesaurusKeywordResource,
+                  TopicCategoryResource,
+                  GroupResource,
+                  FILTER_TYPES)
+from .paginator import CrossSiteXHRPaginator
 
 if settings.HAYSTACK_SEARCH:
     from haystack.query import SearchQuerySet  # noqa
@@ -138,6 +142,7 @@ class CommonModelApi(ModelResource):
         'bbox_y1',
         'category__gn_description',
         'supplemental_information',
+        'site_url',
         'thumbnail_url',
         'detail_url',
         'rating',
@@ -145,6 +150,7 @@ class CommonModelApi(ModelResource):
         'has_time',
         'is_approved',
         'is_published',
+        'dirty_state',
     ]
 
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
@@ -569,13 +575,16 @@ class CommonModelApi(ModelResource):
         """
         Format the objects for output in a response.
         """
-        if 'has_time' in self.VALUES:
-            idx = self.VALUES.index('has_time')
-            del self.VALUES[idx]
+        for key in ('site_url', 'has_time'):
+            if key in self.VALUES:
+                idx = self.VALUES.index(key)
+                del self.VALUES[idx]
         objects_json = objects.values(*self.VALUES)
 
         # hack needed because dehydrate does not seem to work in CommonModelApi
         for item in objects_json:
+            if 'site_url' not in item or len(item['site_url']) == 0:
+                item['site_url'] = settings.SITEURL
             if item['thumbnail_url'] and len(item['thumbnail_url']) == 0:
                 item['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
             if item['title'] and len(item['title']) == 0:
@@ -650,6 +659,7 @@ class ResourceBaseResource(CommonModelApi):
     """ResourceBase api"""
 
     class Meta(CommonMetaApi):
+        paginator_class = CrossSiteXHRPaginator
         queryset = ResourceBase.objects.polymorphic_queryset() \
             .distinct().order_by('-date')
         resource_name = 'base'
@@ -662,6 +672,7 @@ class FeaturedResourceBaseResource(CommonModelApi):
     """Only the featured resourcebases"""
 
     class Meta(CommonMetaApi):
+        paginator_class = CrossSiteXHRPaginator
         queryset = ResourceBase.objects.filter(featured=True).order_by('-date')
         resource_name = 'featured'
         authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
@@ -738,6 +749,9 @@ class LayerResource(CommonModelApi):
                     bundle)
             # Add resource uri
             formatted_obj['resource_uri'] = self.get_resource_uri(bundle)
+
+            if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
+                formatted_obj['site_url'] = settings.SITEURL
 
             # Probe Remote Services
             formatted_obj['store_type'] = 'dataset'
@@ -864,6 +878,7 @@ class LayerResource(CommonModelApi):
     VALUES.append('typename')
 
     class Meta(CommonMetaApi):
+        paginator_class = CrossSiteXHRPaginator
         queryset = Layer.objects.distinct().order_by('-date')
         resource_name = 'layers'
         detail_uri_name = 'id'
@@ -911,6 +926,9 @@ class MapResource(CommonModelApi):
             formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
             formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
 
+            if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
+                formatted_obj['site_url'] = settings.SITEURL
+
             # Probe Remote Services
             formatted_obj['store_type'] = 'map'
             formatted_obj['online'] = True
@@ -941,6 +959,7 @@ class MapResource(CommonModelApi):
         return formatted_objects
 
     class Meta(CommonMetaApi):
+        paginator_class = CrossSiteXHRPaginator
         queryset = Map.objects.distinct().order_by('-date')
         resource_name = 'maps'
         authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
@@ -977,6 +996,9 @@ class DocumentResource(CommonModelApi):
             formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
             formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
 
+            if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
+                formatted_obj['site_url'] = settings.SITEURL
+
             # Probe Remote Services
             formatted_obj['store_type'] = 'dataset'
             formatted_obj['online'] = True
@@ -985,6 +1007,7 @@ class DocumentResource(CommonModelApi):
         return formatted_objects
 
     class Meta(CommonMetaApi):
+        paginator_class = CrossSiteXHRPaginator
         filtering = CommonMetaApi.filtering
         filtering.update({'doc_type': ALL})
         queryset = Document.objects.distinct().order_by('-date')

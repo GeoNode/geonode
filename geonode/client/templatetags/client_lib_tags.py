@@ -99,6 +99,10 @@ class GeoNodeClientLibraryTag(template.Node):
             t = context.template.engine.get_template(
                 hookset.layer_download_template(
                     context=context))
+        elif self.tag_name == 'get_layer_style_edit':
+            t = context.template.engine.get_template(
+                hookset.layer_style_edit_template(
+                    context=context))
 
         # MAPS
         if self.tag_name == 'get_map_detail':
@@ -148,6 +152,7 @@ register.tag('get_layer_edit', do_get_client_library_template)
 register.tag('get_layer_update', do_get_client_library_template)
 register.tag('get_layer_embed', do_get_client_library_template)
 register.tag('get_layer_download', do_get_client_library_template)
+register.tag('get_layer_style_edit', do_get_client_library_template)
 
 register.tag('get_map_detail', do_get_client_library_template)
 register.tag('get_map_new', do_get_client_library_template)

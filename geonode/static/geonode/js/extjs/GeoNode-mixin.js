@@ -7,7 +7,6 @@ Ext.ns("GeoNode");
  *    an SDK app.
  */
 GeoNode.ComposerMixin = {
-
     /** private: method[checkLayerPermissions]
      *  :arg layerRecord: ``GeoExt.data.LayerRecord`` The currently selected layer.
      *  :arg layerTreeId: ``gxp.LayerTree`` or ``gxp.LayerManager`` The layer tree identifier.
@@ -41,7 +40,7 @@ GeoNode.ComposerMixin = {
                     layer.url.indexOf(app.localGeoServerBaseUrl.replace(app.urlPortRegEx, "$1/")) === 0)) {
                 Ext.Ajax.request({
                     /* TODO: use a template variable here if possible */
-                    url:"/gs/" + layer.params.LAYERS + "/edit-check",
+                    url: siteUrl + "gs/" + layer.params.LAYERS + "/edit-check",
                     method:"POST",
                     success:function (response) {
                         var result = Ext.decode(response.responseText);
