@@ -9,7 +9,33 @@ import functional from "app/utils/functional";
 import locationUtils from "app/utils/locationUtils";
 
 export default (() => {
-  const searchInstance = Search.create();
+  const searcher = Search.create();
+
+  /*
+    `syncScope` is used as a shim while AngularJS is being phased out of
+    the project. The `Search` instance is the single source of truth for
+    search state, and the AngularJS $scope object is synced to the instance's
+    data model after the query is executed in order to update the view.
+  */
+
+  const syncScope = ($scope, searcher) => {
+    $scope.page = searcher.get("currentPage");
+    $scope.query = searcher.get("query");
+    $scope.results = searcher.get("results");
+    $scope.total_counts = searcher.get("resultCount");
+    console.log("RESULTS", searcher.get("results"));
+    setTimeout(() => {
+      if (locationUtils.paramExists("title__icontains")) {
+        $scope.text_query = locationUtils
+          .getUrlParam("title__icontains")
+          .replace(/\+/g, " ");
+      }
+    }, 10);
+    if (!$scope.$$phase) {
+      $scope.$apply();
+    }
+  };
+
   const module = angular.module(
     "geonode_main_search",
     [],
@@ -132,67 +158,66 @@ export default (() => {
     $location,
     Configs
   ) {
-    $scope.query = $location.search();
-    $scope.query.limit = searchInstance.setQueryProp(
+    searcher.set("query", locationUtils.getUrlParams());
+    searcher.setQueryProp(
       "limit",
-      $scope.query.limit || CLIENT_RESULTS_LIMIT
+      searcher.getQueryProp("limit") || CLIENT_RESULTS_LIMIT
     );
-    $scope.query.offset = searchInstance.setQueryProp(
-      "offset",
-      $scope.query.limit || 9
-    );
-    $scope.page = searchInstance.set(
+    searcher.setQueryProp("offset", searcher.getQueryProp("offset") || 9);
+    searcher.set(
       "currentPage",
-      Math.round($scope.query.offset / $scope.query.limit + 1)
+      Math.round(
+        searcher.getQueryProp("offset") / searcher.getQueryProp("limit") + 1
+      )
     );
 
     //Get data from apis and make them available to the page
     function query_api(params) {
-      searchInstance.search(Configs.url, params).then(data => {
+      searcher.search(Configs.url, params).then(data => {
+        console.log("!!!PARAMS, DATA", params, data);
         setTimeout(() => {
           $('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();
-          if (locationUtils.paramExists("title__icontains")) {
-            $scope.text_query = locationUtils
-              .getUrlParam("title__icontains")
-              .replace(/\+/g, " ");
-          }
-          $scope.$apply();
         });
-        $scope.results = searchInstance.get("results");
-        $scope.total_counts = searchInstance.get("resultCount");
-        $scope.$apply();
+        syncScope($scope, searcher);
       });
     }
-    query_api($scope.query);
+    query_api(searcher.get("query"));
 
     /*
     * Pagination
     */
     // Control what happens when the total results change
-    $scope.$watch("total_counts", function() {
-      let numpages = searchInstance.calculateNumberOfPages(
-        $scope.total_counts,
-        $scope.query.limit
+    const handleResultChange = () => {
+      let numpages = searcher.calculateNumberOfPages(
+        searcher.get("resultCount"),
+        searcher.getQueryProp("limit")
       );
-      $scope.numpages = searchInstance.set("numberOfPages", numpages);
+      searcher.set("numberOfPages", numpages);
       // In case the user is viewing a page > 1 and a
       // subsequent query returns less pages, then
       // reset the page to one and search again.
-      if ($scope.numpages < $scope.page) {
-        $scope.page = 1;
-        $scope.query.offset = 0;
-        query_api($scope.query);
+      if (searcher.get("numberOfPages") < searcher.get("currentPage")) {
+        searcher.set("currentPage", 1);
+        searcher.setQueryProp("offset", 0);
+        query_api(searcher.get("query"));
       }
 
       // In case of no results, the number of pages is one.
-      if ($scope.numpages == 0) {
-        $scope.numpages = 1;
+      if (searcher.get("numberOfPages") === 0) {
+        searcher.set("numberOfPages", 1);
       }
-    });
+      syncScope($scope, searcher);
+    };
+
+    $scope.$watch("total_counts", handleResultChange);
 
     $scope.paginate_down = function() {
-      if ($scope.page > 1) {
-        $scope.page -= 1;
+      if (searcher.get("currentPage") > 1) {
+        searcher.decrementCurrentPage();
+        searcher.setQueryProp(
+          "offset",
+          searcher.getQueryProp("limit") * searcher.get("currentPage") - 1
+        );
         $scope.query.offset = $scope.query.limit * ($scope.page - 1);
         query_api($scope.query);
       }
@@ -200,11 +225,13 @@ export default (() => {
 
     $scope.paginate_up = function() {
       if ($scope.numpages > $scope.page) {
-        $scope.page += 1;
+        $scope.page = searcher.incrementCurrentPage();
         $scope.query.offset = $scope.query.limit * ($scope.page - 1);
         query_api($scope.query);
       }
     };
+
+    $scope.page = searcher.get("currentPage");
     /*
     * End pagination
     */

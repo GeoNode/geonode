@@ -1,8 +1,10 @@
 import searchHelpers from "app/search/helpers/searchHelpers";
+import PubSub from "pubsub-js";
 
-function create() {
+function create(searchURL) {
   const defaultState = {
     currentPage: 0,
+    searchURL,
     numberOfPages: 1,
     resultCount: 0,
     results: [],
@@ -32,10 +34,6 @@ function create() {
       return state[prop];
     },
     setQueryProp: (prop, val) => {
-      if (!exists(state.query, prop)) {
-        logError(`query.${prop}`);
-        return false;
-      }
       state.query[prop] = val;
       return state.query[prop];
     },
@@ -47,14 +45,34 @@ function create() {
       state = { ...defaultState };
     },
     getCurrentPage: () => state.currentPage,
+    incrementCurrentPage: () => {
+      state.currentPage += 1;
+      return state.currentPage;
+    },
+    decrementCurrentPage: () => {
+      state.currentPage -= 1;
+      return state.currentPage;
+    },
     calculateNumberOfPages: (totalResults, limit) => {
       const n = Math.round(totalResults / limit + 0.49);
       return n === 0 ? 1 : n;
     },
-    search: (url, params) =>
+    paginateDown: () => {
+      if (module.get("currentPage") > 1) {
+        module.decrementCurrentPage();
+        module.setQueryProp(
+          "offset",
+          module.getQueryProp("limit") * module.get("currentPage") - 1
+        );
+        module.search();
+      }
+    },
+    search: (url, query) =>
       new Promise(res => {
-        searchHelpers.fetch(url, params).then(data => {
+        searchHelpers.fetch(url, query).then(data => {
+          console.log("!!!!DATA", data);
           module.setStateFromData(data);
+          PubSub.publish("searchComplete", data);
           res(data);
         });
       }),
