@@ -8,6 +8,7 @@ function create(searchURL) {
     numberOfPages: 1,
     resultCount: 0,
     results: [],
+    queryValue: "",
     query: {
       limit: 1,
       offset: 0
@@ -70,7 +71,6 @@ function create(searchURL) {
     search: (url, query) =>
       new Promise(res => {
         searchHelpers.fetch(url, query).then(data => {
-          console.log("!!!!DATA", data);
           module.setStateFromData(data);
           PubSub.publish("searchComplete", data);
           res(data);

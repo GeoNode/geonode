@@ -15,7 +15,7 @@ const curry = fn => {
 };
 
 const trace = (label, value) => {
-  // eslint-disable-next-line no-console
+  // eslint-disable-next-line
   console.log(`${label}: ${value}`);
   return value;
 };

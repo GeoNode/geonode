@@ -1,11 +1,10 @@
-/* eslint-disable */
-
 import Search from "app/search/components/Search";
 import PubSub from "pubsub-js";
 import SelectionTree from "app/search/components/SelectionTree";
-import TextSearch from "app/search/components/TextSearch";
+import TextSearchForm from "app/search/components/TextSearchForm";
 import searchHelpers from "app/search/helpers/searchHelpers";
 import functional from "app/utils/functional";
+import angularShim from "app/utils/angularShim";
 import locationUtils from "app/utils/locationUtils";
 
 export default (() => {
@@ -18,28 +17,13 @@ export default (() => {
     data model after the query is executed in order to update the view.
   */
 
-  const sync = functional.curry((mapping, $scope, obj2) => {
-    for (let i = 0; i < mapping.length; i += 1) {
-      $scope[mapping[i][0]] = obj2.get([mapping[i][1]]);
-    }
-    setTimeout(() => {
-      if (locationUtils.paramExists("title__icontains")) {
-        $scope.text_query = locationUtils
-          .getUrlParam("title__icontains")
-          .replace(/\+/g, " ");
-      }
-    }, 10);
-    if (!$scope.$$phase) {
-      $scope.$apply();
-    }
-  });
-
-  const syncScope = sync([
+  const syncScope = angularShim.syncScope([
     ["page", "currentPage"],
     ["query", "query"],
     ["results", "results"],
     ["total_counts", "resultCount"],
-    ["numpages", "numberOfPages"]
+    ["numpages", "numberOfPages"],
+    ["text_query", "queryValue"]
   ]);
 
   const module = angular.module(
@@ -177,12 +161,33 @@ export default (() => {
       )
     );
 
-    //Get data from apis and make them available to the page
+    /*
+    * Text search management
+    */
+
+    const textSearchInstance = TextSearchForm.init({
+      url: AUTOCOMPLETE_URL_RESOURCEBASE,
+      id: "text_search"
+    });
+
+    PubSub.subscribe("textSearchClick", (event, data) => {
+      searcher.setQueryProp(data.key, data.val);
+      query_api(searcher.get("query"));
+    });
+
+    // Get data from apis and make them available to the page
     function query_api(params) {
       searcher.search(Configs.url, params).then(data => {
         setTimeout(() => {
           $('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();
         });
+        const queryValue = (textSearchInstance.getFormVal()
+          ? textSearchInstance.getFormVal()
+          : locationUtils.paramExists("title__icontains")
+            ? locationUtils.getUrlParam("title__icontains")
+            : ""
+        ).replace(/\+/g, " ");
+        searcher.set("queryValue", queryValue);
         syncScope($scope, searcher);
       });
     }
@@ -384,21 +389,6 @@ export default (() => {
         query_api($scope.query);
       }
     };
-
-    /*
-    * Text search management
-    */
-
-    TextSearch.init({
-      url: AUTOCOMPLETE_URL_RESOURCEBASE,
-      id: "text_search"
-    });
-
-    PubSub.subscribe("textSearchClick", (event, data) => {
-      console.log("!SEARCH", data);
-      $scope.query[data.key] = data.val;
-      query_api($scope.query);
-    });
 
     /*
     * Region search management
