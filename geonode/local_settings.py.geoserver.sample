@@ -29,6 +29,19 @@ import os
 from urlparse import urlparse, urlunparse
 from geonode.settings import *
 
+# Require users to authenticate before using Geonode
+LOCKDOWN_GEONODE = strtobool(os.getenv('LOCKDOWN_GEONODE', 'False'))
+
+# Require users to authenticate before using Geonode
+if LOCKDOWN_GEONODE:
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
+        ('geonode.security.middleware.LoginRequiredMiddleware',)
+
+# Add additional paths (as regular expressions) that don't require
+# authentication.
+# - authorized exempt urls needed for oauth when GeoNode is set to lockdown
+AUTH_EXEMPT_URLS = (r'^/?$', '/gs/*', '/static/*', '/api/o/*', '/api/roles', '/api/adminRole', '/api/users',)
+
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(PROJECT_ROOT, "uploaded"))
