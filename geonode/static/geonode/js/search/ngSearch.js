@@ -18,12 +18,10 @@ export default (() => {
     data model after the query is executed in order to update the view.
   */
 
-  const syncScope = ($scope, searcher) => {
-    $scope.page = searcher.get("currentPage");
-    $scope.query = searcher.get("query");
-    $scope.results = searcher.get("results");
-    $scope.total_counts = searcher.get("resultCount");
-    console.log("RESULTS", searcher.get("results"));
+  const sync = functional.curry((mapping, $scope, obj2) => {
+    for (let i = 0; i < mapping.length; i += 1) {
+      $scope[mapping[i][0]] = obj2.get([mapping[i][1]]);
+    }
     setTimeout(() => {
       if (locationUtils.paramExists("title__icontains")) {
         $scope.text_query = locationUtils
@@ -34,7 +32,15 @@ export default (() => {
     if (!$scope.$$phase) {
       $scope.$apply();
     }
-  };
+  });
+
+  const syncScope = sync([
+    ["page", "currentPage"],
+    ["query", "query"],
+    ["results", "results"],
+    ["total_counts", "resultCount"],
+    ["numpages", "numberOfPages"]
+  ]);
 
   const module = angular.module(
     "geonode_main_search",

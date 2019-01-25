@@ -5,8 +5,14 @@ const compose = (...fns) =>
 
 const pipe = (...fns) => compose(...fns.reverse());
 
-const curry = (f, arr = []) => (...args) => a =>
-  a.length === f.length ? f(...a) : curry(f, a)([...arr, ...args]);
+const curry = fn => {
+  const curryN = (n, func) => (...args) =>
+    args.length >= n
+      ? func(...args)
+      : curryN(n - args.length, (...innerArgs) => func(...args, ...innerArgs));
+
+  return curryN(fn.length, fn);
+};
 
 const trace = (label, value) => {
   // eslint-disable-next-line no-console
