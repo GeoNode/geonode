@@ -10,7 +10,7 @@ function create(searchURL) {
     results: [],
     query: {
       limit: 1,
-      offset: 1
+      offset: 0
     }
   };
 

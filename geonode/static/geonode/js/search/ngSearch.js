@@ -163,7 +163,7 @@ export default (() => {
       "limit",
       searcher.getQueryProp("limit") || CLIENT_RESULTS_LIMIT
     );
-    searcher.setQueryProp("offset", searcher.getQueryProp("offset") || 9);
+    searcher.setQueryProp("offset", searcher.getQueryProp("offset") || 0);
     searcher.set(
       "currentPage",
       Math.round(
@@ -174,7 +174,6 @@ export default (() => {
     //Get data from apis and make them available to the page
     function query_api(params) {
       searcher.search(Configs.url, params).then(data => {
-        console.log("!!!PARAMS, DATA", params, data);
         setTimeout(() => {
           $('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();
         });
@@ -218,8 +217,7 @@ export default (() => {
           "offset",
           searcher.getQueryProp("limit") * searcher.get("currentPage") - 1
         );
-        $scope.query.offset = $scope.query.limit * ($scope.page - 1);
-        query_api($scope.query);
+        query_api(searcher.get("query"));
       }
     };
 
