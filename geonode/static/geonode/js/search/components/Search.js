@@ -1,7 +1,7 @@
 import searchHelpers from "app/search/helpers/searchHelpers";
 import PubSub from "pubsub-js";
 
-const Search = ({ searchURL = "/api/base/" }) => {
+const Search = ({ searchURL = "/api/base/" } = {}) => {
   const defaultState = {
     currentPage: 0,
     searchURL,
@@ -68,9 +68,9 @@ const Search = ({ searchURL = "/api/base/" }) => {
         api.search();
       }
     },
-    search: (url, query) =>
+    search: query =>
       new Promise(res => {
-        searchHelpers.fetch(url, query).then(data => {
+        searchHelpers.fetch(api.get("searchURL"), query).then(data => {
           api.setStateFromData(data);
           PubSub.publish("searchComplete", data);
           res(data);

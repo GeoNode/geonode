@@ -7,7 +7,9 @@ import angularShim from "app/utils/angularShim";
 import locationUtils from "app/utils/locationUtils";
 
 export default (() => {
-  const searcher = Search();
+  const searcher = Search({
+    searchURL: "/api/base/"
+  });
 
   /*
     `syncScope` is used as a shim while AngularJS is being phased out of
@@ -29,7 +31,7 @@ export default (() => {
     "geonode_main_search",
     [],
     $locationProvider => {
-      if (window.navigator.userAgent.indexOf("MSIE") == -1) {
+      if (window.navigator.userAgent.indexOf("MSIE") === -1) {
         $locationProvider.html5Mode({
           enabled: true,
           requireBase: false
@@ -183,7 +185,7 @@ export default (() => {
 
     // Get data from apis and make them available to the page
     function query_api(params) {
-      searcher.search(Configs.url, params).then(data => {
+      searcher.search(params).then(data => {
         setTimeout(() => {
           $('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();
         });
