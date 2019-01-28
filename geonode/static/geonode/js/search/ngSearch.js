@@ -229,24 +229,9 @@ export default (() => {
 
     $scope.$watch("total_counts", handleResultChange);
 
-    $scope.paginate_down = function() {
-      if (searcher.get("currentPage") > 1) {
-        searcher.decrementCurrentPage();
-        searcher.setQueryProp(
-          "offset",
-          searcher.getQueryProp("limit") * searcher.get("currentPage") - 1
-        );
-        query_api(searcher.get("query"));
-      }
-    };
+    $scope.paginate_down = searcher.paginateDown;
 
-    $scope.paginate_up = function() {
-      if ($scope.numpages > $scope.page) {
-        $scope.page = searcher.incrementCurrentPage();
-        $scope.query.offset = $scope.query.limit * ($scope.page - 1);
-        query_api($scope.query);
-      }
-    };
+    $scope.paginate_up = searcher.paginateUp;
 
     $scope.page = searcher.get("currentPage");
     /*

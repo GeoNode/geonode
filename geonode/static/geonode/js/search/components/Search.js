@@ -58,6 +58,14 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
       const n = Math.round(totalResults / limit + 0.49);
       return n === 0 ? 1 : n;
     },
+    paginateUp: () => {
+      if (api.get("numberOfPages") > api.get("currentPage")) {
+        api.incrementCurrentPage();
+        const offset = api.getQueryProp("limit") * (api.get("currentPage") - 1);
+        api.setQueryProp("offset", offset);
+        api.search();
+      }
+    },
     paginateDown: () => {
       if (api.get("currentPage") > 1) {
         api.decrementCurrentPage();
@@ -68,7 +76,7 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
         api.search();
       }
     },
-    search: query =>
+    search: (query = api.get("query")) =>
       new Promise(res => {
         searchHelpers.fetch(api.get("searchURL"), query).then(data => {
           api.setStateFromData(data);
