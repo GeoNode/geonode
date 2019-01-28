@@ -39,12 +39,12 @@ from geonode.utils import bbox_to_wkt
 
 from geoserver.catalog import Catalog
 
+username = settings.OGC_SERVER['default']['USER']
+password = settings.OGC_SERVER['default']['PASSWORD']
 
-# the data_edit_schema and the data_edit functions are used in edit_data front page in order to display all data
+
 def data_display_schema(name, layers_attributes, ctx):
     # geoserver parameters
-    username = settings.OGC_SERVER['default']['USER']
-    password = settings.OGC_SERVER['default']['PASSWORD']
     location = "{location}{service}".format(** {
         'location': settings.OGC_SERVER['default']['LOCATION'],
         'service': 'wms',
@@ -123,13 +123,9 @@ def save_added_row(layer_name, feature_type, data_dict):
     xml_path = "edit_data/wfs_describe_feature.xml"
     workspace = settings.DEFAULT_WORKSPACE
     xmlstr = get_template(xml_path).render({
-                'layer_name': layer_name,
-                'workspace': workspace
-                }
-            ).strip()
+        'layer_name': layer_name, 'workspace': workspace}).strip()
+
     url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
-    username = settings.OGC_SERVER['default']['USER']
-    password = settings.OGC_SERVER['default']['PASSWORD']
     describe_feature_response = requests.post(url, data=xmlstr, headers=headers, auth=(username, password)).text
 
     xml = bytes(bytearray(describe_feature_response, encoding='utf-8'))
@@ -207,8 +203,7 @@ def save_edits(layer_name, feature_id, data_dict):
 
     headers = {'Content-Type': 'application/xml'}  # set what your server accepts
 
-    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
-
+    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(username, password)).status_code
     if (status_code != 200):
         message = "Failed to save edited data."
         success = False
@@ -225,15 +220,15 @@ def save_geom_edits(layer_name, feature_id, coords):
     workspace = settings.DEFAULT_WORKSPACE
     xml_path = "edit_data/wfs_edit_point_geom.xml"
     xmlstr = get_template(xml_path).render({
-            'layer_name': layer_name,
-            'workspace': workspace,
-            'coords': coords,
-            'feature_id': feature_id,
-            'geometry_clm': geometry_clm}).strip()
+        'layer_name': layer_name,
+        'workspace': workspace,
+        'coords': coords,
+        'feature_id': feature_id,
+        'geometry_clm': geometry_clm}).strip()
 
     url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
-    headers = {'Content-Type': 'application/xml'} # set what your server accepts
-    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
+    headers = {'Content-Type': 'application/xml'}
+    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(username, password)).status_code
 
     status_code_bbox, status_code_seed = update_bbox_and_seed(headers, layer_name, store_name)
 
@@ -248,7 +243,6 @@ def save_geom_edits(layer_name, feature_id, coords):
 
 
 def delete_selected_row(layer_name, feature_id):
-
     xml_path = "edit_data/wfs_delete_row.xml"
     workspace = settings.DEFAULT_WORKSPACE
     xmlstr = get_template(xml_path).render({
@@ -258,7 +252,7 @@ def delete_selected_row(layer_name, feature_id):
 
     url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs'
     headers = {'Content-Type': 'application/xml'}  # set what your server accepts
-    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
+    status_code = requests.post(url, data=xmlstr, headers=headers, auth=(username, password)).status_code
 
     if (status_code != 200):
         message = "Failed to delete row."
@@ -277,13 +271,14 @@ def delete_selected_row(layer_name, feature_id):
 # Returns status_code of each request
 def update_bbox_and_seed(headers, layer_name, store_name):
     # Update the BBOX of layer in geoserver (use of recalculate)
-    url = settings.OGC_SERVER['default']['LOCATION'] + "rest/workspaces/geonode/datastores/{store_name}/featuretypes/{layer_name}.xml?recalculate=nativebbox,latlonbbox".format(** {
-        'store_name': store_name.strip(),
-        'layer_name': layer_name
-    })
+    url = settings.OGC_SERVER['default']['LOCATION'] \
+    + '{store_name}/featuretypes/{layer_name}.xml?recalculate=nativebbox,latlonbbox' \
+    .format(**{
+        'store_name': 'rest/workspaces/geonode/datastores/' + store_name.strip(),
+        'layer_name': layer_name})
 
     xmlstr = """<featureType><enabled>true</enabled></featureType>"""
-    status_code_bbox = requests.put(url, headers=headers, data=xmlstr, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
+    status_code_bbox = requests.put(url, headers=headers, data=xmlstr, auth=(username, password)).status_code
 
     # Seed the cache for this layer
     url = settings.OGC_SERVER['default']['LOCATION'] + "gwc/rest/seed/geonode:{layer_name}.xml".format(** {
@@ -291,32 +286,35 @@ def update_bbox_and_seed(headers, layer_name, store_name):
     })
     xml_path = "edit_data/seedRequest_geom.xml"
     xmlstr = get_template(xml_path).render({
-            'workspace': 'geonode',
-            'layer_name': layer_name
-            })
-    status_code_seed = requests.post(url, data=xmlstr, headers=headers, auth=(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])).status_code
+        'workspace': 'geonode', 'layer_name': layer_name})
+    status_code_seed = requests.post(url, data=xmlstr, headers=headers, auth=(username, password)).status_code
     return status_code_bbox, status_code_seed
 
 
 # Update the values for BBOX in CSW with the values calculated in geoserver layer
 def update_bbox_in_CSW(layer, layer_name):
-
     # Get the coords from geoserver layer and update the base_resourceBase table
-    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
+    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", username, password)
     resource = cat.get_resource(layer_name, workspace="geonode")
     # use bbox_to_wkt to convert the BBOX coords to the wkt format
-    r = bbox_to_wkt(resource.latlon_bbox[0], resource.latlon_bbox[1], resource.latlon_bbox[2], resource.latlon_bbox[3], "4326")
+    r = bbox_to_wkt(
+        resource.latlon_bbox[0], resource.latlon_bbox[1], resource.latlon_bbox[2], resource.latlon_bbox[3], "4326")
     csw_wkt_geometry = r.split(";", 1)[1]
     # update the base_resourceBase
     resources = ResourceBase.objects.filter(pk=layer.id)
-    resources.update(bbox_x0=resource.latlon_bbox[0], bbox_x1=resource.latlon_bbox[1], bbox_y0=resource.latlon_bbox[2], bbox_y1=resource.latlon_bbox[3], csw_wkt_geometry=csw_wkt_geometry)
+    resources.update(
+        bbox_x0=resource.latlon_bbox[0],
+        bbox_x1=resource.latlon_bbox[1],
+        bbox_y0=resource.latlon_bbox[2],
+        bbox_y1=resource.latlon_bbox[3],
+        csw_wkt_geometry=csw_wkt_geometry)
 
     return csw_wkt_geometry
 
 
 #  Returns the store name based on the workspace and the layer name
 def get_store_name(layer_name):
-    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
+    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", username, password)
     resource = cat.get_resource(layer_name, workspace='geonode')
     store_name = resource.store.name
 

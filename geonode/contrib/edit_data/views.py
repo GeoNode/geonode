@@ -17,13 +17,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
-from .utils import data_display, data_display_schema, delete_selected_row, update_bbox_in_CSW, save_geom_edits, save_edits, save_added_row
+from utils import data_display, data_display_schema, \
+    delete_selected_row, update_bbox_in_CSW, save_geom_edits, \
+    save_edits, save_added_row
 
 
 @login_required
@@ -55,7 +58,11 @@ def display_data(request, layername, template='edit_data/edit_data.html'):
         attribute_description[value] = description[0]['description']
         display_order_dict[value] = display_order[0]['display_order']
 
-    context_dict = data_display(name, wfs, layers_attributes, attribute_description, display_order_dict, filtered_attributes, ctx)
+    context_dict = data_display(
+        name, wfs, layers_attributes,
+        attribute_description,
+        display_order_dict,
+        filtered_attributes, ctx)
 
     return render(request, template, context_dict)
 
