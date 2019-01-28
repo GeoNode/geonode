@@ -611,8 +611,13 @@ g+gp5fQ4nmDrSNHjakzQCX2mKMsx/GLWZzoIDd7ECV9f
 # 1 day expiration time by default
 ACCESS_TOKEN_EXPIRE_SECONDS = int(os.getenv('ACCESS_TOKEN_EXPIRE_SECONDS', '86400'))
 
-# authorized exempt urls needed for oauth when GeoNode is set to lockdown
-AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users',)
+# Require users to authenticate before using Geonode
+LOCKDOWN_GEONODE = strtobool(os.getenv('LOCKDOWN_GEONODE', 'False'))
+
+# Add additional paths (as regular expressions) that don't require
+# authentication.
+# - authorized exempt urls needed for oauth when GeoNode is set to lockdown
+AUTH_EXEMPT_URLS = (r'^/?$', '/gs/*', '/static/*', '/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/api/layers',)
 
 ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID', '-1')
 GUARDIAN_GET_INIT_ANONYMOUS_USER = os.getenv(
@@ -1038,13 +1043,6 @@ SRID = {
 }
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
-
-# Require users to authenticate before using Geonode
-LOCKDOWN_GEONODE = strtobool(os.getenv('LOCKDOWN_GEONODE', 'False'))
-
-# Add additional paths (as regular expressions) that don't require
-# authentication.
-AUTH_EXEMPT_URLS = ()
 
 # A tuple of hosts the proxy can send requests to.
 PROXY_ALLOWED_HOSTS = ()
