@@ -1582,8 +1582,6 @@ class LayersStylesApiInteractionTests(
         objects = self.deserialize(resp)['objects']
         self.assertEqual(len(objects), 1)
         obj = objects[0]
-        # Should not have links
-        self.assertFalse('links' in obj)
         # Should not have styles
         self.assertTrue('styles' not in obj)
         # Should have default_style
