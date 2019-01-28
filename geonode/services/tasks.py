@@ -62,7 +62,7 @@ def harvest_resource(self, harvest_job_id):
         try:
             layer = Layer.objects.get(alternate=harvest_job.resource_id)
             catalogue_post_save(instance=layer, sender=layer.__class__)
-        except:
+        except BaseException:
             logger.error("Remote Layer [%s] couldn't be updated" % (harvest_job.resource_id))
     except Exception as err:
         logger.exception(msg="An error has occurred while harvesting "
