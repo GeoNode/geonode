@@ -3,12 +3,11 @@ import PubSub from "pubsub-js";
 import SelectionTree from "app/search/components/SelectionTree";
 import TextSearchForm from "app/search/components/TextSearchForm";
 import searchHelpers from "app/search/helpers/searchHelpers";
-import functional from "app/utils/functional";
 import angularShim from "app/utils/angularShim";
 import locationUtils from "app/utils/locationUtils";
 
 export default (() => {
-  const searcher = Search.create();
+  const searcher = Search();
 
   /*
     `syncScope` is used as a shim while AngularJS is being phased out of
@@ -43,10 +42,10 @@ export default (() => {
   );
 
   module.load_h_keywords = () => {
-    var params =
+    const params =
       typeof FILTER_TYPE === "undefined" ? {} : { type: FILTER_TYPE };
-    searchHelpers.fetch(H_KEYWORDS_ENDPOINT, { params: params }).then(data => {
-      SelectionTree.init({
+    searchHelpers.fetch(H_KEYWORDS_ENDPOINT, { params }).then(data => {
+      SelectionTree({
         id: "treeview",
         data,
         eventId: "h_keyword"
@@ -94,6 +93,13 @@ export default (() => {
       {
         id: "tkeywords",
         endpoint: T_KEYWORDS_ENDPOINT,
+        requestParam: "title__icontains",
+        filterParam: "tkeywords__id__in",
+        alias: "id"
+      },
+      {
+        id: "tkeywords",
+        endpoint: H_KEYWORDS_ENDPOINT,
         requestParam: "title__icontains",
         filterParam: "tkeywords__id__in",
         alias: "id"
@@ -165,7 +171,7 @@ export default (() => {
     * Text search management
     */
 
-    const textSearchInstance = TextSearchForm.init({
+    const textSearchInstance = TextSearchForm({
       url: AUTOCOMPLETE_URL_RESOURCEBASE,
       id: "text_search"
     });

@@ -1,7 +1,7 @@
 import searchHelpers from "app/search/helpers/searchHelpers";
 import PubSub from "pubsub-js";
 
-function create(searchURL) {
+const Search = ({ searchURL = "/api/base/" }) => {
   const defaultState = {
     currentPage: 0,
     searchURL,
@@ -23,7 +23,7 @@ function create(searchURL) {
   };
 
   const exists = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
-  const module = {
+  const api = {
     inspect: () => state,
     get: prop => state[prop],
     set: (prop, val) => {
@@ -59,31 +59,29 @@ function create(searchURL) {
       return n === 0 ? 1 : n;
     },
     paginateDown: () => {
-      if (module.get("currentPage") > 1) {
-        module.decrementCurrentPage();
-        module.setQueryProp(
+      if (api.get("currentPage") > 1) {
+        api.decrementCurrentPage();
+        api.setQueryProp(
           "offset",
-          module.getQueryProp("limit") * module.get("currentPage") - 1
+          api.getQueryProp("limit") * api.get("currentPage") - 1
         );
-        module.search();
+        api.search();
       }
     },
     search: (url, query) =>
       new Promise(res => {
         searchHelpers.fetch(url, query).then(data => {
-          module.setStateFromData(data);
+          api.setStateFromData(data);
           PubSub.publish("searchComplete", data);
           res(data);
         });
       }),
     setStateFromData(data) {
-      module.set("results", data.objects);
-      module.set("resultCount", parseInt(data.meta.total_count, 10));
+      api.set("results", data.objects);
+      api.set("resultCount", parseInt(data.meta.total_count, 10));
     }
   };
-  return module;
-}
-
-export default {
-  create
+  return api;
 };
+
+export default Search;

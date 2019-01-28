@@ -14,9 +14,19 @@ const module = {
     filterType,
     requestParam,
     filterParam,
-    alias
+    alias,
+    customCallback
   }) =>
     new Promise(res => {
+      const cb = data => {
+        if (locationUtils.paramExists(filterParam)) {
+          data.objects = module.setInitialFiltersFromQuery(
+            data.objects,
+            locationUtils.getUrlParam(filterParam),
+            alias
+          );
+        }
+      };
       requestParam = requestParam || "title__icontains";
       const params =
         typeof filterType === "undefined" ? {} : { type: filterType };
@@ -25,13 +35,8 @@ const module = {
         params[requestParam] = locationUtils.getUrlParam(requestParam);
       }
       module.fetch(endpoint, { params }).then(data => {
-        if (locationUtils.paramExists(filterParam)) {
-          data.objects = module.setInitialFiltersFromQuery(
-            data.objects,
-            locationUtils.getUrlParam(filterParam),
-            alias
-          );
-        }
+        if (customCallback) customCallback(data);
+        else cb(data);
         res(data.objects);
       });
     }),

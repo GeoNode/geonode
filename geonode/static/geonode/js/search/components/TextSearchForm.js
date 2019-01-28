@@ -1,6 +1,6 @@
 import PubSub from "pubsub-js";
 
-const init = ({ url, id }) => {
+const TextSearchForm = ({ url, id }) => {
   const module = {
     url,
     id,
@@ -53,6 +53,4 @@ const init = ({ url, id }) => {
   return module;
 };
 
-export default {
-  init
-};
+export default TextSearchForm;

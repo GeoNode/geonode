@@ -1,6 +1,6 @@
 import PubSub from "pubsub-js";
 
-const init = ({ id, data, eventId }) => {
+const SelectionTree = ({ id, data, eventId }) => {
   const $id = $(`#${id}`);
   $id.treeview({
     data,
@@ -25,6 +25,4 @@ const init = ({ id, data, eventId }) => {
   });
 };
 
-export default {
-  init
-};
+export default SelectionTree;
