@@ -40,7 +40,7 @@ if LOCKDOWN_GEONODE:
 # Add additional paths (as regular expressions) that don't require
 # authentication.
 # - authorized exempt urls needed for oauth when GeoNode is set to lockdown
-AUTH_EXEMPT_URLS = (r'^/?$', '/gs/*', '/static/*', '/api/o/*', '/api/roles', '/api/adminRole', '/api/users',)
+AUTH_EXEMPT_URLS = (r'^/?$', '/gs/*', '/static/*', '/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/api/layers',)
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 

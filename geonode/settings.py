@@ -617,7 +617,7 @@ LOCKDOWN_GEONODE = strtobool(os.getenv('LOCKDOWN_GEONODE', 'False'))
 # Add additional paths (as regular expressions) that don't require
 # authentication.
 # - authorized exempt urls needed for oauth when GeoNode is set to lockdown
-AUTH_EXEMPT_URLS = (r'^/?$', '/gs/*', '/static/*', '/api/o/*', '/api/roles', '/api/adminRole', '/api/users',)
+AUTH_EXEMPT_URLS = (r'^/?$', '/gs/*', '/static/*', '/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/api/layers',)
 
 ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID', '-1')
 GUARDIAN_GET_INIT_ANONYMOUS_USER = os.getenv(
