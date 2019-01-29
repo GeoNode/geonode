@@ -90,6 +90,8 @@ def geoserver_post_save(instance, sender, **kwargs):
         instance_dict = model_to_dict(instance)
         payload = json_serializer_producer(instance_dict)
         producer.geoserver_upload_layer(payload)
+        if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+            instance.set_dirty_state()
         logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
         try:
             create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
@@ -275,7 +277,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if settings.RESOURCE_PUBLISHING:
         if instance.is_published != gs_resource.advertised:
             if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-                gs_resource.advertised = 'true' if instance.is_published else 'false'
+                gs_resource.advertised = 'true'
                 gs_catalog.save(gs_resource)
 
     if not settings.FREETEXT_KEYWORDS_READONLY:
@@ -525,7 +527,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
     for style in instance.styles.all():
         legend_url = ogc_server_settings.PUBLIC_LOCATION + \
-            'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+            'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
             instance.alternate + '&STYLE=' + style.name + \
             '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
