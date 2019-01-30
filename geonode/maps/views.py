@@ -34,6 +34,8 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllow
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from django.utils.translation import ugettext as _
+from django.views.decorators.http import require_http_methods
+
 try:
     # Django >= 1.7
     import json
@@ -1357,30 +1359,29 @@ def ajax_url_lookup(request):
         content_type='text/plain'
     )
 
-
+@require_http_methods(["POST",])
 def map_thumbnail(request, mapid):
-    if request.method == 'POST':
-        map_obj = _resolve_map(request, mapid)
+    map_obj = _resolve_map(request, mapid)
+    try:
+        image = None
         try:
-            image = None
-            try:
-                image = _prepare_thumbnail_body_from_opts(request.body,
-                                                          request=request)
-            except BaseException:
-                image = _render_thumbnail(request.body)
-
-            if not image:
-                return
-            filename = "map-%s-thumb.png" % map_obj.uuid
-            map_obj.save_thumbnail(filename, image)
-
-            return HttpResponse(_('Thumbnail saved'))
+            image = _prepare_thumbnail_body_from_opts(request.body,
+                                                        request=request)
         except BaseException:
-            return HttpResponse(
-                content=_('error saving thumbnail'),
-                status=500,
-                content_type='text/plain'
-            )
+            image = _render_thumbnail(request.body)
+
+        if not image:
+            return
+        filename = "map-%s-thumb.png" % map_obj.uuid
+        map_obj.save_thumbnail(filename, image)
+
+        return HttpResponse(_('Thumbnail saved'))
+    except BaseException:
+        return HttpResponse(
+            content=_('error saving thumbnail'),
+            status=500,
+            content_type='text/plain'
+        )
 
 
 def map_metadata_detail(
