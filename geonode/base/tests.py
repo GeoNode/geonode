@@ -123,7 +123,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
             "{% load base_tags %} {% get_menu 'test_menu_placeholder_0' %}"
         )
         rendered = template.render(Context({}))
-        ## menu_placeholder_0
+        # menu_placeholder_0
         # first menu
         self.assertIn(
             self.menu_0_0.title,
@@ -175,7 +175,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
                 self.menu_item_0_1_2.title
             )
         )
-        ## menu_placeholder_1
+        # menu_placeholder_1
         # first menu
         self.assertNotIn(
             self.menu_1_0.title,
@@ -204,7 +204,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
             "{% load base_tags %} {% get_menu 'test_menu_placeholder_1' %}"
         )
         rendered = template.render(Context({}))
-        ## menu_placeholder_0
+        # menu_placeholder_0
         # first menu
         self.assertNotIn(
             self.menu_0_0.title,
@@ -256,7 +256,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
                 self.menu_item_0_1_2.title
             )
         )
-        ## menu_placeholder_1
+        # menu_placeholder_1
         # first menu
         self.assertIn(
             self.menu_1_0.title,
@@ -285,7 +285,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
             "{% load base_tags %} {% render_nav_menu 'test_menu_placeholder_0' %}"
         )
         rendered = template.render(Context({}))
-        ## menu_placeholder_0
+        # menu_placeholder_0
         # first menu
         self.assertIn(
             self.menu_0_0.title,
@@ -337,7 +337,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
                 self.menu_item_0_1_2.title
             )
         )
-        ## menu_placeholder_1
+        # menu_placeholder_1
         # first menu
         self.assertNotIn(
             self.menu_1_0.title,
@@ -366,7 +366,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
             "{% load base_tags %} {% render_nav_menu 'test_menu_placeholder_1' %}"
         )
         rendered = template.render(Context({}))
-        ## menu_placeholder_0
+        # menu_placeholder_0
         # first menu
         self.assertNotIn(
             self.menu_0_0.title,
@@ -418,7 +418,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
                 self.menu_item_0_1_2.title
             )
         )
-        ## menu_placeholder_1
+        # menu_placeholder_1
         # first menu
         self.assertIn(
             self.menu_1_0.title,
