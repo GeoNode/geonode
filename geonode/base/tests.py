@@ -282,7 +282,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
 
     def test_render_top_menu_placeholder_0(self):
         template = Template(
-            "{% load base_tags %} {% render_menu 'test_menu_placeholder_0' %}"
+            "{% load base_tags %} {% render_top_menu 'test_menu_placeholder_0' %}"
         )
         rendered = template.render(Context({}))
         ## menu_placeholder_0
@@ -363,7 +363,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
 
     def test_render_top_menu_placeholder_1(self):
         template = Template(
-            "{% load base_tags %} {% render_menu 'test_menu_placeholder_1' %}"
+            "{% load base_tags %} {% render_top_menu 'test_menu_placeholder_1' %}"
         )
         rendered = template.render(Context({}))
         ## menu_placeholder_0
