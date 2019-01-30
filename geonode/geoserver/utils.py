@@ -25,7 +25,7 @@ requests.packages.urllib3.disable_warnings()
 
 def requests_retry(retries=3,
                    backoff_factor=0.5,
-                   status_forcelist=(500, 502, 504),
+                   status_forcelist=(502, 503, 504),
                    session=None):
     session = session or requests.Session()
     # disable ssl verify
