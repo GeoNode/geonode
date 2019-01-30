@@ -1,10 +1,11 @@
-sudo: required
+sudo: false
 
 language: python
 
 cache:
+  pip: true
   directories:
-    - $HOME/.cache/pip
+    - $HOME/buildout-cache
 
 before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
@@ -117,6 +118,7 @@ branches:
     - 2.6.x
 
 before_install:
+  - mkdir -p $HOME/buildout-cache/{eggs,downloads}
   - scripts/misc/geoserver_server_setup.sh before_install
   - scripts/misc/qgis_server_setup.sh before_install
   - chmod +x scripts/misc/bdd_setup.sh
