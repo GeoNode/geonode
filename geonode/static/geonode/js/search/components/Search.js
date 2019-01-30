@@ -1,4 +1,4 @@
-import searchHelpers from "app/search/helpers/searchHelpers";
+import queryFetch from "app/search/helpers/queryFetch";
 import PubSub from "pubsub-js";
 
 const Search = ({ searchURL = "/api/base/" } = {}) => {
@@ -10,7 +10,7 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
     results: [],
     queryValue: "",
     query: {
-      limit: 1,
+      limit: 0,
       offset: 0
     }
   };
@@ -78,7 +78,7 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
     },
     search: (query = api.get("query")) =>
       new Promise(res => {
-        searchHelpers.fetch(api.get("searchURL"), query).then(data => {
+        queryFetch(api.get("searchURL"), query).then(data => {
           api.setStateFromData(data);
           PubSub.publish("searchComplete", data);
           res(data);

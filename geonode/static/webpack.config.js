@@ -26,6 +26,7 @@ module.exports = {
   },
   resolve: {
     alias: {
+      jquery: path.join(__dirname, "node_modules/jquery/dist/jquery"),
       app: path.resolve(__dirname, "geonode/js")
     }
   }
