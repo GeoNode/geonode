@@ -118,9 +118,9 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
             menu=self.menu_1_0
         )
 
-    def test_render_menu_placeholder_0(self):
+    def test_get_menu_placeholder_0(self):
         template = Template(
-            "{% load base_tags %} {% render_menu 'test_menu_placeholder_0' %}"
+            "{% load base_tags %} {% get_menu 'test_menu_placeholder_0' %}"
         )
         rendered = template.render(Context({}))
         ## menu_placeholder_0
@@ -199,9 +199,9 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
             )
         )
 
-    def test_render_menu_placeholder_1(self):
+    def test_get_menu_placeholder_1(self):
         template = Template(
-            "{% load base_tags %} {% render_menu 'test_menu_placeholder_1' %}"
+            "{% load base_tags %} {% get_menu 'test_menu_placeholder_1' %}"
         )
         rendered = template.render(Context({}))
         ## menu_placeholder_0
@@ -280,9 +280,9 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
             )
         )
 
-    def test_render_top_menu_placeholder_0(self):
+    def test_render_nav_menu_placeholder_0(self):
         template = Template(
-            "{% load base_tags %} {% render_top_menu 'test_menu_placeholder_0' %}"
+            "{% load base_tags %} {% render_nav_menu 'test_menu_placeholder_0' %}"
         )
         rendered = template.render(Context({}))
         ## menu_placeholder_0
@@ -361,9 +361,9 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
             )
         )
 
-    def test_render_top_menu_placeholder_1(self):
+    def test_render_nav_menu_placeholder_1(self):
         template = Template(
-            "{% load base_tags %} {% render_top_menu 'test_menu_placeholder_1' %}"
+            "{% load base_tags %} {% render_nav_menu 'test_menu_placeholder_1' %}"
         )
         rendered = template.render(Context({}))
         ## menu_placeholder_0

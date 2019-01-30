@@ -311,7 +311,7 @@ def fullurl(context, url):
 
 
 @register.assignment_tag
-def render_menu(placeholder_name):
+def get_menu(placeholder_name):
     menus = {
         m: MenuItem.objects.filter(menu=m)
         for m in Menu.objects.filter(placeholder__name=placeholder_name)
@@ -320,7 +320,7 @@ def render_menu(placeholder_name):
 
 
 @register.inclusion_tag(filename='base/menu.html')
-def render_top_menu(placeholder_name):
+def render_nav_menu(placeholder_name):
     menus = {
         m: MenuItem.objects.filter(menu=m)
         for m in Menu.objects.filter(placeholder__name=placeholder_name)
