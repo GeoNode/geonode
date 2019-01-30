@@ -22,7 +22,6 @@ import os
 import re
 import json
 import logging
-import httplib2
 import traceback
 from lxml import etree
 from os.path import isfile
@@ -43,7 +42,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 
 from guardian.shortcuts import get_objects_for_user
-
+from .utils import requests_retry
 from geonode.base.models import ResourceBase
 from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer, Style
@@ -623,9 +622,9 @@ def layer_batch_download(request):
         }
 
         url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        resp, content = http_client.request(
-            url, 'POST', body=json.dumps(fake_map))
-        return HttpResponse(content, status=resp.status)
+        req = http_client.post(url, data=json.dumps(fake_map))
+        content = req.content
+        return HttpResponse(content, status=req.status_code)
 
     if request.method == 'GET':
         # essentially, this just proxies back to geoserver
@@ -635,8 +634,9 @@ def layer_batch_download(request):
 
         url = "%srest/process/batchDownload/status/%s" % (
             ogc_server_settings.LOCATION, download_id)
-        resp, content = http_client.request(url, 'GET')
-        return HttpResponse(content, status=resp.status)
+        req = http_client.get(url)
+        content = req.content
+        return HttpResponse(content, status=req.status_code)
 
 
 def resolve_user(request):
@@ -760,18 +760,20 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
         wms_url = '%s?service=wms&version=%s&request=GetCapabilities'\
             % (layer.remote_service.service_url, version)
 
-    http = httplib2.Http()
-    response, getcap = http.request(wms_url)
-    if tolerant and ('ServiceException' in getcap or response.status == 404):
+    session = requests_retry()
+    req = session.get(wms_url)
+    getcap = req.content
+    if tolerant and ('ServiceException' in getcap or req.status_code == 404):
         # WARNING Please make sure to have enabled DJANGO CACHE as per
         # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
         wms_url = '%s%s/ows?service=wms&version=%s&request=GetCapabilities&layers=%s'\
             % (ogc_server_settings.public_url, workspace, version, layer)
         if access_token:
             wms_url += ('&access_token=%s' % access_token)
-        response, getcap = http.request(wms_url)
+        req = session.get(wms_url)
+        getcap = req.content
 
-    if 'ServiceException' in getcap or response.status == 404:
+    if 'ServiceException' in getcap or req.status_code == 404:
         return None
     return getcap
 
