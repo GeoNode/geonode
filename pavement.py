@@ -47,6 +47,8 @@ from geonode.settings import (on_travis,
                               core_tests,
                               internal_apps_tests,
                               integration_tests,
+                              integration_csw_tests,
+                              integration_bdd_tests,
                               INSTALLED_APPS,
                               GEONODE_CORE_APPS,
                               GEONODE_INTERNAL_APPS,
@@ -483,7 +485,7 @@ def start():
     """
     Start GeoNode (Django, GeoServer & Client)
     """
-    sh('sleep 30')
+    # sh('sleep 30')
     info("GeoNode is now available.")
 
 
@@ -503,7 +505,7 @@ def stop_geoserver():
     Stop GeoServer
     """
     # we use docker-compose for integration tests
-    if integration_tests:
+    if integration_tests or integration_csw_tests or integration_bdd_tests:
         return
 
     # only start if using Geoserver backend
@@ -524,7 +526,7 @@ def stop_geoserver():
             info('Stopping geoserver (process number %s)' % int(pid))
             os.kill(int(pid), signal.SIGKILL)
             os.kill(int(pid), 9)
-            sh('sleep 30')
+            # sh('sleep 30')
             # Check if the process that we killed is alive.
             try:
                 os.kill(int(pid), 0)
@@ -630,7 +632,7 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
     # we use docker-compose for integration tests
-    if integration_tests:
+    if integration_tests or integration_csw_tests or integration_bdd_tests:
         return
 
     # only start if using Geoserver backend
@@ -799,7 +801,7 @@ def test_bdd():
         call_task('reset')
     call_task('setup')
     call_task('sync')
-    sh('sleep 30')
+    # sh('sleep 30')
     info("GeoNode is now available, running the bdd tests now.")
 
     sh('py.test')
@@ -835,7 +837,7 @@ def test_integration(options):
         # Start QGis Server
         call_task('start_qgis_server')
 
-    sh('sleep 30')
+    # sh('sleep 30')
 
     name = options.get('name', 'geonode.tests.integration')
     settings = options.get('settings', '')
@@ -869,7 +871,7 @@ def test_integration(options):
             sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
             sh('%s python -W ignore manage.py runserver %s %s' %
                (settings, bind, foreground))
-            sh('sleep 30')
+            # sh('sleep 30')
             settings = 'REUSE_DB=1 %s' % settings
 
         live_server_option = '--liveserver=localhost:8000'
@@ -912,21 +914,24 @@ def run_tests(options):
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
 
-    if not integration_tests:
+    if not integration_tests and not integration_csw_tests and not integration_bdd_tests:
         sh('%s manage.py test geonode.tests.smoke %s %s' % (prefix, _keepdb, _parallel))
         call_task('test', options={'prefix': prefix})
     else:
-        call_task('test_integration')
-        call_task('test_integration', options={'name': 'geonode.tests.csw'})
+        if integration_tests:
+            call_task('test_integration')
 
-        # only start if using Geoserver backend
-        _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-        if _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
-            call_task('test_integration',
-                      options={'name': 'geonode.upload.tests.integration',
-                               'settings': 'geonode.upload.tests.test_settings'})
+            # only start if using Geoserver backend
+            _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
+            if _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
+                call_task('test_integration',
+                          options={'name': 'geonode.upload.tests.integration',
+                                   'settings': 'geonode.upload.tests.test_settings'})
+        elif integration_csw_tests:
+            call_task('test_integration', options={'name': 'geonode.tests.csw'})
 
-        call_task('test_bdd', options={'local': local})
+        if integration_bdd_tests:
+            call_task('test_bdd', options={'local': local})
 
     sh('flake8 geonode')
 

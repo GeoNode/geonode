@@ -679,6 +679,8 @@ on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
 core_tests = ast.literal_eval(os.environ.get('TEST_RUN_CORE', 'False'))
 internal_apps_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTERNAL_APPS', 'False'))
 integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'False'))
+integration_csw_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_CSW', 'False'))
+integration_bdd_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_BDD', 'False'))
 
 # Setting a custom test runner to avoid running the tests for
 # some problematic 3rd party apps
