@@ -48,6 +48,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.conf import settings
 from django.utils.translation import ugettext as _
+from django.views.decorators.http import require_http_methods
 
 from geonode import geoserver, qgis_server
 
@@ -1387,41 +1388,40 @@ def layer_granule_remove(
     else:
         return HttpResponse("Not allowed", status=403)
 
-
+@require_http_methods(["POST",])
 def layer_thumbnail(request, layername):
-    if request.method == 'POST':
-        layer_obj = _resolve_layer(request, layername)
+    layer_obj = _resolve_layer(request, layername)
 
+    try:
         try:
-            try:
-                preview = json.loads(request.body).get('preview', None)
-            except BaseException:
-                preview = None
-
-            if preview and preview == 'react':
-                format, image = json.loads(
-                    request.body)['image'].split(';base64,')
-                image = base64.b64decode(image)
-            else:
-                image = None
-                try:
-                    image = _prepare_thumbnail_body_from_opts(request.body,
-                                                              request=request)
-                except BaseException:
-                    image = _render_thumbnail(request.body)
-
-            if not image:
-                return
-            filename = "layer-%s-thumb.png" % layer_obj.uuid
-            layer_obj.save_thumbnail(filename, image)
-
-            return HttpResponse('Thumbnail saved')
+            preview = json.loads(request.body).get('preview', None)
         except BaseException:
-            return HttpResponse(
-                content='error saving thumbnail',
-                status=500,
-                content_type='text/plain'
-            )
+            preview = None
+
+        if preview and preview == 'react':
+            format, image = json.loads(
+                request.body)['image'].split(';base64,')
+            image = base64.b64decode(image)
+        else:
+            image = None
+            try:
+                image = _prepare_thumbnail_body_from_opts(request.body,
+                                                            request=request)
+            except BaseException:
+                image = _render_thumbnail(request.body)
+
+        if not image:
+            return
+        filename = "layer-%s-thumb.png" % layer_obj.uuid
+        layer_obj.save_thumbnail(filename, image)
+
+        return HttpResponse('Thumbnail saved')
+    except BaseException:
+        return HttpResponse(
+            content='error saving thumbnail',
+            status=500,
+            content_type='text/plain'
+        )
 
 
 def get_layer(request, layername):
