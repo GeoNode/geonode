@@ -44,6 +44,30 @@ env:
     GEOSERVER_SERVER_PORT: 8080
     ON_TRAVIS: 'True'
     TEST_RUN_INTEGRATION: 'True'
+    TEST_RUN_INTEGRATION_CSW: 'False'
+    TEST_RUN_INTEGRATION_BDD: 'False'
+    MONITORING_ENABLED: 'False'
+    CELERY_ALWAYS_EAGER: 'True'
+  - BACKEND: 'geonode.geoserver'
+    DOCKER_COMPOSE_VERSION: 1.19.0
+    # This is GeoServer server address
+    GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+    GEOSERVER_SERVER_PORT: 8080
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTEGRATION: 'False'
+    TEST_RUN_INTEGRATION_CSW: 'True'
+    TEST_RUN_INTEGRATION_BDD: 'False'
+    MONITORING_ENABLED: 'False'
+    CELERY_ALWAYS_EAGER: 'True'
+  - BACKEND: 'geonode.geoserver'
+    DOCKER_COMPOSE_VERSION: 1.19.0
+    # This is GeoServer server address
+    GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+    GEOSERVER_SERVER_PORT: 8080
+    ON_TRAVIS: 'True'
+    TEST_RUN_INTEGRATION: 'False'
+    TEST_RUN_INTEGRATION_CSW: 'False'
+    TEST_RUN_INTEGRATION_BDD: 'True'
     MONITORING_ENABLED: 'False'
     CELERY_ALWAYS_EAGER: 'True'
   - BACKEND: 'geonode.qgis_server'
