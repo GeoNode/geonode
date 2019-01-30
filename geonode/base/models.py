@@ -1525,6 +1525,7 @@ def do_logout(sender, user, request, **kwargs):
     Take action on user logout. Cleanup user access_token and send logout
     request to GeoServer
     """
+    header_params = {}
     if 'access_token' in request.session:
         try:
             Application = get_application_model()

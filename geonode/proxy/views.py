@@ -34,7 +34,6 @@ from urlparse import urlparse, urlsplit, urljoin
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils.http import is_safe_url
-from django.contrib.auth import authenticate
 from django.http.request import validate_host
 from django.views.decorators.csrf import requires_csrf_token
 from django.middleware.csrf import get_token
@@ -47,6 +46,7 @@ from geonode.utils import (resolve_object,
                            check_ogc_backend,
                            get_dir_time_suffix,
                            zip_dir)
+from geonode.base.oauth import extend_oauth_token, get_auth_token_from_auth_header
 from geonode import geoserver, qgis_server  # noqa
 
 TIMEOUT = 30
@@ -57,18 +57,6 @@ custom_slugify = Slugify(separator='_')
 
 ows_regexp = re.compile(
     "^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
-
-
-def user_from_basic_auth(auth_header):
-    if 'Basic' in auth_header:
-        encoded_credentials = auth_header.split(' ')[1]  # Removes "Basic " to isolate credentials
-        decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(':')
-        username = decoded_credentials[0]
-        password = decoded_credentials[1]
-        # if the credentials are correct, then the feed_bot is not None, but is a User object.
-        user = authenticate(username=username, password=password)
-        return user
-    return None
 
 
 @requires_csrf_token
@@ -166,30 +154,22 @@ def proxy(request, url=None, response_callback=None,
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     access_token = None
-    if request and 'access_token' in request.session:
-        access_token = request.session['access_token']
-
+    # we give precedence to obtained from Aithorization headers
     if 'HTTP_AUTHORIZATION' in request.META:
-        auth = request.META.get(
+        auth_header = request.META.get(
             'HTTP_AUTHORIZATION',
             request.META.get('HTTP_AUTHORIZATION2'))
-        if auth:
-            _user = user_from_basic_auth(auth)
-            if not _user:
-                if 'Bearer' in auth:
-                    access_token = auth.replace('Bearer ', '')
-                    headers['Authorization'] = auth
-            else:
-                try:
-                    from oauth2_provider.models import AccessToken, get_application_model
-                    Application = get_application_model()
-                    app = Application.objects.get(name="GeoServer")
-                    access_token = AccessToken.objects.filter(user=_user, application=app).order_by('-expires').first()
-                except BaseException:
-                    traceback.print_exc()
-                    logger.error("Could retrieve OAuth2 Access Token for user %s" % _user)
+        if auth_header:
+            access_token = get_auth_token_from_auth_header(auth_header)
+    # otherwise we check if a session is active
+    elif request and 'access_token' in request.session:
+        access_token = request.session['access_token']
+        # we extend the token in case the session is active but the token expired
+        if access_token and access_token.is_expired():
+            extend_oauth_token(access_token)
+            request.session['access_token'] = access_token
 
-    if access_token and not headers.get('Authorization'):
+    if access_token:
         headers['Authorization'] = 'Bearer %s' % access_token
 
     site_url = urlsplit(settings.SITEURL)
