@@ -1372,7 +1372,7 @@ def map_thumbnail(request, mapid):
 
         if not image:
             return HttpResponse(
-                content=_('couldn\'t generating thumbnail'),
+                content=_('couldn\'t generate thumbnail'),
                 status=500,
                 content_type='text/plain'
             )

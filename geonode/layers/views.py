@@ -1411,7 +1411,11 @@ def layer_thumbnail(request, layername):
                 image = _render_thumbnail(request.body)
 
         if not image:
-            return
+            return HttpResponse(
+                content=_('couldn\'t generate thumbnail'),
+                status=500,
+                content_type='text/plain'
+            )
         filename = "layer-%s-thumb.png" % layer_obj.uuid
         layer_obj.save_thumbnail(filename, image)
 
