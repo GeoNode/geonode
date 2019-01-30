@@ -1371,7 +1371,11 @@ def map_thumbnail(request, mapid):
             image = _render_thumbnail(request.body)
 
         if not image:
-            return
+            return HttpResponse(
+                content=_('couldn\'t generating thumbnail'),
+                status=500,
+                content_type='text/plain'
+            )
         filename = "map-%s-thumb.png" % map_obj.uuid
         map_obj.save_thumbnail(filename, image)
 
