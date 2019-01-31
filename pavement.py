@@ -47,6 +47,8 @@ from geonode.settings import (on_travis,
                               core_tests,
                               internal_apps_tests,
                               integration_tests,
+                              integration_csw_tests,
+                              integration_bdd_tests,
                               INSTALLED_APPS,
                               GEONODE_CORE_APPS,
                               GEONODE_INTERNAL_APPS,
@@ -139,31 +141,35 @@ def setup_geoserver(options):
     jetty_runner = download_dir / \
         os.path.basename(dev_config['JETTY_RUNNER_URL'])
 
-    grab(
-        options.get(
-            'geoserver',
-            dev_config['GEOSERVER_URL']),
-        geoserver_bin,
-        "geoserver binary")
-    grab(
-        options.get(
-            'jetty',
-            dev_config['JETTY_RUNNER_URL']),
-        jetty_runner,
-        "jetty runner")
+    if _django_11 and (integration_tests or integration_csw_tests or integration_bdd_tests):
+        """Will make use of the docker container for the Integration Tests"""
+        pass
+    else:
+        grab(
+            options.get(
+                'geoserver',
+                dev_config['GEOSERVER_URL']),
+            geoserver_bin,
+            "geoserver binary")
+        grab(
+            options.get(
+                'jetty',
+                dev_config['JETTY_RUNNER_URL']),
+            jetty_runner,
+            "jetty runner")
 
-    if not geoserver_dir.exists():
-        geoserver_dir.makedirs()
+        if not geoserver_dir.exists():
+            geoserver_dir.makedirs()
 
-        webapp_dir = geoserver_dir / 'geoserver'
-        if not webapp_dir:
-            webapp_dir.makedirs()
+            webapp_dir = geoserver_dir / 'geoserver'
+            if not webapp_dir:
+                webapp_dir.makedirs()
 
-        print 'extracting geoserver'
-        z = zipfile.ZipFile(geoserver_bin, "r")
-        z.extractall(webapp_dir)
+            print 'extracting geoserver'
+            z = zipfile.ZipFile(geoserver_bin, "r")
+            z.extractall(webapp_dir)
 
-    _install_data_dir()
+        _install_data_dir()
 
 
 @task
@@ -388,7 +394,7 @@ def updategeoip(options):
 
 @task
 @cmdopts([
-    ('settings', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
+    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ])
 def sync(options):
     """
@@ -477,7 +483,7 @@ def package(options):
     ('bind=', 'b', 'Bind server to provided IP address and port number.'),
     ('java_path=', 'j', 'Full path to java install for Windows'),
     ('foreground', 'f', 'Do not run in background but in foreground'),
-    ('settings', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
+    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ], share_with=['start_django', 'start_geoserver'])
 def start():
     """
@@ -503,7 +509,7 @@ def stop_geoserver():
     Stop GeoServer
     """
     # we use docker-compose for integration tests
-    if integration_tests:
+    if integration_tests or integration_csw_tests or integration_bdd_tests:
         return
 
     # only start if using Geoserver backend
@@ -630,7 +636,7 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
     # we use docker-compose for integration tests
-    if integration_tests:
+    if integration_tests or integration_csw_tests or integration_bdd_tests:
         return
 
     # only start if using Geoserver backend
@@ -817,7 +823,7 @@ def test_javascript(options):
 @task
 @cmdopts([
     ('name=', 'n', 'Run specific tests.'),
-    ('settings', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
+    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ])
 def test_integration(options):
     """
@@ -912,21 +918,23 @@ def run_tests(options):
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
 
-    if not integration_tests:
+    if not integration_tests and not integration_csw_tests and not integration_bdd_tests:
         sh('%s manage.py test geonode.tests.smoke %s %s' % (prefix, _keepdb, _parallel))
         call_task('test', options={'prefix': prefix})
     else:
-        call_task('test_integration')
-        call_task('test_integration', options={'name': 'geonode.tests.csw'})
+        if integration_tests:
+            call_task('test_integration')
 
-        # only start if using Geoserver backend
-        _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-        if _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
-            call_task('test_integration',
-                      options={'name': 'geonode.upload.tests.integration',
-                               'settings': 'geonode.upload.tests.test_settings'})
+            # only start if using Geoserver backend
+            _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
+            if _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
+                call_task('test_integration',
+                          options={'name': 'geonode.upload.tests.integration'})
+        elif integration_csw_tests:
+            call_task('test_integration', options={'name': 'geonode.tests.csw'})
 
-        call_task('test_bdd', options={'local': local})
+        if integration_bdd_tests:
+            call_task('test_bdd', options={'local': local})
 
     sh('flake8 geonode')
 
@@ -962,7 +970,7 @@ def reset_hard():
 @task
 @cmdopts([
     ('type=', 't', 'Import specific data type ("vector", "raster", "time")'),
-    ('settings', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
+    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ])
 def setup_data():
     """
