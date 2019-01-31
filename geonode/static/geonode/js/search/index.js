@@ -1,4 +1,4 @@
 // Welcome Component JS
-import "./ngSearch.js";
+import "./controller.js";
 import "./explore.js";
 import "./cart.js";

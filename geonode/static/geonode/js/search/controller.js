@@ -2,12 +2,14 @@ import Search from "app/search/components/Search";
 import PubSub from "app/utils/pubsub";
 import SelectionTree from "app/search/components/SelectionTree";
 import TextSearchForm from "app/search/components/TextSearchForm";
-import modifyKeywordQuery from "app/search/helpers/modifyKeywordQuery";
-import queryFetch from "app/search/helpers/queryFetch";
-import buildRequestQueue from "app/search/helpers/buildRequestQueue";
-import activateFilters from "app/search/helpers/activateFilters";
 import angularShim from "app/utils/angularShim";
 import locationUtils from "app/utils/locationUtils";
+import modifyQuery from "app/search/functions/modifyQuery";
+import getSortFilter from "app/search/functions/getSortFilter";
+import queryFetch from "app/search/functions/queryFetch";
+import buildRequestQueue from "app/search/functions/buildRequestQueue";
+import activateFilters from "app/search/functions/activateFilters";
+import toggleList from "app/search/functions/toggleList";
 
 export default (() => {
   const searcher = Search({
@@ -27,7 +29,8 @@ export default (() => {
     ["results", "results"],
     ["total_counts", "resultCount"],
     ["numpages", "numberOfPages"],
-    ["text_query", "queryValue"]
+    ["text_query", "queryValue"],
+    ["dataValue", "sortFilter"]
   ]);
 
   const module = angular.module(
@@ -157,12 +160,15 @@ export default (() => {
           setTimeout(() => {
             $('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();
           });
-          const queryValue = (textSearchInstance.getFormVal()
-            ? textSearchInstance.getFormVal()
-            : locationUtils.paramExists("title__icontains")
-              ? locationUtils.getUrlParam("title__icontains")
-              : ""
-          ).replace(/\+/g, " ");
+          const formValue = textSearchInstance.getFormVal();
+          const paramExists = locationUtils.paramExists("title__icontains");
+          const param = locationUtils.getUrlParam("title__icontains");
+          let queryValue = null;
+          if (formValue) queryValue = formValue;
+          else if (paramExists) queryValue = param;
+          else queryValue = "";
+
+          queryValue.replace(/\+/g, " ");
           searcher.set("queryValue", queryValue);
           syncScope($scope, searcher);
         });
@@ -219,7 +225,7 @@ export default (() => {
         // Keep in sync the page location with the query object
         $scope.$watch(
           "query",
-          function() {
+          () => {
             $location.search($scope.query);
           },
           true
@@ -227,7 +233,7 @@ export default (() => {
       }
 
       const updateKWQuery = (element, selectionType) => {
-        const updatedQuery = modifyKeywordQuery({
+        const updatedQuery = modifyQuery({
           value: element.href ? element.href : element.text,
           selectionType,
           query: searcher.get("query")
@@ -294,34 +300,21 @@ export default (() => {
       };
 
       $scope.single_choice_listener = $event => {
-        var element = $($event.currentTarget);
-        var queryEntry = [];
-        var dataFilter = element.attr("data-filter");
-        var value = element.attr("data-value");
-        // Type of data being displayed, use 'content' instead of 'all'
-        $scope.dataValue = value == "all" ? "content" : value;
+        const element = $($event.currentTarget);
+        const updatedQuery = modifyQuery({
+          value: element.attr("data-value"),
+          selectionType: !element.hasClass("selected") ? "select" : "unselect",
+          query: searcher.get("query"),
+          filter: element.attr("data-filter"),
+          singleValue: true
+        });
+        searcher.set("query", updatedQuery);
+        searcher.set("sortFilter", getSortFilter(element));
+        syncScope($scope, searcher);
 
-        // If the query object has the record then grab it
-        if ($scope.query.hasOwnProperty(dataFilter)) {
-          queryEntry = $scope.query[dataFilter];
-        }
-
+        toggleList({ element });
         if (!element.hasClass("selected")) {
-          // Add the entry in the correct query
-          queryEntry = value;
-
-          // clear the active class from it
-          element
-            .parents("ul")
-            .find("a")
-            .removeClass("selected");
-
-          element.addClass("selected");
-
-          //save back the new query entry to the scope query
-          $scope.query[dataFilter] = queryEntry;
-
-          queryApi($scope.query);
+          queryApi();
         }
       };
 

@@ -1,4 +1,4 @@
-import queryFetch from "app/search/helpers/queryFetch";
+import queryFetch from "app/search/functions/queryFetch";
 import PubSub from "pubsub-js";
 
 const Search = ({ searchURL = "/api/base/" } = {}) => {
@@ -8,6 +8,7 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
     numberOfPages: 1,
     resultCount: 0,
     results: [],
+    sortFilter: null,
     queryValue: "",
     query: {
       limit: 0,

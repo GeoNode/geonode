@@ -1,5 +1,5 @@
 /*
-  `queryFetch` builds a url query string based on an object and adds to
+  Build a url query string based on an object and add it to
   the request endpoint.
 */
 

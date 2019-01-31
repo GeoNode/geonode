@@ -1,7 +1,7 @@
 import locationUtils from "app/utils/locationUtils";
 
 /*
-  This function activates sort & type filters if they exist in the URL
+  Activates sort & type filters if they exist in the URL
   query string.
 */
 

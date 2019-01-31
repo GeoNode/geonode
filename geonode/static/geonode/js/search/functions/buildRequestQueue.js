@@ -1,11 +1,10 @@
 import locationUtils from "app/utils/locationUtils";
-import queryFetch from "app/search/helpers/queryFetch";
+import queryFetch from "app/search/functions/queryFetch";
 
 /*
-  `buildRequestQueue` is a modified promise queue that takes an array of objects
-  containing an endpoint and query parameters, requests data based on these
-  objects, and returns the data in an array matching the order of the query
-  objects provided.
+  A modified promise queue. Takes an array of objects containing an endpoint
+  and query parameters, requests data based on these objects, and returns the
+  data in an array matching the order of the query objects provided.
 */
 
 const setInitialFiltersFromQuery = (data, urlQuery, filterParam) =>

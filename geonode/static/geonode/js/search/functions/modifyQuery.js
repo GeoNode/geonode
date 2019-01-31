@@ -1,12 +1,24 @@
 /*
-  `modifyKeywordQuery` adds a keyword query to a provided query object if
-  the selectionType is "select" and removes it if the selectionType is
-  "unselect" and then returns the modified keyword object.
+  Add a filter to a provided query object if the selectionType is "select",
+  remove it if the selectionType is "unselect" and return the modified
+  query object.
 */
 
-export default ({ value, selectionType, query, filter }) => {
-  const dataFilter = filter || "keywords__slug__in";
+export default ({
+  value = "val",
+  selectionType = "select",
+  query = {},
+  filter = "keywords__slug__in",
+  singleValue = false
+}) => {
+  const dataFilter = filter;
   let queryEntry = [];
+
+  // If the filter only accepts one value, begin with an empty array.
+  if (singleValue) {
+    query[dataFilter] = queryEntry;
+  }
+
   // Check if filter property already exists on the query object.
   const hasProp = Object.prototype.hasOwnProperty.call(query, dataFilter);
   if (hasProp) {
