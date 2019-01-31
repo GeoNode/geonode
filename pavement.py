@@ -141,31 +141,35 @@ def setup_geoserver(options):
     jetty_runner = download_dir / \
         os.path.basename(dev_config['JETTY_RUNNER_URL'])
 
-    grab(
-        options.get(
-            'geoserver',
-            dev_config['GEOSERVER_URL']),
-        geoserver_bin,
-        "geoserver binary")
-    grab(
-        options.get(
-            'jetty',
-            dev_config['JETTY_RUNNER_URL']),
-        jetty_runner,
-        "jetty runner")
+    if _django_11 and (integration_tests or integration_csw_tests or integration_bdd_tests):
+        """Will make use of the docker container for the Integration Tests"""
+        pass
+    else:
+        grab(
+            options.get(
+                'geoserver',
+                dev_config['GEOSERVER_URL']),
+            geoserver_bin,
+            "geoserver binary")
+        grab(
+            options.get(
+                'jetty',
+                dev_config['JETTY_RUNNER_URL']),
+            jetty_runner,
+            "jetty runner")
 
-    if not geoserver_dir.exists():
-        geoserver_dir.makedirs()
+        if not geoserver_dir.exists():
+            geoserver_dir.makedirs()
 
-        webapp_dir = geoserver_dir / 'geoserver'
-        if not webapp_dir:
-            webapp_dir.makedirs()
+            webapp_dir = geoserver_dir / 'geoserver'
+            if not webapp_dir:
+                webapp_dir.makedirs()
 
-        print 'extracting geoserver'
-        z = zipfile.ZipFile(geoserver_bin, "r")
-        z.extractall(webapp_dir)
+            print 'extracting geoserver'
+            z = zipfile.ZipFile(geoserver_bin, "r")
+            z.extractall(webapp_dir)
 
-    _install_data_dir()
+        _install_data_dir()
 
 
 @task
