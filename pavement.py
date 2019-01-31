@@ -141,31 +141,35 @@ def setup_geoserver(options):
     jetty_runner = download_dir / \
         os.path.basename(dev_config['JETTY_RUNNER_URL'])
 
-    grab(
-        options.get(
-            'geoserver',
-            dev_config['GEOSERVER_URL']),
-        geoserver_bin,
-        "geoserver binary")
-    grab(
-        options.get(
-            'jetty',
-            dev_config['JETTY_RUNNER_URL']),
-        jetty_runner,
-        "jetty runner")
+    if _django_11 and (integration_tests or integration_csw_tests or integration_bdd_tests):
+        """Will make use of the docker container for the Integration Tests"""
+        pass
+    else:
+        grab(
+            options.get(
+                'geoserver',
+                dev_config['GEOSERVER_URL']),
+            geoserver_bin,
+            "geoserver binary")
+        grab(
+            options.get(
+                'jetty',
+                dev_config['JETTY_RUNNER_URL']),
+            jetty_runner,
+            "jetty runner")
 
-    if not geoserver_dir.exists():
-        geoserver_dir.makedirs()
+        if not geoserver_dir.exists():
+            geoserver_dir.makedirs()
 
-        webapp_dir = geoserver_dir / 'geoserver'
-        if not webapp_dir:
-            webapp_dir.makedirs()
+            webapp_dir = geoserver_dir / 'geoserver'
+            if not webapp_dir:
+                webapp_dir.makedirs()
 
-        print 'extracting geoserver'
-        z = zipfile.ZipFile(geoserver_bin, "r")
-        z.extractall(webapp_dir)
+            print 'extracting geoserver'
+            z = zipfile.ZipFile(geoserver_bin, "r")
+            z.extractall(webapp_dir)
 
-    _install_data_dir()
+        _install_data_dir()
 
 
 @task
@@ -485,7 +489,7 @@ def start():
     """
     Start GeoNode (Django, GeoServer & Client)
     """
-    # sh('sleep 30')
+    sh('sleep 30')
     info("GeoNode is now available.")
 
 
@@ -526,7 +530,7 @@ def stop_geoserver():
             info('Stopping geoserver (process number %s)' % int(pid))
             os.kill(int(pid), signal.SIGKILL)
             os.kill(int(pid), 9)
-            # sh('sleep 30')
+            sh('sleep 30')
             # Check if the process that we killed is alive.
             try:
                 os.kill(int(pid), 0)
@@ -801,7 +805,7 @@ def test_bdd():
         call_task('reset')
     call_task('setup')
     call_task('sync')
-    # sh('sleep 30')
+    sh('sleep 30')
     info("GeoNode is now available, running the bdd tests now.")
 
     sh('py.test')
@@ -837,7 +841,7 @@ def test_integration(options):
         # Start QGis Server
         call_task('start_qgis_server')
 
-    # sh('sleep 30')
+    sh('sleep 30')
 
     name = options.get('name', 'geonode.tests.integration')
     settings = options.get('settings', '')
@@ -871,7 +875,7 @@ def test_integration(options):
             sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
             sh('%s python -W ignore manage.py runserver %s %s' %
                (settings, bind, foreground))
-            # sh('sleep 30')
+            sh('sleep 30')
             settings = 'REUSE_DB=1 %s' % settings
 
         live_server_option = '--liveserver=localhost:8000'
@@ -925,8 +929,7 @@ def run_tests(options):
             _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
             if _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
                 call_task('test_integration',
-                          options={'name': 'geonode.upload.tests.integration',
-                                   'settings': 'geonode.upload.tests.test_settings'})
+                          options={'name': 'geonode.upload.tests.integration'})
         elif integration_csw_tests:
             call_task('test_integration', options={'name': 'geonode.tests.csw'})
 
