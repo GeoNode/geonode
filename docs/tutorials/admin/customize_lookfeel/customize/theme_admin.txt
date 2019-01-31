@@ -251,7 +251,7 @@ An interesting customization you could do in the :file:`site_base.html` would be
 It can be done very easily through the **render_nav_menu** inclusion tags which allow to have ready-to-use dropdown menus without any further front-end implementation needed.
 The following is a basic example.
 
-#. Open the `Admin panel` http://localhost:8000/admin/, go to the BASE section and take a look at the models in the red rectangle in the picture below:
+#. Open the `Admin panel` http://localhost:8000/admin/, go to the BASE section and take a look at the models inside the red rectangle in the picture below:
 
    .. figure:: ../img/admin_base_section.png
 
@@ -273,7 +273,7 @@ The following is a basic example.
 
       {% extends "site_base.html" %}
 
-#. Edit the :file:`site_base.html` template. Let it extends the :file:`base.html`, load the `base_tags` and call the **render_nav_menu** tag, with the placeholder name as argument, inside an `extra_tab` block:
+#. Edit the :file:`site_base.html` template. Let it extend the :file:`base.html`, load the `base_tags` and call the **render_nav_menu** tag, with the placeholder name as argument, inside an `extra_tab` block:
 
    .. code-block:: html
 
@@ -325,9 +325,9 @@ Take a look at the right side of the navbar:
 
 .. figure:: ../img/custom_right_menu.png
 
-The custom menus seen so far are based on a fixed html template, the :file:`base/templates/menu.html`, hooked to the **render_nav_menu**.
+The custom menus seen so far are based on a fixed html template, the :file:`base/templates/menu.html`, hooked to the **render_nav_menu** tag.
 It makes the menus creation very fast in the top navbar but it's not flexible enough to allow to choose a different position. So more generic tags has been implemented in GeoNode to have more customization power.
-The **get_menu** assignment tag, included in the `base_tags`, lets you decide how to render the menus and returns only their data in a dictionary like this:
+The **get_menu** assignment tag, included in the `base_tags`, lets you decide how to render the menus returning only their data in a dictionary like this:
 
 .. code-block:: html
 
