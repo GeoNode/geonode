@@ -8,6 +8,7 @@ import modifyQuery from "app/search/functions/modifyQuery";
 import getSortFilter from "app/search/functions/getSortFilter";
 import queryFetch from "app/search/functions/queryFetch";
 import buildRequestQueue from "app/search/functions/buildRequestQueue";
+import addSortFilterToQuery from "app/search/functions/addSortFilterToQuery";
 import activateFilters from "app/search/functions/activateFilters";
 import toggleList from "app/search/functions/toggleList";
 
@@ -293,30 +294,24 @@ export default (() => {
         $scope.query[dataFilter] = queryEntry;
 
         // if the entry is empty then delete the property from the query
-        if (queryEntry.length == 0) {
+        if (queryEntry.length === 0) {
           delete $scope.query[dataFilter];
         }
         queryApi($scope.query);
       };
 
-      $scope.single_choice_listener = $event => {
-        const element = $($event.currentTarget);
-        const updatedQuery = modifyQuery({
-          value: element.attr("data-value"),
-          selectionType: !element.hasClass("selected") ? "select" : "unselect",
-          query: searcher.get("query"),
-          filter: element.attr("data-filter"),
-          singleValue: true
+      $("[data-filter*='order_by']").on("click", $event => {
+        const $element = $($event.toElement);
+        const updatedQuery = addSortFilterToQuery({
+          element: $element,
+          query: searcher.get("query")
         });
         searcher.set("query", updatedQuery);
-        searcher.set("sortFilter", getSortFilter(element));
-        syncScope($scope, searcher);
-
-        toggleList({ element });
-        if (!element.hasClass("selected")) {
+        if (!$element.hasClass("selected")) {
+          toggleList({ element: $element });
           queryApi();
         }
-      };
+      });
 
       /*
     * Region search management

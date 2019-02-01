@@ -1,5 +1,5 @@
 /*
-  Get sort filter type from DOM element.
+  getSortFilter :: (jQueryObject) => boolean;
 */
 
 export default $element => {
