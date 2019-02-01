@@ -46,7 +46,6 @@ def requests_retry(retries=3,
 def geoserver_requests_session():
     from .helpers import ogc_server_settings
     _user, _password = ogc_server_settings.credentials
-    url = ogc_server_settings.LOCATION
     session = requests.Session()
     session.auth = (_user, _password)
     session = requests_retry(session=session)

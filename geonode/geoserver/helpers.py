@@ -1482,7 +1482,7 @@ def _stylefilterparams_geowebcache_layer(layer_name):
     url = '%sgwc/rest/layers/%s.xml' % (ogc_server_settings.LOCATION, layer_name)
 
     # read GWC configuration
-    req = http_client.get(url,headers=headers)
+    req = http_client.get(url, headers=headers)
     if req.status_code != 200:
         line = "Error {0} reading Style Filter Params GeoWebCache at {1}".format(
             req.status_code, url
@@ -1503,7 +1503,7 @@ def _stylefilterparams_geowebcache_layer(layer_name):
             param_filters[0].append(style_filters_elem)
             body = ET.tostring(tree)
     if body:
-        req = http_client.post(url,data=body, headers=headers)
+        req = http_client.post(url, data=body, headers=headers)
         if req.status_code != 200:
             line = "Error {0} writing Style Filter Params GeoWebCache at {1}".format(
                 req.status_code, url
@@ -1904,7 +1904,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
     _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
         <div style='position: absolute; top:{top}px; left:{left}px; z-index: 749; \
         transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
-        \n".format(height=height, width=width, top=top, left=left)
+        \n"                      .format(height=height, width=width, top=top, left=left)
 
     for row in range(0, numberOfRows):
         for col in range(0, len(first_row)):
