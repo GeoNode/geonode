@@ -102,11 +102,13 @@ logger = logging.getLogger("geonode.layers.views")
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
-GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
+GENERIC_UPLOAD_ERROR = _(
+    "There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
 METADATA_UPLOADED_PRESERVE_ERROR = _("Note: this layer's orginal metadata was \
-populated and preserved by importing a metadata XML file. This metadata cannot be edited.")
+populated and preserved by importing a metadata XML file. This metadata cannot be edited."
+                                     )
 
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
@@ -292,7 +294,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
             if _k in out:
                 if isinstance(out[_k], unicode) or isinstance(
                         out[_k], str):
-                        out[_k] = out[_k].decode(saved_layer.charset).encode("utf-8")
+                    out[_k] = out[_k].decode(saved_layer.charset).encode("utf-8")
                 elif isinstance(out[_k], dict):
                     for key, value in out[_k].iteritems():
                         out[_k][key] = out[_k][key].decode(saved_layer.charset).encode("utf-8")
@@ -1388,7 +1390,8 @@ def layer_granule_remove(
     else:
         return HttpResponse("Not allowed", status=403)
 
-@require_http_methods(["POST",])
+
+@require_http_methods(["POST"])
 def layer_thumbnail(request, layername):
     layer_obj = _resolve_layer(request, layername)
 
@@ -1405,8 +1408,8 @@ def layer_thumbnail(request, layername):
         else:
             image = None
             try:
-                image = _prepare_thumbnail_body_from_opts(request.body,
-                                                            request=request)
+                image = _prepare_thumbnail_body_from_opts(
+                    request.body, request=request)
             except BaseException:
                 image = _render_thumbnail(request.body)
 

@@ -46,8 +46,6 @@ from django.utils.html import strip_tags
 from django.db.models import F
 from django.views.decorators.clickjacking import (xframe_options_exempt,
                                                   xframe_options_sameorigin)
-from django.views.decorators.http import require_http_methods
-
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.layers.views import _resolve_layer
@@ -1359,14 +1357,15 @@ def ajax_url_lookup(request):
         content_type='text/plain'
     )
 
-@require_http_methods(["POST",])
+
+@require_http_methods(["POST"])
 def map_thumbnail(request, mapid):
     map_obj = _resolve_map(request, mapid)
     try:
         image = None
         try:
-            image = _prepare_thumbnail_body_from_opts(request.body,
-                                                        request=request)
+            image = _prepare_thumbnail_body_from_opts(
+                request.body, request=request)
         except BaseException:
             image = _render_thumbnail(request.body)
 
