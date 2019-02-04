@@ -69,8 +69,12 @@ from treebeard.mp_tree import MP_Node
 
 from geonode.people.enumerations import ROLE_VALUES
 
-from oauthlib.common import generate_token
-from oauth2_provider.models import AccessToken, get_application_model
+from geonode.base.oauth import (get_or_create_token,
+                                delete_old_tokens,
+                                set_session_token,
+                                get_session_token,
+                                remove_session_token)
+from oauth2_provider.models import AccessToken
 
 logger = logging.getLogger(__name__)
 
@@ -1458,38 +1462,7 @@ def do_login(sender, user, request, **kwargs):
     if user and user.is_authenticated():
         token = None
         try:
-            Application = get_application_model()
-            app = Application.objects.get(name="GeoServer")
-
-            # Lets create a new one
-            token = generate_token()
-
-            # 1 day expiration time by default
-            _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', 86400)
-            _expire_time = datetime.datetime.now(timezone.get_current_timezone())
-            _expire_delta = datetime.timedelta(seconds=_expire_seconds)
-
-            # Let's create the new AUTH TOKEN
-            existing_token = None
-            try:
-                existing_token = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
-                if existing_token and existing_token.expires < _expire_time:
-                    existing_token = None
-                    existing_token.delete()
-            except BaseException:
-                existing_token = None
-                tb = traceback.format_exc()
-                if tb:
-                    logger.debug(tb)
-
-            if not existing_token:
-                (token, created) = AccessToken.objects.get_or_create(
-                    user=user,
-                    application=app,
-                    expires=_expire_time + _expire_delta,
-                    token=token)
-            else:
-                token = existing_token
+            token = get_or_create_token(user)
         except BaseException:
             u = uuid.uuid1()
             token = u.hex
@@ -1515,7 +1488,7 @@ def do_login(sender, user, request, **kwargs):
             u = uuid.uuid1()
             jsessionid = u.hex
 
-        request.session['access_token'] = token
+        set_session_token(request.session, token)
         request.session['JSESSIONID'] = jsessionid
 
 
@@ -1528,27 +1501,14 @@ def do_logout(sender, user, request, **kwargs):
     header_params = {}
     if 'access_token' in request.session:
         try:
-            Application = get_application_model()
-            app = Application.objects.get(name="GeoServer")
-
-            _expire_time = datetime.datetime.now(timezone.get_current_timezone())
-
-            # Lets delete the old one
-            try:
-                old_tokens = AccessToken.objects.filter(user=user, application=app).order_by('-expires')
-                for old in old_tokens:
-                    if old.expires < _expire_time:
-                        old.delete()
-            except BaseException:
-                tb = traceback.format_exc()
-                if tb:
-                    logger.debug(tb)
+            delete_old_tokens(user)
         except BaseException:
             pass
 
         # Do GeoServer Logout
-        if request and 'access_token' in request.session:
-            access_token = request.session['access_token']
+
+        if request:
+            access_token = get_session_token(request.session)
         else:
             access_token = None
 
@@ -1594,8 +1554,7 @@ def do_logout(sender, user, request, **kwargs):
             if tb:
                 logger.debug(tb)
 
-        if 'access_token' in request.session:
-            del request.session['access_token']
+        remove_session_token(request.session)
 
         request.session.modified = True
 

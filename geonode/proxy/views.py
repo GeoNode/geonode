@@ -46,7 +46,9 @@ from geonode.utils import (resolve_object,
                            check_ogc_backend,
                            get_dir_time_suffix,
                            zip_dir)
-from geonode.base.oauth import extend_oauth_token, get_auth_token_from_auth_header
+from geonode.base.oauth import (extend_token,
+                                get_token_from_auth_header,
+                                get_token_object_from_session)
 from geonode import geoserver, qgis_server  # noqa
 
 TIMEOUT = 30
@@ -160,14 +162,14 @@ def proxy(request, url=None, response_callback=None,
             'HTTP_AUTHORIZATION',
             request.META.get('HTTP_AUTHORIZATION2'))
         if auth_header:
-            access_token = get_auth_token_from_auth_header(auth_header)
+            access_token = get_token_from_auth_header(auth_header)
     # otherwise we check if a session is active
-    elif request and 'access_token' in request.session:
-        access_token = request.session['access_token']
+    elif request and request.user.is_authenticated  :
+        access_token = get_token_object_from_session(request.session)
+
         # we extend the token in case the session is active but the token expired
         if access_token and access_token.is_expired():
-            extend_oauth_token(access_token)
-            request.session['access_token'] = access_token
+            extend_token(access_token)
 
     if access_token:
         headers['Authorization'] = 'Bearer %s' % access_token
