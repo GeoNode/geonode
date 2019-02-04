@@ -163,7 +163,7 @@ def proxy(request, url=None, response_callback=None,
         if auth_header:
             access_token = get_token_from_auth_header(auth_header)
     # otherwise we check if a session is active
-    elif request and request.user.is_authenticated  :
+    elif request and request.user.is_authenticated:
         access_token = get_token_object_from_session(request.session)
 
         # we extend the token in case the session is active but the token expired
