@@ -487,7 +487,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
             layer_url = urlparse.urlsplit(layer.ows_url).netloc
 
             if access_token and ogc_server_url == layer_url and 'access_token' not in layer.ows_url:
-                url = layer.ows_url+'?access_token='+access_token
+                url = '%s?access_token=%s' % (layer.ows_url, access_token)
             else:
                 url = layer.ows_url
             maplayer = MapLayer(
