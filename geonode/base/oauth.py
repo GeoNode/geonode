@@ -12,19 +12,11 @@ from oauthlib.common import generate_token
 logger = logging.getLogger(__name__)
 
 
-def make_token_expiration(seconds = 86400):
+def make_token_expiration(seconds=86400):
     _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', seconds)
     _expire_time = datetime.datetime.now(timezone.get_current_timezone())
     _expire_delta = datetime.timedelta(seconds=_expire_seconds)
     return _expire_time + _expire_delta
-
-
-def is_old_token(token, seconds = 86400):
-    _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', seconds)
-    _expire_time = datetime.datetime.now(timezone.get_current_timezone())
-    _expire_delta = datetime.timedelta(seconds=_expire_seconds)
-
-    token.expires < _expire_time
 
 
 def create_auth_token(user, client="GeoServer"):
@@ -57,19 +49,11 @@ def get_or_create_token(user, client="GeoServer"):
     application = get_application_model()
     app = application.objects.get(name=client)
 
-    # Lets create a new one
-    token = generate_token()
-
-    # 1 day expiration time by default
-    _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', 86400)
-    _expire_time = datetime.datetime.now(timezone.get_current_timezone())
-    _expire_delta = datetime.timedelta(seconds=_expire_seconds)
-
     # Let's create the new AUTH TOKEN
     existing_token = None
     try:
         existing_token = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
-        if existing_token and is_old_token(existing_token):
+        if existing_token and existing_token.is_expired():
             existing_token.delete()
             existing_token = None
     except BaseException:
@@ -133,5 +117,3 @@ def get_token_object_from_session(session):
 def remove_session_token(session):
     if 'access_token' in session:
         del session['access_token']
-
-

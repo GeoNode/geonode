@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-import datetime
 import math
 import os
 import re
@@ -36,7 +35,6 @@ from urlparse import urljoin, urlsplit
 from django.db import models
 from django.core import serializers
 from django.db.models import Q, signals
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -74,7 +72,6 @@ from geonode.base.oauth import (get_or_create_token,
                                 set_session_token,
                                 get_session_token,
                                 remove_session_token)
-from oauth2_provider.models import AccessToken
 
 logger = logging.getLogger(__name__)
 
