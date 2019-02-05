@@ -113,8 +113,10 @@ def get_session_token(session):
 def get_token_object_from_session(session):
     if 'access_token' in session:
         try:
-            return AccessToken.objects.get(token=str(session['access_token']))
+            return AccessToken.objects.get(token=get_session_token(session))
         except BaseException:
+            del session['access_token']
+            session.modified = True
             return None
     return None
 
