@@ -70,7 +70,7 @@ def get_or_create_token(user, client="GeoServer"):
     return token
 
 
-def delete_old_tokens(user, client='Geoserver'):
+def delete_old_tokens(user, client='GeoServer'):
     application = get_application_model()
     app = application.objects.get(name=client)
 

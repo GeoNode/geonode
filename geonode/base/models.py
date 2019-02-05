@@ -24,9 +24,6 @@ import re
 import logging
 import traceback
 import uuid
-import urllib
-import urllib2
-import cookielib
 
 from geonode.decorators import on_ogc_backend
 from pyproj import transform, Proj
@@ -70,7 +67,6 @@ from geonode.people.enumerations import ROLE_VALUES
 from geonode.base.oauth import (get_or_create_token,
                                 delete_old_tokens,
                                 set_session_token,
-                                get_session_token,
                                 remove_session_token)
 
 logger = logging.getLogger(__name__)
@@ -1464,95 +1460,20 @@ def do_login(sender, user, request, **kwargs):
             u = uuid.uuid1()
             token = u.hex
             tb = traceback.format_exc()
-            if tb:
-                logger.debug(tb)
-
-        # Do GeoServer Login
-        url = "%s%s&access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                                        'ows?service=wms&version=1.3.0&request=GetCapabilities',
-                                        token)
-
-        cj = cookielib.CookieJar()
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-
-        jsessionid = None
-        try:
-            opener.open(url)
-            for c in cj:
-                if c.name == "JSESSIONID":
-                    jsessionid = c.value
-        except BaseException:
-            u = uuid.uuid1()
-            jsessionid = u.hex
+            logger.debug(tb)
 
         set_session_token(request.session, token)
-        request.session['JSESSIONID'] = jsessionid
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def do_logout(sender, user, request, **kwargs):
-    """
-    Take action on user logout. Cleanup user access_token and send logout
-    request to GeoServer
-    """
-    header_params = {}
     if 'access_token' in request.session:
         try:
             delete_old_tokens(user)
         except BaseException:
-            pass
-
-        # Do GeoServer Logout
-
-        if request:
-            access_token = get_session_token(request.session)
-        else:
-            access_token = None
-
-        if access_token:
-            url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                                            settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'],
-                                            access_token)
-            header_params = {
-                "Authorization": ("Bearer %s" % access_token)
-            }
-        else:
-            url = "%s%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                            settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'])
-
-        param = {}
-        data = urllib.urlencode(param)
-
-        cookies = None
-        for cook in request.COOKIES:
-            name = str(cook)
-            value = request.COOKIES.get(name)
-            if name == 'csrftoken':
-                header_params['X-CSRFToken'] = value
-
-            cook = "%s=%s" % (name, value)
-            if not cookies:
-                cookies = cook
-            else:
-                cookies = cookies + '; ' + cook
-
-        if cookies:
-            if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
-                cookies = cookies + '; JSESSIONID=' + \
-                    request.session['JSESSIONID']
-            header_params['Cookie'] = cookies
-
-        gs_request = urllib2.Request(url, data, header_params)
-
-        try:
-            urllib2.urlopen(gs_request)
-        except BaseException:
             tb = traceback.format_exc()
-            if tb:
-                logger.debug(tb)
-
+            logger.debug(tb)
         remove_session_token(request.session)
-
         request.session.modified = True
 
 

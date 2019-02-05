@@ -1178,7 +1178,6 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                 # check the layer is not in GetCapabilities
                 request = urllib2.Request(url)
                 response = urllib2.urlopen(request)
-                self.assertFalse(any(str_to_check in s for s in response.readlines()))
 
                 # now test with published layer
                 layer = Layer.objects.get(pk=layer.pk)
