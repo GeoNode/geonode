@@ -53,7 +53,7 @@ class LoginRequiredMiddleware(object):
             settings,
             "AUTH_EXEMPT_URLS",
             ()))
-    redirect_to = reverse('account_login')
+    redirect_to = getattr(settings, 'LOGIN_URL', reverse('account_login'))
 
     def process_request(self, request):
         if not request.user.is_authenticated(
