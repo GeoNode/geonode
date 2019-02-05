@@ -11,7 +11,7 @@
         <a data-value="{{ tk.id }}"
            data-filter="tkeywords__id__in"
            ng-click="multiple_choice_listener($event)"
-           class="{{tk.active}}">{{ tk.label | limitTo: 25 }}{{ tk.label.length > 25 ? '...' : ''}}
+           class="{{tk.active}} multiSelector">{{ tk.label | limitTo: 25 }}{{ tk.label.length > 25 ? '...' : ''}}
             <span class="badge pull-right">{{ tk.count }}</span>
         </a>
       </li>
@@ -23,6 +23,3 @@
 {% endfor %}
 
 </div>
-
-
-

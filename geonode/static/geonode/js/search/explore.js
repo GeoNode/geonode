@@ -29,6 +29,8 @@ $(function() {
         .attr("class", "fa fa-chevron-left");
     }
   });
+
+  /*
   $("nav a.toggle-nav").click(function(e) {
     e.preventDefault();
     if (
@@ -54,6 +56,7 @@ $(function() {
         .attr("class", "fa fa-chevron-down");
     }
   });
+  */
 });
 
 function setContentWidth() {

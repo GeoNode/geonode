@@ -6,10 +6,15 @@ import getSortFilter from "app/search/functions/getSortFilter";
   queryObject
 */
 
-export default ({ element, query, singleValue = true }) => {
+export default ({
+  element,
+  query,
+  singleValue = true,
+  selectionClass = "selected"
+}) => {
   const modifiedQuery = modifyQuery({
     value: element.attr("data-value"),
-    selectionType: !element.hasClass("selected") ? "select" : "unselect",
+    selectionType: !element.hasClass(selectionClass) ? "select" : "unselect",
     query,
     filter: element.attr("data-filter"),
     singleValue

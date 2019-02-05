@@ -9,7 +9,8 @@ export default ({
   selectionType = "select",
   query = {},
   filter = "keywords__slug__in",
-  singleValue = false
+  singleValue = false,
+  sortFilter = null
 }) => {
   const dataFilter = filter;
   let queryEntry = [];
@@ -42,6 +43,10 @@ export default ({
 
   if (selectionType === "select") {
     query[dataFilter] = queryEntry;
+  }
+
+  if (sortFilter) {
+    query.sortFilter = sortFilter;
   }
 
   // return the modified query

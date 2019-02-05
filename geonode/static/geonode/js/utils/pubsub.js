@@ -5,8 +5,8 @@ import PubSub from "pubsub-js";
 */
 
 export default {
-  publish(data) {
-    PubSub.publish(data);
+  publish(event, data) {
+    PubSub.publish(event, data);
   },
   subscribe(event, callback) {
     PubSub.subscribe(event, callback);

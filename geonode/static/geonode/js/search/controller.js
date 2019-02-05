@@ -5,12 +5,17 @@ import TextSearchForm from "app/search/components/TextSearchForm";
 import angularShim from "app/utils/angularShim";
 import locationUtils from "app/utils/locationUtils";
 import modifyQuery from "app/search/functions/modifyQuery";
-import getSortFilter from "app/search/functions/getSortFilter";
 import queryFetch from "app/search/functions/queryFetch";
-import buildRequestQueue from "app/search/functions/buildRequestQueue";
+import requestMultiple from "app/search/functions/requestMultiple";
 import addSortFilterToQuery from "app/search/functions/addSortFilterToQuery";
 import activateFilters from "app/search/functions/activateFilters";
-import toggleList from "app/search/functions/toggleList";
+import activateSidebarToggle from "app/search/functions/activateSidebarToggle";
+import toggleClass from "app/search/functions/toggleClass";
+import getRequestQueue from "app/search/functions/getRequestQueue";
+import MultiSelector from "app/search/components/MultiSelector";
+import MultiList from "app/search/components/MultiList";
+import React from "react";
+import ReactDOM from "react-dom";
 
 export default (() => {
   const searcher = Search({
@@ -63,72 +68,6 @@ export default (() => {
   };
 
   /*
-  * Load categories and keywords
-  */
-  module.run($rootScope => {
-    /*
-    * Load categories and keywords if the filter is available in the page
-    * and set active class if needed
-    */
-
-    const requestQueue = [
-      {
-        id: "categories",
-        endpoint: window.CATEGORIES_ENDPOINT,
-        requestParam: "title__icontains",
-        filterParam: "category__identifier__in",
-        alias: "identifier"
-      },
-      {
-        id: "groupcategories",
-        endpoint: window.GROUP_CATEGORIES_ENDPOINT,
-        requestParam: "name__icontains",
-        filterParam: "slug",
-        alias: "identifier"
-      },
-      {
-        id: "regions",
-        endpoint: window.REGIONS_ENDPOINT,
-        requestParam: "title__icontains",
-        filterParam: "regions__name__in",
-        alias: "name"
-      },
-      {
-        id: "owners",
-        endpoint: window.OWNERS_ENDPOINT,
-        requestParam: "title__icontains",
-        filterParam: "owner__username__in",
-        alias: "identifier"
-      },
-      {
-        id: "tkeywords",
-        endpoint: window.T_KEYWORDS_ENDPOINT,
-        requestParam: "title__icontains",
-        filterParam: "tkeywords__id__in",
-        alias: "id"
-      },
-      {
-        id: "tkeywords",
-        endpoint: window.H_KEYWORDS_ENDPOINT,
-        requestParam: "title__icontains",
-        filterParam: "tkeywords__id__in",
-        alias: "id"
-      }
-      // Only make the request if a page element possessing the id exists
-    ].filter(req => $(`#${req.id}`).length > 0);
-
-    module.loadHKeywords();
-
-    buildRequestQueue(requestQueue).then(data => {
-      for (let i = 0; i < requestQueue.length; i += 1) {
-        $rootScope[requestQueue[i].id] = data[i];
-      }
-    });
-
-    activateFilters();
-  });
-
-  /*
   * Main search controller
   * Load data from api and defines the multiple and single choice handlers
   * Syncs the browser url with the selections
@@ -136,6 +75,41 @@ export default (() => {
   module.controller(
     "geonode_search_controller",
     ($injector, $scope, $location, Configs) => {
+      /*
+      * Load categories and keywords if the filter is available in the page
+      * and set active class if needed
+      */
+
+      module.loadHKeywords();
+      const requestQueue = getRequestQueue();
+      requestMultiple(requestQueue).then(data => {
+        for (let i = 0; i < requestQueue.length; i += 1) {
+          $scope[requestQueue[i].id] = data[i];
+        }
+        const ownersList = $scope.owners
+          .filter(owner => owner.count)
+          .map((owner, i) => {
+            const model = { name: owner.username, count: owner.count };
+
+            return (
+              <MultiSelector
+                key={i}
+                filter="owner__username__in"
+                model={model}
+              />
+            );
+          });
+
+        ReactDOM.render(
+          <MultiList selectors={ownersList} name="Owners" />,
+          document.getElementById(`ownerMultiList`)
+        );
+        activateSidebarToggle();
+        syncScope($scope, searcher);
+      });
+
+      activateFilters();
+
       searcher.set("query", locationUtils.getUrlParams());
       searcher.setQueryProp(
         "limit",
@@ -175,6 +149,19 @@ export default (() => {
         });
       }
       queryApi(searcher.get("query"));
+
+      // Handle multiselection filter click.
+      PubSub.subscribe("multiSelectClicked", (event, data) => {
+        const modifiedQuery = modifyQuery({
+          value: data.value,
+          selectionType: data.selectionType,
+          query: searcher.get("query"),
+          filter: data.filter,
+          singleValue: false
+        });
+        searcher.set("query", modifiedQuery);
+        queryApi(searcher.get("query"));
+      });
 
       /*
         Text search management
@@ -252,66 +239,22 @@ export default (() => {
         updateKWQuery(element, "unselect");
       });
 
-      /*
-    * Add the selection behavior to the element, it adds/removes the 'active' class
-    * and pushes/removes the value of the element from the query object
-    */
-      $scope.multiple_choice_listener = $event => {
-        var element = $($event.currentTarget);
-        var queryEntry = [];
-        var dataFilter = element.attr("data-filter");
-        var value = element.attr("data-value");
+      // Multiple choice listener
 
-        // If the query object has the record then grab it
-        if ($scope.query.hasOwnProperty(dataFilter)) {
-          // When in the location are passed two filters of the same
-          // type then they are put in an array otherwise is a single string
-          if ($scope.query[dataFilter] instanceof Array) {
-            queryEntry = $scope.query[dataFilter];
-          } else {
-            queryEntry.push($scope.query[dataFilter]);
-          }
-        }
-
-        // If the element is active active then deactivate it
-        if (element.hasClass("active")) {
-          // clear the active class from it
-          element.removeClass("active");
-
-          // Remove the entry from the correct query in scope
-
-          queryEntry.splice(queryEntry.indexOf(value), 1);
-        } else if (!element.hasClass("active")) {
-          // if is not active then activate it
-          // Add the entry in the correct query
-          if (queryEntry.indexOf(value) === -1) {
-            queryEntry.push(value);
-          }
-          element.addClass("active");
-        }
-
-        // save back the new query entry to the scope query
-        $scope.query[dataFilter] = queryEntry;
-
-        // if the entry is empty then delete the property from the query
-        if (queryEntry.length === 0) {
-          delete $scope.query[dataFilter];
-        }
-        queryApi($scope.query);
-      };
-
-      $("[data-filter*='order_by']").on("click", $event => {
-        const $element = $($event.toElement);
-        const updatedQuery = addSortFilterToQuery({
-          element: $element,
-          query: searcher.get("query")
+      setTimeout(() => {
+        $(".multiSelector").on("click", $event => {
+          const $element = $($event.toElement);
+          const updatedQuery = addSortFilterToQuery({
+            element: $element,
+            query: searcher.get("query"),
+            selectionClass: "active",
+            singleValue: false
+          });
+          searcher.set("query", updatedQuery);
+          toggleClass($element, "active");
+          queryApi(searcher.get("query"));
         });
-        searcher.set("query", updatedQuery);
-        if (!$element.hasClass("selected")) {
-          toggleList({ element: $element });
-          queryApi();
-        }
-      });
+      }, 2000);
 
       /*
     * Region search management

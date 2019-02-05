@@ -4,6 +4,7 @@ const path = require("path");
 module.exports = {
   context: __dirname,
   devtool: "cheap-eval-source-map",
+  mode: "development",
   entry: {
     search: "./geonode/js/search/index.js"
   },
