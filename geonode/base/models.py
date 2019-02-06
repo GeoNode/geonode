@@ -18,16 +18,12 @@
 #
 #########################################################################
 
-import datetime
 import math
 import os
 import re
 import logging
 import traceback
 import uuid
-import urllib
-import urllib2
-import cookielib
 
 from geonode.decorators import on_ogc_backend
 from pyproj import transform, Proj
@@ -36,7 +32,6 @@ from urlparse import urljoin, urlsplit
 from django.db import models
 from django.core import serializers
 from django.db.models import Q, signals
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -69,8 +64,10 @@ from treebeard.mp_tree import MP_Node
 
 from geonode.people.enumerations import ROLE_VALUES
 
-from oauthlib.common import generate_token
-from oauth2_provider.models import AccessToken, get_application_model
+from geonode.base.oauth import (get_or_create_token,
+                                delete_old_tokens,
+                                set_session_token,
+                                remove_session_token)
 
 logger = logging.getLogger(__name__)
 
@@ -1458,144 +1455,25 @@ def do_login(sender, user, request, **kwargs):
     if user and user.is_authenticated():
         token = None
         try:
-            Application = get_application_model()
-            app = Application.objects.get(name="GeoServer")
-
-            # Lets create a new one
-            token = generate_token()
-
-            # 1 day expiration time by default
-            _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', 86400)
-            _expire_time = datetime.datetime.now(timezone.get_current_timezone())
-            _expire_delta = datetime.timedelta(seconds=_expire_seconds)
-
-            # Let's create the new AUTH TOKEN
-            existing_token = None
-            try:
-                existing_token = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
-                if existing_token and existing_token.expires < _expire_time:
-                    existing_token = None
-                    existing_token.delete()
-            except BaseException:
-                existing_token = None
-                tb = traceback.format_exc()
-                if tb:
-                    logger.debug(tb)
-
-            if not existing_token:
-                (token, created) = AccessToken.objects.get_or_create(
-                    user=user,
-                    application=app,
-                    expires=_expire_time + _expire_delta,
-                    token=token)
-            else:
-                token = existing_token
+            token = get_or_create_token(user)
         except BaseException:
             u = uuid.uuid1()
             token = u.hex
             tb = traceback.format_exc()
-            if tb:
-                logger.debug(tb)
+            logger.debug(tb)
 
-        # Do GeoServer Login
-        url = "%s%s&access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                                        'ows?service=wms&version=1.3.0&request=GetCapabilities',
-                                        token)
-
-        cj = cookielib.CookieJar()
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-
-        jsessionid = None
-        try:
-            opener.open(url)
-            for c in cj:
-                if c.name == "JSESSIONID":
-                    jsessionid = c.value
-        except BaseException:
-            u = uuid.uuid1()
-            jsessionid = u.hex
-
-        request.session['access_token'] = token
-        request.session['JSESSIONID'] = jsessionid
+        set_session_token(request.session, token)
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def do_logout(sender, user, request, **kwargs):
-    """
-    Take action on user logout. Cleanup user access_token and send logout
-    request to GeoServer
-    """
     if 'access_token' in request.session:
         try:
-            Application = get_application_model()
-            app = Application.objects.get(name="GeoServer")
-
-            _expire_time = datetime.datetime.now(timezone.get_current_timezone())
-
-            # Lets delete the old one
-            try:
-                old_tokens = AccessToken.objects.filter(user=user, application=app).order_by('-expires')
-                for old in old_tokens:
-                    if old.expires < _expire_time:
-                        old.delete()
-            except BaseException:
-                tb = traceback.format_exc()
-                if tb:
-                    logger.debug(tb)
-        except BaseException:
-            pass
-
-        # Do GeoServer Logout
-        if request and 'access_token' in request.session:
-            access_token = request.session['access_token']
-        else:
-            access_token = None
-
-        if access_token:
-            url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                                            settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'],
-                                            access_token)
-            header_params = {
-                "Authorization": ("Bearer %s" % access_token)
-            }
-        else:
-            url = "%s%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                            settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'])
-
-        param = {}
-        data = urllib.urlencode(param)
-
-        cookies = None
-        for cook in request.COOKIES:
-            name = str(cook)
-            value = request.COOKIES.get(name)
-            if name == 'csrftoken':
-                header_params['X-CSRFToken'] = value
-
-            cook = "%s=%s" % (name, value)
-            if not cookies:
-                cookies = cook
-            else:
-                cookies = cookies + '; ' + cook
-
-        if cookies:
-            if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
-                cookies = cookies + '; JSESSIONID=' + \
-                    request.session['JSESSIONID']
-            header_params['Cookie'] = cookies
-
-        gs_request = urllib2.Request(url, data, header_params)
-
-        try:
-            urllib2.urlopen(gs_request)
+            delete_old_tokens(user)
         except BaseException:
             tb = traceback.format_exc()
-            if tb:
-                logger.debug(tb)
-
-        if 'access_token' in request.session:
-            del request.session['access_token']
-
+            logger.debug(tb)
+        remove_session_token(request.session)
         request.session.modified = True
 
 
