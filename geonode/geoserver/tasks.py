@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+import threading
+
 from celery.app import shared_task
 from celery.utils.log import get_task_logger
 
@@ -32,3 +34,21 @@ def geoserver_update_layers(self, *args, **kwargs):
     Runs update layers.
     """
     return gs_slurp(*args, **kwargs)
+
+
+@shared_task(bind=True)
+def thumbnail_task(self, instance, overwrite=False, check_bbox=False):
+    from .helpers import create_gs_thumbnail
+    create_gs_thumbnail(instance, overwrite, check_bbox)
+
+
+def async_thumbnail(instance, overwrite=False, check_bbox=False):
+    t = threading.Thread(
+        target=thumbnail_task.delay,
+        args=(instance, ),
+        kwargs={
+            'overwrite': overwrite,
+            'check_bbox': check_bbox
+        })
+    t.setDaemon(True)
+    t.start()
