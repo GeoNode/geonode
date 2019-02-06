@@ -4,7 +4,11 @@ import TextSearchForm from "app/search/components/TextSearchForm";
 import angularShim from "app/utils/angularShim";
 import locationUtils from "app/utils/locationUtils";
 import modifyQuery from "app/search/functions/modifyQuery";
+import toggleList from "app/helpers/toggleList";
+import toggleClass from "app/helpers/toggleClass";
+import addSortFilterToQuery from "app/search/functions/addSortFilterToQuery";
 import renderFilterComponents from "app/search/functions/renderFilterComponents";
+import setDefaultSearchState from "app/search/functions/setDefaultSearchState";
 
 export default (() => {
   const searcher = Search({
@@ -57,23 +61,7 @@ export default (() => {
       * and set active class if needed
       */
 
-      renderFilterComponents($scope).then(() => {
-        syncScope($scope, searcher);
-      });
-
-      searcher.set("query", locationUtils.getUrlParams());
-      searcher.setQueryProp(
-        "limit",
-        5
-        // !DJA HACK @TODO: searcher.getQueryProp("limit") || CLIENT_RESULTS_LIMIT
-      );
-      searcher.setQueryProp("offset", searcher.getQueryProp("offset") || 0);
-      searcher.set(
-        "currentPage",
-        Math.round(
-          searcher.getQueryProp("offset") / searcher.getQueryProp("limit") + 1
-        )
-      );
+      setDefaultSearchState(searcher);
 
       const textSearchInstance = TextSearchForm({
         url: window.AUTOCOMPLETE_URL_RESOURCEBASE,
@@ -81,7 +69,7 @@ export default (() => {
       });
 
       // Get data from apis and make them available to the page
-      function queryApi(params) {
+      function queryApi(params = searcher.get("query")) {
         searcher.search(params).then(data => {
           setTimeout(() => {
             $('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();
@@ -93,19 +81,35 @@ export default (() => {
           if (formValue) queryValue = formValue;
           else if (paramExists) queryValue = param;
           else queryValue = "";
-
-          console.log("!!!!!QUERY", searcher.get("query"));
-
           queryValue.replace(/\+/g, " ");
           searcher.set("queryValue", queryValue);
           syncScope($scope, searcher);
         });
       }
-      queryApi(searcher.get("query"));
+      queryApi();
+
+      const enableMultiSelectors = () => {
+        $(".multiSelector").on("click", $event => {
+          const $element = $($event.toElement);
+          const updatedQuery = addSortFilterToQuery({
+            element: $element,
+            query: searcher.get("query"),
+            selectionClass: "active",
+            singleValue: false
+          });
+          searcher.set("query", updatedQuery);
+          toggleClass($element, "active");
+          queryApi(searcher.get("query"));
+        });
+      };
+
+      renderFilterComponents($scope).then(() => {
+        syncScope($scope, searcher);
+        enableMultiSelectors();
+      });
 
       PubSub.subscribe("searchSubmitted", (event, search) => {
         if (search.id !== "text_search") return;
-        PubSub.publish("searchSubmitted", search.id);
         let queryKey;
         if (search.url === "/autocomplete/ProfileAutocomplete/") {
           // a user profile has no title; if search was triggered from
@@ -135,8 +139,9 @@ export default (() => {
         queryApi($scope.query);
       });
 
-      PubSub.subscribe("paginateUp", queryApi);
-      PubSub.subscribe("paginateDown", queryApi);
+      PubSub.subscribe("paginate", () => {
+        queryApi();
+      });
 
       // Handle multiselection filter click.
       PubSub.subscribe("multiSelectClicked", (event, data) => {
@@ -160,39 +165,16 @@ export default (() => {
         queryApi(searcher.get("query"));
       });
 
-      /*
-        Pagination
-      */
       // Control what happens when the total results change
-      const handleResultChange = () => {
-        const numpages = searcher.calculateNumberOfPages(
-          searcher.get("resultCount"),
-          searcher.getQueryProp("limit")
-        );
-        searcher.set("numberOfPages", numpages);
-        // In case the user is viewing a page > 1 and a
-        // subsequent query returns less pages, then
-        // reset the page to one and search again.
-        if (searcher.get("numberOfPages") < searcher.get("currentPage")) {
-          searcher.set("currentPage", 1);
-          searcher.setQueryProp("offset", 0);
-          queryApi(searcher.get("query"));
-        }
-
-        // In case of no results, the number of pages is one.
-        if (searcher.get("numberOfPages") === 0) {
-          searcher.set("numberOfPages", 1);
-        }
+      $scope.$watch("total_counts", () => {
+        searcher.handleResultChange();
         syncScope($scope, searcher);
-      };
-
-      $scope.$watch("total_counts", handleResultChange);
+      });
 
       $scope.paginate_down = searcher.paginateDown;
 
       $scope.paginate_up = searcher.paginateUp;
 
-      $scope.page = searcher.get("currentPage");
       /*
     * End pagination
     */
@@ -218,13 +200,16 @@ export default (() => {
         queryApi();
       };
 
-      // Hierarchical keywords listeners
       PubSub.subscribe("select_h_keyword", ($event, element) => {
         updateKWQuery(element, "select");
       });
 
       PubSub.subscribe("unselect_h_keyword", ($event, element) => {
         updateKWQuery(element, "unselect");
+      });
+
+      PubSub.subscribe("updateNumberOfPages", () => {
+        queryApi();
       });
 
       $scope.feature_select = $event => {
@@ -238,6 +223,19 @@ export default (() => {
           article.addClass("resource_selected");
         }
       };
+
+      $("[data-filter*='order_by']").on("click", $event => {
+        const $element = $($event.toElement);
+        const updatedQuery = addSortFilterToQuery({
+          element: $element,
+          query: searcher.get("query")
+        });
+        searcher.set("query", updatedQuery);
+        if (!$element.hasClass("selected")) {
+          toggleList({ element: $element });
+          queryApi();
+        }
+      });
 
       /*
     * Date management

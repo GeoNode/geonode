@@ -64,7 +64,7 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
         api.incrementCurrentPage();
         const offset = api.getQueryProp("limit") * (api.get("currentPage") - 1);
         api.setQueryProp("offset", offset);
-        PubSub.publish("paginateUp");
+        PubSub.publish("paginate");
       }
     },
     paginateDown: () => {
@@ -74,7 +74,7 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
           "offset",
           api.getQueryProp("limit") * api.get("currentPage") - 1
         );
-        PubSub.publish("paginateDown");
+        PubSub.publish("paginate");
       }
     },
     search: (query = api.get("query")) =>
@@ -89,6 +89,26 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
       api.set("results", data.objects);
       if (data.meta)
         api.set("resultCount", parseInt(data.meta.total_count, 10));
+    },
+    handleResultChange() {
+      const numpages = api.calculateNumberOfPages(
+        api.get("resultCount"),
+        api.getQueryProp("limit")
+      );
+      api.set("numberOfPages", numpages);
+      // In case the user is viewing a page > 1 and a
+      // subsequent query returns less pages, then
+      // reset the page to one and search again.
+      if (api.get("numberOfPages") < api.get("currentPage")) {
+        api.set("currentPage", 1);
+        api.setQueryProp("offset", 0);
+        PubSub.publish("updateNumberOfPages");
+      }
+
+      // In case of no results, the number of pages is one.
+      if (api.get("numberOfPages") === 0) {
+        api.set("numberOfPages", 1);
+      }
     }
   };
   return api;
