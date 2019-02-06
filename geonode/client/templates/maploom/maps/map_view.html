@@ -1,0 +1,51 @@
+{% extends "geonode_base.html" %}
+
+{% load i18n %}
+
+{% block title %} {% trans "Explorer" %} -  {{map.title}} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{{ block.super }}
+<style>
+
+body{
+    padding-bottom: 0px;
+    overflow: hidden;
+}
+
+.maploom{
+    width: 100%;
+    border:0px;
+
+}
+
+</style>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript">
+      $(document).ready(function() {
+
+          var setHeight = function(){
+            return $('.maploom').css({height:$(window).height()-($('.navbar').height()+$('.classification-banner-text').height())});
+          }
+
+          $('#wrap').css({'padding-top':0});
+          $('body').css({'padding-top':$('.classification-banner-text').height()+$('.navbar').height()});
+          setHeight();
+
+          $(window).resize(function(){
+                  setHeight();
+                  });
+
+          });
+    </script>
+{% endblock %}
+
+{% block header %}{{ block.super }} {% endblock %}
+
+{% block middle %}
+        <iframe src="{% if map %}{% url 'map_view' map.id %}{% else %}{% url 'map_new' %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}{% endif %}" allowFullScreen="true" scrolling="auto" class="maploom"></iframe>
+{% endblock %}
+
+{% block footer %}{% endblock %}

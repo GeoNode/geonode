@@ -24,7 +24,6 @@ import logging
 import traceback
 
 from uuid import uuid4
-from urlparse import urlsplit
 
 from django.conf import settings
 from django.template.defaultfilters import slugify, safe
@@ -87,7 +86,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         # ])
 
         self.indexing_method = INDEXED
-        self.name = slugify(urlsplit(self.url).netloc)[:40]
+        self.name = slugify(self.url)[:255]
         self.title = _title
 
     def create_cascaded_store(self):
@@ -328,5 +327,5 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         # ])
 
         self.indexing_method = INDEXED
-        self.name = slugify(urlsplit(self.url).netloc)[:40]
+        self.name = slugify(self.url)[:255]
         self.title = _title

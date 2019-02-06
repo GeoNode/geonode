@@ -3,11 +3,10 @@
 'use strict';
 
 define(function (require, exports) {
-
         var _      = require('underscore'),
-        fileTypes  = require('upload/FileTypes'),
-        path       = require('upload/path'),
-        common     = require('upload/common'),
+        fileTypes  = require('./FileTypes'),
+        path       = require('./path'),
+        common     = require('./common'),
         LayerInfo;
 
     /** Creates an instance of a LayerInfo
@@ -17,14 +16,11 @@ define(function (require, exports) {
      *  @param {name, files}
      */
     LayerInfo = function (options) {
-
         this.id       = null;
         this.name     = null;
         this.files    = null;
-
         this.type     = null;
         this.main     = null;
-
         this.element  = null;
 
         $.extend(this, options || {});
@@ -330,8 +326,12 @@ define(function (require, exports) {
     LayerInfo.prototype.doResume = function (event) {
         $(this).text('Done').attr('disabled','disabled');
         var id = (new Date()).getTime();
-	    var newWin = window.open(window.location.href,
-                id, "toolbar=1,scrollbars=1,location=0,statusbar=0,menubar=1,resizable=1,width=1100,height=800,left = 240,top = 100");
+        /* ****
+         * AF: Switching those two below allows to open a new window instead of redirecting
+         *     the active one.
+         * ****/
+	    // var newWin = window.open(window.location.href,
+        //        id, "toolbar=1,scrollbars=1,location=0,statusbar=0,menubar=1,resizable=1,width=1100,height=800,left = 240,top = 100");
         common.make_request({
             url: event.data.url,
             async: true,
@@ -344,13 +344,21 @@ define(function (require, exports) {
             },
             success: function (resp, status) {
                 if(resp.url && resp.input_required){
-                    // window.location = resp.url;
-                    newWin.location = resp.url;
-                    newWin.focus();
+                    /* ****
+                     * AF: Switching those two below allows to open a new window instead of redirecting
+                     *     the active one.
+                     * ****/
+                    window.location = resp.url;
+                    /* newWin.location = resp.url;
+                    newWin.focus(); */
                 }else {
-                    // window.location = resp.redirect_to;
-                    newWin.location = resp.redirect_to;
-                    newWin.focus();
+                    /* ****
+                     * AF: Switching those two below allows to open a new window instead of redirecting
+                     *     the active one.
+                     * ****/
+                    window.location = resp.redirect_to;
+                    /* newWin.location = resp.redirect_to;
+                    newWin.focus(); */
                 }
             },
         });
@@ -401,7 +409,7 @@ define(function (require, exports) {
     LayerInfo.prototype.startPolling = function() {
         var self = this;
         if (self.polling) {
-            $.ajax({ url: updateUrl("/upload/progress", 'id', self.id), type: 'GET', success: function(data){
+            $.ajax({ url: updateUrl(siteUrl + "upload/progress", 'id', self.id), type: 'GET', success: function(data){
                 // TODO: Not sure we need to do anything here?
                 //console.log('polling');
             }, dataType: "json", complete: setTimeout(function() {self.startPolling()}, 3000), timeout: 30000 });
@@ -415,13 +423,13 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.doFinal = function (resp) {
         var self = this;
-        if (resp.hasOwnProperty('redirect_to') && resp.redirect_to.indexOf('/upload/final') > -1) {
+        if (resp.hasOwnProperty('redirect_to') && resp.redirect_to.indexOf('upload/final') > -1) {
             common.make_request({
                 url: resp.redirect_to,
                 async: true,
                 beforeSend: function() {
                     self.logStatus({
-                        msg: '<p>' + gettext('Performing Final GeoServer Config Step') + '<img class="pull-right" src="/static/geonode/img/loading.gif"></p>',
+                        msg: '<p>' + gettext('Performing Final GeoServer Config Step') + '<img class="pull-right" src="../../static/geonode/img/loading.gif"></p>',
                         level: 'alert-success',
                         empty: 'true'
                     });
@@ -530,7 +538,7 @@ define(function (require, exports) {
                     } else if (resp.status === 'error') {
                         self.polling = false;
                         self.markError(resp.error_msg, resp.status);
-                    } else if (resp.redirect_to.indexOf('/upload/final') > -1) {
+                    } else if (resp.redirect_to.indexOf('upload/final') > -1) {
                         self.doFinal(resp);
                     } else {
                         window.location = resp.url;
@@ -542,7 +550,7 @@ define(function (require, exports) {
             self.markError(resp.error_msg, resp.status);
         } else if (resp.success === true && typeof resp.url != 'undefined') {
             self.doFinal(resp);
-        } else if (resp.success === true && resp.redirect_to.indexOf('/upload/final') > -1) {
+        } else if (resp.success === true && resp.redirect_to.indexOf('upload/final') > -1) {
             self.doFinal(resp);
         }
     };

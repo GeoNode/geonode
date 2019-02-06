@@ -1,12 +1,14 @@
+{% load static from staticfiles %}
+
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 
 {% include "wm_extra/maps/ext_header.html" %}
 {% include "wm_extra/maps/app_header.html" %}
 {% include "wm_extra/maps/geo_header.html" %}
 
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-mixin.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/Geonode-CatalogueApiSearch.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-GeoExplorer.js"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/GeoNode-mixin.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/Geonode-CatalogueApiSearch.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/GeoNode-GeoExplorer.js" %}"></script>
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {

@@ -23,7 +23,7 @@ We are assuming a Ubuntu 16.04.1 LTS development environment, but these instruct
     sudo apt-get update
     sudo apt-get install python-virtualenv python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk postgresql postgis
 
-    # Install Java 8 (needed by latest GeoServer 2.13)
+    # Install Java 8 (needed by latest GeoServer 2.14)
     sudo apt-add-repository ppa:webupd8team/java
     sudo apt-get update
     sudo apt-get install oracle-java8-installer

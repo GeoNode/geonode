@@ -1,11 +1,13 @@
 {% include "geoext/ext_header.html" %}
 {% include "geoext/app_header.html" %}
 {% include "geoext/geo_header.html" %}
-<link href="{{ STATIC_URL}}geonode/css/geoexplorer/map_geoexplorer.css" rel="stylesheet"/>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-mixin.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/Geonode-CatalogueApiSearch.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-GeoExplorer.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+{% load static from staticfiles %}
+
+<link href="{% static "geonode/css/geoexplorer/map_geoexplorer.css" %}" rel="stylesheet"/>
+<script type="text/javascript" src="{% static "geonode/js/extjs/GeoNode-mixin.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/Geonode-CatalogueApiSearch.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/GeoNode-GeoExplorer.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {

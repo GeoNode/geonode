@@ -1,10 +1,11 @@
 {% include "geoext/ext_header.html" %}
 {% include "geoext/app_header.html" %}
 {% include "geoext/geo_header.html" %}
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-mixin.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/Geonode-CatalogueApiSearch.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-GeoExplorer.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+{% load static from staticfiles %}
+<script type="text/javascript" src="{% static "geonode/js/extjs/GeoNode-mixin.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/Geonode-CatalogueApiSearch.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/GeoNode-GeoExplorer.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
 <script type="text/javascript">
 {% autoescape off %}
         var app;
@@ -267,6 +268,7 @@
                   legend_icon_src += '&access_token={{request.session.access_token}}';
                 {% endif %}
                 $('#legend_icon').attr('src', legend_icon_src);
+                $("#legend_sld_title").text(elem.value);
             });
 
             Ext.get(Ext.DomQuery.select(".style-edit")).on("click", function(evt, elem) {

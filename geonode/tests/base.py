@@ -37,6 +37,10 @@ except BaseException:
 
 from geonode.base.populate_test_data import create_models, remove_models
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class GeoNodeBaseSimpleTestSupport(SimpleTestCase):
     pass
@@ -59,11 +63,19 @@ class GeoNodeBaseTestSupport(TestCase):
 
     def setUp(self):
         super(GeoNodeBaseTestSupport, self).setUp()
+        logging.info(" Test setUp. Creating models.")
         self.get_obj_ids = create_models(type=self.get_type)
 
     def tearDown(self):
         super(GeoNodeBaseTestSupport, self).tearDown()
+        logging.info(" Test tearDown. Destroying models / Cleaning up Server.")
         remove_models(self.get_obj_ids, type=self.get_type)
+
+        from django.conf import settings
+        if settings.OGC_SERVER['default'].get(
+                "GEOFENCE_SECURITY_ENABLED", False):
+                from geonode.security.utils import purge_geofence_all
+                purge_geofence_all()
 
 
 class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport,

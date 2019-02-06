@@ -29,7 +29,7 @@ import traceback
 
 from slugify import Slugify
 from httplib import HTTPConnection, HTTPSConnection
-from urlparse import urlsplit, urljoin
+from urlparse import urlparse, urlsplit, urljoin
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils.http import is_safe_url
@@ -45,6 +45,9 @@ from geonode.utils import (resolve_object,
                            check_ogc_backend,
                            get_dir_time_suffix,
                            zip_dir)
+from geonode.base.oauth import (extend_token,
+                                get_token_from_auth_header,
+                                get_token_object_from_session)
 from geonode import geoserver, qgis_server  # noqa
 
 TIMEOUT = 30
@@ -80,10 +83,6 @@ def proxy(request, url=None, response_callback=None,
         locator += '?' + url.query
     if url.fragment != "":
         locator += '#' + url.fragment
-
-    access_token = None
-    if request and 'access_token' in request.session:
-        access_token = request.session['access_token']
 
     # White-Black Listing Hosts
     if sec_chk_hosts and not settings.DEBUG:
@@ -156,23 +155,23 @@ def proxy(request, url=None, response_callback=None,
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     access_token = None
-    if request and 'access_token' in request.session:
-        access_token = request.session['access_token']
-
-    if access_token:
-        # TODO: Bearer is currently cutted of by Djano / GeoServer
-        if request.method in ("POST", "PUT"):
-            headers['Authorization'] = 'Bearer %s' % access_token
-        if access_token and 'access_token' not in locator:
-            query_separator = '&' if '?' in locator else '?'
-            locator = ('%s%saccess_token=%s' %
-                       (locator, query_separator, access_token))
-    elif 'HTTP_AUTHORIZATION' in request.META:
-        auth = request.META.get(
+    # we give precedence to obtained from Aithorization headers
+    if 'HTTP_AUTHORIZATION' in request.META:
+        auth_header = request.META.get(
             'HTTP_AUTHORIZATION',
             request.META.get('HTTP_AUTHORIZATION2'))
-        if auth:
-            headers['Authorization'] = auth
+        if auth_header:
+            access_token = get_token_from_auth_header(auth_header)
+    # otherwise we check if a session is active
+    elif request and request.user.is_authenticated:
+        access_token = get_token_object_from_session(request.session)
+
+        # we extend the token in case the session is active but the token expired
+        if access_token and access_token.is_expired():
+            extend_token(access_token)
+
+    if access_token:
+        headers['Authorization'] = 'Bearer %s' % access_token
 
     site_url = urlsplit(settings.SITEURL)
 
@@ -191,7 +190,17 @@ def proxy(request, url=None, response_callback=None,
         conn = HTTPSConnection(url.hostname, url.port)
     else:
         conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator.encode('utf8'), request.body, headers)
+    parsed = urlparse(raw_url)
+    parsed._replace(path=locator.encode('utf8'))
+
+    _url = parsed.geturl()
+
+    if request.method == "GET" and access_token and 'access_token' not in _url:
+        query_separator = '&' if '?' in _url else '?'
+        _url = ('%s%saccess_token=%s' %
+                (_url, query_separator, access_token))
+
+    conn.request(request.method, _url, request.body, headers)
     response = conn.getresponse()
     content = response.read()
     status = response.status

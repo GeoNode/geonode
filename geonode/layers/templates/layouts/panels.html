@@ -1,7 +1,8 @@
+{% load static from staticfiles %}
 {% load floppyforms %}
 {% load i18n %}
-<!--<link href="{{ STATIC_URL }}lib/css/bootstrap-select.min.css?v={{ VERSION }}" rel="stylesheet" />-->
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+<!--<link href="{% static "lib/css/bootstrap-select.min.css" %}?v={{ VERSION }}" rel="stylesheet" />-->
+<script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
 <style>
 /* general panel styles */
 #mdeditor_form .panel-group .panel{

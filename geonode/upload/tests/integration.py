@@ -98,10 +98,10 @@ def get_wms(version='1.1.1', type_name=None):
     # requests. Either we should roll our own or fix owslib
     if type_name:
         url = GEOSERVER_URL + \
-            '%s/wms?request=getcapabilities' % type_name.replace(':', '/')
+            '%swms?request=getcapabilities' % type_name.replace(':', '/')
     else:
         url = GEOSERVER_URL + \
-            '/wms?request=getcapabilities'
+            'wms?request=getcapabilities'
     return WebMapService(
         url,
         version=version,

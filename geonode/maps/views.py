@@ -34,6 +34,8 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllow
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from django.utils.translation import ugettext as _
+from django.views.decorators.http import require_http_methods
+
 try:
     # Django >= 1.7
     import json
@@ -42,9 +44,8 @@ except ImportError:
     from django.utils import simplejson as json
 from django.utils.html import strip_tags
 from django.db.models import F
-from django.views.decorators.clickjacking import xframe_options_exempt
-from django.views.decorators.http import require_http_methods
-
+from django.views.decorators.clickjacking import (xframe_options_exempt,
+                                                  xframe_options_sameorigin)
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.layers.views import _resolve_layer
@@ -80,7 +81,9 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
 
     # Use the http_client with one that knows the username
     # and password for GeoServer's management user.
-    from geonode.geoserver.helpers import http_client, _render_thumbnail
+    from geonode.geoserver.helpers import (http_client,
+                                           _render_thumbnail,
+                                           _prepare_thumbnail_body_from_opts)
 elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.helpers import ogc_server_settings
     from geonode.utils import http_client
@@ -105,10 +108,11 @@ def _resolve_map(request, id, permission='base.change_resourcebase',
     '''
     Resolve the Map by the provided typename and check the optional permission.
     '''
-    if id.isdigit():
-        key = 'pk'
-    else:
+    if Map.objects.filter(urlsuffix=id).count() > 0:
         key = 'urlsuffix'
+    else:
+        key = 'pk'
+
     return resolve_object(request, Map, {key: id}, permission=permission,
                           permission_msg=msg, **kwargs)
 
@@ -302,10 +306,11 @@ def map_metadata(
         try:
             all_metadata_author_groups = chain(
                 request.user.group_list_all(),
-                GroupProfile.objects.exclude(access="private"))
+                GroupProfile.objects.exclude(
+                    access="private").exclude(access="public-invite"))
         except BaseException:
             all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private")
+                access="private").exclude(access="public-invite")
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 
@@ -429,6 +434,11 @@ def map_embed_widget(request, mapid,
                            _PERMISSION_MSG_VIEW)
     map_bbox = map_obj.bbox_string.split(',')
 
+    # Sanity Checks
+    for coord in map_bbox:
+        if not coord:
+            return
+
     map_layers = MapLayer.objects.filter(
         map_id=mapid).order_by('stack_order')
     layers = []
@@ -504,6 +514,7 @@ def add_layer(request):
     return map_view(request, str(map_obj.id), layer_name=layer_name)
 
 
+@xframe_options_sameorigin
 def map_view(request, mapid, snapshot=None, layer_name=None,
              template='maps/map_view.html'):
     """
@@ -596,6 +607,7 @@ def map_json(request, mapid, snapshot=None):
             )
 
 
+@xframe_options_sameorigin
 def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
     """
     The view that returns the map composer opened to
@@ -790,7 +802,8 @@ def add_layers_to_map_config(
                 if isinstance(o, decimal.Decimal):
                     o = (str(o) for o in [o])
                 _bbox.append(o)
-            return _bbox
+            # Must be in the form : [x0, x1, y0, y1
+            return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
 
         def sld_definition(style):
             from urllib import quote
@@ -835,6 +848,7 @@ def add_layers_to_map_config(
             "name": layer.alternate,
             "title": layer.title,
             "queryable": True,
+            "storeType": layer.storeType,
             "bbox": {
                 layer.srid: {
                     "srs": layer.srid,
@@ -898,9 +912,13 @@ def add_layers_to_map_config(
                 wms_capabilities = wms_capabilities_resp.getvalue()
                 if wms_capabilities:
                     import xml.etree.ElementTree as ET
+                    namespaces = {'wms': 'http://www.opengis.net/wms',
+                                  'xlink': 'http://www.w3.org/1999/xlink',
+                                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+
                     e = ET.fromstring(wms_capabilities)
                     for atype in e.findall(
-                            "./[Name='%s']/Extent[@name='time']" % (layername)):
+                            "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
                         dim_name = atype.get('name')
                         if dim_name:
                             dim_name = str(dim_name).lower()
@@ -947,7 +965,7 @@ def add_layers_to_map_config(
 
             access_token = request.session['access_token'] if request and 'access_token' in request.session else None
             if access_token and ogc_server_url == layer_url and 'access_token' not in layer.ows_url:
-                url = layer.ows_url + '?access_token=' + access_token
+                url = '%s?access_token=%s' % (layer.ows_url, access_token)
             else:
                 url = layer.ows_url
             maplayer = MapLayer(
@@ -1340,24 +1358,33 @@ def ajax_url_lookup(request):
     )
 
 
+@require_http_methods(["POST"])
 def map_thumbnail(request, mapid):
-    if request.method == 'POST':
-        map_obj = _resolve_map(request, mapid)
+    map_obj = _resolve_map(request, mapid)
+    try:
+        image = None
         try:
+            image = _prepare_thumbnail_body_from_opts(
+                request.body, request=request)
+        except BaseException:
             image = _render_thumbnail(request.body)
 
-            if not image:
-                return
-            filename = "map-%s-thumb.png" % map_obj.uuid
-            map_obj.save_thumbnail(filename, image)
-
-            return HttpResponse('Thumbnail saved')
-        except BaseException:
+        if not image:
             return HttpResponse(
-                content='error saving thumbnail',
+                content=_('couldn\'t generate thumbnail'),
                 status=500,
                 content_type='text/plain'
             )
+        filename = "map-%s-thumb.png" % map_obj.uuid
+        map_obj.save_thumbnail(filename, image)
+
+        return HttpResponse(_('Thumbnail saved'))
+    except BaseException:
+        return HttpResponse(
+            content=_('error saving thumbnail'),
+            status=500,
+            content_type='text/plain'
+        )
 
 
 def map_metadata_detail(

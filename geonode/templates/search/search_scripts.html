@@ -1,9 +1,10 @@
 {% load base_tags %}
-{% if DEBUG_STATIC %}
+{% load static from staticfiles %}
 
-<script src="{{ STATIC_URL }}lib/js/angular.js?v={{ VERSION }}"></script>
-<script src="{{ STATIC_URL }}lib/js/angular-leaflet-directive.min.js?v={{ VERSION }}"></script>
-<script src="{{ STATIC_URL }}lib/js/bootstrap-treeview.min.js?v={{ VERSION }}"></script>
+{% if DEBUG_STATIC %}
+<script src="{% static "lib/js/angular.js" %}?v={{ VERSION }}"></script>
+<script src="{% static "lib/js/angular-leaflet-directive.min.js" %}?v={{ VERSION }}"></script>
+<script src="{% static "lib/js/bootstrap-treeview.min.js" %}?v={{ VERSION }}"></script>
 {% endif %}
 
 {% if include_spatial == 'true' %}
@@ -16,9 +17,9 @@
 {% include 'search/_spatial_tags.html' %}
 
 {% endif %}
-<script src="{{ STATIC_URL }}geonode/js/search/explore.js?v={{ VERSION }}"></script>
-<script src="{{ STATIC_URL }}geonode/js/search/search.js?v={{ VERSION }}"></script>
-<script src="{{ STATIC_URL }}geonode/js/search/cart.js"></script>
+<script src="{% static "geonode/js/search/explore.js" %}?v={{ VERSION }}"></script>
+<script src="{% static "geonode/js/search/search.js" %}?v={{ VERSION }}"></script>
+<script src="{% static "geonode/js/search/cart.js" %}"></script>
 <script type="text/javascript">
   $("body").attr('ng-controller', 'geonode_search_controller');
   CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';

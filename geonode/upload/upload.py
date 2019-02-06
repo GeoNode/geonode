@@ -39,6 +39,7 @@ import os.path
 import shutil
 import uuid
 import zipfile
+import traceback
 
 from django.conf import settings
 from django.db.models import Max
@@ -397,7 +398,9 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
         # @todo once the random tmp9723481758915 type of name is not
         # around, need to track the name computed above, for now, the
         # target store name can be used
-    except Exception as e:
+    except BaseException as e:
+        tb = traceback.format_exc()
+        logger.debug(tb)
         logger.exception('Error creating import session')
         raise e
 

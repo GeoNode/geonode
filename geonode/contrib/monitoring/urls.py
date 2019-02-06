@@ -50,6 +50,4 @@ urlpatterns = [
                     name='api_user_notification_config'),
                 url(r'^api/notifications/$', views.api_user_notifications, name='api_user_notifications'),
                 url(r'^api/autoconfigure/$', views.api_autoconfigure, name='api_autoconfigure'),
-
-
               ]

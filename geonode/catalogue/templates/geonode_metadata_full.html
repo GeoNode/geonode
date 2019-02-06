@@ -1,4 +1,6 @@
 {% load i18n %}
+{% load static from staticfiles %}
+
 <html>
 	<head>
     <meta charset="utf-8">
@@ -7,17 +9,17 @@
     <title>{{ resource.title }}</title>
     {% block head %}
       {% if DEBUG_STATIC %}
-      <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}lib/css/select2.css" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}lib/css/jquery-ui.css" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.css" rel="stylesheet"/>
+      <link href="{% static "lib/css/jquery.dataTables.css" %}" rel="stylesheet" />
+      <link href="{% static "lib/css/select2.css" %}" rel="stylesheet"/>
+      <link href="{% static "lib/css/bootstrap.min.css" %}" rel="stylesheet"/>
+      <link href="{% static "lib/css/jquery-ui.css" %}" rel="stylesheet"/>
+      <link href="{% static "lib/css/bootstrap-datetimepicker.css" %}" rel="stylesheet"/>
       {% else %}
-      <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
+      <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
       {% endif %}
-      <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}geonode/css/ux-all.css" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
+      <link href="{% static "geonode/css/ext-compatibility.css" %}" rel="stylesheet" />
+      <link href="{% static "geonode/css/ux-all.css" %}" rel="stylesheet" />
+      <link href="{% static "geonode/css/base.css" %}" rel="stylesheet" />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
 	<style>
 	dl dd{ margin-left:20px; }

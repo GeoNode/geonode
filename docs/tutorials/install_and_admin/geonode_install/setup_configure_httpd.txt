@@ -155,7 +155,7 @@ Place the following content inside the file
         <Directory "/home/geonode/my_geonode/my_geonode/uploaded/documents/">
             Order allow,deny
             Options Indexes FollowSymLinks
-            Allow from all
+            Deny from all
             Require all granted
             IndexOptions FancyIndexing
         </Directory>
@@ -163,7 +163,7 @@ Place the following content inside the file
         <Directory "/home/geonode/my_geonode/my_geonode/uploaded/layers/">
             Order allow,deny
             Options Indexes FollowSymLinks
-            Allow from all
+            Deny from all
             Require all granted
             IndexOptions FancyIndexing
         </Directory>

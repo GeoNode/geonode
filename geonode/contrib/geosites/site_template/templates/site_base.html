@@ -1,4 +1,6 @@
 {% extends "master_base.html" %}
+{% load static from staticfiles %}
+
 {% block extra_head %}
-      <link href="{{ STATIC_URL }}{{ SITE_NAME|lower }}/css/site_base.css" rel="stylesheet"/>
+      <link href="{% static "" + {{ SITE_NAME|lower }} + "/css/site_base.css" %}" rel="stylesheet"/>
 {% endblock %}

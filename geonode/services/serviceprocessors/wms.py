@@ -118,7 +118,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             INDEXED if self._offers_geonode_projection() else CASCADED)
         # self.url = self.parsed_service.url
         # TODO: Check if the name already esists
-        self.name = slugify(urlsplit(self.url).netloc)[:40]
+        self.name = slugify(self.url)[:255]
 
     def create_cascaded_store(self):
         store = self._get_store(create=True)
@@ -298,24 +298,19 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         )
 
     def _create_layer_service_link(self, geonode_layer):
-        Link.objects.get_or_create(
+        ogc_wms_url = geonode_layer.ows_url
+        ogc_wms_name = 'OGC WMS: %s Service' % geonode_layer.store
+        ogc_wms_link_type = 'OGC:WMS'
+        Link.objects.update_or_create(
             resource=geonode_layer.resourcebase_ptr,
-            url=geonode_layer.ows_url,
-            name="OGC {}: {} Service".format(
-                geonode_layer.remote_service.type,
-                geonode_layer.store
-            ),
-            link_type="OGC:WMS",
-            defaults={
-                "extension": "html",
-                "name": "OGC {}: {} Service".format(
-                    geonode_layer.remote_service.type,
-                    geonode_layer.store
-                ),
-                "url": geonode_layer.ows_url,
-                "mime": "text/html",
-                "link_type": "OGC:WMS",
-            }
+            name=ogc_wms_name,
+            link_type=ogc_wms_link_type,
+            defaults=dict(
+                extension='html',
+                url=ogc_wms_url,
+                mime='text/html',
+                link_type=ogc_wms_link_type
+            )
         )
 
     def _get_cascaded_layer_fields(self, geoserver_resource):
@@ -450,7 +445,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         self.indexing_method = (
             INDEXED if self._offers_geonode_projection() else CASCADED)
         # self.url = self.parsed_service.url
-        self.name = slugify(urlsplit(self.url).netloc)[:40]
+        self.name = slugify(self.url)[:255]
 
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service

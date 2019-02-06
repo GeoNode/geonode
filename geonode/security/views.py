@@ -113,8 +113,54 @@ def resource_permissions(request, resource_id):
 
 
 @require_POST
-def set_bulk_permissions(request):
+def invalidate_permissions_cache(request):
+    from .utils import set_geofence_invalidate_cache
+    uuid = request.POST['uuid']
+    resource = get_object_or_404(ResourceBase, uuid=uuid)
+    can_change_permissions = request.user.has_perm(
+        'change_resourcebase_permissions',
+        resource)
+    if can_change_permissions:
+        set_geofence_invalidate_cache()
+        return HttpResponse(
+            json.dumps({'success': 'ok', 'message': 'GeoFence Security Rules Cache Refreshed!'}),
+            status=200,
+            content_type='text/plain'
+        )
+    else:
+        return HttpResponse(
+            json.dumps({'success': 'false', 'message': 'You cannot modify this resource!'}),
+            status=200,
+            content_type='text/plain'
+        )
 
+
+@require_POST
+def invalidate_tiledlayer_cache(request):
+    from .utils import set_geowebcache_invalidate_cache
+    uuid = request.POST['uuid']
+    resource = get_object_or_404(ResourceBase, uuid=uuid)
+    can_change_data = request.user.has_perm(
+        'change_resourcebase',
+        resource)
+    layer = Layer.objects.get(id=resource.id)
+    if layer and can_change_data:
+        set_geowebcache_invalidate_cache(layer.alternate)
+        return HttpResponse(
+            json.dumps({'success': 'ok', 'message': 'GeoWebCache Tiled Layer Emptied!'}),
+            status=200,
+            content_type='text/plain'
+        )
+    else:
+        return HttpResponse(
+            json.dumps({'success': 'false', 'message': 'You cannot modify this resource!'}),
+            status=200,
+            content_type='text/plain'
+        )
+
+
+@require_POST
+def set_bulk_permissions(request):
     permission_spec = json.loads(request.POST.get('permissions', None))
     resource_ids = request.POST.getlist('resources', [])
     if permission_spec is not None:

@@ -2,7 +2,6 @@ const path = require('path');
 const precss = require('precss');
 const autoprefixer = require('autoprefixer');
 
-
 module.exports = {
   entry: ['./src/index'],
   output: {
@@ -11,18 +10,19 @@ module.exports = {
     publicPath: '/static/monitoring/',
   },
   resolveLoader: {
-    fallback: path.join(__dirname, 'node_modules'),
+    modules: ["web_loaders", "web_modules", "node_loaders", "node_modules"],
   },
   module: {
-    preLoaders: [{
-      test: /\.js$/,
-      loader: 'eslint-loader',
-      exclude: /node_modules/,
-    }],
-    loaders: [
+    rules: [{
+        test: /\.js$/,
+        use: ['babel-loader', 'eslint-loader'],
+        enforce: 'pre',
+        exclude: /node_modules/,
+        include: path.join(__dirname, 'src'),
+      },
       {
         test: /\.js$/,
-        loaders: ['babel'],
+        loaders: ['babel-loader'],
         exclude: /node_modules/,
         include: path.join(__dirname, 'src'),
       },
@@ -34,12 +34,11 @@ module.exports = {
       },
       {
         test: /\.csv$/,
-        loaders: ['csv-loader'],
-        options: {
-          dynamicTyping: true,
-          header: true,
-          skipEmptyLines: true,
-        },
+        loaders: [
+          'csv-loader?dynamicTyping=true&header=true&skipEmptyLines=true'
+        ],
+        exclude: /node_modules/,
+        include: path.join(__dirname, 'src'),
       },
       {
         test: /\.geojson$/,
@@ -55,21 +54,24 @@ module.exports = {
           'resolve-url',
           'postcss',
         ],
+        exclude: /node_modules/,
+        include: path.join(__dirname, 'src'),
       },
       {
-        test: /\.(jpe?g|png|gif|svg)$/i,
+        test: /\.(jpe?g|png|gif|woff|woff2|eot|ttf|svg)$/i,
         loaders: [
-          'file?hash=sha512&digest=hex&name=[hash].[ext]',
-          'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false',
+          'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
+          'image-webpack-loader?bypassOnDebug&optimizationLevel=7&interlaced=false',
         ],
+        exclude: /node_modules/,
+        include: path.join(__dirname, 'src'),
       },
       {
         test: /\.(png|woff(2)?|eot|ttf|)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: 'base64-font-loader',
+        loaders: ['base64-font-loader'],
+        exclude: /node_modules/,
+        include: path.join(__dirname, 'src'),
       },
     ],
-  },
-  postcss() {
-    return [precss, autoprefixer];
   },
 };

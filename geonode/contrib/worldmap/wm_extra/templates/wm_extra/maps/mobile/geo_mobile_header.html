@@ -1,0 +1,27 @@
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/openlayers/theme/default/style.css" />
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/OpenLayers.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/geoext/resources/css/geoext-all.css" />
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/GeoExt.js"></script>
+<link rel="stylesheet" href="{{ GEONODE_CLIENT_LOCATION }}externals/gxp/theme/all.css" />
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/gxp.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/app/geoexplorer.css" />
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/app/geoexplorer_mobile.css" />
+<!--[if IE]><link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/app/ie.css"/><![endif]-->
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/GeoExplorer.js"></script>
+<script type="text/javascript">
+
+//Reset SLD defaults for symbolizer, because for some reason
+// it otherwise wreaks havoc with touch dragging
+
+OpenLayers.Renderer.defaultSymbolizer = {
+	    fillColor: "#000000",
+	    strokeColor: "#000000",
+	    strokeWidth: 2,
+	    fillOpacity: 1,
+	    strokeOpacity: 1,
+	    pointRadius: 0,
+	    labelAlign: 'cm'
+};
+
+
+</script>
