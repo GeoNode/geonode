@@ -6,16 +6,9 @@ import angularShim from "app/utils/angularShim";
 import locationUtils from "app/utils/locationUtils";
 import modifyQuery from "app/search/functions/modifyQuery";
 import queryFetch from "app/search/functions/queryFetch";
-import requestMultiple from "app/search/functions/requestMultiple";
 import addSortFilterToQuery from "app/search/functions/addSortFilterToQuery";
-import activateFilters from "app/search/functions/activateFilters";
-import activateSidebarToggle from "app/search/functions/activateSidebarToggle";
 import toggleClass from "app/search/functions/toggleClass";
-import getRequestQueue from "app/search/functions/getRequestQueue";
-import MultiSelector from "app/search/components/MultiSelector";
-import MultiList from "app/search/components/MultiList";
-import React from "react";
-import ReactDOM from "react-dom";
+import renderSidebar from "app/search/functions/renderSidebar";
 
 export default (() => {
   const searcher = Search({
@@ -81,34 +74,9 @@ export default (() => {
       */
 
       module.loadHKeywords();
-      const requestQueue = getRequestQueue();
-      requestMultiple(requestQueue).then(data => {
-        for (let i = 0; i < requestQueue.length; i += 1) {
-          $scope[requestQueue[i].id] = data[i];
-        }
-        const ownersList = $scope.owners
-          .filter(owner => owner.count)
-          .map((owner, i) => {
-            const model = { name: owner.username, count: owner.count };
-
-            return (
-              <MultiSelector
-                key={i}
-                filter="owner__username__in"
-                model={model}
-              />
-            );
-          });
-
-        ReactDOM.render(
-          <MultiList selectors={ownersList} name="Owners" />,
-          document.getElementById(`ownerMultiList`)
-        );
-        activateSidebarToggle();
+      renderSidebar($scope).then(() => {
         syncScope($scope, searcher);
       });
-
-      activateFilters();
 
       searcher.set("query", locationUtils.getUrlParams());
       searcher.setQueryProp(
@@ -240,7 +208,7 @@ export default (() => {
       });
 
       // Multiple choice listener
-
+      /*
       setTimeout(() => {
         $(".multiSelector").on("click", $event => {
           const $element = $($event.toElement);
@@ -255,6 +223,7 @@ export default (() => {
           queryApi(searcher.get("query"));
         });
       }, 2000);
+      */
 
       /*
     * Region search management
