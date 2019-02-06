@@ -34,21 +34,7 @@ const TextSearchForm = ({ url, id }) => {
   });
 
   $btn.click(() => {
-    let queryKey;
-    if (url === "/autocomplete/ProfileAutocomplete/") {
-      // a user profile has no title; if search was triggered from
-      // the /people page, filter by username instead
-      queryKey = "username__icontains";
-    } else {
-      // eslint-disable-next-line
-      console.log("search key", module.getForm().data());
-      queryKey = module.getForm().data("query-key") || "title__icontains";
-    }
-    const searchVal = module.getFormVal();
-    PubSub.publish("textSearchClick", {
-      key: queryKey,
-      val: searchVal
-    });
+    PubSub.publish("searchSubmitted", { id, url, value: module.getFormVal() });
   });
   return module;
 };

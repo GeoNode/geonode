@@ -1,3 +1,8 @@
+/*
+  An array of objects used to request data from the server to build
+  search filters.
+*/
+
 // () => []
 export default () =>
   [

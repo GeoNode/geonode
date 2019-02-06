@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import PubSub from "app/utils/pubsub";
-import ellipseString from "app/search/functions/ellipseString";
-import toggleProp from "app/search/functions/toggleProp";
-import addDisplayNone from "app/search/functions/addDisplayNone";
+import ellipseString from "app/helpers/ellipseString";
+import toggleProp from "app/helpers/toggleProp";
+import addDisplayNone from "app/helpers/addDisplayNone";
 
 export default class MultiSelector extends React.Component {
   static propTypes = {

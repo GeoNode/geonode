@@ -1,14 +1,10 @@
 import Search from "app/search/components/Search";
 import PubSub from "app/utils/pubsub";
-import SelectionTree from "app/search/components/SelectionTree";
 import TextSearchForm from "app/search/components/TextSearchForm";
 import angularShim from "app/utils/angularShim";
 import locationUtils from "app/utils/locationUtils";
 import modifyQuery from "app/search/functions/modifyQuery";
-import queryFetch from "app/search/functions/queryFetch";
-import addSortFilterToQuery from "app/search/functions/addSortFilterToQuery";
-import toggleClass from "app/search/functions/toggleClass";
-import renderSidebar from "app/search/functions/renderSidebar";
+import renderFilterComponents from "app/search/functions/renderFilterComponents";
 
 export default (() => {
   const searcher = Search({
@@ -48,18 +44,6 @@ export default (() => {
     }
   );
 
-  module.loadHKeywords = () => {
-    const params =
-      typeof FILTER_TYPE === "undefined" ? {} : { type: window.FILTER_TYPE };
-    queryFetch(window.H_KEYWORDS_ENDPOINT, { params }).then(data => {
-      SelectionTree({
-        id: "treeview",
-        data,
-        eventId: "h_keyword"
-      });
-    });
-  };
-
   /*
   * Main search controller
   * Load data from api and defines the multiple and single choice handlers
@@ -73,8 +57,7 @@ export default (() => {
       * and set active class if needed
       */
 
-      module.loadHKeywords();
-      renderSidebar($scope).then(() => {
+      renderFilterComponents($scope).then(() => {
         syncScope($scope, searcher);
       });
 
@@ -111,12 +94,49 @@ export default (() => {
           else if (paramExists) queryValue = param;
           else queryValue = "";
 
+          console.log("!!!!!QUERY", searcher.get("query"));
+
           queryValue.replace(/\+/g, " ");
           searcher.set("queryValue", queryValue);
           syncScope($scope, searcher);
         });
       }
       queryApi(searcher.get("query"));
+
+      PubSub.subscribe("searchSubmitted", (event, search) => {
+        if (search.id !== "text_search") return;
+        PubSub.publish("searchSubmitted", search.id);
+        let queryKey;
+        if (search.url === "/autocomplete/ProfileAutocomplete/") {
+          // a user profile has no title; if search was triggered from
+          // the /people page, filter by username instead
+          queryKey = "username__icontains";
+        } else {
+          // eslint-disable-next-line
+          console.log("search key", textSearchInstance.getForm().data());
+          queryKey =
+            textSearchInstance.getForm().data("query-key") ||
+            "title__icontains";
+        }
+        const searchVal = textSearchInstance.getFormVal();
+        searcher.setQueryProp(queryKey, searchVal);
+        queryApi(searcher.get("query"));
+      });
+
+      TextSearchForm({
+        url: window.AUTOCOMPLETE_URL_REGION,
+        id: "region_search"
+      });
+
+      PubSub.subscribe("searchSubmitted", (event, search) => {
+        if (search.id !== "region_search") return;
+        // eslint-disable-next-line
+        $scope.query["regions__name__in"] = search.value;
+        queryApi($scope.query);
+      });
+
+      PubSub.subscribe("paginateUp", queryApi);
+      PubSub.subscribe("paginateDown", queryApi);
 
       // Handle multiselection filter click.
       PubSub.subscribe("multiSelectClicked", (event, data) => {
@@ -207,54 +227,9 @@ export default (() => {
         updateKWQuery(element, "unselect");
       });
 
-      // Multiple choice listener
-      /*
-      setTimeout(() => {
-        $(".multiSelector").on("click", $event => {
-          const $element = $($event.toElement);
-          const updatedQuery = addSortFilterToQuery({
-            element: $element,
-            query: searcher.get("query"),
-            selectionClass: "active",
-            singleValue: false
-          });
-          searcher.set("query", updatedQuery);
-          toggleClass($element, "active");
-          queryApi(searcher.get("query"));
-        });
-      }, 2000);
-      */
-
-      /*
-    * Region search management
-    */
-      var region_autocomplete = $("#region_search_input").yourlabsAutocomplete({
-        url: AUTOCOMPLETE_URL_REGION,
-        choiceSelector: "span",
-        hideAfter: 200,
-        minimumCharacters: 1,
-        appendAutocomplete: $("#region_search_input"),
-        placeholder: gettext("Enter your region here ...")
-      });
-      $("#region_search_input").bind("selectChoice", function(
-        e,
-        choice,
-        region_autocomplete
-      ) {
-        if (choice[0].children[0] == undefined) {
-          $("#region_search_input").val(choice[0].innerHTML);
-          $("#region_search_btn").click();
-        }
-      });
-
-      $("#region_search_btn").click(function() {
-        $scope.query["regions__name__in"] = $("#region_search_input").val();
-        queryApi($scope.query);
-      });
-
-      $scope.feature_select = function($event) {
-        var element = $(event.currentTarget);
-        var article = $(element.parents("article")[0]);
+      $scope.feature_select = $event => {
+        const element = $($event.currentTarget);
+        const article = $(element.parents("article")[0]);
         if (article.hasClass("resource_selected")) {
           element.html("Select");
           article.removeClass("resource_selected");
@@ -272,23 +247,23 @@ export default (() => {
         date__gte: "",
         date__lte: ""
       };
-      var init_date = true;
+      let initDate = true;
       $scope.$watch(
         "date_query",
-        function() {
+        () => {
           if (
-            $scope.date_query.date__gte != "" &&
-            $scope.date_query.date__lte != ""
+            $scope.date_query.date__gte !== "" &&
+            $scope.date_query.date__lte !== ""
           ) {
-            $scope.query["date__range"] =
-              $scope.date_query.date__gte + "," + $scope.date_query.date__lte;
+            $scope.query["date__range"] = `${$scope.date_query
+              .date__gte}, ${$scope.date_query.date__lte}`;
             delete $scope.query["date__gte"];
             delete $scope.query["date__lte"];
-          } else if ($scope.date_query.date__gte != "") {
+          } else if ($scope.date_query.date__gte !== "") {
             $scope.query["date__gte"] = $scope.date_query.date__gte;
             delete $scope.query["date__range"];
             delete $scope.query["date__lte"];
-          } else if ($scope.date_query.date__lte != "") {
+          } else if ($scope.date_query.date__lte !== "") {
             $scope.query["date__lte"] = $scope.date_query.date__lte;
             delete $scope.query["date__range"];
             delete $scope.query["date__gte"];
@@ -297,10 +272,10 @@ export default (() => {
             delete $scope.query["date__gte"];
             delete $scope.query["date__lte"];
           }
-          if (!init_date) {
+          if (!initDate) {
             queryApi($scope.query);
           } else {
-            init_date = false;
+            initDate = false;
           }
         },
         true

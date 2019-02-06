@@ -1,4 +1,4 @@
-import elementExists from "app/search/functions/elementExists";
+import elementExists from "app/helpers/elementExists";
 import MultiSelector from "app/search/components/MultiSelector";
 import MultiList from "app/search/components/MultiList";
 import React from "react";
@@ -6,48 +6,34 @@ import ReactDOM from "react-dom";
 
 const getRequestById = (queue, id) => queue.filter(req => req.id === id)[0];
 
-const fieldMaps = [
-  {
-    id: "owners",
-    value: "username",
-    filter: "owner__username__in",
-    count: "count",
-    content: "full_name"
-  },
-  {
-    id: "categories",
-    value: "identifier",
-    count: "layers_count",
-    content: "gn_description",
-    filter: "category__identifier__in",
-    elId: "layercategories"
-  },
-  {
-    id: "categories",
-    value: "identifier",
-    count: "count",
-    filter: "category__identifier__in",
-    content: "gn_description"
-  }
-];
+// Create a data model to instaniate filter selectors.
+const getModel = (entry, aliasObject) => ({
+  count: entry[aliasObject.count],
+  content: entry[aliasObject.content],
+  value: entry[aliasObject.value]
+});
 
-export default requestQueue => {
-  fieldMaps.map(fieldMap => {
-    const elId = `${fieldMap.elId || fieldMap.id}MultiList`;
+export default (resolvedRequests, filters) => {
+  filters.map(filter => {
+    // If the DOM element doesn't exist, don't attempt to render it.
+    const elId = `${filter.elId || filter.id}MultiList`;
     if (!elementExists(elId)) return false;
-    const data = getRequestById(requestQueue, fieldMap.id).data;
-    const list = data.filter(entry => entry[fieldMap.count]).map((entry, i) => {
-      const model = {
-        name: entry[fieldMap.name],
-        count: entry[fieldMap.count],
-        content: entry[fieldMap.content],
-        value: entry[fieldMap.value]
-      };
-      return <MultiSelector key={i} filter={fieldMap.filter} model={model} />;
-    });
+
+    // Get the data to populate the multiselect filters.
+    const resolvedData = getRequestById(resolvedRequests, filter.id).data;
+
+    // Build an array of filter selectors.
+    const selectors = resolvedData
+      .filter(entry => entry[filter.alias.count])
+      .map((entry, i) => {
+        const model = getModel(entry, filter.alias);
+        return <MultiSelector key={i} filter={filter.filter} model={model} />;
+      });
+
+    // Render the multiselector list.
     ReactDOM.render(
-      <MultiList selectors={list} name={fieldMap.id} />,
-      document.getElementById(`${fieldMap.elId || fieldMap.id}MultiList`)
+      <MultiList selectors={selectors} name={filter.id} />,
+      document.getElementById(`${filter.elId || filter.id}MultiList`)
     );
     return true;
   });

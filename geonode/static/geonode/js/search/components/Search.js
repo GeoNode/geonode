@@ -1,4 +1,4 @@
-import queryFetch from "app/search/functions/queryFetch";
+import queryFetch from "app/helpers/queryFetch";
 import PubSub from "pubsub-js";
 
 const Search = ({ searchURL = "/api/base/" } = {}) => {
@@ -64,7 +64,7 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
         api.incrementCurrentPage();
         const offset = api.getQueryProp("limit") * (api.get("currentPage") - 1);
         api.setQueryProp("offset", offset);
-        api.search();
+        PubSub.publish("paginateUp");
       }
     },
     paginateDown: () => {
@@ -74,7 +74,7 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
           "offset",
           api.getQueryProp("limit") * api.get("currentPage") - 1
         );
-        api.search();
+        PubSub.publish("paginateDown");
       }
     },
     search: (query = api.get("query")) =>
@@ -87,7 +87,8 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
       }),
     setStateFromData(data) {
       api.set("results", data.objects);
-      api.set("resultCount", parseInt(data.meta.total_count, 10));
+      if (data.meta)
+        api.set("resultCount", parseInt(data.meta.total_count, 10));
     }
   };
   return api;

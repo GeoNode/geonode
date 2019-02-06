@@ -1,5 +1,5 @@
 import locationUtils from "app/utils/locationUtils";
-import queryFetch from "app/search/functions/queryFetch";
+import queryFetch from "app/helpers/queryFetch";
 
 /*
   A modified promise queue. Takes an array of objects containing an endpoint
