@@ -22,7 +22,7 @@ import threading
 
 from celery.app import shared_task
 from celery.utils.log import get_task_logger
-
+from .utils import check_broker_status
 from .helpers import gs_slurp
 
 logger = get_task_logger(__name__)
@@ -43,12 +43,17 @@ def thumbnail_task(self, instance, overwrite=False, check_bbox=False):
 
 
 def async_thumbnail(instance, overwrite=False, check_bbox=False):
-    t = threading.Thread(
-        target=thumbnail_task.delay,
-        args=(instance, ),
-        kwargs={
-            'overwrite': overwrite,
-            'check_bbox': check_bbox
-        })
-    t.setDaemon(True)
-    t.start()
+    celery_enabled = check_broker_status()
+    if celery_enabled:
+        thumbnail_task.delay(
+            instance, overwrite=overwrite, check_bbox=check_bbox)
+    else:
+        t = threading.Thread(
+            target=thumbnail_task.delay,
+            args=(instance, ),
+            kwargs={
+                'overwrite': overwrite,
+                'check_bbox': check_bbox
+            })
+        t.setDaemon(True)
+        t.start()
