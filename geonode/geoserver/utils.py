@@ -80,3 +80,11 @@ def check_broker_status():
             running = _check_async()
 
     return running
+
+
+def test_running():
+    return getattr(settings, 'TEST', False) or getattr(settings, 'INTEGRATION',
+                                                       False)
+
+
+celery_enabled = check_broker_status()
