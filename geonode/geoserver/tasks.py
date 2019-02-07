@@ -22,7 +22,7 @@ import threading
 
 from celery.app import shared_task
 from celery.utils.log import get_task_logger
-from .utils import celery_enabled, test_running
+
 from .helpers import gs_slurp
 
 logger = get_task_logger(__name__)
@@ -40,19 +40,3 @@ def geoserver_update_layers(self, *args, **kwargs):
 def thumbnail_task(self, instance, overwrite=False, check_bbox=False):
     from .helpers import create_gs_thumbnail
     create_gs_thumbnail(instance, overwrite, check_bbox)
-
-
-def async_thumbnail(instance, overwrite=False, check_bbox=False):
-    if celery_enabled or test_running():
-        thumbnail_task.delay(
-            instance, overwrite=overwrite, check_bbox=check_bbox)
-    else:
-        t = threading.Thread(
-            target=thumbnail_task.delay,
-            args=(instance, ),
-            kwargs={
-                'overwrite': overwrite,
-                'check_bbox': check_bbox
-            })
-        t.setDaemon(True)
-        t.start()
