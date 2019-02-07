@@ -7,8 +7,8 @@ import modifyQuery from "app/search/functions/modifyQuery";
 import toggleList from "app/helpers/toggleList";
 import toggleClass from "app/helpers/toggleClass";
 import addSortFilterToQuery from "app/search/functions/addSortFilterToQuery";
-import renderFilterComponents from "app/search/functions/renderFilterComponents";
 import setDefaultSearchState from "app/search/functions/setDefaultSearchState";
+import render from "app/search/render";
 
 export default (() => {
   const searcher = Search({
@@ -103,7 +103,7 @@ export default (() => {
         });
       };
 
-      renderFilterComponents($scope).then(() => {
+      render($scope).then(() => {
         syncScope($scope, searcher);
         enableMultiSelectors();
       });
@@ -117,7 +117,6 @@ export default (() => {
           queryKey = "username__icontains";
         } else {
           // eslint-disable-next-line
-          console.log("search key", textSearchInstance.getForm().data());
           queryKey =
             textSearchInstance.getForm().data("query-key") ||
             "title__icontains";
@@ -144,6 +143,8 @@ export default (() => {
       });
 
       // Handle multiselection filter click.
+
+      // @TODO: This can be removed
       PubSub.subscribe("multiSelectClicked", (event, data) => {
         const modifiedQuery = modifyQuery({
           value: data.value,
@@ -226,11 +227,15 @@ export default (() => {
 
       $("[data-filter*='order_by']").on("click", $event => {
         const $element = $($event.toElement);
+        const value = $element.attr("data-value");
+        const dataValue = value === "all" ? "content" : value;
+        searcher.setQueryProp("dataValue", dataValue);
         const updatedQuery = addSortFilterToQuery({
           element: $element,
           query: searcher.get("query")
         });
         searcher.set("query", updatedQuery);
+        syncScope($scope, searcher);
         if (!$element.hasClass("selected")) {
           toggleList({ element: $element });
           queryApi();

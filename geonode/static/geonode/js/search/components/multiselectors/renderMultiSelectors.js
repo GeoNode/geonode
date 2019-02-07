@@ -1,10 +1,12 @@
 import elementExists from "app/helpers/elementExists";
-import MultiSelector from "app/search/components/MultiSelector";
-import MultiList from "app/search/components/MultiList";
+import MultiSelector from "app/search/components/multiselectors/MultiSelector";
+import MultiList from "app/search/components/multiselectors/MultiList";
+import getMultiSelectorData from "app/search/components/multiselectors/getMultiSelectorData";
+import MULTISELECT_FILTERS from "app/search/components/multiselectors/MULTISELECT_FILTERS";
 import React from "react";
 import ReactDOM from "react-dom";
 
-const getRequestById = (queue, id) => queue.filter(req => req.id === id)[0];
+const getObjById = (queue, id) => queue.filter(req => req.id === id)[0];
 
 // Create a data model to instaniate filter selectors.
 const getModel = (entry, aliasObject) => ({
@@ -13,22 +15,28 @@ const getModel = (entry, aliasObject) => ({
   value: entry[aliasObject.value]
 });
 
-export default (resolvedRequests, filters) => {
-  filters.map(filter => {
+function render(multiSelectObjectArray) {
+  MULTISELECT_FILTERS.map(filter => {
     // If the DOM element doesn't exist, don't attempt to render it.
     const elId = `${filter.elId || filter.id}MultiList`;
     if (!elementExists(elId)) return false;
 
     // Get the data to populate the multiselect filters.
-    const resolvedData = getRequestById(resolvedRequests, filter.id).data;
+    const multiSelectFilterData = getObjById(multiSelectObjectArray, filter.id)
+      .data;
 
     // Build an array of filter selectors.
-    const selectors = resolvedData
+    const selectorModels = multiSelectFilterData
       .filter(entry => entry[filter.alias.count])
       .map((entry, i) => {
         const model = getModel(entry, filter.alias);
-        return <MultiSelector key={i} filter={filter.filter} model={model} />;
+        model.filter = filter.filter;
+        return model;
       });
+
+    const selectors = selectorModels.map((model, i) => (
+      <MultiSelector key={i} model={model} />
+    ));
 
     // Render the multiselector list.
     ReactDOM.render(
@@ -37,4 +45,8 @@ export default (resolvedRequests, filters) => {
     );
     return true;
   });
+}
+
+export default $scope => {
+  getMultiSelectorData($scope).then(render);
 };

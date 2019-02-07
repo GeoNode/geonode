@@ -30,5 +30,14 @@ export default [
       count: "count",
       content: "gn_description"
     }
+  },
+  {
+    id: "types",
+    filter: "type__in",
+    alias: {
+      value: "id",
+      count: "count",
+      content: "name"
+    }
   }
 ];

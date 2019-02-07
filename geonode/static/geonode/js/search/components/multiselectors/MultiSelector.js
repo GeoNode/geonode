@@ -7,14 +7,12 @@ import addDisplayNone from "app/helpers/addDisplayNone";
 
 export default class MultiSelector extends React.Component {
   static propTypes = {
-    filter: PropTypes.string,
     model: PropTypes.object,
     hide: PropTypes.bool
   };
   constructor(props) {
     super(props);
     this.model = props.model;
-    this.filter = props.filter;
     this.hide = props.hide;
     this.state = {
       selected: false
@@ -29,8 +27,8 @@ export default class MultiSelector extends React.Component {
   query = () => {
     const data = {
       selectionType: !this.state.selected ? "select" : "unselect",
-      value: this.model.content,
-      filter: this.filter
+      value: this.model.value,
+      filter: this.model.filter
     };
     PubSub.publish("multiSelectClicked", data);
     this.toggleClass();
@@ -42,7 +40,7 @@ export default class MultiSelector extends React.Component {
     <li style={addDisplayNone(this.hide)}>
       <a
         data-value={this.model.value}
-        data-filter={this.filter}
+        data-filter={this.model.filter}
         onClick={this.query}
         className={this.getClassName()}
       >
