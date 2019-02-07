@@ -44,7 +44,6 @@ from geonode.geoserver.helpers import (cascading_delete,
                                        ogc_server_settings,
                                        _stylefilterparams_geowebcache_layer,
                                        _invalidate_geowebcache_layer)
-from geonode.geoserver.tasks import thumbnail_task
 from geonode.base.models import ResourceBase, Link
 from geonode.people.models import Profile
 from geonode.layers.models import Layer

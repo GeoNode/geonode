@@ -17,9 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-import threading
-
 from celery.app import shared_task
 from celery.utils.log import get_task_logger
 
