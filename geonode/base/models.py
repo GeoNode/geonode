@@ -23,9 +23,7 @@ import os
 import re
 import logging
 import traceback
-import uuid
 
-from geonode.decorators import on_ogc_backend
 from pyproj import transform, Proj
 from urlparse import urljoin, urlsplit
 
@@ -39,7 +37,6 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
 from django.contrib.gis.geos import GEOSGeometry
@@ -51,7 +48,6 @@ from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 from agon_ratings.models import OverallRating
 
-from geonode import geoserver
 from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
@@ -63,11 +59,6 @@ from taggit.models import TagBase, ItemBase
 from treebeard.mp_tree import MP_Node
 
 from geonode.people.enumerations import ROLE_VALUES
-
-from geonode.base.oauth import (get_or_create_token,
-                                delete_old_tokens,
-                                set_session_token,
-                                remove_session_token)
 
 logger = logging.getLogger(__name__)
 
@@ -1444,38 +1435,3 @@ def rating_post_save(instance, *args, **kwargs):
 
 
 signals.post_save.connect(rating_post_save, sender=OverallRating)
-
-
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def do_login(sender, user, request, **kwargs):
-    """
-    Take action on user login. Generate a new user access_token to be shared
-    with GeoServer, and store it into the request.session
-    """
-    if user and user.is_authenticated():
-        token = None
-        try:
-            token = get_or_create_token(user)
-        except BaseException:
-            u = uuid.uuid1()
-            token = u.hex
-            tb = traceback.format_exc()
-            logger.debug(tb)
-
-        set_session_token(request.session, token)
-
-
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def do_logout(sender, user, request, **kwargs):
-    if 'access_token' in request.session:
-        try:
-            delete_old_tokens(user)
-        except BaseException:
-            tb = traceback.format_exc()
-            logger.debug(tb)
-        remove_session_token(request.session)
-        request.session.modified = True
-
-
-user_logged_in.connect(do_login)
-user_logged_out.connect(do_logout)
