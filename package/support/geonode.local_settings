@@ -87,7 +87,7 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)
+    'GEOSERVER_PUBLIC_LOCATION', '{}gs/'.format(SITEURL)
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
