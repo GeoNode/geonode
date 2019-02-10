@@ -675,8 +675,6 @@ def gxp2wm(config, map_obj=None):
             source = config['sources'][source_id]
             if 'url' in source:
                 source_url = source['url']
-                # hack
-                source_url = source_url.replace('https', 'http')
                 if settings.GEOSERVER_PUBLIC_LOCATION in source_url:
                     config['sources'][source_id]['url'] = source_url
                     if 'name' in layer_config:
