@@ -1421,7 +1421,7 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
     'send-summary-every-hour': {
         'task': 'geonode.security.tasks.synch_guardian',
-        'schedule': timedelta(seconds=600),
+        'schedule': timedelta(seconds=60),
     }
 }
 
