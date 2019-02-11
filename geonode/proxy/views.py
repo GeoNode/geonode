@@ -45,9 +45,9 @@ from geonode.utils import (resolve_object,
                            check_ogc_backend,
                            get_dir_time_suffix,
                            zip_dir)
-from geonode.base.oauth import (extend_token,
-                                get_token_from_auth_header,
-                                get_token_object_from_session)
+from geonode.base.auth import (extend_token,
+                               get_token_from_auth_header,
+                               get_token_object_from_session)
 from geonode import geoserver, qgis_server  # noqa
 
 TIMEOUT = 30

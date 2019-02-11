@@ -21,7 +21,7 @@
 import errno
 import logging
 import urllib
-
+from .tasks import thumbnail_task
 from urlparse import urlparse, urljoin
 
 from django.conf import settings
@@ -42,7 +42,6 @@ from geonode.geoserver.helpers import (cascading_delete,
                                        set_layer_style,
                                        gs_catalog,
                                        ogc_server_settings,
-                                       create_gs_thumbnail,
                                        _stylefilterparams_geowebcache_layer,
                                        _invalidate_geowebcache_layer)
 from geonode.base.models import ResourceBase, Link
@@ -94,7 +93,7 @@ def geoserver_post_save(instance, sender, **kwargs):
             instance.set_dirty_state()
         logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
         try:
-            create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
+            thumbnail_task.delay(instance, overwrite=True, check_bbox=True)
         except BaseException:
             logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance.alternate))
 
@@ -518,7 +517,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
             'thumbnail_url' in kwargs['update_fields']:
         logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
-        create_gs_thumbnail(instance, overwrite=True)
+        thumbnail_task.delay(instance, overwrite=True)
 
     try:
         Link.objects.filter(resource=instance.resourcebase_ptr, name='Legend').delete()
@@ -647,4 +646,4 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 def geoserver_post_save_map(instance, sender, **kwargs):
     instance.set_missing_info()
     logger.info("... Creating Thumbnail for Map [%s]" % (instance.title))
-    create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
+    thumbnail_task.delay(instance, overwrite=False, check_bbox=True)
