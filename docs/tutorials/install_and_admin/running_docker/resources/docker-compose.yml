@@ -77,7 +77,7 @@ services:
       - UWSGI_CMD=uwsgi --ini /usr/src/app/uwsgi.ini
       - IS_CELERY=false
       - C_FORCE_ROOT=1
-      - GEOSERVER_PUBLIC_LOCATION=http://geonode/geoserver/
+      - GEOSERVER_PUBLIC_LOCATION=http://geonode/gs/
       - GEOSERVER_LOCATION=http://geonode/geoserver/
       - SITEURL=http://geonode/
 
@@ -116,7 +116,7 @@ services:
       - CELERY_CMD=celery worker --app=geonode.celery_app:app -B -l INFO
       - IS_CELERY=true
       - C_FORCE_ROOT=1
-      - GEOSERVER_PUBLIC_LOCATION=http://geonode/geoserver/
+      - GEOSERVER_PUBLIC_LOCATION=http://geonode/gs/
       - GEOSERVER_LOCATION=http://geonode/geoserver/
       - SITEURL=http://geonode/
 
