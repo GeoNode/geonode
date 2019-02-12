@@ -1419,7 +1419,7 @@ DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIG
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
-    'send-summary-every-hour': {
+    'delayed-security-sync-task': {
         'task': 'geonode.security.tasks.synch_guardian',
         'schedule': timedelta(seconds=60),
     }
