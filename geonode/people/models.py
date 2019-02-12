@@ -40,6 +40,7 @@ from geonode.base.auth import (get_or_create_token,
                                set_session_token,
                                remove_session_token)
 from geonode.groups.models import GroupProfile
+from tastypie.models import create_api_key
 # from geonode.notifications_helper import send_notification
 
 from geonode import geoserver
@@ -284,3 +285,4 @@ def do_logout(sender, user, request, **kwargs):
 
 user_logged_in.connect(do_login)
 user_logged_out.connect(do_logout)
+signals.post_save.connect(create_api_key, sender=Profile)
