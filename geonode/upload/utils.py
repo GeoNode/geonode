@@ -744,8 +744,11 @@ def make_geogig_rest_payload(author_name='admin',
         pg_geogig_db = settings.DATABASES[datastore]
         schema = 'public'
         if 'OPTIONS' in pg_geogig_db and 'options' in pg_geogig_db['OPTIONS']:
-            search_path = pg_geogig_db['OPTIONS']['options'].split('=')[-1]
-            schema = map(str.strip, search_path.split(','))[0]
+            detected_schemas = re.findall('((?<=search_path=).*)\s?',
+                                          pg_geogig_db['OPTIONS']['options'])
+            if len(detected_schemas) > 0:
+                schemas = detected_schemas[0]
+                schema = schemas.split(',')[0]
         payload["dbHost"] = pg_geogig_db['HOST']
         payload["dbPort"] = pg_geogig_db.get('PORT', '5432')
         payload["dbName"] = pg_geogig_db['NAME']
