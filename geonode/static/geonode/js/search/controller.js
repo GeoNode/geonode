@@ -1,20 +1,16 @@
 import Search from "app/search/components/Search";
 import PubSub from "app/utils/pubsub";
+import Map from "app/search/components/Map";
 import TextSearchForm from "app/search/components/TextSearchForm";
 import angularShim from "app/utils/angularShim";
 import locationUtils from "app/utils/locationUtils";
 import modifyQuery from "app/search/functions/modifyQuery";
 import toggleList from "app/helpers/toggleList";
-import toggleClass from "app/helpers/toggleClass";
 import addSortFilterToQuery from "app/search/functions/addSortFilterToQuery";
 import setDefaultSearchState from "app/search/functions/setDefaultSearchState";
 import render from "app/search/render";
 
 export default (() => {
-  const searcher = Search({
-    searchURL: "/api/base/"
-  });
-
   /*
     `syncScope` is used as a shim while AngularJS is being phased out of
     the project. The `Search` instance is the single source of truth for
@@ -32,21 +28,7 @@ export default (() => {
     ["dataValue", "sortFilter"]
   ]);
 
-  const module = angular.module(
-    "geonode_main_search",
-    [],
-    $locationProvider => {
-      if (window.navigator.userAgent.indexOf("MSIE") === -1) {
-        $locationProvider.html5Mode({
-          enabled: true,
-          requireBase: false
-        });
-
-        // make sure that angular doesn't intercept the page links
-        angular.element("a").prop("target", "_self");
-      }
-    }
-  );
+  const module = angular.module("geonode_main_search", []);
 
   /*
   * Main search controller
@@ -56,16 +38,28 @@ export default (() => {
   module.controller(
     "geonode_search_controller",
     ($injector, $scope, $location, Configs) => {
-      /*
-      * Load categories and keywords if the filter is available in the page
-      * and set active class if needed
-      */
+      // Create a search instance to track search state
+      const searcher = Search({
+        searchURL: "/api/base/"
+      });
 
       setDefaultSearchState(searcher);
 
+      // Add extent map
+      Map({
+        id: "filter-map"
+      });
+
+      // Add omni search form
       const textSearchInstance = TextSearchForm({
         url: window.AUTOCOMPLETE_URL_RESOURCEBASE,
         id: "text_search"
+      });
+
+      // Add region search form
+      TextSearchForm({
+        url: window.AUTOCOMPLETE_URL_REGION,
+        id: "region_search"
       });
 
       // Get data from apis and make them available to the page
@@ -86,28 +80,16 @@ export default (() => {
           syncScope($scope, searcher);
         });
       }
+
+      // Execute initial query
       queryApi();
 
-      const enableMultiSelectors = () => {
-        $(".multiSelector").on("click", $event => {
-          const $element = $($event.toElement);
-          const updatedQuery = addSortFilterToQuery({
-            element: $element,
-            query: searcher.get("query"),
-            selectionClass: "active",
-            singleValue: false
-          });
-          searcher.set("query", updatedQuery);
-          toggleClass($element, "active");
-          queryApi(searcher.get("query"));
-        });
-      };
-
+      // Render React components
       render($scope).then(() => {
         syncScope($scope, searcher);
-        enableMultiSelectors();
       });
 
+      // Handle omni search
       PubSub.subscribe("searchSubmitted", (event, search) => {
         if (search.id !== "text_search") return;
         let queryKey;
@@ -126,11 +108,7 @@ export default (() => {
         queryApi(searcher.get("query"));
       });
 
-      TextSearchForm({
-        url: window.AUTOCOMPLETE_URL_REGION,
-        id: "region_search"
-      });
-
+      // Handle region search
       PubSub.subscribe("searchSubmitted", (event, search) => {
         if (search.id !== "region_search") return;
         // eslint-disable-next-line
@@ -138,13 +116,18 @@ export default (() => {
         queryApi($scope.query);
       });
 
+      // Handle pagination
       PubSub.subscribe("paginate", () => {
         queryApi();
       });
 
-      // Handle multiselection filter click.
+      // Handle extent map interaction
+      PubSub.subscribe("mapMove", (event, extent) => {
+        searcher.setQueryProp("extent", extent);
+        queryApi(searcher.get("query"));
+      });
 
-      // @TODO: This can be removed
+      // Handle multiselect button click (owners, categories, types)
       PubSub.subscribe("multiSelectClicked", (event, data) => {
         const modifiedQuery = modifyQuery({
           value: data.value,
@@ -157,39 +140,16 @@ export default (() => {
         queryApi(searcher.get("query"));
       });
 
-      /*
-        Text search management
-      */
-
-      PubSub.subscribe("textSearchClick", (event, data) => {
-        searcher.setQueryProp(data.key, data.val);
-        queryApi(searcher.get("query"));
-      });
-
       // Control what happens when the total results change
       $scope.$watch("total_counts", () => {
         searcher.handleResultChange();
         syncScope($scope, searcher);
       });
 
+      // eslint-disable-next-line
       $scope.paginate_down = searcher.paginateDown;
-
+      // eslint-disable-next-line
       $scope.paginate_up = searcher.paginateUp;
-
-      /*
-    * End pagination
-    */
-
-      if (!Configs.hasOwnProperty("disableQuerySync")) {
-        // Keep in sync the page location with the query object
-        $scope.$watch(
-          "query",
-          () => {
-            $location.search($scope.query);
-          },
-          true
-        );
-      }
 
       const updateKWQuery = (element, selectionType) => {
         const updatedQuery = modifyQuery({
@@ -283,57 +243,6 @@ export default (() => {
         },
         true
       );
-
-      /*
-    * Spatial search
-    */
-      if ($(".leaflet_map").length > 0) {
-        angular.extend($scope, {
-          layers: {
-            baselayers: {
-              stamen: {
-                name: "OpenStreetMap Mapnik",
-                type: "xyz",
-                url: "//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                layerOptions: {
-                  subdomains: ["a", "b", "c"],
-                  attribution:
-                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                  continuousWorld: true
-                }
-              }
-            }
-          },
-          map_center: {
-            lat: 5.6,
-            lng: 3.9,
-            zoom: 0
-          },
-          defaults: {
-            zoomControl: false
-          }
-        });
-
-        var leafletData = $injector.get("leafletData"),
-          map = leafletData.getMap("filter-map");
-
-        map.then(function(map) {
-          map.on("moveend", function() {
-            $scope.query["extent"] = map.getBounds().toBBoxString();
-            queryApi($scope.query);
-          });
-        });
-
-        var showMap = false;
-        $("#_extent_filter").click(function(evt) {
-          showMap = !showMap;
-          if (showMap) {
-            leafletData.getMap().then(function(map) {
-              map.invalidateSize();
-            });
-          }
-        });
-      }
     }
   );
 })();

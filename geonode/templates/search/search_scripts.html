@@ -3,7 +3,6 @@
 
 {% if DEBUG_STATIC %}
 <script src="{% static "lib/js/angular.js" %}?v={{ VERSION }}"></script>
-<script src="{% static "lib/js/angular-leaflet-directive.min.js" %}?v={{ VERSION }}"></script>
 <script src="{% static "lib/js/bootstrap-treeview.min.js" %}?v={{ VERSION }}"></script>
 {% endif %}
 
@@ -11,6 +10,7 @@
 <style>
   .filter-map-container {  /* filter map */
     height: 300px;
+    display: block;
   }
 </style>
 
@@ -55,7 +55,8 @@
 
   var deps = ['search'];
   {% if include_spatial == 'true' %}
-  deps.push('leaflet-directive');
+  // @TODO: add this logic to component !DJA
+  // deps.push('leaflet-directive');
   {% endif %}
   angular.bootstrap(document, deps);
 </script>

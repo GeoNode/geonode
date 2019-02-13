@@ -1,6 +1,9 @@
+import PubSub from "app/utils/pubsub";
+
 export default () => {
   $("nav a.toggle-nav").click(function navToggle(e) {
     e.preventDefault();
+    PubSub.publish("sidebarToggle");
     if (
       $(this)
         .parents("h4")

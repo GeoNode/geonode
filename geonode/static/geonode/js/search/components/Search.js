@@ -12,6 +12,7 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
     queryValue: "",
     query: {
       limit: 0,
+      extent: "",
       offset: 0
     }
   };
