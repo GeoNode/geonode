@@ -325,6 +325,9 @@ class CommonModelApi(ModelResource):
                 elif type in LAYER_SUBTYPES.keys():
                     subtypes.append(type)
 
+            if 'vector' in subtypes and 'vector_time' not in subtypes:
+                subtypes.append('vector_time')
+
             if len(subtypes) > 0:
                 types.append("layer")
                 sqs = SearchQuerySet().narrow("subtype:%s" %
