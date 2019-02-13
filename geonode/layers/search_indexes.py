@@ -97,7 +97,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     def prepare_subtype(self, obj):
         if obj.storeType == "dataStore":
             if obj.has_time:
-                return "vectorTimeSeries"
+                return "vector_time"
             else:
                 return "vector"
         elif obj.storeType == "coverageStore":
