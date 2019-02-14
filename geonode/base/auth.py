@@ -74,13 +74,11 @@ def delete_old_tokens(user, client='GeoServer'):
     application = get_application_model()
     app = application.objects.get(name=client)
 
-    _expire_time = datetime.datetime.now(timezone.get_current_timezone())
-
     # Lets delete the old one
     try:
         old_tokens = AccessToken.objects.filter(user=user, application=app).order_by('-expires')
         for old in old_tokens:
-            if old.expires < _expire_time:
+            if old.is_expired():
                 old.delete()
     except BaseException:
         tb = traceback.format_exc()
