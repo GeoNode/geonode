@@ -61,13 +61,43 @@ sed -i -r "s|<user enabled=\".*\" name=\".*\" password=\".*\"/>|<user enabled=\"
 sed -i -r "s|<userRoles username=\".*\">|<userRoles username=\"$ADMIN_USERNAME\">|" "/spcgeonode-geodatadir/security/role/default/roles.xml"
 ADMIN_ENCRYPTED_PASSWORD=""
 
-
 ############################
-# 3. OAUTH2 CONFIGURATION
+# 3. WAIT FOR POSTGRESQL
 ############################
 
 echo "-----------------------------------------------------"
-echo "3. (Re)setting OAuth2 Configuration"
+echo "3. Wait for PostgreSQL to be ready and initialized"
+
+# Wait for PostgreSQL
+set +e
+for i in $(seq 60); do
+    psql -h postgres -U postgres -c "SLECT client_id FROM oauth2_provider_application" &>/dev/null && break
+    sleep 1
+done
+if [ $? != 0 ]; then
+    echo "PostgreSQL not ready or not initialized"
+    exit 1
+fi
+set -e
+
+############################
+# 4. OAUTH2 CONFIGURATION
+############################
+
+echo "-----------------------------------------------------"
+echo "4. (Re)setting OAuth2 Configuration"
+
+# Wait for PostgreSQL
+set +e
+for i in $(seq 60); do
+    psql -h postgres -U postgres -c "SELECT client_id FROM oauth2_provider_application" &>/dev/null && break
+    sleep 1
+done
+if [ $? != 0 ]; then
+    echo "PostgreSQL not ready or not initialized"
+    exit 1
+fi
+set -e
 
 # Edit /spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml
 
@@ -97,11 +127,11 @@ CLIENT_SECRET=""
 
 
 ############################
-# 3. RE(SETTING) BASE URL
+# 5. RE(SETTING) BASE URL
 ############################
 
 echo "-----------------------------------------------------"
-echo "4. (Re)setting Baseurl"
+echo "5. (Re)setting Baseurl"
 
 sed -i -r "s|<proxyBaseUrl>.*</proxyBaseUrl>|<proxyBaseUrl>$BASEURL</proxyBaseUrl>|" "/spcgeonode-geodatadir/global.xml" 
 
