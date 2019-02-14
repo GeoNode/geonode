@@ -35,6 +35,8 @@ services:
     labels:
         org.geonode.component: rabbitmq
         org.geonode.instance.name: geonode
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
 
   celery:
     restart: unless-stopped
@@ -138,4 +140,5 @@ volumes:
     name: ${COMPOSE_PROJECT_NAME}-dbdata
   dbbackups:
     name: ${COMPOSE_PROJECT_NAME}-dbbackups
-
+  rabbitmq:
+    name: ${COMPOSE_PROJECT_NAME}-rabbitmq
