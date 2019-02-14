@@ -72,7 +72,11 @@ def synch_guardian():
                                 sync_geofence_with_guardian(layer, perms, group=group)
 
                         try:
-                            thumbnail_task.delay(layer, overwrite=True, check_bbox=True)
+                            thumbnail_task.delay(
+                                layer.id,
+                                layer.__class__.__name__,
+                                overwrite=True,
+                                check_bbox=True)
                         except BaseException:
                             logger.warn("!WARNING! - Failure while Creating Thumbnail \
                                 for Layer [%s]" % (layer.alternate))
