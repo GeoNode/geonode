@@ -136,7 +136,7 @@ Upgrade Development Environment
             65  GEOSERVER_PUBLIC_LOCATION = os.getenv(                                                                                  49  GEOSERVER_PUBLIC_LOCATION = os.getenv(
             ------------------------------------------------------------------------
             66  #    'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)                                                    <>
-            67      'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'                                                            50      'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+            67      'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'                                                            50      'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/gs/'
             68  )
             ------------------------------------------------------------------------
             69                                                                                                                       =
