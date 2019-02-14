@@ -27,6 +27,7 @@ else
         BASEURL="$BASEURL:$HTTP_PORT"
     fi
 fi
+export BASEURL="$BASEURL/geoserver"
 
 echo "BASEURL is $BASEURL"
 
