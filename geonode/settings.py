@@ -1177,12 +1177,7 @@ LEAFLET_CONFIG = {
             'css': 'lib/css/leaflet-measure.css',
             'js': 'lib/js/leaflet-measure.js',
             'auto-include': True,
-        },
-        'leaflet.draw': {
-            'css': 'lib/css/leaflet.draw.css',
-            'js': 'lib/js/leaflet.draw.js',
-            'auto-include': True,
-        },
+        }
     },
     'SRID': 3857,
     'RESET_VIEW': False
@@ -1194,12 +1189,6 @@ if not DEBUG_STATIC:
         'leaflet-plugins': {
             'js': 'lib/js/leaflet-plugins.min.js',
             'css': 'lib/css/leaflet-plugins.min.css',
-            'auto-include': True,
-        },
-        # added temporary till I merge everything in the .min files
-        'leaflet.draw': {
-            'css': 'lib/css/leaflet.draw.css',
-            'js': 'lib/js/leaflet.draw.js',
             'auto-include': True,
         }
     }

@@ -289,7 +289,6 @@ module.exports = function(grunt) {
             'lib/css/leaflet.fullscreen.css',
             'lib/css/Leaflet.NavBar.css',
             'lib/css/leaflet-measure.css',
-            'lib/css/leaflet.draw.css',
             'lib/css/Control.Opacity.css',
             'lib/css/easy-button.css'
           ]
@@ -342,7 +341,6 @@ module.exports = function(grunt) {
             'lib/js/Leaflet.fullscreen.min.js',
             'lib/js/Leaflet.NavBar.js',
             'lib/js/leaflet-measure.js',
-            'lib/js/leaflet.draw.js',
             'lib/js/Control.Opacity.js',
             'lib/js/easy-button.js'
           ]

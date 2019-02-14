@@ -11,9 +11,9 @@
 
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static 'lib/css/dataTables.css' %}">
-<!-- <link rel="stylesheet" type="text/css" href="{% static 'lib/css/dataTables.bootstrap.min.css' %}"> -->
+
+
 {% leaflet_css %}
-{% leaflet_css plugins="leaflet.draw" %}
 
 <style>
   .leaflet-container {  /* all maps */
@@ -47,15 +47,6 @@
   .leaflet-draw-tooltip {
     display: none;
   }
-
-  /*
-  .modal-dialog {
-    width: 70%;
-    position: relative;
-    overflow-x: auto;
-    padding: 15px;
-  }
-  */
 
 </style>
 
@@ -452,5 +443,6 @@
   }
 
 </script>
+
 {% include "edit_data/edit_data_modal.html" %}
 {% endblock extra_script %}

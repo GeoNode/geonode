@@ -1,9 +1,15 @@
+{% load staticfiles %}
 {% load leaflet_tags %}
-
 {% leaflet_js %}
-{% leaflet_js  plugins="leaflet.draw" %}
+
 {% leaflet_map "preview_add_geom_modal" creatediv=False %}
 
+{% block head %}
+  <link rel="stylesheet" type="text/css" href="{% static 'edit_data/css/leaflet.draw.css' %}">
+{% endblock %}
+
+
+<script src="{% static 'edit_data/js/leaflet.draw.js' %}"></script>
 
 <script type="text/javascript">
     $(function() {
