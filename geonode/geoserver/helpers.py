@@ -33,12 +33,11 @@ import sys
 from threading import local
 import time
 import uuid
-import base64
-import httplib2
 
 import urllib
 from urlparse import urlsplit, urlparse, urljoin
 
+from .utils import geoserver_requests_session
 from agon_ratings.models import OverallRating
 from bs4 import BeautifulSoup
 from dialogos.models import Comment
@@ -86,11 +85,11 @@ def check_geoserver_is_up():
        this is needed to be able to upload.
     """
     url = "%s" % ogc_server_settings.LOCATION
-    resp, content = http_client.request(url, "GET")
+    req = http_client.get(url)
     msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
            'have started it.' % url)
-    logger.debug(resp)
-    assert resp['status'] == '200', msg
+    logger.debug(req)
+    assert req.status_code == 200, msg
 
 
 def _add_sld_boilerplate(symbolizer):
@@ -409,9 +408,9 @@ def cascading_delete(cat, layer_name):
             raise e
 
     if resource is None:
-            # If there is no associated resource,
-            # this method can not delete anything.
-            # Let's return and make a note in the log.
+        # If there is no associated resource,
+        # this method can not delete anything.
+        # Let's return and make a note in the log.
         logger.debug(
             'cascading_delete was called with a non existent resource')
         return
@@ -818,7 +817,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         dft_url = server_url + ("%s?f=json" % layer.alternate)
         try:
             # The code below will fail if http_client cannot be imported
-            body = json.loads(http_client.request(dft_url)[1])
+            req = http_client.get(dft_url)
+            body = req.json()
             attribute_map = [[n["name"], _esri_types[n["type"]]]
                              for n in body["fields"] if n.get("name") and n.get("type")]
         except Exception:
@@ -834,7 +834,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         try:
             # The code below will fail if http_client cannot be imported  or
             # WFS not supported
-            body = http_client.request(dft_url)[1]
+            req = http_client.get(dft_url)
+            body = req.content
             doc = etree.fromstring(body)
             path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(
                 xsd="{http://www.w3.org/2001/XMLSchema}")
@@ -859,7 +860,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 "y": 1
             })
             try:
-                body = http_client.request(dft_url)[1]
+                req = http_client.get(dft_url)
+                body = req.content
                 soup = BeautifulSoup(body)
                 for field in soup.findAll('th'):
                     if(field.string is None):
@@ -878,7 +880,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             "identifiers": layer.alternate.encode('utf-8')
         })
         try:
-            response, body = http_client.request(dc_url)
+            req = http_client.get(dc_url)
+            body = req.content
             doc = etree.fromstring(body)
             path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(
                 wcs="{http://www.opengis.net/wcs/1.1.1}")
@@ -1406,21 +1409,8 @@ class OGC_Servers_Handler(object):
 def get_wms():
     wms_url = ogc_server_settings.internal_ows + \
         "?service=WMS&request=GetCapabilities&version=1.1.0"
-    netloc = urlparse(wms_url).netloc
-    http = httplib2.Http()
-    http.add_credentials(_user, _password)
-    http.authorizations.append(
-        httplib2.BasicAuthentication(
-            (_user, _password),
-            netloc,
-            wms_url,
-            {},
-            None,
-            None,
-            http
-        )
-    )
-    body = http.request(wms_url)[1]
+    req = http_client.get(wms_url)
+    body = req.content
     _wms = WebMapService(wms_url, xml=body)
     return _wms
 
@@ -1486,22 +1476,16 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
 
 
 def _stylefilterparams_geowebcache_layer(layer_name):
-    http = httplib2.Http()
-    username, password = ogc_server_settings.credentials
-    auth = base64.encodestring(username + ':' + password)
-    # http.add_credentials(username, password)
     headers = {
-        "Content-Type": "text/xml",
-        "Authorization": "Basic " + auth
+        "Content-Type": "text/xml"
     }
     url = '%sgwc/rest/layers/%s.xml' % (ogc_server_settings.LOCATION, layer_name)
 
     # read GWC configuration
-    method = "GET"
-    response, _ = http.request(url, method, headers=headers)
-    if response.status != 200:
+    req = http_client.get(url, headers=headers)
+    if req.status_code != 200:
         line = "Error {0} reading Style Filter Params GeoWebCache at {1}".format(
-            response.status, url
+            req.status_code, url
         )
         logger.error(line)
         return
@@ -1519,35 +1503,29 @@ def _stylefilterparams_geowebcache_layer(layer_name):
             param_filters[0].append(style_filters_elem)
             body = ET.tostring(tree)
     if body:
-        method = "POST"
-        response, _ = http.request(url, method, body=body, headers=headers)
-        if response.status != 200:
+        req = http_client.post(url, data=body, headers=headers)
+        if req.status_code != 200:
             line = "Error {0} writing Style Filter Params GeoWebCache at {1}".format(
-                response.status, url
+                req.status_code, url
             )
             logger.error(line)
 
 
 def _invalidate_geowebcache_layer(layer_name, url=None):
-    http = httplib2.Http()
-    username, password = ogc_server_settings.credentials
-    auth = base64.encodestring(username + ':' + password)
     # http.add_credentials(username, password)
-    method = "POST"
     headers = {
         "Content-Type": "text/xml",
-        "Authorization": "Basic " + auth
     }
     body = """
         <truncateLayer><layerName>{0}</layerName></truncateLayer>
         """.strip().format(layer_name)
     if not url:
         url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
-    response, _ = http.request(url, method, body=body, headers=headers)
+    req = http_client.post(url, data=body, headers=headers)
 
-    if response.status != 200:
+    if req.status_code != 200:
         line = "Error {0} invalidating GeoWebCache at {1}".format(
-            response.status, url
+            req.status_code, url
         )
         logger.error(line)
 
@@ -1733,21 +1711,7 @@ _wms = None
 _csw = None
 _user, _password = ogc_server_settings.credentials
 
-http_client = httplib2.Http()
-http_client.add_credentials(_user, _password)
-http_client.add_credentials(_user, _password)
-_netloc = urlparse(ogc_server_settings.LOCATION).netloc
-http_client.authorizations.append(
-    httplib2.BasicAuthentication(
-        (_user, _password),
-        _netloc,
-        ogc_server_settings.LOCATION,
-        {},
-        None,
-        None,
-        http_client
-    )
-)
+http_client = geoserver_requests_session()
 
 
 url = ogc_server_settings.rest
@@ -1807,9 +1771,9 @@ def _render_thumbnail(req_body, width=240, height=180):
         data = data.encode('ASCII', 'ignore')
     data = unicode(data, errors='ignore').encode('UTF-8')
     try:
-        resp, content = http_client.request(url, "POST", data, {
-            'Content-type': 'text/html'
-        })
+        req = http_client.post(
+            url, data=data, headers={'Content-type': 'text/html'})
+        content = req.content
     except Exception:
         logging.warning('Error generating thumbnail')
         return
@@ -1940,7 +1904,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
     _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
         <div style='position: absolute; top:{top}px; left:{left}px; z-index: 749; \
         transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
-        \n".format(height=height, width=width, top=top, left=left)
+        \n"                      .format(height=height, width=width, top=top, left=left)
 
     for row in range(0, numberOfRows):
         for col in range(0, len(first_row)):

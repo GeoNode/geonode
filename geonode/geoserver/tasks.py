@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from celery.app import shared_task
 from celery.utils.log import get_task_logger
 
@@ -32,3 +31,9 @@ def geoserver_update_layers(self, *args, **kwargs):
     Runs update layers.
     """
     return gs_slurp(*args, **kwargs)
+
+
+@shared_task(bind=True)
+def thumbnail_task(self, instance, overwrite=False, check_bbox=False):
+    from .helpers import create_gs_thumbnail
+    create_gs_thumbnail(instance, overwrite, check_bbox)

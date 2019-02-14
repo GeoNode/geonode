@@ -56,7 +56,7 @@ Preliminary Steps & Checks
             )
 
             GEOSERVER_PUBLIC_LOCATION = os.getenv(
-                'GEOSERVER_PUBLIC_LOCATION', '{}/geoserver/'.format(SITEURL)
+                'GEOSERVER_PUBLIC_LOCATION', '{}/gs/'.format(SITEURL)
             )
             ...
 
@@ -309,7 +309,7 @@ In order to do that, edit the ``my_geonode/local_settings.py`` file:
         )
 
         GEOSERVER_PUBLIC_LOCATION = os.getenv(
-            'GEOSERVER_PUBLIC_LOCATION', '{}/geoserver/'.format(SITEURL)
+            'GEOSERVER_PUBLIC_LOCATION', '{}/gs/'.format(SITEURL)
         )
         ...
         CATALOGUE = {
@@ -475,7 +475,7 @@ In order to do that, edit the ``my_geonode/local_settings.py`` file:
         )
 
         GEOSERVER_PUBLIC_LOCATION = os.getenv(
-            'GEOSERVER_PUBLIC_LOCATION', '{}/geoserver/'.format(SITEURL)
+            'GEOSERVER_PUBLIC_LOCATION', '{}/gs/'.format(SITEURL)
         )
 
         OGC_SERVER_DEFAULT_USER = os.getenv(

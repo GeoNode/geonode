@@ -17,43 +17,29 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-
-from geoserver.catalog import Catalog
-
-from collections import OrderedDict
-import requests
-import re
-import time
+import json
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-#from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
-from django.utils.translation import ugettext as _
-from django.shortcuts import render_to_response
-from django.template import Context
-from django.template.loader import get_template
-from django.utils.safestring import mark_safe
-from django.conf import settings
 
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
-from .utils import *
+from utils import data_display, data_display_schema, \
+    delete_selected_row, update_bbox_in_CSW, save_geom_edits, \
+    save_edits, save_added_row
 
 
 @login_required
 def display_data(request, layername, template='edit_data/edit_data.html'):
 
-    #start_time = time.time()
     layer = _resolve_layer(
         request,
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_MODIFY)
     workspace, name = layer.typename.split(':')
-    #initialize context_dict
-    context_dict = {}
-    context_dict["resource"] = layer
+    ctx = {}
+    ctx["resource"] = layer
     # get layer's attributes with display_order gt 0
     layers_attributes = []
     attr_to_display = layer.attribute_set.filter(display_order__gt=0)
@@ -64,7 +50,7 @@ def display_data(request, layername, template='edit_data/edit_data.html'):
     attribute_description = {}
     display_order_dict = {}
 
-    wfs, filtered_attributes, context_dict = data_display_schema( name, layers_attributes, context_dict )
+    wfs, filtered_attributes, context_dict = data_display_schema(name, layers_attributes, ctx)
 
     for idx, value in enumerate(filtered_attributes):
         description = layer.attribute_set.values('description').filter(attribute=value)
@@ -72,10 +58,14 @@ def display_data(request, layername, template='edit_data/edit_data.html'):
         attribute_description[value] = description[0]['description']
         display_order_dict[value] = display_order[0]['display_order']
 
-    context_dict = data_display( name, wfs, layers_attributes, attribute_description, display_order_dict, filtered_attributes, context_dict )
+    context_dict = data_display(
+        name, wfs, layers_attributes,
+        attribute_description,
+        display_order_dict,
+        filtered_attributes, ctx)
 
-    #print("--- %s seconds ---" % (time.time() - start_time))
-    return render(request, template, context_dict )
+    return render(request, template, context_dict)
+
 
 @login_required
 def add_row(request, template='edit_data/edit_data.html'):
@@ -93,7 +83,7 @@ def add_row(request, template='edit_data/edit_data.html'):
 
     if (status_code == 200):
         update_bbox_in_CSW(layer, layer_name)
-    return JsonResponse({'success': success,  'message': message})
+    return JsonResponse({'success': success, 'message': message})
 
 
 @login_required
@@ -104,7 +94,8 @@ def edits(request, template='edit_data/edit_data.html'):
     layer_name = data_dict['layer_name']
 
     success, message, status_code = save_edits(layer_name, feature_id, data_dict)
-    return JsonResponse({'success': success,  'message': message})
+    return JsonResponse({'success': success, 'message': message})
+
 
 @login_required
 def geom_edits(request, template='edit_data/edit_data.html'):
@@ -123,7 +114,8 @@ def geom_edits(request, template='edit_data/edit_data.html'):
 
     if (status_code == 200):
         update_bbox_in_CSW(layer, layer_name)
-    return JsonResponse({'success': success,  'message': message})
+    return JsonResponse({'success': success, 'message': message})
+
 
 @login_required
 def delete_row(request, template='edit_data/edit_data.html'):

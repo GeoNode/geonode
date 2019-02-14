@@ -19,8 +19,6 @@
 #########################################################################
 
 from django.conf.urls import url
-from django.conf import settings
-from django.views.generic import TemplateView
 
 from geonode.contrib.edit_data import views as edit_data
 

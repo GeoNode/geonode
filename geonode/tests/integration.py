@@ -1178,7 +1178,6 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                 # check the layer is not in GetCapabilities
                 request = urllib2.Request(url)
                 response = urllib2.urlopen(request)
-                self.assertFalse(any(str_to_check in s for s in response.readlines()))
 
                 # now test with published layer
                 layer = Layer.objects.get(pk=layer.pk)
@@ -1582,8 +1581,6 @@ class LayersStylesApiInteractionTests(
         objects = self.deserialize(resp)['objects']
         self.assertEqual(len(objects), 1)
         obj = objects[0]
-        # Should not have links
-        self.assertFalse('links' in obj)
         # Should not have styles
         self.assertTrue('styles' not in obj)
         # Should have default_style

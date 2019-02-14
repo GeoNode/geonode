@@ -18,25 +18,18 @@
 #
 #########################################################################
 
-import datetime
 import math
 import os
 import re
 import logging
 import traceback
-import uuid
-import urllib
-import urllib2
-import cookielib
 
-from geonode.decorators import on_ogc_backend
 from pyproj import transform, Proj
 from urlparse import urljoin, urlsplit
 
 from django.db import models
 from django.core import serializers
 from django.db.models import Q, signals
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -44,7 +37,6 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
 from django.contrib.gis.geos import GEOSGeometry
@@ -56,7 +48,6 @@ from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 from agon_ratings.models import OverallRating
 
-from geonode import geoserver
 from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
@@ -68,9 +59,6 @@ from taggit.models import TagBase, ItemBase
 from treebeard.mp_tree import MP_Node
 
 from geonode.people.enumerations import ROLE_VALUES
-
-from oauthlib.common import generate_token
-from oauth2_provider.models import AccessToken, get_application_model
 
 logger = logging.getLogger(__name__)
 
@@ -1447,130 +1435,3 @@ def rating_post_save(instance, *args, **kwargs):
 
 
 signals.post_save.connect(rating_post_save, sender=OverallRating)
-
-
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def do_login(sender, user, request, **kwargs):
-    """
-    Take action on user login. Generate a new user access_token to be shared
-    with GeoServer, and store it into the request.session
-    """
-    if user and user.is_authenticated():
-        token = None
-        try:
-            Application = get_application_model()
-            app = Application.objects.get(name="GeoServer")
-
-            # Lets create a new one
-            token = generate_token()
-
-            AccessToken.objects.get_or_create(
-                user=user,
-                application=app,
-                expires=datetime.datetime.now(timezone.get_current_timezone()) +
-                datetime.timedelta(
-                    days=1),
-                token=token)
-        except BaseException:
-            u = uuid.uuid1()
-            token = u.hex
-
-        # Do GeoServer Login
-        url = "%s%s&access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                                        'ows?service=wms&version=1.3.0&request=GetCapabilities',
-                                        token)
-
-        cj = cookielib.CookieJar()
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-
-        jsessionid = None
-        try:
-            opener.open(url)
-            for c in cj:
-                if c.name == "JSESSIONID":
-                    jsessionid = c.value
-        except BaseException:
-            u = uuid.uuid1()
-            jsessionid = u.hex
-
-        request.session['access_token'] = token
-        request.session['JSESSIONID'] = jsessionid
-
-
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def do_logout(sender, user, request, **kwargs):
-    """
-    Take action on user logout. Cleanup user access_token and send logout
-    request to GeoServer
-    """
-    if 'access_token' in request.session:
-        try:
-            Application = get_application_model()
-            app = Application.objects.get(name="GeoServer")
-
-            # Lets delete the old one
-            try:
-                old = AccessToken.objects.get(user=user, application=app)
-            except BaseException:
-                pass
-            else:
-                old.delete()
-        except BaseException:
-            pass
-
-        # Do GeoServer Logout
-        if request and 'access_token' in request.session:
-            access_token = request.session['access_token']
-        else:
-            access_token = None
-
-        if access_token:
-            url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                                            settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'],
-                                            access_token)
-            header_params = {
-                "Authorization": ("Bearer %s" % access_token)
-            }
-        else:
-            url = "%s%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                            settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'])
-
-        param = {}
-        data = urllib.urlencode(param)
-
-        cookies = None
-        for cook in request.COOKIES:
-            name = str(cook)
-            value = request.COOKIES.get(name)
-            if name == 'csrftoken':
-                header_params['X-CSRFToken'] = value
-
-            cook = "%s=%s" % (name, value)
-            if not cookies:
-                cookies = cook
-            else:
-                cookies = cookies + '; ' + cook
-
-        if cookies:
-            if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
-                cookies = cookies + '; JSESSIONID=' + \
-                    request.session['JSESSIONID']
-            header_params['Cookie'] = cookies
-
-        gs_request = urllib2.Request(url, data, header_params)
-
-        try:
-            urllib2.urlopen(gs_request)
-        except BaseException:
-            tb = traceback.format_exc()
-            if tb:
-                logger.debug(tb)
-
-        if 'access_token' in request.session:
-            del request.session['access_token']
-
-        request.session.modified = True
-
-
-user_logged_in.connect(do_login)
-user_logged_out.connect(do_logout)
