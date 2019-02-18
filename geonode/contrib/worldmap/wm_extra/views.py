@@ -487,7 +487,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
             layer_url = urlparse.urlsplit(layer.ows_url).netloc
 
             if access_token and ogc_server_url == layer_url and 'access_token' not in layer.ows_url:
-                url = layer.ows_url+'?access_token='+access_token
+                url = '%s?access_token=%s' % (layer.ows_url, access_token)
             else:
                 url = layer.ows_url
             maplayer = MapLayer(
@@ -675,8 +675,6 @@ def gxp2wm(config, map_obj=None):
             source = config['sources'][source_id]
             if 'url' in source:
                 source_url = source['url']
-                # hack
-                source_url = source_url.replace('https', 'http')
                 if settings.GEOSERVER_PUBLIC_LOCATION in source_url:
                     config['sources'][source_id]['url'] = source_url
                     if 'name' in layer_config:

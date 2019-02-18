@@ -59,7 +59,7 @@ Set the following environment variables as needed (change SITE_NAME and SERVER_I
       export OWNER=$PG_USERNAME
       export ALLOWED_HOSTS="localhost, $SERVER_IP, "
       export GEOSERVER_LOCATION=http://localhost:8080/geoserver/
-      export GEOSERVER_PUBLIC_LOCATION=http://$SERVER_IP/geoserver/
+      export GEOSERVER_PUBLIC_LOCATION=http://$SERVER_IP/gs/
       export SOLR_URL =http://localhost:8983/solr/hypermap/select/
       export HYPERMAP_REGISTRY_URL =http://localhost:8001
       export MAPPROXY_URL=http://localhost:8001
@@ -123,7 +123,7 @@ Hypermap Registry
 
 GeoNode with the WorldMap contribute module requires a Hypermap Registry (Hypermap) running instance.
 
-You can install Hypermap by following these instructions (use the "Manual Installation" section): https://github.com/cga-harvard/HHypermap/blob/master/_docs/developers.md
+You can install Hypermap by following these instructions (use the "Manual Installation" section): http://cga-harvard.github.io/Hypermap-Registry/installation.html
 
 Note that you can bypass Java 8 installation as it was installed previously. As a search engine you should install Solr, as we haven't tested Elasticsearch with WorldMap so far. Create a specific virtual environment for Hypermap in order not to interfere with the GeoNode/WorldMap virtual environment.
 

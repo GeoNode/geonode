@@ -30,10 +30,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError, Http404
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from django.utils.translation import ugettext as _
+from django.views.decorators.http import require_http_methods
+
 try:
     # Django >= 1.7
     import json
@@ -44,8 +46,6 @@ from django.utils.html import strip_tags
 from django.db.models import F
 from django.views.decorators.clickjacking import (xframe_options_exempt,
                                                   xframe_options_sameorigin)
-from django.views.decorators.http import require_http_methods
-
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.layers.views import _resolve_layer
@@ -780,6 +780,9 @@ def add_layers_to_map_config(
         except ObjectDoesNotExist:
             # bad layer, skip
             continue
+        except Http404:
+            # can't find the layer, skip it.
+            continue
 
         if not request.user.has_perm(
                 'view_resourcebase',
@@ -1358,29 +1361,33 @@ def ajax_url_lookup(request):
     )
 
 
+@require_http_methods(["POST"])
 def map_thumbnail(request, mapid):
-    if request.method == 'POST':
-        map_obj = _resolve_map(request, mapid)
+    map_obj = _resolve_map(request, mapid)
+    try:
+        image = None
         try:
-            image = None
-            try:
-                image = _prepare_thumbnail_body_from_opts(request.body,
-                                                          request=request)
-            except BaseException:
-                image = _render_thumbnail(request.body)
-
-            if not image:
-                return
-            filename = "map-%s-thumb.png" % map_obj.uuid
-            map_obj.save_thumbnail(filename, image)
-
-            return HttpResponse(_('Thumbnail saved'))
+            image = _prepare_thumbnail_body_from_opts(
+                request.body, request=request)
         except BaseException:
+            image = _render_thumbnail(request.body)
+
+        if not image:
             return HttpResponse(
-                content=_('error saving thumbnail'),
+                content=_('couldn\'t generate thumbnail'),
                 status=500,
                 content_type='text/plain'
             )
+        filename = "map-%s-thumb.png" % map_obj.uuid
+        map_obj.save_thumbnail(filename, image)
+
+        return HttpResponse(_('Thumbnail saved'))
+    except BaseException:
+        return HttpResponse(
+            content=_('error saving thumbnail'),
+            status=500,
+            content_type='text/plain'
+        )
 
 
 def map_metadata_detail(

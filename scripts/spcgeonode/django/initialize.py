@@ -6,7 +6,7 @@ This script initializes Geonode
 # Setting up the  context
 #########################################################
 
-import os, requests, json, uuid, django
+import os, requests, json, uuid, django, time
 django.setup()
 
 #########################################################
@@ -14,6 +14,9 @@ django.setup()
 #########################################################
 
 from django.core.management import call_command
+from django.db import connection
+from django.db.utils import OperationalError
+from requests.exceptions import ConnectionError
 from geonode.people.models import Profile
 from oauth2_provider.models import Application
 from django.conf import settings
@@ -25,20 +28,36 @@ admin_email = os.getenv('ADMIN_EMAIL')
 
 
 #########################################################
-# 1. Running the migrations
+# 1. Waiting for PostgreSQL
 #########################################################
 
 print("-----------------------------------------------------")
-print("1. Running the migrations")
+print("1. Waiting for PostgreSQL")
+for _ in range(60):
+    try:
+        connection.ensure_connection()
+        break
+    except OperationalError:
+        time.sleep(1)
+else:
+    connection.ensure_connection()
+connection.close()
+
+#########################################################
+# 2. Running the migrations
+#########################################################
+
+print("-----------------------------------------------------")
+print("2. Running the migrations")
 call_command('migrate', '--noinput')
 
 
 #########################################################
-# 2. Creating superuser if it doesn't exist
+# 3. Creating superuser if it doesn't exist
 #########################################################
 
 print("-----------------------------------------------------")
-print("2. Creating/updating superuser")
+print("3. Creating/updating superuser")
 try:
     superuser = Profile.objects.get(username=admin_username)
     superuser.set_password(admin_password)
@@ -56,11 +75,11 @@ except Profile.DoesNotExist:
 
 
 #########################################################
-# 3. Create an OAuth2 provider to use authorisations keys
+# 4. Create an OAuth2 provider to use authorisations keys
 #########################################################
 
 print("-----------------------------------------------------")
-print("3. Create/update an OAuth2 provider to use authorisations keys")
+print("4. Create/update an OAuth2 provider to use authorisations keys")
 app, created = Application.objects.get_or_create(
     pk=1,
     name='GeoServer',
@@ -68,8 +87,8 @@ app, created = Application.objects.get_or_create(
     authorization_grant_type='authorization-code'
 )
 redirect_uris = [
-    'http://{}/geoserver'.format(os.getenv('HTTPS_HOST',"") if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_HOST')),
-    'http://{}/geoserver/index.html'.format(os.getenv('HTTPS_HOST',"") if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_HOST')),
+    'http://{}/gs'.format(os.getenv('HTTPS_HOST',"") if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_HOST')),
+    'http://{}/gs/index.html'.format(os.getenv('HTTPS_HOST',"") if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_HOST')),
 ]
 app.redirect_uris = "\n".join(redirect_uris)
 app.save()
@@ -80,39 +99,53 @@ else:
 
 
 #########################################################
-# 4. Loading fixtures
+# 5. Loading fixtures
 #########################################################
 
 print("-----------------------------------------------------")
-print("4. Loading fixtures")
+print("5. Loading fixtures")
 call_command('loaddata', 'initial_data')
 
 
 #########################################################
-# 5. Running updatemaplayerip
+# 6. Running updatemaplayerip
 #########################################################
 
 print("-----------------------------------------------------")
-print("5. Running updatemaplayerip")
+print("6. Running updatemaplayerip")
 # call_command('updatelayers') # TODO CRITICAL : this overrides the layer thumbnail of existing layers even if unchanged !!!
 call_command('updatemaplayerip')
 
 
 #########################################################
-# 6. Collecting static files
+# 7. Collecting static files
 #########################################################
 
 print("-----------------------------------------------------")
-print("6. Collecting static files")
+print("7. Collecting static files")
 call_command('collectstatic', '--noinput', verbosity=0)
 
-
 #########################################################
-# 7. Securing GeoServer
+# 8. Waiting for GeoServer
 #########################################################
 
 print("-----------------------------------------------------")
-print("7. Securing GeoServer")
+print("8. Waiting for GeoServer")
+for _ in range(60*5):
+    try:
+        requests.head("http://geoserver:8080/geoserver")
+        break
+    except ConnectionError:
+        time.sleep(1)
+else:
+    requests.head("http://geoserver:8080/geoserver")
+
+#########################################################
+# 9. Securing GeoServer
+#########################################################
+
+print("-----------------------------------------------------")
+print("9. Securing GeoServer")
 
 # Getting the old password
 try:
