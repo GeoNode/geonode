@@ -130,6 +130,8 @@ services:
   pgdumper:
     image: olivierdalang/spcgeonode:pgdumper-latest
     build: ./pgdumper/
+    environment:
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
     volumes:
       - pgdumps:/spcgeonode-pgdumps/ 
     restart: on-failure
