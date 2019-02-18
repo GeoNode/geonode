@@ -37,6 +37,7 @@ from geonode.base.models import (
     HierarchicalKeyword, Menu, MenuItem
 )
 from geonode.security.utils import get_visible_resources
+from collections import OrderedDict
 
 register = template.Library()
 
@@ -316,7 +317,7 @@ def get_menu(placeholder_name):
         m: MenuItem.objects.filter(menu=m)
         for m in Menu.objects.filter(placeholder__name=placeholder_name)
     }
-    return menus
+    return OrderedDict(sorted(menus.items(), key=lambda(k,v):(v,k)))
 
 
 @register.inclusion_tag(filename='base/menu.html')
@@ -325,4 +326,4 @@ def render_nav_menu(placeholder_name):
         m: MenuItem.objects.filter(menu=m)
         for m in Menu.objects.filter(placeholder__name=placeholder_name)
     }
-    return {'menus': menus}
+    return {'menus': OrderedDict(sorted(menus.items(), key=lambda(k,v):(v,k)))}

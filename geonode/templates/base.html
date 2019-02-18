@@ -20,6 +20,7 @@
 {% load i18n avatar_tags %}
 {% load static from staticfiles %}
 {% load account socialaccount %}
+{% load base_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -146,7 +147,9 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav toolbar">
+
           {% block tabs %}
+
           <li id="nav_layers">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
@@ -176,9 +179,9 @@
               {% else %}
               <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
               {% endif %}
-            </li>
-            <li>
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
+          </li>
+          <li>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
                 <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
                 <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
@@ -193,12 +196,17 @@
                 <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                 {% endif %}
               </ul>
-            </li>
+          </li>
 
-      {% block extra_tab %}
-            {% endblock %}
-            {% endblock %}
-          </ul>
+          {% block extra_tab %}
+
+              {% render_nav_menu 'TOPBAR_MENU' %}
+
+          {% endblock %}
+
+          {% endblock %}
+
+        </ul>
         <ul class="nav navbar-nav navbar-right">
             <li>
               <div class="search">
