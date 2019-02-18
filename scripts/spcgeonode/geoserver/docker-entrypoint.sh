@@ -71,7 +71,7 @@ echo "3. Wait for PostgreSQL to be ready and initialized"
 # Wait for PostgreSQL
 set +e
 for i in $(seq 60); do
-    psql -h postgres -U postgres -c "SLECT client_id FROM oauth2_provider_application" &>/dev/null && break
+    psql -h postgres -U postgres -c "SELECT client_id FROM oauth2_provider_application" &>/dev/null && break
     sleep 1
 done
 if [ $? != 0 ]; then
@@ -86,18 +86,6 @@ set -e
 
 echo "-----------------------------------------------------"
 echo "4. (Re)setting OAuth2 Configuration"
-
-# Wait for PostgreSQL
-set +e
-for i in $(seq 60); do
-    psql -h postgres -U postgres -c "SELECT client_id FROM oauth2_provider_application" &>/dev/null && break
-    sleep 1
-done
-if [ $? != 0 ]; then
-    echo "PostgreSQL not ready or not initialized"
-    exit 1
-fi
-set -e
 
 # Edit /spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml
 
