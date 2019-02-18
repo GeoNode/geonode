@@ -71,7 +71,7 @@ echo "3. Wait for PostgreSQL to be ready and initialized"
 # Wait for PostgreSQL
 set +e
 for i in $(seq 60); do
-    psql -h postgres -U postgres -c "SLECT client_id FROM oauth2_provider_application" &>/dev/null && break
+    psql "$DATABASE_URL" -c "ON_ERROR_STOP=1; SELECT client_id FROM oauth2_provider_application" &>/dev/null && break
     sleep 1
 done
 if [ $? != 0 ]; then
@@ -102,8 +102,8 @@ set -e
 # Edit /spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml
 
 # Getting oauth keys and secrets from the database
-CLIENT_ID=$(psql -h postgres -U postgres -c "SELECT client_id FROM oauth2_provider_application WHERE name='GeoServer'" -t | tr -d '[:space:]')
-CLIENT_SECRET=$(psql -h postgres -U postgres -c "SELECT client_secret FROM oauth2_provider_application WHERE name='GeoServer'" -t | tr -d '[:space:]')
+CLIENT_ID=$(psql "$DATABASE_URL" -c "SELECT client_id FROM oauth2_provider_application WHERE name='GeoServer'" -t | tr -d '[:space:]')
+CLIENT_SECRET=$(psql "$DATABASE_URL" -c "SELECT client_secret FROM oauth2_provider_application WHERE name='GeoServer'" -t | tr -d '[:space:]')
 if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
     echo "Could not get OAuth2 ID and SECRET from database. Make sure Postgres container is started and Django has finished it's migrations."
     exit 1
