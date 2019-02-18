@@ -317,7 +317,7 @@ def get_menu(placeholder_name):
         m: MenuItem.objects.filter(menu=m)
         for m in Menu.objects.filter(placeholder__name=placeholder_name)
     }
-    return OrderedDict(sorted(menus.items(), key=lambda(k,v):(v,k)))
+    return OrderedDict(sorted(menus.items(), key=lambda(k, v): (v, k)))
 
 
 @register.inclusion_tag(filename='base/menu.html')
@@ -326,4 +326,4 @@ def render_nav_menu(placeholder_name):
         m: MenuItem.objects.filter(menu=m)
         for m in Menu.objects.filter(placeholder__name=placeholder_name)
     }
-    return {'menus': OrderedDict(sorted(menus.items(), key=lambda(k,v):(v,k)))}
+    return {'menus': OrderedDict(sorted(menus.items(), key=lambda(k, v): (v, k)))}
