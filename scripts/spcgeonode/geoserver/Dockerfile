@@ -2,6 +2,7 @@ FROM openjdk:8-jre-alpine
 
 ARG version=2.14.2
 ARG branch=2.14.x
+ARG plugins=
 
 # Install dependencies
 RUN apk add --no-cache ca-certificates openssl curl postgresql-client fontconfig ttf-ubuntu-font-family
@@ -23,6 +24,15 @@ RUN echo "Download geoserver for geonode" && \
     rm /geoserver-$version/webapps/geoserver/* -rf && \
     unzip -o geoserver-$branch.war -d /geoserver/webapps/geoserver/ && \
     rm /geoserver-$branch.war
+
+# Plugins support
+# Example:
+#   $ docker-compose build --build-arg plugins="csw" geoserver
+RUN for plugin in $plugins; do \
+        wget https://downloads.sourceforge.net/project/geoserver/GeoServer/$version/extensions/geoserver-$version-$plugin-plugin.zip && \
+        unzip -o geoserver-$version-$plugin-plugin.zip -d /geoserver/webapps/geoserver/WEB-INF/lib && \
+        rm geoserver-$version-$plugin-plugin.zip; \
+    done
 
 # Download initial data dir
 RUN wget https://build.geo-solutions.it/geonode/geoserver/latest/data-$branch.zip --no-check-certificate
