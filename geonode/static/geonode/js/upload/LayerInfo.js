@@ -303,7 +303,7 @@ define(function (require, exports) {
      *  @returns {string}
      */
     LayerInfo.prototype.markError = function (error, status) {
-        var error = (error != undefined ? error : 'Unespected error!');
+        var error = (error != undefined ? error : 'Unexpected error!');
         common.logError(error, this.element.find('#status'));
     };
 
