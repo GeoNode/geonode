@@ -244,6 +244,114 @@ From here you can continue to customize your :file:`site_index.html` template to
 Other theming options
 ---------------------
 
+Additional menus
+~~~~~~~~~~~~~~~~
+
+An interesting customization could be to insert `additional menus` in the navbar.
+It can be done very easily through the **render_nav_menu** inclusion tags which allow to have ready-to-use dropdown menus without any further front-end implementation needed.
+This template tag takes the `placeholder name` as argument and renders all the menus which belong to it through ``<li>`` tags.
+
+GeoNode provides a **TOPBAR_MENU** named placeholder by default inside the `extra_tab` block of the ``base.html``:
+
+.. code-block:: html
+
+  {% block extra_tab %}
+
+      {% render_nav_menu 'TOPBAR_MENU' %}
+
+  {% endblock %}
+
+A placeholder is a logical container for menus, to make it work you should load the `intial_data.json` (see :ref:`geonode_install_initialization` for references) or create the placeholder from the `Admin` panel (pay attention to the `Name`, it must be 'TOPBAR_MENU'):
+
+.. figure:: ../img/admin_menu_placeholder_initial_data.png
+
+Once the placeholder has been created you can add your menus from the 'Admin' panel.
+The following is a basic example.
+
+Open the `Admin panel` http://localhost:8000/admin/, go to the BASE section and take a look at the models inside the red rectangle in the picture below:
+
+.. figure:: ../img/admin_base_section.png
+
+Follow these steps:
+
+#. Check if **TOPBAR_MENU** exists in the **Menu placeholder** section (if not create it as described in the section above):
+
+    .. figure:: ../img/admin_menu_placeholders.png
+
+#. Create **Menu**\s. They are links containers, give them a `title` and choose the placeholder they belong to (the **TOPBAR_MENU** placeholder in this case). A menu will be shown before or after another menu based on the `order` field:
+
+    .. figure:: ../img/admin_menu.png
+
+    .. figure:: ../img/admin_menu_2.png
+
+#. Create **Menu Item**\s. They can be internal or external links. For each link a `menu` must be selected. The `title` is the link visible label and the `order` field determines the mutual position between all the links in a menu:
+
+    .. figure:: ../img/admin_menu_item_1_1.png
+
+    .. figure:: ../img/admin_menu_item_1_2.png
+
+    .. figure:: ../img/admin_menu_item_2_1.png
+
+#. See the result:
+
+    .. figure:: ../img/custom_menu_1.png
+
+    .. figure:: ../img/custom_menu_2.png
+
+You could want your menu on the right side of the top navbar, near the `search` function for example. It can be accomplished in few simple steps:
+
+#. Add a block (`my_extra_right_tab` in the example below) in the :file:`base.html` template, inside the ``navbar-right`` <ul> element:
+
+   .. code-block:: html
+
+      <ul class="nav navbar-nav navbar-right">
+
+           {% block my_extra_right_tab %}
+
+           {% endblock my_extra_right_tab %}
+
+            <li>
+                <div class="search">
+                ...
+
+#. Move the **render_nav_menu** tag into the block:
+
+    .. code-block:: html
+
+      <ul class="nav navbar-nav navbar-right">
+
+           {% block my_extra_right_tab %}
+
+               {% render_nav_menu 'TOPBAR_MENU' %}
+
+           {% endblock my_extra_right_tab %}
+
+            <li>
+                <div class="search">
+                ...
+
+Take a look at the right side of the navbar:
+
+.. figure:: ../img/custom_right_menu.png
+
+The custom menus seen so far are based on a fixed html template, the :file:`base/templates/menu.html`, hooked to the **render_nav_menu** tag. Feel free to create new placeholders and menus through this powerful template tag, it makes the menus creation very fast in the top navbar but it's not flexible enough to allow to choose a different position.
+So more generic tags has been implemented in GeoNode to have more customization power.
+
+The **get_menu** assignment tag, included in the `base_tags`, lets you decide how to render the menus returning only their data in a dictionary like this:
+
+.. code-block:: html
+
+    {
+        <Menu: my_menu_1>: <QuerySet [<MenuItem: my_item_1_1>, <MenuItem: my_item_1_2>]>,
+        <Menu: my_menu_2>: <QuerySet [<MenuItem: my_item_2_1>, <MenuItem: my_item_2_2>]>,
+        ...
+    }
+
+You can easily use those data to build `Bootstrap <https://getbootstrap.com/docs/3.3>`_ dropdowns or an accordion panels and put them wherever you want.
+
+Styling options
+---------------
+
 You are able to change any specific piece of your GeoNode project's style by adding CSS rules to :file:`site_base.css`, but since GeoNode is based on Bootstrap, there are many pre-defined themes that you can simply drop into your project to get a whole new look. This is very similar to `WordPress <http://wordpress.com>`_ themes and is a powerful and easy way to change the look of your site without much effort.
 
 Bootswatch

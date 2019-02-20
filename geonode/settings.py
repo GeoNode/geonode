@@ -354,29 +354,19 @@ INSTALLED_APPS = (
     'leaflet',
     'bootstrap3_datetime',
     'django_filters',
-    'django_extensions',
     'django_basic_auth',
     'autocomplete_light',
     'mptt',
-    # 'crispy_forms',
-
-    # 'djkombu',
-    # 'djcelery',
-    # 'kombu.transport.django',
-
     'storages',
     'floppyforms',
 
     # Theme
-    "pinax_theme_bootstrap",
     'django_forms_bootstrap',
 
     # Social
     'avatar',
     'dialogos',
-    # 'pinax.comments',
     'agon_ratings',
-    # 'pinax.ratings',
     'announcements',
     'actstream',
     'user_messages',
@@ -392,9 +382,6 @@ INSTALLED_APPS = (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-
-    # Django REST Framework
-    'rest_framework',
 
     # GeoNode
     'geonode',
@@ -550,6 +537,10 @@ MIDDLEWARE_CLASSES = (
     # risks.
     # 'geonode.middleware.PrintProxyMiddleware',
 
+    # This middleware checks for ACCESS_TOKEN validity and if expired forces
+    # user logout
+    'geonode.security.middleware.SessionControlMiddleware',
+
     # If you use SessionAuthenticationMiddleware, be sure it appears before OAuth2TokenMiddleware.
     # SessionAuthenticationMiddleware is NOT required for using
     # django-oauth-toolkit.
@@ -558,7 +549,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 # Security stuff
-MIDDLEWARE_CLASSES += ('django.middleware.security.SecurityMiddleware',)
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False
