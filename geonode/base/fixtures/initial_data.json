@@ -4845,5 +4845,12 @@
         "bbox_y0": 3.48639,
         "bbox_y1": 12.21558
       }
+    },
+    {
+      "model": "base.menuplaceholder",
+      "pk": 1,
+      "fields": {
+        "name": "TOPBAR_MENU"
+      }
     }
 ]

@@ -33,8 +33,11 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
-from geonode.base.models import HierarchicalKeyword
+from geonode.base.models import (
+    HierarchicalKeyword, Menu, MenuItem
+)
 from geonode.security.utils import get_visible_resources
+from collections import OrderedDict
 
 register = template.Library()
 
@@ -306,3 +309,21 @@ def fullurl(context, url):
         return ''
     r = context['request']
     return r.build_absolute_uri(url)
+
+
+@register.assignment_tag
+def get_menu(placeholder_name):
+    menus = {
+        m: MenuItem.objects.filter(menu=m)
+        for m in Menu.objects.filter(placeholder__name=placeholder_name)
+    }
+    return OrderedDict(sorted(menus.items(), key=lambda(k, v): (v, k)))
+
+
+@register.inclusion_tag(filename='base/menu.html')
+def render_nav_menu(placeholder_name):
+    menus = {
+        m: MenuItem.objects.filter(menu=m)
+        for m in Menu.objects.filter(placeholder__name=placeholder_name)
+    }
+    return {'menus': OrderedDict(sorted(menus.items(), key=lambda(k, v): (v, k)))}
