@@ -3,18 +3,18 @@
 <nav class="filter" ng-cloak>
   {% if facet_type == 'layers' %}
     {% verbatim %}
-    <div id="categoriesMultiList"/>
+    <div id="render_categoriesMultiList"/>
     {% endverbatim %}
   {% else %}
     {% verbatim %}
-    <div id="layercategoriesMultiList"/>
+    <div id="render_layercategoriesMultiList"/>
     {% endverbatim %}
   {% endif %}
 </nav>
 {% endif %}
 {% if SEARCH_FILTERS.OWNERS_ENABLED %}
 <nav class="filter" ng-cloak>
-  <div id="ownersMultiList"/>
+  <div id="render_ownersMultiList"/>
 </nav>
 {% endif %}
 {% if SEARCH_FILTERS.DATE_ENABLED %}

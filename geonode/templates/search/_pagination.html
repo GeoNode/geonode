@@ -10,7 +10,7 @@
   <nav>
 	<ul class="pagination pull-right">
 	  <li ng-click="paginate_down()"><a href><strong><i class="fa fa-angle-left"></i></strong></a></li>
-	  <li><a href>{% trans "page" %} <span ng-model="page" ng-bind="page"></span> {% trans "of" %} <span ng-bind="numpages"></span></a>
+	  <li><a href>{% trans "page" %} <span id="searchState_currentPage"></span> {% trans "of" %} <span id="searchState_numberOfPages"></span> <span id="searchState_numberOfPages"></span></a>
 	  </li>
 	  <li ng-click="paginate_up()"><a href><strong><i class="fa fa-angle-right"></i></strong></a></li>
 	</ul>

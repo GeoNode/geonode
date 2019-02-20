@@ -39,9 +39,10 @@ function render(multiSelectObjectArray) {
     ));
 
     // Render the multiselector list.
+    console.log("---->", `render_${filter.elId || filter.id}MultiList`);
     ReactDOM.render(
       <MultiList selectors={selectors} name={filter.id} />,
-      document.getElementById(`${filter.elId || filter.id}MultiList`)
+      document.getElementById(`render_${filter.elId || filter.id}MultiList`)
     );
     return true;
   });
