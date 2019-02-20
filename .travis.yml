@@ -25,8 +25,8 @@ addons:
   postgresql: 9.6
   apt:
     packages:
-    - postgresql-9.6-postgis-2.4
-    - nginx
+      - postgresql-9.6-postgis-2.4
+      - nginx
   firefox: "latest-esr"
 
 matrix:
@@ -36,6 +36,7 @@ matrix:
       python: 2.7
       env:
           - BACKEND: 'geonode.geoserver'
+            DOCKER_COMPOSE_VERSION: 1.19.0
             ON_TRAVIS: 'True'
             TEST_RUN_CORE: 'True'
             MONITORING_ENABLED: 'False'
@@ -43,6 +44,7 @@ matrix:
       python: 2.7
       env:
           - BACKEND: 'geonode.geoserver'
+            DOCKER_COMPOSE_VERSION: 1.19.0
             ON_TRAVIS: 'True'
             TEST_RUN_INTERNAL_APPS: 'True'
             MONITORING_ENABLED: 'False'
@@ -173,12 +175,12 @@ install:
       sudo apt-get install -y libgdal1i python-gdal gdal-bin spatialite-bin;
       sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext;
       sudo apt-get install -y python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk;
-      sudo add-apt-repository -y ppa:webupd8team/java;
-      sudo apt-get update;
-      echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections;
-      echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections;
-      sudo apt-get install -y oracle-java8-set-default ant maven --no-install-recommends;
+      sudo apt-add-repository -y ppa:webupd8team/java;
+      sudo apt update; sudo apt upgrade -y; sudo apt autoremove --purge;
+      sudo apt install -y oracle-java8-set-default ant maven;
       sudo update-java-alternatives --set java-8-oracle;
+      export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
+      export PATH=$JAVA_HOME'bin/java':$PATH
       pip install -r requirements.txt --upgrade;
       pip install -e . --upgrade;
       pip install pygdal==`gdal-config --version`.*;
