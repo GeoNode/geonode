@@ -25,7 +25,7 @@ x-common-django:
     # hardcoded
     - DEBUG=False
     - DJANGO_SETTINGS_MODULE=geonode.settings
-    - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
+    - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
     - BROKER_URL=amqp://rabbitmq:5672
     - STATIC_ROOT=/spcgeonode-static/
     - MEDIA_ROOT=/spcgeonode-media/
@@ -109,6 +109,7 @@ services:
       - HTTP_PORT=${HTTP_PORT}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
     volumes:
       - geodatadir:/spcgeonode-geodatadir/
     restart: on-failure
@@ -129,6 +130,8 @@ services:
   pgdumper:
     image: olivierdalang/spcgeonode:pgdumper-latest
     build: ./pgdumper/
+    environment:
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
     volumes:
       - pgdumps:/spcgeonode-pgdumps/ 
     restart: on-failure
@@ -150,6 +153,8 @@ services:
   # PostGIS database.
   postgres:
     image: mdillon/postgis:9.6-alpine
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - database:/var/lib/postgresql/data/ 
     restart: on-failure
