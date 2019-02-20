@@ -55,7 +55,7 @@ fi
 echo "-----------------------------------------------------"
 echo "2. (Re)setting admin account"
 
-ADMIN_ENCRYPTED_PASSWORD=$(/usr/lib/jvm/java-1.8-openjdk/jre/bin/java -classpath /geoserver-2.14.0/webapps/geoserver/WEB-INF/lib/jasypt-1.9.2.jar org.jasypt.intf.cli.JasyptStringDigestCLI digest.sh algorithm=SHA-256 saltSizeBytes=16 iterations=100000 input="$ADMIN_PASSWORD" verbose=0 | tr -d '\n')
+ADMIN_ENCRYPTED_PASSWORD=$(/usr/lib/jvm/java-1.8-openjdk/jre/bin/java -classpath /geoserver/webapps/geoserver/WEB-INF/lib/jasypt-1.9.2.jar org.jasypt.intf.cli.JasyptStringDigestCLI digest.sh algorithm=SHA-256 saltSizeBytes=16 iterations=100000 input="$ADMIN_PASSWORD" verbose=0 | tr -d '\n')
 sed -i -r "s|<user enabled=\".*\" name=\".*\" password=\".*\"/>|<user enabled=\"true\" name=\"$ADMIN_USERNAME\" password=\"digest1:$ADMIN_ENCRYPTED_PASSWORD\"/>|" "/spcgeonode-geodatadir/security/usergroup/default/users.xml"
 # TODO : more selective regexp for this one as there may be several users...
 sed -i -r "s|<userRoles username=\".*\">|<userRoles username=\"$ADMIN_USERNAME\">|" "/spcgeonode-geodatadir/security/role/default/roles.xml"
