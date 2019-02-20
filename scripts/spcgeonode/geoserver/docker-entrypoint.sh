@@ -55,7 +55,7 @@ fi
 echo "-----------------------------------------------------"
 echo "2. (Re)setting admin account"
 
-ADMIN_ENCRYPTED_PASSWORD=$(/usr/lib/jvm/java-1.8-openjdk/jre/bin/java -classpath /geoserver-2.14.0/webapps/geoserver/WEB-INF/lib/jasypt-1.9.2.jar org.jasypt.intf.cli.JasyptStringDigestCLI digest.sh algorithm=SHA-256 saltSizeBytes=16 iterations=100000 input="$ADMIN_PASSWORD" verbose=0 | tr -d '\n')
+ADMIN_ENCRYPTED_PASSWORD=$(/usr/lib/jvm/java-1.8-openjdk/jre/bin/java -classpath /geoserver/webapps/geoserver/WEB-INF/lib/jasypt-1.9.2.jar org.jasypt.intf.cli.JasyptStringDigestCLI digest.sh algorithm=SHA-256 saltSizeBytes=16 iterations=100000 input="$ADMIN_PASSWORD" verbose=0 | tr -d '\n')
 sed -i -r "s|<user enabled=\".*\" name=\".*\" password=\".*\"/>|<user enabled=\"true\" name=\"$ADMIN_USERNAME\" password=\"digest1:$ADMIN_ENCRYPTED_PASSWORD\"/>|" "/spcgeonode-geodatadir/security/usergroup/default/users.xml"
 # TODO : more selective regexp for this one as there may be several users...
 sed -i -r "s|<userRoles username=\".*\">|<userRoles username=\"$ADMIN_USERNAME\">|" "/spcgeonode-geodatadir/security/role/default/roles.xml"
@@ -71,7 +71,7 @@ echo "3. Wait for PostgreSQL to be ready and initialized"
 # Wait for PostgreSQL
 set +e
 for i in $(seq 60); do
-    psql -h postgres -U postgres -c "ON_ERROR_STOP=1; SELECT client_id FROM oauth2_provider_application" &>/dev/null && break
+    psql "$DATABASE_URL" -c "ON_ERROR_STOP=1; SELECT client_id FROM oauth2_provider_application" &>/dev/null && break
     sleep 1
 done
 if [ $? != 0 ]; then
@@ -90,8 +90,8 @@ echo "4. (Re)setting OAuth2 Configuration"
 # Edit /spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml
 
 # Getting oauth keys and secrets from the database
-CLIENT_ID=$(psql -h postgres -U postgres -c "SELECT client_id FROM oauth2_provider_application WHERE name='GeoServer'" -t | tr -d '[:space:]')
-CLIENT_SECRET=$(psql -h postgres -U postgres -c "SELECT client_secret FROM oauth2_provider_application WHERE name='GeoServer'" -t | tr -d '[:space:]')
+CLIENT_ID=$(psql "$DATABASE_URL" -c "SELECT client_id FROM oauth2_provider_application WHERE name='GeoServer'" -t | tr -d '[:space:]')
+CLIENT_SECRET=$(psql "$DATABASE_URL" -c "SELECT client_secret FROM oauth2_provider_application WHERE name='GeoServer'" -t | tr -d '[:space:]')
 if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
     echo "Could not get OAuth2 ID and SECRET from database. Make sure Postgres container is started and Django has finished it's migrations."
     exit 1

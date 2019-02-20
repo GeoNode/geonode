@@ -1,5 +1,9 @@
 FROM openjdk:8-jre-alpine
 
+ARG version=2.14.2
+ARG branch=2.14.x
+ARG plugins=
+
 # Install dependencies
 RUN apk add --no-cache ca-certificates openssl curl postgresql-client fontconfig ttf-ubuntu-font-family
 RUN update-ca-certificates
@@ -12,20 +16,30 @@ WORKDIR /
 # TODO : this is a bit dirty..... can't we stat from vanilla Geoserver ?
 # TODO : merge into on step
 RUN echo "Download geoserver for geonode" && \
-    wget https://downloads.sourceforge.net/project/geoserver/GeoServer/2.14.0/geoserver-2.14.0-bin.zip && \
-    wget https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-2.14.x.war --no-check-certificate && \
-    unzip geoserver-2.14.0-bin.zip && \
-    rm /geoserver-2.14.0-bin.zip && \
-    rm /geoserver-2.14.0/webapps/geoserver/* -rf && \
-    unzip -o geoserver-2.14.x.war -d /geoserver-2.14.0/webapps/geoserver/ && \
-    rm /geoserver-2.14.x.war
+    wget https://downloads.sourceforge.net/project/geoserver/GeoServer/$version/geoserver-$version-bin.zip && \
+    wget https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-$branch.war --no-check-certificate && \
+    unzip geoserver-$version-bin.zip && \
+    mv geoserver-$version geoserver && \
+    rm /geoserver-$version-bin.zip && \
+    rm /geoserver-$version/webapps/geoserver/* -rf && \
+    unzip -o geoserver-$branch.war -d /geoserver/webapps/geoserver/ && \
+    rm /geoserver-$branch.war
+
+# Plugins support
+# Example:
+#   $ docker-compose build --build-arg plugins="csw" geoserver
+RUN for plugin in $plugins; do \
+        wget https://downloads.sourceforge.net/project/geoserver/GeoServer/$version/extensions/geoserver-$version-$plugin-plugin.zip && \
+        unzip -o geoserver-$version-$plugin-plugin.zip -d /geoserver/webapps/geoserver/WEB-INF/lib && \
+        rm geoserver-$version-$plugin-plugin.zip; \
+    done
 
 # Download initial data dir
-RUN wget https://build.geo-solutions.it/geonode/geoserver/latest/data-2.14.x.zip --no-check-certificate
-RUN unzip /data-2.14.x.zip
+RUN wget https://build.geo-solutions.it/geonode/geoserver/latest/data-$branch.zip --no-check-certificate
+RUN unzip /data-$branch.zip
 RUN ls /data
 
-WORKDIR /geoserver-2.14.0/
+WORKDIR /geoserver/
 
 # Add the entrypoint
 ADD docker-entrypoint.sh /docker-entrypoint.sh 
@@ -36,7 +50,7 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 8080
 
 # Set environnment variables
-ENV GEOSERVER_HOME=/geoserver-2.14.0
+ENV GEOSERVER_HOME=/geoserver
 ENV GEOSERVER_DATA_DIR=/spcgeonode-geodatadir
 
 # Run geoserver
