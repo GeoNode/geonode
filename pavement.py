@@ -686,6 +686,17 @@ def start_geoserver(options):
         # prevents geonode security from initializing correctly otherwise
         with pushd(data_dir):
             javapath = "java"
+            if on_travis:
+                sh((
+                    'echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections;'
+                    ' echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections;'
+                    ' sudo apt install -y oracle-java8-set-default ant maven;'
+                    ' sudo update-java-alternatives --set java-8-oracle'
+                ))
+                # import subprocess
+                # result = subprocess.run(['update-alternatives', '--list', 'java'], stdout=subprocess.PIPE)
+                # javapath = result.stdout
+                javapath = "/usr/lib/jvm/java-8-oracle/jre/bin/java"
             loggernullpath = os.devnull
 
             # checking if our loggernullpath exists and if not, reset it to
@@ -701,7 +712,7 @@ def start_geoserver(options):
                 loggernullpath = "../../downloaded/null.txt"
 
             try:
-                sh(('java -version'))
+                sh(('%(javapath)s -version') % locals() )
             except BaseException:
                 print "Java was not found in your path.  Trying some other options: "
                 javapath_opt = None
