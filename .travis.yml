@@ -193,7 +193,7 @@ install:
 
 before_script:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
-      true;
+      sudo service nginx stop;
     else
       echo "Initialize DB";
       psql -U postgres -c "create extension postgis";
