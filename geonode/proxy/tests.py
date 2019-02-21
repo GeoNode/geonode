@@ -52,7 +52,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
                                    (self.proxy_url, self.url))
         # 404 - NOT FOUND
         if response.status_code != 404:
-            self.assertEqual(response.status_code, 200)
+            self.assertTrue(response.status_code in (200, 301))
 
     @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=())
     def test_validate_host_disabled_not_in_debug(self):
@@ -71,4 +71,4 @@ class ProxyTest(GeoNodeBaseTestSupport):
                                    (self.proxy_url, self.url))
         # 404 - NOT FOUND
         if response.status_code != 404:
-            self.assertEqual(response.status_code, 200)
+            self.assertTrue(response.status_code in (200, 301))

@@ -196,9 +196,8 @@ before_script:
       true;
     else
       echo "Initialize DB";
-      sudo apt install postgresql-9.6-postgis-2.4;
       psql -U postgres -c "create extension postgis";
-      chmod +x scripts/misc/create_dbs_travis.sh
+      chmod +x scripts/misc/create_dbs_travis.sh;
       scripts/misc/create_dbs_travis.sh before_script;
       echo "For GeoServer Server Travis steps";
       scripts/misc/geoserver_server_setup.sh before_script;
