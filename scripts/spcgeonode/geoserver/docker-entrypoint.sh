@@ -123,7 +123,29 @@ echo "5. (Re)setting Baseurl"
 
 sed -i -r "s|<proxyBaseUrl>.*</proxyBaseUrl>|<proxyBaseUrl>$BASEURL</proxyBaseUrl>|" "/spcgeonode-geodatadir/global.xml" 
 
+############################
+# 6. IMPORTING SSL CERTIFICATE
+############################
 
+echo "-----------------------------------------------------"
+echo "6. Importing SSL certificate (if using HTTPS)"
+
+# https://docs.geoserver.org/stable/en/user/community/oauth2/index.html#ssl-trusted-certificates
+if [ ! -z "$HTTPS_HOST" ]; then
+    PASSWORD=$(openssl rand -base64 18)
+
+    openssl s_client -connect ${HTTPS_HOST#https://}:${HTTPS_PORT} </dev/null |
+        openssl x509 -out server.crt
+
+    # create a keystore and import certificate
+    keytool -import -noprompt -trustcacerts \
+            -alias ${HTTPS_HOST} -file server.crt \
+            -keystore /keystore.jks -storepass ${PASSWORD}
+
+    rm server.crt
+
+    JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.keyStore=/keystore.jks -Djavax.net.ssl.keyStorePassword=$PASSWORD"
+fi
 
 echo "-----------------------------------------------------"
 echo "FINISHED GEOSERVER ENTRYPOINT -----------------------"
