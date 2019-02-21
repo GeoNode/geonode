@@ -187,7 +187,9 @@ def proxy(request, url=None, response_callback=None,
                     "Accept-encoding": encoding, })
 
     if url.scheme == 'https':
-        conn = HTTPSConnection(url.hostname, url.port)
+        import ssl
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+        conn = HTTPSConnection(url.hostname, url.port, context=context)
     else:
         conn = HTTPConnection(url.hostname, url.port)
     parsed = urlparse(raw_url)
