@@ -155,6 +155,9 @@ before_install:
       export GEONODE_REPOSITORY=$(pwd);
       GECKODRIVER_VERSION="v0.24.0";
     else
+      sudo apt-get update
+      sudo /etc/init.d/postgresql stop
+      sudo /etc/init.d/postgresql start 9.6
       mkdir -p $HOME/buildout-cache/{eggs,downloads};
       scripts/misc/geoserver_server_setup.sh before_install;
       scripts/misc/qgis_server_setup.sh before_install;
@@ -175,8 +178,7 @@ install:
       sudo apt-get install -y libgdal1i python-gdal gdal-bin spatialite-bin;
       sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext;
       sudo apt-get install -y python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk;
-      sudo apt-add-repository -y ppa:webupd8team/java;
-      sudo apt update; sudo apt upgrade -y; sudo apt autoremove --purge;
+      sudo apt-add-repository -y ppa:webupd8team/java; sudo apt update;
       sudo apt install -y oracle-java8-set-default ant maven;
       sudo update-java-alternatives --set java-8-oracle;
       export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
