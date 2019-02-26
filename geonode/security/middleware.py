@@ -33,20 +33,32 @@ from geonode.geoserver.utils import geoserver_requests_session
 
 from guardian.shortcuts import get_anonymous_user
 
-white_list_paths = (
-    reverse('account_login'),
-    reverse('forgot_username'),
-    reverse('help'),
-    reverse('javascript-catalog'),
-    reverse('lang'),
-    reverse('layer_acls'),
-    reverse('layer_acls_dep'),
-    reverse('layer_resolve_user'),
-    reverse('layer_resolve_user_dep'),
-    '/account/(?!.*(?:signup))',
-    # block unauthenticated users from creating new accounts.
-    '/static/*',
-)
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    white_list_paths = (
+        reverse('account_login'),
+        reverse('forgot_username'),
+        reverse('help'),
+        reverse('javascript-catalog'),
+        reverse('lang'),
+        reverse('layer_acls'),
+        reverse('layer_acls_dep'),
+        reverse('layer_resolve_user'),
+        reverse('layer_resolve_user_dep'),
+        '/account/(?!.*(?:signup))',
+        # block unauthenticated users from creating new accounts.
+        '/static/*',
+    )
+else:
+    white_list_paths = (
+        reverse('account_login'),
+        reverse('forgot_username'),
+        reverse('help'),
+        reverse('javascript-catalog'),
+        reverse('lang'),
+        '/account/(?!.*(?:signup))',
+        # block unauthenticated users from creating new accounts.
+        '/static/*',
+    )
 
 white_list = map(
     compile,
