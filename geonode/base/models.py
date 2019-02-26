@@ -60,7 +60,6 @@ from treebeard.mp_tree import MP_Node
 
 from geonode.people.enumerations import ROLE_VALUES
 
-
 logger = logging.getLogger(__name__)
 
 

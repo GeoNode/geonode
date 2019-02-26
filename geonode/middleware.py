@@ -23,9 +23,14 @@ try:
 except ImportError:
     from django.utils import simplejson as json
 from django.http import HttpResponse
+from django.contrib.auth import logout
 
-from geonode.geoserver.helpers import ogc_server_settings
+from geonode import geoserver
+from geonode.geoserver import helpers
+from geonode.utils import check_ogc_backend
 from geonode.security.views import _perms_info_json
+from geonode.base.auth import get_token_object_from_session
+from geonode.geoserver.utils import geoserver_requests_session
 
 
 class PrintProxyMiddleware(object):
@@ -42,7 +47,7 @@ def print_map(request):
     permissions = {}
     params = json.loads(request.body)
     for layer in params['layers']:
-        if ogc_server_settings.LOCATION in layer['baseURL']:
+        if helpers.ogc_server_settings.LOCATION in layer['baseURL']:
             for layer_name in layer['layers']:
                 layer_obj = Layer.objects.get(alternate=layer_name)
                 permissions[layer_obj] = _perms_info_json(layer_obj)
@@ -56,3 +61,23 @@ def print_map(request):
             layer_obj.set_permissions(json.loads(permissions[layer_obj]))
 
     return resp
+
+
+class SessionControlMiddleware(object):
+        """
+        Middleware that checks if session variables have been correctly set.
+        """
+        def process_request(self, request):
+            if not request.user.is_authenticated or \
+            not request.user.is_active:
+                logout(request)
+            else:
+                access_token = get_token_object_from_session(request.session)
+
+                # we extend the token in case the session is active but the token expired
+                if access_token and access_token.is_expired():
+                    logout(request)
+
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                # Refresh http_client session auth
+                helpers.http_client = geoserver_requests_session()

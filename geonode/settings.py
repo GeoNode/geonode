@@ -550,6 +550,10 @@ MIDDLEWARE_CLASSES = (
     # risks.
     # 'geonode.middleware.PrintProxyMiddleware',
 
+    # This middleware checks for ACCESS_TOKEN validity and if expired forces
+    # user logout
+    'geonode.middleware.SessionControlMiddleware',
+
     # If you use SessionAuthenticationMiddleware, be sure it appears before OAuth2TokenMiddleware.
     # SessionAuthenticationMiddleware is NOT required for using
     # django-oauth-toolkit.
@@ -558,7 +562,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 # Security stuff
-MIDDLEWARE_CLASSES += ('django.middleware.security.SecurityMiddleware',)
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False
