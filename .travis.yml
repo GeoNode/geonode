@@ -27,8 +27,7 @@ addons:
 matrix:
   fast_finish: true
   include:
-  - name: "GeoServer-backend Core Modules Smoke Tests"
-    python: 2.7
+  - python: 2.7
     virtualenv:
         system_site_packages: true
     env:
@@ -37,8 +36,7 @@ matrix:
           ON_TRAVIS: 'True'
           TEST_RUN_CORE: 'True'
           MONITORING_ENABLED: 'False'
-  - name: "GeoServer-backend Contrib Apps Smoke Tests"
-    python: 2.7
+  - python: 2.7
     virtualenv:
         system_site_packages: true
     env:
@@ -47,8 +45,7 @@ matrix:
           ON_TRAVIS: 'True'
           TEST_RUN_INTERNAL_APPS: 'True'
           MONITORING_ENABLED: 'False'
-  - name: "GeoServer-backend Integration Tests"
-    python: 2.7
+  - python: 2.7
     virtualenv:
         system_site_packages: true
     env:
@@ -63,8 +60,7 @@ matrix:
           TEST_RUN_INTEGRATION_BDD: 'False'
           MONITORING_ENABLED: 'False'
           CELERY_ALWAYS_EAGER: 'True'
-  - name: "GeoServer-backend Integration CSW Tests"
-    python: 2.7
+  - python: 2.7
     virtualenv:
         system_site_packages: true
     env:
@@ -79,8 +75,7 @@ matrix:
           TEST_RUN_INTEGRATION_BDD: 'False'
           MONITORING_ENABLED: 'False'
           CELERY_ALWAYS_EAGER: 'True'
-  - name: "GeoServer-backend Integration BDD Tests"
-    python: 2.7
+  - python: 2.7
     virtualenv:
         system_site_packages: true
     env:
@@ -95,8 +90,7 @@ matrix:
           TEST_RUN_INTEGRATION_BDD: 'True'
           MONITORING_ENABLED: 'False'
           CELERY_ALWAYS_EAGER: 'True'
-  - name: "QGis Server-backend Core Modules Smoke Tests"
-    python: 2.7
+  - python: 2.7
     virtualenv:
         system_site_packages: true
     env:
@@ -113,8 +107,7 @@ matrix:
           TEST_RUN_CORE: 'True'
           MONITORING_ENABLED: 'False'
           CELERY_ALWAYS_EAGER: 'True'
-  - name: "QGis Server-backend Contrib Apps Smoke Tests"
-    python: 2.7
+  - python: 2.7
     virtualenv:
         system_site_packages: true
     env:
@@ -131,8 +124,7 @@ matrix:
           TEST_RUN_INTERNAL_APPS: 'True'
           MONITORING_ENABLED: 'False'
           CELERY_ALWAYS_EAGER: 'True'
-  - name: "QGis Server-backend Integration Tests"
-    python: 2.7
+  - python: 2.7
     virtualenv:
         system_site_packages: true
     env:
@@ -150,8 +142,7 @@ matrix:
           MONITORING_ENABLED: 'False'
           CELERY_ALWAYS_EAGER: 'True'
   allow_failures:
-  - name: "Selenium Integration Tests"
-    python: 3.5
+  - python: 3.5
     env:
         - TEST_RUN_SELENIUM: 'True'
 
