@@ -1336,6 +1336,79 @@ class Link(models.Model):
         return u"{0} link".format(self.link_type)
 
 
+class MenuPlaceholder(models.Model):
+
+    name = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        unique=True
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Menu(models.Model):
+
+    title = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False
+    )
+    placeholder = models.ForeignKey(
+        to='MenuPlaceholder',
+        on_delete=models.CASCADE,
+        null=False
+    )
+    order = models.IntegerField(
+        null=False,
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        unique_together = (
+            ('placeholder', 'order'),
+            ('placeholder', 'title'),
+        )
+        ordering = ['order']
+
+
+class MenuItem(models.Model):
+
+    title = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False
+    )
+    menu = models.ForeignKey(
+        to='Menu',
+        on_delete=models.CASCADE,
+        null=False
+    )
+    order = models.IntegerField(
+        null=False
+    )
+    blank_target = models.BooleanField()
+    url = models.CharField(
+        max_length=2000,
+        null=False,
+        blank=False
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        unique_together = (
+            ('menu', 'order'),
+            ('menu', 'title'),
+        )
+        ordering = ['order']
+
+
 def resourcebase_post_save(instance, *args, **kwargs):
     """
     Used to fill any additional fields after the save.
