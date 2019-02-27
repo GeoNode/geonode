@@ -1,5 +1,7 @@
 {% load base_tags %}
 {% load static from staticfiles %}
+{% load i18n %}
+
 
 {% if DEBUG_STATIC %}
 <script src="{% static "lib/js/angular.js" %}?v={{ VERSION }}"></script>
@@ -18,6 +20,8 @@
 
 {% endif %}
 <script src="{% static "dist/search.bundle.js" %}?v={{ VERSION }}"></script>
+<script src="{% url "javascript-catalog" %}"></script>
+
 <script type="text/javascript">
   $("body").attr('ng-controller', 'geonode_search_controller');
   CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';
