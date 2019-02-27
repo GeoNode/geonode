@@ -12,9 +12,6 @@ cache:
 before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
 
-virtualenv:
-  system_site_packages: true
-
 services:
   - docker
   - postgresql
@@ -34,6 +31,8 @@ matrix:
   include:
     - name: "GeoServer-backend Core Modules Smoke Tests"
       python: 2.7
+      virtualenv:
+          system_site_packages: true
       env:
           - BACKEND: 'geonode.geoserver'
             DOCKER_COMPOSE_VERSION: 1.19.0
@@ -42,6 +41,8 @@ matrix:
             MONITORING_ENABLED: 'False'
     - name: "GeoServer-backend Contrib Apps Smoke Tests"
       python: 2.7
+      virtualenv:
+          system_site_packages: true
       env:
           - BACKEND: 'geonode.geoserver'
             DOCKER_COMPOSE_VERSION: 1.19.0
@@ -50,6 +51,8 @@ matrix:
             MONITORING_ENABLED: 'False'
     - name: "GeoServer-backend Integration Tests"
       python: 2.7
+      virtualenv:
+          system_site_packages: true
       env:
           - BACKEND: 'geonode.geoserver'
             DOCKER_COMPOSE_VERSION: 1.19.0
@@ -64,6 +67,8 @@ matrix:
             CELERY_ALWAYS_EAGER: 'True'
     - name: "GeoServer-backend Integration CSW Tests"
       python: 2.7
+      virtualenv:
+          system_site_packages: true
       env:
           - BACKEND: 'geonode.geoserver'
             DOCKER_COMPOSE_VERSION: 1.19.0
@@ -78,6 +83,8 @@ matrix:
             CELERY_ALWAYS_EAGER: 'True'
     - name: "GeoServer-backend Integration BDD Tests"
       python: 2.7
+      virtualenv:
+          system_site_packages: true
       env:
           - BACKEND: 'geonode.geoserver'
             DOCKER_COMPOSE_VERSION: 1.19.0
@@ -92,6 +99,8 @@ matrix:
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Core Modules Smoke Tests"
       python: 2.7
+      virtualenv:
+          system_site_packages: true
       env:
           - BACKEND: 'geonode.qgis_server'
             DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
@@ -108,6 +117,8 @@ matrix:
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Contrib Apps Smoke Tests"
       python: 2.7
+      virtualenv:
+          system_site_packages: true
       env:
           - BACKEND: 'geonode.qgis_server'
             DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
@@ -124,6 +135,8 @@ matrix:
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Integration Tests"
       python: 2.7
+      virtualenv:
+          system_site_packages: true
       env:
           - BACKEND: 'geonode.qgis_server'
             DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
@@ -138,6 +151,10 @@ matrix:
             TEST_RUN_INTEGRATION: 'True'
             MONITORING_ENABLED: 'False'
             CELERY_ALWAYS_EAGER: 'True'
+    - name: "Selenium Integration Tests"
+      python: 3.5
+      env:
+          - TEST_RUN_SELENIUM: 'True'
 
 branches:
   only:
