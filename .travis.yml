@@ -1,7 +1,5 @@
-sudo: true
-
+sudo: required
 language: python
-
 dist: xenial
 
 cache:
