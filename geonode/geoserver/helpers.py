@@ -37,6 +37,7 @@ import uuid
 import urllib
 from urlparse import urlsplit, urlparse, urljoin
 
+from .utils import geoserver_requests_session
 from agon_ratings.models import OverallRating
 from bs4 import BeautifulSoup
 from dialogos.models import Comment
@@ -1710,7 +1711,7 @@ _wms = None
 _csw = None
 _user, _password = ogc_server_settings.credentials
 
-http_client = None
+http_client = geoserver_requests_session()
 
 
 url = ogc_server_settings.rest

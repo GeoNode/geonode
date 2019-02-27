@@ -24,7 +24,7 @@ except ImportError:
     from django.utils import simplejson as json
 from django.http import HttpResponse
 
-from geonode.geoserver import helpers
+from geonode.geoserver.helpers import ogc_server_settings
 from geonode.security.views import _perms_info_json
 
 
@@ -42,7 +42,7 @@ def print_map(request):
     permissions = {}
     params = json.loads(request.body)
     for layer in params['layers']:
-        if helpers.ogc_server_settings.LOCATION in layer['baseURL']:
+        if ogc_server_settings.LOCATION in layer['baseURL']:
             for layer_name in layer['layers']:
                 layer_obj = Layer.objects.get(alternate=layer_name)
                 permissions[layer_obj] = _perms_info_json(layer_obj)
