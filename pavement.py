@@ -71,7 +71,7 @@ assert sys.version_info >= (2, 6), \
 
 dev_config = None
 with open("dev_config.yml", 'r') as f:
-    dev_config = yaml.load(f)
+    dev_config = yaml.load(f, Loader=yaml.Loader)
 
 
 def grab(src, dest, name):
