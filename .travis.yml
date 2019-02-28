@@ -153,6 +153,9 @@ matrix:
       python: 3.5
       env:
           - TEST_RUN_SELENIUM: 'True'
+            GEONODE_USER: admin
+            GEONODE_PASS: admin
+            GEONODE_URL: http://localhost
 
 branches:
   only:

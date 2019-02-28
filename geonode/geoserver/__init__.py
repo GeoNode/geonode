@@ -42,6 +42,10 @@ def run_setup_hooks(*args, **kwargs):
     signals.pre_save.connect(geoserver_pre_save_maplayer, sender=MapLayer)
     signals.post_save.connect(geoserver_post_save_map, sender=Map)
 
+    from . import helpers
+    from .utils import geoserver_requests_session
+    helpers.http_client = geoserver_requests_session()
+
 
 class GeoserverAppConfig(NotificationsAppConfigBase):
     name = 'geonode.geoserver'
