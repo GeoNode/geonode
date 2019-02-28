@@ -545,7 +545,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 # Security stuff
-MIDDLEWARE_CLASSES += ('django.middleware.security.SecurityMiddleware',)
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False
