@@ -491,8 +491,8 @@ def _get_time_dimensions(layer, upload_session):
                     print(layer_values)
                     if layer_values:
                         for feat in layer_values:
-                            if feat.get(a['name'])['value']:  # and \
-                            # iso8601(str(feat.get(a['name'])['value'])):
+                            if feat.get(a['name'])['value'] and \
+                            iso8601(str(feat.get(a['name'])['value'])):
                                 if a not in att_list:
                                     att_list.append(a)
                         print(att_list)

@@ -237,7 +237,7 @@ script:
           -f docker-compose.override.localhost.yml
           up --build;
       curl -s --fail
-          --retry 30 --retry-delay 10 --retry-connrefused
+          --retry 30 --retry-delay 10
           $URL >/dev/null;
       GEONODE_USER=admin GEONODE_PASS=admin GEONODE_URL=$URL ./test.sh;
     else

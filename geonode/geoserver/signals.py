@@ -91,7 +91,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         producer.geoserver_upload_layer(payload)
         if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
             instance.set_dirty_state()
-        logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
+        logger.info("... Creating Thumbnail for Layer [%s]" % (instance))
         try:
             thumbnail_task.delay(
                 instance.id,
@@ -99,7 +99,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                 overwrite=True,
                 check_bbox=True)
         except BaseException:
-            logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance.alternate))
+            logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance))
 
 
 def geoserver_post_save_local(instance, *args, **kwargs):
@@ -520,9 +520,14 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
     if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
             'thumbnail_url' in kwargs['update_fields']:
-        logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
-        thumbnail_task.delay(
-            instance.id, instance.__class__.__name__, overwrite=True)
+        logger.info("... Creating Thumbnail for Layer [%s]" % (instance))
+        try:
+            thumbnail_task.delay(
+                instance.id,
+                instance.__class__.__name__,
+                overwrite=True)
+        except BaseException:
+            logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance))
 
     try:
         Link.objects.filter(resource=instance.resourcebase_ptr, name='Legend').delete()
@@ -650,9 +655,12 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 
 def geoserver_post_save_map(instance, sender, **kwargs):
     instance.set_missing_info()
-    logger.info("... Creating Thumbnail for Map [%s]" % (instance.title))
-    thumbnail_task.delay(
-        instance.id,
-        instance.__class__.__name__,
-        overwrite=False,
-        check_bbox=True)
+    logger.info("... Creating Thumbnail for Map [%s]" % (instance))
+    try:
+        thumbnail_task.delay(
+            instance.id,
+            instance.__class__.__name__,
+            overwrite=False,
+            check_bbox=True)
+    except BaseException:
+        logger.warn("!WARNING! - Failure while Creating Thumbnail for Map [%s]" % (instance))
