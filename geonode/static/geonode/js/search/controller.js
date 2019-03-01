@@ -1,4 +1,4 @@
-import Search from "app/search/components/Search";
+import searcher from "app/search/searcher";
 import PubSub from "app/utils/pubsub";
 import Map from "app/search/components/Map";
 import TextSearchForm from "app/search/components/TextSearchForm";
@@ -28,9 +28,9 @@ export default (() => {
     ["dataValue", "sortFilter"]
   ]);
 
-  const syncView = ($scope, searcher) => {
-    syncAngular($scope, searcher);
-    PubSub.publish("syncView", searcher.inspect());
+  const syncView = ($scope, search) => {
+    syncAngular($scope, search);
+    PubSub.publish("syncView", search.inspect());
   };
 
   const module = angular.module("geonode_main_search", []);
@@ -42,10 +42,6 @@ export default (() => {
   */
   module.controller("geonode_search_controller", $scope => {
     // Create a search instance to track search state
-    const searcher = Search({
-      searchURL: "/api/base/"
-    });
-
     setDefaultSearchState(searcher);
 
     // Add extent map
@@ -147,11 +143,6 @@ export default (() => {
       searcher.handleResultChange();
       syncView($scope, searcher);
     });
-
-    // eslint-disable-next-line
-    $scope.paginate_down = searcher.paginateDown;
-    // eslint-disable-next-line
-    $scope.paginate_up = searcher.paginateUp;
 
     const updateKWQuery = (element, selectionType) => {
       const updatedQuery = modifyQuery({

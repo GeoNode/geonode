@@ -1,12 +1,13 @@
 import React from "react";
 import StatefulString from "app/search/components/StatefulString";
+import searcher from "app/search/searcher";
 
 export default function Pagination() {
   return (
     <div className="row">
       <nav>
         <ul className="pagination pull-right">
-          <li ng-click="paginate_down()">
+          <li onClick={searcher.paginateDown}>
             <a href>
               <strong>
                 <i className="fa fa-angle-left" />
@@ -15,11 +16,11 @@ export default function Pagination() {
           </li>
           <li>
             <a href>
-              page <StatefulString id="currentPage" /> of{" "}
-              <StatefulString id="numberOfPages" />
+              {window.gettext("page")} <StatefulString id="currentPage" />{" "}
+              {window.gettext("of")} <StatefulString id="numberOfPages" />
             </a>
           </li>
-          <li ng-click="paginate_up()">
+          <li onClick={searcher.paginateUp}>
             <a href>
               <strong>
                 <i className="fa fa-angle-right" />
