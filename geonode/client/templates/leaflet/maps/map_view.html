@@ -10,6 +10,10 @@
 
 {% block head %}
     {{ block.super }}
+ <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+            type="text/javascript"></script>
+ <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"
+            type="text/javascript"></script>
 {% endblock head %}
 
 {% block extra_head %}
@@ -54,10 +58,29 @@
                     <div class="form-group">
                         <label for="add_layer_select">Available layers</label>
                         <select class="form-control" id="add_layer_select">
+			
+                                <script>
+				var alternate = '';
+                                </script>
+
                             {% for layer in layers %}
+
+  				<script>
+				alternate = '{{ layer.alternate }}';
+				</script>
+
                                 <option value="{{ layer.alternate }}"
                                         id="option_{{ layer.alternate }}">{{ layer.title }}</option>
                             {% endfor %}
+			    {% for layer in geoserver_layers %}
+                                <script>
+
+				//var layerurl = url_layer(layers[0].alternate);
+                                </script>
+                                <option value="{{ layer.title }}"
+						id="option_{{ layer.title }}">{{ layer.title }}</option>
+                            {% endfor %}
+
                         </select>
                         <input id="add_layer_button" type="submit" class="btn btn-info" value="Add Layer">
                     </div>
@@ -127,13 +150,13 @@
 {% block extra_script %}
 {{ block.super }}
     {% leaflet_js %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"
-            type="text/javascript"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
     <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
     <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
 
     <script src="{% static 'lib/js/L.Control.Pan.js' %}"></script>
+
+    <script src="{% static "lib/js/L.TileLayer.BetterWMS.js" %}"></script>
 
     <script type="text/javascript">
         jQuery.fn.extend({
@@ -150,19 +173,23 @@
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
         });
 
-        var OpenMapSurfer_Roads = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
+        var OpenMapSurfer_Roads = L.tileLayer('', {
             maxZoom: 20,
             attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         });
+       var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+           maxZoom: 20,
+           subdomains:['mt0','mt1','mt2','mt3']
+       });
 
-        {% if create %}
+
             all_layers = {
                 'OpenMapSurfer_Roads': {
-                    'title': 'OpenMapSurfer Roads',
+                    'title': 'NO BACKGROUND',
                     'name': 'OpenMapSurfer_Roads',
                     'url': OpenMapSurfer_Roads._url,
                     'layer': OpenMapSurfer_Roads,
-                    'visibility': true,
+                    'visibility': false,
                     'group': 'background',
                     'zIndex': 0
                 },
@@ -174,16 +201,23 @@
                     'visibility': false,
                     'group': 'background',
                     'zIndex': 1
-                }
+                },
+                'googleSat': {
+                    'title': 'SATELLITE',
+                    'name': 'googleSat',
+                    'url': googleSat._url,
+                    'layer': googleSat,
+                    'visibility': true,
+                    'group': 'background',
+                    'zIndex': 2
+                },
+
             };
             all_layers_list.push('OpenMapSurfer_Roads');
             all_layers_list.push('osm');
+            all_layers_list.push('googleSat');
 
-            active_background_layer = OpenMapSurfer_Roads;
-        {% else %}
-            all_layers = {};
-            all_layers_list = [];
-        {% endif %}
+            active_background_layer = googleSat;
 
         var w_height = $(window).height();
         var map_height = w_height - $('nav').height();
@@ -246,10 +280,10 @@
 
         function compare_bounds(bound1, bound2) {
             return [
-                Math.max(bound1[0], bound2[0]),
+                Math.min(bound1[0], bound2[0]),
                 Math.min(bound1[1], bound2[1]),
                 Math.max(bound1[2], bound2[2]),
-                Math.min(bound1[3], bound2[3]) ]
+                Math.max(bound1[3], bound2[3]) ]
         }
 
         function add_layer(layer_typename, visibility, layer_order) {
@@ -260,6 +294,93 @@
             if (!layer_typename) {
                 return
             }
+			//Adding group layers from Geoserver
+			if(!layer_typename.includes('geonode:')){
+				var layer_url = '';
+				$.ajax({
+					type: 'GET',
+					url: '/layers/' + $("#add_layer_select option:eq(0)").val() + '/get',
+					data: {},
+					dataType: 'json',
+                success: function (json) {
+                        layer_url = json['url'];
+                layer_title = layer_typename;                        
+				var tile_layer = L.tileLayer.betterWms(layer_url,
+                {
+                    crs: L.CRS.EPSG4326, format: 'image/png', transparent: true, layers:$('#add_layer_select').val()
+                });
+			//Montenegro bounds	
+			var bounds = [18.2, 41.9, 20.5, 43.5];
+
+			var hidden_layers = $("#hidden-layer-list > input");
+                        if(hidden_layers.length != 0) {
+                            temp_bounds = undefined;
+                            hidden_layers.each(function () {
+                                //temp_bounds has been determined from the previous loop
+                                if(temp_bounds != undefined) {
+                                    bounds = temp_bounds;
+                                }
+                                previous_bounds = $(this).val();
+                                //convert string to float
+                                previous_bounds = previous_bounds.split(",").map(function (elem) {
+                                        return parseFloat(elem);
+                                    });
+                                temp_bounds = compare_bounds(bounds, previous_bounds);
+                            });
+                            bounds = temp_bounds;
+                        }
+
+
+                        zoom_to_box(map, bounds);
+
+			// Add to list layer
+                        if (visibility) {
+                            // Add the layer
+                            map.addLayer(tile_layer);
+                            $("#layer-list").prepend(
+                                    "<li id='li_" + layer_typename + "'>" +
+                                    "<input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "' checked>" +
+                                    layer_title +
+                                    "<button type='button' onclick='delete_layer_clicked(this);' value='" + layer_typename + "'>X</button>" +
+                                    "</li>");
+                        } else {
+                            $("#layer-list").prepend(
+                                    "<li id='li_" + layer_typename + "'>" +
+                                    "<input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "'>" +
+                                    layer_title +
+                                    "<button type='button' onclick='delete_layer_clicked(this);' value='" + layer_typename + "'>X</button>" +
+                                    "</li>");
+                        }
+
+                        $("#hidden-layer-list").html("<input type='hidden' id='hidden_"+ layer_typename +"' value='"+bounds+"' />");
+
+                        // Add to memory
+                        var added_layer = {};
+                        added_layer.title = layer_title;
+                        added_layer.url = layer_url;
+                        added_layer.layer = tile_layer;
+                        added_layer.visibility = visibility;
+                        if (layer_order) {
+                            added_layer.zIndex = layer_order;
+                        } else {
+                            console.log('No layer order, set to : ' + (all_layers_list.length));
+                            added_layer.zIndex = all_layers_list.length;
+                        }
+                        all_layers[layer_typename] = added_layer;
+
+                        // Add to list of overlay layers
+                        all_layers_list.push(layer_typename);
+
+                        // Set zIndex of the layer
+                        tile_layer.setZIndex(added_layer.zIndex);
+                        console.log(added_layer.zIndex);
+
+
+                        // Hide from available layer
+                        document.getElementById("option_" + layer_typename).style.display = 'none';
+                        $('#add_layer_select').prop('selectedIndex', -1);
+	}});	
+			}else{
             $.ajax({
                 type: 'GET',
                 url: '/layers/' + layer_typename + '/get',
@@ -267,10 +388,14 @@
                 dataType: 'json',
                 success: function (json) {
                     var layer_url = json['url'];
-                    var layer_title = json['title'];
+                    var layer_title = json['title'];		    
 
                     // Add layer to leaflet
-                    var tile_layer = L.tileLayer(layer_url);
+                    // var tile_layer = L.tileLayer(layer_url);
+					var tile_layer = L.tileLayer.betterWms(layer_url,
+                    {
+						crs: L.CRS.EPSG4326, format: 'image/png', transparent: true, layers:$('#add_layer_select').val()
+                    });		     
                     if (tile_layer != null) {
                         // Set view to new added layer
                         var bounds = [json['bbox_x0'], json['bbox_y0'],
@@ -292,8 +417,6 @@
                                     });
                                 temp_bounds = compare_bounds(bounds, previous_bounds);
                             });
-                            // The zoom value will determine how wide the layers will be shown
-                            map.setZoom(5);
                             bounds = temp_bounds;
                         }
                         zoom_to_box(map, bounds);
@@ -350,6 +473,7 @@
                     console.log(xhr.status + ": " + xhr.responseText);
                 }
             });
+			}
         }
 
         function save_map(event) {
@@ -416,14 +540,13 @@
         }
 
         function populate_background_layer(the_list, the_dict) {
-            console.log(the_list);
             for (i = 0; i < the_list.length; i++) {
                 var background_layer_name = the_list[i];
                 var background_layer = the_dict[background_layer_name];
                 if (background_layer['group'] != 'background') {
                     continue;
                 }
-                if (background_layer['visibility'] == "True") {
+                if (background_layer['visibility'] == "True" || (background_layer['visibility'])) {
                     active_background_layer = background_layer;
                     $("#background-layer-list").prepend(
                             '<li>' +
@@ -433,17 +556,6 @@
                             background_layer['title'] +
                             '</li>'
                     );
-                } else if (background_layer['visibility']) {
-                    active_background_layer = background_layer;
-                    $("#background-layer-list").prepend(
-                            '<li>' +
-                            '<input type="radio" name="background-layer" value="' +
-                            background_layer_name +
-                            '" checked="checked">' +
-                            background_layer['title'] +
-                            '</li>'
-                    );
-
                 } else {
                     $("#background-layer-list").prepend(
                             '<li>' +
@@ -458,28 +570,34 @@
             }
             // Add radio button listener for background layer
             $('input:radio[name=background-layer]').change(function () {
+		for (var key in all_layers) {
+		    all_layers[key]['visibility']=false;
+		}
                 var new_background_layer = all_layers[this.value]['layer'];
                 map.removeLayer(active_background_layer);
                 new_background_layer.addTo(map);
                 new_background_layer.setZIndex(0);
                 active_background_layer = new_background_layer;
+		all_layers[this.value]['visibility']=true;
             });
         }
 
         $(document).ready(function () {
             // Initiate map
+
             {% if create %}
+		// Center for Montenegro
                 map = L.map('map', {
-                    center: [-6.2, 106.8],
-                    zoom: 11,
+                    center: [42.7, 19.5],
+                    zoom: 9,
                     layers: [active_background_layer]
                 });
-            {% else %}
-                map = L.map('map', {
-                    center: [-6.2, 106.8],
-                    zoom: 11
-                });
-            {% endif %}
+             {% else %}
+                 map = L.map('map', {
+                    center: [42.7, 19.5],
+                    zoom: 9,
+                    layers: [active_background_layer]});
+             {% endif %}
 
             L.easyButton({
                 states: [{
@@ -584,7 +702,7 @@
                         {% endif %}
                     }
                 {% endfor %}
-                populate_background_layer(all_layers_list, all_layers);
+                //populate_background_layer(all_layers_list, all_layers);
                 {% if map and map.center_x %}
                     // console.log("{{ map.center_x }}, {{ map.center_y }}), {{ map.zoom }}");
                     map.setView(new L.LatLng({{ map.center_x }}, {{ map.center_y }}), {{ map.zoom }});

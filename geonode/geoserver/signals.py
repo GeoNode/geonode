@@ -21,7 +21,7 @@
 import errno
 import logging
 import urllib
-from .tasks import thumbnail_task
+
 from urlparse import urlparse, urljoin
 
 from django.conf import settings
@@ -42,6 +42,7 @@ from geonode.geoserver.helpers import (cascading_delete,
                                        set_layer_style,
                                        gs_catalog,
                                        ogc_server_settings,
+                                       create_gs_thumbnail,
                                        _stylefilterparams_geowebcache_layer,
                                        _invalidate_geowebcache_layer)
 from geonode.base.models import ResourceBase, Link
@@ -91,11 +92,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         producer.geoserver_upload_layer(payload)
         logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
         try:
-            thumbnail_task.delay(
-                instance.id,
-                instance.__class__.__name__,
-                overwrite=True,
-                check_bbox=True)
+            create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
         except BaseException:
             logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance.alternate))
 
@@ -278,7 +275,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if settings.RESOURCE_PUBLISHING:
         if instance.is_published != gs_resource.advertised:
             if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-                gs_resource.advertised = 'true'
+                gs_resource.advertised = 'true' if instance.is_published else 'false'
                 gs_catalog.save(gs_resource)
 
     if not settings.FREETEXT_KEYWORDS_READONLY:
@@ -519,8 +516,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
             'thumbnail_url' in kwargs['update_fields']:
         logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
-        thumbnail_task.delay(
-            instance.id, instance.__class__.__name__, overwrite=True)
+        create_gs_thumbnail(instance, overwrite=True)
 
     try:
         Link.objects.filter(resource=instance.resourcebase_ptr, name='Legend').delete()
@@ -529,7 +525,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
     for style in instance.styles.all():
         legend_url = ogc_server_settings.PUBLIC_LOCATION + \
-            'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+            'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
             instance.alternate + '&STYLE=' + style.name + \
             '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
@@ -602,11 +598,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
     # Define the link after the cleanup, we should use this more rather then remove
     # potential parasites
-    tile_url = ('%sgwc/service/gmaps?' % ogc_server_settings.public_url +
-                'layers=%s' % instance.alternate.encode('utf-8') +
-                '&zoom={z}&x={x}&y={y}' +
-                '&format=image/png8'
-                )
+    tile_url = ('%swms?' % ogc_server_settings.public_url) 
 
     link, created = Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                                extension='tiles',
@@ -649,8 +641,4 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 def geoserver_post_save_map(instance, sender, **kwargs):
     instance.set_missing_info()
     logger.info("... Creating Thumbnail for Map [%s]" % (instance.title))
-    thumbnail_task.delay(
-        instance.id,
-        instance.__class__.__name__,
-        overwrite=False,
-        check_bbox=True)
+    create_gs_thumbnail(instance, overwrite=False, check_bbox=True)

@@ -116,7 +116,7 @@ class LeafletHookSet(GeoExtHookSet):
 
     # Maps
     def map_detail_template(self, context=None):
-        return 'leaflet/maps/map_view.html'
+        return 'leaflet/maps/map_embed_widget.html'
 
     def map_new_template(self, context=None):
         return 'leaflet/maps/map_view.html'
@@ -131,7 +131,7 @@ class LeafletHookSet(GeoExtHookSet):
         return 'leaflet/maps/map_edit.html'
 
     def map_embed_template(self, context=None):
-        return 'leaflet/maps/map_detail.html'
+        return 'leaflet/maps/map_embed.html'
 
     def map_download_template(self, context=None):
         return 'leaflet/maps/map_embed.html'

@@ -1,26 +1,6 @@
-<!-- -----------------------------------------------------------------
--
-- Copyright (C) 2019 OSGeo
--
-- This program is free software: you can redistribute it and/or modify
-- it under the terms of the GNU General Public License as published by
-- the Free Software Foundation, either version 3 of the License, or
-- (at your option) any later version.
--
-- This program is distributed in the hope that it will be useful,
-- but WITHOUT ANY WARRANTY; without even the implied warranty of
-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-- GNU General Public License for more details.
--
-- You should have received a copy of the GNU General Public License
-- along with this program. If not, see <http://www.gnu.org/licenses/>.
--
----------------------------------------------------------------------- -->
-
 {% load i18n avatar_tags %}
 {% load static from staticfiles %}
 {% load account socialaccount %}
-{% load base_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -147,9 +127,7 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav toolbar">
-
           {% block tabs %}
-
           <li id="nav_layers">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
@@ -179,9 +157,9 @@
               {% else %}
               <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
               {% endif %}
-          </li>
-          <li>
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
+            </li>
+            <li>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
                 <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
                 <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
@@ -196,23 +174,13 @@
                 <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                 {% endif %}
               </ul>
-          </li>
+            </li>
 
-          {% block extra_tab %}
-
-          {% endblock %}
-
-          {% endblock %}
-
-        </ul>
+      {% block extra_tab %}
+            {% endblock %}
+            {% endblock %}
+          </ul>
         <ul class="nav navbar-nav navbar-right">
-
-            {% block my_extra_right_tab %}
-
-               {% render_nav_menu 'TOPBAR_MENU' %}
-
-           {% endblock my_extra_right_tab %}
-
             <li>
               <div class="search">
                 <form id="search" action="{% url "search" %}" >
@@ -249,7 +217,7 @@
                     <li role="separator" class="divider"></li>
                     <li><a href="{% url "admin:index" %}">{% trans "Admin" %}</a></li>
                     {% if 'geonode.geoserver' in INSTALLED_APPS %}
-                    <li><a href="{{ OGC_SERVER.default.WEB_UI_LOCATION }}">GeoServer</a></li>
+                    <li><a href="{% url "proxy" %}?url={{ OGC_SERVER.default.LOCATION }}">GeoServer</a></li>
                     {% endif %}
                     {% if USE_MONITORING %}
                     <li role="separator" class="divider"></li>
@@ -467,6 +435,7 @@
     <script src="{% static "lib/js/select2.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "lib/js/waypoints.js" %}?v={{ VERSION }}"></script>
     {% else %}
+    <script src="{% static "lib/js/jquery.min.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "lib/js/assets.min.js" %}?v={{ VERSION }}"></script>
     {% endif %}
     <script src="{% static "geonode/js/utils/utils.js" %}?v={{ VERSION }}"></script>
