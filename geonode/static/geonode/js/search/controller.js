@@ -138,6 +138,12 @@ export default (() => {
       queryApi(searcher.get("query"));
     });
 
+    // Handle date range change
+    PubSub.subscribe("dateRangeUpdated", (event, modifiedQuery) => {
+      searcher.set("query", modifiedQuery);
+      queryApi(searcher.get("query"));
+    });
+
     // Control what happens when the total results change
     $scope.$watch("total_counts", () => {
       searcher.handleResultChange();
