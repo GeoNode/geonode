@@ -10,12 +10,11 @@ import DateFilter from "app/search/components/DateFilter";
 export default $scope =>
   new Promise(res => {
     // Request the data needed to build query filters.
-    /*
+
     ReactDOM.render(
       <DateFilter />,
       document.getElementById(`render_dateFilter`)
     );
-    */
 
     activateKeywordFilter();
     renderMultiSelectors($scope);
