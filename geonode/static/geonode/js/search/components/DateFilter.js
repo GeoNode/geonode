@@ -11,7 +11,6 @@ export default class DateFilter extends React.Component {
     };
   }
   handleStartDateChange = event => {
-    console.log("CHANGE!!");
     this.setState({ startDate: event.target.value });
     this.updateQuery();
   };
