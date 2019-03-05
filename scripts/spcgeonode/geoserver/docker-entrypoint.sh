@@ -71,7 +71,7 @@ echo "3. Wait for PostgreSQL to be ready and initialized"
 # Wait for PostgreSQL
 set +e
 for i in $(seq 60); do
-    psql "$DATABASE_URL" -c "ON_ERROR_STOP=1; SELECT client_id FROM oauth2_provider_application" &>/dev/null && break
+    psql "$DATABASE_URL" -c "\set ON_ERROR_STOP 1; SELECT client_id FROM oauth2_provider_application" &>/dev/null && break
     sleep 1
 done
 if [ $? != 0 ]; then
