@@ -21,7 +21,6 @@ export default class DateFilter extends React.Component {
   updateQuery = () => {
     let initDate = true;
     const query = searcher.get("query");
-    console.log("START DATE", this.state.startDate);
     if (this.state.startDate !== "" && this.state.endDate !== "") {
       query["date__range"] = `${this.state.startDate}, ${this.state.endDate}`;
       delete query["date__gte"];
@@ -40,7 +39,6 @@ export default class DateFilter extends React.Component {
       delete query["date__lte"];
     }
     if (initDate) {
-      console.log("!!!QUERY", query);
       PubSub.publish("dateRangeUpdated", query);
     } else {
       initDate = false;
