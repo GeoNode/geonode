@@ -200,47 +200,5 @@ export default (() => {
         queryApi();
       }
     });
-
-    /*
-    * Date management
-    */
-
-    $scope.date_query = {
-      date__gte: "",
-      date__lte: ""
-    };
-    let initDate = true;
-    $scope.$watch(
-      "date_query",
-      () => {
-        if (
-          $scope.date_query.date__gte !== "" &&
-          $scope.date_query.date__lte !== ""
-        ) {
-          $scope.query["date__range"] = `${$scope.date_query
-            .date__gte}, ${$scope.date_query.date__lte}`;
-          delete $scope.query["date__gte"];
-          delete $scope.query["date__lte"];
-        } else if ($scope.date_query.date__gte !== "") {
-          $scope.query["date__gte"] = $scope.date_query.date__gte;
-          delete $scope.query["date__range"];
-          delete $scope.query["date__lte"];
-        } else if ($scope.date_query.date__lte !== "") {
-          $scope.query["date__lte"] = $scope.date_query.date__lte;
-          delete $scope.query["date__range"];
-          delete $scope.query["date__gte"];
-        } else {
-          delete $scope.query["date__range"];
-          delete $scope.query["date__gte"];
-          delete $scope.query["date__lte"];
-        }
-        if (!initDate) {
-          queryApi($scope.query);
-        } else {
-          initDate = false;
-        }
-      },
-      true
-    );
   });
 })();
