@@ -540,7 +540,7 @@ MIDDLEWARE_CLASSES = (
 
     # This middleware checks for ACCESS_TOKEN validity and if expired forces
     # user logout
-    # 'geonode.security.middleware.SessionControlMiddleware',
+    'geonode.security.middleware.SessionControlMiddleware',
 
     # If you use SessionAuthenticationMiddleware, be sure it appears before OAuth2TokenMiddleware.
     # SessionAuthenticationMiddleware is NOT required for using
