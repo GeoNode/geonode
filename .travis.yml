@@ -238,7 +238,6 @@ script:
       curl -s --fail \
         --retry 30 --retry-delay 10 --retry-connrefused $URL/geoserver >/dev/null;
       GEONODE_USER=admin GEONODE_PASS=admin GEONODE_URL=$URL geonode-selenium/test.sh;
-    else
       paver run_tests --coverage --local false;
     fi
 
