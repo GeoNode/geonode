@@ -729,23 +729,24 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     context_dict = {}
     data_dict = json.loads(request.POST.get('json_data'))
     layername = data_dict['layer_name']
-    filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
-    workspace, name = layername.split(':')
+    filtered_attributes = ''
+    if not isinstance(data_dict['filtered_attributes'], basestring):
+        filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
+    name = layername if ':' not in layername else layername.split(':')[1]
     location = "{location}{service}".format(** {
         'location': settings.OGC_SERVER['default']['LOCATION'],
         'service': 'wms',
     })
+    access_token = None
+    if request and 'access_token' in request.session:
+        access_token = request.session['access_token']
+    if access_token and 'access_token' not in location:
+        location = '%s?access_token=%s' % (location, access_token)
 
     try:
-        # TODO: should be improved by using OAuth2 token (or at least user
-        # related to it) instead of super-powers
-        username = settings.OGC_SERVER['default']['USER']
-        password = settings.OGC_SERVER['default']['PASSWORD']
         wfs = WebFeatureService(
             location,
-            version='1.1.0',
-            username=username,
-            password=password)
+            version='1.1.0')
         response = wfs.getfeature(
             typename=name,
             propertyname=filtered_attributes,
