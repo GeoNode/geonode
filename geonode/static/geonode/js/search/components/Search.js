@@ -8,7 +8,7 @@ const Search = ({ searchURL = "/api/base/" } = {}) => {
     numberOfPages: 1,
     resultCount: 0,
     results: [],
-    sortFilter: null,
+    sortFilter: "-date",
     queryValue: "",
     query: {
       limit: 0,

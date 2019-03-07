@@ -1,0 +1,61 @@
+import React from "react";
+import searcher from "app/search/searcher";
+import PubSub from "app/utils/pubsub";
+
+export default class SortFilter extends React.Component {
+  searchFilter = window.djangoSearchVars.search_filter;
+  render = () => {
+    return (<div class="btn-group pull-right" role="group" aria-label="tools">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <div ng-if="dataValue == 'title' || dataValue == 'username'" ng-cloak>
+            <i class="fa fa-sort-alpha-asc fa-lg"></i>
+            <i class="fa fa-angle-down fa-lg"></i>
+          </div>
+          <div ng-if="dataValue == '-title' || dataValue == '-username'" ng-cloak>
+            <i class="fa fa-sort-alpha-desc fa-lg"></i>
+            <i class="fa fa-angle-down fa-lg"></i>
+          </div>
+          <div ng-if="dataValue == 'date' || dataValue == 'last_modified' || dataValue == 'date_joined'" ng-cloak>
+            <i class="fa fa-clock-o"></i>
+            <i class="fa fa-clock-o fa-level-up"></i>
+            <i class="fa fa-angle-down fa-lg"></i>
+          </div>
+          <div ng-if="dataValue == '-date' || dataValue == '-last_modified' || dataValue == '-date_joined'" ng-cloak>
+            <i class="fa fa-clock-o"></i>
+            <i class="fa fa-clock-o fa-level-down"></i>
+            <i class="fa fa-angle-down fa-lg"></i>
+          </div>
+          <div ng-if="dataValue == '-popular_count'" ng-cloak>
+            <i class="fa fa-fire fa-lg"></i>
+            <i class="fa fa-angle-down fa-lg"></i>
+          </div>
+          <div ng-if="dataValue == null" ng-cloak>
+            <i class="fa fa-clock-o"></i>
+            <i class="fa fa-clock-o fa-level-down"></i>
+            <i class="fa fa-angle-down fa-lg"></i>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right" id="sort">
+          // {% if facet_type != 'groups' and facet_type != 'people' and facet_type != 'groupcategories' %}
+              <li><a data-value="-date" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{window.gettext("Most recent")}</a></li>
+              <li><a data-value="date" data-filter="order_by" ng-click="single_choice_listener($event)">{window.gettext("Less recent")}</a></li>
+              <li><a data-value="title" data-filter="order_by" ng-click="single_choice_listener($event)">{window.gettext("A - Z")}</a></li>
+              <li><a data-value="-title" data-filter="order_by" ng-click="single_choice_listener($event)">{window.gettext("Z - A")}</a></li>
+              <li><a data-value="-popular_count" data-filter="order_by" ng-click="single_choice_listener($event)">{window.gettext("Most popular")}</a></li>
+          // {% elif facet_type == 'groups' %}
+              <li><a data-value="-last_modified" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{window.gettext("Most recent")}</a></li>
+              <li><a data-value="last_modified" data-filter="order_by" ng-click="single_choice_listener($event)">{window.gettext("Less recent")}</a></li>
+              <li><a data-value="title" data-filter="order_by" ng-click="single_choice_listener($event)">{window.gettext("A - Z")}</a></li>
+              <li><a data-value="-title" data-filter="order_by" ng-click="single_choice_listener($event)">{window.gettext("Z - A")}</a></li>
+          // {% elif facet_type == 'people' %}
+              <li><a data-value="-date_joined" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{window.gettext("Most recent")}</a></li>
+              <li><a data-value="date_joined" data-filter="order_by" ng-click="single_choice_listener($event)">{window.gettext("Less recent")}</a></li>
+              <li><a data-value="username" data-filter="order_by" ng-click="single_choice_listener($event)">{window.gettext("A - Z")}</a></li>
+              <li><a data-value="-username" data-filter="order_by" ng-click="single_choice_listener($event)">{window.gettext("Z - A")}</a></li>
+          // {% endif %}
+        </ul>
+      </div>
+    </div>)
+  }
+}

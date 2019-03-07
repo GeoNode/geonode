@@ -1,4 +1,10 @@
 {% load i18n %}
+<!--Store server side vars here-->
+<script>
+window.djangoSearchVars = {
+  facet_type: {{ facet_type }}
+};
+</script>
 <div class="row" ng-controller="CartList">
   <div class="col-md-3">
     <resource-cart data-facet-type="{{ facet_type }}"></resource-cart>

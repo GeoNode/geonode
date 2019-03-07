@@ -189,6 +189,7 @@ export default (() => {
       const value = $element.attr("data-value");
       const dataValue = value === "all" ? "content" : value;
       searcher.setQueryProp("dataValue", dataValue);
+      searcher.set("sortFilter", dataValue);
       const updatedQuery = addSortFilterToQuery({
         element: $element,
         query: searcher.get("query")
