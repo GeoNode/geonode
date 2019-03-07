@@ -111,8 +111,12 @@ script:
     elif [ "$TEST_RUN_SELENIUM" = "True" ]; then
       docker-compose -f docker-compose.yml -f docker-compose.override.localhost.yml up --build -d;
       URL=http://localhost;
-      wget --timeout=15 --waitretry=10 --tries=60 --retry-connrefused --retry-on-http-error -c $URL >/dev/null &&
-      wget --timeout=15 --waitretry=10 --tries=60 --retry-connrefused --retry-on-http-error -c $URL/geoserver >/dev/null;
+      for i in {1..60}; do \
+          wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 --continue $URL >/dev/null &&
+	  wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 --continue $URL/geoserver >/dev/null;
+          if [ $? = 0 ]; then break; fi; \
+          sleep 1s; \
+      done;
       GEONODE_USER=admin GEONODE_PASS=admin GEONODE_URL="$URL" geonode-selenium/test.sh;
     else
       paver run_tests --coverage --local false;
