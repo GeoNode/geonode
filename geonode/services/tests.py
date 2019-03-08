@@ -17,8 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.conf import settings
-from django.contrib.sessions.backends.db import SessionStore
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import Client
 from django.test.utils import override_settings
@@ -30,7 +29,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
 from unittest import TestCase as StandardTestCase
 
 from django.core.urlresolvers import reverse
-from django.contrib.auth import get_user_model, SESSION_KEY, BACKEND_SESSION_KEY, HASH_SESSION_KEY
+from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 import mock
 from owslib.map.wms111 import ContentMetadata
@@ -68,7 +67,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertEqual(result, phony_workspace)
         mock_catalog.assert_called_with(
             service_url=mock_settings.OGC_SERVER[
-                            "default"]["LOCATION"] + "rest",
+                "default"]["LOCATION"] + "rest",
             username=mock_settings.OGC_SERVER["default"]["USER"],
             password=mock_settings.OGC_SERVER["default"]["PASSWORD"]
         )
@@ -97,7 +96,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertEqual(result, phony_workspace)
         mock_catalog.assert_called_with(
             service_url=mock_settings.OGC_SERVER[
-                            "default"]["LOCATION"] + "rest",
+                "default"]["LOCATION"] + "rest",
             username=mock_settings.OGC_SERVER["default"]["USER"],
             password=mock_settings.OGC_SERVER["default"]["PASSWORD"]
         )
@@ -248,14 +247,6 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         handler = wms.WmsServiceHandler(self.phony_url)
         result = list(handler.get_resources())
         self.assertEqual(result[0].name, self.phony_layer_name)
-
-    # @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
-    #             autospec=True)
-    # def test_harvest_resources_filter(self, mock_wms):
-    #     mock_wms.return_value = (self.phony_url, self.parsed_wms)
-    #     handler = wms.WmsServiceHandler(self.phony_url)
-    #     result = handler.get_resource(self.phony_layer_name)
-    #     self.assertEqual(result.name, self.phony_layer_name)
 
     @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
                 autospec=True)
