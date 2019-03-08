@@ -153,6 +153,11 @@ matrix:
       python: 3.5
       env:
           - TEST_RUN_SELENIUM: 'True'
+    - name: "Selenium Integration Tests SPCGeonode"
+      python: 3.5
+      env:
+          - TEST_RUN_SELENIUM: 'True'
+          - SPCGEONODE: 'True'
 
 branches:
   only:
@@ -223,8 +228,22 @@ before_script:
     fi
 
 script:
-  - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
+  - if [ "$TEST_RUN_SELENIUM" = "True" ] && [ "$SPCGEONODE" = "True" ]; then
       geonode-selenium/test-docker.sh;
+    elif [ "$TEST_RUN_SELENIUM" = "True" ]; then
+      docker-compose -f docker-compose.yml -f docker-compose.override.localhost.yml up --build -d;
+      URL="http://localhost";
+      for i in {1..20}; do
+        curl -s --fail "$URL" >/dev/null &&
+        curl -s --fail "$URL/geoserver" >/dev/null &&
+        break;
+        sleep 30;
+      done;
+      if [ $? != 0 ]; then
+        exit $?;
+      fi;
+      sleep 180;
+      GEONODE_USER=admin GEONODE_PASS=admin GEONODE_URL="$URL" geonode-selenium/test.sh;
     else
       paver run_tests --coverage --local false;
     fi
