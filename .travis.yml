@@ -120,6 +120,7 @@ script:
       if [ $? != 0 ]; then
         exit $?;
       fi;
+      sleep 180;
       GEONODE_USER=admin GEONODE_PASS=admin GEONODE_URL="$URL" geonode-selenium/test.sh;
     else
       paver run_tests --coverage --local false;
