@@ -24,7 +24,7 @@ from django.test.utils import override_settings
 from selenium.webdriver.chrome.webdriver import WebDriver
 from webdriver_manager.chrome import ChromeDriverManager
 
-from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 from unittest import TestCase as StandardTestCase
 
