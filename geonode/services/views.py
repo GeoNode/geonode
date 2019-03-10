@@ -157,6 +157,9 @@ def harvest_resources(request, service_id):
             harvestable_resources = paginator.page(1)
         except EmptyPage:
             harvestable_resources = paginator.page(paginator.num_pages)
+
+        filter_row = [{},{"id": 'id-filter', "data_key": "id"},{"id": 'name-filter', "data_key": "title"},
+                     {"id": 'desc-filter', "data_key": "abstract"}]
         result = render(
             request,
             "services/service_resources_harvest.html",
@@ -168,6 +171,7 @@ def harvest_resources(request, service_id):
                 "requested": request.GET.getlist("resource_list"),
                 "is_sync": is_sync,
                 "errored_state": errored_state,
+                "filter_row": filter_row,
             }
         )
     elif request.method == "POST":
