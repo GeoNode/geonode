@@ -11,26 +11,23 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var wmsLayer = null;
-            //var map = L.map('the_map').setView([{{ resource.center_y }}, {{ resource.center_x }}], {{ resource.zoom }});
-	    //Centre for Montenegro
-	    var map = L.map('the_map',{measureControl: true}).setView([42.7,19.5],8);
+	    var map = L.map('the_map',{measureControl: true}).setView([{{ resource.center_x }}, {{ resource.center_y }}], {{ resource.zoom }});
             var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
             });
-            //map.addLayer(osm);
             var bbox = {{map_bbox}};
             zoom_to_box(map, bbox);
-	        var layer_url;
+	    var layer_url;
             var options;
             {% for layer in map_layers %}
                 if ('{{layer.group}}' == 'background') {
 		    if ('{{layer.visibility}}' == 'True') {
 			if('{{layer.ows_url}}'.indexOf('&')>0){
-                options = {
-                    maxZoom: 20,
-                    subdomains:['mt0','mt1','mt2','mt3']
-                };
-            }
+options = {
+           maxZoom: 20,
+           subdomains:['mt0','mt1','mt2','mt3']
+       };
+}
 			map.addLayer(L.tileLayer('{{layer.ows_url}}'.replace(/&amp;/g,'&'), options));
 		    }    
                 }

@@ -198,9 +198,9 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         else:
             height_zoom = 15
 
-        map_obj.center_x = center[0]
-        map_obj.center_y = center[1]
-        map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
+        #map_obj.center_x = center[0]
+        #map_obj.center_y = center[1]
+        #map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
 
 
     group = None
@@ -548,9 +548,9 @@ def map_embed_widget(request, mapid,
         else:
             height_zoom = 15
 
-        map_obj.center_x = center[0]
-        map_obj.center_y = center[1]
-        map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
+        #map_obj.center_x = center[0]
+        #map_obj.center_y = center[1]
+        #map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
 
     context = {
         'resource': map_obj,
