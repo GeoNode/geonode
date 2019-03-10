@@ -146,4 +146,6 @@ splinter==0.7.7
 pytest-splinter==1.8.5
 pytest-django==3.1.2
 setuptools==39.0.1
+webdriver-manager==1.7
+websocket-client==0.55.0
 Twisted
