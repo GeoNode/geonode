@@ -355,9 +355,9 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.failUnlessEqual(len(Service.objects.all()), 0)
 
 
-@override_settings(SITEURL='http://localhost:8006/')
-class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
-    port = 8006
+# @override_settings(SITEURL='http://localhost:8006/')
+class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
+    # port = 8006
 
     @classmethod
     def setUpClass(cls):
@@ -389,9 +389,9 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
         form = forms.CreateServiceForm(form_data)
 
 
-        response = cls.client.post(reverse('register_service'), data=form_data)
-        cls.selenium.get(cls.live_server_url + response.url)
-        cls.selenium.refresh()
+        # response = cls.client.post(reverse('register_service'), data=form_data)
+        # cls.selenium.get(cls.live_server_url + response.url)
+        # cls.selenium.refresh()
 
     @classmethod
     def tearDownClass(cls):
