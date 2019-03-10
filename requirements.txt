@@ -124,7 +124,7 @@ pycountry
 # required by worldmap
 datautil==0.4
 dicttoxml==1.7.4
-django-geoexplorer-worldmap==4.0.63
+django-geoexplorer-worldmap==4.0.64
 geopy==1.14.0
 vectorformats==0.1
 
