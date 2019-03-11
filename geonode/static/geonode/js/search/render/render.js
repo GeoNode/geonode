@@ -6,6 +6,7 @@ import activateKeywordFilter from "app/search/functions/activateKeywordFilter";
 import React from "react";
 import ReactDOM from "react-dom";
 import DateFilter from "app/search/components/DateFilter";
+import SortFilter from "app/search/components/SortFilter";
 
 export default $scope =>
   new Promise(res => {
@@ -14,6 +15,11 @@ export default $scope =>
     ReactDOM.render(
       <DateFilter />,
       document.getElementById(`render_dateFilter`)
+    );
+
+    ReactDOM.render(
+      <SortFilter />,
+      document.getElementById(`render_sortFilter`)
     );
 
     activateKeywordFilter();
