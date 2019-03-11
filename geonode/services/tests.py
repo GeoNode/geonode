@@ -415,7 +415,6 @@ class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
 
             if attr_name == "filter_row":
                 filter_row_count = filter_row_count + 1
-            # else:
             if val == "none":
                 hidden_row_count = hidden_row_count + 1
             else:
