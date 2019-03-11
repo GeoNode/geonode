@@ -518,6 +518,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'dj_pagination.middleware.PaginationMiddleware',
     # The setting below makes it possible to serve different languages per
     # user depending on things like headers in HTTP requests.
@@ -1519,7 +1520,6 @@ if USE_GEOSERVER:
         }
     }
     baselayers = MAP_BASELAYERS
-    # MAP_BASELAYERS = [PUBLIC_GEOSERVER, LOCAL_GEOSERVER]
     MAP_BASELAYERS = [PUBLIC_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
 

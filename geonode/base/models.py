@@ -310,38 +310,41 @@ class HierarchicalKeyword(TagBase, MP_Node):
         """Dumps a tree branch to a python data structure."""
         qset = cls._get_serializable_model().get_tree(parent)
         ret, lnk = [], {}
-        for pyobj in qset:
-            serobj = serializers.serialize('python', [pyobj])[0]
-            # django's serializer stores the attributes in 'fields'
-            fields = serobj['fields']
-            depth = fields['depth'] or 1
-            fields['text'] = fields['name']
-            fields['href'] = fields['slug']
-            del fields['name']
-            del fields['slug']
-            del fields['path']
-            del fields['numchild']
-            del fields['depth']
-            if 'id' in fields:
-                # this happens immediately after a load_bulk
-                del fields['id']
+        try:
+            for pyobj in qset:
+                serobj = serializers.serialize('python', [pyobj])[0]
+                # django's serializer stores the attributes in 'fields'
+                fields = serobj['fields']
+                depth = fields['depth'] or 1
+                fields['text'] = fields['name']
+                fields['href'] = fields['slug']
+                del fields['name']
+                del fields['slug']
+                del fields['path']
+                del fields['numchild']
+                del fields['depth']
+                if 'id' in fields:
+                    # this happens immediately after a load_bulk
+                    del fields['id']
 
-            newobj = {}
-            for field in fields:
-                newobj[field] = fields[field]
-            if keep_ids:
-                newobj['id'] = serobj['pk']
+                newobj = {}
+                for field in fields:
+                    newobj[field] = fields[field]
+                if keep_ids:
+                    newobj['id'] = serobj['pk']
 
-            if (not parent and depth == 1) or\
-               (parent and depth == parent.depth):
-                ret.append(newobj)
-            else:
-                parentobj = pyobj.get_parent()
-                parentser = lnk[parentobj.pk]
-                if 'nodes' not in parentser:
-                    parentser['nodes'] = []
-                parentser['nodes'].append(newobj)
-            lnk[pyobj.pk] = newobj
+                if (not parent and depth == 1) or\
+                   (parent and depth == parent.depth):
+                    ret.append(newobj)
+                else:
+                    parentobj = pyobj.get_parent()
+                    parentser = lnk[parentobj.pk]
+                    if 'nodes' not in parentser:
+                        parentser['nodes'] = []
+                    parentser['nodes'].append(newobj)
+                lnk[pyobj.pk] = newobj
+        except BaseException:
+            pass
         return ret
 
 
