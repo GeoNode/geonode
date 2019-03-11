@@ -349,18 +349,26 @@ class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
         cls.user.save()
         cls.client.login(username='test', password='test@123')
         cls.cookie = cls.client.cookies['sessionid']
-        cls.selenium = WebDriver(ChromeDriverManager().install())
+        cls.selenium = WebDriver(ChromeDriverManager().install())  # ChromeDriverManager().install()
+        # cls.selenium = WebDriver('/usr/lib/chromium-browser/chromedriver')
         cls.selenium.implicitly_wait(10)
         cls.selenium.get(cls.live_server_url + '/')
         cls.selenium.add_cookie({'name': 'sessionid', 'value': cls.cookie.value, 'secure': False, 'path': '/'})
         cls.selenium.refresh()
         reg_url = reverse('register_service')
+        cls.client.get(reg_url)
+
         url = 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
         service_type = enumerations.WMS
         form_data = {
             'url': url,
             'type': service_type
         }
+        forms.CreateServiceForm(form_data)
+
+        response = cls.client.post(reverse('register_service'), data=form_data)
+        cls.selenium.get(cls.live_server_url + response.url)
+        cls.selenium.refresh()
 
     @classmethod
     def tearDownClass(cls):
