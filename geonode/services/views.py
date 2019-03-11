@@ -158,8 +158,7 @@ def harvest_resources(request, service_id):
         except EmptyPage:
             harvestable_resources = paginator.page(paginator.num_pages)
 
-        filter_row = [{},{"id": 'id-filter', "data_key": "id"},{"id": 'name-filter', "data_key": "title"},
-                     {"id": 'desc-filter', "data_key": "abstract"}]
+        filter_row = [{}, {"id": 'id-filter', "data_key": "id"}, {"id": 'name-filter', "data_key": "title"}, {"id": 'desc-filter', "data_key": "abstract"}]
         result = render(
             request,
             "services/service_resources_harvest.html",
@@ -327,9 +326,9 @@ def edit_service(request, service_id):
         return HttpResponse(
             loader.render_to_string(
                 '401.html', context={
-                        'error_message': _(
-                            "You are not permitted to change this service."
-                        )}, request=request), status=401)
+                    'error_message': _(
+                        "You are not permitted to change this service."
+                    )}, request=request), status=401)
     if request.method == "POST":
         service_form = forms.ServiceForm(
             request.POST, instance=service, prefix="service")
@@ -355,9 +354,9 @@ def remove_service(request, service_id):
         return HttpResponse(
             loader.render_to_string(
                 '401.html', context={
-                        'error_message': _(
-                            "You are not permitted to remove this service."
-                        )}, request=request), status=401)
+                    'error_message': _(
+                        "You are not permitted to remove this service."
+                    )}, request=request), status=401)
     if request.method == 'GET':
         return render(request, "services/service_remove.html",
                       {"service": service})

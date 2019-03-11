@@ -17,11 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.conf import settings
-from django.contrib.sessions.backends.db import SessionStore
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import Client
-from django.test.utils import override_settings
 from selenium.webdriver.chrome.webdriver import WebDriver
 from webdriver_manager.chrome import ChromeDriverManager
 
@@ -30,7 +26,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
 from unittest import TestCase as StandardTestCase
 
 from django.core.urlresolvers import reverse
-from django.contrib.auth import get_user_model, SESSION_KEY, BACKEND_SESSION_KEY, HASH_SESSION_KEY
+from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 import mock
 from owslib.map.wms111 import ContentMetadata
@@ -249,14 +245,6 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         result = list(handler.get_resources())
         self.assertEqual(result[0].name, self.phony_layer_name)
 
-    # @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
-    #             autospec=True)
-    # def test_harvest_resources_filter(self, mock_wms):
-    #     mock_wms.return_value = (self.phony_url, self.parsed_wms)
-    #     handler = wms.WmsServiceHandler(self.phony_url)
-    #     result = handler.get_resource(self.phony_layer_name)
-    #     self.assertEqual(result.name, self.phony_layer_name)
-
     @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
                 autospec=True)
     @mock.patch("geonode.services.serviceprocessors.wms.settings",
@@ -299,18 +287,10 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             password=mock_catalog.password
         )
 
-    # @mock.patch("geonode.services.serviceprocessors.handler.WmsServiceHandler",
-    #             autospec=True)
-    # def test_local_user_cant_delete_service(self, mock_wms_handler):
     def test_local_user_cant_delete_service(self):
         self.client.logout()
         response = self.client.get(reverse('register_service'))
         self.failUnlessEqual(response.status_code, 302)
-
-        # self.client.login(username='serviceowner', password='somepassword')
-        # response = self.client.get(reverse('register_service'))
-        # self.failUnlessEqual(response.status_code, 200)
-
         url = 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
         # url = "http://fake"
         service_type = enumerations.WMS
@@ -355,9 +335,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.failUnlessEqual(len(Service.objects.all()), 0)
 
 
-# @override_settings(SITEURL='http://localhost:8006/')
 class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
-    # port = 8006
 
     @classmethod
     def setUpClass(cls):
@@ -371,27 +349,18 @@ class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
         cls.user.save()
         cls.client.login(username='test', password='test@123')
         cls.cookie = cls.client.cookies['sessionid']
-        cls.selenium = WebDriver(ChromeDriverManager().install()) #ChromeDriverManager().install()
-        # cls.selenium = WebDriver('/usr/lib/chromium-browser/chromedriver')
+        cls.selenium = WebDriver(ChromeDriverManager().install())
         cls.selenium.implicitly_wait(10)
         cls.selenium.get(cls.live_server_url + '/')
         cls.selenium.add_cookie({'name': 'sessionid', 'value': cls.cookie.value, 'secure': False, 'path': '/'})
         cls.selenium.refresh()
         reg_url = reverse('register_service')
-        response = cls.client.get(reg_url)
-
         url = 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
         service_type = enumerations.WMS
         form_data = {
             'url': url,
             'type': service_type
         }
-        form = forms.CreateServiceForm(form_data)
-
-
-        # response = cls.client.post(reverse('register_service'), data=form_data)
-        # cls.selenium.get(cls.live_server_url + response.url)
-        # cls.selenium.refresh()
 
     @classmethod
     def tearDownClass(cls):
@@ -400,39 +369,29 @@ class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
 
     def test_harvest_resources(self):
         table = self.selenium.find_element_by_id('resource_table')
-        self.test_resource_table_status(table,False)
-        # print "Status 1 tested--- Ok"
+        self.test_resource_table_status(table, False)
 
         self.selenium.find_element_by_id('id-filter').send_keys('atlantis:roads')
         self.selenium.find_element_by_id('btn-id-filter').click()
         self.test_resource_table_status(table, True)
-        # print "Status 2 tested--- Ok"
 
         self.selenium.find_element_by_id('name-filter').send_keys('landmarks')
         self.selenium.find_element_by_id('btn-name-filter').click()
         self.test_resource_table_status(table, True)
-        # print "Status 3 tested--- Ok"
 
         self.selenium.find_element_by_id('desc-filter').send_keys('None')
         self.selenium.find_element_by_id('btn-desc-filter').click()
         self.test_resource_table_status(table, True)
-        # print "Status 4 tested--- Ok"
 
         self.selenium.find_element_by_id('desc-filter').send_keys('')
         self.selenium.find_element_by_id('btn-desc-filter').click()
         self.test_resource_table_status(table, True)
-        # print "Status 5 tested--- Ok"
-        # self.selenium.
 
         self.selenium.find_element_by_id('btnClearFilter').click()
-        self.test_resource_table_status(table,False)
-        # print "Clear Filter Button tested--- Ok"
-
-
+        self.test_resource_table_status(table, False)
         self.selenium.find_element_by_id('id-filter').send_keys('atlantis:tiger_roads_tiger_roads')
         self.selenium.find_element_by_id('btn-id-filter').click()
         self.selenium.find_element_by_id('option_atlantis:tiger_roads_tiger_roads').click()
-        # self.test_resource_table_status(table, True)
         self.selenium.find_element_by_tag_name('form').submit()
         pass
 
@@ -444,7 +403,6 @@ class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
         hidden_row_count = 0
         for row in rows:
             attr_name = row.get_attribute('name')
-            prop_name = row.get_property('name')
             val = row.value_of_css_property('display')
 
             if attr_name == "filter_row":
@@ -455,8 +413,8 @@ class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
             else:
                 visible_rows_count = visible_rows_count + 1
         result = {"filter_row_count": filter_row_count,
-                "visible_rows_count": visible_rows_count,
-                "hidden_row_count": hidden_row_count}
+                  "visible_rows_count": visible_rows_count,
+                  "hidden_row_count": hidden_row_count}
 
         if is_row_filtered:
             self.assertTrue(result["filter_row_count"] > 0)

@@ -1,4 +1,4 @@
-sudo: required
+sudo: truel
 language: python
 dist: xenial
 
