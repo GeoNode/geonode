@@ -20,7 +20,7 @@
 
 import json
 
-from django.contrib.sites.models import get_current_site
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import Http404, HttpResponse
 from django.contrib.auth import authenticate, get_user_model, login
 from django.utils.translation import ugettext as _
