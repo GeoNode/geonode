@@ -27,16 +27,16 @@ addons:
 matrix:
   fast_finish: true
   include:
-#    - name: "GeoServer-backend Core Modules Smoke Tests"
-#      python: 2.7
-#      virtualenv:
-#          system_site_packages: true
-#      env:
-#          - BACKEND: 'geonode.geoserver'
-#            DOCKER_COMPOSE_VERSION: 1.19.0
-#            ON_TRAVIS: 'True'
-#            TEST_RUN_CORE: 'True'
-#            MONITORING_ENABLED: 'False'
+    - name: "GeoServer-backend Core Modules Smoke Tests"
+      python: 2.7
+      virtualenv:
+          system_site_packages: true
+      env:
+          - BACKEND: 'geonode.geoserver'
+            DOCKER_COMPOSE_VERSION: 1.19.0
+            ON_TRAVIS: 'True'
+            TEST_RUN_CORE: 'True'
+            MONITORING_ENABLED: 'False'
 #    - name: "GeoServer-backend Contrib Apps Smoke Tests"
 #      python: 2.7
 #      virtualenv:
