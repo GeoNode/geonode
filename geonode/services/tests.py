@@ -349,7 +349,7 @@ class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
         cls.user.save()
         cls.client.login(username='test', password='test@123')
         cls.cookie = cls.client.cookies['sessionid']
-        cls.selenium = WebDriver(ChromeDriverManager().install())  # ChromeDriverManager().install()
+        cls.selenium = WebDriver(ChromeDriverManager().install())
         # cls.selenium = WebDriver('/usr/lib/chromium-browser/chromedriver')
         cls.selenium.implicitly_wait(10)
         cls.selenium.get(cls.live_server_url + '/')
