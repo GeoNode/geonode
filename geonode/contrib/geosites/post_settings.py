@@ -59,7 +59,7 @@ PYCSW['CONFIGURATION']['metadata:main']['provider_url'] = SITEURL
 LOCAL_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + 'ows'
 
 # Directories to search for templates
-TEMPLATE_DIRS = (
+TEMPLATES[0]['DIRS'] += (
     os.path.join(SITE_ROOT, 'templates/'),
     os.path.join(PROJECT_ROOT, 'templates/'),
     os.path.join(GEONODE_ROOT, 'templates/'),
