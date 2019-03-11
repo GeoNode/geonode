@@ -158,7 +158,9 @@ def harvest_resources(request, service_id):
         except EmptyPage:
             harvestable_resources = paginator.page(paginator.num_pages)
 
-        filter_row = [{}, {"id": 'id-filter', "data_key": "id"}, {"id": 'name-filter', "data_key": "title"}, {"id": 'desc-filter', "data_key": "abstract"}]
+        filter_row = [{}, {"id": 'id-filter', "data_key": "id"},
+                      {"id": 'name-filter', "data_key": "title"},
+                      {"id": 'desc-filter', "data_key": "abstract"}]
         result = render(
             request,
             "services/service_resources_harvest.html",
