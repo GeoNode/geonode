@@ -17,11 +17,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import Client
 from selenium import webdriver
 # from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver import DesiredCapabilities
-from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.chrome import ChromeDriverManager
 
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
 
@@ -337,7 +338,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.failUnlessEqual(len(Service.objects.all()), 0)
 
 
-class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
+class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
