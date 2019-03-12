@@ -225,7 +225,6 @@ before_script:
 script:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
       geonode-selenium/test-docker.sh;
-#      python manage.py test geonode.services.test_selenium.WmsServiceHarvestingTestCase.test_harvest_resources
     else
       paver run_tests --coverage --local false;
     fi
