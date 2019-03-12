@@ -24,7 +24,6 @@ addons:
       - nginx
   firefox: "latest-esr"
 
-
 matrix:
   fast_finish: true
   include:
@@ -151,7 +150,7 @@ matrix:
             MONITORING_ENABLED: 'False'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "Selenium Integration Tests"
-      python: 2.7
+      python: 3.5
       env:
           - TEST_RUN_SELENIUM: 'True'
 
@@ -226,7 +225,7 @@ before_script:
 script:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
       geonode-selenium/test-docker.sh;
-      python manage.py test geonode.services.test_selenium.WmsServiceHarvestingTestCase.test_harvest_resources
+#      python manage.py test geonode.services.test_selenium.WmsServiceHarvestingTestCase.test_harvest_resources
     else
       paver run_tests --coverage --local false;
     fi
