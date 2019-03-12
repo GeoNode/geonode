@@ -25,7 +25,7 @@ kombu==4.2.1 # python-kombu (4.1.0 in our ppa)
 coreschema==0.0.4 # python-coreschema (0.0.4 in our ppa)
 autoflake<=0.7 # python-autoflake (0.7 in our ppa)
 flake8>=2.6.2,<=3.5.0 # python-flake8 (2.5.4) FIXME
-pycodestyle<=2.5.0 # missing TODO
+pycodestyle<2.4.0 # missing TODO
 pyflakes>=1.2.3,<=1.6.0 # python-pyflakes (1.6.0 in our ppa) FIXME
 boto<=2.38.0 # python-boto (2.38.0)
 six<1.11.0 # https://github.com/benjaminp/six/issues/210 (1.10.0 in ppa)
