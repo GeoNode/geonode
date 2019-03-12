@@ -150,10 +150,10 @@ matrix:
 #            TEST_RUN_INTEGRATION: 'True'
 #            MONITORING_ENABLED: 'False'
 #            CELERY_ALWAYS_EAGER: 'True'
-#    - name: "Selenium Integration Tests"
-#      python: 3.5
-#      env:
-#          - TEST_RUN_SELENIUM: 'True'
+    - name: "Selenium Integration Tests"
+      python: 3.5
+      env:
+          - TEST_RUN_SELENIUM: 'True'
 
 branches:
   only:

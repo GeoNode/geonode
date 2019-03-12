@@ -20,7 +20,8 @@
 from django.test import Client
 from selenium import webdriver
 # from selenium.webdriver.chrome.webdriver import WebDriver
-# from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver import DesiredCapabilities
+from webdriver_manager.chrome import ChromeDriverManager
 
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
 
@@ -350,7 +351,10 @@ class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
         cls.user.save()
         cls.client.login(username='test', password='test@123')
         cls.cookie = cls.client.cookies['sessionid']
-        cls.selenium = webdriver.Firefox()
+        firefox_cap = DesiredCapabilities.FIREFOX
+        firefox_cap["marionette"] = True
+        firefox_cap["binary"] = '/usr/bin/firefox'
+        cls.selenium = webdriver.Firefox(capabilities=firefox_cap)
         # cls.selenium = WebDriver(ChromeDriverManager().install())
         # cls.selenium = WebDriver('/usr/lib/chromium-browser/chromedriver')
         cls.selenium.implicitly_wait(10)
