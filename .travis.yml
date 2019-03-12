@@ -153,13 +153,6 @@ matrix:
       python: 3.5
       env:
           - TEST_RUN_SELENIUM: 'True'
-    - name: "Javascript Tests"
-        python: 2.7
-        virtualenv:
-          system_site_packages: true
-        env:
-          - TEST_RUN_SELENIUM: 'True'
-            JAVASCRIPT_TEST: 'True'
 
 branches:
   only:
