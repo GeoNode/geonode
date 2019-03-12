@@ -18,8 +18,9 @@
 #
 #########################################################################
 from django.test import Client
-from selenium.webdriver.chrome.webdriver import WebDriver
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
+# from selenium.webdriver.chrome.webdriver import WebDriver
+# from webdriver_manager.chrome import ChromeDriverManager
 
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
 
@@ -349,7 +350,8 @@ class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
         cls.user.save()
         cls.client.login(username='test', password='test@123')
         cls.cookie = cls.client.cookies['sessionid']
-        cls.selenium = WebDriver(ChromeDriverManager().install())
+        cls.selenium = webdriver.Firefox()
+        # cls.selenium = WebDriver(ChromeDriverManager().install())
         # cls.selenium = WebDriver('/usr/lib/chromium-browser/chromedriver')
         cls.selenium.implicitly_wait(10)
         cls.selenium.get(cls.live_server_url + '/')
