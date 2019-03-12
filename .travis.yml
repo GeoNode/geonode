@@ -151,10 +151,10 @@ matrix:
 #            TEST_RUN_INTEGRATION: 'True'
 #            MONITORING_ENABLED: 'False'
 #            CELERY_ALWAYS_EAGER: 'True'
-#    - name: "Selenium Integration Tests"
-#      python: 3.5
-#      env:
-#          - TEST_RUN_SELENIUM: 'True'
+    - name: "Selenium Integration Tests"
+      python: 3.5
+      env:
+          - TEST_RUN_SELENIUM: 'True'
 
 branches:
   only:
@@ -227,6 +227,7 @@ before_script:
 script:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
       geonode-selenium/test-docker.sh;
+      python manage.py test geonode.services.test_selenium.WmsServiceHarvestingTestCase.test_harvest_resources
     else
       paver run_tests --coverage --local false;
     fi
