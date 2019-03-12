@@ -8,6 +8,7 @@ from selenium.webdriver import DesiredCapabilities
 # from webdriver_manager.chrome import ChromeDriverManager
 from . import enumerations, forms
 
+
 class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
 
     @classmethod
