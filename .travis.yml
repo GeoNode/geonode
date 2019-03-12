@@ -43,6 +43,7 @@ matrix:
       virtualenv:
           system_site_packages: true
       env:
+          - TEST_RUN_SELENIUM: 'True'
           - BACKEND: 'geonode.geoserver'
             DOCKER_COMPOSE_VERSION: 1.19.0
             ON_TRAVIS: 'True'
@@ -119,6 +120,7 @@ matrix:
       virtualenv:
           system_site_packages: true
       env:
+          - TEST_RUN_SELENIUM: 'True'
           - BACKEND: 'geonode.qgis_server'
             DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
             DOCKER_COMPOSE_VERSION: 1.19.0
@@ -150,10 +152,10 @@ matrix:
 #            TEST_RUN_INTEGRATION: 'True'
 #            MONITORING_ENABLED: 'False'
 #            CELERY_ALWAYS_EAGER: 'True'
-    - name: "Selenium Integration Tests"
-      python: 3.5
-      env:
-          - TEST_RUN_SELENIUM: 'True'
+#    - name: "Selenium Integration Tests"
+#      python: 3.5
+#      env:
+#          - TEST_RUN_SELENIUM: 'True'
 
 branches:
   only:
