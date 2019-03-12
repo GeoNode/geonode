@@ -17,8 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
 
 from unittest import TestCase as StandardTestCase
 
@@ -61,7 +60,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertEqual(result, phony_workspace)
         mock_catalog.assert_called_with(
             service_url=mock_settings.OGC_SERVER[
-                "default"]["LOCATION"] + "rest",
+                            "default"]["LOCATION"] + "rest",
             username=mock_settings.OGC_SERVER["default"]["USER"],
             password=mock_settings.OGC_SERVER["default"]["PASSWORD"]
         )
@@ -90,7 +89,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertEqual(result, phony_workspace)
         mock_catalog.assert_called_with(
             service_url=mock_settings.OGC_SERVER[
-                "default"]["LOCATION"] + "rest",
+                            "default"]["LOCATION"] + "rest",
             username=mock_settings.OGC_SERVER["default"]["USER"],
             password=mock_settings.OGC_SERVER["default"]["PASSWORD"]
         )
@@ -284,18 +283,10 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             password=mock_catalog.password
         )
 
-    # @mock.patch("geonode.services.serviceprocessors.handler.WmsServiceHandler",
-    #             autospec=True)
-    # def test_local_user_cant_delete_service(self, mock_wms_handler):
     def test_local_user_cant_delete_service(self):
         self.client.logout()
         response = self.client.get(reverse('register_service'))
         self.failUnlessEqual(response.status_code, 302)
-
-        # self.client.login(username='serviceowner', password='somepassword')
-        # response = self.client.get(reverse('register_service'))
-        # self.failUnlessEqual(response.status_code, 200)
-
         url = 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
         # url = "http://fake"
         service_type = enumerations.WMS
