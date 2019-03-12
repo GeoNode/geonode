@@ -24,7 +24,6 @@ addons:
       - nginx
   firefox: "latest-esr"
 
-
 matrix:
   fast_finish: true
   include:
@@ -119,7 +118,6 @@ matrix:
       virtualenv:
           system_site_packages: true
       env:
-          - TEST_RUN_SELENIUM: 'True'
           - BACKEND: 'geonode.qgis_server'
             DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
             DOCKER_COMPOSE_VERSION: 1.19.0
@@ -155,13 +153,13 @@ matrix:
       python: 3.5
       env:
           - TEST_RUN_SELENIUM: 'True'
-#    -name: "Javascript Testing"
-#      python: 2.7
-#      virtualenv:
-#        system_site_packages: true
-#      env:
-#          - TEST_RUN_SELENIUM: 'True'
-#            JAVASCRIPT_TESTING: 'True'
+    -name: "Javascript Testing"
+      python: 2.7
+      virtualenv:
+        system_site_packages: true
+      env:
+          - TEST_RUN_SELENIUM: 'True'
+            JAVASCRIPT_TESTING: 'True'
 
 branches:
   only:
@@ -234,9 +232,9 @@ before_script:
 script:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
       geonode-selenium/test-docker.sh;
-#      if [ "$TEST_RUN_SELENIUM" = "True" ]; then
-#        python manage.py test geonode.services.test_selenium.WmsServiceHarvestingTestCase.test_harvest_resources
-#      fi
+      if [ "$TEST_RUN_SELENIUM" = "True" ]; then
+        python manage.py test geonode.services.test_selenium.WmsServiceHarvestingTestCase.test_harvest_resources
+      fi
     else
       paver run_tests --coverage --local false;
     fi
