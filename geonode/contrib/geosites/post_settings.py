@@ -62,6 +62,7 @@ LOCAL_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + 'o
 TEMPLATES[0]['DIRS'] += (
     os.path.join(SITE_ROOT, 'templates/'),
     os.path.join(PROJECT_ROOT, 'templates/'),
+    os.path.join(GEOSITES_ROOT, 'templates/'),
     os.path.join(GEONODE_ROOT, 'templates/'),
 )
 
