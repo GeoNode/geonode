@@ -51,12 +51,25 @@ except:
     # there are no site local_settings to import
     pass
 
-OGC_SERVER['default']['LOCATION'] = GEOSERVER_URL
-#OGC_SERVER['default']['LOCATION'] = os.path.join(SITEURL, 'geoserver/')
-OGC_SERVER['default']['PUBLIC_LOCATION'] = os.path.join(SITEURL, 'geoserver/')
-CATALOGUE['default']['URL'] = '%scatalogue/csw' % SITEURL
+
+OGC_SERVER['default']['location'] = GEOSERVER_LOCATION
+OGC_SERVER['default']['WEB_UI_LOCATION'] = GEOSERVER_WEB_UI_LOCATION
+OGC_SERVER['default']['PUBLIC_LOCATION'] = GEOSERVER_PUBLIC_LOCATION
+OGC_SERVER['default']['USER'] = OGC_SERVER_DEFAULT_USER
+OGC_SERVER['default']['PASSWORD'] = OGC_SERVER_DEFAULT_PASSWORD
+OGC_SERVER['default']['DATASTORE'] = 'datastore'
+CATALOGUE['default']['URL'] = urljoin(SITEURL, '/catalogue/csw')
+PYCSW['CONFIGURATION']['server']['url'] = CATALOGUE['default']['URL']
 PYCSW['CONFIGURATION']['metadata:main']['provider_url'] = SITEURL
-LOCAL_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + 'ows'
+
+if USE_GEOSERVER:
+    LOCAL_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms"
+    PUBLIC_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows"
+    baselayers = MAP_BASELAYERS
+    # MAP_BASELAYERS = [PUBLIC_GEOSERVER, LOCAL_GEOSERVER]
+    MAP_BASELAYERS = [PUBLIC_GEOSERVER]
+    MAP_BASELAYERS.extend(baselayers)
+
 
 # Directories to search for templates
 TEMPLATES[0]['DIRS'] += (

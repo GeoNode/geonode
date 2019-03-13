@@ -25,6 +25,8 @@
 import os
 
 # Outside URL
+from urlparse import urljoin
+
 SITEURL = 'http://$DOMAIN'
 
 
@@ -37,3 +39,23 @@ SITE_DATABASES = {
     },
 }
 """
+
+GEOSERVER_LOCATION = os.getenv(
+    'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
+)
+
+GEOSERVER_WEB_UI_LOCATION = os.getenv(
+    'GEOSERVER_WEB_UI_LOCATION', urljoin(SITEURL, '/geoserver/')
+)
+
+GEOSERVER_PUBLIC_LOCATION = os.getenv(
+    'GEOSERVER_PUBLIC_LOCATION', urljoin(SITEURL, '/gs/')
+)
+
+OGC_SERVER_DEFAULT_USER = os.getenv(
+    'GEOSERVER_ADMIN_USER', 'admin'
+)
+
+OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
+    'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
+)
