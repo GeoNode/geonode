@@ -56,7 +56,7 @@ def bbox2wktpolygon(bbox):
     maxx = float(bbox[2])
     maxy = float(bbox[3])
     return 'POLYGON((%.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f))' \
-        % (minx, miny, minx, maxy, maxx, maxy, maxx, miny, minx, miny)
+           % (minx, miny, minx, maxy, maxx, maxy, maxx, miny, minx, miny)
 
 
 def inverse_mercator(xy):
@@ -66,7 +66,7 @@ def inverse_mercator(xy):
     lon = (xy[0] / 20037508.34) * 180
     lat = (xy[1] / 20037508.34) * 180
     lat = 180 / math.pi * \
-        (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
+          (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
     return (lon, lat)
 
 
@@ -124,6 +124,7 @@ def decimal_encode(bbox):
             o = (str(o) for o in [o])
         _bbox.append("{0:.15f}".format(round(o, 2)))
     return _bbox
+
 
 def test_resource_table_status(test_cls, table, is_row_filtered):
     tbody = table.find_elements_by_tag_name('tbody')
