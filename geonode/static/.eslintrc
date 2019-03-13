@@ -40,7 +40,7 @@
     "import/extensions": "off",
     "import/no-unresolved": "off",
     "import/no-extraneous-dependencies": "off",
-    "indent": ["error", 2],
+    "indent": [2, 2, {"SwitchCase": 1}],
     "no-bitwise": ["error", {
       "int32Hint": true
     }],
@@ -51,6 +51,7 @@
     "no-unused-vars": ["error", {
       "args": "none"
     }],
+    "no-script-url": off,
     "one-var": "off",
     "prefer-destructuring": "off",
     "prettier/prettier": "off",

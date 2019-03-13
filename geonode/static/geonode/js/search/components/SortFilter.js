@@ -1,91 +1,67 @@
 import React from "react";
 
-const facetNodes = {
-  default: (
-    <ul className="dropdown-menu dropdown-menu-right" id="sort">
-      <li>
-        <a data-value="-date" data-filter="order_by" className="selected">
-          {window.gettext("Most recent")}
-        </a>
-      </li>
-      <li>
-        <a data-value="date" data-filter="order_by">
-          {window.gettext("Less recent")}
-        </a>
-      </li>
-      <li>
-        <a data-value="title" data-filter="order_by">
-          {window.gettext("A - Z")}
-        </a>
-      </li>
-      <li>
-        <a data-value="-title" data-filter="order_by">
-          {window.gettext("Z - A")}
-        </a>
-      </li>
-      <li>
-        <a data-value="-popular_count" data-filter="order_by">
-          {window.gettext("Most popular")}
-        </a>
-      </li>
-    </ul>
-  ),
-  groups: (
-    <ul className="dropdown-menu dropdown-menu-right" id="sort">
-      <li>
-        <a
-          data-value="-last_modified"
-          data-filter="order_by"
-          className="selected"
-        >
-          {window.gettext("Most recent")}
-        </a>
-      </li>
-      <li>
-        <a data-value="last_modified" data-filter="order_by">
-          {window.gettext("Less recent")}
-        </a>
-      </li>
-      <li>
-        <a data-value="title" data-filter="order_by">
-          {window.gettext("A - Z")}
-        </a>
-      </li>
-      <li>
-        <a data-value="-title" data-filter="order_by">
-          {window.gettext("Z - A")}
-        </a>
-      </li>
-    </ul>
-  ),
-  people: (
-    <ul className="dropdown-menu dropdown-menu-right" id="sort">
-      <li>
-        <a
-          data-value="-date_joined"
-          data-filter="order_by"
-          className="selected"
-        >
-          {window.gettext("Most recent")}
-        </a>
-      </li>
-      <li>
-        <a data-value="date_joined" data-filter="order_by">
-          {window.gettext("Less recent")}
-        </a>
-      </li>
-      <li>
-        <a data-value="username" data-filter="order_by">
-          {window.gettext("A - Z")}
-        </a>
-      </li>
-      <li>
-        <a data-value="-username" data-filter="order_by">
-          {window.gettext("Z - A")}
-        </a>
-      </li>
-    </ul>
-  )
+const facetData = {
+  default: [
+    {
+      text: "Most recent",
+      value: "-date",
+      selected: true
+    },
+    {
+      text: "Less recent",
+      value: "date"
+    },
+    {
+      text: "A - Z",
+      value: "title"
+    },
+    {
+      text: "Z - A",
+      value: "-title"
+    },
+    {
+      text: "Most popular",
+      value: "-popular_count"
+    }
+  ],
+  groups: [
+    {
+      text: "Most recent",
+      value: "-date",
+      selected: true
+    },
+    {
+      text: "Less recent",
+      value: "date"
+    },
+    {
+      text: "A - Z",
+      value: "title"
+    },
+    {
+      text: "Z - A",
+      value: "-title"
+    }
+  ],
+  people: [
+    {
+      text: "Most recent",
+      value: "-date",
+      selected: true
+    },
+    {
+      text: "Less recent",
+      value: "date"
+    },
+    {
+      text: "A - Z",
+      value: "username"
+    },
+    {
+      text: "Z - A",
+      value: "-username"
+    }
+  ]
 };
 
 export default class SortFilter extends React.Component {
@@ -95,7 +71,6 @@ export default class SortFilter extends React.Component {
   };
   facetType = window.djangoSearchVars.facet_type;
   updateDataValue = dataValue => {
-    console.log("!!!DATAVALUE", dataValue);
     this.setState({
       dataValue
     });
@@ -109,70 +84,79 @@ export default class SortFilter extends React.Component {
     if (this.state.dataValue === dataValue) return { display: "block" };
     return { display: "none" };
   };
+  buildFacetNode = nodes => {
+    const liNodes = nodes.map((node, i) => (
+      <li key={i}>
+        <a
+          href="javascript:;"
+          onClick={() => this.updateDataValue(node.value)}
+          data-value={node.value}
+          data-filter="order_by"
+          className={node.selected ? "selected" : ""}
+        >
+          {window.gettext(node.text)}
+        </a>
+      </li>
+    ));
+    return (
+      <ul className="dropdown-menu dropdown-menu-right" id="sort">
+        {liNodes}
+      </ul>
+    );
+  };
   getFacetNode = () => {
     switch (this.facetType) {
       case "groups":
-        return facetNodes.groups;
+        return this.buildFacetNode(facetData.groups);
       case "people":
-        return facetNodes.people;
+        return this.buildFacetNode(facetData.people);
       default:
-        return facetNodes.default;
+        return this.buildFacetNode(facetData.default);
     }
   };
-  render = () => {
-    return (
-      <div className="btn-group pull-right" role="group" aria-label="tools">
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-default dropdown-toggle"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
+  render = () => (
+    <div className="btn-group pull-right" role="group" aria-label="tools">
+      <div className="btn-group" role="group">
+        <button
+          type="button"
+          className="btn btn-default dropdown-toggle"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <div
+            onClick={() => this.updateDataValue("title")}
+            style={this.getStyle(["title", "username"])}
           >
-            <div
-              onClick={() => this.updateDataValue("title")}
-              style={this.getStyle(["title", "username"])}
-              ng-cloak
-            >
-              <i className="fa fa-sort-alpha-asc fa-lg" />
-              <i className="fa fa-angle-down fa-lg" />
-            </div>
-            <div
-              onClick={() => this.updateDataValue("-title")}
-              style={this.getStyle(["-title", "-username"])}
-              ng-cloak
-            >
-              <i className="fa fa-sort-alpha-desc fa-lg" />
-              <i className="fa fa-angle-down fa-lg" />
-            </div>
-            <div
-              style={this.getStyle(["date", "last_modified", "date_joined"])}
-            >
-              <i className="fa fa-clock-o" />
-              <i className="fa fa-clock-o fa-level-up" />
-              <i className="fa fa-angle-down fa-lg" />
-            </div>
-            <div
-              style={this.getStyle(["-date", "-last_modified", "-date_joined"])}
-            >
-              <i className="fa fa-clock-o" />
-              <i className="fa fa-clock-o fa-level-down" />
-              <i className="fa fa-angle-down fa-lg" />
-            </div>
-            <div style={this.getStyle(["-popular_count"])} ng-cloak>
-              <i className="fa fa-fire fa-lg" />
-              <i className="fa fa-angle-down fa-lg" />
-            </div>
-            <div ng-if="dataValue == null" ng-cloak>
-              <i className="fa fa-clock-o" />
-              <i className="fa fa-clock-o fa-level-down" />
-              <i className="fa fa-angle-down fa-lg" />
-            </div>
-          </button>
-          {this.getFacetNode()}
-        </div>
+            <i className="fa fa-sort-alpha-asc fa-lg" />
+            <i className="fa fa-angle-down fa-lg" />
+          </div>
+          <div
+            onClick={() => this.updateDataValue("-title")}
+            style={this.getStyle(["-title", "-username"])}
+          >
+            <i className="fa fa-sort-alpha-desc fa-lg" />
+            <i className="fa fa-angle-down fa-lg" />
+          </div>
+          <div style={this.getStyle(["date", "last_modified", "date_joined"])}>
+            <i className="fa fa-clock-o" />
+            <i className="fa fa-clock-o fa-level-up" />
+            <i className="fa fa-angle-down fa-lg" />
+          </div>
+          <div
+            style={this.getStyle(["-date", "-last_modified", "-date_joined"])}
+          >
+            <i className="fa fa-clock-o" />
+            <i className="fa fa-clock-o fa-level-down" />
+            <i className="fa fa-angle-down fa-lg" />
+          </div>
+          <div style={this.getStyle(["-popular_count"])}>
+            <i className="fa fa-fire fa-lg" />
+            <i className="fa fa-angle-down fa-lg" />
+          </div>
+        </button>
+        {this.getFacetNode()}
       </div>
-    );
-  };
+    </div>
+  );
 }

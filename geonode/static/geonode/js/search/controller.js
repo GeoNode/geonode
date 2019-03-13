@@ -76,6 +76,7 @@ export default (() => {
         else queryValue = "";
         queryValue.replace(/\+/g, " ");
         searcher.set("queryValue", queryValue);
+        PubSub.publish("searchComplete", searcher);
         syncView($scope, searcher);
       });
     }
