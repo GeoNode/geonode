@@ -407,5 +407,5 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
                 self.selenium.find_element_by_id('id-filter').send_keys('atlantis:tiger_roads_tiger_roads')
 
                 self.selenium.find_element_by_id('btn-id-filter').click()
-                self.selenium.find_element_by_id('option_atlantis:tiger_roads_tiger_roads').click()
-                self.selenium.find_element_by_tag_name('form').submit()
+                # self.selenium.find_element_by_id('option_atlantis:tiger_roads_tiger_roads').click()
+                # self.selenium.find_element_by_tag_name('form').submit()
