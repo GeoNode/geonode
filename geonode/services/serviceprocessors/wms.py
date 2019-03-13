@@ -21,11 +21,11 @@
 
 import json
 import logging
+import requests
 import traceback
 
 from uuid import uuid4
 from urlparse import urlsplit, urljoin
-from httplib import HTTPConnection, HTTPSConnection
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -492,15 +492,10 @@ class GeoNodeServiceHandler(WmsServiceHandler):
     def _probe_geonode_wms(self, raw_url):
         url = urlsplit(raw_url)
 
-        if url.scheme == 'https':
-            conn = HTTPSConnection(url.hostname, url.port)
-        else:
-            conn = HTTPConnection(url.hostname, url.port)
-        conn.request('GET', '/api/ows_endpoints/', '', {})
-        response = conn.getresponse()
-        content = response.read()
-        status = response.status
-        content_type = response.getheader("Content-Type", "text/plain")
+        response = requests.get('%sapi/ows_endpoints/' % settings.SITEURL, '', {})
+        content = response.content
+        status = response.status_code
+        content_type = response.headers['Content-Type']
 
         # NEW-style OWS Enabled GeoNode
         if status == 200 and 'application/json' == content_type:
@@ -519,20 +514,12 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         return _url
 
     def _enrich_layer_metadata(self, geonode_layer):
-        url = urlsplit(self.url)
-
-        if url.scheme == 'https':
-            conn = HTTPSConnection(url.hostname, url.port)
-        else:
-            conn = HTTPConnection(url.hostname, url.port)
-
         workspace, layername = geonode_layer.name.split(
             ":") if ":" in geonode_layer.name else (None, geonode_layer.name)
-        conn.request('GET', '/api/layers/?name=%s' % layername, '', {})
-        response = conn.getresponse()
-        content = response.read()
-        status = response.status
-        content_type = response.getheader("Content-Type", "text/plain")
+        response = requests.get('%sapi/layers/?name=%s' % (settings.SITEURL, layername), '', {})
+        content = response.content
+        status = response.status_code
+        content_type = response.headers['Content-Type']
 
         if status == 200 and 'application/json' == content_type:
             try:
