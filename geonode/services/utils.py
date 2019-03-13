@@ -65,8 +65,7 @@ def inverse_mercator(xy):
     """
     lon = (xy[0] / 20037508.34) * 180
     lat = (xy[1] / 20037508.34) * 180
-    lat = 180 / math.pi * \
-          (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
+    lat = 180 / math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
     return (lon, lat)
 
 
