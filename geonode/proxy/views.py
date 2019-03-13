@@ -22,13 +22,13 @@ import os
 import re
 import json
 import shutil
+import urllib
 import logging
 import requests
 import tempfile
 import traceback
 
 from slugify import Slugify
-from httplib import HTTPConnection, HTTPSConnection
 from urlparse import urlparse, urlsplit, urljoin
 from django.conf import settings
 from django.http import HttpResponse
@@ -50,7 +50,7 @@ from geonode.base.auth import (extend_token,
                                get_token_object_from_session)
 from geonode import geoserver, qgis_server  # noqa
 
-TIMEOUT = 30
+TIMEOUT = 300
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,11 @@ ows_regexp = re.compile(
 
 @requires_csrf_token
 def proxy(request, url=None, response_callback=None,
-          sec_chk_hosts=True, sec_chk_rules=True, **kwargs):
+          sec_chk_hosts=True, sec_chk_rules=True, timeout=None, **kwargs):
+    # Request default timeout
+    if not timeout:
+        timeout = TIMEOUT
+
     # Security rules and settings
     PROXY_ALLOWED_HOSTS = getattr(settings, 'PROXY_ALLOWED_HOSTS', ())
 
@@ -174,24 +178,17 @@ def proxy(request, url=None, response_callback=None,
         headers['Authorization'] = 'Bearer %s' % access_token
 
     site_url = urlsplit(settings.SITEURL)
-
     pragma = "no-cache"
     referer = request.META[
         "HTTP_REFERER"] if "HTTP_REFERER" in request.META else \
         "{scheme}://{netloc}/".format(scheme=site_url.scheme,
                                       netloc=site_url.netloc)
     encoding = request.META["HTTP_ACCEPT_ENCODING"] if "HTTP_ACCEPT_ENCODING" in request.META else "gzip"
-
     headers.update({"Pragma": pragma,
                     "Referer": referer,
-                    "Accept-encoding": encoding, })
+                    "Accept-encoding": encoding,
+    })
 
-    if url.scheme == 'https':
-        import ssl
-        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-        conn = HTTPSConnection(url.hostname, url.port, context=context)
-    else:
-        conn = HTTPConnection(url.hostname, url.port)
     parsed = urlparse(raw_url)
     parsed._replace(path=locator.encode('utf8'))
 
@@ -202,21 +199,37 @@ def proxy(request, url=None, response_callback=None,
         _url = ('%s%saccess_token=%s' %
                 (_url, query_separator, access_token))
 
-    conn.request(request.method, _url, request.body, headers)
-    response = conn.getresponse()
-    content = response.read()
-    status = response.status
-    content_type = response.getheader("Content-Type", "text/plain")
+    response = None
+    content = None
+    status = None
+    content_type = None
+
+    import requests
+    action = getattr(requests, request.method.lower(), None)
+    if action:
+        try:
+            response = action(
+                headers=headers,
+                url=urllib.unquote(_url).decode('utf8'),
+                data=request.body,
+                timeout=timeout
+            )
+            content = response.content
+            status = response.status_code
+            content_type = response.headers['Content-Type']
+        except BaseException:
+            pass
 
     # decompress GZipped responses if not enabled
-    if content and response.getheader('Content-Encoding') == 'gzip':
+    # if content and response and response.getheader('Content-Encoding') == 'gzip':
+    if content and content_type and content_type == 'gzip':
         from StringIO import StringIO
         import gzip
         buf = StringIO(content)
         f = gzip.GzipFile(fileobj=buf)
         content = f.read()
 
-    if response_callback:
+    if response and response_callback:
         kwargs = {} if not kwargs else kwargs
         kwargs.update({
             'response': response,
@@ -227,7 +240,7 @@ def proxy(request, url=None, response_callback=None,
         return response_callback(**kwargs)
     else:
         # If we get a redirect, let's add a useful message.
-        if status in (301, 302, 303, 307):
+        if status and status in (301, 302, 303, 307):
             _response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
                                       'asked for a redirect to "%s"' % (url, response.getheader('Location'))),
                                      status=status,
