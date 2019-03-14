@@ -28,6 +28,7 @@ import logging
 import gisdata
 
 from django.conf import settings
+from django.http import HttpRequest
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
@@ -77,6 +78,105 @@ class StreamToLogger(object):
     def write(self, buf):
         for line in buf.rstrip().splitlines():
             self.logger.log(self.log_level, line.rstrip())
+
+
+class SecurityTest(GeoNodeBaseTestSupport):
+
+    type = 'layer'
+
+    """
+    Tests for the Geonode security app.
+    """
+
+    def setUp(self):
+        super(SecurityTest, self).setUp()
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_login_middleware(self):
+        """
+        Tests the Geonode login required authentication middleware.
+        """
+        from geonode.security.middleware import LoginRequiredMiddleware
+        middleware = LoginRequiredMiddleware()
+
+        white_list = [
+            reverse('account_ajax_login'),
+            reverse('account_confirm_email', kwargs=dict(key='test')),
+            reverse('account_login'),
+            reverse('account_reset_password'),
+            reverse('forgot_username'),
+            reverse('layer_acls'),
+            reverse('layer_resolve_user'),
+        ]
+
+        black_list = [
+            reverse('account_signup'),
+            reverse('document_browse'),
+            reverse('maps_browse'),
+            reverse('layer_browse'),
+            reverse('layer_detail', kwargs=dict(layername='geonode:Test')),
+            reverse('layer_remove', kwargs=dict(layername='geonode:Test')),
+            reverse('profile_browse'),
+        ]
+
+        request = HttpRequest()
+        request.user = get_anonymous_user()
+
+        # Requests should be redirected to the the `redirected_to` path when un-authenticated user attempts to visit
+        # a black-listed url.
+        for path in black_list:
+            request.path = path
+            response = middleware.process_request(request)
+            self.assertEqual(response.status_code, 302)
+            self.assertTrue(
+                response.get('Location').startswith(
+                    middleware.redirect_to))
+
+        # The middleware should return None when an un-authenticated user
+        # attempts to visit a white-listed url.
+        for path in white_list:
+            request.path = path
+            response = middleware.process_request(request)
+            self.assertIsNone(
+                response,
+                msg="Middleware activated for white listed path: {0}".format(path))
+
+        self.client.login(username='admin', password='admin')
+        admin = get_user_model().objects.get(username='admin')
+        self.assertTrue(admin.is_authenticated())
+        request.user = admin
+
+        # The middleware should return None when an authenticated user attempts
+        # to visit a black-listed url.
+        for path in black_list:
+            request.path = path
+            response = middleware.process_request(request)
+            self.assertIsNone(response)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_session_ctrl_middleware(self):
+        """
+        Tests the Geonode session control authentication middleware.
+        """
+        from geonode.security.middleware import SessionControlMiddleware
+        middleware = SessionControlMiddleware()
+
+        request = HttpRequest()
+
+        self.client.login(username='admin', password='admin')
+        admin = get_user_model().objects.get(username='admin')
+        self.assertTrue(admin.is_authenticated())
+        request.user = admin
+        request.path = reverse('layer_browse')
+        middleware.process_request(request)
+        response = self.client.get(request.path)
+        self.assertEqual(response.status_code, 200)
+        # Simulating Token expired (or not set)
+        request.session = {}
+        request.session['access_token'] = None
+        middleware.process_request(request)
+        response = self.client.get('/admin')
+        self.assertEqual(response.status_code, 302)
 
 
 class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):

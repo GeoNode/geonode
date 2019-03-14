@@ -948,7 +948,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                     _p = "&".join("%s=%s" % item for item in params.items())
                     resp, image = ogc_client.request(thumbnail_create_url + '&' + _p)
                     if 'ServiceException' in image or \
-                       resp.status < 200 or resp.status > 299:
+                       resp.status_code < 200 or resp.status_code > 299:
                         msg = 'Unable to obtain thumbnail: %s' % image
                         raise Exception(msg)
                 except BaseException:

@@ -32,7 +32,7 @@ def geoserver_update_layers(self, *args, **kwargs):
     return gs_slurp(*args, **kwargs)
 
 
-@shared_task(bind=True, queue='update')
+@shared_task(bind=True, queue='update', expires=30)
 def thumbnail_task(self,
                    instance_id,
                    instance_type,
