@@ -33,7 +33,7 @@ import tarfile
 import time
 import shutil
 import string
-import httplib2
+import requests
 import urlparse
 import urllib
 import gc
@@ -1335,14 +1335,40 @@ def check_ogc_backend(backend_package):
     return False
 
 
-if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    ogc_server_settings = settings.OGC_SERVER['default']
-    http_client = httplib2.Http(
-        cache=getattr(
-            ogc_server_settings, 'CACHE', None), timeout=getattr(
-            ogc_server_settings, 'TIMEOUT', 1))
-else:
-    http_client = httplib2.Http(timeout=10)
+class HttpClient(object):
+    def __init__(self):
+        self.timeout = 10
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            ogc_server_settings = settings.OGC_SERVER['default']
+            self.timeout = getattr(ogc_server_settings, 'TIMEOUT', 10)
+
+    def request(self, url, method='GET', data=None, headers={}):
+        action = getattr(requests, method.lower(), None)
+        response = None
+        content = None
+        if action:
+            response = action(
+                url=urllib.unquote(url).decode('utf8'),
+                data=data,
+                headers=headers,
+                timeout=self.timeout)
+            content = response.content
+        else:
+            response = requests.get(url, headers=headers, timeout=self.timeout)
+            content = response.content
+
+        return (response, content)
+
+    def get(self, url):
+        response, content = self.request(url)
+        return response
+
+    def post(self, url, data=None, headers={}):
+        response, content = self.request(url, method='POST', data=data, headers=headers)
+        return response
+
+
+http_client = HttpClient()
 
 
 def get_dir_time_suffix():
