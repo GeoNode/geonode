@@ -249,7 +249,7 @@ def site_facets(context):
 
         if facet_type == 'home':
             facets['user'] = get_user_model().objects.exclude(
-                username='AnonymousUser').count()
+                username='AnonymousUser').filter(id__in=users_for_site()).count()
 
             facets['group'] = GroupProfile.objects.exclude(
                 access="private").count()
