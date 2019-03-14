@@ -103,6 +103,7 @@ class SessionControlMiddleware(object):
                     access_token = get_token_object_from_session(request.session)
                 except BaseException:
                     access_token = None
+                    self.do_logout(request)
 
                 # we extend the token in case the session is active but the token expired
                 if access_token and access_token.is_expired():
@@ -113,14 +114,13 @@ class SessionControlMiddleware(object):
                 helpers.http_client = geoserver_requests_session()
 
         def do_logout(self, request):
-
             try:
                 logout(request)
             except BaseException:
                 pass
-
-            if not any(path.match(request.path) for path in white_list):
-                return HttpResponseRedirect(
-                    '{login_path}?next={request_path}'.format(
-                        login_path=self.redirect_to,
-                        request_path=request.path))
+            finally:
+                if not any(path.match(request.path) for path in white_list):
+                    return HttpResponseRedirect(
+                        '{login_path}?next={request_path}'.format(
+                            login_path=self.redirect_to,
+                            request_path=request.path))
