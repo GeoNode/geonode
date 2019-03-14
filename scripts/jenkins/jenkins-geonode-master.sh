@@ -20,13 +20,13 @@ pip install --quiet nosexcover
 pip install --quiet pylint
 pip install --quiet pyflakes
 pip install --quiet clonedigger
-pip install --quiet pep8
+pip install --quiet pycodestyle
 
 # Setup and Build GeoNode
 git clean -dxff
 
 # run this here while we have a clean dir.
-#/usr/bin/sloccount --duplicates --wide --details geonode/ > sloccount.out 
+#/usr/bin/sloccount --duplicates --wide --details geonode/ > sloccount.out
 #python /usr/local/bin/clokins.py --exclude-list-file=scripts/jenkins/clokins.exclude . > clokins.output
 
 pip install -e .
@@ -64,14 +64,14 @@ cp TEST-nose.xml csw-TEST-nose.xml
 cp coverage.xml csw-coverage.xml
 cp coverage -R csw-coverage
 
-# Run the javascript tests 
+# Run the javascript tests
 #paver test_javascript
 #mv geonode/static/geonode/junit.xml ./javascript-TEST-nose.xml
 
 # Run Code Quality Tools
 export DJANGO_SETTINGS_MODULE=geonode.settings
 pylint -f parseable geonode/ | tee pylint.out
-pep8 --repeat geonode | tee pep8.out
+pycodestyle geonode | tee pycodestyle.out
 find . -type f -iname "*.py" | egrep -v '^./tests/'|xargs pyflakes  > pyflakes.out || :
 clonedigger --cpd-output . || :
 mv output.xml clonedigger.out

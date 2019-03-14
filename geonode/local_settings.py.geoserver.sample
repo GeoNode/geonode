@@ -466,20 +466,6 @@ if GEONODE_CATALOGUE_SERVICE:
 
 MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
 
-if 'geonode.geoserver' in INSTALLED_APPS:
-    LOCAL_GEOSERVER = {
-        "type": "wms",
-        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
-        "visibility": True,
-        "title": "Local GeoServer",
-        "group": "background",
-        "format": "image/png8",
-        "restUrl": "/gs/rest"
-    }
-    # baselayers = MAPSTORE_BASELAYERS
-    # MAPSTORE_BASELAYERS = [LOCAL_GEOSERVER]
-    # MAPSTORE_BASELAYERS.extend(baselayers)
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
