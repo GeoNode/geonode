@@ -128,7 +128,7 @@ GEOSERVER_PUBLIC_HOST = os.getenv(
 )
 
 GEOSERVER_PUBLIC_PORT = os.getenv(
-    'GEOSERVER_PUBLIC_PORT', 8080
+    'GEOSERVER_PUBLIC_PORT', 8000
 )
 
 _default_public_location = 'http://{}:{}/gs/'.format(GEOSERVER_PUBLIC_HOST, GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/gs/'.format(GEOSERVER_PUBLIC_HOST)
@@ -465,20 +465,6 @@ if GEONODE_CATALOGUE_SERVICE:
     ]
 
 MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
-
-if 'geonode.geoserver' in INSTALLED_APPS:
-    LOCAL_GEOSERVER = {
-        "type": "wms",
-        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
-        "visibility": True,
-        "title": "Local GeoServer",
-        "group": "background",
-        "format": "image/png8",
-        "restUrl": "/gs/rest"
-    }
-    # baselayers = MAPSTORE_BASELAYERS
-    # MAPSTORE_BASELAYERS = [LOCAL_GEOSERVER]
-    # MAPSTORE_BASELAYERS.extend(baselayers)
 
 LOGGING = {
     'version': 1,
