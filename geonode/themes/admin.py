@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from django import forms
 from django.contrib import admin
 
 from .models import Partner, GeoNodeThemeCustomization
@@ -28,7 +29,20 @@ class PartnerAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'title', 'href',)
 
 
+class GeonodeThemCustomizationForm(forms.ModelForm):
+    class Meta:
+        model = GeoNodeThemeCustomization
+        widgets = {
+            'body_color': forms.TextInput(attrs={'type': 'color'}),
+            'navbar_color': forms.TextInput(attrs={'type': 'color'}),
+            'jumbotron_color': forms.TextInput(attrs={'type': 'color'}),
+            'copyright_color': forms.TextInput(attrs={'type': 'color'}),
+        }
+        fields = '__all__'
+
+
 @admin.register(GeoNodeThemeCustomization)
 class GeoNodeThemeCustomizationAdmin(admin.ModelAdmin):
+    form = GeonodeThemCustomizationForm
     list_display = ('id', 'is_enabled', 'name', 'date', 'description')
     list_display_links = ('id', 'name',)
