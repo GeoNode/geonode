@@ -27,7 +27,7 @@ import os
 # Outside URL
 from urlparse import urljoin
 
-SITEURL = 'http://$DOMAIN'
+SITEURL = 'http://$DOMAIN/'
 
 
 # databases unique to site if not defined in site settings

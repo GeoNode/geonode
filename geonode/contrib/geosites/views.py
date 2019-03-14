@@ -231,6 +231,6 @@ class SiteLoginView(LoginView):
     def form_valid(self, form):
         # check if user exists and belongs to current site
         if not users_for_site().filter(username=form.user.username).exists() and not form.user.is_superuser:
-            return redirect(settings.ACCOUNT_LOGIN_URL)
+            return redirect(settings.LOGIN_URL)
 
         return super(SiteLoginView, self).form_valid(form)

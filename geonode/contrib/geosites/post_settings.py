@@ -52,6 +52,14 @@ except:
     pass
 
 
+# Login and logout urls override
+LOGIN_URL = os.getenv('LOGIN_URL', urljoin(SITEURL, 'account/login/'))
+LOGOUT_URL = os.getenv('LOGOUT_URL', urljoin(SITEURL, 'account/logout/'))
+
+ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
+ACCOUNT_LOGOUT_REDIRECT_URL =  os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
+
+
 OGC_SERVER['default']['location'] = GEOSERVER_LOCATION
 OGC_SERVER['default']['WEB_UI_LOCATION'] = GEOSERVER_WEB_UI_LOCATION
 OGC_SERVER['default']['PUBLIC_LOCATION'] = GEOSERVER_PUBLIC_LOCATION
