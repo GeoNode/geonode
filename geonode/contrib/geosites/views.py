@@ -234,4 +234,3 @@ class SiteLoginView(LoginView):
             return redirect(settings.ACCOUNT_LOGIN_URL)
 
         return super(SiteLoginView, self).form_valid(form)
-
