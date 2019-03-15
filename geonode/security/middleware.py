@@ -26,10 +26,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
 from geonode import geoserver
-from geonode.geoserver import helpers
 from geonode.utils import check_ogc_backend
 from geonode.base.auth import get_token_object_from_session
-from geonode.geoserver.utils import geoserver_requests_session
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -106,12 +104,8 @@ class SessionControlMiddleware(object):
                     self.do_logout(request)
 
                 # we extend the token in case the session is active but the token expired
-                if access_token and access_token.is_expired():
+                if access_token is None or access_token.is_expired():
                     self.do_logout(request)
-
-            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                # Refresh http_client session auth
-                helpers.http_client = geoserver_requests_session()
 
         def do_logout(self, request):
             try:
@@ -119,6 +113,9 @@ class SessionControlMiddleware(object):
             except BaseException:
                 pass
             finally:
+                from django.contrib import messages
+                from django.utils.translation import ugettext_noop as _
+                messages.warning(request, _("Session is Expired. Please login again!"))
                 if not any(path.match(request.path) for path in white_list):
                     return HttpResponseRedirect(
                         '{login_path}?next={request_path}'.format(
