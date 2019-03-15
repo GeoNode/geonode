@@ -48,6 +48,19 @@ def geoserver_requests_session():
     from .helpers import ogc_server_settings
     _user, _password = ogc_server_settings.credentials
     session = requests.Session()
-    session.auth = (_user, _password)
+    access_token = None
+    try:
+        from django.contrib.auth import get_user_model
+        from geonode.base.auth import get_or_create_token
+        _u = get_user_model().objects.get(username=_user)
+        access_token = get_or_create_token(_u)
+    except BaseException:
+        pass
+
+    if access_token and not access_token.is_expired():
+        headers = {"Authorization": "Bearer %s" % access_token.token}
+        session.headers.update(headers)
+    else:
+        session.auth = (_user, _password)
     session = requests_retry(session=session)
     return session

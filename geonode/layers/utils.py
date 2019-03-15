@@ -930,7 +930,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 .update(thumbnail_url=thumbnail_remote_url)
 
             # Download thumbnail and save it locally.
-            if not ogc_client and not check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            if not ogc_client:
                 ogc_client = http_client
 
             if ogc_client:
@@ -945,8 +945,10 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         params['bbox'] = instance.bbox_string
                         params['crs'] = instance.srid
 
-                    _p = "&".join("%s=%s" % item for item in params.items())
-                    resp, image = ogc_client.request(thumbnail_create_url + '&' + _p)
+                    for _p in params.keys():
+                        if _p.lower() not in thumbnail_create_url.lower():
+                            thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (_p, params[_p])
+                    resp, image = ogc_client.request(thumbnail_create_url)
                     if 'ServiceException' in image or \
                        resp.status_code < 200 or resp.status_code > 299:
                         msg = 'Unable to obtain thumbnail: %s' % image
@@ -957,28 +959,28 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
                     # Replace error message with None.
                     image = None
-            elif check_ogc_backend(geoserver.BACKEND_PACKAGE) and instance.bbox:
-                instance_bbox = instance.bbox[0:4]
-                request_body = {
-                    'bbox': [str(coord) for coord in instance_bbox],
-                    'srid': instance.srid,
-                    'width': width,
-                    'height': height
-                }
 
-                if thumbnail_create_url:
-                    request_body['thumbnail_create_url'] = thumbnail_create_url
-                elif instance.alternate:
-                    request_body['layers'] = instance.alternate
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                if image is None and instance.bbox:
+                    instance_bbox = instance.bbox[0:4]
+                    request_body = {
+                        'bbox': [str(coord) for coord in instance_bbox],
+                        'srid': instance.srid,
+                        'width': width,
+                        'height': height
+                    }
+                    if thumbnail_create_url:
+                        request_body['thumbnail_create_url'] = thumbnail_create_url
+                    elif instance.alternate:
+                        request_body['layers'] = instance.alternate
+                    image = _prepare_thumbnail_body_from_opts(request_body)
 
-                image = _prepare_thumbnail_body_from_opts(request_body)
-
-            if image is not None:
-                instance.save_thumbnail(thumbnail_name, image=image)
-            else:
-                msg = 'Unable to obtain thumbnail for: %s' % instance
-                logger.error(msg)
-                # raise Exception(msg)
+                if image is not None:
+                    instance.save_thumbnail(thumbnail_name, image=image)
+                else:
+                    msg = 'Unable to obtain thumbnail for: %s' % instance
+                    logger.error(msg)
+                    # raise Exception(msg)
 
 
 # this is the original implementation of create_gs_thumbnail()

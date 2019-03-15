@@ -88,11 +88,12 @@ class CountJSONSerializer(Serializer):
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
-        if options['title_filter']:
-            resources = resources.filter(title__icontains=options['title_filter'])
+        if resources and resources.count() > 0:
+            if options['title_filter']:
+                resources = resources.filter(title__icontains=options['title_filter'])
 
-        if options['type_filter']:
-            resources = resources.instance_of(options['type_filter'])
+            if options['type_filter']:
+                resources = resources.instance_of(options['type_filter'])
 
         counts = list(resources.values(options['count_type']).annotate(count=Count(options['count_type'])))
 
