@@ -104,7 +104,7 @@ class SessionControlMiddleware(object):
                     self.do_logout(request)
 
                 # we extend the token in case the session is active but the token expired
-                if access_token and access_token.is_expired():
+                if access_token is None or access_token.is_expired():
                     self.do_logout(request)
 
         def do_logout(self, request):
@@ -113,6 +113,9 @@ class SessionControlMiddleware(object):
             except BaseException:
                 pass
             finally:
+                from django.contrib import messages
+                from django.utils.translation import ugettext_noop as _
+                messages.warning(request, _("Session is Expired. Please login again!"))
                 if not any(path.match(request.path) for path in white_list):
                     return HttpResponseRedirect(
                         '{login_path}?next={request_path}'.format(

@@ -549,6 +549,8 @@ MIDDLEWARE_CLASSES = (
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
 )
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
 # Security stuff
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
