@@ -40,7 +40,19 @@ if LOCKDOWN_GEONODE:
 # Add additional paths (as regular expressions) that don't require
 # authentication.
 # - authorized exempt urls needed for oauth when GeoNode is set to lockdown
-AUTH_EXEMPT_URLS = (r'^/?$', '/gs/*', '/static/*', '/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/api/layers',)
+FORCE_SCRIPT_NAME = os.getenv('FORCE_SCRIPT_NAME', '')
+AUTH_EXEMPT_URLS = (
+    r'^%s/?$' % FORCE_SCRIPT_NAME,
+    '%s/o/*' % FORCE_SCRIPT_NAME,
+    '%s/gs/*' % FORCE_SCRIPT_NAME,
+    '%s/account/*' % FORCE_SCRIPT_NAME,
+    '%s/static/*' % FORCE_SCRIPT_NAME,
+    '%s/api/o/*' % FORCE_SCRIPT_NAME,
+    '%s/api/roles' % FORCE_SCRIPT_NAME,
+    '%s/api/adminRole' % FORCE_SCRIPT_NAME,
+    '%s/api/users' % FORCE_SCRIPT_NAME,
+    '%s/api/layers' % FORCE_SCRIPT_NAME,
+)
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -73,18 +85,6 @@ except ValueError:
     # fallback to regular list of values separated with misc chars
     ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
-
-# Define email service on GeoNode
-EMAIL_ENABLE = True
-
-if EMAIL_ENABLE:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'localhost'
-    EMAIL_PORT = 25
-    EMAIL_HOST_USER = ''
-    EMAIL_HOST_PASSWORD = ''
-    EMAIL_USE_TLS = False
-    DEFAULT_FROM_EMAIL = 'Example.com <no-reply@localhost>'
 
 TIME_ZONE = 'UTC'
 
@@ -540,8 +540,9 @@ if UNOCONV_ENABLE:
     UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
 
 # Advanced Security Workflow Settings
+DELAYED_SECURITY_SIGNALS = False
 ACCOUNT_OPEN_SIGNUP = True
-ACCOUNT_APPROVAL_REQUIRED = True
+ACCOUNT_APPROVAL_REQUIRED = False
 CLIENT_RESULTS_LIMIT = 20
 API_LIMIT_PER_PAGE = 1000
 FREETEXT_KEYWORDS_READONLY = False

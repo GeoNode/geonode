@@ -1343,6 +1343,26 @@ class HttpClient(object):
             self.timeout = getattr(ogc_server_settings, 'TIMEOUT', 10)
 
     def request(self, url, method='GET', data=None, headers={}):
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
+            from geonode.geoserver.helpers import ogc_server_settings
+            _user, _password = ogc_server_settings.credentials
+            access_token = None
+            try:
+                from django.contrib.auth import get_user_model
+                from geonode.base.auth import get_or_create_token
+                _u = get_user_model().objects.get(username=_user)
+                access_token = get_or_create_token(_u)
+            except BaseException:
+                tb = traceback.format_exc()
+                logger.debug(tb)
+                pass
+
+            if access_token and not access_token.is_expired():
+                headers['Authorization'] = 'Bearer %s' % access_token.token
+            else:
+                valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
+                headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+
         action = getattr(requests, method.lower(), None)
         response = None
         content = None
