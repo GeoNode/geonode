@@ -218,6 +218,11 @@ L.Control.EasyButton = L.Control.extend({
 
   state: function(newState){
 
+    // when called with no args, it's a getter
+    if (arguments.length === 0) {
+      return this._currentState.stateName;
+    }
+
     // activate by name
     if(typeof newState == 'string'){
 

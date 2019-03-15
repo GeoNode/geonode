@@ -557,11 +557,7 @@ def geoserver_proxy(request,
     kwargs = {'affected_layers': affected_layers}
     import urllib
     raw_url = urllib.unquote(raw_url).decode('utf8')
-    try:
-        if ogc_server_settings.LOCATION in raw_url:
-            raw_url = raw_url.replace(ogc_server_settings.LOCATION, ogc_server_settings.WEB_UI_LOCATION)
-    except BaseException:
-        pass
+
     return proxy(request, url=raw_url, response_callback=_response_callback, timeout=3, **kwargs)
 
 

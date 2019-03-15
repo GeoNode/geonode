@@ -109,7 +109,6 @@ define(['underscore',
         }
     };
 
-
     /** Function to ...
      *
      *  @params
@@ -396,7 +395,6 @@ define(['underscore',
     };
 
     // public api
-
     return {
         initialize: initialize,
         doSrs: doSrs,

@@ -26,7 +26,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
 from geonode.layers.models import Layer
-from geonode.geoserver.tasks import thumbnail_task
 
 from .utils import (purge_geofence_layer_rules,
                     sync_geofence_with_guardian)  # set_geofence_invalidate_cache
@@ -70,16 +69,6 @@ def synch_guardian():
                                 group = Group.objects.get(name=group)
                                 # Set the GeoFence Group Rules
                                 sync_geofence_with_guardian(layer, perms, group=group)
-
-                        try:
-                            thumbnail_task.delay(
-                                layer.id,
-                                layer.__class__.__name__,
-                                overwrite=True,
-                                check_bbox=True)
-                        except BaseException:
-                            logger.warn("!WARNING! - Failure while Creating Thumbnail \
-                                for Layer [%s]" % (layer.alternate))
 
                         r.clear_dirty_state()
                     except BaseException:
