@@ -51,7 +51,11 @@ class GeoNodeBaseTestSupport(TestCase):
     type = None
     obj_ids = []
 
-    fixtures = ['initial_data.json', 'group_test_data.json']
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
 
     @classproperty
     def get_type(cls):
