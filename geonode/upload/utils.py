@@ -411,11 +411,11 @@ def next_step_response(req, upload_session, force_ajax=True):
 
 
 def is_latitude(colname):
-    return colname.lower() in _latitude_names
+    return any([_l in colname.lower() for _l in _latitude_names])
 
 
 def is_longitude(colname):
-    return colname.lower() in _longitude_names
+    return any([_l in colname.lower() for _l in _longitude_names])
 
 
 def is_async_step(upload_session):
@@ -468,7 +468,7 @@ def _get_time_dimensions(layer, upload_session):
         'enddate']
 
     def filter_name(b):
-        return [kw for kw in date_time_keywords if kw in b]
+        return any([_kw in b for _kw in date_time_keywords])
 
     att_list = []
     try:
@@ -477,7 +477,7 @@ def _get_time_dimensions(layer, upload_session):
             ft = layer_values[0]
             attributes = [{'name': k, 'binding': ft[k]['binding'] or 0} for k in ft.keys()]
             for a in attributes:
-                if (('Integer' in a['binding'] or 'Long' in a['binding']) and 'id' != a['name'].lower()) \
+                if ((('Integer' in a['binding'] or 'Long' in a['binding']) and 'id' != a['name'].lower())) \
                         and filter_name(a['name'].lower()):
                     if layer_values:
                         for feat in layer_values:
@@ -490,7 +490,8 @@ def _get_time_dimensions(layer, upload_session):
                         and filter_name(a['name'].lower()):
                     if layer_values:
                         for feat in layer_values:
-                            if iso8601(str(feat.get(a['name'])['value'])):
+                            if feat.get(a['name'])['value'] and \
+                            iso8601(str(feat.get(a['name'])['value'])):
                                 if a not in att_list:
                                     att_list.append(a)
                     else:

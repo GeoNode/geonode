@@ -37,7 +37,6 @@ import uuid
 import urllib
 from urlparse import urlsplit, urlparse, urljoin
 
-from .utils import geoserver_requests_session
 from agon_ratings.models import OverallRating
 from bs4 import BeautifulSoup
 from dialogos.models import Comment
@@ -68,6 +67,8 @@ from geonode.utils import set_attributes
 from geonode.security.utils import set_geowebcache_invalidate_cache
 import xml.etree.ElementTree as ET
 from django.utils.module_loading import import_string
+
+from .utils import geoserver_requests_session
 
 
 logger = logging.getLogger(__name__)
@@ -821,7 +822,9 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             body = req.json()
             attribute_map = [[n["name"], _esri_types[n["type"]]]
                              for n in body["fields"] if n.get("name") and n.get("type")]
-        except Exception:
+        except BaseException:
+            tb = traceback.format_exc()
+            logger.debug(tb)
             attribute_map = []
     elif layer.storeType in ["dataStore", "remoteStore", "wmsStore"]:
         dft_url = re.sub("\/wms\/?$",
@@ -841,7 +844,9 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 xsd="{http://www.w3.org/2001/XMLSchema}")
             attribute_map = [[n.attrib["name"], n.attrib["type"]] for n in doc.findall(
                 path) if n.attrib.get("name") and n.attrib.get("type")]
-        except Exception:
+        except BaseException:
+            tb = traceback.format_exc()
+            logger.debug(tb)
             attribute_map = []
             # Try WMS instead
             dft_url = server_url + "?" + urllib.urlencode({
@@ -869,7 +874,9 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                     else:
                         field_name = field.string
                     attribute_map.append([field_name, "xsd:string"])
-            except Exception:
+            except BaseException:
+                tb = traceback.format_exc()
+                logger.debug(tb)
                 attribute_map = []
 
     elif layer.storeType in ["coverageStore"]:
@@ -886,7 +893,9 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(
                 wcs="{http://www.opengis.net/wcs/1.1.1}")
             attribute_map = [[n.text, "raster"] for n in doc.findall(path)]
-        except Exception:
+        except BaseException:
+            tb = traceback.format_exc()
+            logger.debug(tb)
             attribute_map = []
 
     # Get attribute statistics & package for call to really_set_attributes()
@@ -925,6 +934,8 @@ def set_styles(layer, gs_catalog):
         try:
             default_style = gs_layer.default_style or None
         except BaseException:
+            tb = traceback.format_exc()
+            logger.debug(tb)
             pass
 
         if not default_style:
@@ -934,6 +945,8 @@ def set_styles(layer, gs_catalog):
                 gs_layer.default_style = default_style
                 gs_catalog.save(gs_layer)
             except BaseException:
+                tb = traceback.format_exc()
+                logger.debug(tb)
                 logger.exception("GeoServer Layer Default Style issues!")
 
         if default_style:
@@ -943,6 +956,8 @@ def set_styles(layer, gs_catalog):
                 try:
                     gs_catalog.create_style(layer.name, sld_body, raw=True, workspace=layer.workspace)
                 except BaseException:
+                    tb = traceback.format_exc()
+                    logger.debug(tb)
                     pass
                 style = gs_catalog.get_style(layer.name, workspace=layer.workspace)
             else:
@@ -958,6 +973,8 @@ def set_styles(layer, gs_catalog):
                     if alt_style:
                         style_set.append(save_style(alt_style))
         except BaseException:
+            tb = traceback.format_exc()
+            logger.debug(tb)
             pass
 
     layer.styles = style_set
@@ -976,6 +993,8 @@ def save_style(gs_style):
     try:
         style.sld_title = gs_style.sld_title
     except BaseException:
+        tb = traceback.format_exc()
+        logger.debug(tb)
         style.sld_title = gs_style.name
     finally:
         style.sld_body = gs_style.sld_body
@@ -1014,7 +1033,9 @@ def get_attribute_statistics(layer_name, field):
         return None
     try:
         return wps_execute_layer_attribute_statistics(layer_name, field)
-    except Exception:
+    except BaseException:
+        tb = traceback.format_exc()
+        logger.debug(tb)
         logger.exception('Error generating layer aggregate statistics')
 
 

@@ -654,9 +654,12 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 
 def geoserver_post_save_map(instance, sender, **kwargs):
     instance.set_missing_info()
-    logger.info("... Creating Thumbnail for Map [%s]" % (instance.title))
-    thumbnail_task.delay(
-        instance.id,
-        instance.__class__.__name__,
-        overwrite=False,
-        check_bbox=True)
+    logger.info("... Creating Thumbnail for Map [%s]" % (instance))
+    try:
+        thumbnail_task.delay(
+            instance.id,
+            instance.__class__.__name__,
+            overwrite=False,
+            check_bbox=True)
+    except BaseException:
+        logger.warn("!WARNING! - Failure while Creating Thumbnail for Map [%s]" % (instance))

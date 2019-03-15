@@ -36,9 +36,13 @@ class GeoNodeAuthorization(DjangoAuthorization):
     permission system"""
 
     def read_list(self, object_list, bundle):
-        permitted_ids = get_objects_for_user(
-            bundle.request.user,
-            'base.view_resourcebase').values('id')
+        permitted_ids = []
+        try:
+            permitted_ids = get_objects_for_user(
+                bundle.request.user,
+                'base.view_resourcebase').values('id')
+        except BaseException:
+            pass
 
         return object_list.filter(id__in=permitted_ids)
 
