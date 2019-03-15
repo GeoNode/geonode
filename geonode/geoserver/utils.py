@@ -51,9 +51,9 @@ def geoserver_requests_session():
     access_token = None
     try:
         from django.contrib.auth import get_user_model
-        from geonode.base.auth import get_auth_token
+        from geonode.base.auth import get_or_create_token
         _u = get_user_model().objects.get(username=_user)
-        access_token = get_auth_token(_u)
+        access_token = get_or_create_token(_u)
     except BaseException:
         pass
 
