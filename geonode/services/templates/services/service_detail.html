@@ -1,39 +1,6 @@
 {% extends "services/services_base.html" %}
 {% load i18n %}
 {% load guardian_tags %}
-{% block head %}
-
-{{ block.super }}
-<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-var app;
-{% autoescape off %}
-Ext.onReady(function() {
-
-{% if can_change_permissions %}
-       new GeoNode.WorldMapPermissionsEditor({
-                renderTo: "permissions_form",
-                submitTo: "{% url "geonode.services.views.ajax_service_permissions" service.id %}",
-                userLookup: "{% url "account_ajax_lookup" %}",
-                customGroup: "{{ customGroup }}",
-                permissions: {{ permissions_json }},
-        levels: {
-            'admin': 'layer_admin',
-                    'readwrite': 'layer_readwrite',
-                    'readonly': 'layer_readonly',
-                    'none': '_none'
-        },
-        listeners: {
-            updated: function(perms) {
-                var submitTo = "{% url "geonode.services.views.ajax_service_permissions" service.id %}";
-                Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
-            }
-        }
-    });
-    {% endif %}
-});
-{% endautoescape %}
-</script>
-{% endblock %}
 
 {% block body %}
 <div class="twocol">

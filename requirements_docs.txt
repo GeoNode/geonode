@@ -47,9 +47,7 @@ django-treebeard==4.2.1
 docker==3.1.1
 elasticsearch<3.0.0
 flake8==2.5.4
-funcsigs==1.0.2
 geoip2==2.9.0
-geolinks==0.2.0
 geonode-agon-ratings==0.3.8
 geonode-announcements==1.0.13
 geonode-avatar==2.1.8

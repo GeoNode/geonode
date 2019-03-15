@@ -28,11 +28,7 @@ from geonode.notifications_helper import has_notifications
 
 def resource_urls(request):
     """Global values to pass to templates"""
-    site = None
-    try:
-        site = Site.objects.get_current()
-    except BaseException:
-        pass
+    site = Site.objects.get_current()
 
     defaults = dict(
         STATIC_URL=settings.STATIC_URL,

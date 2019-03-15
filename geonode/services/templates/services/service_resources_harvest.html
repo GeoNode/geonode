@@ -167,9 +167,7 @@
 
 {% block extra_script %}
     {{ block.super }}
-    <script src="{% static "services/js/bootstrap-typeahead.min.js" %}"></script>
-    <script src="{% static "services/js/underscore-min.js" %}"></script>
-    <script src="{% static "services/js/resources_harvest.js" %}"></script>
+    <script src="{% static "geonode/js/services/resources_harvest.js" %}"></script>
 
     <script type="text/javascript">
         var resources = [];
@@ -177,7 +175,7 @@
             resources.push({
                 id: '{{ resource_meta.id }}',
                 title: '{{ resource_meta.title }}',
-                abstract: '{{ resource_meta.abstract}}'
+                abstract: '{{ resource_meta.abstract|safe|truncatechars:20|striptags }}'
             });
         {% endfor %}
         var filterInfo = {{ filter_row|safe }};
@@ -239,8 +237,6 @@
             });
         }
 
-
     </script>
-
 
 {% endblock extra_script %}

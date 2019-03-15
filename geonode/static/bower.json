@@ -1,6 +1,6 @@
 {
   "name": "geonode",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "main": "geonode/css/base.css",
   "componentsDirectory": ".components",
   "dependencies": {
@@ -11,7 +11,7 @@
     "jquery-ui": "1.10.4",
     "requirejs": "2.1.2",
     "requirejs-text": "2.0.3",
-    "underscore": "1.4.2",
+    "underscore": "^1.9.1",
     "jquery-waypoints": "2.0.5",
     "bootstrap": "3.3.7",
     "moment": "2.17.1",
@@ -39,6 +39,7 @@
     "bootstrap-multiselect": "https://github.com/davidstutz/bootstrap-multiselect",
     "bootstrap-table": "1.11.1",
     "bootstrap-toggle": "2.2.2",
+    "bootstrap3-typeahead": "^4.0.2",
     "fastselect": "https://github.com/dbrekalo/fastselect.git",
     "clipboard": "^1.7.1",
     "Leaflet.EasyButton": "^2.2.4"

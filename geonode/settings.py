@@ -803,7 +803,6 @@ OGC_SERVER = {
         # 'datastore',
         'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE',''),
         'PG_GEOGIG': False,
-        # 'CACHE': ".cache"  # local cache file to for HTTP requests
         'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '10'))  # number of seconds to allow for HTTP requests
     }
 }

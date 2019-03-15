@@ -91,15 +91,17 @@ def geoserver_post_save(instance, sender, **kwargs):
         producer.geoserver_upload_layer(payload)
         if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
             instance.set_dirty_state()
-        logger.info("... Creating Thumbnail for Layer [%s]" % (instance))
-        try:
-            thumbnail_task.delay(
-                instance.id,
-                instance.__class__.__name__,
-                overwrite=True,
-                check_bbox=True)
-        except BaseException:
-            logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance))
+
+        if instance.storeType != 'remoteStore':
+            logger.info("... Creating Thumbnail for Layer [%s]" % (instance))
+            try:
+                thumbnail_task.delay(
+                    instance.id,
+                    instance.__class__.__name__,
+                    overwrite=True,
+                    check_bbox=True)
+            except BaseException:
+                logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance))
 
 
 def geoserver_post_save_local(instance, *args, **kwargs):
@@ -519,7 +521,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # some thumbnail generators will update thumbnail_url.  If so, don't
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
     if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
-            'thumbnail_url' in kwargs['update_fields']:
+            'thumbnail_url' in kwargs['update_fields'] and instance.storeType != "remoteStore":
         logger.info("... Creating Thumbnail for Layer [%s]" % (instance))
         try:
             thumbnail_task.delay(
