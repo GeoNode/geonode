@@ -93,19 +93,19 @@ class SessionControlMiddleware(object):
         redirect_to = getattr(settings, 'LOGIN_URL', reverse('account_login'))
 
         def process_request(self, request):
-            if not request.user.is_authenticated or \
-            not request.user.is_active:
-                self.do_logout(request)
-            else:
-                try:
-                    access_token = get_token_object_from_session(request.session)
-                except BaseException:
-                    access_token = None
+            if request.user and request.user.is_authenticated:
+                if not request.user.is_active:
                     self.do_logout(request)
+                else:
+                    try:
+                        access_token = get_token_object_from_session(request.session)
+                    except BaseException:
+                        access_token = None
+                        self.do_logout(request)
 
-                # we extend the token in case the session is active but the token expired
-                if access_token is None or access_token.is_expired():
-                    self.do_logout(request)
+                    # we extend the token in case the session is active but the token expired
+                    if access_token is None or access_token.is_expired():
+                        self.do_logout(request)
 
         def do_logout(self, request):
             try:
