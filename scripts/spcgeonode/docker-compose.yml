@@ -33,6 +33,7 @@ x-common-django:
     - MEDIA_URL=/uploaded/
     - GEOSERVER_LOCATION=http://nginx/geoserver/
     - ASYNC_SIGNALS=True
+    - SESSION_EXPIRED_CONTROL_ENABLED=False
     # TODO : we should probably remove this and set Celery to use JSON serialization instead of pickle
     - C_FORCE_ROOT=True
     # We get an exception after migrations on startup (it seems the monitoring app tries to resolve the geoserver domain name after it's migration, which can happen before oauth migrations on which geoserver startup depends...)
@@ -41,7 +42,7 @@ x-common-django:
     - static:/spcgeonode-static/
     - media:/spcgeonode-media/
   restart: on-failure
-    
+
 services:
 
   # Our custom django application. It includes Geonode.
@@ -55,7 +56,7 @@ services:
       start_period: 60s
     entrypoint: ["/spcgeonode/scripts/spcgeonode/django/docker-entrypoint.sh"]
     command: "uwsgi --chdir=/spcgeonode --module=geonode.wsgi --socket=:8000 --http=127.0.0.1:8001 --processes=5"
-    
+
   # Celery worker that executes celery tasks created by Django.
   celery:
     << : *default-common-django
@@ -73,7 +74,7 @@ services:
     << : *default-common-django
     entrypoint: []
     command: 'celery events --app=geonode.celery_app:app --pidfile="/celeryev.pid" --camera=django_celery_monitor.camera.Camera --frequency=2.0 -l info'
-  
+
   # Nginx is serving django static and media files and proxies to django and geonode
   nginx:
     image: olivierdalang/spcgeonode:nginx-latest
@@ -126,14 +127,14 @@ services:
     volumes:
       - certificates:/spcgeonode-certificates/
     restart: on-failure
-   
+
   pgdumper:
     image: olivierdalang/spcgeonode:pgdumper-latest
     build: ./pgdumper/
     environment:
       - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
     volumes:
-      - pgdumps:/spcgeonode-pgdumps/ 
+      - pgdumps:/spcgeonode-pgdumps/
     restart: on-failure
 
   rclone:
@@ -149,14 +150,14 @@ services:
       - media:/spcgeonode-media/
       - geodatadir:/spcgeonode-geodatadir/
     restart: on-failure
-    
+
   # PostGIS database.
   postgres:
     image: mdillon/postgis:9.6-alpine
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - database:/var/lib/postgresql/data/ 
+      - database:/var/lib/postgresql/data/
     restart: on-failure
 
   # Vanilla RabbitMQ service. This is needed by celery

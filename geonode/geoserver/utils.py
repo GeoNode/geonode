@@ -17,9 +17,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 import requests
+import traceback
+
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
+
+logger = logging.getLogger(__name__)
 
 requests.packages.urllib3.disable_warnings()
 
@@ -50,12 +55,15 @@ def geoserver_requests_session():
     session = requests.Session()
     access_token = None
     try:
-        from django.contrib.auth import get_user_model
-        from geonode.base.auth import get_or_create_token
-        _u = get_user_model().objects.get(username=_user)
-        access_token = get_or_create_token(_u)
+        from oauth2_provider.models import AccessToken, get_application_model
+        Application = get_application_model()
+        app = Application.objects.get(name='GeoServer')
+        access_token = AccessToken.objects.filter(
+            user__username=_user,
+            application=app).order_by('-expires').first()
     except BaseException:
-        pass
+        tb = traceback.format_exc()
+        logger.error(tb)
 
     if access_token and not access_token.is_expired():
         headers = {"Authorization": "Bearer %s" % access_token.token}

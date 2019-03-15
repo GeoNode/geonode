@@ -334,6 +334,7 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
         )
         self.thread = first_message.thread
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_inbox_renders(self):
         logged_in = self.client.login(
             username=self.first_user.username, password=self.user_password)
@@ -353,6 +354,7 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
             "{}{}?next=http%3A//testserver{}".format(settings.SITEURL[:-1], reverse("account_login"), target_url)
         )
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_new_message_renders(self):
         logged_in = self.client.login(
             username=self.first_user.username, password=self.user_password)
@@ -373,6 +375,7 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
             "{}{}?next=http%3A//testserver{}".format(settings.SITEURL[:-1], reverse("account_login"), target_url)
         )
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_thread_detail_renders(self):
         logged_in = self.client.login(
             username=self.first_user.username, password=self.user_password)

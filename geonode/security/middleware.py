@@ -93,10 +93,10 @@ class SessionControlMiddleware(object):
         redirect_to = getattr(settings, 'LOGIN_URL', reverse('account_login'))
 
         def process_request(self, request):
-            if request.user and request.user.is_authenticated:
+            if request and request.user:
                 if not request.user.is_active:
                     self.do_logout(request)
-                else:
+                elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
                     try:
                         access_token = get_token_object_from_session(request.session)
                     except BaseException:
@@ -113,9 +113,13 @@ class SessionControlMiddleware(object):
             except BaseException:
                 pass
             finally:
-                from django.contrib import messages
-                from django.utils.translation import ugettext_noop as _
-                messages.warning(request, _("Session is Expired. Please login again!"))
+                try:
+                    from django.contrib import messages
+                    from django.utils.translation import ugettext_noop as _
+                    messages.warning(request, _("Session is Expired. Please login again!"))
+                except BaseException:
+                    pass
+
                 if not any(path.match(request.path) for path in white_list):
                     return HttpResponseRedirect(
                         '{login_path}?next={request_path}'.format(
