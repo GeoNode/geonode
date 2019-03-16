@@ -93,7 +93,7 @@ class SessionControlMiddleware(object):
         redirect_to = getattr(settings, 'LOGIN_URL', reverse('account_login'))
 
         def process_request(self, request):
-            if request and request.user:
+            if request and request.user and not request.user.is_anonymous:
                 if not request.user.is_active:
                     self.do_logout(request)
                 elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
