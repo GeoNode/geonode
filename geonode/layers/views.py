@@ -617,11 +617,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # provide bbox in EPSG:4326 for leaflet
     if context_dict["preview"] == 'leaflet':
-        srid, wkt = layer.geographic_bounding_box.split(';')
-        srid = re.findall(r'\d+', srid)
-        geom = GEOSGeometry(wkt, srid=int(srid[0]))
-        geom.transform(4326)
-        context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
+        try:
+            srid, wkt = layer.geographic_bounding_box.split(';')
+            srid = re.findall(r'\d+', srid)
+            geom = GEOSGeometry(wkt, srid=int(srid[0]))
+            geom.transform(4326)
+            context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
+        except BaseException:
+            pass
 
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
