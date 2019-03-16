@@ -958,11 +958,10 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                     # Replace error message with None.
                     image = None
             elif check_ogc_backend(geoserver.BACKEND_PACKAGE) and instance.bbox:
-	        #	instance = ResourceBase.objects.get(id=instance.id)
- 		if isinstance(instance, Map):
-        	    instance = Map.objects.get(id=instance.id)
-    		else:
-        	    instance = Layer.objects.get(id=instance.id)
+            if isinstance(instance, Map):
+                instance = Map.objects.get(id=instance.id)
+            else:
+                instance = Layer.objects.get(id=instance.id)
                 instance_bbox = instance.bbox[0:4]
                 request_body = {
                     'bbox': [str(coord) for coord in instance_bbox],

@@ -19,6 +19,9 @@
         position: relative;
         left: 0px !important;
     }
+    .leaflet-popup-content{
+	overflow: auto !important;
+    }
 </style>
 <script type="text/javascript">
      document.addEventListener("DOMContentLoaded", function (event) {
@@ -245,7 +248,7 @@
                 L.control.browserPrint.mode.landscape(),
                 "PORTrait",
                 L.control.browserPrint.mode.auto("Auto", "B4"),
-                L.control.browserPrint.mode.custom("Select print area", "B5")
+                L.control.browserPrint.mode.custom("Selektuj oblast za štampu", "B5")
             ]
         }).addTo(map);
 	map.on('baselayerchange', function(e){
@@ -342,7 +345,7 @@ function createMapThumbnail() {
     }
 
 
-{% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
+  {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
 
     {# Event handler for style editing #}
     function edit_style_on_submit(event){

@@ -598,7 +598,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
     # Define the link after the cleanup, we should use this more rather then remove
     # potential parasites
-    tile_url = ('%swms?' % ogc_server_settings.public_url) 
+    tile_url = ('%swms?' % ogc_server_settings.public_url)
 
     link, created = Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                                extension='tiles',

@@ -157,7 +157,6 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     map_layers = layers
     layers1 = []
     for layer in map_layers:
-        #if layer.group != 'background':
         layers1.append(layer)
     if map_obj.srid != 'EPSG:3857':
         map_bbox = [float(coord) for coord in map_bbox]
@@ -165,43 +164,9 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         map_bbox = llbbox_to_mercator([float(coord) for coord in map_bbox])
 
     if map_bbox[1] == float('-inf'):
-        map_bbox[1]=0
+        map_bbox[1] = 0
     if map_bbox[3] == float('-inf'):
-        map_bbox[3]=0
-
-    if map_bbox and len(map_bbox) >= 4:
-        minx, miny, maxx, maxy = [float(coord) for coord in map_bbox]
-        x = (minx + maxx) / 2
-        y = (miny + maxy) / 2
-
-        if getattr(settings, 'DEFAULT_MAP_CRS') == "EPSG:3857":
-            center = list((x, y))
-        else:
-            center = list(forward_mercator((x, y)))
-
-        if center[1] == float('-inf'):
-            center[1] = 0
-
-        BBOX_DIFFERENCE_THRESHOLD = 1e-5
-
-        # Check if the bbox is invalid
-        valid_x = (maxx - minx) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-        valid_y = (maxy - miny) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-
-        if valid_x:
-            width_zoom = math.log(360 / abs(maxx - minx), 2)
-        else:
-            width_zoom = 15
-
-        if valid_y:
-            height_zoom = math.log(360 / abs(maxy - miny), 2)
-        else:
-            height_zoom = 15
-
-        #map_obj.center_x = center[0]
-        #map_obj.center_y = center[1]
-        #map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
-
+        map_bbox[3] = 0
 
     group = None
     if map_obj.group:
@@ -215,10 +180,10 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         'group': group,
         'layers': layers,
         'map_layers': layers1,
-	'map_bbox': map_bbox,
+        'map_bbox': map_bbox,
         'perms_list': get_perms(request.user, map_obj.get_self_resource()),
         'permissions_json': _perms_info_json(map_obj),
-        "documents": get_related_documents(map_obj),
+        'documents': get_related_documents(map_obj),
         'links': links,
         'preview': getattr(
             settings,
@@ -465,17 +430,16 @@ def map_embed(
             'base.view_resourcebase',
             _PERMISSION_MSG_VIEW)
 
-	layers = MapLayer.objects.filter(map=mapid)
+    layers = MapLayer.objects.filter(map=mapid)
         if snapshot is None:
             config = map_obj.viewer_json(request)
         else:
             config = snapshot_config(
                 snapshot, map_obj, request)
-
     return render(request, template, context={
         'config': json.dumps(config),
-	'resource': map_obj,
-	'map_layers': layers
+        'resource': map_obj,
+        'map_layers': layers
     })
 
 
@@ -515,42 +479,9 @@ def map_embed_widget(request, mapid,
         map_bbox = llbbox_to_mercator([float(coord) for coord in map_bbox])
 
     if map_bbox[1] == float('-inf'):
-	map_bbox[1]=0
+        map_bbox[1] = 0
     if map_bbox[3] == float('-inf'):
-        map_bbox[3]=0
-
-    if map_bbox and len(map_bbox) >= 4:
-        minx, miny, maxx, maxy = [float(coord) for coord in map_bbox]
-        x = (minx + maxx) / 2
-        y = (miny + maxy) / 2
-
-        if getattr(settings, 'DEFAULT_MAP_CRS') == "EPSG:3857":
-            center = list((x, y))
-        else:
-            center = list(forward_mercator((x, y)))
-
-        if center[1] == float('-inf'):
-            center[1] = 0
-
-        BBOX_DIFFERENCE_THRESHOLD = 1e-5
-
-        # Check if the bbox is invalid
-        valid_x = (maxx - minx) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-        valid_y = (maxy - miny) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-
-        if valid_x:
-            width_zoom = math.log(360 / abs(maxx - minx), 2)
-        else:
-            width_zoom = 15
-
-        if valid_y:
-            height_zoom = math.log(360 / abs(maxy - miny), 2)
-        else:
-            height_zoom = 15
-
-        #map_obj.center_x = center[0]
-        #map_obj.center_y = center[1]
-        #map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
+        map_bbox[3] = 0
 
     context = {
         'resource': map_obj,
@@ -687,7 +618,8 @@ def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
 
     url = "%srest/layergroups" % (settings.GEOSERVER_PUBLIC_LOCATION)
 
-    myResponse = requests.get(url,auth=HTTPBasicAuth("%s" % (settings.OGC_SERVER_DEFAULT_USER), "%s" % (settings.OGC_SERVER_DEFAULT_PASSWORD)))
+    myResponse = requests.get(url, auth=HTTPBasicAuth(
+        "%s" % (settings.OGC_SERVER_DEFAULT_USER), "%s" % (settings.OGC_SERVER_DEFAULT_PASSWORD)))
     if(myResponse.ok):
         jData = json.loads(myResponse.content)
         for key in jData["layerGroups"]["layerGroup"]:
@@ -695,12 +627,11 @@ def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
             dict["title"] = str(key["name"])
             dict["alternate"] = str(key["name"])
             dict["url"] = "%swms/" % (settings.GEOSERVER_PUBLIC_LOCATION)
-            #dict["url"] = layers[0].url
             geoserver_layers.append(dict)
     else:
         geoserver_layers.append(myResponse)
 
-    layers=Layer.objects.filter()
+    layers = Layer.objects.filter()
     map_obj = _resolve_map(
         request,
         mapid,
@@ -713,9 +644,9 @@ def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
         config = snapshot_config(snapshot, map_obj, request)
 
     return render(request, template, context={
-	'map_layers': map_layers,
-	'layers': layers,
-	'geoserver_layers': geoserver_layers,
+        'map_layers': map_layers,
+        'layers': layers,
+        'geoserver_layers': geoserver_layers,
         'mapId': mapid,
         'config': json.dumps(config),
         'map': map_obj,
@@ -758,25 +689,24 @@ def new_map(request, template='maps/map_new.html'):
 
     url = "%srest/layergroups" % (settings.GEOSERVER_PUBLIC_LOCATION)
 
-    myResponse = requests.get(url,auth=HTTPBasicAuth("%s" % (settings.OGC_SERVER_DEFAULT_USER), "%s" % (settings.OGC_SERVER_DEFAULT_PASSWORD)))
+    myResponse = requests.get(url, auth=HTTPBasicAuth(
+        "%s" % (settings.OGC_SERVER_DEFAULT_USER), "%s" % (settings.OGC_SERVER_DEFAULT_PASSWORD)))
     if(myResponse.ok):
-        jData = json.loads(myResponse.content)    
+        jData = json.loads(myResponse.content)
         for key in jData["layerGroups"]["layerGroup"]:
             dict = {}
             dict["title"] = str(key["name"])
             dict["alternate"] = str(key["name"])
-	    dict["url"] = "%swms/" % (settings.GEOSERVER_PUBLIC_LOCATION)
-	    #dict["url"] = layers[0].url
+            dict["url"] = "%swms/" % (settings.GEOSERVER_PUBLIC_LOCATION)
             geoserver_layers.append(dict)
     else:
-	geoserver_layers.append(myResponse)
-	
-
+        geoserver_layers.append(myResponse)
+    
     context_dict = {
         'config': config,
         'map': map_obj,
-        'layers':layers,
-	'geoserver_layers': geoserver_layers
+        'layers': layers,
+        'geoserver_layers': geoserver_layers
     }
     context_dict["preview"] = getattr(
         settings,
