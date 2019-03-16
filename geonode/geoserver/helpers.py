@@ -63,12 +63,10 @@ from geonode import GeoNodeException
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.security.views import _perms_info_json
-from geonode.utils import set_attributes
+from geonode.utils import set_attributes, http_client
 from geonode.security.utils import set_geowebcache_invalidate_cache
 import xml.etree.ElementTree as ET
 from django.utils.module_loading import import_string
-
-from .utils import geoserver_requests_session
 
 
 logger = logging.getLogger(__name__)
@@ -1731,9 +1729,6 @@ ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
 _wms = None
 _csw = None
 _user, _password = ogc_server_settings.credentials
-
-http_client = geoserver_requests_session()
-
 
 url = ogc_server_settings.rest
 gs_catalog = Catalog(url, _user, _password)
