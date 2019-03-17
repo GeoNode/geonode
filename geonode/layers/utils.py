@@ -331,78 +331,84 @@ def is_raster(filename):
 
 
 def get_resolution(filename):
-    gtif = gdal.Open(filename)
-    gt = gtif.GetGeoTransform()
-    __, resx, __, __, __, resy = gt
-    resolution = '%s %s' % (resx, resy)
-    return resolution
+    try:
+        gtif = gdal.Open(filename)
+        gt = gtif.GetGeoTransform()
+        __, resx, __, __, __, resy = gt
+        resolution = '%s %s' % (resx, resy)
+        return resolution
+    except BaseException:
+        return None
 
 
 def get_bbox(filename):
     """Return bbox in the format [xmin,xmax,ymin,ymax]."""
     from django.contrib.gis.gdal import DataSource, SRSException
-    srid = None
-    bbox_x0, bbox_y0, bbox_x1, bbox_y1 = None, None, None, None
+    srid = 4326
+    bbox_x0, bbox_y0, bbox_x1, bbox_y1 = -180, -90, 180, 90
 
-    if is_vector(filename):
-        y_min = -90
-        y_max = 90
-        x_min = -180
-        x_max = 180
-        datasource = DataSource(filename)
-        layer = datasource[0]
-        bbox_x0, bbox_y0, bbox_x1, bbox_y1 = layer.extent.tuple
-        srs = layer.srs
-        try:
-            if not srs:
-                raise GeoNodeException('Invalid Projection. Layer is missing CRS!')
-            srs.identify_epsg()
-        except SRSException:
-            pass
-        epsg_code = srs.srid
-        # can't find epsg code, then check if bbox is within the 4326 boundary
-        if epsg_code is None and (x_min <= bbox_x0 <= x_max and
-                                  x_min <= bbox_x1 <= x_max and
-                                  y_min <= bbox_y0 <= y_max and
-                                  y_min <= bbox_y1 <= y_max):
-            # set default epsg code
-            epsg_code = '4326'
-        elif epsg_code is None:
-            # otherwise, stop the upload process
-            raise GeoNodeException(
-                "Invalid Layers. "
-                "Needs an authoritative SRID in its CRS to be accepted")
+    try:
+        if is_vector(filename):
+            y_min = -90
+            y_max = 90
+            x_min = -180
+            x_max = 180
+            datasource = DataSource(filename)
+            layer = datasource[0]
+            bbox_x0, bbox_y0, bbox_x1, bbox_y1 = layer.extent.tuple
+            srs = layer.srs
+            try:
+                if not srs:
+                    raise GeoNodeException('Invalid Projection. Layer is missing CRS!')
+                srs.identify_epsg()
+            except SRSException:
+                pass
+            epsg_code = srs.srid
+            # can't find epsg code, then check if bbox is within the 4326 boundary
+            if epsg_code is None and (x_min <= bbox_x0 <= x_max and
+                                      x_min <= bbox_x1 <= x_max and
+                                      y_min <= bbox_y0 <= y_max and
+                                      y_min <= bbox_y1 <= y_max):
+                # set default epsg code
+                epsg_code = '4326'
+            elif epsg_code is None:
+                # otherwise, stop the upload process
+                raise GeoNodeException(
+                    "Invalid Layers. "
+                    "Needs an authoritative SRID in its CRS to be accepted")
 
-        # eliminate default EPSG srid as it will be added when this function returned
-        srid = epsg_code if epsg_code else '4326'
-    elif is_raster(filename):
-        gtif = gdal.Open(filename)
-        gt = gtif.GetGeoTransform()
-        prj = gtif.GetProjection()
-        srs = osr.SpatialReference(wkt=prj)
-        cols = gtif.RasterXSize
-        rows = gtif.RasterYSize
+            # eliminate default EPSG srid as it will be added when this function returned
+            srid = epsg_code if epsg_code else '4326'
+        elif is_raster(filename):
+            gtif = gdal.Open(filename)
+            gt = gtif.GetGeoTransform()
+            prj = gtif.GetProjection()
+            srs = osr.SpatialReference(wkt=prj)
+            cols = gtif.RasterXSize
+            rows = gtif.RasterYSize
 
-        ext = []
-        xarr = [0, cols]
-        yarr = [0, rows]
+            ext = []
+            xarr = [0, cols]
+            yarr = [0, rows]
 
-        # Get the extent.
-        for px in xarr:
-            for py in yarr:
-                x = gt[0] + (px * gt[1]) + (py * gt[2])
-                y = gt[3] + (px * gt[4]) + (py * gt[5])
-                ext.append([x, y])
+            # Get the extent.
+            for px in xarr:
+                for py in yarr:
+                    x = gt[0] + (px * gt[1]) + (py * gt[2])
+                    y = gt[3] + (px * gt[4]) + (py * gt[5])
+                    ext.append([x, y])
 
-            yarr.reverse()
+                yarr.reverse()
 
-        # ext has four corner points, get a bbox from them.
-        # order is important, so make sure min and max is correct.
-        bbox_x0 = min(ext[0][0], ext[2][0])
-        bbox_y0 = min(ext[0][1], ext[2][1])
-        bbox_x1 = max(ext[0][0], ext[2][0])
-        bbox_y1 = max(ext[0][1], ext[2][1])
-        srid = srs.GetAuthorityCode(None) if srs else '4326'
+            # ext has four corner points, get a bbox from them.
+            # order is important, so make sure min and max is correct.
+            bbox_x0 = min(ext[0][0], ext[2][0])
+            bbox_y0 = min(ext[0][1], ext[2][1])
+            bbox_x1 = max(ext[0][0], ext[2][0])
+            bbox_y1 = max(ext[0][1], ext[2][1])
+            srid = srs.GetAuthorityCode(None) if srs else '4326'
+    except BaseException:
+        pass
 
     return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
 
@@ -930,7 +936,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 .update(thumbnail_url=thumbnail_remote_url)
 
             # Download thumbnail and save it locally.
-            if not ogc_client and not check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            if not ogc_client:
                 ogc_client = http_client
 
             if ogc_client:
@@ -945,10 +951,12 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         params['bbox'] = instance.bbox_string
                         params['crs'] = instance.srid
 
-                    _p = "&".join("%s=%s" % item for item in params.items())
-                    resp, image = ogc_client.request(thumbnail_create_url + '&' + _p)
+                    for _p in params.keys():
+                        if _p.lower() not in thumbnail_create_url.lower():
+                            thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (_p, params[_p])
+                    resp, image = ogc_client.request(thumbnail_create_url)
                     if 'ServiceException' in image or \
-                       resp.status < 200 or resp.status > 299:
+                       resp.status_code < 200 or resp.status_code > 299:
                         msg = 'Unable to obtain thumbnail: %s' % image
                         raise Exception(msg)
                 except BaseException:
@@ -957,28 +965,28 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
                     # Replace error message with None.
                     image = None
-            elif check_ogc_backend(geoserver.BACKEND_PACKAGE) and instance.bbox:
-                instance_bbox = instance.bbox[0:4]
-                request_body = {
-                    'bbox': [str(coord) for coord in instance_bbox],
-                    'srid': instance.srid,
-                    'width': width,
-                    'height': height
-                }
 
-                if thumbnail_create_url:
-                    request_body['thumbnail_create_url'] = thumbnail_create_url
-                elif instance.alternate:
-                    request_body['layers'] = instance.alternate
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                if image is None and instance.bbox:
+                    instance_bbox = instance.bbox[0:4]
+                    request_body = {
+                        'bbox': [str(coord) for coord in instance_bbox],
+                        'srid': instance.srid,
+                        'width': width,
+                        'height': height
+                    }
+                    if thumbnail_create_url:
+                        request_body['thumbnail_create_url'] = thumbnail_create_url
+                    elif instance.alternate:
+                        request_body['layers'] = instance.alternate
+                    image = _prepare_thumbnail_body_from_opts(request_body)
 
-                image = _prepare_thumbnail_body_from_opts(request_body)
-
-            if image is not None:
-                instance.save_thumbnail(thumbnail_name, image=image)
-            else:
-                msg = 'Unable to obtain thumbnail for: %s' % instance
-                logger.error(msg)
-                # raise Exception(msg)
+                if image is not None:
+                    instance.save_thumbnail(thumbnail_name, image=image)
+                else:
+                    msg = 'Unable to obtain thumbnail for: %s' % instance
+                    logger.error(msg)
+                    # raise Exception(msg)
 
 
 # this is the original implementation of create_gs_thumbnail()

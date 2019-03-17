@@ -33,7 +33,7 @@ import tarfile
 import time
 import shutil
 import string
-import httplib2
+import requests
 import urlparse
 import urllib
 import gc
@@ -81,6 +81,8 @@ SIGN_CHARACTER = '$'
 SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')
 
 custom_slugify = Slugify(separator='_')
+
+requests.packages.urllib3.disable_warnings()
 
 signalnames = [
     'class_prepared',
@@ -1335,14 +1337,60 @@ def check_ogc_backend(backend_package):
     return False
 
 
-if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    ogc_server_settings = settings.OGC_SERVER['default']
-    http_client = httplib2.Http(
-        cache=getattr(
-            ogc_server_settings, 'CACHE', None), timeout=getattr(
-            ogc_server_settings, 'TIMEOUT', 1))
-else:
-    http_client = httplib2.Http(timeout=10)
+class HttpClient(object):
+    def __init__(self):
+        self.timeout = 10
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            ogc_server_settings = settings.OGC_SERVER['default']
+            self.timeout = getattr(ogc_server_settings, 'TIMEOUT', 10)
+
+    def request(self, url, method='GET', data=None, headers={}):
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
+            from geonode.geoserver.helpers import ogc_server_settings
+            _user, _password = ogc_server_settings.credentials
+            access_token = None
+            try:
+                from django.contrib.auth import get_user_model
+                from geonode.base.auth import get_or_create_token
+                _u = get_user_model().objects.get(username=_user)
+                access_token = get_or_create_token(_u)
+            except BaseException:
+                tb = traceback.format_exc()
+                logger.debug(tb)
+                pass
+
+            if access_token and not access_token.is_expired():
+                headers['Authorization'] = 'Bearer %s' % access_token.token
+            else:
+                valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
+                headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+
+        action = getattr(requests, method.lower(), None)
+        response = None
+        content = None
+        if action:
+            response = action(
+                url=urllib.unquote(url).decode('utf8'),
+                data=data,
+                headers=headers,
+                timeout=self.timeout)
+            content = response.content
+        else:
+            response = requests.get(url, headers=headers, timeout=self.timeout)
+            content = response.content
+
+        return (response, content)
+
+    def get(self, url):
+        response, content = self.request(url)
+        return response
+
+    def post(self, url, data=None, headers={}):
+        response, content = self.request(url, method='POST', data=data, headers=headers)
+        return response
+
+
+http_client = HttpClient()
 
 
 def get_dir_time_suffix():

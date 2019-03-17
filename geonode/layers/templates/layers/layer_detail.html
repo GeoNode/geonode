@@ -564,6 +564,7 @@
     {% if resource.get_legend %}
     <li class="list-group-item">
       <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
+      {% if resource.default_style %}
       {% for style in resource.styles.all %}
           {% if resource.default_style == style %}
               {% for legend in resource.get_legend %}
@@ -582,6 +583,11 @@
               {% endfor %}
           {% endif %}
       {% endfor %}
+      {% else %}
+        {% for legend in resource.get_legend %}
+            <p><img id="legend_icon" src="{{ legend.url }}"></p>
+        {% endfor %}
+      {% endif %}
     </li>
     {% endif %}
     <li class="list-group-item">
