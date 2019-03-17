@@ -55,10 +55,8 @@ from geoserver.support import DimensionInfo
 from geoserver.workspace import Workspace
 from gsimporter import Client
 from lxml import etree
-from owslib.util import http_post
 from owslib.wcs import WebCoverageService
 from owslib.wms import WebMapService
-
 from geonode import GeoNodeException
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.layers.models import Layer, Attribute, Style
@@ -816,8 +814,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         dft_url = server_url + ("%s?f=json" % layer.alternate)
         try:
             # The code below will fail if http_client cannot be imported
-            req = http_client.get(dft_url)
-            body = req.json()
+            req, body = http_client.get(dft_url)
+            body = json.loads(body)
             attribute_map = [[n["name"], _esri_types[n["type"]]]
                              for n in body["fields"] if n.get("name") and n.get("type")]
         except BaseException:
@@ -835,8 +833,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         try:
             # The code below will fail if http_client cannot be imported  or
             # WFS not supported
-            req = http_client.get(dft_url)
-            body = req.content
+            req, body = http_client.get(dft_url)
             doc = etree.fromstring(body)
             path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(
                 xsd="{http://www.w3.org/2001/XMLSchema}")
@@ -863,8 +860,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 "y": 1
             })
             try:
-                req = http_client.get(dft_url)
-                body = req.content
+                req, body = http_client.get(dft_url)
                 soup = BeautifulSoup(body)
                 for field in soup.findAll('th'):
                     if(field.string is None):
@@ -885,8 +881,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             "identifiers": layer.alternate.encode('utf-8')
         })
         try:
-            req = http_client.get(dc_url)
-            body = req.content
+            req, body = http_client.get(dc_url)
             doc = etree.fromstring(body)
             path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(
                 wcs="{http://www.opengis.net/wcs/1.1.1}")
@@ -1428,8 +1423,7 @@ class OGC_Servers_Handler(object):
 def get_wms():
     wms_url = ogc_server_settings.internal_ows + \
         "?service=WMS&request=GetCapabilities&version=1.1.0"
-    req = http_client.get(wms_url)
-    body = req.content
+    req, body = http_client.get(wms_url)
     _wms = WebMapService(wms_url, xml=body)
     return _wms
 
@@ -1438,24 +1432,30 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
     """Derive aggregate statistics from WPS endpoint"""
 
     # generate statistics using WPS
-    url = '%s/ows' % (ogc_server_settings.LOCATION)
-
-    # TODO: use owslib.wps.WebProcessingService for WPS interaction
-    # this requires GeoServer's WPS gs:Aggregate function to
-    # return a proper wps:ExecuteResponse
+    url = urljoin(ogc_server_settings.LOCATION, 'ows')
 
     request = render_to_string('layers/wps_execute_gs_aggregate.xml', {
                                'layer_name': layer_name,
                                'field': field
                                })
-    response = http_post(
-        url,
-        request,
-        timeout=ogc_server_settings.TIMEOUT,
-        username=ogc_server_settings.credentials.username,
-        password=ogc_server_settings.credentials.password)
+    u = urlsplit(url)
 
-    exml = etree.fromstring(response)
+    headers = {
+        'User-Agent': 'OWSLib (https://geopython.github.io/OWSLib)',
+        'Content-type': 'text/xml',
+        'Accept': 'text/xml',
+        'Accept-Language': 'en-US',
+        'Accept-Encoding': 'gzip,deflate',
+        'Host': u.netloc,
+    }
+
+    response, content = http_client.request(
+        url,
+        method='POST',
+        data=request,
+        headers=headers)
+
+    exml = etree.fromstring(content)
 
     result = {}
 
@@ -1475,23 +1475,6 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
     result['unique_values'] = 'NA'
 
     return result
-
-    # TODO: find way of figuring out threshold better
-    # Looks incomplete what is the purpose if the nex lines?
-
-    # if result['Count'] < 10000:
-    #     request = render_to_string('layers/wps_execute_gs_unique.xml', {
-    #                                'layer_name': 'geonode:%s' % layer_name,
-    #                                'field': field
-    #                                })
-
-    #     response = http_post(
-    #     url,
-    #     request,
-    #     timeout=ogc_server_settings.TIMEOUT,
-    #     username=ogc_server_settings.credentials.username,
-    #     password=ogc_server_settings.credentials.password)
-    #     exml = etree.fromstring(response)
 
 
 def _stylefilterparams_geowebcache_layer(layer_name):
@@ -1787,10 +1770,9 @@ def _render_thumbnail(req_body, width=240, height=180):
         data = data.encode('ASCII', 'ignore')
     data = unicode(data, errors='ignore').encode('UTF-8')
     try:
-        req = http_client.post(
+        req, content = http_client.post(
             url, data=data, headers={'Content-type': 'text/html'})
-        content = req.content
-    except Exception:
+    except BaseException:
         logging.warning('Error generating thumbnail')
         return
     return content

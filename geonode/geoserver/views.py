@@ -625,8 +625,7 @@ def layer_batch_download(request):
         }
 
         url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        req = http_client.post(url, data=json.dumps(fake_map))
-        content = req.content
+        req, content = http_client.post(url, data=json.dumps(fake_map))
         return HttpResponse(content, status=req.status_code)
 
     if request.method == 'GET':
@@ -637,8 +636,7 @@ def layer_batch_download(request):
 
         url = "%srest/process/batchDownload/status/%s" % (
             ogc_server_settings.LOCATION, download_id)
-        req = http_client.get(url)
-        content = req.content
+        req, content = http_client.get(url)
         return HttpResponse(content, status=req.status_code)
 
 
