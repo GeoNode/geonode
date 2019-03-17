@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from collections import namedtuple, defaultdict
 import datetime
 from decimal import Decimal
@@ -82,7 +81,7 @@ def check_geoserver_is_up():
        this is needed to be able to upload.
     """
     url = "%s" % ogc_server_settings.LOCATION
-    req = http_client.get(url)
+    req, content = http_client.get(url)
     msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
            'have started it.' % url)
     logger.debug(req)
@@ -1484,7 +1483,7 @@ def _stylefilterparams_geowebcache_layer(layer_name):
     url = '%sgwc/rest/layers/%s.xml' % (ogc_server_settings.LOCATION, layer_name)
 
     # read GWC configuration
-    req = http_client.get(url, headers=headers)
+    req, content = http_client.get(url, headers=headers)
     if req.status_code != 200:
         line = "Error {0} reading Style Filter Params GeoWebCache at {1}".format(
             req.status_code, url
@@ -1505,7 +1504,7 @@ def _stylefilterparams_geowebcache_layer(layer_name):
             param_filters[0].append(style_filters_elem)
             body = ET.tostring(tree)
     if body:
-        req = http_client.post(url, data=body, headers=headers)
+        req, content = http_client.post(url, data=body, headers=headers)
         if req.status_code != 200:
             line = "Error {0} writing Style Filter Params GeoWebCache at {1}".format(
                 req.status_code, url
@@ -1523,7 +1522,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         """.strip().format(layer_name)
     if not url:
         url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
-    req = http_client.post(url, data=body, headers=headers)
+    req, content = http_client.post(url, data=body, headers=headers)
 
     if req.status_code != 200:
         line = "Error {0} invalidating GeoWebCache at {1}".format(
