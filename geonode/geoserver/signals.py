@@ -90,13 +90,6 @@ def geoserver_post_save(instance, sender, **kwargs):
         instance_dict = model_to_dict(instance)
         payload = json_serializer_producer(instance_dict)
         producer.geoserver_upload_layer(payload)
-<<<<<<< HEAD
-        logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
-        try:
-            create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
-        except BaseException:
-            logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance.alternate))
-=======
         if instance.storeType != 'remoteStore':
             logger.info("... Creating Thumbnail for Layer [%s]" % (instance))
             try:
@@ -107,7 +100,6 @@ def geoserver_post_save(instance, sender, **kwargs):
                     check_bbox=True)
             except BaseException:
                 logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance))
->>>>>>> 8dcddb3760c517a6c56b25895e2771acba136b65
 
 
 def geoserver_post_save_local(instance, *args, **kwargs):
@@ -527,11 +519,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # some thumbnail generators will update thumbnail_url.  If so, don't
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
     if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
-<<<<<<< HEAD
-            'thumbnail_url' in kwargs['update_fields']:
-        logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
-        create_gs_thumbnail(instance, overwrite=True)
-=======
             'thumbnail_url' in kwargs['update_fields'] and instance.storeType != "remoteStore":
         logger.info("... Creating Thumbnail for Layer [%s]" % (instance))
         try:
@@ -541,7 +528,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                 overwrite=True)
         except BaseException:
             logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance))
->>>>>>> 8dcddb3760c517a6c56b25895e2771acba136b65
 
     try:
         Link.objects.filter(resource=instance.resourcebase_ptr, name='Legend').delete()
@@ -665,10 +651,6 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 
 def geoserver_post_save_map(instance, sender, **kwargs):
     instance.set_missing_info()
-<<<<<<< HEAD
-    logger.info("... Creating Thumbnail for Map [%s]" % (instance.title))
-    create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
-=======
     logger.info("... Creating Thumbnail for Map [%s]" % (instance))
     try:
         thumbnail_task.delay(
@@ -678,4 +660,3 @@ def geoserver_post_save_map(instance, sender, **kwargs):
             check_bbox=True)
     except BaseException:
         logger.warn("!WARNING! - Failure while Creating Thumbnail for Map [%s]" % (instance))
->>>>>>> 8dcddb3760c517a6c56b25895e2771acba136b65

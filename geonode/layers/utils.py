@@ -965,34 +965,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
                     # Replace error message with None.
                     image = None
-<<<<<<< HEAD
-            elif check_ogc_backend(geoserver.BACKEND_PACKAGE) and instance.bbox:
-            if isinstance(instance, Map):
-                instance = Map.objects.get(id=instance.id)
-            else:
-                instance = Layer.objects.get(id=instance.id)
-                instance_bbox = instance.bbox[0:4]
-                request_body = {
-                    'bbox': [str(coord) for coord in instance_bbox],
-                    'srid': instance.srid,
-                    'width': width,
-                    'height': height
-                }
-
-                if thumbnail_create_url:
-                    request_body['thumbnail_create_url'] = thumbnail_create_url
-                elif instance.alternate:
-                    request_body['layers'] = instance.alternate
-
-                image = _prepare_thumbnail_body_from_opts(request_body)
-
-            if image is not None:
-                instance.save_thumbnail(thumbnail_name, image=image)
-            else:
-                msg = 'Unable to obtain thumbnail for: %s' % instance
-                logger.error(msg)
-                # raise Exception(msg)
-=======
 
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                 if image is None and instance.bbox:
@@ -1015,7 +987,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                     msg = 'Unable to obtain thumbnail for: %s' % instance
                     logger.error(msg)
                     # raise Exception(msg)
->>>>>>> 8dcddb3760c517a6c56b25895e2771acba136b65
 
 
 # this is the original implementation of create_gs_thumbnail()
