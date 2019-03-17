@@ -35,6 +35,8 @@ except BaseException:
             self.fget = method
             return self
 
+from geonode import geoserver, qgis_server  # noqa
+from geonode.utils import check_ogc_backend
 from geonode.base.populate_test_data import create_models, remove_models
 
 import logging
@@ -51,7 +53,17 @@ class GeoNodeBaseTestSupport(TestCase):
     type = None
     obj_ids = []
 
-    fixtures = ['initial_data.json', 'group_test_data.json']
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+        fixtures = [
+            'initial_data.json',
+            'group_test_data.json',
+            'default_oauth_apps.json'
+        ]
+    else:
+        fixtures = [
+            'initial_data.json',
+            'group_test_data.json'
+        ]
 
     @classproperty
     def get_type(cls):

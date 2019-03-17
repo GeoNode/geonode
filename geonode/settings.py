@@ -472,6 +472,45 @@ LOGGING = {
 }
 
 #
+# Test Settings
+#
+
+on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
+core_tests = ast.literal_eval(os.environ.get('TEST_RUN_CORE', 'False'))
+internal_apps_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTERNAL_APPS', 'False'))
+integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'False'))
+integration_csw_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_CSW', 'False'))
+integration_bdd_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_BDD', 'False'))
+selenium_tests = ast.literal_eval(os.environ.get('TEST_RUN_SELENIUM', 'False'))
+
+# Setting a custom test runner to avoid running the tests for
+# some problematic 3rd party apps
+# Default Nose Test Suite
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Django 1.11 ParallelTestSuite
+TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
+TEST_RUNNER_KEEPDB = 0
+TEST_RUNNER_PARALLEL = 1
+
+# GeoNode test suite
+# TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
+# TEST_RUNNER_WORKER_MAX = 3
+# TEST_RUNNER_WORKER_COUNT = 'auto'
+# TEST_RUNNER_NOT_THREAD_SAFE = None
+# TEST_RUNNER_PARENT_TIMEOUT = 10
+# TEST_RUNNER_WORKER_TIMEOUT = 10
+
+TEST = 'test' in sys.argv
+INTEGRATION = 'geonode.tests.integration' in sys.argv
+
+# Arguments for the test runner
+NOSE_ARGS = [
+    '--nocapture',
+    '--detailed-errors',
+]
+
+#
 # Customizations to built in Django settings required by GeoNode
 #
 
@@ -657,44 +696,6 @@ ACTSTREAM_SETTINGS = {
 THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
     'THEME_ACCOUNT_CONTACT_EMAIL', 'admin@example.com'
 )
-
-#
-# Test Settings
-#
-
-on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
-core_tests = ast.literal_eval(os.environ.get('TEST_RUN_CORE', 'False'))
-internal_apps_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTERNAL_APPS', 'False'))
-integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'False'))
-integration_csw_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_CSW', 'False'))
-integration_bdd_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_BDD', 'False'))
-
-# Setting a custom test runner to avoid running the tests for
-# some problematic 3rd party apps
-# Default Nose Test Suite
-# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-# Django 1.11 ParallelTestSuite
-TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
-TEST_RUNNER_KEEPDB = 0
-TEST_RUNNER_PARALLEL = 1
-
-# GeoNode test suite
-# TEST_RUNNER = 'geonode.tests.suite.runner.DjangoParallelTestSuiteRunner'
-# TEST_RUNNER_WORKER_MAX = 3
-# TEST_RUNNER_WORKER_COUNT = 'auto'
-# TEST_RUNNER_NOT_THREAD_SAFE = None
-# TEST_RUNNER_PARENT_TIMEOUT = 10
-# TEST_RUNNER_WORKER_TIMEOUT = 10
-
-TEST = 'test' in sys.argv
-INTEGRATION = 'geonode.tests.integration' in sys.argv
-
-# Arguments for the test runner
-NOSE_ARGS = [
-    '--nocapture',
-    '--detailed-errors',
-]
 
 #
 # GeoNode specific settings

@@ -77,7 +77,9 @@ def bdd_server(request):
 @pytest.fixture(scope='function', autouse=True)
 def geonode_db_setup(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():
-        call_command('loaddata', 'sample_admin.json')
+        call_command('loaddata', 'initial_data.json')
+        call_command('loaddata', 'group_test_data.json')
+        call_command('loaddata', 'default_oauth_apps.json')
 
 
 # @pytest.fixture(scope='function', autouse=True)
