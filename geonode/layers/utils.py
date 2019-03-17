@@ -331,78 +331,84 @@ def is_raster(filename):
 
 
 def get_resolution(filename):
-    gtif = gdal.Open(filename)
-    gt = gtif.GetGeoTransform()
-    __, resx, __, __, __, resy = gt
-    resolution = '%s %s' % (resx, resy)
-    return resolution
+    try:
+        gtif = gdal.Open(filename)
+        gt = gtif.GetGeoTransform()
+        __, resx, __, __, __, resy = gt
+        resolution = '%s %s' % (resx, resy)
+        return resolution
+    except BaseException:
+        return None
 
 
 def get_bbox(filename):
     """Return bbox in the format [xmin,xmax,ymin,ymax]."""
     from django.contrib.gis.gdal import DataSource, SRSException
-    srid = None
-    bbox_x0, bbox_y0, bbox_x1, bbox_y1 = None, None, None, None
+    srid = 4326
+    bbox_x0, bbox_y0, bbox_x1, bbox_y1 = -180, -90, 180, 90
 
-    if is_vector(filename):
-        y_min = -90
-        y_max = 90
-        x_min = -180
-        x_max = 180
-        datasource = DataSource(filename)
-        layer = datasource[0]
-        bbox_x0, bbox_y0, bbox_x1, bbox_y1 = layer.extent.tuple
-        srs = layer.srs
-        try:
-            if not srs:
-                raise GeoNodeException('Invalid Projection. Layer is missing CRS!')
-            srs.identify_epsg()
-        except SRSException:
-            pass
-        epsg_code = srs.srid
-        # can't find epsg code, then check if bbox is within the 4326 boundary
-        if epsg_code is None and (x_min <= bbox_x0 <= x_max and
-                                  x_min <= bbox_x1 <= x_max and
-                                  y_min <= bbox_y0 <= y_max and
-                                  y_min <= bbox_y1 <= y_max):
-            # set default epsg code
-            epsg_code = '4326'
-        elif epsg_code is None:
-            # otherwise, stop the upload process
-            raise GeoNodeException(
-                "Invalid Layers. "
-                "Needs an authoritative SRID in its CRS to be accepted")
+    try:
+        if is_vector(filename):
+            y_min = -90
+            y_max = 90
+            x_min = -180
+            x_max = 180
+            datasource = DataSource(filename)
+            layer = datasource[0]
+            bbox_x0, bbox_y0, bbox_x1, bbox_y1 = layer.extent.tuple
+            srs = layer.srs
+            try:
+                if not srs:
+                    raise GeoNodeException('Invalid Projection. Layer is missing CRS!')
+                srs.identify_epsg()
+            except SRSException:
+                pass
+            epsg_code = srs.srid
+            # can't find epsg code, then check if bbox is within the 4326 boundary
+            if epsg_code is None and (x_min <= bbox_x0 <= x_max and
+                                      x_min <= bbox_x1 <= x_max and
+                                      y_min <= bbox_y0 <= y_max and
+                                      y_min <= bbox_y1 <= y_max):
+                # set default epsg code
+                epsg_code = '4326'
+            elif epsg_code is None:
+                # otherwise, stop the upload process
+                raise GeoNodeException(
+                    "Invalid Layers. "
+                    "Needs an authoritative SRID in its CRS to be accepted")
 
-        # eliminate default EPSG srid as it will be added when this function returned
-        srid = epsg_code if epsg_code else '4326'
-    elif is_raster(filename):
-        gtif = gdal.Open(filename)
-        gt = gtif.GetGeoTransform()
-        prj = gtif.GetProjection()
-        srs = osr.SpatialReference(wkt=prj)
-        cols = gtif.RasterXSize
-        rows = gtif.RasterYSize
+            # eliminate default EPSG srid as it will be added when this function returned
+            srid = epsg_code if epsg_code else '4326'
+        elif is_raster(filename):
+            gtif = gdal.Open(filename)
+            gt = gtif.GetGeoTransform()
+            prj = gtif.GetProjection()
+            srs = osr.SpatialReference(wkt=prj)
+            cols = gtif.RasterXSize
+            rows = gtif.RasterYSize
 
-        ext = []
-        xarr = [0, cols]
-        yarr = [0, rows]
+            ext = []
+            xarr = [0, cols]
+            yarr = [0, rows]
 
-        # Get the extent.
-        for px in xarr:
-            for py in yarr:
-                x = gt[0] + (px * gt[1]) + (py * gt[2])
-                y = gt[3] + (px * gt[4]) + (py * gt[5])
-                ext.append([x, y])
+            # Get the extent.
+            for px in xarr:
+                for py in yarr:
+                    x = gt[0] + (px * gt[1]) + (py * gt[2])
+                    y = gt[3] + (px * gt[4]) + (py * gt[5])
+                    ext.append([x, y])
 
-            yarr.reverse()
+                yarr.reverse()
 
-        # ext has four corner points, get a bbox from them.
-        # order is important, so make sure min and max is correct.
-        bbox_x0 = min(ext[0][0], ext[2][0])
-        bbox_y0 = min(ext[0][1], ext[2][1])
-        bbox_x1 = max(ext[0][0], ext[2][0])
-        bbox_y1 = max(ext[0][1], ext[2][1])
-        srid = srs.GetAuthorityCode(None) if srs else '4326'
+            # ext has four corner points, get a bbox from them.
+            # order is important, so make sure min and max is correct.
+            bbox_x0 = min(ext[0][0], ext[2][0])
+            bbox_y0 = min(ext[0][1], ext[2][1])
+            bbox_x1 = max(ext[0][0], ext[2][0])
+            bbox_y1 = max(ext[0][1], ext[2][1])
+            srid = srs.GetAuthorityCode(None) if srs else '4326'
+    except BaseException:
+        pass
 
     return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
 

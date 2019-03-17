@@ -5,12 +5,8 @@ ARG branch=2.14.x
 ARG plugins=
 
 # Install dependencies
-RUN apk update \
-    && apk upgrade \
-    && apk add --no-cache \
-        ca-certificates \
-    && update-ca-certificates 2>/dev/null || true
-RUN apk add openssl wget curl postgresql-client fontconfig ttf-ubuntu-font-family
+RUN apk add --no-cache ca-certificates openssl curl postgresql-client fontconfig ttf-ubuntu-font-family
+RUN update-ca-certificates
 
 WORKDIR /
 
@@ -19,13 +15,9 @@ WORKDIR /
 # then we replace it with the geonode build
 # TODO : this is a bit dirty..... can't we stat from vanilla Geoserver ?
 # TODO : merge into on step
-RUN echo "Download geoserver $version for geonode" && \
-    while [ 1 ]; do \
-      wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 --continue https://downloads.sourceforge.net/project/geoserver/GeoServer/$version/geoserver-$version-bin.zip --secure-protocol=TLSv1 --no-check-certificate; \
-      if [ $? = 0 ]; then break; fi; \
-      sleep 1s; \
-    done;
-RUN wget https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-$branch.war --no-check-certificate && \
+RUN echo "Download geoserver for geonode" && \
+    wget https://downloads.sourceforge.net/project/geoserver/GeoServer/$version/geoserver-$version-bin.zip && \
+    wget https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-$branch.war --no-check-certificate && \
     unzip geoserver-$version-bin.zip && \
     mv geoserver-$version geoserver && \
     rm /geoserver-$version-bin.zip && \
@@ -50,7 +42,7 @@ RUN ls /data
 WORKDIR /geoserver/
 
 # Add the entrypoint
-ADD docker-entrypoint.sh /docker-entrypoint.sh 
+ADD docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

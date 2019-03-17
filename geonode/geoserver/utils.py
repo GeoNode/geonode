@@ -19,7 +19,6 @@
 #########################################################################
 import logging
 import requests
-import traceback
 
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -46,29 +45,4 @@ def requests_retry(retries=3,
     adapter = HTTPAdapter(max_retries=retry)
     session.mount('http://', adapter)
     session.mount('https://', adapter)
-    return session
-
-
-def geoserver_requests_session():
-    from .helpers import ogc_server_settings
-    _user, _password = ogc_server_settings.credentials
-    session = requests.Session()
-    access_token = None
-    try:
-        from oauth2_provider.models import AccessToken, get_application_model
-        Application = get_application_model()
-        app = Application.objects.get(name='GeoServer')
-        access_token = AccessToken.objects.filter(
-            user__username=_user,
-            application=app).order_by('-expires').first()
-    except BaseException:
-        tb = traceback.format_exc()
-        logger.error(tb)
-
-    if access_token and not access_token.is_expired():
-        headers = {"Authorization": "Bearer %s" % access_token.token}
-        session.headers.update(headers)
-    else:
-        session.auth = (_user, _password)
-    session = requests_retry(session=session)
     return session
