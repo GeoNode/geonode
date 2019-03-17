@@ -82,6 +82,8 @@ SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')
 
 custom_slugify = Slugify(separator='_')
 
+requests.packages.urllib3.disable_warnings()
+
 signalnames = [
     'class_prepared',
     'm2m_changed',
