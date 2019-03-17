@@ -42,12 +42,3 @@ def requests_retry(retries=3,
     session.mount('http://', adapter)
     session.mount('https://', adapter)
     return session
-
-
-def geoserver_requests_session():
-    from .helpers import ogc_server_settings
-    _user, _password = ogc_server_settings.credentials
-    session = requests.Session()
-    session.auth = (_user, _password)
-    session = requests_retry(session=session)
-    return session

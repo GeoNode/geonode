@@ -42,7 +42,7 @@ RUN ls /data
 WORKDIR /geoserver/
 
 # Add the entrypoint
-ADD docker-entrypoint.sh /docker-entrypoint.sh 
+ADD docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

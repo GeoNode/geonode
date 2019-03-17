@@ -555,7 +555,10 @@ def geoserver_proxy(request,
                     logger.warn("Could not find any Layer %s on DB" % os.path.basename(request.path))
 
     kwargs = {'affected_layers': affected_layers}
-    return proxy(request, url=raw_url, response_callback=_response_callback, **kwargs)
+    import urllib
+    raw_url = urllib.unquote(raw_url).decode('utf8')
+
+    return proxy(request, url=raw_url, response_callback=_response_callback, timeout=3, **kwargs)
 
 
 def _response_callback(**kwargs):
@@ -571,7 +574,7 @@ def _response_callback(**kwargs):
             layer.save()
 
     # Replace Proxy URL
-    if content_type in ('application/xml', 'text/xml', 'text/plain'):
+    if content_type in ('application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json'):
         _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
         content = content\
             .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\

@@ -25,9 +25,8 @@ kombu==4.2.1 # python-kombu (4.1.0 in our ppa)
 coreschema==0.0.4 # python-coreschema (0.0.4 in our ppa)
 autoflake<=0.7 # python-autoflake (0.7 in our ppa)
 flake8>=2.6.2,<=3.5.0 # python-flake8 (2.5.4) FIXME
-pycodestyle<=2.3.0 # missing TODO
+pycodestyle<2.4.0 # missing TODO
 pyflakes>=1.2.3,<=1.6.0 # python-pyflakes (1.6.0 in our ppa) FIXME
-pep8<=1.7.1 # python-pep8 (1.7.1 in our ppa)
 boto<=2.38.0 # python-boto (2.38.0)
 six<1.11.0 # https://github.com/benjaminp/six/issues/210 (1.10.0 in ppa)
 tqdm==4.23.3
@@ -58,12 +57,12 @@ pycsw==2.2.0 # python-pycsw (1.10.1, 2.0.0, 2.0.3 in our ppa) FIXME
 SQLAlchemy==1.1.14 # required by pycsw==2.2.0
 Shapely==1.5.17 # python-shapely (1.5.13) FIXME
 mercantile==1.0.4
+geoip2==2.9.0
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
 # Django Apps
 dj-database-url<=0.4.2 # , python-dj-database-url (0.4.1 in ppa)
-Pinax<=0.9a2 # python-pinax (0.9a2 in our ppa)
 pinax-notifications==4.1.0 # (4.1.0 in our ppa)
 django-forms-bootstrap<=3.1.0 # python-django-forms-bootstrap (3.1.0 in our ppa)
 django-allauth<=0.34.0 # python-django-allauth (0.34.0 in our ppa)
@@ -114,7 +113,6 @@ timeout-decorator==0.4.0 # TODO
 psutil==5.4.8 # (3.4.2 in ppa)
 django-cors-headers<=2.2.0 # python-django-cors-headers (2.2.0 in our ppa)
 django-multi-email-field<=0.5.1 # python-django-multi-email-field (0.5.1 in our ppa)
-# WeasyPrint
 user-agents # python-user-agents (1.1.0 in our ppa)
 xmljson # python-xmljson (0.1.9 in our ppa)
 django-ipware<2.2
@@ -131,7 +129,6 @@ vectorformats==0.1
 #production
 uWSGI==2.0.17
 gunicorn==19.7.1
-#debug
 ipython==5.5.0
 docker==3.1.1
 invoke==0.22.1

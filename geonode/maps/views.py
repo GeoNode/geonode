@@ -1117,7 +1117,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
         # the path to geoserver backend continue here
         resp, content = http_client.request(url, 'POST', body=mapJson)
 
-        status = int(resp.status)
+        status = int(resp.status_code)
 
         if status == 200:
             map_status = json.loads(content)
@@ -1168,8 +1168,8 @@ def map_download_check(request):
             url = "%srest/process/batchDownload/status/%s" % (
                 ogc_server_settings.LOCATION, layer["id"])
             resp, content = http_client.request(url, 'GET')
-            status = resp.status
-            if resp.status == 400:
+            status = resp.status_code
+            if resp.status_code == 400:
                 return HttpResponse(
                     content="Something went wrong",
                     status=status)
