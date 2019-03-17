@@ -59,8 +59,8 @@ def post_save_resource(instance, sender, **kwargs):
     assigned to the current site and to the master site"""
     current_site = Site.objects.get_current()
     master_site = Site.objects.get(id=1)
-    SiteResources.objects.get(site=current_site).resources.add(instance.get_self_resource())
-    SiteResources.objects.get(site=master_site).resources.add(instance.get_self_resource())
+    SiteResources.objects.get_or_create(site=current_site)[0].resources.add(instance.get_self_resource())
+    SiteResources.objects.get_or_create(site=master_site)[0].resources.add(instance.get_self_resource())
 
 
 def post_save_site(instance, sender, **kwargs):
@@ -88,7 +88,7 @@ def post_save_profile(instance, sender, **kwargs):
     assigned to the current site only"""
     if not instance.is_superuser and kwargs['created'] and not kwargs['raw'] and instance.username != 'AnonymousUser':
         current_site = Site.objects.get_current()
-        SitePeople.objects.get(site=current_site).people.add(instance)
+        SitePeople.objects.get_or_create(site=current_site)[0].people.add(instance)
 
 
 def post_delete_profile(instance, sender, **kwargs):
