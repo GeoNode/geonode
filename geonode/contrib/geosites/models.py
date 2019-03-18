@@ -58,9 +58,9 @@ def post_save_resource(instance, sender, **kwargs):
     """Signal to ensure that every created resource is
     assigned to the current site and to the master site"""
     current_site = Site.objects.get_current()
-    master_site = Site.objects.get(id=1)
     SiteResources.objects.get(site=current_site).resources.add(instance.get_self_resource())
-    SiteResources.objects.get(site=master_site).resources.add(instance.get_self_resource())
+    if current_site.id != 1:
+        SiteResources.objects.get(site_id=1).resources.add(instance.get_self_resource())
 
 
 def post_save_site(instance, sender, **kwargs):
@@ -72,9 +72,9 @@ def post_save_site(instance, sender, **kwargs):
 def post_delete_resource(instance, sender, **kwargs):
     """Signal to ensure that on resource delete it get remove from the SiteResources as well"""
     current_site = Site.objects.get_current()
-    master_site = Site.objects.get(id=1)
     SiteResources.objects.get(site=current_site).resources.remove(instance.get_self_resource())
-    SiteResources.objects.get(site=master_site).resources.remove(instance.get_self_resource())
+    if current_site.id != 1:
+        SiteResources.objects.get(site_id=1).resources.remove(instance.get_self_resource())
 
 
 def post_delete_site(instance, sender, **kwargs):
