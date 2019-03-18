@@ -40,6 +40,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.maps.utils import fix_baselayers
 from geonode import geoserver, qgis_server
+from geonode.settings import on_travis
 from geonode.utils import default_map_config, check_ogc_backend
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.tests.utils import NotificationsTestsHelper
@@ -687,41 +688,42 @@ community."
     def test_rating_map_remove(self):
         """Test map rating is removed on map remove
         """
-        self.client.login(username=self.user, password=self.passwd)
+        if not on_travis:
+            self.client.login(username=self.user, password=self.passwd)
 
-        new_map = reverse('new_map_json')
+            new_map = reverse('new_map_json')
 
-        logger.info("Create the map")
-        response = self.client.post(
-            new_map,
-            data=self.viewer_config,
-            content_type="text/json")
-        map_id = int(json.loads(response.content)['id'])
-        ctype = ContentType.objects.get(model='map')
+            logger.info("Create the map")
+            response = self.client.post(
+                new_map,
+                data=self.viewer_config,
+                content_type="text/json")
+            map_id = int(json.loads(response.content)['id'])
+            ctype = ContentType.objects.get(model='map')
 
-        logger.info("Create the rating with the correct content type")
-        try:
-            OverallRating.objects.create(
-                category=1,
-                object_id=map_id,
-                content_type=ctype,
-                rating=3)
-        except BaseException as e:
-            logger.exception(e)
+            logger.info("Create the rating with the correct content type")
+            try:
+                OverallRating.objects.create(
+                    category=1,
+                    object_id=map_id,
+                    content_type=ctype,
+                    rating=3)
+            except BaseException as e:
+                logger.exception(e)
 
-        logger.info("Remove the map")
-        try:
-            response = self.client.post(reverse('map_remove', args=(map_id,)))
-            self.assertEquals(response.status_code, 302)
-        except BaseException as e:
-            logger.exception(e)
+            logger.info("Remove the map")
+            try:
+                response = self.client.post(reverse('map_remove', args=(map_id,)))
+                self.assertEquals(response.status_code, 302)
+            except BaseException as e:
+                logger.exception(e)
 
-        logger.info("Check there are no ratings matching the removed map")
-        try:
-            rating = OverallRating.objects.filter(object_id=map_id)
-            self.assertEquals(rating.count(), 0)
-        except BaseException as e:
-            logger.exception(e)
+            logger.info("Check there are no ratings matching the removed map")
+            try:
+                rating = OverallRating.objects.filter(object_id=map_id)
+                self.assertEquals(rating.count(), 0)
+            except BaseException as e:
+                logger.exception(e)
 
     @dump_func_name
     def test_fix_baselayers(self):
