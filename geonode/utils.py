@@ -25,7 +25,6 @@ import datetime
 import logging
 import os
 import re
-import uuid
 import subprocess
 import select
 import tempfile
@@ -59,9 +58,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection, transaction
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.serializers.json import DjangoJSONEncoder
-from django.utils import timezone
-
+from django.contrib.auth import get_user_model
 from geonode import geoserver, qgis_server, GeoNodeException  # noqa
+from geonode.base.auth import get_or_create_token
 
 try:
     import json
@@ -400,8 +399,7 @@ class GXPMapBase(object):
         """
 
         user = request.user if request else None
-        access_token = request.session['access_token'] if request and \
-            'access_token' in request.session else uuid.uuid1().hex
+        access_token = get_or_create_token(user)
 
         if self.id and len(added_layers) == 0:
             cfg = cache.get("viewer_json_" +
@@ -431,7 +429,7 @@ class GXPMapBase(object):
                     results.append(x)
             return results
 
-        configs = [l.source_config(access_token) for l in layers]
+        configs = [l.source_config(access_token.token) for l in layers]
 
         i = 0
         for source in uniqify(configs):
@@ -581,7 +579,7 @@ class GXPLayerBase(object):
 
             my_url = urlparse.urlsplit(self.ows_url)
 
-            if access_token and my_url.netloc in urls:
+            if str(access_token) and my_url.netloc in urls:
                 request_params = urlparse.parse_qs(my_url.query)
                 if 'access_token' in request_params:
                     del request_params['access_token']
@@ -1062,93 +1060,6 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     return True, None, list_col
 
 
-def set_attributes(
-        layer,
-        attribute_map,
-        overwrite=False,
-        attribute_stats=None):
-    """ *layer*: a geonode.layers.models.Layer instance
-        *attribute_map*: a list of 2-lists specifying attribute names and types,
-            example: [ ['id', 'Integer'], ... ]
-        *overwrite*: replace existing attributes with new values if name/type matches.
-        *attribute_stats*: dictionary of return values from get_attribute_statistics(),
-            of the form to get values by referencing attribute_stats[<layer_name>][<field_name>].
-    """
-    # Some import dependency tweaking; functions in this module are used before
-    # models are fully set up so Attribute has to be imported here.
-    from geonode.layers.models import Attribute
-
-    # we need 3 more items; description, attribute_label, and display_order
-    attribute_map_dict = {
-        'field': 0,
-        'ftype': 1,
-        'description': 2,
-        'label': 3,
-        'display_order': 4,
-    }
-    for attribute in attribute_map:
-        attribute.extend((None, None, 0))
-
-    attributes = layer.attribute_set.all()
-    # Delete existing attributes if they no longer exist in an updated layer
-    for la in attributes:
-        lafound = False
-        for attribute in attribute_map:
-            field, ftype, description, label, display_order = attribute
-            if field == la.attribute:
-                lafound = True
-                # store description and attribute_label in attribute_map
-                attribute[attribute_map_dict['description']] = la.description
-                attribute[attribute_map_dict['label']] = la.attribute_label
-                attribute[attribute_map_dict['display_order']
-                          ] = la.display_order
-        if overwrite or not lafound:
-            logger.debug(
-                "Going to delete [%s] for [%s]",
-                la.attribute,
-                layer.name.encode('utf-8'))
-            la.delete()
-
-    # Add new layer attributes if they don't already exist
-    if attribute_map is not None:
-        iter = len(Attribute.objects.filter(layer=layer)) + 1
-        for attribute in attribute_map:
-            field, ftype, description, label, display_order = attribute
-            if field is not None:
-                la, created = Attribute.objects.get_or_create(
-                    layer=layer, attribute=field, attribute_type=ftype,
-                    description=description, attribute_label=label,
-                    display_order=display_order)
-                if created:
-                    if (not attribute_stats or layer.name not in attribute_stats or
-                            field not in attribute_stats[layer.name]):
-                        result = None
-                    else:
-                        result = attribute_stats[layer.name][field]
-
-                    if result is not None:
-                        logger.debug("Generating layer attribute statistics")
-                        la.count = result['Count']
-                        la.min = result['Min']
-                        la.max = result['Max']
-                        la.average = result['Average']
-                        la.median = result['Median']
-                        la.stddev = result['StandardDeviation']
-                        la.sum = result['Sum']
-                        la.unique_values = result['unique_values']
-                        la.last_stats_updated = datetime.datetime.now(timezone.get_current_timezone())
-                    la.visible = ftype.find("gml:") != 0
-                    la.display_order = iter
-                    la.save()
-                    iter += 1
-                    logger.debug(
-                        "Created [%s] attribute for [%s]",
-                        field,
-                        layer.name.encode('utf-8'))
-    else:
-        logger.debug("No attributes found")
-
-
 def id_to_obj(id_):
     if id_ == id_none:
         return None
@@ -1340,21 +1251,21 @@ def check_ogc_backend(backend_package):
 class HttpClient(object):
     def __init__(self):
         self.timeout = 10
+        self.username = 'admin'
+        self.password = 'admin'
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             ogc_server_settings = settings.OGC_SERVER['default']
-            self.timeout = getattr(ogc_server_settings, 'TIMEOUT', 10)
+            self.timeout = ogc_server_settings['TIMEOUT'] if 'TIMEOUT' in ogc_server_settings else 10
+            self.username = ogc_server_settings['USER'] if 'USER' in ogc_server_settings else 'admin'
+            self.password = ogc_server_settings['PASSWORD'] if 'PASSWORD' in ogc_server_settings else 'geoserver'
 
     def request(self, url, method='GET', data=None, headers={}):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
-            from geonode.geoserver.helpers import ogc_server_settings
-            _user, _password = ogc_server_settings.credentials
-            valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
+            valid_uname_pw = base64.b64encode(
+                b"%s:%s" % (self.username, self.password)).decode("ascii")
             headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
-
             try:
-                from django.contrib.auth import get_user_model
-                from geonode.base.auth import get_or_create_token
-                _u = get_user_model().objects.get(username=_user)
+                _u = get_user_model().objects.get(username=self.username)
                 access_token = get_or_create_token(_u)
                 if access_token and not access_token.is_expired():
                     headers['Authorization'] = 'Bearer %s' % access_token.token
@@ -1363,9 +1274,12 @@ class HttpClient(object):
                 logger.debug(tb)
                 pass
 
-        action = getattr(requests, method.lower(), None)
         response = None
         content = None
+        session = requests.Session()
+        adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
+        session.mount("{scheme}://".format(scheme=urlparse.urlsplit(url).scheme), adapter)
+        action = getattr(session, method.lower(), None)
         if action:
             response = action(
                 url=urllib.unquote(url).decode('utf8'),
@@ -1373,7 +1287,7 @@ class HttpClient(object):
                 headers=headers,
                 timeout=self.timeout)
         else:
-            response = requests.get(url, headers=headers, timeout=self.timeout)
+            response = session.get(url, headers=headers, timeout=self.timeout)
 
         try:
             content = response.content

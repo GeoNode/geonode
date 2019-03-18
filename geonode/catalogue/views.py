@@ -31,6 +31,7 @@ from guardian.shortcuts import get_objects_for_user
 from geonode.catalogue.backends.pycsw_local import CONFIGURATION
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer
+from geonode.base.auth import get_or_create_token
 from geonode.base.models import ContactRole, SpatialRepresentationType
 from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile
@@ -50,23 +51,24 @@ def csw_global_dispatch(request):
     mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
 
     access_token = None
-    if request and 'access_token' in request.session:
-        access_token = request.session['access_token']
+    if request and request.user:
+        access_token = get_or_create_token(request.user)
+        if access_token and access_token.is_expired():
+            access_token = None
 
     absolute_uri = ('%s' % request.build_absolute_uri())
     query_string = ('%s' % request.META['QUERY_STRING'])
-
-    if access_token and 'access_token' not in query_string:
-        absolute_uri = ('%s&access_token=%s' % (absolute_uri, access_token))
-        query_string = ('%s&access_token=%s' % (query_string, access_token))
-
     env = request.META.copy()
+
+    if access_token and not access_token.is_expired():
+        env.update({'access_token': access_token.token})
+        if 'access_token' not in query_string:
+            absolute_uri = ('%s&access_token=%s' % (absolute_uri, access_token.token))
+            query_string = ('%s&access_token=%s' % (query_string, access_token.token))
+
     env.update({'local.app_root': os.path.dirname(__file__),
                 'REQUEST_URI': absolute_uri,
                 'QUERY_STRING': query_string})
-
-    if access_token:
-        env.update({'access_token': access_token})
 
     # Save original filter before doing anything
     mdict_filter = mdict['repository']['filter']
@@ -170,7 +172,7 @@ def csw_global_dispatch(request):
         for prefix, uri in spaces.iteritems():
             ET.register_namespace(prefix, uri)
 
-        if access_token:
+        if access_token and not access_token.is_expired():
             tree = ET.fromstring(content)
             for online_resource in tree.findall(
                     '*//gmd:CI_OnlineResource', spaces):
@@ -182,7 +184,7 @@ def csw_global_dispatch(request):
                                 url.text += "?"
                             else:
                                 url.text += "&"
-                            url.text += ("access_token=%s" % (access_token))
+                            url.text += ("access_token=%s" % (access_token.token))
                             url.set('updated', 'yes')
                 except BaseException:
                     pass
