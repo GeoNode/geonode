@@ -204,8 +204,10 @@ def proxy(request, url=None, response_callback=None,
     status = None
     content_type = None
 
-    import requests
-    action = getattr(requests, request.method.lower(), None)
+    session = requests.Session()
+    adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
+    session.mount("{scheme}://".format(scheme=site_url.scheme), adapter)
+    action = getattr(session, request.method.lower(), None)
     if action:
         try:
             response = action(
