@@ -719,7 +719,7 @@ community."
         logger.info("Check there are no ratings matching the removed map")
         try:
             rating = OverallRating.objects.filter(object_id=map_id)
-            self.assertTrue(rating.count() > 0)
+            self.assertEquals(rating.count(), 0)
         except BaseException as e:
             logger.exception(e)
 
