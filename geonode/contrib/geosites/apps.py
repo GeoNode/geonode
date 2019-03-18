@@ -18,8 +18,8 @@ def create_default_site_relations(app_config, verbosity=2, interactive=True, usi
         return
 
     for site in Site.objects.all():
-        SiteResources.objects.create(site=site)
-        SitePeople.objects.create(site=site)
+        SiteResources.objects.get_or_create(site=site)
+        SitePeople.objects.get_or_create(site=site)
 
 
 class GeositesConfig(AppConfig):
