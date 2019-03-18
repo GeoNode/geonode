@@ -206,7 +206,7 @@ install:
       sudo update-java-alternatives --set java-8-oracle;
       export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
       export PATH=$JAVA_HOME'bin/java':$PATH
-      sudo add-apt-repository ppa:jonathonf/backports;
+      sudo apt-add-repository ppa:jonathonf/backports;
       sudo apt-get -y update && sudo apt-get install -y sqlite3;
       sqlite3 --version;
       pip install -r requirements.txt --upgrade;
