@@ -44,6 +44,7 @@ from django.utils.translation import ugettext as _
 from guardian.shortcuts import get_objects_for_user
 from .utils import requests_retry
 from geonode.base.models import ResourceBase
+from geonode.base.auth import get_or_create_token
 from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
@@ -660,7 +661,7 @@ def resolve_user(request):
                                 content_type="text/plain")
 
     if not any([user, geoserver, superuser]
-               ) and not request.user.is_anonymous():
+               ) and not request.user.is_anonymous:
         user = request.user.username
         superuser = request.user.is_superuser
 
@@ -833,12 +834,11 @@ def get_capabilities(request, layerid=None, user=None,
     for layer in layers:
         if request.user.has_perm('view_resourcebase',
                                  layer.get_self_resource()):
-            access_token = None
-            if request and 'access_token' in request.session:
-                access_token = request.session['access_token']
+            access_token = get_or_create_token(request.user)
+            if access_token and not access_token.is_expired():
+                access_token = access_token.token
             else:
                 access_token = None
-
             try:
                 workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
                 layercap = get_layer_capabilities(layer,

@@ -40,62 +40,90 @@ def make_token_expiration(seconds=86400):
 
 
 def create_auth_token(user, client="GeoServer"):
+    if not user or user.is_anonymous:
+        return None
     expires = make_token_expiration()
-    Application = get_application_model()
-    app = Application.objects.get(name=client)
-    (access_token, created) = AccessToken.objects.get_or_create(
-        user=user,
-        application=app,
-        expires=expires,
-        token=generate_token())
-    return access_token
-
-
-def extend_token(token):
-    access_token = AccessToken.objects.get(id=token.id)
-    expires = make_token_expiration()
-    access_token.expires = expires
-    access_token.save()
-
-
-def get_auth_token(user, client="GeoServer"):
-    Application = get_application_model()
-    app = Application.objects.get(name=client)
-    access_token = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
-    return access_token
-
-
-def get_or_create_token(user, client="GeoServer"):
-    application = get_application_model()
-    app = application.objects.get(name=client)
-
-    # Let's create the new AUTH TOKEN
-    existing_token = None
     try:
-        existing_token = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
-        if existing_token and existing_token.is_expired():
-            existing_token.delete()
-            existing_token = None
+        Application = get_application_model()
+        app = Application.objects.get(name=client)
+        (access_token, created) = AccessToken.objects.get_or_create(
+            user=user,
+            application=app,
+            expires=expires,
+            token=generate_token())
+        return access_token
     except BaseException:
-        existing_token = None
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
 
-    if not existing_token:
-        token = create_auth_token(user, client)
-    else:
-        token = existing_token
 
-    return token
+def extend_token(token):
+    try:
+        access_token = AccessToken.objects.get(id=token.id)
+        expires = make_token_expiration()
+        access_token.expires = expires
+        access_token.save()
+    except BaseException:
+        tb = traceback.format_exc()
+        if tb:
+            logger.debug(tb)
+
+
+def get_auth_token(user, client="GeoServer"):
+    if not user or user.is_anonymous:
+        return None
+    try:
+        Application = get_application_model()
+        app = Application.objects.get(name=client)
+        access_token = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
+        return access_token
+    except BaseException:
+        tb = traceback.format_exc()
+        if tb:
+            logger.debug(tb)
+
+
+def get_or_create_token(user, client="GeoServer"):
+    if not user or user.is_anonymous:
+        return None
+    try:
+        application = get_application_model()
+        app = application.objects.get(name=client)
+
+        # Let's create the new AUTH TOKEN
+        existing_token = None
+        try:
+            existing_token = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
+            if existing_token and existing_token.is_expired():
+                existing_token.delete()
+                existing_token = None
+        except BaseException:
+            existing_token = None
+            tb = traceback.format_exc()
+            if tb:
+                logger.debug(tb)
+
+        if not existing_token:
+            token = create_auth_token(user, client)
+        else:
+            token = existing_token
+
+        return token
+    except BaseException:
+        tb = traceback.format_exc()
+        if tb:
+            logger.debug(tb)
 
 
 def delete_old_tokens(user, client='GeoServer'):
-    application = get_application_model()
-    app = application.objects.get(name=client)
-
-    # Lets delete the old one
+    if not user or user.is_anonymous:
+        return None
     try:
+        application = get_application_model()
+        app = application.objects.get(name=client)
+
+        # Lets delete the old one
         old_tokens = AccessToken.objects.filter(user=user, application=app).order_by('-expires')
         for old in old_tokens:
             if old.is_expired():
@@ -133,6 +161,9 @@ def get_token_object_from_session(session):
         try:
             return AccessToken.objects.get(token=get_session_token(session))
         except BaseException:
+            tb = traceback.format_exc()
+            if tb:
+                logger.debug(tb)
             del session['access_token']
             session.modified = True
             return None

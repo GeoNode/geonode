@@ -35,12 +35,12 @@ from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
 from django.contrib.auth import get_user_model
 from django.conf import settings
-from geonode.settings import on_travis
 from geonode.decorators import on_ogc_backend, dump_func_name
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.maps.utils import fix_baselayers
 from geonode import geoserver, qgis_server
+from geonode.settings import on_travis
 from geonode.utils import default_map_config, check_ogc_backend
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.tests.utils import NotificationsTestsHelper
@@ -721,7 +721,7 @@ community."
             logger.info("Check there are no ratings matching the removed map")
             try:
                 rating = OverallRating.objects.filter(object_id=map_id)
-                self.assertTrue(rating.count() > 0)
+                self.assertEquals(rating.count(), 0)
             except BaseException as e:
                 logger.exception(e)
 
