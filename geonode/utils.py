@@ -1253,21 +1253,26 @@ def check_ogc_backend(backend_package):
 class HttpClient(object):
     def __init__(self):
         self.timeout = 10
+        self.pool_connections = 10
+        self.pool_maxsize = 10
         self.username = 'admin'
         self.password = 'admin'
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             ogc_server_settings = settings.OGC_SERVER['default']
             self.timeout = ogc_server_settings['TIMEOUT'] if 'TIMEOUT' in ogc_server_settings else 10
+            self.pool_connections = ogc_server_settings['POOL_CONNECTIONS'] if \
+            'POOL_CONNECTIONS' in ogc_server_settings else 10
+            self.pool_maxsize = ogc_server_settings['POOL_MAXSIZE'] if 'POOL_MAXSIZE' in ogc_server_settings else 10
             self.username = ogc_server_settings['USER'] if 'USER' in ogc_server_settings else 'admin'
             self.password = ogc_server_settings['PASSWORD'] if 'PASSWORD' in ogc_server_settings else 'geoserver'
 
-    def request(self, url, method='GET', data=None, headers={}):
+    def request(self, url, method='GET', data=None, headers={}, stream=False, timeout=None, user=None):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
             valid_uname_pw = base64.b64encode(
                 b"%s:%s" % (self.username, self.password)).decode("ascii")
             headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
             try:
-                _u = get_user_model().objects.get(username=self.username)
+                _u = user or get_user_model().objects.get(username=self.username)
                 access_token = get_or_create_token(_u)
                 if access_token and not access_token.is_expired():
                     headers['Authorization'] = 'Bearer %s' % access_token.token
@@ -1279,7 +1284,10 @@ class HttpClient(object):
         response = None
         content = None
         session = requests.Session()
-        adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
+        adapter = requests.adapters.HTTPAdapter(
+            pool_connections=self.pool_connections,
+            pool_maxsize=self.pool_maxsize
+        )
         session.mount("{scheme}://".format(scheme=urlparse.urlsplit(url).scheme), adapter)
         action = getattr(session, method.lower(), None)
         if action:
@@ -1287,22 +1295,35 @@ class HttpClient(object):
                 url=urllib.unquote(url).decode('utf8'),
                 data=data,
                 headers=headers,
-                timeout=self.timeout)
+                timeout=timeout or self.timeout,
+                stream=stream)
         else:
             response = session.get(url, headers=headers, timeout=self.timeout)
 
         try:
-            content = response.content
+            content = response.content if not stream else response.raw
         except BaseException:
             content = None
 
         return (response, content)
 
-    def get(self, url):
-        return self.request(url)
+    def get(self, url, data=None, headers={}, stream=False, timeout=None, user=None):
+        return self.request(url,
+                            method='GET',
+                            data=data,
+                            headers=headers,
+                            timeout=timeout or self.timeout,
+                            stream=stream,
+                            user=user)
 
-    def post(self, url, data=None, headers={}):
-        return self.request(url, method='POST', data=data, headers=headers)
+    def post(self, url, data=None, headers={}, stream=False, timeout=None, user=None):
+        return self.request(url,
+                            method='POST',
+                            data=data,
+                            headers=headers,
+                            timeout=timeout or self.timeout,
+                            stream=stream,
+                            user=user)
 
 
 http_client = HttpClient()
