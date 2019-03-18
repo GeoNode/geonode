@@ -788,16 +788,18 @@ def test(options):
     """
     if on_travis:
         if core_tests:
-            _apps = tuple(GEONODE_CORE_APPS)
+            _apps = GEONODE_CORE_APPS
         if internal_apps_tests:
-            _apps = tuple(GEONODE_INTERNAL_APPS)
+            _apps = GEONODE_INTERNAL_APPS
     else:
-        _apps = tuple(GEONODE_APPS)
+        _apps = GEONODE_APPS
 
-    sh("%s manage.py test %s.tests --noinput %s %s" % (options.get('prefix'),
-                                                       '.tests '.join(_apps),
-                                                       _keepdb,
-                                                       _parallel))
+    for _app in _apps:
+        if _app and len(_app) > 0 and 'geonode' in _app:
+            sh("%s manage.py test %s.tests --noinput %s %s" % (options.get('prefix'),
+                                                               _app,
+                                                               _keepdb,
+                                                               _parallel))
 
 
 @task
