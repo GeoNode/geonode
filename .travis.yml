@@ -22,6 +22,9 @@ addons:
     packages:
       - postgresql-9.6-postgis-2.4
       - nginx
+      - sqlite3
+    sources:
+      - travis-ci/sqlite3
   firefox: "latest-esr"
 
 matrix:
