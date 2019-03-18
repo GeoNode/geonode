@@ -430,7 +430,7 @@ def map_embed(
             'base.view_resourcebase',
             _PERMISSION_MSG_VIEW)
 
-    layers = MapLayer.objects.filter(map=mapid)
+        layers = MapLayer.objects.filter(map=mapid)
         if snapshot is None:
             config = map_obj.viewer_json(request)
         else:
