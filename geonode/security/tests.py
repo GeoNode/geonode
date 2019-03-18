@@ -34,7 +34,6 @@ from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
 from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
 from geonode import geoserver
-from geonode.settings import on_travis
 from geonode.base.populate_test_data import all_public
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.people.models import Profile

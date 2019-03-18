@@ -35,7 +35,6 @@ from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
 from django.contrib.auth import get_user_model
 from django.conf import settings
-from geonode.settings import on_travis
 from geonode.decorators import on_ogc_backend, dump_func_name
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
