@@ -1348,22 +1348,20 @@ class HttpClient(object):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
             from geonode.geoserver.helpers import ogc_server_settings
             _user, _password = ogc_server_settings.credentials
-            access_token = None
+            valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
+            headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+
             try:
                 from django.contrib.auth import get_user_model
                 from geonode.base.auth import get_or_create_token
                 _u = get_user_model().objects.get(username=_user)
                 access_token = get_or_create_token(_u)
+                if access_token and not access_token.is_expired():
+                    headers['Authorization'] = 'Bearer %s' % access_token.token
             except BaseException:
                 tb = traceback.format_exc()
                 logger.debug(tb)
                 pass
-
-            if access_token and not access_token.is_expired():
-                headers['Authorization'] = 'Bearer %s' % access_token.token
-            else:
-                valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
-                headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
 
         action = getattr(requests, method.lower(), None)
         response = None
@@ -1374,20 +1372,21 @@ class HttpClient(object):
                 data=data,
                 headers=headers,
                 timeout=self.timeout)
-            content = response.content
         else:
             response = requests.get(url, headers=headers, timeout=self.timeout)
+
+        try:
             content = response.content
+        except BaseException:
+            content = None
 
         return (response, content)
 
     def get(self, url):
-        response, content = self.request(url)
-        return response
+        return self.request(url)
 
     def post(self, url, data=None, headers={}):
-        response, content = self.request(url, method='POST', data=data, headers=headers)
-        return response
+        return self.request(url, method='POST', data=data, headers=headers)
 
 
 http_client = HttpClient()
