@@ -400,6 +400,8 @@ class GXPMapBase(object):
 
         user = request.user if request else None
         access_token = get_or_create_token(user)
+        if access_token and not access_token.is_expired():
+            access_token = access_token.token
 
         if self.id and len(added_layers) == 0:
             cfg = cache.get("viewer_json_" +
@@ -429,7 +431,7 @@ class GXPMapBase(object):
                     results.append(x)
             return results
 
-        configs = [l.source_config(access_token.token) for l in layers]
+        configs = [l.source_config(access_token) for l in layers]
 
         i = 0
         for source in uniqify(configs):

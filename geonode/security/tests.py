@@ -41,14 +41,13 @@ from geonode.people.models import Profile
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.layers.populate_layers_data import create_layer_data
 from geonode.groups.models import Group
 from geonode.utils import check_ogc_backend
 from geonode.tests.utils import check_layer
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.helpers import gs_slurp
 from geonode.geoserver.upload import geoserver_upload
-
+from geonode.layers.populate_layers_data import create_layer_data
 
 from .utils import (purge_geofence_all,
                     get_users_with_perms,
@@ -1131,8 +1130,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             self.assertEquals(response.status_code, 302)
 
     def test_map_download(self):
+        """Test the correct permissions on layers on map download"""
         if not on_travis:
-            """Test the correct permissions on layers on map download"""
             create_maplayers()
             # Get a Map
             the_map = Map.objects.get(title='GeoNode Default Map')

@@ -17,9 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from geonode.layers.models import Style, Attribute, Layer
 from django.conf import settings
+from geonode.layers.models import Style, Attribute, Layer
 
 ogc_location = settings.OGC_SERVER['default']['LOCATION']
 
