@@ -182,8 +182,8 @@ before_install:
       scripts/misc/qgis_server_setup.sh before_install;
       chmod +x scripts/misc/bdd_setup.sh;
       scripts/misc/bdd_setup.sh before_install;
-      sqlite3 --version
-      sudo apt-get autoremove sqlite3
+      sqlite3 --version;
+      sudo apt-get autoremove sqlite3;
     fi
 
 install:
@@ -206,8 +206,9 @@ install:
       sudo update-java-alternatives --set java-8-oracle;
       export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
       export PATH=$JAVA_HOME'bin/java':$PATH
-      sudo add-apt-repository ppa:jonathonf/backports
-      sudo apt-get -y update && sudo apt-get install -y sqlite3
+      sudo add-apt-repository ppa:jonathonf/backports;
+      sudo apt-get -y update && sudo apt-get install -y sqlite3;
+      sqlite3 --version;
       pip install -r requirements.txt --upgrade;
       pip install -e . --upgrade;
       pip install pygdal==`gdal-config --version`.*;
