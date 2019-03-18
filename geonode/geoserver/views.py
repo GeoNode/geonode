@@ -661,7 +661,7 @@ def resolve_user(request):
                                 content_type="text/plain")
 
     if not any([user, geoserver, superuser]
-               ) and not request.user.is_anonymous():
+               ) and not request.user.is_anonymous:
         user = request.user.username
         superuser = request.user.is_superuser
 

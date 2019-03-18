@@ -40,6 +40,8 @@ def make_token_expiration(seconds=86400):
 
 
 def create_auth_token(user, client="GeoServer"):
+    if not user or user.is_anonymous:
+        return None
     expires = make_token_expiration()
     Application = get_application_model()
     app = Application.objects.get(name=client)
@@ -59,6 +61,8 @@ def extend_token(token):
 
 
 def get_auth_token(user, client="GeoServer"):
+    if not user or user.is_anonymous:
+        return None
     Application = get_application_model()
     app = Application.objects.get(name=client)
     access_token = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
@@ -66,6 +70,8 @@ def get_auth_token(user, client="GeoServer"):
 
 
 def get_or_create_token(user, client="GeoServer"):
+    if not user or user.is_anonymous:
+        return None
     application = get_application_model()
     app = application.objects.get(name=client)
 
@@ -91,6 +97,8 @@ def get_or_create_token(user, client="GeoServer"):
 
 
 def delete_old_tokens(user, client='GeoServer'):
+    if not user or user.is_anonymous:
+        return None
     application = get_application_model()
     app = application.objects.get(name=client)
 
