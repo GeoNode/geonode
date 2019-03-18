@@ -585,6 +585,15 @@ MIDDLEWARE_CLASSES = (
 )
 
 # Security stuff
+SESSION_EXPIRED_CONTROL_ENABLED = ast.literal_eval(os.environ.get('SESSION_EXPIRED_CONTROL_ENABLED', 'True'))
+
+if SESSION_EXPIRED_CONTROL_ENABLED:
+    MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+    # This middleware checks for ACCESS_TOKEN validity and if expired forces
+    # user logout
+    MIDDLEWARE_CLASSES += \
+            ('geonode.security.middleware.SessionControlMiddleware',)
+
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False
@@ -793,7 +802,7 @@ OGC_SERVER = {
         'GEOGIG_ENABLED': False,
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
-        'WPS_ENABLED': False,
+        'WPS_ENABLED': True,
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log'
         % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
