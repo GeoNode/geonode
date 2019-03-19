@@ -39,12 +39,13 @@ import gc
 import weakref
 import traceback
 
-from math import atan, exp, log, pi, sin, tan, floor
-from contextlib import closing
-from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
-from StringIO import StringIO
 from osgeo import ogr
 from slugify import Slugify
+from StringIO import StringIO
+from contextlib import closing
+from math import atan, exp, log, pi, sin, tan, floor
+from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
+from requests.packages.urllib3.util.retry import Retry
 
 from django.conf import settings
 from django.core.cache import cache
@@ -1252,17 +1253,23 @@ def check_ogc_backend(backend_package):
 
 class HttpClient(object):
     def __init__(self):
-        self.timeout = 10
-        self.pool_connections = 10
+        self.timeout = 5
+        self.retries = 5
         self.pool_maxsize = 10
+        self.backoff_factor = 0.3
+        self.pool_connections = 10
+        self.status_forcelist = (500, 502, 503, 504)
         self.username = 'admin'
         self.password = 'admin'
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             ogc_server_settings = settings.OGC_SERVER['default']
-            self.timeout = ogc_server_settings['TIMEOUT'] if 'TIMEOUT' in ogc_server_settings else 10
+            self.timeout = ogc_server_settings['TIMEOUT'] if 'TIMEOUT' in ogc_server_settings else 5
+            self.retries = ogc_server_settings['MAX_RETRIES'] if 'MAX_RETRIES' in ogc_server_settings else 5
+            self.backoff_factor = ogc_server_settings['BACKOFF_FACTOR'] if \
+            'BACKOFF_FACTOR' in ogc_server_settings else 0.3
+            self.pool_maxsize = ogc_server_settings['POOL_MAXSIZE'] if 'POOL_MAXSIZE' in ogc_server_settings else 10
             self.pool_connections = ogc_server_settings['POOL_CONNECTIONS'] if \
             'POOL_CONNECTIONS' in ogc_server_settings else 10
-            self.pool_maxsize = ogc_server_settings['POOL_MAXSIZE'] if 'POOL_MAXSIZE' in ogc_server_settings else 10
             self.username = ogc_server_settings['USER'] if 'USER' in ogc_server_settings else 'admin'
             self.password = ogc_server_settings['PASSWORD'] if 'PASSWORD' in ogc_server_settings else 'geoserver'
 
@@ -1284,9 +1291,17 @@ class HttpClient(object):
         response = None
         content = None
         session = requests.Session()
+        retry = Retry(
+            total=self.retries,
+            read=self.retries,
+            connect=self.retries,
+            backoff_factor=self.backoff_factor,
+            status_forcelist=self.status_forcelist,
+        )
         adapter = requests.adapters.HTTPAdapter(
-            pool_connections=self.pool_connections,
-            pool_maxsize=self.pool_maxsize
+            max_retries=retry,
+            pool_maxsize=self.pool_maxsize,
+            pool_connections=self.pool_connections
         )
         session.mount("{scheme}://".format(scheme=urlparse.urlsplit(url).scheme), adapter)
         action = getattr(session, method.lower(), None)
