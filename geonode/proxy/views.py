@@ -213,7 +213,7 @@ def proxy(request, url=None, response_callback=None,
                                             user=request.user)
     content = response.content
     status = response.status_code
-    content_type = response.headers['Content-Type']
+    content_type = response.headers.get('Content-Type')
 
     # decompress GZipped responses if not enabled
     # if content and response and response.getheader('Content-Encoding') == 'gzip':
