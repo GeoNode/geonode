@@ -464,15 +464,19 @@ def map_embed_widget(request, mapid,
         valid_x = (maxx - minx) ** 2 > BBOX_DIFFERENCE_THRESHOLD
         valid_y = (maxy - miny) ** 2 > BBOX_DIFFERENCE_THRESHOLD
 
+        width_zoom = 15
         if valid_x:
-            width_zoom = math.log(360 / abs(maxx - minx), 2)
-        else:
-            width_zoom = 15
+            try:
+                width_zoom = math.log(360 / abs(maxx - minx), 2)
+            except BaseException:
+                pass
 
+        height_zoom = 15
         if valid_y:
-            height_zoom = math.log(360 / abs(maxy - miny), 2)
-        else:
-            height_zoom = 15
+            try:
+                height_zoom = math.log(360 / abs(maxy - miny), 2)
+            except BaseException:
+                pass
 
         map_obj.center_x = center[0]
         map_obj.center_y = center[1]
