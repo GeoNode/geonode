@@ -558,8 +558,8 @@ def geoserver_proxy(request,
     kwargs = {'affected_layers': affected_layers}
     import urllib
     raw_url = urllib.unquote(raw_url).decode('utf8')
-
-    return proxy(request, url=raw_url, response_callback=_response_callback, timeout=3, **kwargs)
+    timeout = getattr(ogc_server_settings, 'TIMEOUT') or 10
+    return proxy(request, url=raw_url, response_callback=_response_callback, timeout=timeout, **kwargs)
 
 
 def _response_callback(**kwargs):
