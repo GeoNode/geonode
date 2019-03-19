@@ -798,10 +798,10 @@ def test(options):
     for _app in _apps:
         if _app and len(_app) > 0 and 'geonode' in _app:
             _apps_to_test.append(_app)
-    sh("%s manage.py test geonode.tests.smoke %s --noinput %s %s" % (options.get('prefix'),
-                                                                     '%s.tests '.join(_apps_to_test),
-                                                                     _keepdb,
-                                                                     _parallel))
+    sh("%s manage.py test geonode.tests.smoke %s.tests --noinput %s %s" % (options.get('prefix'),
+                                                                           '.tests '.join(_apps_to_test),
+                                                                           _keepdb,
+                                                                           _parallel))
 
 
 @task
