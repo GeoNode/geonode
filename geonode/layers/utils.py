@@ -27,9 +27,11 @@ import os
 import glob
 import sys
 import logging
+import tarfile
 
-from geonode.maps.models import Map
 from osgeo import gdal, osr
+from zipfile import ZipFile, is_zipfile
+from datetime import datetime
 
 # Django functionality
 from django.contrib.auth import get_user_model
@@ -42,6 +44,8 @@ from django.db import transaction
 from django.db.models import Q
 
 # Geonode functionality
+from geonode.maps.models import Map
+from geonode.base.auth import get_or_create_token
 from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, UploadSession, LayerFile
@@ -49,16 +53,22 @@ from geonode.base.models import Link, SpatialRepresentationType,  \
     TopicCategory, Region, License, ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.layers.metadata import set_metadata
-from geonode.utils import (http_client, check_ogc_backend,
-                           unzip_file, extract_tarfile)
-from ..geoserver.helpers import (ogc_server_settings,
-                                 _prepare_thumbnail_body_from_opts)
+from geonode.utils import (http_client,
+                           check_ogc_backend,
+                           unzip_file,
+                           extract_tarfile,
+                           bbox_to_projection)
 
-import tarfile
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    # FIXME: The post service providing the map_status object
+    # should be moved to geonode.geoserver.
+    from geonode.geoserver.helpers import ogc_server_settings
 
-from zipfile import ZipFile, is_zipfile
-
-from datetime import datetime
+    # Use the http_client with one that knows the username
+    # and password for GeoServer's management user.
+    from geonode.geoserver.helpers import _prepare_thumbnail_body_from_opts
+elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+    from geonode.qgis_server.helpers import ogc_server_settings
 
 logger = logging.getLogger('geonode.layers.utils')
 
@@ -958,10 +968,12 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                     if 'ServiceException' in image or \
                        resp.status_code < 200 or resp.status_code > 299:
                         msg = 'Unable to obtain thumbnail: %s' % image
-                        raise Exception(msg)
-                except BaseException:
-                    import traceback
-                    logger.debug(traceback.format_exc())
+                        logger.error(msg)
+
+                        # Replace error message with None.
+                        image = None
+                except BaseException as e:
+                    logger.exception(e)
 
                     # Replace error message with None.
                     image = None
@@ -986,7 +998,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 else:
                     msg = 'Unable to obtain thumbnail for: %s' % instance
                     logger.error(msg)
-                    # raise Exception(msg)
 
 
 # this is the original implementation of create_gs_thumbnail()
@@ -994,21 +1005,46 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     """
     Create a thumbnail with a GeoServer request.
     """
+    layers = None
+    bbox = None  # x0, x1, y0, y1
+    local_layers = []
+    local_bboxes = []
     if isinstance(instance, Map):
-        local_layers = []
         # a map could be empty!
         if not instance.layers:
             return
         for layer in instance.layers:
             if layer.local:
                 local_layers.append(layer.name)
+                # Compute Bounds
+                _l = Layer.objects.get(alternate=layer.name)
+                wgs84_bbox = bbox_to_projection(_l.bbox)
+                local_bboxes.append(wgs84_bbox)
         layers = ",".join(local_layers).encode('utf-8')
     else:
         layers = instance.alternate.encode('utf-8')
+        # Compute Bounds
+        _l = Layer.objects.get(alternate=layers)
+        wgs84_bbox = bbox_to_projection(_l.bbox)
+        local_bboxes.append(wgs84_bbox)
 
-    wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'ows'
-    wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.1'
-    wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png8'
+    if local_bboxes:
+        for _bbox in local_bboxes:
+            if bbox is None:
+                bbox = _bbox
+            else:
+                if bbox[0] > _bbox[0]:
+                    bbox[0] = _bbox[0]
+                if bbox[1] < _bbox[1]:
+                    bbox[1] = _bbox[1]
+                if bbox[2] > _bbox[2]:
+                    bbox[2] = _bbox[2]
+                if bbox[3] < _bbox[3]:
+                    bbox[3] = _bbox[3]
+
+    wms_endpoint = getattr(ogc_server_settings, 'WMS_ENDPOINT') or 'ows'
+    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.1.1'
+    wms_format = getattr(ogc_server_settings, 'WMS_FORMAT') or 'image/png8'
 
     params = {
         'service': 'WMS',
@@ -1018,6 +1054,25 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
         'format': wms_format,
         # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
     }
+
+    if bbox:
+        params['bbox'] = "%s,%s,%s,%s" % (bbox[0], bbox[2], bbox[1], bbox[3])
+        params['crs'] = 'EPSG:4326'
+        params['width'] = 240
+        params['height'] = 180
+
+    user = None
+    try:
+        username = ogc_server_settings.credentials.username
+        user = get_user_model().objects.get(username=username)
+    except BaseException as e:
+        logger.exception(e)
+
+    access_token = None
+    if user:
+        access_token = get_or_create_token(user)
+        if access_token and not access_token.is_expired():
+            params['access_token'] = access_token.token
 
     # Avoid using urllib.urlencode here because it breaks the url.
     # commas and slashes in values get encoded and then cause trouble
@@ -1031,6 +1086,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     thumbnail_create_url = posixpath.join(
         ogc_server_settings.LOCATION,
         wms_endpoint) + "?" + _p
+
     create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
                      overwrite=overwrite, check_bbox=check_bbox)
 
