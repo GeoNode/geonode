@@ -11,6 +11,7 @@ def create_default_site_relations(app_config, verbosity=2, interactive=True, usi
         Site = apps.get_model('sites', 'Site')
         SiteResources = apps.get_model('geosites', 'SiteResources')
         SitePeople = apps.get_model('geosites', 'SitePeople')
+        SiteGroups = apps.get_model('geosites', 'SiteGroups')
     except LookupError:
         return
 
@@ -20,6 +21,7 @@ def create_default_site_relations(app_config, verbosity=2, interactive=True, usi
     for site in Site.objects.all():
         SiteResources.objects.get_or_create(site=site)
         SitePeople.objects.get_or_create(site=site)
+        SiteGroups.objects.get_or_create(site=site)
 
 
 class GeositesConfig(AppConfig):

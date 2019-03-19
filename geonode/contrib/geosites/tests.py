@@ -30,11 +30,11 @@ from guardian.shortcuts import remove_perm
 
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
-from geonode.groups.models import Group
+from geonode.groups.models import Group, GroupProfile
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from .populate_sites_data import create_sites
-from .models import SiteResources, SitePeople
+from .models import SiteResources, SitePeople, SiteGroups
 
 
 @override_settings(SITE_NAME='Slave')
@@ -246,3 +246,15 @@ class SiteTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         self.assertEqual(master_siteppl.people.count(), 2)
         self.assertEqual(slave_siteppl.people.count(), 9)
+
+    def test_groups_belong_to_correct_site(self):
+        """Test that the users belong to the correct site"""
+        master_groups = SiteGroups.objects.get(site=self.master_site)
+        slave_groups = SiteGroups.objects.get(site=self.slave_site)
+        self.assertEqual(master_groups.groups.count(), 0)
+        self.assertEqual(slave_groups.groups.count(), 1)
+
+        GroupProfile.objects.create(name='test group')
+
+        self.assertEqual(master_groups.groups.count(), 0)
+        self.assertEqual(slave_groups.groups.count(), 2)
