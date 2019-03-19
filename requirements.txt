@@ -17,9 +17,6 @@ decorator==4.3.2
 celery==4.2.1
 kombu==4.4.0
 coreschema==0.0.4
-autoflake==1.2
-flake8>=2.6.2,<=3.5.0
-pyflakes>=1.2.3,<=1.6.0
 boto<=2.49.0
 six<1.11.0 # https://github.com/benjaminp/six/issues/210
 tqdm==4.31.1
@@ -130,10 +127,10 @@ invoke==0.22.1
 coverage==4.5.3
 parse-type==0.4.1
 poster~=0.8.1
-pytest==3.5.0
-pytest-bdd==2.20.0
-splinter==0.7.7
-pytest-splinter==1.8.5
-pytest-django==3.1.2
+flake8==3.7.7
+pytest==4.3.1
+pytest-bdd==3.1.0
+splinter==0.10.0
+pytest-django==3.4.8
 setuptools==40.8.0
 Twisted==18.9.0
