@@ -45,14 +45,13 @@ except ImportError:
 
 from geonode.settings import (on_travis,
                               core_tests,
-                              internal_apps_tests,
                               integration_tests,
                               integration_csw_tests,
                               integration_bdd_tests,
+                              GEONODE_APPS,
                               INSTALLED_APPS,
                               GEONODE_CORE_APPS,
                               GEONODE_INTERNAL_APPS,
-                              GEONODE_APPS,
                               OGC_SERVER,
                               ASYNC_SIGNALS)
 
@@ -786,14 +785,10 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    if on_travis:
-        if core_tests:
-            _apps = GEONODE_CORE_APPS
-        if internal_apps_tests:
-            _apps = GEONODE_INTERNAL_APPS
+    if on_travis and core_tests:
+        _apps = GEONODE_CORE_APPS + GEONODE_INTERNAL_APPS
     else:
         _apps = GEONODE_APPS
-
     _apps_to_test = []
     for _app in _apps:
         if _app and len(_app) > 0 and 'geonode' in _app:

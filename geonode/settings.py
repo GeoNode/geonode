@@ -477,7 +477,6 @@ LOGGING = {
 
 on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
 core_tests = ast.literal_eval(os.environ.get('TEST_RUN_CORE', 'False'))
-internal_apps_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTERNAL_APPS', 'False'))
 integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'False'))
 integration_csw_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_CSW', 'False'))
 integration_bdd_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_BDD', 'False'))
@@ -809,7 +808,7 @@ OGC_SERVER = {
         # 'datastore',
         'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE',''),
         'PG_GEOGIG': False,
-        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '5')),  # number of seconds to allow for HTTP requests
+        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '30')),  # number of seconds to allow for HTTP requests
         'POOL_CONNECTIONS': int(os.getenv('OGC_REQUEST_POOL_CONNECTIONS', '10')),
         'POOL_MAXSIZE': int(os.getenv('OGC_REQUEST_POOL_MAXSIZE', '10')),
     }
