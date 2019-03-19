@@ -182,7 +182,6 @@ before_install:
       scripts/misc/qgis_server_setup.sh before_install;
       chmod +x scripts/misc/bdd_setup.sh;
       scripts/misc/bdd_setup.sh before_install;
-      sqlite3 --version;
       sudo apt-get autoremove sqlite3;
     fi
 
@@ -201,7 +200,6 @@ install:
       sudo apt-get install -y python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk;
       sudo apt-add-repository -y ppa:jonathonf/backports;
       sudo apt-get -y update && sudo apt-get install -y sqlite3;
-      sqlite3 --version;
       sudo apt-add-repository -y ppa:webupd8team/java; sudo apt update;
       echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections;
       echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections;
