@@ -21,6 +21,12 @@
 from autocomplete_light.registry import register
 
 from geonode.base.autocomplete_light_registry import ResourceBaseAutocomplete
+from geonode.documents.autocomplete_light_registry import DocumentAutocomplete
+from geonode.documents.models import Document
+from geonode.layers.autocomplete_light_registry import LayerAutocomplete
+from geonode.layers.models import Layer
+from geonode.maps.autocomplete_light_registry import MapAutocomplete
+from geonode.maps.models import Map
 from .utils import resources_for_site
 
 
@@ -32,8 +38,61 @@ class ResourceBaseAutocomplete(ResourceBaseAutocomplete):
         return super(ResourceBaseAutocomplete, self).choices_for_request()
 
 
+class DocumentAutocomplete(DocumentAutocomplete):
+    def choices_for_request(self):
+        self.choices = Document.objects.filter(id__in=resources_for_site())
+        return super(DocumentAutocomplete, self).choices_for_request()
+
+
+class LayerAutocomplete(LayerAutocomplete):
+    def choices_for_request(self):
+        self.choices = Layer.objects.filter(id__in=resources_for_site())
+        return super(LayerAutocomplete, self).choices_for_request()
+
+
+class MapAutocomplete(MapAutocomplete):
+    def choices_for_request(self):
+        self.choices = Map.objects.filter(id__in=resources_for_site())
+        return super(MapAutocomplete, self).choices_for_request()
+
+
 register(ResourceBaseAutocomplete,
          search_fields=['title'],
          order_by=['title'],
          limit_choices=100,
          autocomplete_js_attributes={'placeholder': 'Resource name..', }, )
+
+register(
+    Document,
+    DocumentAutocomplete,
+    search_fields=['title'],
+    order_by=['title'],
+    limit_choices=100,
+    autocomplete_js_attributes={
+        'placeholder': 'Document name..',
+    },
+)
+
+register(
+    Layer,
+    LayerAutocomplete,
+    search_fields=[
+        'title',
+        '^alternate'],
+    order_by=['title'],
+    limit_choices=100,
+    autocomplete_js_attributes={
+        'placeholder': 'Layer name..',
+    },
+)
+
+register(
+    Map,
+    MapAutocomplete,
+    search_fields=['title'],
+    order_by=['title'],
+    limit_choices=100,
+    autocomplete_js_attributes={
+        'placeholder': 'Map name..',
+    },
+)
