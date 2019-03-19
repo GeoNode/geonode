@@ -794,12 +794,14 @@ def test(options):
     else:
         _apps = GEONODE_APPS
 
+    _apps_to_test = []
     for _app in _apps:
         if _app and len(_app) > 0 and 'geonode' in _app:
-            sh("%s manage.py test %s.tests --noinput %s %s" % (options.get('prefix'),
-                                                               _app,
-                                                               _keepdb,
-                                                               _parallel))
+            _apps_to_test.append(_app)
+    sh("%s manage.py test geonode.tests.smoke %s --noinput %s %s" % (options.get('prefix'),
+                                                                     '%s.tests '.join(_apps_to_test),
+                                                                     _keepdb,
+                                                                     _parallel))
 
 
 @task
@@ -932,7 +934,6 @@ def run_tests(options):
     local = options.get('local', 'false')  # travis uses default to false
 
     if not integration_tests and not integration_csw_tests and not integration_bdd_tests:
-        sh('%s manage.py test geonode.tests.smoke %s %s' % (prefix, _keepdb, _parallel))
         call_task('test', options={'prefix': prefix})
     else:
         if integration_tests:
