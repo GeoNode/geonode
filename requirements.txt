@@ -1,120 +1,114 @@
-# # The commented name next to the package
-# # is the Ubuntu 16.04 package that provides it
-# # with version in parenthesis
-
-# # Apps with official Ubuntu 16.04 packages
-
 # native dependencies
-Pillow>3.3.1,<=3.3.2 # python-imaging (3.1.2) - python-pillow (3.3.1 in our ppa)
-lxml==3.6.2 # python-lxml (3.6.2 in our ppa) FIXME # <=3.8.0 throws pkg_resources.ContextualVersionConflict: (lxml 3.8.0 (/usr/local/lib/python2.7/site-packages), Requirement.parse('lxml==3.6.2'), set(['pycsw']))
-psycopg2<=2.7.3.1 # python-psycopg2 (2.7.3.1 in our ppa)
-Django==1.11.20 # python-django (1.8.19 in our ppa) FIXME
+Pillow>3.3.1,<=3.3.2
+lxml==3.6.2 # <=3.8.0 throws pkg_resources.ContextualVersionConflict: (lxml 3.8.0 (/usr/local/lib/python2.7/site-packages), Requirement.parse('lxml==3.6.2'), set(['pycsw']))
+psycopg2==2.7.7
+Django==1.11.20
 
 # Other
-amqp==2.2.2 # (python-amqp 2.2.2 in our ppa)
-pyyaml>=4.2b1 # (python-pyyaml 3.12 in out ppa)
-beautifulsoup4<=4.4.1 # python-bs4 (4.4.1)
-httplib2<=0.10.3 # python-httplib2 (0.10.3 in our ppa)
-Paver<=1.2.4 # python-paver (1.2.4)
-nose<=1.3.7 # python-nose (1.3.7)
-awesome-slugify<=1.6.5 # python-awesome-slugify (1.6.5)
-django-floppyforms<=1.7.0 # python-django-floppyforms (1.7.0 in our ppa)
-decorator<=4.1.2 # python-decorator (4.1.2 in our ppa)
-celery==4.2.1 # python-celery (4.1.0)
-kombu==4.2.1 # python-kombu (4.1.0 in our ppa)
-coreschema==0.0.4 # python-coreschema (0.0.4 in our ppa)
-autoflake<=0.7 # python-autoflake (0.7 in our ppa)
-flake8>=2.6.2,<=3.5.0 # python-flake8 (2.5.4) FIXME
-pycodestyle<2.4.0 # missing TODO
-pyflakes>=1.2.3,<=1.6.0 # python-pyflakes (1.6.0 in our ppa) FIXME
-boto<=2.38.0 # python-boto (2.38.0)
-six<1.11.0 # https://github.com/benjaminp/six/issues/210 (1.10.0 in ppa)
-tqdm==4.23.3
+amqp==2.4.2
+pyyaml>=4.2b1
+beautifulsoup4==4.7.1
+httplib2<=0.10.3
+Paver==1.3.4
+nose<=1.3.7
+awesome-slugify<=1.6.5
+django-floppyforms<=1.7.0
+decorator==4.3.2
+celery==4.2.1
+kombu==4.4.0
+coreschema==0.0.4
+autoflake==1.2
+flake8>=2.6.2,<=3.5.0
+pycodestyle<2.4.0
+pyflakes>=1.2.3,<=1.6.0
+boto<=2.49.0
+six<1.11.0 # https://github.com/benjaminp/six/issues/210
+tqdm==4.31.1
 
 # Django Apps
-dj-pagination<=2.3.2 # python-dj-pagination (2.3.2 in our ppa)
+dj-pagination==2.4.0
 django-celery-monitor<=1.1.2
-django-filter==1.1.0 # python-django-filter (1.1.0 in our ppa)
-django-jsonfield<=1.0.1 # python-django-jsonfield (0.9.15, 1.0.1 in our ppa)
-django-jsonfield-compat<=0.4.4 # python-django-jsonfield-compat (0.4.4 in our ppa)
-django-leaflet<=0.23.0 # python-django-leaflet (0.23.0 in our ppa)
-django-taggit<=0.22.2 # python-django-taggit (0.22.1 in our ppa)
-django-mptt<=0.9.0 # django-mptt (0.9.0 in our ppa)
-django-treebeard<=4.2.1 # django-treebeard (4.2.1 in our ppa)
-django-guardian<=1.4.9 # django-guardian (1.4.9 in our ppa)
-django-downloadview<=1.9 # python-django-downloadview (1.9 in our ppa)
-django-polymorphic<2.0 # python-django-polymorphic (1.3)
-django-tastypie<=0.14.0 # python-django-tastypie (0.14.0 in our ppa)
-django-invitations<=1.9.2 # python-django-invitations (1.9.2 in our ppa)
-geonode-oauth-toolkit>=1.1.2rc0 # python-django-oauth-toolkit (0.12.0 in our ppa)
-oauthlib==2.1.0 # python-oauthlib (2.0.6 in our ppa) FIXME
-pyopenssl==18.0.0
+django-filter==1.1.0
+django-jsonfield<=1.0.1
+django-jsonfield-compat<=0.4.4
+django-leaflet==0.24.0
+django-taggit==0.24.0
+django-mptt==0.9.1
+django-treebeard==4.3
+django-guardian<=1.4.9
+django-downloadview<=1.9
+django-polymorphic<2.0
+django-tastypie<=0.14.0
+django-invitations<=1.9.2
+geonode-oauth-toolkit>=1.1.2rc0
+oauthlib==2.1.0
+pyopenssl==19.0.0
 
 # geopython dependencies
-pyproj>=1.9.5,<=1.9.5.1 # python-pyproj (1.9.5.1)
-OWSLib==0.16.0 # python-owslib (0.15.0 in our ppa) FIXME
-pycsw==2.2.0 # python-pycsw (1.10.1, 2.0.0, 2.0.3 in our ppa) FIXME
-SQLAlchemy==1.1.14 # required by pycsw==2.2.0
-Shapely==1.5.17 # python-shapely (1.5.13) FIXME
+pyproj>=1.9.5,<=1.9.5.1
+OWSLib==0.16.0
+pycsw==2.2.0
+SQLAlchemy==1.3.1 # required by pycsw==2.2.0
+Shapely==1.5.17
 mercantile==1.0.4
 geoip2==2.9.0
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
 # Django Apps
-dj-database-url<=0.4.2 # , python-dj-database-url (0.4.1 in ppa)
-pinax-notifications==4.1.0 # (4.1.0 in our ppa)
-django-forms-bootstrap<=3.1.0 # python-django-forms-bootstrap (3.1.0 in our ppa)
-django-allauth<=0.34.0 # python-django-allauth (0.34.0 in our ppa)
-django-activity-stream<=0.6.5 # python-django-activity-stream (0.6.5 in our ppa)
-django-appconf<=1.0.2 # (1.0.2 in ppa)
-django-autocomplete-light==2.3.3 # (2.3.3.1 in ppa) # pinned because >=2.3.4 throw an exception on startup
-django-geonode-client>=1.0.0 # python-django-geonode-client (1.0.0 in our ppa)
-django-modeltranslation>=0.11,<=0.12.2 # python-django-modeltranslation (0.12 Debian) FIXME
-django-basic-authentication-decorator==0.9 # python-django-basic-authentication-decorator (0.9 in our ppa)
+dj-database-url==0.5.0
+pinax-notifications==4.1.0
+django-forms-bootstrap<=3.1.0
+django-allauth==0.39.1
+django-activity-stream==0.7.0
+django-appconf==1.0.3
+django-autocomplete-light==2.3.3 # pinned because >=2.3.4 throw an exception on startup
+django-geonode-client==1.0.9
+django-modeltranslation>=0.11,<=0.12.2
+django-basic-authentication-decorator==0.9
 
 # GeoNode org maintained apps.
-django-geoexplorer>=4.0.40,<5.0 # python-django-geoexplorer (4.0.39 in our ppa)
-geonode-user-messages==0.1.14 # python-geonode-user-messages (0.1.14 in our ppa)
-geonode-avatar==2.1.8 # python-geonode-avatar (2.1.7 in our ppa) FIXME
-geonode-announcements==1.0.13 # python-geonode-announcements (1.0.13 in our ppa)
-geonode-agon-ratings==0.3.8 # python-geonode-agon-ratings (0.3.8 in our ppa)
-arcrest>=10.0 # TODO
-geonode-dialogos==1.2 # python-geonode-dialogos (0.9 in our ppa)
-gsconfig>=1.0.10 # python-gsconfig (1.0.8 in our ppa)
-gn-gsimporter>=1.0.9 # python-gn-gsimporter (1.0.2 in our ppa)
-gisdata>=0.5.4 # python-gisdata (0.5.4 in our ppa)
+django-geoexplorer==4.0.41
+geonode-user-messages==0.1.14
+geonode-avatar==2.1.8
+geonode-announcements==1.0.13
+geonode-agon-ratings==0.3.8
+arcrest>=10.0
+geonode-dialogos==1.2
+gsconfig>=1.0.10
+gn-gsimporter>=1.0.9
+gisdata>=0.5.4
 
-# haystack/elasticsearch, uncomment to use
-django-haystack==2.8.1 # (2.8.0 in our ppa)
+# haystack/elasticsearch
+django-haystack==2.8.1
 elasticsearch>=2.0.0,<3.0.0
 
 # datetimepicker widget
-django-bootstrap3-datetimepicker-2==2.5.0 # python-django-bootstrap3-datetimepicker-2 (2.5.0 in our ppa)
+django-bootstrap3-datetimepicker-2==2.8.2
 
 # AWS S3 dependencies
-django-storages<=1.6.5 # python-django-storages (1.6.5 in our ppa)
+django-storages==1.7.1
 
-# DJango Caches
-python-memcached<=1.59 # python-memcached (1.59 in our ppa)
+# Django Caches
+python-memcached<=1.59
 
 # Contribs
-xmltodict<=0.10.2 # (0.9.2 in ppa)
-inflection<=0.3.1  # python-inflection (0.3.1 in our ppa)
-jdcal<=1.3 # (1.3 in our ppa)
-mock<=2.0.0 # (1.3.0 in ppa) FIXME
-python-dateutil<=2.6.1 # (2.6.1 in our ppa)
-pytz<=2018.3 # python-pytz (2018.3 in our ppa)
-requests>=2.20.0 # (2.18.4 in our ppa) FIXME
-simplejson<=3.13.2 # (3.13.2 in our ppa)
-timeout-decorator==0.4.0 # TODO
+xmltodict<=0.10.2
+inflection<=0.3.1
+jdcal==1.4
+mock<=2.0.0
+python-dateutil==2.8.0
+pytz==2018.9
+requests>=2.20.0
+simplejson==3.16.0
+timeout-decorator==0.4.1
 
 # required by monitoring
-psutil==5.4.8 # (3.4.2 in ppa)
-django-cors-headers<=2.2.0 # python-django-cors-headers (2.2.0 in our ppa)
-django-multi-email-field<=0.5.1 # python-django-multi-email-field (0.5.1 in our ppa)
-user-agents # python-user-agents (1.1.0 in our ppa)
-xmljson # python-xmljson (0.1.9 in our ppa)
+psutil==5.6.1
+django-cors-headers==2.5.2
+django-multi-email-field<=0.5.1
+user-agents
+xmljson
 django-ipware<2.2
 # no version here, use latest one with fresh data
 pycountry
@@ -122,19 +116,19 @@ pycountry
 # required by worldmap
 datautil==0.4
 dicttoxml==1.7.4
-django-geoexplorer-worldmap==4.0.64
-geopy==1.14.0
+django-geoexplorer-worldmap==4.0.65
+geopy==1.18.1
 vectorformats==0.1
 
 #production
-uWSGI==2.0.17
-gunicorn==19.7.1
-ipython==5.5.0
-docker==3.1.1
+uWSGI==2.0.18
+gunicorn==19.9.0
+ipython==5.8.0
+docker==3.7.0
 invoke==0.22.1
 
 # tests
-coverage<=4.5.1
+coverage==4.5.3
 parse-type==0.4.1
 poster~=0.8.1
 pytest==3.5.0
@@ -142,5 +136,5 @@ pytest-bdd==2.20.0
 splinter==0.7.7
 pytest-splinter==1.8.5
 pytest-django==3.1.2
-setuptools==39.0.1
-Twisted
+setuptools==40.8.0
+Twisted==18.9.0
