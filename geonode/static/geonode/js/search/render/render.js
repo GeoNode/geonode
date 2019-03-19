@@ -7,6 +7,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import DateFilter from "app/search/components/DateFilter";
 import SortFilter from "app/search/components/SortFilter";
+import Cart from "app/search/components/Cart";
 
 export default $scope =>
   new Promise(res => {
@@ -21,6 +22,8 @@ export default $scope =>
       <SortFilter />,
       document.getElementById(`render_sortFilter`)
     );
+
+    ReactDOM.render(<Cart />, document.getElementById(`render_cart`));
 
     activateKeywordFilter();
     renderMultiSelectors($scope);
