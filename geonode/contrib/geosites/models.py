@@ -116,13 +116,13 @@ def post_save_group(instance, sender, **kwargs):
     assigned to the current site only"""
     if kwargs['created'] and not kwargs['raw']:
         current_site = Site.objects.get_current()
-        SiteGroups.objects.get(site=current_site).group.add(instance)
+        SiteGroups.objects.get(site=current_site).groups.add(instance)
 
 
 def post_delete_group(instance, sender, **kwargs):
     """Signal to delete the SitePeople on profile delete"""
     current_site = Site.objects.get_current()
-    SiteGroups.objects.get(site=current_site).group.remove(instance)
+    SiteGroups.objects.get(site=current_site).groups.remove(instance)
 
 
 # Django doesn't propagate the signals to the parents so we need to add the listeners on the children
