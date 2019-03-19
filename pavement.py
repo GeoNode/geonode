@@ -789,6 +789,7 @@ def test(options):
         _apps = GEONODE_CORE_APPS + GEONODE_INTERNAL_APPS
     else:
         _apps = GEONODE_APPS
+
     _apps_to_test = []
     for _app in _apps:
         if _app and len(_app) > 0 and 'geonode' in _app:
