@@ -37,6 +37,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_CORE: 'True'
             MONITORING_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
     - name: "GeoServer-backend Contrib Apps Smoke Tests"
       python: 2.7
       virtualenv:
@@ -47,6 +48,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_INTERNAL_APPS: 'True'
             MONITORING_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
     - name: "GeoServer-backend Integration Tests"
       python: 2.7
       virtualenv:
@@ -62,6 +64,7 @@ matrix:
             TEST_RUN_INTEGRATION_CSW: 'False'
             TEST_RUN_INTEGRATION_BDD: 'False'
             MONITORING_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "GeoServer-backend Integration CSW Tests"
       python: 2.7
@@ -78,6 +81,7 @@ matrix:
             TEST_RUN_INTEGRATION_CSW: 'True'
             TEST_RUN_INTEGRATION_BDD: 'False'
             MONITORING_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "GeoServer-backend Integration BDD Tests"
       python: 2.7
@@ -94,6 +98,7 @@ matrix:
             TEST_RUN_INTEGRATION_CSW: 'False'
             TEST_RUN_INTEGRATION_BDD: 'True'
             MONITORING_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Core Modules Smoke Tests"
       python: 2.7
@@ -112,6 +117,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_CORE: 'True'
             MONITORING_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Contrib Apps Smoke Tests"
       python: 2.7
@@ -130,6 +136,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_INTERNAL_APPS: 'True'
             MONITORING_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Integration Tests"
       python: 2.7
@@ -148,6 +155,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_INTEGRATION: 'True'
             MONITORING_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "Selenium Integration Tests"
       python: 3.5
@@ -243,17 +251,11 @@ after_script:
       paver reset_hard;
     fi
 
-# after_success:
-  # - codecov
-  # - bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8
+after_success:
+  - codecov
+  - bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8
 
 notifications:
-  # irc:
-  #   channels:
-  #     - "irc.freenode.org#geonode"
-  #   use_notice: true
   email:
     - alessio.fabiani@gmail.com
-  #   - ingenieroariel@gmail.com
-  #   - simone.dalmasso@gmail.com
-  # slack: geonode-sprint:oQylJRkU9feZ8JruGi6czWwe
+  slack: geonode-sprint:oQylJRkU9feZ8JruGi6czWwe

@@ -21,16 +21,16 @@
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
+import json
 import shutil
-import tempfile
+import gisdata
+import logging
 import zipfile
+import tempfile
 import StringIO
 import contextlib
-import json
+
 from datetime import datetime
-
-import gisdata
-
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
@@ -56,11 +56,9 @@ from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.base.populate_test_data import all_public
 from geonode.layers.forms import JSONField, LayerUploadForm
 from geonode.utils import check_ogc_backend
-from .populate_layers_data import create_layer_data
-from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers import LayersAppConfig
-
-import logging
+from geonode.tests.utils import NotificationsTestsHelper
+from geonode.layers.populate_layers_data import create_layer_data
 
 logger = logging.getLogger(__name__)
 

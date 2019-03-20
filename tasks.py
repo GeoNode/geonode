@@ -41,6 +41,8 @@ def update(ctx):
     ):
         ctx.run("echo export GEOSERVER_PUBLIC_LOCATION=\
 http://{public_fqdn}/gs/ >> {override_fn}".format(**envs), pty=True)
+        ctx.run("echo export GEOSERVER_WEB_UI_LOCATION=\
+http://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
         ctx.run("echo export SITEURL=\
 http://{public_fqdn}/ >> {override_fn}".format(**envs), pty=True)
 

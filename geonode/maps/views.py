@@ -51,6 +51,9 @@ from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.layers.views import _resolve_layer
 from geonode.utils import (DEFAULT_TITLE,
                            DEFAULT_ABSTRACT,
+                           num_encode, num_decode,
+                           build_social_links,
+                           http_client,
                            forward_mercator,
                            llbbox_to_mercator,
                            bbox_to_projection,
@@ -62,31 +65,22 @@ from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
 from geonode.base.forms import CategoryForm
 from geonode.base.models import TopicCategory
-from .tasks import delete_map
+from geonode import geoserver, qgis_server
 from geonode.groups.models import GroupProfile
-
 from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
-from geonode.utils import num_encode, num_decode
-from geonode.utils import build_social_links
-from geonode import geoserver, qgis_server
 from geonode.base.views import batch_modify
-
+from .tasks import delete_map
 from requests.compat import urljoin
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
-
-    # Use the http_client with one that knows the username
-    # and password for GeoServer's management user.
-    from geonode.geoserver.helpers import (http_client,
-                                           _render_thumbnail,
+    from geonode.geoserver.helpers import (_render_thumbnail,
                                            _prepare_thumbnail_body_from_opts)
 elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.helpers import ogc_server_settings
-    from geonode.utils import http_client
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -470,15 +464,19 @@ def map_embed_widget(request, mapid,
         valid_x = (maxx - minx) ** 2 > BBOX_DIFFERENCE_THRESHOLD
         valid_y = (maxy - miny) ** 2 > BBOX_DIFFERENCE_THRESHOLD
 
+        width_zoom = 15
         if valid_x:
-            width_zoom = math.log(360 / abs(maxx - minx), 2)
-        else:
-            width_zoom = 15
+            try:
+                width_zoom = math.log(360 / abs(maxx - minx), 2)
+            except BaseException:
+                pass
 
+        height_zoom = 15
         if valid_y:
-            height_zoom = math.log(360 / abs(maxy - miny), 2)
-        else:
-            height_zoom = 15
+            try:
+                height_zoom = math.log(360 / abs(maxy - miny), 2)
+            except BaseException:
+                pass
 
         map_obj.center_x = center[0]
         map_obj.center_y = center[1]

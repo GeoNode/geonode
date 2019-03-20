@@ -57,10 +57,11 @@ from lxml import etree
 from owslib.wcs import WebCoverageService
 from owslib.wms import WebMapService
 from geonode import GeoNodeException
-from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.base.auth import get_or_create_token
+from geonode.utils import http_client
 from geonode.layers.models import Layer, Attribute, Style
+from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.security.views import _perms_info_json
-from geonode.utils import set_attributes, http_client
 from geonode.security.utils import set_geowebcache_invalidate_cache
 import xml.etree.ElementTree as ET
 from django.utils.module_loading import import_string
@@ -799,6 +800,89 @@ def get_stores(store_type=None):
         elif store_type is None:
             store_list.append({'name': store.name, 'type': stype})
     return store_list
+
+
+def set_attributes(
+        layer,
+        attribute_map,
+        overwrite=False,
+        attribute_stats=None):
+    """ *layer*: a geonode.layers.models.Layer instance
+        *attribute_map*: a list of 2-lists specifying attribute names and types,
+            example: [ ['id', 'Integer'], ... ]
+        *overwrite*: replace existing attributes with new values if name/type matches.
+        *attribute_stats*: dictionary of return values from get_attribute_statistics(),
+            of the form to get values by referencing attribute_stats[<layer_name>][<field_name>].
+    """
+    # we need 3 more items; description, attribute_label, and display_order
+    attribute_map_dict = {
+        'field': 0,
+        'ftype': 1,
+        'description': 2,
+        'label': 3,
+        'display_order': 4,
+    }
+    for attribute in attribute_map:
+        attribute.extend((None, None, 0))
+
+    attributes = layer.attribute_set.all()
+    # Delete existing attributes if they no longer exist in an updated layer
+    for la in attributes:
+        lafound = False
+        for attribute in attribute_map:
+            field, ftype, description, label, display_order = attribute
+            if field == la.attribute:
+                lafound = True
+                # store description and attribute_label in attribute_map
+                attribute[attribute_map_dict['description']] = la.description
+                attribute[attribute_map_dict['label']] = la.attribute_label
+                attribute[attribute_map_dict['display_order']
+                          ] = la.display_order
+        if overwrite or not lafound:
+            logger.debug(
+                "Going to delete [%s] for [%s]",
+                la.attribute,
+                layer.name.encode('utf-8'))
+            la.delete()
+
+    # Add new layer attributes if they don't already exist
+    if attribute_map is not None:
+        iter = len(Attribute.objects.filter(layer=layer)) + 1
+        for attribute in attribute_map:
+            field, ftype, description, label, display_order = attribute
+            if field is not None:
+                la, created = Attribute.objects.get_or_create(
+                    layer=layer, attribute=field, attribute_type=ftype,
+                    description=description, attribute_label=label,
+                    display_order=display_order)
+                if created:
+                    if (not attribute_stats or layer.name not in attribute_stats or
+                            field not in attribute_stats[layer.name]):
+                        result = None
+                    else:
+                        result = attribute_stats[layer.name][field]
+
+                    if result is not None:
+                        logger.debug("Generating layer attribute statistics")
+                        la.count = result['Count']
+                        la.min = result['Min']
+                        la.max = result['Max']
+                        la.average = result['Average']
+                        la.median = result['Median']
+                        la.stddev = result['StandardDeviation']
+                        la.sum = result['Sum']
+                        la.unique_values = result['unique_values']
+                        la.last_stats_updated = datetime.datetime.now(timezone.get_current_timezone())
+                    la.visible = ftype.find("gml:") != 0
+                    la.display_order = iter
+                    la.save()
+                    iter += 1
+                    logger.debug(
+                        "Created [%s] attribute for [%s]",
+                        field,
+                        layer.name.encode('utf-8'))
+    else:
+        logger.debug("No attributes found")
 
 
 def set_attributes_from_geoserver(layer, overwrite=False):
@@ -1842,8 +1926,10 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
         }
 
-        if request and 'access_token' in request.session:
-            params['access_token'] = request.session['access_token']
+        if request and request.user:
+            access_token = get_or_create_token(request.user)
+            if access_token and not access_token.is_expired():
+                params['access_token'] = access_token.token
 
         _p = "&".join("%s=%s" % item for item in params.items())
 
