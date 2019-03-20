@@ -100,6 +100,7 @@ matrix:
             MONITORING_ENABLED: 'False'
             SESSION_EXPIRED_CONTROL_ENABLED: 'False'
             CELERY_ALWAYS_EAGER: 'True'
+            TEST_RUN_SELENIUM: 'True'
     - name: "QGis Server-backend Core Modules Smoke Tests"
       python: 2.7
       virtualenv:
