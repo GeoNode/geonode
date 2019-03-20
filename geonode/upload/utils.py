@@ -53,8 +53,8 @@ def _log(msg, *args):
 
 
 iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012]))' +
-                     '([/-]?(?P<mday>(0[1-9])|([12]\d)|(3[01])))?)?(?:T(?P<hour>([01][0-9])' +
-                     '|(?:2[0123]))(\:?(?P<min>[0-5][0-9])(\:?(?P<sec>[0-5][0-9]([\,\.]\d{1,10})?))?)' +
+                     r'([/-]?(?P<mday>(0[1-9])|([12]\d)|(3[01])))?)?(?:T(?P<hour>([01][0-9])' +
+                     r'|(?:2[0123]))(\:?(?P<min>[0-5][0-9])(\:?(?P<sec>[0-5][0-9]([\,\.]\d{1,10})?))?)' +
                      '?(?:Z|([\-+](?:([01][0-9])|(?:2[0123]))(\:?(?:[0-5][0-9]))?))?)?))$').match
 
 _SUPPORTED_CRS = getattr(settings, 'UPLOADER', None)
@@ -491,7 +491,7 @@ def _get_time_dimensions(layer, upload_session):
                     if layer_values:
                         for feat in layer_values:
                             if feat.get(a['name'])['value'] and \
-                            iso8601(str(feat.get(a['name'])['value'])):
+                                    iso8601(str(feat.get(a['name'])['value'])):
                                 if a not in att_list:
                                     att_list.append(a)
                     else:

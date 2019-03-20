@@ -219,10 +219,10 @@ class HostGeoNodeService(BaseServiceHandler):
 services = dict(
     (c.get_name(), c,)
     for c in (
-            GeoNodeService,
-            GeoServerService,
-            HostGeoNodeService,
-            HostGeoServerService,))
+        GeoNodeService,
+        GeoServerService,
+        HostGeoNodeService,
+        HostGeoServerService,))
 
 
 def get_for_service(sname):

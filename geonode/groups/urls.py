@@ -30,7 +30,7 @@ urlpatterns = [  # 'geonode.groups.views',
 
     url(r'^categories/$',
         TemplateView.as_view(
-        template_name="groups/category_list.html"),
+            template_name="groups/category_list.html"),
         name="group_category_list"),
     url(r'^categories/_create/$', views.group_category_create,
         name="group_category_create"),

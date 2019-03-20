@@ -58,7 +58,7 @@ def catalogue_post_save(instance, sender, **kwargs):
             catalogue = get_catalogue()
             catalogue.create_record(instance)
             record = catalogue.get_record(instance.uuid)
-        except EnvironmentError, err:
+        except EnvironmentError as err:
             msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
             if err.reason.errno == errno.ECONNREFUSED:
                 LOGGER.warn(msg, err)
@@ -116,7 +116,7 @@ def catalogue_pre_save(instance, sender, **kwargs):
     try:
         catalogue = get_catalogue()
         record = catalogue.get_record(instance.uuid)
-    except EnvironmentError, err:
+    except EnvironmentError as err:
         msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
         LOGGER.warn(msg, err)
         raise err

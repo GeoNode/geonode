@@ -187,7 +187,7 @@ def proxy(request, url=None, response_callback=None,
     headers.update({"Pragma": pragma,
                     "Referer": referer,
                     "Accept-encoding": encoding,
-    })
+                    })
 
     parsed = urlparse(raw_url)
     parsed._replace(path=locator.encode('utf8'))

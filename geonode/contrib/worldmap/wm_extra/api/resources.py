@@ -66,8 +66,8 @@ class LayerResource(ModelResource):
         allowed_methods = ['get', ]
         ordering = ['date', ]
         fields = [
-                    'abstract', 'bbox', 'created_dttm', 'date', 'date_type', 'is_public', 'keywords',
-                    'name', 'owner_username', 'srs', 'temporal_extent_end',
+            'abstract', 'bbox', 'created_dttm', 'date', 'date_type', 'is_public', 'keywords',
+            'name', 'owner_username', 'srs', 'temporal_extent_end',
                     'temporal_extent_start', 'title', 'topic_category', 'typename', 'uuid',
         ]
 

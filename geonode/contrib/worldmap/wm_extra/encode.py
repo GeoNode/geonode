@@ -8,7 +8,7 @@ from xml.sax.saxutils import quoteattr
 import re
 
 ALPHABET = string.ascii_uppercase + string.ascii_lowercase + \
-           string.digits + '-_'
+    string.digits + '-_'
 ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
@@ -45,7 +45,7 @@ def despam(text):
     Rudimentary bad word filter, to be replaced soon by something more solid
     """
     return re.sub(
-                    r'c.?[i1].?[a@].?[l1].?[i1].?[s$]|v.?[Ii1].?[a@].?gr.?[a@]|[l1].?[e3].?v.?[i!1].?t.?r.?[a@]|\
+        r'c.?[i1].?[a@].?[l1].?[i1].?[s$]|v.?[Ii1].?[a@].?gr.?[a@]|[l1].?[e3].?v.?[i!1].?t.?r.?[a@]|\
                     -online|4u|adipex|advicer|baccarrat|blackjack|bllogspot|booker|byob|car-rental-e-site|car-rentals-e-site|\
                     carisoprodol|c.?[a@].?[s$].?[i!1].?n.?[o0]|chatroom|coolhu|coolhu|credit-card-debt|credit-report|cwas|cyclen|\
                     benzaprine|dating-e-site|day-trading|debt-consolidation|debt-consolidation|discreetordering|\
@@ -66,6 +66,7 @@ class XssCleaner(HTMLParser):
     """
     Cross-site scripting protection, from http://code.activestate.com/recipes/496942-cross-site-scripting-xss-defense/
     """
+
     def __init__(self, fmt=AbstractFormatter):
         HTMLParser.__init__(self, fmt)
         self.result = ""
@@ -139,9 +140,9 @@ class XssCleaner(HTMLParser):
             if tag in self.allowed_attributes:
                 attrs = dict(attrs)
                 self.allowed_attributes_here =\
-                [x for x in self.allowed_attributes[tag] if x in attrs and
-                    len(attrs[x]) > 0
-                ]
+                    [x for x in self.allowed_attributes[tag] if x in attrs and
+                     len(attrs[x]) > 0
+                     ]
                 for attribute in self.allowed_attributes_here:
                     if attribute in ['href', 'src', 'background']:
                         if self.url_is_acceptable(attrs[attribute]):

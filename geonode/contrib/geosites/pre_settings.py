@@ -19,7 +19,7 @@
 #
 #########################################################################
 
-##### Settings to be included first
+# Settings to be included first
 
 # Default Django settings for GeoNode.
 import os
@@ -56,7 +56,7 @@ DATABASES['default']['NAME'] = os.path.join(SITE_ROOT, '..', 'development.db')
 # internal url to GeoServer
 GEOSERVER_URL = 'http://localhost:8080/geoserver/'
 
-##### Global Overrides
+# Global Overrides
 # Below are some common GeoNode settings that might be overridden to provide
 # global setting acrosss all sites. Can be overridden in a sites settings.
 
@@ -74,7 +74,7 @@ GEOSERVER_URL = 'http://localhost:8080/geoserver/'
 #PROXY_ALLOWED_HOSTS = ('.domain',)
 
 
-##### Production settings
+# Production settings
 
 # DEBUG Settings
 DEBUG = True
@@ -87,4 +87,3 @@ try:
     from local_settings import *
 except ImportError:
     pass
-

@@ -146,7 +146,7 @@ def _container_exposed_port(component, instname):
         )
         for key in json.loads(ports_dict):
             port = re.split('/tcp', key)[0]
-    except:
+    except BaseException:
         port = 80
     return port
 

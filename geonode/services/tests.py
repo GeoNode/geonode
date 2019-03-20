@@ -64,7 +64,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertEqual(result, phony_workspace)
         mock_catalog.assert_called_with(
             service_url=mock_settings.OGC_SERVER[
-                            "default"]["LOCATION"] + "rest",
+                "default"]["LOCATION"] + "rest",
             username=mock_settings.OGC_SERVER["default"]["USER"],
             password=mock_settings.OGC_SERVER["default"]["PASSWORD"]
         )
@@ -93,7 +93,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertEqual(result, phony_workspace)
         mock_catalog.assert_called_with(
             service_url=mock_settings.OGC_SERVER[
-                            "default"]["LOCATION"] + "rest",
+                "default"]["LOCATION"] + "rest",
             username=mock_settings.OGC_SERVER["default"]["USER"],
             password=mock_settings.OGC_SERVER["default"]["PASSWORD"]
         )

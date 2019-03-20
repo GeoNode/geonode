@@ -94,7 +94,7 @@ class CatalogueBackend(GenericCatalogueBackend):
 
     def search_records(self, keywords, start, limit, bbox):
         with self.catalogue:
-            lresults = self._csw_local_dispatch(keywords, keywords, start+1, limit, bbox)
+            lresults = self._csw_local_dispatch(keywords, keywords, start + 1, limit, bbox)
             # serialize XML
             e = etree.fromstring(lresults)
 

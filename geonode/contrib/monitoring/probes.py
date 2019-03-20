@@ -72,7 +72,7 @@ class BaseProbe(object):
                 'used': m(vm.used),
                 'free': m(vm.available),
                 'usage': vm.used,
-                'usage.percent': ((vm.used * 100.0)/vm.total),
+                'usage.percent': ((vm.used * 100.0) / vm.total),
                 }
 
     @staticmethod

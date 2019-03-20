@@ -960,7 +960,7 @@ def add_layers_to_map_config(
                                 layer_params=json.dumps(config),
                                 visibility=True,
                                 source_params=json.dumps(source_params)
-            )
+                                )
         else:
             ogc_server_url = urlparse.urlsplit(
                 ogc_server_settings.PUBLIC_LOCATION).netloc

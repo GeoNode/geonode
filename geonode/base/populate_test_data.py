@@ -97,31 +97,31 @@ def create_fixtures():
     world_extent = [-180, 180, -90, 90]
 
     map_data = [
-            ('GeoNode Default Map', 'GeoNode default map abstract', ('populartag',), world_extent, biota),
-            ('ipsum lorem', 'common ipsum lorem', ('populartag', 'maptagunique'), world_extent, biota),
-            ('lorem1 ipsum1', 'common abstract1', ('populartag',), world_extent, biota),
-            ('ipsum foo', 'common bar lorem', ('populartag',), world_extent, location),
-            ('map one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1], location),
-            ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
-            ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
-            ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
-            ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
-            ]
+        ('GeoNode Default Map', 'GeoNode default map abstract', ('populartag',), world_extent, biota),
+        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'maptagunique'), world_extent, biota),
+        ('lorem1 ipsum1', 'common abstract1', ('populartag',), world_extent, biota),
+        ('ipsum foo', 'common bar lorem', ('populartag',), world_extent, location),
+        ('map one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1], location),
+        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
+        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
+        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
+        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
+    ]
 
     user_data = [
-            ('bobby', 'bob', 'bobby', ''),
-            ('norman', 'norman', 'norman', ''),
-            ('user1', 'pass', 'uniquefirst', 'foo'),
-            ('user2', 'pass', 'foo', 'uniquelast'),
-            ('unique_username', 'pass', 'foo', 'uniquelast'),
-            ('jblaze', 'pass', 'johnny', 'blaze'),
-            ('foo', 'pass', 'bar', 'baz'),
-            ]
+        ('bobby', 'bob', 'bobby', ''),
+        ('norman', 'norman', 'norman', ''),
+        ('user1', 'pass', 'uniquefirst', 'foo'),
+        ('user2', 'pass', 'foo', 'uniquelast'),
+        ('unique_username', 'pass', 'foo', 'uniquelast'),
+        ('jblaze', 'pass', 'johnny', 'blaze'),
+        ('foo', 'pass', 'bar', 'baz'),
+    ]
 
     people_data = [
-            ('this contains all my interesting profile information',),
-            ('some other information goes here',),
-            ]
+        ('this contains all my interesting profile information',),
+        ('some other information goes here',),
+    ]
     now = datetime.now(timezone.get_current_timezone())
     step = timedelta(days=60)
 
@@ -146,14 +146,14 @@ def create_fixtures():
                   ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', world_extent,
                    next_date(), ('populartag', 'layertagunique'), location),  # flake8: noqa
                   ('common double it', 'whatever', 'whatever', 'geonode:whatever', [
-             0, 1, 0, 1], next_date(), ('populartag',), location),  # flake8: noqa
-            ('common double time', 'else', 'fooey', 'geonode:fooey', [
-             0, 5, 0, 5], next_date(), ('populartag',), location),  # flake8: noqa
-            ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [
-             0, 10, 0, 10], next_date(), ('populartag',), biota),   # flake8: noqa
-            ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [
-             0, 50, 0, 50], next_date(), ('populartag',), biota),   # flake8: noqa
-            ]
+                      0, 1, 0, 1], next_date(), ('populartag',), location),  # flake8: noqa
+                  ('common double time', 'else', 'fooey', 'geonode:fooey', [
+                      0, 5, 0, 5], next_date(), ('populartag',), location),  # flake8: noqa
+                  ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [
+                      0, 10, 0, 10], next_date(), ('populartag',), biota),   # flake8: noqa
+                  ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [
+                      0, 50, 0, 50], next_date(), ('populartag',), biota),   # flake8: noqa
+                  ]
 
     document_data = [('lorem ipsum', 'common lorem ipsum', ('populartag',), world_extent, biota),
                      ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique'), world_extent, biota),

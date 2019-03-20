@@ -933,7 +933,7 @@ def set_styles(layer, gs_catalog):
         if not default_style:
             try:
                 default_style = gs_catalog.get_style(layer.name, workspace=layer.workspace) \
-                                or gs_catalog.get_style(layer.name)
+                    or gs_catalog.get_style(layer.name)
                 gs_layer.default_style = default_style
                 gs_catalog.save(gs_layer)
             except BaseException:

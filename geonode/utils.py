@@ -1408,7 +1408,7 @@ def zip_dir(basedir, archivename):
             # NOTE: ignore empty directories
             for fn in files:
                 absfn = os.path.join(root, fn)
-                zfn = absfn[len(basedir)+len(os.sep):]  # XXX: relative path
+                zfn = absfn[len(basedir) + len(os.sep):]  # XXX: relative path
                 z.write(absfn, zfn)
 
 
@@ -1474,7 +1474,7 @@ def slugify_zh(text, separator='_'):
     QUOTE_PATTERN = re.compile(r'[\']+')
     ALLOWED_CHARS_PATTERN = re.compile(u'[^\u4e00-\u9fa5a-z0-9]+')
     DUPLICATE_DASH_PATTERN = re.compile('-{2,}')
-    NUMBERS_PATTERN = re.compile('(?<=\d),(?=\d)')
+    NUMBERS_PATTERN = re.compile(r'(?<=\d),(?=\d)')
     DEFAULT_SEPARATOR = '-'
 
     # if not isinstance(text, types.UnicodeType):
