@@ -28,7 +28,6 @@ from django.conf import settings
 from django.core.management import call_command
 from geonode import settings as gn_settings
 # from geonode.tests.bdd.e2e.factories.profile import SuperAdminProfileFactory
-from pytest_django.fixtures import live_server
 
 # We manually designate which settings we will be using in an environment variable
 # This is similar to what occurs in the `manage.py`
