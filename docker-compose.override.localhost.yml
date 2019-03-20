@@ -15,6 +15,7 @@ services:
       - SITEURL=http://localhost/
       - ALLOWED_HOSTS=['localhost', ]
       - GEOSERVER_PUBLIC_LOCATION=http://localhost/gs/
+      - GEOSERVER_WEB_UI_LOCATION=http://localhost/geoserver/
 
   celery:
     build: .
@@ -27,6 +28,7 @@ services:
       - SITEURL=http://localhost/
       - ALLOWED_HOSTS=['localhost', ]
       - GEOSERVER_PUBLIC_LOCATION=http://localhost/gs/
+      - GEOSERVER_WEB_UI_LOCATION=http://localhost/geoserver/
 
   geoserver:
     environment:
