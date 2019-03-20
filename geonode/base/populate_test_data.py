@@ -26,7 +26,6 @@ from django.core.serializers import serialize
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
-from django.conf import settings
 from geonode.layers.models import Layer
 from geonode.base.models import TopicCategory
 from geonode.maps.models import Map, MapLayer
@@ -140,19 +139,20 @@ def create_fixtures():
     next_date = get_test_date()
 
     layer_data = [('CA', 'abstract1', 'CA', 'geonode:CA', world_extent, next_date(), ('populartag', 'here'), elevation),
-                  ('layer2', 'abstract2', 'layer2', 'geonode:layer2', world_extent, next_date(), ('populartag',), elevation),
+                  ('layer2', 'abstract2', 'layer2', 'geonode:layer2',
+                   world_extent, next_date(), ('populartag',), elevation),
                   ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer',
-                   world_extent, next_date(), ('populartag',), elevation),  # flake8: noqa
+                   world_extent, next_date(), ('populartag',), elevation),
                   ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', world_extent,
-                   next_date(), ('populartag', 'layertagunique'), location),  # flake8: noqa
+                   next_date(), ('populartag', 'layertagunique'), location),
                   ('common double it', 'whatever', 'whatever', 'geonode:whatever', [
-                      0, 1, 0, 1], next_date(), ('populartag',), location),  # flake8: noqa
+                      0, 1, 0, 1], next_date(), ('populartag',), location),
                   ('common double time', 'else', 'fooey', 'geonode:fooey', [
-                      0, 5, 0, 5], next_date(), ('populartag',), location),  # flake8: noqa
+                      0, 5, 0, 5], next_date(), ('populartag',), location),
                   ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [
-                      0, 10, 0, 10], next_date(), ('populartag',), biota),   # flake8: noqa
+                      0, 10, 0, 10], next_date(), ('populartag',), biota),
                   ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [
-                      0, 50, 0, 50], next_date(), ('populartag',), biota),   # flake8: noqa
+                      0, 50, 0, 50], next_date(), ('populartag',), biota),
                   ]
 
     document_data = [('lorem ipsum', 'common lorem ipsum', ('populartag',), world_extent, biota),
@@ -237,28 +237,28 @@ def create_models(type=None):
         for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('coverageStore', 'dataStore'))):
             title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
             end = start + timedelta(days=365)
-            l = Layer(title=title,
-                      abstract=abstract,
-                      name=name,
-                      alternate=alternate,
-                      bbox_x0=bbox_x0,
-                      bbox_x1=bbox_x1,
-                      bbox_y0=bbox_y0,
-                      bbox_y1=bbox_y1,
-                      srid='EPSG:4326',
-                      uuid=str(uuid4()),
-                      owner=owner,
-                      temporal_extent_start=start,
-                      temporal_extent_end=end,
-                      date=start,
-                      storeType=storeType,
-                      category=category,
-                      )
-            l.save()
-            obj_ids.append(l.id)
+            layer = Layer(title=title,
+                          abstract=abstract,
+                          name=name,
+                          alternate=alternate,
+                          bbox_x0=bbox_x0,
+                          bbox_x1=bbox_x1,
+                          bbox_y0=bbox_y0,
+                          bbox_y1=bbox_y1,
+                          srid='EPSG:4326',
+                          uuid=str(uuid4()),
+                          owner=owner,
+                          temporal_extent_start=start,
+                          temporal_extent_end=end,
+                          date=start,
+                          storeType=storeType,
+                          category=category,
+                          )
+            layer.save()
+            obj_ids.append(layer.id)
             for kw in kws:
-                l.keywords.add(kw)
-                l.save()
+                layer.keywords.add(kw)
+                layer.save()
     return obj_ids
 
 
@@ -280,8 +280,8 @@ def remove_models(obj_ids, type=None):
         try:
             l_ids = obj_ids or [l.id for l in Layer.objects.all()]
             for id in l_ids:
-                l = Layer.objects.get(pk=id)
-                l.delete()
+                layer = Layer.objects.get(pk=id)
+                layer.delete()
         except BaseException:
             pass
     elif type == 'document':

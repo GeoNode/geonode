@@ -94,8 +94,8 @@ def parse_flex_date(dateString):
 def parse_julian_date(dateString):
     from jdcal import gcal2jd
     flex_date = parse_flex_date(dateString)
-    julian = gcal2jd(int(flex_date.year), int(flex_date.month if flex_date.month is not '' else '1'),
-                     int(flex_date.day if flex_date.day is not '' else '1'))
+    julian = gcal2jd(int(flex_date.year), int(flex_date.month if flex_date.month != '' else '1'),
+                     int(flex_date.day if flex_date.day != '' else '1'))
     return julian[0] + julian[1]
 
 

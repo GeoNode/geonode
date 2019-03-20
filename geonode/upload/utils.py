@@ -383,7 +383,7 @@ def next_step_response(req, upload_session, force_ajax=True):
             return run_response(req, upload_session)
         else:
             # on sync we want to run the import and advance to the next step
-            run_import(upload_session, async=False)
+            run_import(upload_session, async_upload=False)
             return next_step_response(req, upload_session,
                                       force_ajax=force_ajax)
     session_id = None
@@ -549,7 +549,7 @@ def layer_eligible_for_time_dimension(
     return (_is_eligible, layer_values)
 
 
-def run_import(upload_session, async=_ASYNC_UPLOAD):
+def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
     """Run the import, possibly asynchronously.
 
     Returns the target datastore.
@@ -564,7 +564,7 @@ def run_import(upload_session, async=_ASYNC_UPLOAD):
             raise Exception(_('unknown item state: %s' % task.state))
     elif import_session.state == 'PENDING' and task.target.store_type == 'coverageStore':
         if task.state == 'READY':
-            import_session.commit(async)
+            import_session.commit(async_upload)
             import_execution_requested = True
         if task.state == 'ERROR':
             progress = task.get_progress()
@@ -606,7 +606,7 @@ def run_import(upload_session, async=_ASYNC_UPLOAD):
     _log('running import session')
     # run async if using a database
     if not import_execution_requested:
-        import_session.commit(async)
+        import_session.commit(async_upload)
 
     # @todo check status of import session - it may fail, but due to protocol,
     # this will not be reported during the commit

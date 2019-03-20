@@ -41,7 +41,7 @@ class BaseServiceExpose(object):
         pass
 
     def expose(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     @classmethod
     def get_name(cls):
@@ -130,10 +130,10 @@ class BaseServiceHandler(object):
         return self.handle_collected(_collected)
 
     def _collect(self, since, until, *args, **kwargs):
-        raise NotImplemented()
+        raise NotImplementedError
 
     def handle_collected(self):
-        raise NotImplemented()
+        raise NotImplementedError
 
     def mark_as_checked(self):
         self.service.last_check = self.now

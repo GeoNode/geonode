@@ -138,7 +138,7 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 
     matchingEntries = (GazetteerEntry.objects.extra(
         where=['placename_tsv @@ to_tsquery(%s)'],
-        params=[re.sub("\s+", " & ", place_name.strip()) + ":*"]).filter(criteria))[:500] \
+        params=[re.sub(r"\s+", " & ", place_name.strip()) + ":*"]).filter(criteria))[:500] \
         if settings.GAZETTEER_FULLTEXTSEARCH else GazetteerEntry.objects.filter(criteria)
     posts = []
     for entry in matchingEntries:

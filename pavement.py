@@ -229,7 +229,7 @@ def _robust_rmtree(path, logger=None, max_retries=5):
         try:
             shutil.rmtree(path)
             return
-        except OSError as e:
+        except OSError:
             if logger:
                 info('Unable to remove path: %s' % path)
                 info('Retrying after %d seconds' % i)
@@ -542,7 +542,7 @@ def stop_geoserver():
                 os.kill(int(pid), 0)
                 # raise Exception("""wasn't able to kill the process\nHINT:use
                 # signal.SIGKILL or signal.SIGABORT""")
-            except OSError as ex:
+            except OSError:
                 continue
     except Exception as e:
         info(e)
@@ -933,7 +933,8 @@ def run_tests(options):
     """
     if options.get('coverage'):
         prefix = 'coverage run --branch --source=geonode \
-            --omit="*/management/*,*/test*,*/wsgi*,*/middleware*,*/context_processors*,geonode/qgis_server/*,geonode/contrib/*,geonode/upload/*"'
+            --omit="*/management/*,*/test*,*/wsgi*,*/middleware*,*/context_processors*,\
+            geonode/qgis_server/*,geonode/contrib/*,geonode/upload/*"'
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false

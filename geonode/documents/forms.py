@@ -28,7 +28,7 @@ from django import forms
 from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from django.forms import HiddenInput, TextInput
+from django.forms import HiddenInput
 from modeltranslation.forms import TranslationModelForm
 
 from geonode.documents.models import (

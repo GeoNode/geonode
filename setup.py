@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-import os
 try:  # for pip >= 10
     from pip._internal.req import parse_requirements
     from pip._internal.download import PipSession
@@ -47,10 +46,10 @@ setup(name='GeoNode',
       license='GPL',
       packages=find_packages(),
       package_data={
-          '': ['*.*'],
-          '': ['static/*.*'],
+          '': ['*.*'], # noqa
+          '': ['static/*.*'], # noqa
           'static': ['*.*'],
-          '': ['templates/*.*'],
+          '': ['templates/*.*'], # noqa
           'templates': ['*.*'],
       },
       include_package_data=True,
