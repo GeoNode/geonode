@@ -36,6 +36,8 @@ except:
     pass
 
 # master local_settings
+from urlparse import urljoin
+
 try:
     # load in local_settings (usually for setting SITEURL and DATABASES for production)
     execfile(os.path.join(SITE_ROOT, '../', 'local_settings.py'))
@@ -107,9 +109,6 @@ STATIC_ROOT = os.path.join(SERVE_PATH, 'static')
 
 # Put media files in root
 MEDIA_ROOT = os.path.join(SERVE_PATH, 'uploaded')
-
-#OGC_SERVER['default']['LOCATION'] = os.path.join(GEOSERVER_URL, 'geoserver/')
-
 
 # add datastore if defined
 if DATASTORE in DATABASES.keys():
