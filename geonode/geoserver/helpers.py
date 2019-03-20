@@ -822,7 +822,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             logger.debug(tb)
             attribute_map = []
     elif layer.storeType in ["dataStore", "remoteStore", "wmsStore"]:
-        dft_url = re.sub("\/wms\/?$",
+        dft_url = re.sub(r"\/wms\/?$",
                          "/",
                          server_url) + "ows?" + urllib.urlencode({"service": "wfs",
                                                                   "version": "1.0.0",

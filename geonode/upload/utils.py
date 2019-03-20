@@ -55,7 +55,7 @@ def _log(msg, *args):
 iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012]))' +
                      r'([/-]?(?P<mday>(0[1-9])|([12]\d)|(3[01])))?)?(?:T(?P<hour>([01][0-9])' +
                      r'|(?:2[0123]))(\:?(?P<min>[0-5][0-9])(\:?(?P<sec>[0-5][0-9]([\,\.]\d{1,10})?))?)' +
-                     '?(?:Z|([\-+](?:([01][0-9])|(?:2[0123]))(\:?(?:[0-5][0-9]))?))?)?))$').match
+                     r'?(?:Z|([\-+](?:([01][0-9])|(?:2[0123]))(\:?(?:[0-5][0-9]))?))?)?))$').match
 
 _SUPPORTED_CRS = getattr(settings, 'UPLOADER', None)
 if _SUPPORTED_CRS:
@@ -745,7 +745,7 @@ def make_geogig_rest_payload(author_name='admin',
         pg_geogig_db = settings.DATABASES[datastore]
         schema = 'public'
         if 'OPTIONS' in pg_geogig_db and 'options' in pg_geogig_db['OPTIONS']:
-            detected_schemas = re.findall('((?<=search_path=).*)\s?',
+            detected_schemas = re.findall(r'((?<=search_path=).*)\s?',
                                           pg_geogig_db['OPTIONS']['options'])
             if len(detected_schemas) > 0:
                 schemas = detected_schemas[0]
@@ -920,7 +920,7 @@ Schema= the_geom:Polygon,location:String,{time_attr}
 CheckAuxiliaryMetadata={aux_metadata_flag}
 SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi"""
 
-    datastore_template = """SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
+    datastore_template = r"""SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
 host={db_host}
 port={db_port}
 database={db_name}

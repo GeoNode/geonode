@@ -57,7 +57,7 @@ logger = logging.getLogger(__name__)
 custom_slugify = Slugify(separator='_')
 
 ows_regexp = re.compile(
-    "^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
+    r"^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
 
 
 @requires_csrf_token
