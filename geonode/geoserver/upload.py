@@ -166,8 +166,8 @@ def geoserver_upload(
     # Verify the resource was created
     if not gs_resource:
         gs_resource = gs_catalog.get_resource(
-                name,
-                workspace=workspace)
+            name,
+            workspace=workspace)
     if gs_resource is not None:
         assert gs_resource.name == name
     else:
@@ -245,7 +245,7 @@ def geoserver_upload(
             except BaseException:
                 try:
                     style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
-                            cat.get_style(name + '_layer')
+                        cat.get_style(name + '_layer')
                     overwrite = style or False
                     cat.create_style(name + '_layer', sld, overwrite=overwrite, raw=True,
                                      workspace=settings.DEFAULT_WORKSPACE)

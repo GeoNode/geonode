@@ -86,42 +86,42 @@ class LoginRequiredMiddleware(object):
 
 
 class SessionControlMiddleware(object):
-        """
-        Middleware that checks if session variables have been correctly set.
-        """
+    """
+    Middleware that checks if session variables have been correctly set.
+    """
 
-        redirect_to = getattr(settings, 'LOGIN_URL', reverse('account_login'))
+    redirect_to = getattr(settings, 'LOGIN_URL', reverse('account_login'))
 
-        def process_request(self, request):
-            if request and request.user and not request.user.is_anonymous:
-                if not request.user.is_active:
+    def process_request(self, request):
+        if request and request.user and not request.user.is_anonymous:
+            if not request.user.is_active:
+                self.do_logout(request)
+            elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                try:
+                    access_token = get_token_object_from_session(request.session)
+                except BaseException:
+                    access_token = None
                     self.do_logout(request)
-                elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                    try:
-                        access_token = get_token_object_from_session(request.session)
-                    except BaseException:
-                        access_token = None
-                        self.do_logout(request)
 
-                    # we extend the token in case the session is active but the token expired
-                    if access_token is None or access_token.is_expired():
-                        self.do_logout(request)
+                # we extend the token in case the session is active but the token expired
+                if access_token is None or access_token.is_expired():
+                    self.do_logout(request)
 
-        def do_logout(self, request):
+    def do_logout(self, request):
+        try:
+            logout(request)
+        except BaseException:
+            pass
+        finally:
             try:
-                logout(request)
+                from django.contrib import messages
+                from django.utils.translation import ugettext_noop as _
+                messages.warning(request, _("Session is Expired. Please login again!"))
             except BaseException:
                 pass
-            finally:
-                try:
-                    from django.contrib import messages
-                    from django.utils.translation import ugettext_noop as _
-                    messages.warning(request, _("Session is Expired. Please login again!"))
-                except BaseException:
-                    pass
 
-                if not any(path.match(request.path) for path in white_list):
-                    return HttpResponseRedirect(
-                        '{login_path}?next={request_path}'.format(
-                            login_path=self.redirect_to,
-                            request_path=request.path))
+            if not any(path.match(request.path) for path in white_list):
+                return HttpResponseRedirect(
+                    '{login_path}?next={request_path}'.format(
+                        login_path=self.redirect_to,
+                        request_path=request.path))

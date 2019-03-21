@@ -16,12 +16,12 @@ class FlexiDateField(models.Field):
     empty_strings_allowed = False
 
     default_error_messages = {
-                                'invalid': _(u"'%s' value has an invalid date format. Acceptable formats include "
-                                             u"YYYY-MM-DD where YYYY = year (at least 4 digits, use"
-                                             u"0001 for year 1), MM = month (1-12, optional),"
-                                             u" DD = day of month (1-31, optional)."
-                                             u"For BC dates insert a minus sign before year (-1000-01-01)"
-                                             u" or append with BC (1000-01-01 BC).")
+        'invalid': _(u"'%s' value has an invalid date format. Acceptable formats include "
+                     u"YYYY-MM-DD where YYYY = year (at least 4 digits, use"
+                     u"0001 for year 1), MM = month (1-12, optional),"
+                     u" DD = day of month (1-31, optional)."
+                     u"For BC dates insert a minus sign before year (-1000-01-01)"
+                     u" or append with BC (1000-01-01 BC).")
     }
 
     description = _("Date BC/AD (without time)")
@@ -38,7 +38,7 @@ class FlexiDateField(models.Field):
         return "flexidate"
 
     def db_type(self, connection):
-            return 'varchar'
+        return 'varchar'
 
     def to_python(self, value):
         if value is None:
@@ -94,8 +94,8 @@ def parse_flex_date(dateString):
 def parse_julian_date(dateString):
     from jdcal import gcal2jd
     flex_date = parse_flex_date(dateString)
-    julian = gcal2jd(int(flex_date.year), int(flex_date.month if flex_date.month is not '' else '1'),
-                     int(flex_date.day if flex_date.day is not '' else '1'))
+    julian = gcal2jd(int(flex_date.year), int(flex_date.month if flex_date.month != '' else '1'),
+                     int(flex_date.day if flex_date.day != '' else '1'))
     return julian[0] + julian[1]
 
 

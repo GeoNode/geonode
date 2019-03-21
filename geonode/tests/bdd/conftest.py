@@ -28,7 +28,6 @@ from django.conf import settings
 from django.core.management import call_command
 from geonode import settings as gn_settings
 # from geonode.tests.bdd.e2e.factories.profile import SuperAdminProfileFactory
-from pytest_django.fixtures import live_server
 
 # We manually designate which settings we will be using in an environment variable
 # This is similar to what occurs in the `manage.py`
@@ -51,7 +50,7 @@ def pytest_configure():
 
 
 @pytest.fixture(scope='function', autouse=True)
-def bdd_server(request):
+def bdd_server(request, live_server):
     """
         Workaround inspired by
         https://github.com/mozilla/addons-server/pull/4875/files#diff-0223c02758be2ac7967ea22c6fa4b361R96
@@ -71,7 +70,7 @@ def bdd_server(request):
         else:
             os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = siteurl_fqdn
 
-    return live_server(request)
+    return live_server
 
 
 @pytest.fixture(scope='function', autouse=True)

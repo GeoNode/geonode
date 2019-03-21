@@ -19,7 +19,7 @@
 #
 #########################################################################
 
-##### Settings to be included last
+# Settings to be included last
 
 ###############################################
 # Master Geosite settings
@@ -31,7 +31,7 @@
 try:
     # load in local_settings from system installed geonode
     execfile(os.path.join(GEONODE_ROOT, 'local_settings.py'))
-except:
+except BaseException:
     # there are no system geonode local_settings to import
     pass
 
@@ -39,7 +39,7 @@ except:
 try:
     # load in local_settings (usually for setting SITEURL and DATABASES for production)
     execfile(os.path.join(SITE_ROOT, '../', 'local_settings.py'))
-except:
+except BaseException:
     # there are no master local_settings to import
     pass
 
@@ -47,7 +47,7 @@ except:
 try:
     # load in local_settings (usually for setting SITEURL and DATABASES for production)
     execfile(os.path.join(SITE_ROOT, 'local_settings.py'))
-except:
+except BaseException:
     # there are no site local_settings to import
     pass
 
@@ -78,7 +78,7 @@ if SITE_DATABASES:
 
 # Update apps if site has own apps
 if SITE_APPS:
-	INSTALLED_APPS += SITE_APPS
+    INSTALLED_APPS += SITE_APPS
 
 # Put static files in root
 STATIC_ROOT = os.path.join(SERVE_PATH, 'static')
@@ -111,6 +111,7 @@ if DATASTORE in DATABASES.keys():
 # DEBUG_TOOLBAR can interfere with Django - keep it off until needed
 if DEBUG_TOOLBAR:
     DEBUG_TOOLBAR_PATCH_SETTINGS = False
+
     def show_if_superuser(request):
         return True if request.user.is_superuser else False
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)

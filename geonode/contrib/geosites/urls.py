@@ -24,7 +24,7 @@ from django.views.generic import TemplateView
 from geonode.urls import urlpatterns
 from .api import api
 from .views import site_layer_detail, site_document_detail, site_map_detail, layer_acls, \
-        ajax_login, ajax_lookup, SiteLoginView
+    ajax_login, ajax_lookup, SiteLoginView
 
 from geonode.geoserver import views
 from geonode.layers import views as layers_views

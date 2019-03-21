@@ -211,7 +211,7 @@ def get_highest_priority():
               http://<host>:<port>/geoserver/rest/geofence/rules.json?page=(count-1)&entries=1
         """
         headers = {'Content-type': 'application/json'}
-        r = requests.get(url + 'rest/geofence/rules.json?page=' + str(rules_count-1) + '&entries=1',
+        r = requests.get(url + 'rest/geofence/rules.json?page=' + str(rules_count - 1) + '&entries=1',
                          headers=headers,
                          auth=HTTPBasicAuth(user, passwd))
         if (r.status_code < 200 or r.status_code > 201):
@@ -568,7 +568,7 @@ def _get_geofence_payload(layer, workspace, access, user=None, group=None,
     layer_el.text = layer
     access_el = etree.SubElement(root_el, "access")
     access_el.text = access
-    if service is not None and service is not "*":
+    if service is not None and service != "*":
         service_el = etree.SubElement(root_el, "service")
         service_el.text = service
     return etree.tostring(root_el)

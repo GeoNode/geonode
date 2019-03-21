@@ -402,11 +402,11 @@ try:
 except ValueError:
     # fallback to regular list of values separated with misc chars
     ALLOWED_DOCUMENT_TYPES = [
-    'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png',
-    'ppt', 'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml',
-    'zip', 'gz', 'qml'
-] if os.getenv('ALLOWED_DOCUMENT_TYPES') is None \
-else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_DOCUMENT_TYPES'))
+        'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png',
+        'ppt', 'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml',
+        'zip', 'gz', 'qml'
+    ] if os.getenv('ALLOWED_DOCUMENT_TYPES') is None \
+        else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_DOCUMENT_TYPES'))
 
 MAX_DOCUMENT_SIZE = int(os.getenv('MAX_DOCUMENT_SIZE ', '2'))  # MB
 
@@ -652,7 +652,17 @@ LOCKDOWN_GEONODE = strtobool(os.getenv('LOCKDOWN_GEONODE', 'False'))
 # Add additional paths (as regular expressions) that don't require
 # authentication.
 # - authorized exempt urls needed for oauth when GeoNode is set to lockdown
-AUTH_EXEMPT_URLS = (r'^/?$', '/gs/*', '/static/*', '/o/*', '/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/api/layers',)
+AUTH_EXEMPT_URLS = (
+    r'^/?$',
+    '/gs/*',
+    '/static/*',
+    '/o/*',
+    '/api/o/*',
+    '/api/roles',
+    '/api/adminRole',
+    '/api/users',
+    '/api/layers',
+)
 
 ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID', '-1')
 GUARDIAN_GET_INIT_ANONYMOUS_USER = os.getenv(
@@ -712,7 +722,8 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 # per-deployment settings should go here
 SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'localhost')
 SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', 8000)
-_default_siteurl = "http://%s:%s/" % (SITE_HOST_NAME, SITE_HOST_PORT) if SITE_HOST_PORT else "http://%s/" % SITE_HOST_NAME
+_default_siteurl = "http://%s:%s/" % (SITE_HOST_NAME,
+                                      SITE_HOST_PORT) if SITE_HOST_PORT else "http://%s/" % SITE_HOST_NAME
 SITEURL = os.getenv('SITEURL', _default_siteurl)
 
 # we need hostname for deployed
@@ -728,7 +739,7 @@ LOGIN_URL = os.getenv('LOGIN_URL', '{}account/login/'.format(SITEURL))
 LOGOUT_URL = os.getenv('LOGOUT_URL', '{}account/logout/'.format(SITEURL))
 
 ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
-ACCOUNT_LOGOUT_REDIRECT_URL =  os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
+ACCOUNT_LOGOUT_REDIRECT_URL = os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
 
 # Backend
 DEFAULT_WORKSPACE = os.getenv('DEFAULT_WORKSPACE', 'geonode')
@@ -759,7 +770,9 @@ GEOSERVER_PUBLIC_PORT = os.getenv(
     'GEOSERVER_PUBLIC_PORT', 8000
 )
 
-_default_public_location = 'http://{}:{}/gs/'.format(GEOSERVER_PUBLIC_HOST, GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/gs/'.format(GEOSERVER_PUBLIC_HOST)
+_default_public_location = 'http://{}:{}/gs/'.format(
+    GEOSERVER_PUBLIC_HOST,
+    GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/gs/'.format(GEOSERVER_PUBLIC_HOST)
 
 GEOSERVER_WEB_UI_LOCATION = os.getenv(
     'GEOSERVER_WEB_UI_LOCATION', GEOSERVER_LOCATION
@@ -807,7 +820,7 @@ OGC_SERVER = {
         % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
         # 'datastore',
-        'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE',''),
+        'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE', ''),
         'PG_GEOGIG': False,
         'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '5')),
         'MAX_RETRIES': int(os.getenv('OGC_REQUEST_MAX_RETRIES', '5')),
@@ -1086,12 +1099,12 @@ if HAYSTACK_SEARCH:
     if 'haystack' not in INSTALLED_APPS:
         INSTALLED_APPS += ('haystack', )
     HAYSTACK_CONNECTIONS = {
-       'default': {
-           'ENGINE': 'haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine',
-           'URL': os.getenv('HAYSTACK_ENGINE_URL', 'http://127.0.0.1:9200/'),
-           'INDEX_NAME': os.getenv('HAYSTACK_ENGINE_INDEX_NAME', 'haystack'),
-           },
-       }
+        'default': {
+            'ENGINE': 'haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine',
+            'URL': os.getenv('HAYSTACK_ENGINE_URL', 'http://127.0.0.1:9200/'),
+            'INDEX_NAME': os.getenv('HAYSTACK_ENGINE_INDEX_NAME', 'haystack'),
+        },
+    }
     HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
     HAYSTACK_SEARCH_RESULTS_PER_PAGE = int(os.getenv('HAYSTACK_SEARCH_RESULTS_PER_PAGE', '200'))
 
@@ -1685,12 +1698,12 @@ GEOTIFF_IO_BASE_URL = os.getenv(
 if USE_WORLDMAP:
     GEONODE_CLIENT_LOCATION = '/static/worldmap_client/'
     INSTALLED_APPS += (
-            'geoexplorer-worldmap',
-            'geonode.contrib.worldmap.gazetteer',
-            'geonode.contrib.worldmap.wm_extra',
-            'geonode.contrib.worldmap.mapnotes',
-            'geonode.contrib.createlayer',
-        )
+        'geoexplorer-worldmap',
+        'geonode.contrib.worldmap.gazetteer',
+        'geonode.contrib.worldmap.wm_extra',
+        'geonode.contrib.worldmap.mapnotes',
+        'geonode.contrib.createlayer',
+    )
     # WorldMap Gazetter settings
     USE_GAZETTEER = True
     GAZETTEER_DB_ALIAS = 'default'

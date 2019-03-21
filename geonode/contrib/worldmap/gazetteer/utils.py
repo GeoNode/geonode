@@ -41,7 +41,7 @@ def get_geometry_type(layer):
         cur.execute("select type, f_geometry_column, srid from geometry_columns where f_table_name = '%s'" % layer.name)
         result = cur.fetchone()
         return result
-    except Exception, e:
+    except Exception as e:
         logger.error("Error retrieving type for PostGIS table %s:%s", layer.name, str(e))
         raise
     finally:
@@ -57,7 +57,7 @@ def getGazetteerEntry(input_id):
             posts.append({'placename': entry.place_name, 'coordinates': (entry.longitude, entry.latitude),
                           'source': formatSourceLink(entry.layer_name), 'id': entry.id})
         return posts
-    except Exception, e:
+    except Exception as e:
         logger.error("Error retrieving results for gazetteer by id %d:%s", input_id, str(e))
         raise
 
@@ -138,20 +138,20 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 
     matchingEntries = (GazetteerEntry.objects.extra(
         where=['placename_tsv @@ to_tsquery(%s)'],
-        params=[re.sub("\s+", " & ", place_name.strip()) + ":*"]).filter(criteria))[:500] \
+        params=[re.sub(r"\s+", " & ", place_name.strip()) + ":*"]).filter(criteria))[:500] \
         if settings.GAZETTEER_FULLTEXTSEARCH else GazetteerEntry.objects.filter(criteria)
     posts = []
     for entry in matchingEntries:
         posts.append(
-                        {
-                            'placename': entry.place_name,
-                            'coordinates': (entry.latitude, entry.longitude),
-                            'source': formatSourceLink(entry.layer_name),
-                            'start_date': entry.start_date,
-                            'end_date': entry.end_date,
-                            'gazetteer_id': entry.id
-                        }
-                    )
+            {
+                'placename': entry.place_name,
+                'coordinates': (entry.latitude, entry.longitude),
+                'source': formatSourceLink(entry.layer_name),
+                'start_date': entry.start_date,
+                'end_date': entry.end_date,
+                'gazetteer_id': entry.id
+            }
+        )
     return posts
 
 
@@ -177,7 +177,7 @@ def add_to_gazetteer(layer, name_attributes, start_attribute=None,
         field_name = "l.\"" + date_attribute.attribute + "\""
         date_format = []
         if "xsd:date" not in date_attribute.attribute_type and \
-        date_attribute.gazetteerattribute.date_format is not None:
+                date_attribute.gazetteerattribute.date_format is not None:
             # This could be in any of multiple formats, and postgresql needs a format pattern to convert it.
             # User should supply this format when adding the layer attribute to the gazetteer
             date_format.append(
@@ -201,7 +201,7 @@ def add_to_gazetteer(layer, name_attributes, start_attribute=None,
         date_format = []
         date_format.append(
             "TO_CHAR(TO_DATE(CAST('{}' AS TEXT), 'YYYY-MM-DD BC'), 'YYYY-MM-DD BC')".format(
-            metadata_date))
+                metadata_date))
         date_format.append(
             "CAST(TO_CHAR(TO_DATE(CAST('{}' AS TEXT), 'YYYY-MM-DD BC'), 'J') AS integer)".format(
                 metadata_date))
@@ -294,9 +294,9 @@ def add_to_gazetteer(layer, name_attributes, start_attribute=None,
         # detect column type, needed by dblink
         cur = conn.cursor(layer.store)
         cur.execute(
-                        "select data_type from information_schema.columns where table_name = '%s'"
-                        " and column_name = '%s';"
-                        % (layer_name, name)
+            "select data_type from information_schema.columns where table_name = '%s'"
+            " and column_name = '%s';"
+            % (layer_name, name)
         )
         attribute_type = cur.fetchone()[0]
         cur.close()
@@ -360,7 +360,7 @@ def add_to_gazetteer(layer, name_attributes, start_attribute=None,
         conn.commit()
         cur.close()
         return "Done"
-    except Exception, e:
+    except Exception as e:
         logger.error("Error retrieving type for PostGIS table %s:%s", layer_name, str(e))
         raise
     finally:

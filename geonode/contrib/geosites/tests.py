@@ -68,8 +68,8 @@ class SiteTests(ResourceTestCaseMixin):
                                                 'pk': self.slave_site.pk})
         self.api_layer_url = reverse('api_dispatch_list',
                                      kwargs={
-                                        'api_name': 'api',
-                                        'resource_name': 'layers'})
+                                         'api_name': 'api',
+                                         'resource_name': 'layers'})
 
         self.anonymous_user = get_anonymous_user()
         self.slave2_data = {'name': 'Slave2',

@@ -1,12 +1,11 @@
 import json
-import logging
 import os
 import re
 import ast
 
 import docker
 
-from invoke import run, task
+from invoke import task
 
 BOOTSTRAP_IMAGE_CHEIP = 'codenvy/che-ip:nightly'
 
@@ -42,6 +41,8 @@ def update(ctx):
     ):
         ctx.run("echo export GEOSERVER_PUBLIC_LOCATION=\
 http://{public_fqdn}/gs/ >> {override_fn}".format(**envs), pty=True)
+        ctx.run("echo export GEOSERVER_WEB_UI_LOCATION=\
+http://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
         ctx.run("echo export SITEURL=\
 http://{public_fqdn}/ >> {override_fn}".format(**envs), pty=True)
 
@@ -146,7 +147,7 @@ def _container_exposed_port(component, instname):
         )
         for key in json.loads(ports_dict):
             port = re.split('/tcp', key)[0]
-    except:
+    except BaseException:
         port = 80
     return port
 

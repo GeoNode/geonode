@@ -352,7 +352,7 @@ class CommonModelApi(ModelResource):
             else:
                 words = [
                     w for w in re.split(
-                        '\W',
+                        r'\W',
                         query,
                         flags=re.UNICODE) if w]
                 for i, search_word in enumerate(words):
@@ -964,7 +964,7 @@ class MapResource(CommonModelApi):
             ]
             for layer in map_layers:
                 formatted_map_layer = model_to_dict(
-                     layer, fields=map_layer_fields)
+                    layer, fields=map_layer_fields)
                 formatted_layers.append(formatted_map_layer)
             formatted_obj['layers'] = formatted_layers
             formatted_objects.append(formatted_obj)

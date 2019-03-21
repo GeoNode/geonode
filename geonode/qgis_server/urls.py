@@ -160,8 +160,8 @@ urlpatterns = [
         name='set-thumbnail'
     ),
     url(
-       r'^download-qlr/(?P<layername>[\w]*)$',
-       download_qlr,
-       name='download-qlr'
+        r'^download-qlr/(?P<layername>[\w]*)$',
+        download_qlr,
+        name='download-qlr'
     ),
 ]

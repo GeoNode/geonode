@@ -99,18 +99,18 @@ def get_esri_extent(esriobj):
     try:
         if 'fullExtent' in esriobj._json_struct:
             extent = esriobj._json_struct['fullExtent']
-    except Exception, err:
+    except Exception as err:
         logger.error(err, exc_info=True)
 
     try:
         if 'extent' in esriobj._json_struct:
             extent = esriobj._json_struct['extent']
-    except Exception, err:
+    except Exception as err:
         logger.error(err, exc_info=True)
 
     try:
         srs = extent['spatialReference']['wkid']
-    except Exception, err:
+    except Exception as err:
         logger.error(err, exc_info=True)
 
     return [extent, srs]
