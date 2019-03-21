@@ -139,10 +139,10 @@ class PermissionLevelMixin(object):
         if self.__class__.__name__ == 'Layer':
             if anonymous_can_view and settings.OGC_SERVER['default'].get(
                     "GEOFENCE_SECURITY_ENABLED", False):
-                    if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-                        set_geofence_all(self)
-                    else:
-                        self.get_self_resource().set_dirty_state()
+                if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+                    set_geofence_all(self)
+                else:
+                    self.get_self_resource().set_dirty_state()
             # only for layer owner
             assign_perm('change_layer_data', self.owner, self)
             assign_perm('change_layer_style', self.owner, self)
