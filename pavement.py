@@ -342,7 +342,6 @@ def win_install_deps(options):
     win_packages = {
         # required by transifex-client
         "Py2exe": dev_config['WINDOWS']['py2exe'],
-        "Nose": dev_config['WINDOWS']['nose'],
         # the wheel 1.9.4 installs but pycsw wants 1.9.3, which fails to compile
         # when pycsw bumps their pyproj to 1.9.4 this can be removed.
         "PyProj": dev_config['WINDOWS']['pyproj'],
@@ -361,9 +360,9 @@ def win_install_deps(options):
         os.remove(tempfile)
     if failed and sys.maxsize > 2**32:
         print "64bit architecture is not currently supported"
-        print "try finding the 64 binaries for py2exe, nose, and pyproj"
+        print "try finding the 64 binaries for py2exe, and pyproj"
     elif failed:
-        print "install failed for py2exe, nose, and/or pyproj"
+        print "install failed for py2exe, and/or pyproj"
     else:
         print "Windows dependencies now complete.  Run pip install -e geonode --use-mirrors"
 
