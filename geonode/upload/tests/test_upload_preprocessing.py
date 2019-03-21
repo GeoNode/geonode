@@ -34,7 +34,7 @@ class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
 
     MOCK_PREFIX = "geonode.upload.upload_preprocessing"
 
-    @mock.patch(MOCK_PREFIX+".convert_kml_ground_overlay_to_geotiff", autospec=True)
+    @mock.patch(MOCK_PREFIX + ".convert_kml_ground_overlay_to_geotiff", autospec=True)
     def test_preprocess_files_kml_ground_overlay(self, mock_handler):
         dirname = "phony"
         kml_path = "fake_path.kml"
@@ -71,9 +71,9 @@ class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
             kml_doc, ns, "north")
         self.assertEqual(result, fake_north)
 
-    @mock.patch(MOCK_PREFIX+".subprocess.check_output", autospec=True)
-    @mock.patch(MOCK_PREFIX+".get_kml_doc", autospec=True)
-    @mock.patch(MOCK_PREFIX+"._extract_bbox_param", autospec=True)
+    @mock.patch(MOCK_PREFIX + ".subprocess.check_output", autospec=True)
+    @mock.patch(MOCK_PREFIX + ".get_kml_doc", autospec=True)
+    @mock.patch(MOCK_PREFIX + "._extract_bbox_param", autospec=True)
     def test_convert_kml_ground_overlay_to_geotiff(self, mock_extract_param,
                                                    mock_get_kml_doc,
                                                    mock_subprocess):
@@ -87,7 +87,7 @@ class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
         mock_extract_param.side_effect = [fake_west, fake_north,
                                           fake_east, fake_south]
         mock_open = mock.mock_open(read_data=fake_kml_bytes)
-        with mock.patch(self.MOCK_PREFIX+".open", mock_open):
+        with mock.patch(self.MOCK_PREFIX + ".open", mock_open):
             upload_preprocessing.convert_kml_ground_overlay_to_geotiff(
                 "fake_kml_path",
                 fake_other_file_path

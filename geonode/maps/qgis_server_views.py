@@ -170,11 +170,11 @@ class MapCreateView(CreateView):
                                               layer_params=json.dumps(config),
                                               visibility=True,
                                               source_params=json.dumps({
-                                                "ptype": service.ptype,
-                                                "remote": True,
-                                                "url": url,
-                                                "name": service.name,
-                                                "title": "[R] %s" % service.title}))
+                                                  "ptype": service.ptype,
+                                                  "remote": True,
+                                                  "url": url,
+                                                  "name": service.name,
+                                                  "title": "[R] %s" % service.title}))
                     else:
                         ogc_server_url = urlparse.urlsplit(
                             ogc_server_settings.PUBLIC_LOCATION).netloc
@@ -183,7 +183,7 @@ class MapCreateView(CreateView):
                         if access_token and ogc_server_url == layer_url and \
                                 'access_token' not in layer.ows_url:
                             url = layer.ows_url + '?access_token=' + \
-                                  access_token
+                                access_token
                         else:
                             url = layer.ows_url
                         map_layers = MapLayer(

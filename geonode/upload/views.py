@@ -64,7 +64,7 @@ from .forms import (
 from .models import Upload, UploadFile
 from .files import (get_scan_hint,
                     scan_file
-)
+                    )
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,

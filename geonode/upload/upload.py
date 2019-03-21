@@ -214,7 +214,7 @@ def upload(
               end_time_transform_type=end_time_transform_type,
               time_format=None, srs=None, use_big_date=use_big_date)
 
-    utils.run_import(upload_session, async=False)
+    utils.run_import(upload_session, async_upload=False)
 
     final_step(upload_session, user)
 

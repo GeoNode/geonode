@@ -142,9 +142,9 @@ def action_add_layer(instance, sender, created, **kwargs):
     if created:
         username = instance.owner.username
         action = Action(
-                        action_type='layer_create',
-                        description='User %s created layer with id %s' % (username, instance.id),
-                        args=instance.uuid,
+            action_type='layer_create',
+            description='User %s created layer with id %s' % (username, instance.id),
+            args=instance.uuid,
         )
         action.save()
 
@@ -152,9 +152,9 @@ def action_add_layer(instance, sender, created, **kwargs):
 def action_delete_layer(instance, sender, **kwargs):
     username = instance.owner.username
     action = Action(
-                    action_type='layer_delete',
-                    description='User %s deleted layer with id %s' % (username, instance.id),
-                    args=instance.uuid,
+        action_type='layer_delete',
+        description='User %s deleted layer with id %s' % (username, instance.id),
+        args=instance.uuid,
     )
     action.save()
 
@@ -163,9 +163,9 @@ def action_add_map(instance, sender, created, **kwargs):
     if created:
         username = instance.owner.username
         action = Action(
-                        action_type='map_create',
-                        description='User %s created map with id %s' % (username, instance.id),
-                        args=instance.uuid,
+            action_type='map_create',
+            description='User %s created map with id %s' % (username, instance.id),
+            args=instance.uuid,
         )
         action.save()
 
@@ -173,9 +173,9 @@ def action_add_map(instance, sender, created, **kwargs):
 def action_delete_map(instance, sender, **kwargs):
     username = instance.owner.username
     action = Action(
-                    action_type='map_delete',
-                    description='User %s deleted map with id %s' % (username, instance.id),
-                    args=instance.uuid,
+        action_type='map_delete',
+        description='User %s deleted map with id %s' % (username, instance.id),
+        args=instance.uuid,
     )
     action.save()
 

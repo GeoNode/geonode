@@ -107,6 +107,6 @@ def forgot_username(request):
                 message = _("No user could be found with that email address.")
 
     return render(request, 'people/forgot_username_form.html', context={
-                                  'message': message,
-                                  'form': username_form
-                              })
+        'message': message,
+        'form': username_form
+    })

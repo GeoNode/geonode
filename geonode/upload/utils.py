@@ -53,9 +53,9 @@ def _log(msg, *args):
 
 
 iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012]))' +
-                     '([/-]?(?P<mday>(0[1-9])|([12]\d)|(3[01])))?)?(?:T(?P<hour>([01][0-9])' +
-                     '|(?:2[0123]))(\:?(?P<min>[0-5][0-9])(\:?(?P<sec>[0-5][0-9]([\,\.]\d{1,10})?))?)' +
-                     '?(?:Z|([\-+](?:([01][0-9])|(?:2[0123]))(\:?(?:[0-5][0-9]))?))?)?))$').match
+                     r'([/-]?(?P<mday>(0[1-9])|([12]\d)|(3[01])))?)?(?:T(?P<hour>([01][0-9])' +
+                     r'|(?:2[0123]))(\:?(?P<min>[0-5][0-9])(\:?(?P<sec>[0-5][0-9]([\,\.]\d{1,10})?))?)' +
+                     r'?(?:Z|([\-+](?:([01][0-9])|(?:2[0123]))(\:?(?:[0-5][0-9]))?))?)?))$').match
 
 _SUPPORTED_CRS = getattr(settings, 'UPLOADER', None)
 if _SUPPORTED_CRS:
@@ -383,7 +383,7 @@ def next_step_response(req, upload_session, force_ajax=True):
             return run_response(req, upload_session)
         else:
             # on sync we want to run the import and advance to the next step
-            run_import(upload_session, async=False)
+            run_import(upload_session, async_upload=False)
             return next_step_response(req, upload_session,
                                       force_ajax=force_ajax)
     session_id = None
@@ -491,7 +491,7 @@ def _get_time_dimensions(layer, upload_session):
                     if layer_values:
                         for feat in layer_values:
                             if feat.get(a['name'])['value'] and \
-                            iso8601(str(feat.get(a['name'])['value'])):
+                                    iso8601(str(feat.get(a['name'])['value'])):
                                 if a not in att_list:
                                     att_list.append(a)
                     else:
@@ -549,7 +549,7 @@ def layer_eligible_for_time_dimension(
     return (_is_eligible, layer_values)
 
 
-def run_import(upload_session, async=_ASYNC_UPLOAD):
+def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
     """Run the import, possibly asynchronously.
 
     Returns the target datastore.
@@ -564,7 +564,7 @@ def run_import(upload_session, async=_ASYNC_UPLOAD):
             raise Exception(_('unknown item state: %s' % task.state))
     elif import_session.state == 'PENDING' and task.target.store_type == 'coverageStore':
         if task.state == 'READY':
-            import_session.commit(async)
+            import_session.commit(async_upload)
             import_execution_requested = True
         if task.state == 'ERROR':
             progress = task.get_progress()
@@ -606,7 +606,7 @@ def run_import(upload_session, async=_ASYNC_UPLOAD):
     _log('running import session')
     # run async if using a database
     if not import_execution_requested:
-        import_session.commit(async)
+        import_session.commit(async_upload)
 
     # @todo check status of import session - it may fail, but due to protocol,
     # this will not be reported during the commit
@@ -745,7 +745,7 @@ def make_geogig_rest_payload(author_name='admin',
         pg_geogig_db = settings.DATABASES[datastore]
         schema = 'public'
         if 'OPTIONS' in pg_geogig_db and 'options' in pg_geogig_db['OPTIONS']:
-            detected_schemas = re.findall('((?<=search_path=).*)\s?',
+            detected_schemas = re.findall(r'((?<=search_path=).*)\s?',
                                           pg_geogig_db['OPTIONS']['options'])
             if len(detected_schemas) > 0:
                 schemas = detected_schemas[0]
@@ -920,7 +920,7 @@ Schema= the_geom:Polygon,location:String,{time_attr}
 CheckAuxiliaryMetadata={aux_metadata_flag}
 SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi"""
 
-    datastore_template = """SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
+    datastore_template = r"""SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
 host={db_host}
 port={db_port}
 database={db_name}

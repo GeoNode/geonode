@@ -62,7 +62,7 @@ try:
     from geonode.settings import TEST_RUNNER_KEEPDB, TEST_RUNNER_PARALLEL
     _keepdb = '-k' if TEST_RUNNER_KEEPDB else ''
     _parallel = ('--parallel=%s' % TEST_RUNNER_PARALLEL) if TEST_RUNNER_PARALLEL else ''
-except:
+except BaseException:
     _keepdb = ''
     _parallel = ''
 
@@ -103,8 +103,14 @@ def grab(src, dest, name):
             block_size = 1024
             wrote = 0
             with open('output.bin', 'wb') as f:
-                for data in tqdm(r.iter_content(block_size), total=math.ceil(total_size//block_size) , unit='KB', unit_scale=False):
-                    wrote = wrote  + len(data)
+                for data in tqdm(
+                        r.iter_content(block_size),
+                        total=math.ceil(
+                            total_size //
+                            block_size),
+                        unit='KB',
+                        unit_scale=False):
+                    wrote = wrote + len(data)
                     f.write(data)
             print(" total_size [%d] / wrote [%d] " % (total_size, wrote))
             if total_size != 0 and wrote != total_size:
@@ -223,7 +229,7 @@ def _robust_rmtree(path, logger=None, max_retries=5):
         try:
             shutil.rmtree(path)
             return
-        except OSError as e:
+        except OSError:
             if logger:
                 info('Unable to remove path: %s' % path)
                 info('Retrying after %d seconds' % i)
@@ -524,8 +530,8 @@ def stop_geoserver():
         # awk '{print $2}'",
         proc = subprocess.Popen(
             "ps -ef | grep -i -e 'geoserver' | awk '{print $2}'",
-                                shell=True,
-                                stdout=subprocess.PIPE)
+            shell=True,
+            stdout=subprocess.PIPE)
         for pid in proc.stdout:
             info('Stopping geoserver (process number %s)' % int(pid))
             os.kill(int(pid), signal.SIGKILL)
@@ -536,7 +542,7 @@ def stop_geoserver():
                 os.kill(int(pid), 0)
                 # raise Exception("""wasn't able to kill the process\nHINT:use
                 # signal.SIGKILL or signal.SIGABORT""")
-            except OSError as ex:
+            except OSError:
                 continue
     except Exception as e:
         info(e)
@@ -610,7 +616,8 @@ def start_django():
         # "notifications.events",
         # "geonode.layer.viewer"
     ]
-    sh('%s celery -A geonode.celery_app:app worker -Q %s -B -E -l INFO %s' % (settings, ",".join(celery_queues),foreground))
+    sh('%s celery -A geonode.celery_app:app worker -Q %s -B -E -l INFO %s' %
+       (settings, ",".join(celery_queues), foreground))
 
     if ASYNC_SIGNALS:
         sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
@@ -712,7 +719,7 @@ def start_geoserver(options):
                 loggernullpath = "../../downloaded/null.txt"
 
             try:
-                sh(('%(javapath)s -version') % locals() )
+                sh(('%(javapath)s -version') % locals())
             except BaseException:
                 print "Java was not found in your path.  Trying some other options: "
                 javapath_opt = None
@@ -928,7 +935,8 @@ def run_tests(options):
     """
     if options.get('coverage'):
         prefix = 'coverage run --branch --source=geonode \
-            --omit="*/management/*,*/__init__*,*/views*,*/tasks*,*/test*,*/wsgi*,*/middleware*,*/context_processors*,geonode/qgis_server/*,geonode/contrib/*,geonode/upload/*"'
+            --omit="*/management/*,*/__init__*,*/views*,*/tasks*,*/test*,*/wsgi*,*/middleware*,\
+                */context_processors*,geonode/qgis_server/*,geonode/contrib/*,geonode/upload/*"'
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
@@ -966,7 +974,7 @@ def _reset():
     from geonode import settings
     sh("rm -rf {path}".format(
         path=os.path.join(settings.PROJECT_ROOT, 'development.db')
-        )
+    )
     )
     sh("rm -rf geonode/development.db")
     sh("rm -rf geonode/uploaded/*")
