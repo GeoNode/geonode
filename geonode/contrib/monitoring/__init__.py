@@ -41,8 +41,8 @@ class MonitoringAppConfig(NotificationsAppConfigBase):
     NOTIFICATIONS = ((NOTIFICATION_NAME,
                       _("Monitoring alert"),
                       _("Alert situation reported by monitoring"),
-                     ),
-                    )
+                      ),
+                     )
 
     def ready(self):
         super(MonitoringAppConfig, self).ready()

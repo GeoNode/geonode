@@ -69,7 +69,7 @@ def _build_state_layer(layer):
     link_netkml = Link.objects.get(resource=layer.get_self_resource(), name='View in Google Earth')
     url_map = "{base}{context}".format(
         base=site_url,
-        context=reverse("new_map")+"?layer="+layer.service_typename)
+        context=reverse("new_map") + "?layer=" + layer.service_typename)
 
     state['url_detail'] = url_detail
     state['url_shp'] = link_shp.url if link_shp else ''

@@ -235,10 +235,10 @@ def create_gs_layer(name, title, geometry_type, attributes=None):
            "<crs>EPSG:4326</crs></latLonBoundingBox>"
            "{attributes}"
            "</featureType>").format(
-                name=name.encode('UTF-8', 'strict'), native_name=native_name.encode('UTF-8', 'strict'),
-                title=title.encode('UTF-8', 'strict'),
-                minx=BBOX[0], maxx=BBOX[1], miny=BBOX[2], maxy=BBOX[3],
-                attributes=attributes_block)
+        name=name.encode('UTF-8', 'strict'), native_name=native_name.encode('UTF-8', 'strict'),
+        title=title.encode('UTF-8', 'strict'),
+        minx=BBOX[0], maxx=BBOX[1], miny=BBOX[2], maxy=BBOX[3],
+        attributes=attributes_block)
 
     url = ('%s/workspaces/%s/datastores/%s/featuretypes'
            % (ogc_server_settings.internal_rest, workspace.name, datastore.name))

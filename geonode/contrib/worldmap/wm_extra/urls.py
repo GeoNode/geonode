@@ -48,14 +48,14 @@ urlpatterns = [
     url(r'^maps/history/(?P<mapid>\d+)/?$', ajax_snapshot_history, name='ajax_snapshot_history'),
     # layers
     url(
-            r'^data/(?P<layername>[^/]*)$',
-            RedirectView.as_view(pattern_name='layer_detail', permanent=False)
-       ),
+        r'^data/(?P<layername>[^/]*)$',
+        RedirectView.as_view(pattern_name='layer_detail', permanent=False)
+    ),
     url(
         r'^layers/(?P<layername>[^/]*)/searchable-fields$',
         layer_searchable_fields,
         name='layer_searchable_fields'
-       ),
+    ),
     url(
         r'^data/(?P<layername>[^/]*)/ajax-edit-check/?$',
         ajax_layer_edit_check,

@@ -31,6 +31,7 @@ from geonode.api.api import TagResource, TopicCategoryResource, RegionResource, 
     ProfileResource, GroupResource
 from geonode.api.resourcebase_api import CommonModelApi, LayerResource, MapResource, DocumentResource, \
     ResourceBaseResource
+
 from geonode.api.urls import api
 from geonode.base.models import ResourceBase
 from geonode.groups.models import GroupProfile

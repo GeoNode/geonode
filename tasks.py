@@ -1,12 +1,11 @@
 import json
-import logging
 import os
 import re
 import ast
 
 import docker
 
-from invoke import run, task
+from invoke import task
 
 BOOTSTRAP_IMAGE_CHEIP = 'codenvy/che-ip:nightly'
 
@@ -148,7 +147,7 @@ def _container_exposed_port(component, instname):
         )
         for key in json.loads(ports_dict):
             port = re.split('/tcp', key)[0]
-    except:
+    except BaseException:
         port = 80
     return port
 
