@@ -67,7 +67,6 @@ kombu==4.4.0
 lxml==3.6.2
 mercantile==1.0.4
 mock==2.0.0
-nose==1.3.7
 oauthlib==2.1.0
 OWSLib==0.16.0
 Paver==1.3.4
