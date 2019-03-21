@@ -60,7 +60,7 @@ gsconfig>=1.0.10
 gunicorn==19.9.0
 httplib2==0.10.3
 inflection==0.3.1
-invoke==0.22.1
+invoke==1.2.0
 ipython==5.8.0
 jdcal==1.4
 kombu==4.4.0
