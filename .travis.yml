@@ -100,7 +100,6 @@ matrix:
             MONITORING_ENABLED: 'False'
             SESSION_EXPIRED_CONTROL_ENABLED: 'False'
             CELERY_ALWAYS_EAGER: 'True'
-            TEST_RUN_SELENIUM: 'True'
     - name: "QGis Server-backend Core Modules Smoke Tests"
       python: 2.7
       virtualenv:
@@ -184,6 +183,14 @@ before_install:
     fi
 
 install:
+  - if [ "$TEST_RUN_INTEGRATION_BDD" = "True" ]; then
+      /usr/bin/Xvfb :99 -ac -screen 0 1024x768x8 & export DISPLAY=":99";
+      GECKODRIVER_VERSION="v0.24.0";
+      wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -O geckodriver.tar.gz;
+      mkdir bin;
+      tar zxf geckodriver.tar.gz -C bin;
+      export PATH=$PATH:$PWD/bin;
+    fi
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
       pip install -r geonode-selenium/requirements.txt;
       wget https://download.osgeo.org/geotiff/samples/spot/chicago/UTM2GTIF.TIF -P geonode-selenium/data;

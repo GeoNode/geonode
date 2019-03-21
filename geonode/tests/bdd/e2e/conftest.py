@@ -39,7 +39,7 @@ from splinter import Browser
 @pytest.yield_fixture(scope='function', autouse=True)
 def en_browser(browser, bdd_server):
     """Browser login page from live server."""
-    browser = Browser()
+    browser = Browser('firefox', headless=True)
     en_browser = browser
     en_browser.visit(urljoin(bdd_server.url, '/account/login/'))
     yield en_browser
