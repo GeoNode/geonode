@@ -136,6 +136,31 @@ def invalidate_permissions_cache(request):
 
 
 @require_POST
+def attributes_sats_refresh(request):
+    from geonode.geoserver.helpers import set_attributes_from_geoserver
+    uuid = request.POST['uuid']
+    resource = get_object_or_404(ResourceBase, uuid=uuid)
+    can_change_data = request.user.has_perm(
+        'change_resourcebase',
+        resource)
+    layer = Layer.objects.get(id=resource.id)
+    if layer and can_change_data:
+        # recalculate the layer statistics
+        set_attributes_from_geoserver(layer, overwrite=True)
+        return HttpResponse(
+            json.dumps({'success': 'ok', 'message': 'Attributes/Stats Refreshed Successfully!'}),
+            status=200,
+            content_type='text/plain'
+        )
+    else:
+        return HttpResponse(
+            json.dumps({'success': 'false', 'message': 'You cannot modify this resource!'}),
+            status=200,
+            content_type='text/plain'
+        )
+
+
+@require_POST
 def invalidate_tiledlayer_cache(request):
     from .utils import set_geowebcache_invalidate_cache
     uuid = request.POST['uuid']
