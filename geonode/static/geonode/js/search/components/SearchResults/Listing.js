@@ -1,76 +1,214 @@
 import React from "react";
-import Empty from "app/search/components/SearchResults/Empty";
+import getNewMapURL from "app/search/functions/getNewMapURL";
+import ellipseString from "app/helpers/ellipseString";
 
-export default class Results extends React.Component {
-  render = () => (
-    <article ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
-      <div class="col-lg-12 item-container">
-        <div class="col-lg-12 profile-avatar">
-          <div class="col-lg-4 item-thumb">
-            <a href="{{ item.detail_url }}">
-              <img ng-src="{{ item.thumbnail_url }}" />
-            </a>
-          </div>
-          <div class="col-lg-8 item-details">
-            <div class="row">
-              <div class="col-xs-10">
-                <p class="item-meta">
-                    <span class="item-category">{{ item.category__gn_description }}</span><br>
-                    <span class="item-category" ng-if="item.group"><a href="{{ item.site_url }}groups/group/{{ item.group }}/activity/"><i class="fa fa-group" aria-hidden="true" style="margin-right: 8px;"></i>{{ item.group_name }}</a><br></span>
-                    <span class="item-category" ng-if="item.has_time">
-                      <i class="fa fa-clock-o" aria-hidden="true" style="margin-right: 8px;"></i>{window.gettext("Temporal Series")}<br>
-                    </span>
-                </p>
-                <h4>
-                    <i ng-if="item.store_type == 'remoteStore'" title="Remote Service" class="fa fa-external-link fa-1" style="vertical-align:  middle;padding-right: 10px;"></i>
-                    <i ng-if="item.store_type == 'dataStore'" title="Vector Data" class="fa fa-pencil-square-o fa-1" style="vertical-align:  middle;padding-right: 10px;"></i>
-                    <i ng-if="item.store_type == 'coverageStore'" title="Raster Data" class="fa fa-picture-o fa-1" style="vertical-align:  middle;padding-right: 10px;"></i>
-                    <i ng-if="item.store_type == 'dataset'" title="File/Dataset" class="fa fa-newspaper-o fa-1" style="vertical-align:  middle;padding-right: 10px;"></i>
-                    <i ng-if="item.store_type == 'map'" title="Map" class="fa fa-map-o fa-1" style="vertical-align:  middle;padding-right: 10px;"></i>
-                    <a href="{{ item.detail_url }}">{{ item.title }}</a>
-                </h4>
-              </div>
-              <div class="col-xs-2">
-                <h4>
-                  <button
-                    class="btn btn-default btn-xs pull-right"
-                    ng-if="cart"
-                    ng-click="cart.toggleItem(item)"
-                    data-toggle="tooltip"
-                    data-placement="bottom"
-                    title="Select"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
-                </h4>
-              </div>
+const containsPath = (url, path) => url.indexOf(`/${path}/`) > -1;
+
+const getStyle = (condition, style = {}) => {
+  style.display = condition ? "block" : "none";
+  return style;
+};
+
+const dataButtonBaseStyle = {
+  verticalAlign: "middle",
+  paddingRight: 10
+};
+
+const getDataButtonStyle = (listing, dataType) =>
+  getStyle(listing.store_type === dataType, dataButtonBaseStyle);
+
+const Listing = listing => (
+  <article resource_id="{listing.id}" ng-cloak className="ng-cloak">
+    <div className="col-lg-12 item-container">
+      <div className="col-lg-12 profile-avatar">
+        <div className="col-lg-4 item-thumb">
+          <a href={listing.detail_url}>
+            <img ng-src={listing.thumbnail_url} />
+          </a>
+        </div>
+        <div className="col-lg-8 item-details">
+          <div className="row">
+            <div className="col-xs-10">
+              <p className="item-meta">
+                <span className="item-category">
+                  {listing.category__gn_description}
+                </span>
+                <br />
+                <span className="item-category" style={getStyle(listing.group)}>
+                  <a
+                    href={`${listing.site_url}groups/group/${listing.group}/activity/`}
+                  >
+                    <i
+                      className="fa fa-group"
+                      aria-hidden="true"
+                      style="margin-right: 8px;"
+                    />
+                    {listing.group_name}
+                  </a>
+                  <br />
+                </span>
+                <span
+                  className="item-category"
+                  style={getStyle(listing.has_time)}
+                >
+                  <i
+                    className="fa fa-clock-o"
+                    aria-hidden="true"
+                    style="margin-right: 8px;"
+                  />
+                  {window.gettext("Temporal Series")}
+                  <br />
+                </span>
+              </p>
+              <h4>
+                <i
+                  style={getDataButtonStyle(listing, "remoteStore")}
+                  title="Remote Service"
+                  className="fa fa-external-link fa-1"
+                />
+                <i
+                  style={getDataButtonStyle(listing, "dataStore")}
+                  title="Vector Data"
+                  className="fa fa-pencil-square-o fa-1"
+                />
+                <i
+                  style={getDataButtonStyle(listing, "coverageStore")}
+                  title="Raster Data"
+                  className="fa fa-picture-o fa-1"
+                />
+                <i
+                  style={getDataButtonStyle(listing, "dataset")}
+                  title="File/Dataset"
+                  className="fa fa-newspaper-o fa-1"
+                />
+                <i
+                  style={getDataButtonStyle(listing, "map")}
+                  title="Map"
+                  className="fa fa-map-o fa-1"
+                />
+                <a href={listing.detail_url}>{listing.title}</a>
+              </h4>
             </div>
-            <em ng-if="item.online && item.store_type == 'remoteStore'">
-              <span ng-if="item.online == true"><i class="fa fa-power-off text-success"></i> {window.gettext("Service is online")}</span>
-              <span ng-if="item.online == false"><i class="fa fa-power-off text-danger"></i> {window.gettext("Service is offline")}</span>
-            </em>
-            <div class="alert alert-danger" ng-if="item.dirty_state == true">{window.gettext("SECURITY NOT YET SYNCHRONIZED")}</div>
-            <div class="alert alert-warning" ng-if="item.dirty_state == false && item.is_approved == false">{window.gettext("PENDING APPROVAL")}</div>
-            <div class="alert alert-danger" ng-if="item.dirty_state == false && item.is_approved == true && item.is_published == false">{window.gettext("UNPUBLISHED")}</div>
+            <div className="col-xs-2">
+              <h4>
+                <button
+                  className="btn btn-default btn-xs pull-right"
+                  ng-if="cart"
+                  ng-click="cart.toggleItem(item)"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Select"
+                >
+                  <i
+                    ng-className="cart.getFaClass(item.id)"
+                    className="fa fa-lg"
+                  />
+                </button>
+              </h4>
+            </div>
+          </div>
+          <em
+            style={getStyle(
+              listing.online && listing.store_type === "remoteStore"
+            )}
+          >
+            <span style={getStyle(listing.online)}>
+              <i className="fa fa-power-off text-success" />{" "}
+              {window.gettext("Service is online")}
+            </span>
+            <span style={getStyle(!listing.online)}>
+              <i className="fa fa-power-off text-danger" />{" "}
+              {window.gettext("Service is offline")}
+            </span>
+          </em>
+          <div
+            className="alert alert-danger"
+            style={getStyle(listing.dirty_state)}
+          >
+            {window.gettext("SECURITY NOT YET SYNCHRONIZED")}
+          </div>
+          <div
+            className="alert alert-warning"
+            style={getStyle(!listing.dirty_state && !listing.is_approved)}
+          >
+            {window.gettext("PENDING APPROVAL")}
+          </div>
+          <div
+            className="alert alert-danger"
+            style={getStyle(
+              !listing.dirty_state &&
+                listing.is_approved &&
+                !listing.is_published
+            )}
+          >
+            {window.gettext("UNPUBLISHED")}
+          </div>
 
-            <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
-            <div class="row">
-              <div class="col-lg-12 item-items">
-                <ul class="list-inline">
-                  <li><a href="{{ item.site_url }}people/profile/{{ item.owner__username }}"><i class="fa fa-user"></i>{{ item.owner_name }}</a></li>
-                  <li><a href="{{ item.detail_url }}#info"><i class="fa fa-calendar-o"></i>{{ item.date|date:'d MMM y' }}</a></li>
-                  <li><a href="{{ item.detail_url }}"><i class="fa fa-eye"></i>{{ item.popular_count }}</a></li>
-                  <li><a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a></li>
-                  <li><a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a></li>
-                  <li><a ng-if="item.detail_url.indexOf('/layers/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
-                    <i class="fa fa-map-marker"></i>window.gettext("Create a Map")</a>
-                  </li>
-                  <li><a ng-if="item.detail_url.indexOf('/maps/') > -1" href="{{ item.site_url }}maps/{{item.id}}/view">
-                    <i class="fa fa-map-marker"></i>window.gettext("View Map")</a>
-                  </li>
-                </ul>
-              </div>
+          <p className="abstract">{ellipseString(listing.abstract, 300)}</p>
+          <div className="row">
+            <div className="col-lg-12 item-items">
+              <ul className="list-inline">
+                <li>
+                  <a
+                    href={`${listing.site_url}people/profile/${listing.owner__username}`}
+                  >
+                    <i className="fa fa-user" />
+                    {listing.owner_name}
+                  </a>
+                </li>
+                <li>
+                  <a href={`${listing.detail_url}#info`}>
+                    <i className="fa fa-calendar-o" />
+                    {listing.date}
+                  </a>
+                </li>
+                <li>
+                  <a href={listing.detail_url}>
+                    <i className="fa fa-eye" />
+                    {listing.popular_count}
+                  </a>
+                </li>
+                <li>
+                  <a href={`${listing.detail_url}#share`}>
+                    <i className="fa fa-share" />
+                    {listing.share_count}
+                  </a>
+                </li>
+                <li>
+                  <a href={`${listing.detail_url}#rate`}>
+                    <i className="fa fa-star" />
+                    {listing.rating}
+                  </a>
+                </li>
+
+                <li>
+                  <a
+                    style={getStyle(containsPath(listing.detail_url, "layers"))}
+                    href={getNewMapURL(
+                      window.siteUrl,
+                      listing.detail_url.substring(8)
+                    )}
+                  >
+                    <i className="fa fa-map-marker" />
+                    {window.gettext("Create a Map")}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    style={getStyle(containsPath(listing.detail_url, "maps"))}
+                    href={`${listing.site_url}maps/${listing.id}/view`}
+                  >
+                    <i className="fa fa-map-marker" />
+                    {window.gettext("View Map")}
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
-    </article>
-  )
-}
+    </div>
+  </article>
+);
+
+export default Listing;
