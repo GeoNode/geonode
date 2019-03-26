@@ -165,7 +165,7 @@ matrix:
 branches:
   only:
     - master
-    - 2.20
+    - 2.20.x
     - 2.8.x
     - 2.6.x
 
