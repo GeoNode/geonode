@@ -52,7 +52,7 @@ geoip2==2.9.0
 
 # Django Apps
 dj-database-url==0.5.0
-pinax-notifications==4.1.0
+pinax-notifications==5.0.3
 django-forms-bootstrap<=3.1.0
 django-allauth==0.39.1
 django-activity-stream==0.7.0
