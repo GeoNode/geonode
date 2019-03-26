@@ -180,10 +180,6 @@ msgstr "Előadó GeoServer Config lépés"
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Réteg feltöltött fájlok, konfigurálása a GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr ""
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "Eltávolít"

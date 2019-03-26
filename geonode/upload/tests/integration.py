@@ -45,7 +45,6 @@ from geonode.geoserver.helpers import ogc_server_settings
 from geonode.geoserver.helpers import cascading_delete
 from geonode.geoserver.signals import gs_catalog
 from geoserver.catalog import Catalog
-# from geonode.upload.utils import make_geogig_rest_payload
 from gisdata import BAD_DATA
 from gisdata import GOOD_DATA
 from owslib.wms import WebMapService
@@ -838,53 +837,3 @@ class TestUploadDBDataStore(UploaderBase):
                 self.assertTrue('error_msg' in resp_js)
                 self.assertTrue(
                     'Source SRS is not valid' in resp_js['error_msg'])
-
-
-# class GeogigTest(GeoNodeBaseTestSupport):
-#     port = 8000
-#     def test_payload_creation(self):
-#         '''Test formation of REST call to geoserver's geogig API'''
-#         author_name = "test"
-#         author_email = "testuser@geonode.org"
-#
-#         # Test filebased geogig
-#         settings.OGC_SERVER['default']['PG_GEOGIG'] = False
-#         fb_message = {
-#             "authorName": author_name,
-#             "authorEmail": author_email,
-#             "parentDirectory":
-#             settings.OGC_SERVER['default']['GEOGIG_DATASTORE_DIR']
-#         }
-#         fb_payload = make_geogig_rest_payload(author_name, author_email)
-#         self.assertDictEqual(fb_message, fb_payload)
-#         self.assertEquals(json.dumps(fb_message, sort_keys=True),
-#                           json.dumps(fb_payload, sort_keys=True))
-#
-#         # Test postgres based geogig
-#         settings.OGC_SERVER['default']['PG_GEOGIG'] = True
-#         # Manually override the settings to simulate the REST call for postgres
-#         settings.DATABASES['test-pg'] = {
-#             "HOST": "localhost",
-#             "PORT": "5432",
-#             "NAME": "repos",
-#             "SCHEMA": "public",
-#             "USER": "geogig",
-#             "PASSWORD": "geogig"
-#         }
-#         settings.OGC_SERVER['default']['DATASTORE'] = 'test-pg'
-#
-#         pg_message = {
-#             "authorName": author_name,
-#             "authorEmail": author_email,
-#             "dbHost": settings.DATABASES['test-pg']['HOST'],
-#             "dbPort": settings.DATABASES['test-pg']['PORT'],
-#             "dbName": settings.DATABASES['test-pg']['NAME'],
-#             "dbSchema": settings.DATABASES['test-pg']['SCHEMA'],
-#             "dbUser": settings.DATABASES['test-pg']['USER'],
-#             "dbPassword": settings.DATABASES['test-pg']['PASSWORD']
-#         }
-#
-#         pg_payload = make_geogig_rest_payload(author_name, author_email)
-#         self.assertDictEqual(pg_message, pg_payload)
-#         self.assertEquals(json.dumps(pg_message, sort_keys=True),
-#                           json.dumps(pg_payload, sort_keys=True))

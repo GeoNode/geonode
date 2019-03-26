@@ -188,10 +188,6 @@ msgstr "Шаг выполнения настройки GeoServer"
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Файлы слоёв загружены, настройка в GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr "Выберите или создайте хранилище Geogig"
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "Удалить"

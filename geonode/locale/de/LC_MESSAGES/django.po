@@ -671,10 +671,6 @@ msgstr "GeoExplorer"
 msgid "Create a New Map"
 msgstr "Neue Karte anlegen"
 
-#: client/templates/maploom/maps/map_view.html:5
-msgid "Explorer"
-msgstr "Explorer"
-
 #: client/templates/worldmap/maps/map_worldmap.html:169
 msgid "Identify"
 msgstr "Identifizieren"
@@ -5053,10 +5049,6 @@ msgstr "Teilen"
 #: templates/_actions.html:14
 msgid "Ratings"
 msgstr "Bewertungen"
-
-#: templates/_actions.html:20
-msgid "GeoGig"
-msgstr "GeoGig"
 
 #: templates/_actions.html:23
 msgid "Exif"

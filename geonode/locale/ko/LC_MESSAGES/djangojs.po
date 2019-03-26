@@ -181,10 +181,6 @@ msgstr "GeoServer 구성 단계 수행"
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "GeoServer에 레이어 파일 업로드 완료, 구성중"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr "Geogig 저장소를 선택하거나 생성합니다."
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "제거하기"

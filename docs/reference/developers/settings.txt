@@ -232,12 +232,6 @@ entry for the datastore in the ``DATABASES`` dictionary with the same name.  Exa
    }
   }
 
-GEOGIG_ENABLED
-..............
-Default: ``False``
-
-A boolean that represents whether the OGC server supports GeoGig datastores.
-
 GEONODE_SECURITY_ENABLED
 ........................
 Default: ``True``
@@ -265,12 +259,6 @@ PASSWORD
 Default: ``'geoserver'``
 
 The administrative password for the OGC server as a string.
-
-PG_GEOGIG
-.........
-Default: ``False``
-
-A boolean that represents whether GeoNode will use a Postgres database as a backend for GeoGig stores. When set to true, the ``DATASTORE`` field must be set to a Postgres database which will be used.
 
 PRINT_NG_ENABLED
 ................
@@ -464,13 +452,6 @@ A boolean that specifies whether Open Graph is enabled.  Open Graph is used by F
 Upload settings
 ===============
 
-GEOGIG_DATASTORE_NAME
----------------------
-Default: ``None``
-
-A string with the default GeoGig datastore name.  This value is only used if no GeoGig datastore name is provided
-when data is uploaded but it must be populated if your deployment supports GeoGig.
-
 UPLOADER
 --------
 Default::
@@ -479,7 +460,6 @@ Default::
         'BACKEND' : 'geonode.rest',
         'OPTIONS' : {
             'TIME_ENABLED': False,
-            'GEOGIG_ENABLED': False,
         }
     }
 
@@ -494,8 +474,7 @@ The uploader backend to use.  The backend choices are:
 * ``'geonode.importer'``
 * ``'geonode.rest'``
 
-The importer backend requires the GeoServer importer extension to be enabled and is required for uploading data into
-GeoGig datastores.
+The importer backend requires the GeoServer importer extension to be enabled.
 
 OPTIONS
 -------
@@ -503,7 +482,6 @@ Default::
 
     'OPTIONS' : {
         'TIME_ENABLED': False,
-        'GEOGIG_ENABLED': False,
     }
 
 TIME_ENABLED
@@ -511,12 +489,6 @@ TIME_ENABLED
 Default: ``False``
 
 A boolean that specifies whether the upload should allow the user to enable time support when uploading data.
-
-GEOGIG_ENABLED
---------------
-Default: ``False``
-
-A boolean that specifies whether the uploader should allow the user to upload data into a GeoGig datastore.
 
 User Account settings
 =====================

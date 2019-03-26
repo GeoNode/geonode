@@ -712,7 +712,7 @@ class LayerResource(CommonModelApi):
 
     def format_objects(self, objects):
         """
-        Formats the object then adds a geogig_link as necessary.
+        Formats the object.
         """
         formatted_objects = []
         for obj in objects:
@@ -738,9 +738,6 @@ class LayerResource(CommonModelApi):
 
             formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
             formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
-
-            # add the geogig link
-            formatted_obj['geogig_link'] = obj.geogig_link
 
             # provide style information
             bundle = self.build_bundle(obj=obj)
