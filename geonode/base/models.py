@@ -1297,9 +1297,6 @@ class LinkManager(models.Manager):
     def original(self):
         return self.get_queryset().filter(link_type='original')
 
-    def geogig(self):
-        return self.get_queryset().filter(name__icontains='geogig')
-
     def ows(self):
         return self.get_queryset().filter(
             link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])

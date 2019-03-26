@@ -358,10 +358,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                          instance.bbox_x1, instance.bbox_y1])
 
     # Create Raw Data download link
-    try:
-        path = gs_resource.dom.findall('nativeName')
-    except BaseException:
-        path = instance.alternate
     download_url = urljoin(settings.SITEURL,
                            reverse('download', args=[instance.id]))
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,
@@ -410,57 +406,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                            link_type='data',
                                        )
                                        )
-
-        gs_store_type = gs_resource.store.type.lower() if gs_resource.store.type else None
-        geogig_repository = gs_resource.store.connection_parameters.get('geogig_repository', '')
-        geogig_repo_name = geogig_repository.replace('geoserver://', '')
-
-        if gs_store_type == 'geogig' and geogig_repo_name:
-
-            repo_url = '{url}geogig/repos/{repo_name}'.format(
-                url=ogc_server_settings.public_url,
-                repo_name=geogig_repo_name)
-
-            try:
-                path = gs_resource.dom.findall('nativeName')
-            except BaseException:
-                path = instance.alternate
-
-            if path:
-                path = 'path={path}'.format(path=path[0].text)
-
-            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                       url=repo_url,
-                                       defaults=dict(extension='html',
-                                                     name='Clone in GeoGig',
-                                                     mime='text/xml',
-                                                     link_type='html'
-                                                     )
-                                       )
-
-            def command_url(command):
-                return "{repo_url}/{command}.json?{path}".format(repo_url=repo_url,
-                                                                 path=path,
-                                                                 command=command)
-
-            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                       url=command_url('log'),
-                                       defaults=dict(extension='json',
-                                                     name='GeoGig log',
-                                                     mime='application/json',
-                                                     link_type='html'
-                                                     )
-                                       )
-
-            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                       url=command_url('statistics'),
-                                       defaults=dict(extension='json',
-                                                     name='GeoGig statistics',
-                                                     mime='application/json',
-                                                     link_type='html'
-                                                     )
-                                       )
-
     elif instance.storeType == 'coverageStore':
         links = wcs_links(ogc_server_settings.public_url + 'wcs?',
                           instance.alternate.encode('utf-8'),

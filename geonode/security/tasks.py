@@ -71,7 +71,8 @@ def synch_guardian():
                                 sync_geofence_with_guardian(layer, perms, group=group)
 
                         r.clear_dirty_state()
-                    except BaseException:
+                    except BaseException as e:
+                        logger.exception(e)
                         logger.warn("!WARNING! - Failure Synching-up Security Rules for Resource [%s]" % (r))
 
             # if set_geofence_invalidate_cache():

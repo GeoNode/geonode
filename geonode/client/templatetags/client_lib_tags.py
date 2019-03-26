@@ -18,10 +18,26 @@
 #
 #########################################################################
 from django import template
+from django.conf import settings
 from django.template.base import FilterExpression, kwarg_re
 from ..hooks import hookset
 
 register = template.Library()
+
+
+@register.simple_tag
+def mapbox_access_token():
+    return getattr(settings, "MAPBOX_ACCESS_TOKEN", None)
+
+
+@register.simple_tag
+def bing_api_key():
+    return getattr(settings, "BING_API_KEY", None)
+
+
+@register.simple_tag
+def google_api_key():
+    return getattr(settings, "GOOGLE_API_KEY", None)
 
 
 def parse_tag(token, parser):

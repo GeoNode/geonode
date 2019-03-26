@@ -214,8 +214,6 @@ def save_step_view(req, session):
             permissions=form.cleaned_data["permissions"],
             import_sld_file=sld,
             upload_type=spatial_files[0].file_type.code,
-            geogig=form.cleaned_data['geogig'],
-            geogig_store=form.cleaned_data['geogig_store'],
             time=form.cleaned_data['time'],
             mosaic=form.cleaned_data['mosaic'],
             append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
