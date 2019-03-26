@@ -6,7 +6,6 @@ awesome-slugify==1.6.5
 beautifulsoup4==4.7.1
 boto==2.49.0
 celery==4.2.1
-coreschema==0.0.4
 coverage==4.5.3
 datautil==0.4
 decorator==4.3.2
