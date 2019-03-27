@@ -7,6 +7,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import DateFilter from "app/search/components/DateFilter";
 import SortFilter from "app/search/components/SortFilter";
+import Results from "app/search/components/SearchResults/Results";
 import Cart from "app/search/components/Cart";
 
 export default $scope =>
@@ -22,6 +23,8 @@ export default $scope =>
       <SortFilter />,
       document.getElementById(`render_sortFilter`)
     );
+
+    ReactDOM.render(<Results />, document.getElementById(`render_results`));
 
     ReactDOM.render(<Cart />, document.getElementById(`render_cart`));
 

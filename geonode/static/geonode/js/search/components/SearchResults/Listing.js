@@ -4,7 +4,8 @@ import ellipseString from "app/helpers/ellipseString";
 
 const containsPath = (url, path) => url.indexOf(`/${path}/`) > -1;
 
-const getStyle = (condition, style = {}) => {
+const getStyle = (condition, style) => {
+  console.log("!!!STYLE", style);
   style.display = condition ? "block" : "none";
   return style;
 };
@@ -18,12 +19,12 @@ const getDataButtonStyle = (listing, dataType) =>
   getStyle(listing.store_type === dataType, dataButtonBaseStyle);
 
 const Listing = listing => (
-  <article resource_id="{listing.id}" ng-cloak className="ng-cloak">
+  <article key={listing.key} resource_id={listing.id}>
     <div className="col-lg-12 item-container">
       <div className="col-lg-12 profile-avatar">
         <div className="col-lg-4 item-thumb">
           <a href={listing.detail_url}>
-            <img ng-src={listing.thumbnail_url} />
+            <img src={listing.thumbnail_url} />
           </a>
         </div>
         <div className="col-lg-8 item-details">
@@ -41,7 +42,7 @@ const Listing = listing => (
                     <i
                       className="fa fa-group"
                       aria-hidden="true"
-                      style="margin-right: 8px;"
+                      style={{ marginRight: 8 }}
                     />
                     {listing.group_name}
                   </a>
@@ -54,7 +55,7 @@ const Listing = listing => (
                   <i
                     className="fa fa-clock-o"
                     aria-hidden="true"
-                    style="margin-right: 8px;"
+                    style={{ marginRight: 8 }}
                   />
                   {window.gettext("Temporal Series")}
                   <br />
@@ -99,10 +100,7 @@ const Listing = listing => (
                   data-placement="bottom"
                   title="Select"
                 >
-                  <i
-                    ng-className="cart.getFaClass(item.id)"
-                    className="fa fa-lg"
-                  />
+                  <i className="fa fa-lg" />
                 </button>
               </h4>
             </div>
@@ -144,7 +142,7 @@ const Listing = listing => (
             {window.gettext("UNPUBLISHED")}
           </div>
 
-          <p className="abstract">{ellipseString(listing.abstract, 300)}</p>
+          <p className="abstract">{ellipseString(300, listing.abstract)}</p>
           <div className="row">
             <div className="col-lg-12 item-items">
               <ul className="list-inline">
