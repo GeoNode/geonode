@@ -62,7 +62,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.debug(msg, *args)
+    logger.info(msg, *args)
 
 
 class StreamToLogger(object):
@@ -177,6 +177,55 @@ class SecurityTest(GeoNodeBaseTestSupport):
         middleware.process_request(request)
         response = self.client.get('/admin')
         self.assertEqual(response.status_code, 302)
+
+
+class SecurityViewsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super(SecurityViewsTests, self).setUp()
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
+
+        self.user = 'admin'
+        self.passwd = 'admin'
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_attributes_sats_refresh(self):
+        layers = Layer.objects.all()[:2].values_list('id', flat=True)
+        test_layer = Layer.objects.get(id=layers[0])
+
+        self.client.login(username='admin', password='admin')
+        layer_attributes = test_layer.attributes
+        self.assertIsNotNone(layer_attributes)
+        test_layer.attribute_set.all().delete()
+        test_layer.save()
+
+        data = {
+            'uuid': test_layer.uuid
+        }
+        resp = self.client.post(reverse('attributes_sats_refresh'), data)
+        self.assertHttpOK(resp)
+        self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
+
+        from geonode.geoserver.helpers import set_attributes_from_geoserver
+        test_layer.attribute_set.all().delete()
+        test_layer.save()
+
+        set_attributes_from_geoserver(test_layer, overwrite=True)
+        self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_invalidate_tiledlayer_cache(self):
+        layers = Layer.objects.all()[:2].values_list('id', flat=True)
+        test_layer = Layer.objects.get(id=layers[0])
+
+        self.client.login(username='admin', password='admin')
+
+        data = {
+            'uuid': test_layer.uuid
+        }
+        resp = self.client.post(reverse('invalidate_tiledlayer_cache'), data)
+        self.assertHttpOK(resp)
 
 
 class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):

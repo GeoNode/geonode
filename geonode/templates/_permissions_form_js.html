@@ -316,6 +316,7 @@
             $("#_permissions_feedbacks").find('.modal-title').text(title);
             $("#_permissions_feedbacks").find('.modal-body').text(body);
             $("#_permissions_feedbacks").modal("show");
+            $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
           }, /* - END success - */
           cache: false
         }
@@ -328,6 +329,7 @@
             $("#_permissions_feedbacks").find('.modal-title').text(title);
             $("#_permissions_feedbacks").find('.modal-body').text(body);
             $("#_permissions_feedbacks").modal("show");
+            $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
       });
       return false;
     };
@@ -360,6 +362,7 @@
               $("#_permissions_feedbacks").find('.modal-title').text(title);
               $("#_permissions_feedbacks").find('.modal-body').text(body);
               $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
             },
             cache: false
           }
@@ -372,6 +375,45 @@
               $("#_permissions_feedbacks").find('.modal-title').text(title);
               $("#_permissions_feedbacks").find('.modal-body').text(body);
               $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
+        });
+        return false;
+    });
+
+    $("#attributes_sats_refresh").click(function(){
+        $.ajax(
+          {
+            type: "POST",
+            url: "{% url 'attributes_sats_refresh' %}",
+            dataType: 'json',
+            data: { uuid: "{{ resource.uuid }}" },
+            success: function(data) {
+              $("#modal_perms").modal("hide");
+              message = data;
+              title = "";
+              body = message.message;
+              if (message.success) {
+                  title = "OK";
+              } else {
+                  title = "Warning";
+              }
+              $("#_permissions_feedbacks").find('.modal-title').text(title);
+              $("#_permissions_feedbacks").find('.modal-body').text(body);
+              $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
+            },
+            cache: false
+          }
+        ).fail(function (jqXHR, textStatus, error) {
+              // Handle error here
+              $("#modal_perms").modal("hide");
+              message = JSON.parse(jqXHR.responseText);
+              body = message.message;
+              title = "Error";
+              $("#_permissions_feedbacks").find('.modal-title').text(title);
+              $("#_permissions_feedbacks").find('.modal-body').text(body);
+              $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
         });
         return false;
     });
@@ -396,6 +438,7 @@
               $("#_permissions_feedbacks").find('.modal-title').text(title);
               $("#_permissions_feedbacks").find('.modal-body').text(body);
               $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
             },
             cache: false
           }
@@ -408,6 +451,7 @@
               $("#_permissions_feedbacks").find('.modal-title').text(title);
               $("#_permissions_feedbacks").find('.modal-body').text(body);
               $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
         });
         return false;
     });
