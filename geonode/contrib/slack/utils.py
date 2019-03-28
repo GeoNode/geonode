@@ -20,7 +20,6 @@
 
 import copy
 
-from slugify import Slugify
 from httplib import HTTPSConnection
 from urlparse import urlsplit
 
@@ -35,8 +34,6 @@ except ImportError:
 from .enumerations import SLACK_MESSAGE_TEMPLATES
 
 from geonode.base.models import Link
-
-custom_slugify = Slugify(separator='_')
 
 
 def _build_state_resourcebase(resource):

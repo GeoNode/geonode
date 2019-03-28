@@ -2,7 +2,7 @@ Django==1.11.20
 six==1.10.0
 amqp==2.4.2
 arcrest==10.3
-awesome-slugify==1.6.5
+python-slugify==3.0.1
 beautifulsoup4==4.7.1
 boto==2.49.0
 celery==4.2.1
