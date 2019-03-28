@@ -21,7 +21,7 @@
 import errno
 import logging
 import urllib
-from .tasks import thumbnail_task
+
 from urlparse import urlparse, urljoin
 
 from django.conf import settings
@@ -42,6 +42,7 @@ from geonode.geoserver.helpers import (cascading_delete,
                                        set_layer_style,
                                        gs_catalog,
                                        ogc_server_settings,
+                                       create_gs_thumbnail,
                                        _stylefilterparams_geowebcache_layer,
                                        _invalidate_geowebcache_layer)
 from geonode.base.models import ResourceBase, Link
@@ -89,16 +90,11 @@ def geoserver_post_save(instance, sender, **kwargs):
         instance_dict = model_to_dict(instance)
         payload = json_serializer_producer(instance_dict)
         producer.geoserver_upload_layer(payload)
-        if instance.storeType != 'remoteStore':
-            logger.info("... Creating Thumbnail for Layer [%s]" % (instance))
-            try:
-                thumbnail_task.delay(
-                    instance.id,
-                    instance.__class__.__name__,
-                    overwrite=True,
-                    check_bbox=True)
-            except BaseException:
-                logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance))
+        logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
+        try:
+            create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
+        except BaseException:
+            logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance.alternate))
 
 
 def geoserver_post_save_local(instance, *args, **kwargs):
@@ -518,15 +514,9 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # some thumbnail generators will update thumbnail_url.  If so, don't
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
     if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
-            'thumbnail_url' in kwargs['update_fields'] and instance.storeType != "remoteStore":
-        logger.info("... Creating Thumbnail for Layer [%s]" % (instance))
-        try:
-            thumbnail_task.delay(
-                instance.id,
-                instance.__class__.__name__,
-                overwrite=True)
-        except BaseException:
-            logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance))
+            'thumbnail_url' in kwargs['update_fields']:
+        logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
+        create_gs_thumbnail(instance, overwrite=True)
 
     try:
         Link.objects.filter(resource=instance.resourcebase_ptr, name='Legend').delete()
@@ -654,12 +644,5 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 
 def geoserver_post_save_map(instance, sender, **kwargs):
     instance.set_missing_info()
-    logger.info("... Creating Thumbnail for Map [%s]" % (instance))
-    try:
-        thumbnail_task.delay(
-            instance.id,
-            instance.__class__.__name__,
-            overwrite=False,
-            check_bbox=True)
-    except BaseException:
-        logger.warn("!WARNING! - Failure while Creating Thumbnail for Map [%s]" % (instance))
+    logger.info("... Creating Thumbnail for Map [%s]" % (instance.title))
+    create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
