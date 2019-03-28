@@ -17,11 +17,10 @@ export default class Results extends React.Component {
     });
   }
   renderResultsOrEmpty = () => {
-    console.log("!!!!RESULT STATE", this.state.results);
-    if (!this.state.results.length) return Empty;
+    if (!this.state.results.length) return <Empty />;
     return this.state.results.map((result, i) => {
       result.key = i;
-      return Listing(result);
+      return <Listing key={i} result={result} />;
     });
   };
   render = () => (

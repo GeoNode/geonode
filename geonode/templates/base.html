@@ -12,7 +12,15 @@
     <meta Http-Equiv="Expires" Content="0">
     <meta Http-Equiv="Pragma-directive: no-cache">
     <meta Http-Equiv="Cache-directive: no-cache">
-
+    <script>
+      window.djangoSearchVars = {};
+    {% if facet_type == None %}
+      window.djangoSearchVars.facet_type = "";
+    {% else %}
+      window.djangoSearchVars.facet_type = {{ facet_type }};
+    {% endif %}
+    console.log("!!!!FACET TYPE!!!!", window.djangoSearchVars)
+    </script>
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
       {% if DEBUG_STATIC %}
