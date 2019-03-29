@@ -165,6 +165,7 @@ matrix:
 branches:
   only:
     - master
+    - 2.20.x
     - 2.8.x
     - 2.6.x
 
@@ -201,7 +202,7 @@ install:
     else
       sudo apt-get -qq -y update;
       sudo apt-get install -y libgdal1i python-gdal gdal-bin spatialite-bin;
-      sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext;
+      sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-httplib2 python-httplib2 gettext;
       sudo apt-get install -y python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk;
       sudo apt-add-repository -y ppa:webupd8team/java; sudo apt update;
       echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections;
