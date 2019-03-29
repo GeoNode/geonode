@@ -134,7 +134,6 @@ def get_visible_resources(queryset,
                     Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
         else:
             filter_set = filter_set.exclude(Q(dirty_state=True))
-
     return filter_set
 
 
