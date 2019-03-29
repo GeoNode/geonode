@@ -103,12 +103,6 @@ class UploaderSession(object):
     # defaults to REPLACE if not provided. Accepts APPEND, too
     update_mode = None
 
-    # Import to GeoGig repository
-    geogig = None
-
-    # GeoGig Repository to import to
-    geogig_store = None
-
     # Configure Time for this Layer
     time = None
 
@@ -456,7 +450,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
     use_big_date = getattr(
         settings,
         'USE_BIG_DATE',
-        False) and not upload_session.geogig
+        False)
 
     if time_attribute:
         if time_transform_type:

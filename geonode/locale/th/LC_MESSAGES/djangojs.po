@@ -180,10 +180,6 @@ msgstr "กำลังทำขั้นตอนการตั้งค่า
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "ไฟล์ชั้นข้อมูลอัพโหลดเสร็จแล้ว กำลังตั้งค่าใน GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr "เลือกหรือสร้าง Geogig repository"
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "ลบ"

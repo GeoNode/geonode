@@ -181,10 +181,6 @@ msgstr "Изпълнение на последна стъпка по конфи�
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Слоевете са качени, конфигуриране в GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr "Изберете или създайте Geogig хранилище."
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "Премахване"

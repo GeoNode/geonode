@@ -180,10 +180,6 @@ msgstr "ការ​ស​ម្តែ​ង GeoServer កំណត់​រច�
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "ឯកសារ​ស្រទាប់​ដែល​បាន​ផ្ទុក​ឡើង​, កំណត់​រចនាសម្ព័ន្ធ​ក្នុង​ការ GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr ""
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "យក"

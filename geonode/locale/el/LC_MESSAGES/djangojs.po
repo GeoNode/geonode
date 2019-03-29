@@ -187,10 +187,6 @@ msgstr "Εκτέλεση GeoServer Config Βήμα"
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Αρχεία Layer φορτωθεί, διαμόρφωση σε GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr "Επιλέξτε ή δημιουργήσετε ένα Geogig"
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "Κατάργηση"

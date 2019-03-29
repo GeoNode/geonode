@@ -223,16 +223,6 @@
       </article>
       {% endif %}
 
-      {% if GEOGIG_ENABLED and resource.link_set.geogig %}
-        {% with "_geogig_layer_detail.html" as geogig_template %}
-        <article id="geogig" class="tab-pane">
-          {% with resource as obj %}
-            {% include geogig_template %}
-          {% endwith %}
-        </article>
-        {% endwith %}
-      {% endif %}
-
       {% if DISPLAY_RATINGS %}
       <article id="rate" class="tab-pane">
         <!-- TODO: Move this to a reusable template snippet -->
@@ -460,7 +450,7 @@
                 <div class="col-sm-3">
                   <i class="fa fa-tint fa-3x"></i>
                   <h4>{% trans "Styles" %}</h4>
-                  {% if preview == 'geoext' or preview == 'react' or  preview == 'leaflet' or preview == 'maploom' %}
+                  {% if preview == 'geoext' or preview == 'react' or  preview == 'leaflet' %}
                     <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
                   {% else %}
                     <a class="btn btn-default btn-block btn-xs style-edit" href="{% url "layer_sld_edit" resource.service_typename %}">{% trans "Edit" %}</a>
@@ -720,12 +710,6 @@
 
 {% block extra_script %}
 {{ block.super }}
-    {% if GEOGIG_ENABLED and resource.link_set.geogig %}
-        {% with "_geogig_scripts.html" as geogig_scripts_template %}
-            {% include  geogig_scripts_template %}
-        {% endwith %}
-    {% endif %}
-
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user resource "layer" %}
     {% else %}
