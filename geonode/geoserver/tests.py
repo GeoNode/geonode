@@ -833,12 +833,10 @@ class UtilsTests(GeoNodeBaseTestSupport):
                 'PRINT_NG_ENABLED': True,
                 'GEONODE_SECURITY_ENABLED': True,
                 'GEOFENCE_SECURITY_ENABLED': True,
-                'GEOGIG_ENABLED': False,
                 'WMST_ENABLED': False,
                 'BACKEND_WRITE_ENABLED': True,
                 'WPS_ENABLED': False,
                 'DATASTORE': str(),
-                'GEOGIG_DATASTORE_DIR': str(),
             }
         }
 
@@ -846,8 +844,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
             'BACKEND': 'geonode.rest',
             'OPTIONS': {
                 'TIME_ENABLED': False,
-                'MOSAIC_ENABLED': False,
-                'GEOGIG_ENABLED': False}}
+                'MOSAIC_ENABLED': False}}
 
         self.DATABASE_DEFAULT_SETTINGS = {
             'default': {
@@ -881,7 +878,6 @@ class UtilsTests(GeoNodeBaseTestSupport):
             self.assertTrue(ogc_settings.MAPFISH_PRINT_ENABLED)
             self.assertTrue(ogc_settings.PRINT_NG_ENABLED)
             self.assertTrue(ogc_settings.GEONODE_SECURITY_ENABLED)
-            self.assertFalse(ogc_settings.GEOGIG_ENABLED)
             self.assertFalse(ogc_settings.WMST_ENABLED)
             self.assertTrue(ogc_settings.BACKEND_WRITE_ENABLED)
             self.assertFalse(ogc_settings.WPS_ENABLED)

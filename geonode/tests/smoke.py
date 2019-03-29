@@ -61,13 +61,6 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
             except BaseException:
                 self.assertTrue(False)
 
-        if 'geonode.contrib.api_basemaps' in settings.INSTALLED_APPS:
-            try:
-                import geonode.contrib.api_basemaps  # noqa
-                self.assertTrue(True)
-            except BaseException:
-                self.assertTrue(False)
-
         if 'geonode.contrib.ows_api' in settings.INSTALLED_APPS:
             try:
                 import geonode.contrib.ows_api  # noqa

@@ -184,10 +184,6 @@ msgstr "GeoServer Config Step රංග"
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "ස්ථරය ගොනු GeoServer දී මානකර , උඩුගත"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr "තෝරන්න හෝ නිර්මාණය Geogig repository."
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "ඉවත් කරන්න"

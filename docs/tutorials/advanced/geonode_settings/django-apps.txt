@@ -21,7 +21,7 @@ these apps for your specific needs.
      django-apps/proxy
      django-apps/search
      django-apps/security
-  
+
   .. comment:
       geonode.base
         core application functionality.
@@ -34,7 +34,7 @@ these apps for your specific needs.
 
       geonode.maps
         manage maps, styles
-  
+
       geonode.proxy
         support JavaScript applications accessing GeoServer
 
@@ -224,11 +224,6 @@ OGC_SERVER
 
     A boolean that represents whether GeoNode's security application is enabled.
 
-  GEOGIT_ENABLED
-    Default: ``False``
-
-    A boolean that represents whether the OGC server supports GeoGig datastores.
-
   WMST_ENABLED
     Default: ``False``
 
@@ -303,13 +298,13 @@ SITEURL
 
 DEFAULT_MAP_BASE_LAYER
   The name of the background layer to include in newly created maps.
- 
+
 DEFAULT_MAP_CENTER
   Default: ``(0, 0)``
 
   A 2-tuple with the latitude/longitude coordinates of the center-point to use
   in newly created maps.
- 
+
 DEFAULT_MAP_ZOOM
   Default: ``0``
 
@@ -321,9 +316,9 @@ ASYNC_SIGNALS_BROKER_URL
   Default: ```memory://``
 
   Sets broker url for async signals handling. Asynchronous signals are part of
-  scalable architecture of GeoNode. 
+  scalable architecture of GeoNode.
 
-  Internally, this will be parsed and used by `kombu` library. Default is `memory` 
+  Internally, this will be parsed and used by `kombu` library. Default is `memory`
   transport, meaning all signals send with this method will be handled in-process,
   synchronously. When using `memory://` you do not need to set up external AMQP broker.
 
