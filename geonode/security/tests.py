@@ -1322,6 +1322,29 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
 
 class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    """
+    Test resources synchronization with Guardian and dirty states cleaning
+    """
+
+    def setUp(self):
+        super(SecurityRulesTest, self).setUp()
+        # Layer upload
+        layer_upload_url = reverse('layer_upload')
+        self.client.login(username="admin", password="admin")
+        input_paths, suffixes = self._get_input_paths()
+        input_files = [open(fp, 'rb') for fp in input_paths]
+        files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
+        files['base_file'] = files.pop('shp_file')
+        with contextlib.nested(*input_files):
+            files['permissions'] = '{}'
+            files['charset'] = 'utf-8'
+            files['layer_title'] = 'test layer'
+            resp = self.client.post(layer_upload_url, data=files)
+        # Check the response is OK
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.content)
+        lname = data['url'].split(':')[-1]
+        self._l = Layer.objects.get(name=lname)
 
     def _get_input_paths(self):
         base_name = 'single_point'
@@ -1330,36 +1353,34 @@ class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         paths = [os.path.join(base_path, 'vector', '{}.{}'.format(base_name, suffix)) for suffix in suffixes]
         return paths, suffixes,
 
-    def test_sync_resources_with_guardian(self):
-        """
-        Test resources synchronization with Guardian and dirty states cleaning
-        """
-        with self.settings(DELAYED_SECURITY_SIGNALS=True):
-            # Layer upload
-            layer_upload_url = reverse('layer_upload')
-            self.client.login(username="admin", password="admin")
-            input_paths, suffixes = self._get_input_paths()
-            input_files = [open(fp, 'rb') for fp in input_paths]
-            files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
-            files['base_file'] = files.pop('shp_file')
-            with contextlib.nested(*input_files):
-                files['permissions'] = '{}'
-                files['charset'] = 'utf-8'
-                files['layer_title'] = 'test layer'
-                resp = self.client.post(layer_upload_url, data=files)
-            # Check the response is OK
-            self.assertEqual(resp.status_code, 200)
-            data = json.loads(resp.content)
-            lname = data['url'].split(':')[-1]
-            _l = Layer.objects.get(name=lname)
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_sync_resources_with_guardian_delay_false(self):
+
+        with self.settings(DELAYED_SECURITY_SIGNALS=False):
             # Set geofence (and so the dirty state)
-            set_geofence_all(_l)
+            set_geofence_all(self._l)
             # Retrieve the same layer
-            dirty_layer = Layer.objects.get(pk=_l.id)
+            dirty_layer = Layer.objects.get(pk=self._l.id)
+            # Check dirty state (True)
+            self.assertFalse(dirty_layer.dirty_state)
+            # Call sync resources
+            sync_resources_with_guardian()
+            clean_layer = Layer.objects.get(pk=self._l.id)
+            # Check dirty state
+            self.assertFalse(clean_layer.dirty_state)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_sync_resources_with_guardian_delay_true(self):
+
+        with self.settings(DELAYED_SECURITY_SIGNALS=True):
+            # Set geofence (and so the dirty state)
+            set_geofence_all(self._l)
+            # Retrieve the same layer
+            dirty_layer = Layer.objects.get(pk=self._l.id)
             # Check dirty state (True)
             self.assertTrue(dirty_layer.dirty_state)
             # Call sync resources
             sync_resources_with_guardian()
-            clean_layer = Layer.objects.get(pk=_l.id)
+            clean_layer = Layer.objects.get(pk=self._l.id)
             # Check dirty state
             self.assertFalse(clean_layer.dirty_state)
