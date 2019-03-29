@@ -26,7 +26,7 @@ import logging
 import tempfile
 import traceback
 
-from slugify import Slugify
+from slugify import slugify
 from urlparse import urlparse, urlsplit, urljoin
 from django.conf import settings
 from django.http import HttpResponse
@@ -52,8 +52,6 @@ from geonode import geoserver, qgis_server  # noqa
 TIMEOUT = 300
 
 logger = logging.getLogger(__name__)
-
-custom_slugify = Slugify(separator='_')
 
 ows_regexp = re.compile(
     r"^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
@@ -319,7 +317,7 @@ def download(request, resourceid, sender=Layer):
             try:
                 links = Link.objects.filter(resource=instance.resourcebase_ptr)
                 for link in links:
-                    link_name = custom_slugify(link.name)
+                    link_name = slugify(link.name)
                     link_file = os.path.join(target_md_folder, "".join([link_name, ".%s" % link.extension]))
                     if link.link_type in ('data'):
                         # Skipping 'data' download links

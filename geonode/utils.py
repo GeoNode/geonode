@@ -40,7 +40,7 @@ import weakref
 import traceback
 
 from osgeo import ogr
-from slugify import Slugify
+from slugify import slugify
 from StringIO import StringIO
 from contextlib import closing
 from math import atan, exp, log, pi, sin, tan, floor
@@ -79,8 +79,6 @@ ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
 SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')
-
-custom_slugify = Slugify(separator='_')
 
 requests.packages.urllib3.disable_warnings()
 
@@ -1037,7 +1035,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
             if has_ch:
                 new_field_name = slugify_zh(field_name, separator='_')
             else:
-                new_field_name = custom_slugify(field_name)
+                new_field_name = slugify(field_name)
             if not b.match(new_field_name):
                 new_field_name = '_' + new_field_name
             j = 0
@@ -1455,13 +1453,15 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
     from django.core.urlresolvers import reverse
     from django.utils.translation import ugettext
 
+    # Prune old links
+    if prune:
+        _def_link_types = (
+            'data', 'image', 'original', 'html', 'OGC:WMS', 'OGC:WFS', 'OGC:WCS')
+        Link.objects.filter(resource=instance.resourcebase_ptr, link_type__in=_def_link_types).delete()
+
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
         from geonode.geoserver.helpers import ogc_server_settings
-
-        # Prune old links
-        if prune:
-            Link.objects.filter(resource=instance.resourcebase_ptr).delete()
 
         # Compute parameters for the new links
         try:
