@@ -55,7 +55,7 @@ from geonode.people.utils import get_valid_user
 from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.base.populate_test_data import all_public
 from geonode.layers.forms import JSONField, LayerUploadForm
-from geonode.utils import check_ogc_backend
+from geonode.utils import check_ogc_backend, set_resource_default_links
 from geonode.layers import LayersAppConfig
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.populate_layers_data import create_layer_data
@@ -257,6 +257,29 @@ class LayersTest(GeoNodeBaseTestSupport):
             for ll in links:
                 self.assertEquals(ll.link_type, "metadata")
 
+            _def_link_types = (
+                'data', 'image', 'original', 'html', 'OGC:WMS', 'OGC:WFS', 'OGC:WCS')
+            Link.objects.filter(resource=lyr.resourcebase_ptr, link_type__in=_def_link_types).delete()
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="data")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 0)
+
+            set_resource_default_links(lyr, lyr)
+
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="metadata")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 7)
+            for ll in links:
+                self.assertEquals(ll.link_type, "metadata")
+
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="data")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 6)
+
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 3)
+
         lyr = Layer.objects.filter(storeType="coverageStore").first()
         self.assertEquals(lyr.storeType, "coverageStore")
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -265,6 +288,29 @@ class LayersTest(GeoNodeBaseTestSupport):
             self.assertEquals(len(links), 7)
             for ll in links:
                 self.assertEquals(ll.link_type, "metadata")
+
+            _def_link_types = (
+                'data', 'image', 'original', 'html', 'OGC:WMS', 'OGC:WFS', 'OGC:WCS')
+            Link.objects.filter(resource=lyr.resourcebase_ptr, link_type__in=_def_link_types).delete()
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="data")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 0)
+
+            set_resource_default_links(lyr, lyr)
+
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="metadata")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 7)
+            for ll in links:
+                self.assertEquals(ll.link_type, "metadata")
+
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="data")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 2)
+
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 7)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
