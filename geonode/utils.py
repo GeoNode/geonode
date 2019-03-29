@@ -1453,15 +1453,15 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
     from django.core.urlresolvers import reverse
     from django.utils.translation import ugettext
 
+    # Prune old links
+    if prune:
+        _def_link_types = (
+            'data', 'image', 'original', 'html', 'OGC:WMS', 'OGC:WFS', 'OGC:WCS')
+        Link.objects.filter(resource=instance.resourcebase_ptr, link_type__in=_def_link_types).delete()
+
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
         from geonode.geoserver.helpers import ogc_server_settings
-
-        # Prune old links
-        if prune:
-            _def_link_types = (
-                'data', 'image', 'original', 'html', 'OGC:WMS', 'OGC:WFS', 'OGC:WCS')
-            Link.objects.filter(resource=instance.resourcebase_ptr, link_type__in=_def_link_types).delete()
 
         # Compute parameters for the new links
         try:
