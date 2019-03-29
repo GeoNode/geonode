@@ -605,7 +605,7 @@ def _update_geofence_rule(layer, workspace, service, user=None, group=None):
             raise RuntimeError(msg)
 
 
-def sync_resources_with_guardian():
+def sync_resources_with_guardian(resource=None):
     """
     Sync resources with Guardian and clear their dirty state
     """
@@ -613,7 +613,10 @@ def sync_resources_with_guardian():
     from geonode.base.models import ResourceBase
     from geonode.layers.models import Layer
 
-    dirty_resources = ResourceBase.objects.filter(dirty_state=True)
+    if resource:
+        dirty_resources = ResourceBase.objects.filter(id=resource.id)
+    else:
+        dirty_resources = ResourceBase.objects.filter(dirty_state=True)
     if dirty_resources and dirty_resources.count() > 0:
         logger.debug(" --------------------------- synching with guardian!")
         for r in dirty_resources:

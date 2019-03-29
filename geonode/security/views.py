@@ -114,16 +114,17 @@ def resource_permissions(request, resource_id):
 
 @require_POST
 def invalidate_permissions_cache(request):
-    from .utils import set_geofence_invalidate_cache
+    from .utils import sync_resources_with_guardian
     uuid = request.POST['uuid']
     resource = get_object_or_404(ResourceBase, uuid=uuid)
     can_change_permissions = request.user.has_perm(
         'change_resourcebase_permissions',
         resource)
     if can_change_permissions:
-        set_geofence_invalidate_cache()
+        # Push Security Rules
+        sync_resources_with_guardian(resource)
         return HttpResponse(
-            json.dumps({'success': 'ok', 'message': 'GeoFence Security Rules Cache Refreshed!'}),
+            json.dumps({'success': 'ok', 'message': 'Security Rules Cache Refreshed!'}),
             status=200,
             content_type='text/plain'
         )
