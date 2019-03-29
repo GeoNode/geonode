@@ -3678,10 +3678,6 @@ msgstr "ចែករំលែក"
 msgid "Ratings"
 msgstr "ការ​ផ្តល់​ចំណាត់​ថ្នាក់"
 
-#: geonode/templates/_actions.html:20
-msgid "GeoGig"
-msgstr ""
-
 #: geonode/templates/_actions.html:23
 msgid "Exif"
 msgstr ""

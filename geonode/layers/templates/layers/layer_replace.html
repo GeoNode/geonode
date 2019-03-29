@@ -136,7 +136,6 @@
 
   csrf_token =  "{{ csrf_token }}",
   form_target = "{% url "layer_replace" resource.service_typename %}",
-  geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
   time_enabled = {{ TIME_ENABLED|lower  }},
   mosaic_enabled = {{ MOSAIC_ENABLED|lower  }},
   userLookup = "{% url "account_ajax_lookup" %}"

@@ -92,7 +92,6 @@ OGC_SERVER = {
         'PRINT_NG_ENABLED': True,
         'GEONODE_SECURITY_ENABLED': True,
         'GEOFENCE_SECURITY_ENABLED': True,
-        'GEOGIG_ENABLED': False,
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
         'WPS_ENABLED': False,
@@ -100,7 +99,6 @@ OGC_SERVER = {
         # Set to dictionary identifier of database containing spatial data in
         # DATABASES dictionary to enable
         'DATASTORE': 'default',
-        'PG_GEOGIG': False,
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }
@@ -120,7 +118,6 @@ UPLOADER = {
     'OPTIONS': {
         'TIME_ENABLED': True,
         'MOSAIC_ENABLED': False,
-        'GEOGIG_ENABLED': False,
     },
     'SUPPORTED_CRS': [
         'EPSG:4326',

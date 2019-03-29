@@ -181,10 +181,6 @@ msgstr "செயற்பாட்டு ஜியோ அமைப்பு 
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "அடுக்கு கோப்புகளை, பதிவேற்றிய ஜியோ கட்டமைத்தல்"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr "Geogig களஞ்சியம் ஒன்றை தெரிவு செய்க அல்லது உருவாக்குக"
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "அகற்று"

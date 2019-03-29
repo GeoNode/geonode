@@ -182,10 +182,6 @@ msgstr "পারফর্মিং GeoServer কনফিগ ধাপ"
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "লেয়ার ফাইল আপলোড GeoServer মধ্যে কনফিগার"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr "নির্বাচন করুন অথবা একটি Geogig repository তৈরি করুন "
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "অপসারণ"

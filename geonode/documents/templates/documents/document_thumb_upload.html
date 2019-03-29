@@ -86,7 +86,6 @@
     {% autoescape off %}
       csrf_token =  "{{ csrf_token }}",
       form_target = "{% url "document_thumb_upload" docid=resource.id %}",
-      geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
       time_enabled = false,
       mosaic_enabled = false,
       userLookup = "{% url "account_ajax_lookup" %}"
