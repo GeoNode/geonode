@@ -1,8 +1,10 @@
+{% extends "geonode_base.html" %}
+
 {% load i18n %}
 {% load base_tags %}
 {% load client_lib_tags %}
 
-{% block title %} {% trans "New Map" %} - {% endblock %}
+{% block title %} {% trans "New Map" %} - {{ block.super }} {% endblock %}
 {% block head %}
 
     <style>
@@ -12,6 +14,7 @@
     </style>
 
     {% get_map_new %}
+	{{ block.super }}
 {% endblock %}
 
 {% block footer %}{% endblock %}

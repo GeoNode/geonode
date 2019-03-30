@@ -1,15 +1,13 @@
-{% extends "geonode_base.html" %}
 {% load bootstrap_tags %}
 {% load static from staticfiles %}
 {% load i18n %}
 {% load leaflet_tags %}
 
 {% block title %}
-    {% trans "GeoExplorer" %} - {{ block.super }}
+    {% trans "GeoExplorer" %}
 {% endblock title %}
 
 {% block head %}
-    {{ block.super }}
  <script src="https://code.jquery.com/jquery-1.12.4.min.js"
             type="text/javascript"></script>
  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"
@@ -27,11 +25,16 @@
     <link rel="stylesheet" href="{% static 'lib/css/L.Control.Pan.css' %}"/>
     <link href="{% static "geonode/css/map_leaflet.css" %}" rel="stylesheet"/>
     <style type="text/css">
-        html, body, #wrap {
+        html, body, #wrap2 {
             height: 100%;
             width: 100%;
         }
-
+	#wrap {display:none !important;}
+	#wrap2{
+		background: #fff;
+		padding-bottom: 40px;
+		padding-top: 10px;
+		width: 100%;}
         #layer-list li {
             cursor: move;
         }
@@ -45,13 +48,17 @@
         }
 
     </style>
+ <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+            type="text/javascript"></script>
+ <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"
+            type="text/javascript"></script>
 {% endblock extra_head %}
 
 {% block body %}
     </div>
     </div>
     </div>
-    <div class="container-fluid">
+    <div id="wrap2" class="container-fluid">
         <div class="row">
             <div class="col-md-3 pad0">
                 <div class="options-panel newmap">
@@ -148,7 +155,6 @@
 {% endblock footer %}
 
 {% block extra_script %}
-{{ block.super }}
     {% leaflet_js %}
     <script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
     <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
@@ -185,7 +191,7 @@
 
             all_layers = {
                 'OpenMapSurfer_Roads': {
-                    'title': 'NO BACKGROUND',
+                    'title': 'BEZ PODLOGE',
                     'name': 'OpenMapSurfer_Roads',
                     'url': OpenMapSurfer_Roads._url,
                     'layer': OpenMapSurfer_Roads,
@@ -220,7 +226,8 @@
             active_background_layer = googleSat;
 
         var w_height = $(window).height();
-        var map_height = w_height - $('nav').height();
+        //var map_height = w_height - $('nav').height();
+	var map_height = w_height - 72;
         map.css("height", map_height);
 
         function remove(id) {
