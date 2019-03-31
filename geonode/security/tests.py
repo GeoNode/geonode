@@ -1321,6 +1321,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             cleanup(test_perm_layer.name, test_perm_layer.uuid)
 
 
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     """
     Test resources synchronization with Guardian and dirty states cleaning
@@ -1353,7 +1354,6 @@ class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         paths = [os.path.join(base_path, 'vector', '{}.{}'.format(base_name, suffix)) for suffix in suffixes]
         return paths, suffixes,
 
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_sync_resources_with_guardian_delay_false(self):
 
         with self.settings(DELAYED_SECURITY_SIGNALS=False):
@@ -1369,7 +1369,6 @@ class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check dirty state
             self.assertFalse(clean_layer.dirty_state)
 
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_sync_resources_with_guardian_delay_true(self):
 
         with self.settings(DELAYED_SECURITY_SIGNALS=True):
