@@ -23,7 +23,7 @@ from geonode.layers.models import Layer
 from geonode.catalogue.models import catalogue_post_save
 
 from geonode import geoserver, qgis_server  # noqa
-from geonode.utils import check_ogc_backend
+from geonode.utils import check_ogc_backend, set_resource_default_links
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import set_attributes_from_geoserver as set_attributes
@@ -73,10 +73,13 @@ class Command(BaseCommand):
         for index, layer in enumerate(all_layers):
             print "[%s / %s] Updating Layer [%s] ..." % ((index + 1), len(all_layers), layer.name)
             try:
-
                 # recalculate the layer statistics
                 set_attributes(layer, overwrite=True)
 
+                # refresh metadata links
+                set_resource_default_links(layer, layer, prune=True)
+
+                # refresh catalogue metadata records
                 catalogue_post_save(instance=layer, sender=layer.__class__)
             except BaseException as e:
                 # import traceback
