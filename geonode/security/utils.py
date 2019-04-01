@@ -134,7 +134,6 @@ def get_visible_resources(queryset,
                     Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
         else:
             filter_set = filter_set.exclude(Q(dirty_state=True))
-
     return filter_set
 
 
@@ -604,3 +603,46 @@ def _update_geofence_rule(layer, workspace, service, user=None, group=None):
             logger.warning(msg)
         else:
             raise RuntimeError(msg)
+
+
+def sync_resources_with_guardian(resource=None):
+    """
+    Sync resources with Guardian and clear their dirty state
+    """
+
+    from geonode.base.models import ResourceBase
+    from geonode.layers.models import Layer
+
+    if resource:
+        dirty_resources = ResourceBase.objects.filter(id=resource.id)
+    else:
+        dirty_resources = ResourceBase.objects.filter(dirty_state=True)
+    if dirty_resources and dirty_resources.count() > 0:
+        logger.debug(" --------------------------- synching with guardian!")
+        for r in dirty_resources:
+            if r.polymorphic_ctype.name == 'layer':
+                layer = None
+                try:
+                    purge_geofence_layer_rules(r)
+                    layer = Layer.objects.get(id=r.id)
+                    perm_spec = layer.get_all_level_info()
+                    logger.debug(" %s --------------------------- %s " % (layer, perm_spec))
+                    # All the other users
+                    if 'users' in perm_spec:
+                        for user, perms in perm_spec['users'].items():
+                            user = get_user_model().objects.get(username=user)
+                            # Set the GeoFence User Rules
+                            geofence_user = str(user)
+                            if "AnonymousUser" in geofence_user:
+                                geofence_user = None
+                            sync_geofence_with_guardian(layer, perms, user=geofence_user)
+                    # All the other groups
+                    if 'groups' in perm_spec:
+                        for group, perms in perm_spec['groups'].items():
+                            group = Group.objects.get(name=group)
+                            # Set the GeoFence Group Rules
+                            sync_geofence_with_guardian(layer, perms, group=group)
+                    r.clear_dirty_state()
+                except BaseException as e:
+                    logger.exception(e)
+                    logger.warn("!WARNING! - Failure Synching-up Security Rules for Resource [%s]" % (r))

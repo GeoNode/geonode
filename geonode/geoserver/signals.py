@@ -85,6 +85,9 @@ def geoserver_post_save(instance, sender, **kwargs):
         payload = json_serializer_producer(instance_dict)
         producer.geoserver_upload_layer(payload)
 
+        if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+            instance.set_dirty_state()
+
         if instance.storeType != 'remoteStore':
             logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
             try:

@@ -43,10 +43,10 @@ def sync_geonode_layers(ignore_errors, filter, username):
             print 'Syncing layer %s/%s: %s' % (count, layers_count, layer.name)
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))
+            # re-sync GeoFence security rules
             layer.set_permissions(perm_spec)
             # recalculate the layer statistics
             set_attributes_from_geoserver(layer, overwrite=True)
-            layer.save()
         except Exception:
             layer_errors.append(layer.alternate)
             exception_type, error, traceback = sys.exc_info()

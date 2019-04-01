@@ -303,6 +303,22 @@
           type: "POST",
           url: action,
           data: JSON.stringify(permissions),
+          beforeSend: function(){
+               // Handle the beforeSend event
+               try {
+                   $("#_perms_processing").modal("show");
+               } catch(err) {
+                   console.log(err);
+               }
+          },
+          complete: function(){
+               // Handle the complete event
+               try {
+                   $("#_perms_processing").modal("hide");
+               } catch(err) {
+                   console.log(err);
+               }
+          },
           success: function(data) {
             $("#modal_perms").modal("hide");
             message = JSON.parse(data);
@@ -349,6 +365,22 @@
             url: "{% url 'invalidate_permissions_cache' %}",
             dataType: 'json',
             data: { uuid: "{{ resource.uuid }}" },
+            beforeSend: function(){
+                 // Handle the beforeSend event
+                 try {
+                     $("#_perms_processing").modal("show");
+                 } catch(err) {
+                     console.log(err);
+                 }
+            },
+            complete: function(){
+                 // Handle the complete event
+                 try {
+                     $("#_perms_processing").modal("hide");
+                 } catch(err) {
+                     console.log(err);
+                 }
+            },
             success: function(data) {
               $("#modal_perms").modal("hide");
               message = data;
@@ -364,7 +396,26 @@
               $("#_permissions_feedbacks").modal("show");
               $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
             },
-            cache: false
+            error: function(jqXHR, textStatus){
+                try {
+                    if(textStatus === 'timeout')
+                    {
+                        $("#_permissions_feedbacks").find('.modal-title').text('Timeout');
+                        $("#_permissions_feedbacks").find('.modal-body').text('Failed from timeout: Could not create Thumbnail');
+                        $("#_permissions_feedbacks").modal("show");
+                    } else {
+                        $("#_permissions_feedbacks").find('.modal-title').text('Error: ' + textStatus);
+                        $("#_permissions_feedbacks").find('.modal-body').text('Could not set Layer Permissions');
+                        $("#_permissions_feedbacks").modal("show");
+                    }
+                } catch(err) {
+                    console.log(err);
+                } finally {
+                    return true;
+                }
+            },
+            cache: false,
+            timeout: 60000
           }
         ).fail(function (jqXHR, textStatus, error) {
               // Handle error here

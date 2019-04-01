@@ -26,6 +26,7 @@ import base64
 import urllib2
 import logging
 import gisdata
+import contextlib
 
 from django.conf import settings
 from django.http import HttpRequest
@@ -55,7 +56,8 @@ from .utils import (purge_geofence_all,
                     get_highest_priority,
                     set_geofence_all,
                     set_geowebcache_invalidate_cache,
-                    sync_geofence_with_guardian)
+                    sync_geofence_with_guardian,
+                    sync_resources_with_guardian)
 
 
 logger = logging.getLogger(__name__)
@@ -1317,3 +1319,67 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Cleaning Up
             test_perm_layer.delete()
             cleanup(test_perm_layer.name, test_perm_layer.uuid)
+
+
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
+class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    """
+    Test resources synchronization with Guardian and dirty states cleaning
+    """
+
+    def setUp(self):
+        super(SecurityRulesTest, self).setUp()
+        # Layer upload
+        layer_upload_url = reverse('layer_upload')
+        self.client.login(username="admin", password="admin")
+        input_paths, suffixes = self._get_input_paths()
+        input_files = [open(fp, 'rb') for fp in input_paths]
+        files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
+        files['base_file'] = files.pop('shp_file')
+        with contextlib.nested(*input_files):
+            files['permissions'] = '{}'
+            files['charset'] = 'utf-8'
+            files['layer_title'] = 'test layer'
+            resp = self.client.post(layer_upload_url, data=files)
+        # Check the response is OK
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.content)
+        lname = data['url'].split(':')[-1]
+        self._l = Layer.objects.get(name=lname)
+
+    def _get_input_paths(self):
+        base_name = 'single_point'
+        suffixes = 'shp shx dbf prj'.split(' ')
+        base_path = gisdata.GOOD_DATA
+        paths = [os.path.join(base_path, 'vector', '{}.{}'.format(base_name, suffix)) for suffix in suffixes]
+        return paths, suffixes,
+
+    def test_sync_resources_with_guardian_delay_false(self):
+
+        with self.settings(DELAYED_SECURITY_SIGNALS=False):
+            # Set geofence (and so the dirty state)
+            set_geofence_all(self._l)
+            # Retrieve the same layer
+            dirty_layer = Layer.objects.get(pk=self._l.id)
+            # Check dirty state (True)
+            self.assertFalse(dirty_layer.dirty_state)
+            # Call sync resources
+            sync_resources_with_guardian()
+            clean_layer = Layer.objects.get(pk=self._l.id)
+            # Check dirty state
+            self.assertFalse(clean_layer.dirty_state)
+
+    def test_sync_resources_with_guardian_delay_true(self):
+
+        with self.settings(DELAYED_SECURITY_SIGNALS=True):
+            # Set geofence (and so the dirty state)
+            set_geofence_all(self._l)
+            # Retrieve the same layer
+            dirty_layer = Layer.objects.get(pk=self._l.id)
+            # Check dirty state (True)
+            self.assertTrue(dirty_layer.dirty_state)
+            # Call sync resources
+            sync_resources_with_guardian()
+            clean_layer = Layer.objects.get(pk=self._l.id)
+            # Check dirty state
+            self.assertFalse(clean_layer.dirty_state)
