@@ -295,7 +295,7 @@ def layer_style_manage(request, layername):
                    'to manage style information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer.name)
                    )
-            logger.warn(msg)
+            logger.debug(msg)
             # If geoserver is not online, return an error
             return render(
                 request,
