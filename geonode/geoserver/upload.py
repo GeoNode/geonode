@@ -188,10 +188,10 @@ def geoserver_upload(
     if _native_bbox and len(_native_bbox) >= 5 and _native_bbox[4:5][0] != 'EPSG:4326':
         box = _native_bbox[:4]
         minx, maxx, miny, maxy = [float(a) for a in box]
-        if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
-           - 90 <= miny <= 90 and -90 <= maxy <= 90:
+        if -180 <= int(minx) <= 180 and -180 <= int(maxx) <= 180 and \
+            -90 <= int(miny) <= 90 and -90 <= int(maxy) <= 90:
             logger.info('GeoServer failed to detect the projection for layer '
-                        '[%s]. Guessing EPSG:4326', name)
+                        '[%s]. Forcing EPSG:4326', name)
             # If GeoServer couldn't figure out the projection, we just
             # assume it's lat/lon to avoid a bad GeoServer configuration
 
