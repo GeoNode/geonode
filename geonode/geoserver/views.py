@@ -765,15 +765,16 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
     session = requests_retry()
     req = session.get(wms_url)
     getcap = req.content
-    if tolerant and ('ServiceException' in getcap or req.status_code == 404):
-        # WARNING Please make sure to have enabled DJANGO CACHE as per
-        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-        wms_url = '%s%s/ows?service=wms&version=%s&request=GetCapabilities&layers=%s'\
-            % (ogc_server_settings.public_url, workspace, version, layer)
-        if access_token:
-            wms_url += ('&access_token=%s' % access_token)
-        req = session.get(wms_url)
-        getcap = req.content
+    if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+        if tolerant and ('ServiceException' in getcap or req.status_code == 404):
+            # WARNING Please make sure to have enabled DJANGO CACHE as per
+            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+            wms_url = '%s%s/ows?service=wms&version=%s&request=GetCapabilities&layers=%s'\
+                % (ogc_server_settings.public_url, workspace, version, layer)
+            if access_token:
+                wms_url += ('&access_token=%s' % access_token)
+            req = session.get(wms_url)
+            getcap = req.content
 
     if 'ServiceException' in getcap or req.status_code == 404:
         return None
