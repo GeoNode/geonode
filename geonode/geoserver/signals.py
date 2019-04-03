@@ -248,8 +248,10 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     instance.store = gs_resource.store.name
 
     try:
+        logger.debug(" -------------------------------------------------- ")
         bbox = gs_resource.native_bbox
-
+        logger.debug(bbox)
+        logger.debug(" -------------------------------------------------- ")
         # Set bounding box values
         instance.bbox_x0 = bbox[0]
         instance.bbox_x1 = bbox[1]
@@ -262,6 +264,8 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if instance.srid:
         instance.srid_url = "http://www.spatialreference.org/ref/" + \
             instance.srid.replace(':', '/').lower() + "/"
+    elif instance.bbox_x0 and instance.bbox_x1 and instance.bbox_y0 and instance.bbox_y1:
+        instance.srid = 'EPSG:4326'
     else:
         raise GeoNodeException("Invalid Projection. Layer is missing CRS!")
 
