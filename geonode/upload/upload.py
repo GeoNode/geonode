@@ -934,11 +934,7 @@ def final_step(upload_session, user):
         saved_layer.upload_session = geonode_upload_session
 
     signals.upload_complete.send(sender=final_step, layer=saved_layer)
-
     geonode_upload_session.save()
     saved_layer.save()
-
     cat._cache.clear()
-    cat.reload()
-
     return saved_layer

@@ -200,12 +200,13 @@ def geoserver_upload(
             gs_resource.latlon_bbox = _native_bbox
             gs_resource.projection = "EPSG:4326"
             cat.save(gs_resource)
+            logger.debug('BBOX coordinates forced to [-180, -90, 180, 90] for layer '
+                         '[%s].', name)
 
     # Step 7. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 7. Creating style for [%s]' % name)
     cat.save(gs_resource)
-    cat.reload()
     publishing = cat.get_layer(name) or gs_resource
 
     if 'sld' in files:
