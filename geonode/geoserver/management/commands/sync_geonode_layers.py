@@ -18,8 +18,9 @@
 #
 #########################################################################
 
-import json
+import ast
 import sys
+import json
 
 from django.core.management.base import BaseCommand
 
@@ -28,7 +29,7 @@ from geonode.security.views import _perms_info_json
 from geonode.geoserver.helpers import set_attributes_from_geoserver
 
 
-def sync_geonode_layers(ignore_errors, filter, username, updatepermissions=None, updatethumbnails=None):
+def sync_geonode_layers(ignore_errors, filter, username, updatepermissions, updatethumbnails):
     layers = Layer.objects.all().order_by('name')
     if filter:
         layers = layers.filter(name__icontains=filter)
@@ -41,7 +42,7 @@ def sync_geonode_layers(ignore_errors, filter, username, updatepermissions=None,
         try:
             count += 1
             print 'Syncing layer %s/%s: %s' % (count, layers_count, layer.name)
-            if updatepermissions or not updatethumbnails:
+            if ast.literal_eval(updatepermissions):
                 print 'Syncing permissions...'
                 # sync permissions in GeoFence
                 perm_spec = json.loads(_perms_info_json(layer))
@@ -49,7 +50,7 @@ def sync_geonode_layers(ignore_errors, filter, username, updatepermissions=None,
                 layer.set_permissions(perm_spec)
                 # recalculate the layer statistics
                 set_attributes_from_geoserver(layer, overwrite=True)
-            if updatethumbnails or not updatepermissions:
+            if ast.literal_eval(updatethumbnails):
                 print 'Regenerating thumbnails...'
                 layer.save()
         except Exception:
@@ -91,18 +92,14 @@ class Command(BaseCommand):
             default=None,
             help="Only update data owned by the specified username")
         parser.add_argument(
-            '-p',
             '--updatepermissions',
-            action='store_true',
             dest="updatepermissions",
-            default=False,
+            default='True',
             help="Update only the layer permissions. Does not regenerate styles and thumbnails")
         parser.add_argument(
-            '-t',
             '--updatethumbnails',
-            action='store_true',
             dest="updatethumbnails",
-            default=False,
+            default='True',
             help="Update only the layer styles and thumbnails. Does not re-sync security rules.")
 
     def handle(self, **options):
