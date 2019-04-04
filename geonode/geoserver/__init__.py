@@ -55,12 +55,11 @@ def set_resource_links(*args, **kwargs):
     from geonode.layers.models import Layer
 
     _all_layers = Layer.objects.all()
-    for index, layer in enumerate(_all_layers):
+    for index, layer in enumerate(_all_layers, start=1):
         _lyr_name = layer.name
-        print "[%s / %s] Updating Layer [%s] ..." % ((index + 1), len(_all_layers), _lyr_name)
-        logger.debug(
-            "[%s / %s] Updating Layer [%s] ..." % ((index + 1), len(_all_layers), _lyr_name)
-        )
+        message = "[%s / %s] Updating Layer [%s] ..." % (index, len(_all_layers), _lyr_name)
+        print(message)
+        logger.debug(message)
         try:
             set_resource_default_links(layer, layer)
             catalogue_post_save(instance=layer, sender=layer.__class__)
