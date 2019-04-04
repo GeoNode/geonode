@@ -754,7 +754,7 @@ _default_public_location = 'http://{}:{}/gs/'.format(
     GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/gs/'.format(GEOSERVER_PUBLIC_HOST)
 
 GEOSERVER_WEB_UI_LOCATION = os.getenv(
-    'GEOSERVER_WEB_UI_LOCATION', GEOSERVER_LOCATION
+    'GEOSERVER_WEB_UI_LOCATION', _default_public_location
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
