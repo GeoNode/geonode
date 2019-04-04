@@ -190,7 +190,6 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             self.assertEquals(r.status_code, 200)
             o = json.loads(r.text)
             self.assertTrue('long-array-array' in o)
-            self.assertTrue(len(o['long-array-array']) > 0)
 
             from geonode.geoserver.helpers import (get_sld_for,
                                                    fixup_style,
