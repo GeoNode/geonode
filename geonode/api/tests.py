@@ -17,20 +17,21 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+from django.conf import settings
 from datetime import datetime, timedelta
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth.models import Group
-from geonode.groups.models import GroupProfile
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.tests.base import GeoNodeBaseTestSupport
-
-from geonode.base.populate_test_data import all_public
+from geonode import geoserver
 from geonode.layers.models import Layer
+from geonode.utils import check_ogc_backend
+from geonode.groups.models import GroupProfile
+from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.base.populate_test_data import all_public
 
 
 class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
@@ -131,6 +132,29 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(self.list_url + str(layer.id) + '/')
         self.assertValidJSONResponse(resp)
 
+        # with delayed security
+        with self.settings(DELAYED_SECURITY_SIGNALS=True):
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                from geonode.security.utils import sync_geofence_with_guardian
+                sync_geofence_with_guardian(layer, self.perm_spec)
+                self.assertTrue(layer.dirty_state)
+
+                self.client.login(username=self.user, password=self.passwd)
+                resp = self.client.get(self.list_url)
+                self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
+                self.client.logout()
+                resp = self.client.get(self.list_url)
+                self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+
+                from geonode.people.models import Profile
+                Profile.objects.create(username='imnew',
+                                       password='pbkdf2_sha256$12000$UE4gAxckVj4Z$N\
+                    6NbOXIQWWblfInIoq/Ta34FdRiPhawCIZ+sOO3YQs=')
+                self.client.login(username='imnew', password='thepwd')
+                resp = self.client.get(self.list_url)
+                self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+
     def test_new_user_has_access_to_old_layers(self):
         """Test that a new user can access the public available layers"""
         from geonode.people.models import Profile
@@ -141,6 +165,33 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(self.list_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
+        # with delayed security
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            _ogc_geofence_enabled = settings.OGC_SERVER
+            try:
+                _ogc_geofence_enabled['default']['GEOFENCE_SECURITY_ENABLED'] = True
+                with self.settings(DELAYED_SECURITY_SIGNALS=True,
+                                   OGC_SERVER=_ogc_geofence_enabled,
+                                   DEFAULT_ANONYMOUS_VIEW_PERMISSION=True):
+                    layer = Layer.objects.all()[0]
+                    layer.set_default_permissions()
+                    layer.refresh_from_db()
+                    self.assertTrue(layer.dirty_state)
+
+                    self.client.login(username=self.user, password=self.passwd)
+                    resp = self.client.get(self.list_url)
+                    self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
+                    self.client.logout()
+                    resp = self.client.get(self.list_url)
+                    self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+
+                    self.client.login(username='imnew', password='thepwd')
+                    resp = self.client.get(self.list_url)
+                    self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+            finally:
+                _ogc_geofence_enabled['default']['GEOFENCE_SECURITY_ENABLED'] = False
 
 
 class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):

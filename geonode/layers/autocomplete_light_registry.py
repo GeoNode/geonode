@@ -21,10 +21,30 @@
 from autocomplete_light.registry import register
 from autocomplete_light.autocomplete.shortcuts import AutocompleteModelTemplate
 from models import Layer
+from guardian.shortcuts import get_objects_for_user
+
+from django.conf import settings
+from geonode.security.utils import get_visible_resources
 
 
 class LayerAutocomplete(AutocompleteModelTemplate):
     choice_template = 'autocomplete_response.html'
+
+    def choices_for_request(self):
+        request = self.request
+        permitted = get_objects_for_user(
+            request.user,
+            'base.view_resourcebase')
+        self.choices = self.choices.filter(id__in=permitted)
+
+        self.choices = get_visible_resources(
+            self.choices,
+            request.user if request else None,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
+
+        return super(LayerAutocomplete, self).choices_for_request()
 
 
 register(

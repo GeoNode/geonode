@@ -684,6 +684,9 @@
       <h4>{% trans "Permissions" %}</h4>
       <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
       <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Layer Permissions" %}</a></p>
+      {% if USE_GEOSERVER %}
+        <a href="#" class="btn btn-primary btn-block" data-dismiss="modal" id="security_refresh">{% trans "Sync permissions immediately" %}</a>
+      {% endif %}
     </li>
     {% endif %}
     {% endif %}
@@ -699,6 +702,22 @@
     {% include "base/_resourcebase_contact_snippet.html" %}
   </ul>
 
+  <div class="modal fade" style="width: 100%; height: 100%;" id="_perms_processing" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h1>{% trans "Processing..." %}</h1>
+              </div>
+              <div class="modal-body">
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                      {% trans "Updating Permissions..." %}
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
 
   {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form.html" %}

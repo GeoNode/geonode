@@ -753,12 +753,12 @@ _default_public_location = 'http://{}:{}/gs/'.format(
     GEOSERVER_PUBLIC_HOST,
     GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/gs/'.format(GEOSERVER_PUBLIC_HOST)
 
-GEOSERVER_WEB_UI_LOCATION = os.getenv(
-    'GEOSERVER_WEB_UI_LOCATION', GEOSERVER_LOCATION
-)
-
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
     'GEOSERVER_PUBLIC_LOCATION', _default_public_location
+)
+
+GEOSERVER_WEB_UI_LOCATION = os.getenv(
+    'GEOSERVER_WEB_UI_LOCATION', GEOSERVER_PUBLIC_LOCATION
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -1406,12 +1406,13 @@ if USE_GEOSERVER:
 #     },
 # }
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
+DELAYED_SECURITY_INTERVAL = int(os.getenv('DELAYED_SECURITY_INTERVAL', 60))
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
     'delayed-security-sync-task': {
         'task': 'geonode.security.tasks.synch_guardian',
-        'schedule': timedelta(seconds=60),
+        'schedule': timedelta(seconds=DELAYED_SECURITY_INTERVAL),
     }
 }
 
