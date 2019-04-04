@@ -119,7 +119,7 @@ DATABASE_URL = os.getenv(
 _db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 _db_conf.update({'TIMEOUT': 60})
 DATABASES = {
-    'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+    'default': _db_conf
 }
 
 if os.getenv('DEFAULT_BACKEND_DATASTORE'):
