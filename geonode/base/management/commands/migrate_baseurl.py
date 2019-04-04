@@ -20,11 +20,12 @@
 
 import helpers
 
+from django.db.models import Func, F, Value
 from django.core.management.base import BaseCommand, CommandError
 
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer, Style
-from geonode.maps.models import Map
+from geonode.maps.models import Map, MapLayer
 from geonode.base.models import Link
 
 from geonode.utils import designals, resignals
@@ -37,14 +38,6 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
 
         # Named (optional) arguments
-        parser.add_argument(
-            '-i',
-            '--ignore-errors',
-            action='store_true',
-            dest='ignore_errors',
-            default=False,
-            help='Stop after any errors are encountered.')
-
         parser.add_argument(
             '-f',
             '--force',
@@ -64,7 +57,6 @@ class Command(BaseCommand):
             help='Target Address (the one to be changed e.g. http://my-public.geonode.org)')
 
     def handle(self, **options):
-        # ignore_errors = options.get('ignore_errors')
         force_exec = options.get('force_exec')
         source_address = options.get('source_address')
         target_address = options.get('target_address')
@@ -87,65 +79,38 @@ Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address
                 designals()
                 print "...done!"
 
-                maps = Map.objects.all()
+                _cnt = Map.objects.filter(thumbnail_url__icontains=source_address).update(
+                    thumbnail_url=Func(
+                        F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
+                print "Updated %s Maps" % _cnt
 
-                for map in maps:
-                    print "Checking Map[%s]" % (map)
-                    if map.thumbnail_url:
-                        map.thumbnail_url = map.thumbnail_url.replace(source_address, target_address)
-                    map_layers = map.layers
-                    for layer in map_layers:
-                        if layer.ows_url:
-                            original = layer.ows_url
-                            layer.ows_url = layer.ows_url.replace(source_address, target_address)
-                            print "Updated OWS URL from [%s] to [%s]" % (original, layer.ows_url)
-                        if layer.layer_params:
-                            layer.layer_params = layer.layer_params.replace(source_address, target_address)
-                            print "Updated Layer Params also for Layer [%s]" % (layer)
-                        layer.save()
-                    map.save()
-                    print "Updated Map[%s]" % (map)
+                _cnt = MapLayer.objects.filter(ows_url__icontains=source_address).update(
+                    ows_url=Func(
+                        F('ows_url'),Value(source_address),Value(target_address),function='replace'))
+                MapLayer.objects.filter(layer_params__icontains=source_address).update(
+                    layer_params=Func(
+                        F('layer_params'),Value(source_address),Value(target_address),function='replace'))
+                print "Updated %s MapLayers" % _cnt
 
-                layers = Layer.objects.all()
+                _cnt = Layer.objects.filter(thumbnail_url__icontains=source_address).update(
+                    thumbnail_url=Func(
+                        F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
+                print "Updated %s Layers" % _cnt
 
-                for layer in layers:
-                    print "Checking Layer[%s]" % (layer)
-                    if layer.thumbnail_url:
-                        original = layer.thumbnail_url
-                        layer.thumbnail_url = layer.thumbnail_url.replace(source_address, target_address)
-                        layer.save()
-                        print "Updated Thumbnail URL from [%s] to [%s]" % (original, layer.thumbnail_url)
+                _cnt = Style.objects.filter(sld_url__icontains=source_address).update(
+                    sld_url=Func(
+                        F('sld_url'),Value(source_address),Value(target_address),function='replace'))
+                print "Updated %s Styles" % _cnt
 
-                styles = Style.objects.all()
+                _cnt = Link.objects.filter(url__icontains=source_address).update(
+                    url=Func(
+                        F('url'),Value(source_address),Value(target_address),function='replace'))
+                print "Updated %s Links" % _cnt
 
-                for style in styles:
-                    print "Checking Style[%s]" % (style)
-                    if style.sld_url:
-                        original = style.sld_url
-                        style.sld_url = style.sld_url.replace(source_address, target_address)
-                        style.save()
-                        print "Updated SLD URL from [%s] to [%s]" % (original, style.sld_url)
-
-                links = Link.objects.all()
-
-                for link in links:
-                    print "Checking Link[%s]" % (link)
-                    if link.url:
-                        original = link.url
-                        link.url = link.url.replace(source_address, target_address)
-                        link.save()
-                        print "Updated URL from [%s] to [%s]" % (original, link.url)
-
-                resources = ResourceBase.objects.all()
-
-                for res in resources:
-                    print "Checking Resource[%s]" % (res)
-                    if res.metadata_xml:
-                        original = res.metadata_xml
-                        res.metadata_xml = res.metadata_xml.replace(source_address, target_address)
-                        res.save()
-                        print "Updated URL in metadata XML for resource [%s]" % (res)
-
+                _cnt = ResourceBase.objects.filter(thumbnail_url__icontains=source_address).update(
+                    thumbnail_url=Func(
+                        F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
+                print "Updated %s ResourceBases" % _cnt
             finally:
                 # Reactivate GeoNode Signals
                 print "Reactivating GeoNode Signals..."

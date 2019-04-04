@@ -222,6 +222,15 @@ class CommonModelApi(ModelResource):
         if keywords:
             filtered = self.filter_h_keywords(filtered, keywords)
 
+        # Hide Dirty State Resources
+        user = request.user if request else None
+        if not user or not user.is_superuser:
+            if user:
+                filtered = filtered.exclude(Q(dirty_state=True) & ~(
+                    Q(owner__username__iexact=str(user))))
+            else:
+                filtered = filtered.exclude(Q(dirty_state=True))
+
         return filtered
 
     def filter_published(self, queryset, request):
