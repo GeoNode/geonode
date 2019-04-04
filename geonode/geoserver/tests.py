@@ -1037,6 +1037,7 @@ class SignalsTests(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_set_resources_links(self):
 
+        from django.db.models import Q
         from geonode.base.models import Link
         from geonode.catalogue import get_catalogue
 
@@ -1057,20 +1058,20 @@ class SignalsTests(GeoNodeBaseTestSupport):
         self.assertFalse(_links.count() > 0, "No links have been deleted")
         # Delete resources metadata
         _layers = Layer.objects.exclude(
-            metadata_xml__isnull=True).exclude(
-            metadata_xml__exact='').exclude(
-            csw_anytext__isnull=True).exclude(
-            csw_anytext__exact=''
+            Q(metadata_xml__isnull=True) |
+            Q(metadata_xml__exact='') |
+            Q(csw_anytext__isnull=True) |
+            Q(csw_anytext__exact='')
         )
         count = _layers.count()
         self.assertTrue(count > 0, "No layers have got metadata")
         if count:
             _layers.update(metadata_xml=None)
             _updated_layers = Layer.objects.exclude(
-                metadata_xml__isnull=True).exclude(
-                metadata_xml__exact='').exclude(
-                csw_anytext__isnull=True).exclude(
-                csw_anytext__exact=''
+                Q(metadata_xml__isnull=True) |
+                Q(metadata_xml__exact='') |
+                Q(csw_anytext__isnull=True) |
+                Q(csw_anytext__exact='')
             )
             updated_count = _updated_layers.count()
             self.assertTrue(
@@ -1087,10 +1088,10 @@ class SignalsTests(GeoNodeBaseTestSupport):
         )
         # Check layers
         _post_migrate_layers = Layer.objects.exclude(
-            metadata_xml__isnull=True).exclude(
-            metadata_xml__exact='').exclude(
-            csw_anytext__isnull=True).exclude(
-            csw_anytext__exact=''
+            Q(metadata_xml__isnull=True) |
+            Q(metadata_xml__exact='') |
+            Q(csw_anytext__isnull=True) |
+            Q(csw_anytext__exact='')
         )
         post_migrate_layers_count = _post_migrate_layers.count()
         self.assertTrue(
