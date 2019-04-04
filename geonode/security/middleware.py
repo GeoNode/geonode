@@ -113,12 +113,13 @@ class SessionControlMiddleware(object):
         except BaseException:
             pass
         finally:
-            try:
-                from django.contrib import messages
-                from django.utils.translation import ugettext_noop as _
-                messages.warning(request, _("Session is Expired. Please login again!"))
-            except BaseException:
-                pass
+            # AF: Causing DB lock... interesting!
+            # try:
+            #     from django.contrib import messages
+            #     from django.utils.translation import ugettext_noop as _
+            #     messages.warning(request, _("Session is Expired. Please login again!"))
+            # except BaseException:
+            #     pass
 
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
