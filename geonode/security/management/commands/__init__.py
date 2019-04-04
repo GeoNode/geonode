@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2018 OSGeo
+# Copyright (C) 2019 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,16 +17,3 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from celery import shared_task
-from django.conf import settings
-from .utils import sync_resources_with_guardian
-
-
-@shared_task
-def synch_guardian():
-    """
-    Sync resources with Guardian and clear their dirty state
-    """
-    if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-        sync_resources_with_guardian()
