@@ -116,6 +116,8 @@ DATABASE_URL = os.getenv(
 # 'ENGINE': 'django.contrib.gis.db.backends.postgis'
 # see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
 # detailed list of supported backends and notes.
+_db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+_db_conf.update({'TIMEOUT': 60})
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 }
