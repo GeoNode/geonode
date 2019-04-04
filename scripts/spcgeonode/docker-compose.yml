@@ -33,7 +33,7 @@ x-common-django:
     - MEDIA_URL=/uploaded/
     - GEOSERVER_LOCATION=http://nginx/geoserver/
     - ASYNC_SIGNALS=True
-    - SESSION_EXPIRED_CONTROL_ENABLED=False
+    - SESSION_EXPIRED_CONTROL_ENABLED=True
     # TODO : we should probably remove this and set Celery to use JSON serialization instead of pickle
     - C_FORCE_ROOT=True
     # We get an exception after migrations on startup (it seems the monitoring app tries to resolve the geoserver domain name after it's migration, which can happen before oauth migrations on which geoserver startup depends...)
