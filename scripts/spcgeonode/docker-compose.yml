@@ -55,7 +55,7 @@ services:
       retries: 1
       start_period: 60s
     entrypoint: ["/spcgeonode/scripts/spcgeonode/django/docker-entrypoint.sh"]
-    command: "uwsgi --chdir=/spcgeonode --module=geonode.wsgi --socket=:8000 --http=127.0.0.1:8001 --processes=5"
+    command: "uwsgi --chdir=/spcgeonode --module=geonode.wsgi --socket=:8000 --http=127.0.0.1:8001 --processes=5 --buffer-size=8192"
 
   # Celery worker that executes celery tasks created by Django.
   celery:

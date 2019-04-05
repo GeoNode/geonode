@@ -25,6 +25,7 @@ import json
 import os
 import shutil
 import tempfile
+from django.core.management import call_command
 from os.path import basename, splitext
 
 from django.conf import settings
@@ -1029,3 +1030,127 @@ class UtilsTests(GeoNodeBaseTestSupport):
         # database, no exceptions should be thrown.
         with self.settings(UPLOADER=uploader_settings, OGC_SERVER=ogc_server_settings, DATABASES=database_settings):
             OGC_Servers_Handler(ogc_server_settings)['default']
+
+
+class SignalsTests(GeoNodeBaseTestSupport):
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_set_resources_links(self):
+
+        from django.db.models import Q
+        from geonode.base.models import Link
+        from geonode.catalogue import get_catalogue
+
+        # Links
+        _def_link_types = ['original', 'metadata']
+        _links = Link.objects.filter(link_type__in=_def_link_types)
+        # Check 'original' and 'metadata' links exist
+        self.assertIsNotNone(
+            _links,
+            "No 'original' and 'metadata' links have been found"
+        )
+        self.assertTrue(
+            _links.count() > 0,
+            "No 'original' and 'metadata' links have been found"
+        )
+        # Delete all 'original' and 'metadata' links
+        _links.delete()
+        self.assertFalse(_links.count() > 0, "No links have been deleted")
+        # Delete resources metadata
+        _layers = Layer.objects.exclude(
+            Q(metadata_xml__isnull=True) |
+            Q(metadata_xml__exact='') |
+            Q(csw_anytext__isnull=True) |
+            Q(csw_anytext__exact='')
+        )
+        count = _layers.count()
+        self.assertTrue(count > 0, "No layers have got metadata")
+        if count:
+            _layers.update(metadata_xml=None)
+            _updated_layers = Layer.objects.exclude(
+                Q(metadata_xml__isnull=True) |
+                Q(metadata_xml__exact='') |
+                Q(csw_anytext__isnull=True) |
+                Q(csw_anytext__exact='')
+            )
+            updated_count = _updated_layers.count()
+            self.assertTrue(
+                updated_count == 0,
+                "Metadata have not been updated (deleted) correctly"
+            )
+        # Call migrate
+        call_command("migrate", verbosity=0)
+        # Check links
+        _post_migrate_links = Link.objects.filter(link_type__in=_def_link_types)
+        self.assertTrue(
+            _post_migrate_links.count() > 0,
+            "No links have been restored"
+        )
+        # Check layers
+        _post_migrate_layers = Layer.objects.exclude(
+            Q(metadata_xml__isnull=True) |
+            Q(metadata_xml__exact='') |
+            Q(csw_anytext__isnull=True) |
+            Q(csw_anytext__exact='')
+        )
+        post_migrate_layers_count = _post_migrate_layers.count()
+        self.assertTrue(
+            post_migrate_layers_count > 0,
+            "After migrations, there are no layers with metadata"
+        )
+        self.assertTrue(
+            post_migrate_layers_count >= count,
+            "After migrations, some metadata have not been restored correctly"
+        )
+        for _lyr in _post_migrate_layers:
+            # Check original links in csw_anytext
+            _post_migrate_links_orig = Link.objects.filter(
+                resource=_lyr.resourcebase_ptr,
+                resource_id=_lyr.resourcebase_ptr.id,
+                link_type='original'
+            )
+            self.assertTrue(
+                _post_migrate_links_orig.count() > 0,
+                "No 'original' links has been found for the layer '{}'".format(
+                    _lyr.alternate
+                )
+            )
+            for _link_orig in _post_migrate_links_orig:
+                self.assertIn(
+                    _link_orig.url,
+                    _lyr.csw_anytext,
+                    "The link URL {0} is not present in the 'csw_anytext' attribute of the layer '{1}'".format(
+                        _link_orig.url,
+                        _lyr.alternate
+                    )
+                )
+            # Check catalogue
+            catalogue = get_catalogue()
+            record = catalogue.get_record(_lyr.uuid)
+            self.assertIsNotNone(record)
+            self.assertTrue(
+                hasattr(record, 'links'),
+                "No records have been found in the catalogue for the resource '{}'".format(
+                    _lyr.alternate
+                )
+            )
+            # Check 'metadata' links for each record
+            for mime, name, metadata_url in record.links['metadata']:
+                try:
+                    _post_migrate_link_meta = Link.objects.get(
+                        resource=_lyr.resourcebase_ptr,
+                        url=metadata_url,
+                        name=name,
+                        extension='xml',
+                        mime=mime,
+                        link_type='metadata'
+                    )
+                except Link.DoesNotExist:
+                    _post_migrate_link_meta = None
+                self.assertIsNotNone(
+                    _post_migrate_link_meta,
+                    "No '{}' links have been found in the catalogue for the resource '{}'".format(
+                        name,
+                        _lyr.alternate
+                    )
+                )
