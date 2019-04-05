@@ -34,7 +34,6 @@ from .helpers import (GEOSERVER_LAYER_TYPES,
                       get_store,
                       get_sld_for,
                       ogc_server_settings,
-                      cascading_delete,
                       _create_db_featurestore,
                       _create_featurestore,
                       _create_coveragestore)
@@ -185,32 +184,29 @@ def geoserver_upload(
         _native_bbox = gs_resource.native_bbox
     except BaseException:
         pass
+
     if _native_bbox and len(_native_bbox) >= 5 and _native_bbox[4:5][0] == 'EPSG:4326':
         box = _native_bbox[:4]
         minx, maxx, miny, maxy = [float(a) for a in box]
-        if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
-           - 90 <= miny <= 90 and -90 <= maxy <= 90:
-            logger.info('GeoServer failed to detect the projection for layer '
-                        '[%s]. Guessing EPSG:4326', name)
-            # If GeoServer couldn't figure out the projection, we just
-            # assume it's lat/lon to avoid a bad GeoServer configuration
-
+        if -180 <= round(minx, 5) <= 180 and -180 <= round(maxx, 5) <= 180 and \
+        -90 <= round(miny, 5) <= 90 and -90 <= round(maxy, 5) <= 90:
             gs_resource.latlon_bbox = _native_bbox
             gs_resource.projection = "EPSG:4326"
             cat.save(gs_resource)
         else:
-            msg = ('GeoServer failed to detect the projection for layer '
-                   '[%s]. It doesn\'t look like EPSG:4326, so backing out '
-                   'the layer.')
-            logger.info(msg, name)
-            cascading_delete(cat, name)
-            raise GeoNodeException(msg % name)
+            logger.warning('BBOX coordinates outside normal EPSG:4326 values for layer '
+                           '[%s].', name)
+            _native_bbox = [-180, -90, 180, 90, "EPSG:4326"]
+            gs_resource.latlon_bbox = _native_bbox
+            gs_resource.projection = "EPSG:4326"
+            cat.save(gs_resource)
+            logger.debug('BBOX coordinates forced to [-180, -90, 180, 90] for layer '
+                         '[%s].', name)
 
     # Step 7. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 7. Creating style for [%s]' % name)
     cat.save(gs_resource)
-    cat.reload()
     publishing = cat.get_layer(name) or gs_resource
 
     if 'sld' in files:

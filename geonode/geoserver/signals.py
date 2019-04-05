@@ -85,6 +85,9 @@ def geoserver_post_save(instance, sender, **kwargs):
         payload = json_serializer_producer(instance_dict)
         producer.geoserver_upload_layer(payload)
 
+        if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+            instance.set_dirty_state()
+
         if instance.storeType != 'remoteStore':
             logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
             try:
@@ -245,8 +248,10 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     instance.store = gs_resource.store.name
 
     try:
+        logger.debug(" -------------------------------------------------- ")
         bbox = gs_resource.native_bbox
-
+        logger.debug(bbox)
+        logger.debug(" -------------------------------------------------- ")
         # Set bounding box values
         instance.bbox_x0 = bbox[0]
         instance.bbox_x1 = bbox[1]
@@ -259,6 +264,9 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if instance.srid:
         instance.srid_url = "http://www.spatialreference.org/ref/" + \
             instance.srid.replace(':', '/').lower() + "/"
+    elif instance.bbox_x0 and instance.bbox_x1 and instance.bbox_y0 and instance.bbox_y1:
+        # Guessing 'EPSG:4326' by default
+        instance.srid = 'EPSG:4326'
     else:
         raise GeoNodeException("Invalid Projection. Layer is missing CRS!")
 
