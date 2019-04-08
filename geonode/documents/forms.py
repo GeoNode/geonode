@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from geonode.base.forms import ResourceBaseForm
 import json
 import os
 import re
@@ -27,7 +28,7 @@ from django import forms
 from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from django.forms import HiddenInput, TextInput
+from django.forms import HiddenInput
 from modeltranslation.forms import TranslationModelForm
 
 from geonode.documents.models import (
@@ -39,8 +40,6 @@ from geonode.maps.models import Map
 from geonode.layers.models import Layer
 
 autodiscover()  # flake8: noqa
-
-from geonode.base.forms import ResourceBaseForm
 
 
 class DocumentFormMixin(object):
@@ -70,7 +69,7 @@ class DocumentFormMixin(object):
         # create and fetch desired links
         instances = []
         for link in self.cleaned_data[links_field]:
-            matches = re.match("type:(\d+)-id:(\d+)", link)
+            matches = re.match(r"type:(\d+)-id:(\d+)", link)
             if matches:
                 content_type = ContentType.objects.get(id=matches.group(1))
                 instance, _ = DocumentResourceLink.objects.get_or_create(
@@ -82,7 +81,7 @@ class DocumentFormMixin(object):
 
         # delete remaining links
         DocumentResourceLink.objects\
-        .filter(document_id=self.instance.id).exclude(pk__in=[i.pk for i in instances]).delete()
+            .filter(document_id=self.instance.id).exclude(pk__in=[i.pk for i in instances]).delete()
 
 
 class DocumentForm(ResourceBaseForm, DocumentFormMixin):

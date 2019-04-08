@@ -303,6 +303,22 @@
           type: "POST",
           url: action,
           data: JSON.stringify(permissions),
+          beforeSend: function(){
+               // Handle the beforeSend event
+               try {
+                   $("#_perms_processing").modal("show");
+               } catch(err) {
+                   console.log(err);
+               }
+          },
+          complete: function(){
+               // Handle the complete event
+               try {
+                   $("#_perms_processing").modal("hide");
+               } catch(err) {
+                   console.log(err);
+               }
+          },
           success: function(data) {
             $("#modal_perms").modal("hide");
             message = JSON.parse(data);
@@ -316,6 +332,7 @@
             $("#_permissions_feedbacks").find('.modal-title').text(title);
             $("#_permissions_feedbacks").find('.modal-body').text(body);
             $("#_permissions_feedbacks").modal("show");
+            $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
           }, /* - END success - */
           cache: false
         }
@@ -328,6 +345,7 @@
             $("#_permissions_feedbacks").find('.modal-title').text(title);
             $("#_permissions_feedbacks").find('.modal-body').text(body);
             $("#_permissions_feedbacks").modal("show");
+            $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
       });
       return false;
     };
@@ -347,6 +365,22 @@
             url: "{% url 'invalidate_permissions_cache' %}",
             dataType: 'json',
             data: { uuid: "{{ resource.uuid }}" },
+            beforeSend: function(){
+                 // Handle the beforeSend event
+                 try {
+                     $("#_perms_processing").modal("show");
+                 } catch(err) {
+                     console.log(err);
+                 }
+            },
+            complete: function(){
+                 // Handle the complete event
+                 try {
+                     $("#_perms_processing").modal("hide");
+                 } catch(err) {
+                     console.log(err);
+                 }
+            },
             success: function(data) {
               $("#modal_perms").modal("hide");
               message = data;
@@ -360,6 +394,64 @@
               $("#_permissions_feedbacks").find('.modal-title').text(title);
               $("#_permissions_feedbacks").find('.modal-body').text(body);
               $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
+            },
+            error: function(jqXHR, textStatus){
+                try {
+                    if(textStatus === 'timeout')
+                    {
+                        $("#_permissions_feedbacks").find('.modal-title').text('Timeout');
+                        $("#_permissions_feedbacks").find('.modal-body').text('Failed from timeout: Could not create Thumbnail');
+                        $("#_permissions_feedbacks").modal("show");
+                    } else {
+                        $("#_permissions_feedbacks").find('.modal-title').text('Error: ' + textStatus);
+                        $("#_permissions_feedbacks").find('.modal-body').text('Could not set Layer Permissions');
+                        $("#_permissions_feedbacks").modal("show");
+                    }
+                } catch(err) {
+                    console.log(err);
+                } finally {
+                    return true;
+                }
+            },
+            cache: false,
+            timeout: 60000
+          }
+        ).fail(function (jqXHR, textStatus, error) {
+              // Handle error here
+              $("#modal_perms").modal("hide");
+              message = JSON.parse(jqXHR.responseText);
+              body = message.message;
+              title = "Error";
+              $("#_permissions_feedbacks").find('.modal-title').text(title);
+              $("#_permissions_feedbacks").find('.modal-body').text(body);
+              $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
+        });
+        return false;
+    });
+
+    $("#attributes_sats_refresh").click(function(){
+        $.ajax(
+          {
+            type: "POST",
+            url: "{% url 'attributes_sats_refresh' %}",
+            dataType: 'json',
+            data: { uuid: "{{ resource.uuid }}" },
+            success: function(data) {
+              $("#modal_perms").modal("hide");
+              message = data;
+              title = "";
+              body = message.message;
+              if (message.success) {
+                  title = "OK";
+              } else {
+                  title = "Warning";
+              }
+              $("#_permissions_feedbacks").find('.modal-title').text(title);
+              $("#_permissions_feedbacks").find('.modal-body').text(body);
+              $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
             },
             cache: false
           }
@@ -372,6 +464,7 @@
               $("#_permissions_feedbacks").find('.modal-title').text(title);
               $("#_permissions_feedbacks").find('.modal-body').text(body);
               $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
         });
         return false;
     });
@@ -396,6 +489,7 @@
               $("#_permissions_feedbacks").find('.modal-title').text(title);
               $("#_permissions_feedbacks").find('.modal-body').text(body);
               $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
             },
             cache: false
           }
@@ -408,6 +502,7 @@
               $("#_permissions_feedbacks").find('.modal-title').text(title);
               $("#_permissions_feedbacks").find('.modal-body').text(body);
               $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
         });
         return false;
     });

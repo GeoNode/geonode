@@ -57,20 +57,20 @@ sitemaps = {
 }
 
 urlpatterns = [
-                url(r'^$',
-                    TemplateView.as_view(template_name='index.html'),
-                    name='home'),
-                url(r'^help/$',
-                    TemplateView.as_view(template_name='help.html'),
-                    name='help'),
-                url(r'^developer/$',
-                    TemplateView.as_view(
-                    template_name='developer.html'),
-                    name='developer'),
-                url(r'^about/$',
-                    TemplateView.as_view(template_name='about.html'),
-                    name='about'),
-              ]
+    url(r'^$',
+        TemplateView.as_view(template_name='index.html'),
+        name='home'),
+    url(r'^help/$',
+        TemplateView.as_view(template_name='help.html'),
+        name='help'),
+    url(r'^developer/$',
+        TemplateView.as_view(
+            template_name='developer.html'),
+        name='developer'),
+    url(r'^about/$',
+        TemplateView.as_view(template_name='about.html'),
+        name='about'),
+]
 
 # WorldMap
 if settings.USE_WORLDMAP:
@@ -107,7 +107,7 @@ urlpatterns += [
     # Search views
     url(r'^search/$',
         TemplateView.as_view(
-        template_name='search/search.html'),
+            template_name='search/search.html'),
         name='search'),
 
     # Social views
@@ -219,8 +219,8 @@ if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     urlpatterns += [  # '',
         url(r'^qgis-server/',
             include(
-            'geonode.qgis_server.urls',
-            namespace='qgis_server')),
+                'geonode.qgis_server.urls',
+                namespace='qgis_server')),
     ]
 
 if settings.NOTIFICATIONS_MODULE in settings.INSTALLED_APPS:

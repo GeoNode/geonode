@@ -222,6 +222,15 @@ class CommonModelApi(ModelResource):
         if keywords:
             filtered = self.filter_h_keywords(filtered, keywords)
 
+        # Hide Dirty State Resources
+        user = request.user if request else None
+        if not user or not user.is_superuser:
+            if user:
+                filtered = filtered.exclude(Q(dirty_state=True) & ~(
+                    Q(owner__username__iexact=str(user))))
+            else:
+                filtered = filtered.exclude(Q(dirty_state=True))
+
         return filtered
 
     def filter_published(self, queryset, request):
@@ -352,7 +361,7 @@ class CommonModelApi(ModelResource):
             else:
                 words = [
                     w for w in re.split(
-                        '\W',
+                        r'\W',
                         query,
                         flags=re.UNICODE) if w]
                 for i, search_word in enumerate(words):
@@ -691,7 +700,7 @@ class LayerResource(CommonModelApi):
     links = fields.ListField(
         attribute='links',
         null=True,
-        use_in='detail',
+        use_in='all',
         default=[])
     if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         default_style = fields.ForeignKey(
@@ -716,7 +725,7 @@ class LayerResource(CommonModelApi):
 
     def format_objects(self, objects):
         """
-        Formats the object then adds a geogig_link as necessary.
+        Formats the object.
         """
         formatted_objects = []
         for obj in objects:
@@ -742,9 +751,6 @@ class LayerResource(CommonModelApi):
 
             formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
             formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
-
-            # add the geogig link
-            formatted_obj['geogig_link'] = obj.geogig_link
 
             # provide style information
             bundle = self.build_bundle(obj=obj)
@@ -970,7 +976,7 @@ class MapResource(CommonModelApi):
             ]
             for layer in map_layers:
                 formatted_map_layer = model_to_dict(
-                     layer, fields=map_layer_fields)
+                    layer, fields=map_layer_fields)
                 formatted_layers.append(formatted_map_layer)
             formatted_obj['layers'] = formatted_layers
             formatted_objects.append(formatted_obj)

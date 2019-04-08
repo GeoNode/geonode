@@ -38,6 +38,7 @@ class FavoriteTest(GeoNodeBaseTestSupport):
     """
     Tests geonode.contrib.favorite app/module
     """
+
     def setUp(self):
         super(FavoriteTest, self).setUp()
         self.adm_un = "admin"

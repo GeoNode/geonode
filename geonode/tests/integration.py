@@ -98,11 +98,11 @@ def zip_dir(basedir, archivename):
             # NOTE: ignore empty directories
             for fn in files:
                 absfn = os.path.join(root, fn)
-                zfn = absfn[len(basedir)+len(os.sep):]  # XXX: relative path
+                zfn = absfn[len(basedir) + len(os.sep):]  # XXX: relative path
                 z.write(absfn, zfn)
 
 
-"""
+r"""
  HOW TO RUN THE TESTS
  --------------------
  (https://github.com/GeoNode/geonode/blob/master/docs/tutorials/devel/testing.txt)
@@ -190,7 +190,6 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             self.assertEquals(r.status_code, 200)
             o = json.loads(r.text)
             self.assertTrue('long-array-array' in o)
-            self.assertTrue(len(o['long-array-array']) > 0)
 
             from geonode.geoserver.helpers import (get_sld_for,
                                                    fixup_style,
@@ -473,8 +472,8 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                         'Expected specific number of keywords from uploaded layer XML metadata')
 
                 self.assertTrue(
-                     u'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
-                     'Expected CSV of keywords from uploaded layer XML metadata')
+                    u'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
+                    'Expected CSV of keywords from uploaded layer XML metadata')
 
                 self.assertTrue(
                     'Landing Strips' in uploaded.keyword_list(),
@@ -570,8 +569,8 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                             'Expected specific number of keywords from uploaded layer XML metadata')
 
                     self.assertTrue(
-                         u'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
-                         'Expected CSV of keywords from uploaded layer XML metadata')
+                        u'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
+                        'Expected CSV of keywords from uploaded layer XML metadata')
 
                     self.assertTrue(
                         'Landing Strips' in uploaded.keyword_list(),

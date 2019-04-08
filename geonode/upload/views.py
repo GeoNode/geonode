@@ -64,7 +64,7 @@ from .forms import (
 from .models import Upload, UploadFile
 from .files import (get_scan_hint,
                     scan_file
-)
+                    )
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
@@ -214,8 +214,6 @@ def save_step_view(req, session):
             permissions=form.cleaned_data["permissions"],
             import_sld_file=sld,
             upload_type=spatial_files[0].file_type.code,
-            geogig=form.cleaned_data['geogig'],
-            geogig_store=form.cleaned_data['geogig_store'],
             time=form.cleaned_data['time'],
             mosaic=form.cleaned_data['mosaic'],
             append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
@@ -342,11 +340,14 @@ def csv_step_view(request, upload_session):
         for candidate in attributes:
             if not isinstance(candidate.name, basestring):
                 non_str_in_headers.append(str(candidate.name))
-            if candidate.name in point_candidates:
-                if is_latitude(candidate.name):
-                    lat_candidate = candidate.name
-                elif is_longitude(candidate.name):
-                    lng_candidate = candidate.name
+            if is_latitude(candidate.name):
+                lat_candidate = candidate.name
+                if lat_candidate and lat_candidate not in point_candidates:
+                    point_candidates.append(lat_candidate)
+            elif is_longitude(candidate.name):
+                lng_candidate = candidate.name
+                if lng_candidate and lng_candidate not in point_candidates:
+                    point_candidates.append(lng_candidate)
         if request.method == 'POST':
             guessed_lat_or_lng = False
             selected_lat = lat_field
@@ -377,9 +378,9 @@ def csv_step_view(request, upload_session):
     elif request.method == 'POST':
         if not lat_field or not lng_field:
             error = 'Please choose which columns contain the latitude and longitude data.'
-        elif (lat_field not in point_candidates or
-              lng_field not in point_candidates):
-            error = 'Invalid latitude/longitude columns'
+        # elif (lat_field not in point_candidates or
+        #       lng_field not in point_candidates):
+        #     error = 'Invalid latitude/longitude columns'
         elif lat_field == lng_field:
             error = 'You cannot select the same column for latitude and longitude data.'
 

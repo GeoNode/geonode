@@ -28,25 +28,25 @@ SLACK_MESSAGE_TEMPLATES = {
                     "<{baseurl}|{sitename}> by <{owner_url}|{owner_name}>.",
             "thumb_url": "{thumbnail_url}",
             "fields": [{
-                 "title": "Zipped Shapefile",
-                 "value": "<{url_shp}|Download>",
-                 "short": True
-             },
-             {
-                 "title": "GeoJSON",
-                 "value": "<{url_geojson}|Download>",
-                 "short": True
-             },
-             {
-                 "title": "View in Google Earth",
-                 "value": "<{url_netkml}|Download>",
-                 "short": True
-             },
-             {
-                 "title": "View on Map",
-                 "value": "<{url_map}|View>",
-                 "short": True
-             }],
+                "title": "Zipped Shapefile",
+                "value": "<{url_shp}|Download>",
+                "short": True
+            },
+                {
+                "title": "GeoJSON",
+                "value": "<{url_geojson}|Download>",
+                "short": True
+            },
+                {
+                "title": "View in Google Earth",
+                "value": "<{url_netkml}|Download>",
+                "short": True
+            },
+                {
+                "title": "View on Map",
+                "value": "<{url_map}|View>",
+                "short": True
+            }],
             "color": "#000099"
         }]
     },
@@ -59,25 +59,25 @@ SLACK_MESSAGE_TEMPLATES = {
                     "<{baseurl}|{sitename}> by <{owner_url}|{owner_name}>.",
             "thumb_url": "{thumbnail_url}",
             "fields": [{
-                 "title": "Zipped Shapefile",
-                 "value": "<{url_shp}|Download>",
-                 "short": True
-             },
-             {
-                 "title": "GeoJSON",
-                 "value": "<{url_geojson}|Download>",
-                 "short": True
-             },
-             {
-                 "title": "View in Google Earth",
-                 "value": "<{url_netkml}|Download>",
-                 "short": True
-             },
-             {
-                 "title": "View on Map",
-                 "value": "<{url_map}|View>",
-                 "short": True
-             }],
+                "title": "Zipped Shapefile",
+                "value": "<{url_shp}|Download>",
+                "short": True
+            },
+                {
+                "title": "GeoJSON",
+                "value": "<{url_geojson}|Download>",
+                "short": True
+            },
+                {
+                "title": "View in Google Earth",
+                "value": "<{url_netkml}|Download>",
+                "short": True
+            },
+                {
+                "title": "View on Map",
+                "value": "<{url_map}|View>",
+                "short": True
+            }],
             "color": "#000099"
         }]
     },
@@ -98,15 +98,15 @@ SLACK_MESSAGE_TEMPLATES = {
                     "<{baseurl}|{sitename}> by <{owner_url}|{owner_name}>.",
             "thumb_url": "{thumbnail_url}",
             "fields": [{
-                 "title": "View Map",
-                 "value": "<{url_view}|View>",
-                 "short": True
-             },
-             {
-                 "title": "Download Map",
-                 "value": "<{url_download}|Download>",
-                 "short": True
-             }],
+                "title": "View Map",
+                "value": "<{url_view}|View>",
+                "short": True
+            },
+                {
+                "title": "Download Map",
+                "value": "<{url_download}|Download>",
+                "short": True
+            }],
             "color": "#000099"
         }]
     },
@@ -119,15 +119,15 @@ SLACK_MESSAGE_TEMPLATES = {
                     "<{baseurl}|{sitename}> by <{owner_url}|{owner_name}>.",
             "thumb_url": "{thumbnail_url}",
             "fields": [{
-                 "title": "View Map",
-                 "value": "<{url_view}|View>",
-                 "short": True
-             },
-             {
-                 "title": "Download Map",
-                 "value": "<{url_download}|Download>",
-                 "short": True
-             }],
+                "title": "View Map",
+                "value": "<{url_view}|View>",
+                "short": True
+            },
+                {
+                "title": "Download Map",
+                "value": "<{url_download}|Download>",
+                "short": True
+            }],
             "color": "#000099"
         }]
     },
@@ -148,10 +148,10 @@ SLACK_MESSAGE_TEMPLATES = {
                     "<{baseurl}|{sitename}> by <{owner_url}|{owner_name}>.",
             "thumb_url": "{thumbnail_url}",
             "fields": [{
-                 "title": "Download Document",
-                 "value": "<{url_download}|Download>",
-                 "short": True
-             }],
+                "title": "Download Document",
+                "value": "<{url_download}|Download>",
+                "short": True
+            }],
             "color": "#000099"
         }]
     },
@@ -164,10 +164,10 @@ SLACK_MESSAGE_TEMPLATES = {
                     "<{baseurl}|{sitename}> by <{owner_url}|{owner_name}>.",
             "thumb_url": "{thumbnail_url}",
             "fields": [{
-                 "title": "Download Document",
-                 "value": "<{url_download}|Download>",
-                 "short": True
-             }],
+                "title": "Download Document",
+                "value": "<{url_download}|Download>",
+                "short": True
+            }],
             "color": "#000099"
         }]
     },

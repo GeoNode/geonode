@@ -18,8 +18,9 @@
 #
 #########################################################################
 
-import json
+import ast
 import sys
+import json
 
 from django.core.management.base import BaseCommand
 
@@ -28,7 +29,7 @@ from geonode.security.views import _perms_info_json
 from geonode.geoserver.helpers import set_attributes_from_geoserver
 
 
-def sync_geonode_layers(ignore_errors, filter, username):
+def sync_geonode_layers(ignore_errors, filter, username, updatepermissions, updatethumbnails):
     layers = Layer.objects.all().order_by('name')
     if filter:
         layers = layers.filter(name__icontains=filter)
@@ -41,12 +42,17 @@ def sync_geonode_layers(ignore_errors, filter, username):
         try:
             count += 1
             print 'Syncing layer %s/%s: %s' % (count, layers_count, layer.name)
-            # sync permissions in GeoFence
-            perm_spec = json.loads(_perms_info_json(layer))
-            layer.set_permissions(perm_spec)
-            # recalculate the layer statistics
-            set_attributes_from_geoserver(layer, overwrite=True)
-            layer.save()
+            if ast.literal_eval(updatepermissions):
+                print 'Syncing permissions...'
+                # sync permissions in GeoFence
+                perm_spec = json.loads(_perms_info_json(layer))
+                # re-sync GeoFence security rules
+                layer.set_permissions(perm_spec)
+                # recalculate the layer statistics
+                set_attributes_from_geoserver(layer, overwrite=True)
+            if ast.literal_eval(updatethumbnails):
+                print 'Regenerating thumbnails...'
+                layer.save()
         except Exception:
             layer_errors.append(layer.alternate)
             exception_type, error, traceback = sys.exc_info()
@@ -85,12 +91,24 @@ class Command(BaseCommand):
             dest="username",
             default=None,
             help="Only update data owned by the specified username")
+        parser.add_argument(
+            '--updatepermissions',
+            dest="updatepermissions",
+            default='True',
+            help="Update only the layer permissions. Does not regenerate styles and thumbnails")
+        parser.add_argument(
+            '--updatethumbnails',
+            dest="updatethumbnails",
+            default='True',
+            help="Update only the layer styles and thumbnails. Does not re-sync security rules.")
 
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
+        updatepermissions = options.get('updatepermissions')
+        updatethumbnails = options.get('updatethumbnails')
         filter = options.get('filter')
         if not options.get('username'):
             username = None
         else:
             username = options.get('username')
-        sync_geonode_layers(ignore_errors, filter, username)
+        sync_geonode_layers(ignore_errors, filter, username, updatepermissions, updatethumbnails)

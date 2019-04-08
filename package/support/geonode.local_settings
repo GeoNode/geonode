@@ -115,14 +115,12 @@ OGC_SERVER = {
         'PRINT_NG_ENABLED': True,
         'GEONODE_SECURITY_ENABLED': True,
         'GEOFENCE_SECURITY_ENABLED': True,
-        'GEOGIG_ENABLED': False,
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
         'WPS_ENABLED': True,
         'LOG_FILE':'/usr/share/geoserver/data/logs/geoserver.log',
         # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
         'DATASTORE': 'datastore',
-        'PG_GEOGIG': False,
         'TIMEOUT': 60  # number of seconds to allow for HTTP requests
     }
 }
@@ -142,7 +140,6 @@ UPLOADER = {
     'OPTIONS': {
         'TIME_ENABLED': False,
         'MOSAIC_ENABLED': False,
-        'GEOGIG_ENABLED': False,
     },
     'SUPPORTED_CRS': [
         'EPSG:4326',
@@ -339,10 +336,6 @@ GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
 #    'RESET_VIEW': False
 # }
 
-ALT_OSM_BASEMAPS = ast.literal_eval(os.environ.get('ALT_OSM_BASEMAPS', 'False'))
-CARTODB_BASEMAPS = ast.literal_eval(os.environ.get('CARTODB_BASEMAPS', 'False'))
-STAMEN_BASEMAPS = ast.literal_eval(os.environ.get('STAMEN_BASEMAPS', 'False'))
-THUNDERFOREST_BASEMAPS = ast.literal_eval(os.environ.get('THUNDERFOREST_BASEMAPS', 'False'))
 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
 BING_API_KEY = os.environ.get('BING_API_KEY', None)
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
@@ -396,14 +389,6 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 # To enable the Leaflet based Client enable those
 # GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'  # DEPRECATED use HOOKSET instead
 # GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
-
-# To enable the MapLoom based Client enable those
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'maploom'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.MaploomHookSet"
-#
-# CORS_ORIGIN_WHITELIST = (
-#     HOSTNAME
-# )
 
 # To enable the MapStore2 based Client enable those
 # if 'geonode_mapstore_client' not in INSTALLED_APPS:
@@ -568,4 +553,3 @@ DISPLAY_WMS_LINKS = True
 
 # For more information on available settings please consult the Django docs at
 # https://docs.djangoproject.com/en/dev/ref/settings
-

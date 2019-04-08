@@ -906,13 +906,6 @@ msgid ""
 "A boolean that represents whether GeoNode's security application is enabled."
 msgstr ""
 
-# 5f23d1f7e5d244ebba7b965895d428b8
-# c3a41ea18c774fbd84e9864e50fef700
-#: ../../reference/developers/django-apps.txt:238
-#: ../../reference/developers/settings.txt:215
-msgid "GEOGIT_ENABLED"
-msgstr ""
-
 # c2b68beb1f084bfeac02c3c887183e34
 # 51c7c14140414093882dd3db4da7fc3a
 # f8de4ebd0d784cdfb07d6bde75d0eb54
@@ -936,12 +929,6 @@ msgstr ""
 #: ../../reference/developers/settings.txt:375
 #: ../../reference/developers/settings.txt:384
 msgid "Default: ``False``"
-msgstr ""
-
-# 0fe05bfadaae404b907911d895194aae
-#: ../../reference/developers/django-apps.txt:238
-msgid ""
-"A boolean that represents whether the OGC server supports Geogit datastores."
 msgstr ""
 
 # 852e596b5a5b4a1286d7ae79561e393b
@@ -1446,12 +1433,6 @@ msgid ""
 "``DATABASES`` dictionary with the same name.  Example::"
 msgstr ""
 
-# c085e28e59134891b9b3a102c7fffe3c
-#: ../../reference/developers/settings.txt:218
-msgid ""
-"A boolean that represents whether the OGC server supports GeoGit datastores."
-msgstr ""
-
 # 26fdbac3338a43929ec68f61e01e82e7
 #: ../../reference/developers/settings.txt:224
 msgid ""
@@ -1514,22 +1495,9 @@ msgstr ""
 msgid "Upload settings"
 msgstr ""
 
-# 3ce69d2f8fc74f6cbdab4ddc89e8bf85
-#: ../../reference/developers/settings.txt:326
-msgid "GEOGIT_DATASTORE_NAME"
-msgstr ""
-
 # 65c6ee195cd0474c9affcd690e5d3205
 #: ../../reference/developers/settings.txt:327
 msgid "Default: ``None``"
-msgstr ""
-
-# eab540483df74791abbd6397e8b799bc
-#: ../../reference/developers/settings.txt:329
-msgid ""
-"A string with the default GeoGit datastore name.  This value is only used if "
-"no GeoGit datastore name is provided when data is uploaded but it must be "
-"populated if your deployment supports GeoGit."
 msgstr ""
 
 # 1f86357a48a647afbf50da6d8b112729
@@ -1562,13 +1530,6 @@ msgstr ""
 msgid "``'geonode.rest'``"
 msgstr ""
 
-# d8df4a62723348829107f4d9578dec34
-#: ../../reference/developers/settings.txt:355
-msgid ""
-"The importer backend requires the Geoserver importer backend to be enabled "
-"and is required for uploading data into GeoGit datastores."
-msgstr ""
-
 # 0bd2ac1696744895aba41897bb4fcb68
 #: ../../reference/developers/settings.txt:359
 msgid "OPTIONS"
@@ -1584,18 +1545,6 @@ msgstr ""
 msgid ""
 "A boolean that specifies whether the upload should allow the user to enable "
 "time support when uploading data."
-msgstr ""
-
-# 067ea181069e49a88e28819ee391634b
-#: ../../reference/developers/settings.txt:374
-msgid "GEOGIT_ENABED"
-msgstr ""
-
-# afa8b086dc154b4fa17b698b64e543b7
-#: ../../reference/developers/settings.txt:377
-msgid ""
-"A boolean that specifies whether the uploader should allow the user to "
-"upload data into a GeoGit datastore."
 msgstr ""
 
 # 3a1eca0bc7dd4609a283feb2fde0d17f

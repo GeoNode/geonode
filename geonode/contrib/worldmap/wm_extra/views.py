@@ -404,7 +404,7 @@ def new_map_config(request):
 
         if 'layer' in params:
             map_obj = Map(projection=getattr(settings, 'DEFAULT_MAP_CRS',
-                          'EPSG:900913'))
+                                             'EPSG:900913'))
             config = add_layers_to_map_config(request, map_obj, params.getlist('layer'))
         else:
             config = DEFAULT_MAP_CONFIG
@@ -706,10 +706,10 @@ def gxp2wm(config, map_obj=None):
                             if layer.styles.all().count() > 0:
                                 layer_config['styles'] = [layer.styles.all()[0].name, ]
                     else:
-                        if type(layer_config['styles']) == unicode:
+                        if isinstance(layer_config['styles'], unicode):
                             try:
                                 layer_config['styles'] = ast.literal_eval(layer_config['styles'])
-                            except: # noqa
+                            except:  # noqa
                                 layer_config['styles'] = [layer_config['styles'], ]
                     if 'styles' not in layer_config:
                         is_valid = False
@@ -727,8 +727,8 @@ def gxp2wm(config, map_obj=None):
                 layer_config['local'] = False
                 layer_config['styles'] = ''
                 hh_url = (
-                            '%smap/wmts/%s/default_grid/${z}/${x}/${y}.png' %
-                            (layer_config['detail_url'], layer_config['name'])
+                    '%smap/wmts/%s/default_grid/${z}/${x}/${y}.png' %
+                    (layer_config['detail_url'], layer_config['name'])
                 )
                 layer_config['url'] = hh_url
             if is_wm or is_hh:
@@ -787,7 +787,7 @@ def get_layer_attributes(layer):
         attribute_fields.append({"id": la.attribute,
                                  "header": la.attribute,
                                  "searchable": searchable
-                                })
+                                 })
     return attribute_fields
 
 
@@ -873,7 +873,7 @@ def snapshot_config(snapshot, map_obj, request):
                 cfg['abstract'] = gnLayer.abstract
                 cfg['styles'] = maplayer.styles
                 cfg['local'] = True
-            except Exception, e:
+            except Exception as e:
                 # Give it some default values so it will still show up on the map, but disable it in the layer tree
                 cfg['srs'] = 'EPSG:900913'
                 cfg['llbbox'] = [-180, -90, 180, 90]

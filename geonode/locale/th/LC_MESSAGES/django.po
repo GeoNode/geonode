@@ -3685,10 +3685,6 @@ msgstr "แบ่งปัน"
 msgid "Ratings"
 msgstr "ความนิยม"
 
-#: geonode/templates/_actions.html:20
-msgid "GeoGig"
-msgstr "GeoGig"
-
 #: geonode/templates/_actions.html:23
 msgid "Exif"
 msgstr "Exif"

@@ -27,9 +27,11 @@ import os
 import glob
 import sys
 import logging
+import tarfile
 
-from geonode.maps.models import Map
 from osgeo import gdal, osr
+from zipfile import ZipFile, is_zipfile
+from datetime import datetime
 
 # Django functionality
 from django.contrib.auth import get_user_model
@@ -42,6 +44,8 @@ from django.db import transaction
 from django.db.models import Q
 
 # Geonode functionality
+from geonode.maps.models import Map
+from geonode.base.auth import get_or_create_token
 from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, UploadSession, LayerFile
@@ -49,16 +53,22 @@ from geonode.base.models import Link, SpatialRepresentationType,  \
     TopicCategory, Region, License, ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.layers.metadata import set_metadata
-from geonode.utils import (http_client, check_ogc_backend,
-                           unzip_file, extract_tarfile)
-from ..geoserver.helpers import (ogc_server_settings,
-                                 _prepare_thumbnail_body_from_opts)
+from geonode.utils import (http_client,
+                           check_ogc_backend,
+                           unzip_file,
+                           extract_tarfile,
+                           bbox_to_projection)
 
-import tarfile
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    # FIXME: The post service providing the map_status object
+    # should be moved to geonode.geoserver.
+    from geonode.geoserver.helpers import ogc_server_settings
 
-from zipfile import ZipFile, is_zipfile
-
-from datetime import datetime
+    # Use the http_client with one that knows the username
+    # and password for GeoServer's management user.
+    from geonode.geoserver.helpers import _prepare_thumbnail_body_from_opts
+elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+    from geonode.qgis_server.helpers import ogc_server_settings
 
 logger = logging.getLogger('geonode.layers.utils')
 
@@ -331,78 +341,84 @@ def is_raster(filename):
 
 
 def get_resolution(filename):
-    gtif = gdal.Open(filename)
-    gt = gtif.GetGeoTransform()
-    __, resx, __, __, __, resy = gt
-    resolution = '%s %s' % (resx, resy)
-    return resolution
+    try:
+        gtif = gdal.Open(filename)
+        gt = gtif.GetGeoTransform()
+        __, resx, __, __, __, resy = gt
+        resolution = '%s %s' % (resx, resy)
+        return resolution
+    except BaseException:
+        return None
 
 
 def get_bbox(filename):
     """Return bbox in the format [xmin,xmax,ymin,ymax]."""
     from django.contrib.gis.gdal import DataSource, SRSException
-    srid = None
-    bbox_x0, bbox_y0, bbox_x1, bbox_y1 = None, None, None, None
+    srid = 4326
+    bbox_x0, bbox_y0, bbox_x1, bbox_y1 = -180, -90, 180, 90
 
-    if is_vector(filename):
-        y_min = -90
-        y_max = 90
-        x_min = -180
-        x_max = 180
-        datasource = DataSource(filename)
-        layer = datasource[0]
-        bbox_x0, bbox_y0, bbox_x1, bbox_y1 = layer.extent.tuple
-        srs = layer.srs
-        try:
-            if not srs:
-                raise GeoNodeException('Invalid Projection. Layer is missing CRS!')
-            srs.identify_epsg()
-        except SRSException:
-            pass
-        epsg_code = srs.srid
-        # can't find epsg code, then check if bbox is within the 4326 boundary
-        if epsg_code is None and (x_min <= bbox_x0 <= x_max and
-                                  x_min <= bbox_x1 <= x_max and
-                                  y_min <= bbox_y0 <= y_max and
-                                  y_min <= bbox_y1 <= y_max):
-            # set default epsg code
-            epsg_code = '4326'
-        elif epsg_code is None:
-            # otherwise, stop the upload process
-            raise GeoNodeException(
-                "Invalid Layers. "
-                "Needs an authoritative SRID in its CRS to be accepted")
+    try:
+        if is_vector(filename):
+            y_min = -90
+            y_max = 90
+            x_min = -180
+            x_max = 180
+            datasource = DataSource(filename)
+            layer = datasource[0]
+            bbox_x0, bbox_y0, bbox_x1, bbox_y1 = layer.extent.tuple
+            srs = layer.srs
+            try:
+                if not srs:
+                    raise GeoNodeException('Invalid Projection. Layer is missing CRS!')
+                srs.identify_epsg()
+            except SRSException:
+                pass
+            epsg_code = srs.srid
+            # can't find epsg code, then check if bbox is within the 4326 boundary
+            if epsg_code is None and (x_min <= bbox_x0 <= x_max and
+                                      x_min <= bbox_x1 <= x_max and
+                                      y_min <= bbox_y0 <= y_max and
+                                      y_min <= bbox_y1 <= y_max):
+                # set default epsg code
+                epsg_code = '4326'
+            elif epsg_code is None:
+                # otherwise, stop the upload process
+                raise GeoNodeException(
+                    "Invalid Layers. "
+                    "Needs an authoritative SRID in its CRS to be accepted")
 
-        # eliminate default EPSG srid as it will be added when this function returned
-        srid = epsg_code if epsg_code else '4326'
-    elif is_raster(filename):
-        gtif = gdal.Open(filename)
-        gt = gtif.GetGeoTransform()
-        prj = gtif.GetProjection()
-        srs = osr.SpatialReference(wkt=prj)
-        cols = gtif.RasterXSize
-        rows = gtif.RasterYSize
+            # eliminate default EPSG srid as it will be added when this function returned
+            srid = epsg_code if epsg_code else '4326'
+        elif is_raster(filename):
+            gtif = gdal.Open(filename)
+            gt = gtif.GetGeoTransform()
+            prj = gtif.GetProjection()
+            srs = osr.SpatialReference(wkt=prj)
+            cols = gtif.RasterXSize
+            rows = gtif.RasterYSize
 
-        ext = []
-        xarr = [0, cols]
-        yarr = [0, rows]
+            ext = []
+            xarr = [0, cols]
+            yarr = [0, rows]
 
-        # Get the extent.
-        for px in xarr:
-            for py in yarr:
-                x = gt[0] + (px * gt[1]) + (py * gt[2])
-                y = gt[3] + (px * gt[4]) + (py * gt[5])
-                ext.append([x, y])
+            # Get the extent.
+            for px in xarr:
+                for py in yarr:
+                    x = gt[0] + (px * gt[1]) + (py * gt[2])
+                    y = gt[3] + (px * gt[4]) + (py * gt[5])
+                    ext.append([x, y])
 
-            yarr.reverse()
+                yarr.reverse()
 
-        # ext has four corner points, get a bbox from them.
-        # order is important, so make sure min and max is correct.
-        bbox_x0 = min(ext[0][0], ext[2][0])
-        bbox_y0 = min(ext[0][1], ext[2][1])
-        bbox_x1 = max(ext[0][0], ext[2][0])
-        bbox_y1 = max(ext[0][1], ext[2][1])
-        srid = srs.GetAuthorityCode(None) if srs else '4326'
+            # ext has four corner points, get a bbox from them.
+            # order is important, so make sure min and max is correct.
+            bbox_x0 = min(ext[0][0], ext[2][0])
+            bbox_y0 = min(ext[0][1], ext[2][1])
+            bbox_x1 = max(ext[0][0], ext[2][0])
+            bbox_y1 = max(ext[0][1], ext[2][1])
+            srid = srs.GetAuthorityCode(None) if srs else '4326'
+    except BaseException:
+        pass
 
     return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
 
@@ -930,7 +946,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 .update(thumbnail_url=thumbnail_remote_url)
 
             # Download thumbnail and save it locally.
-            if not ogc_client and not check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            if not ogc_client:
                 ogc_client = http_client
 
             if ogc_client:
@@ -945,40 +961,43 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         params['bbox'] = instance.bbox_string
                         params['crs'] = instance.srid
 
-                    _p = "&".join("%s=%s" % item for item in params.items())
-                    resp, image = ogc_client.request(thumbnail_create_url + '&' + _p)
+                    for _p in params.keys():
+                        if _p.lower() not in thumbnail_create_url.lower():
+                            thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (_p, params[_p])
+                    resp, image = ogc_client.request(thumbnail_create_url)
                     if 'ServiceException' in image or \
-                       resp.status < 200 or resp.status > 299:
+                       resp.status_code < 200 or resp.status_code > 299:
                         msg = 'Unable to obtain thumbnail: %s' % image
-                        raise Exception(msg)
-                except BaseException:
-                    import traceback
-                    logger.debug(traceback.format_exc())
+                        logger.error(msg)
+
+                        # Replace error message with None.
+                        image = None
+                except BaseException as e:
+                    logger.exception(e)
 
                     # Replace error message with None.
                     image = None
-            elif check_ogc_backend(geoserver.BACKEND_PACKAGE) and instance.bbox:
-                instance_bbox = instance.bbox[0:4]
-                request_body = {
-                    'bbox': [str(coord) for coord in instance_bbox],
-                    'srid': instance.srid,
-                    'width': width,
-                    'height': height
-                }
 
-                if thumbnail_create_url:
-                    request_body['thumbnail_create_url'] = thumbnail_create_url
-                elif instance.alternate:
-                    request_body['layers'] = instance.alternate
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                if image is None and instance.bbox:
+                    instance_bbox = instance.bbox[0:4]
+                    request_body = {
+                        'bbox': [str(coord) for coord in instance_bbox],
+                        'srid': instance.srid,
+                        'width': width,
+                        'height': height
+                    }
+                    if thumbnail_create_url:
+                        request_body['thumbnail_create_url'] = thumbnail_create_url
+                    elif instance.alternate:
+                        request_body['layers'] = instance.alternate
+                    image = _prepare_thumbnail_body_from_opts(request_body)
 
-                image = _prepare_thumbnail_body_from_opts(request_body)
-
-            if image is not None:
-                instance.save_thumbnail(thumbnail_name, image=image)
-            else:
-                msg = 'Unable to obtain thumbnail for: %s' % instance
-                logger.error(msg)
-                # raise Exception(msg)
+                if image is not None:
+                    instance.save_thumbnail(thumbnail_name, image=image)
+                else:
+                    msg = 'Unable to obtain thumbnail for: %s' % instance
+                    logger.error(msg)
 
 
 # this is the original implementation of create_gs_thumbnail()
@@ -986,21 +1005,46 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     """
     Create a thumbnail with a GeoServer request.
     """
+    layers = None
+    bbox = None  # x0, x1, y0, y1
+    local_layers = []
+    local_bboxes = []
     if isinstance(instance, Map):
-        local_layers = []
         # a map could be empty!
         if not instance.layers:
             return
         for layer in instance.layers:
             if layer.local:
                 local_layers.append(layer.name)
+                # Compute Bounds
+                _l = Layer.objects.get(alternate=layer.name)
+                wgs84_bbox = bbox_to_projection(_l.bbox)
+                local_bboxes.append(wgs84_bbox)
         layers = ",".join(local_layers).encode('utf-8')
     else:
         layers = instance.alternate.encode('utf-8')
+        # Compute Bounds
+        _l = Layer.objects.get(alternate=layers)
+        wgs84_bbox = bbox_to_projection(_l.bbox)
+        local_bboxes.append(wgs84_bbox)
 
-    wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'ows'
-    wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.1'
-    wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png8'
+    if local_bboxes:
+        for _bbox in local_bboxes:
+            if bbox is None:
+                bbox = _bbox
+            else:
+                if bbox[0] > _bbox[0]:
+                    bbox[0] = _bbox[0]
+                if bbox[1] < _bbox[1]:
+                    bbox[1] = _bbox[1]
+                if bbox[2] > _bbox[2]:
+                    bbox[2] = _bbox[2]
+                if bbox[3] < _bbox[3]:
+                    bbox[3] = _bbox[3]
+
+    wms_endpoint = getattr(ogc_server_settings, 'WMS_ENDPOINT') or 'ows'
+    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.1.1'
+    wms_format = getattr(ogc_server_settings, 'WMS_FORMAT') or 'image/png8'
 
     params = {
         'service': 'WMS',
@@ -1010,6 +1054,25 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
         'format': wms_format,
         # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
     }
+
+    if bbox:
+        params['bbox'] = "%s,%s,%s,%s" % (bbox[0], bbox[2], bbox[1], bbox[3])
+        params['crs'] = 'EPSG:4326'
+        params['width'] = 240
+        params['height'] = 180
+
+    user = None
+    try:
+        username = ogc_server_settings.credentials.username
+        user = get_user_model().objects.get(username=username)
+    except BaseException as e:
+        logger.exception(e)
+
+    access_token = None
+    if user:
+        access_token = get_or_create_token(user)
+        if access_token and not access_token.is_expired():
+            params['access_token'] = access_token.token
 
     # Avoid using urllib.urlencode here because it breaks the url.
     # commas and slashes in values get encoded and then cause trouble
@@ -1023,6 +1086,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     thumbnail_create_url = posixpath.join(
         ogc_server_settings.LOCATION,
         wms_endpoint) + "?" + _p
+
     create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
                      overwrite=overwrite, check_bbox=check_bbox)
 

@@ -72,8 +72,12 @@ def facets(context):
     facet_type = context['facet_type'] if 'facet_type' in context else 'all'
 
     if not settings.SKIP_PERMS_FILTER:
-        authorized = get_objects_for_user(
-            request.user, 'base.view_resourcebase').values('id')
+        authorized = []
+        try:
+            authorized = get_objects_for_user(
+                request.user, 'base.view_resourcebase').values('id')
+        except BaseException:
+            pass
 
     if facet_type == 'documents':
 
@@ -176,7 +180,15 @@ def facets(context):
             layers = layers.filter(id__in=authorized)
 
         counts = layers.values('storeType').annotate(count=Count('storeType'))
-        count_dict = dict([(count['storeType'], count['count']) for count in counts])
+
+        counts_array = []
+        try:
+            for count in counts:
+                counts_array.append((count['storeType'], count['count']))
+        except BaseException:
+            pass
+
+        count_dict = dict(counts_array)
 
         vector_time_series = layers.exclude(has_time=False).filter(storeType='dataStore'). \
             values('storeType').annotate(count=Count('storeType'))
@@ -317,13 +329,18 @@ def get_menu(placeholder_name):
         m: MenuItem.objects.filter(menu=m)
         for m in Menu.objects.filter(placeholder__name=placeholder_name)
     }
-    return OrderedDict(sorted(menus.items(), key=lambda(k, v): (v, k)))
+    return OrderedDict(sorted(menus.items(), key=lambda k_v1: (k_v1[1], k_v1[0])))
 
 
 @register.inclusion_tag(filename='base/menu.html')
 def render_nav_menu(placeholder_name):
-    menus = {
-        m: MenuItem.objects.filter(menu=m)
-        for m in Menu.objects.filter(placeholder__name=placeholder_name)
-    }
-    return {'menus': OrderedDict(sorted(menus.items(), key=lambda(k, v): (v, k)))}
+    menus = {}
+    try:
+        menus = {
+            m: MenuItem.objects.filter(menu=m)
+            for m in Menu.objects.filter(placeholder__name=placeholder_name)
+        }
+    except BaseException:
+        pass
+
+    return {'menus': OrderedDict(sorted(menus.items(), key=lambda k_v: (k_v[1], k_v[0])))}

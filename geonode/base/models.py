@@ -310,38 +310,41 @@ class HierarchicalKeyword(TagBase, MP_Node):
         """Dumps a tree branch to a python data structure."""
         qset = cls._get_serializable_model().get_tree(parent)
         ret, lnk = [], {}
-        for pyobj in qset:
-            serobj = serializers.serialize('python', [pyobj])[0]
-            # django's serializer stores the attributes in 'fields'
-            fields = serobj['fields']
-            depth = fields['depth'] or 1
-            fields['text'] = fields['name']
-            fields['href'] = fields['slug']
-            del fields['name']
-            del fields['slug']
-            del fields['path']
-            del fields['numchild']
-            del fields['depth']
-            if 'id' in fields:
-                # this happens immediately after a load_bulk
-                del fields['id']
+        try:
+            for pyobj in qset:
+                serobj = serializers.serialize('python', [pyobj])[0]
+                # django's serializer stores the attributes in 'fields'
+                fields = serobj['fields']
+                depth = fields['depth'] or 1
+                fields['text'] = fields['name']
+                fields['href'] = fields['slug']
+                del fields['name']
+                del fields['slug']
+                del fields['path']
+                del fields['numchild']
+                del fields['depth']
+                if 'id' in fields:
+                    # this happens immediately after a load_bulk
+                    del fields['id']
 
-            newobj = {}
-            for field in fields:
-                newobj[field] = fields[field]
-            if keep_ids:
-                newobj['id'] = serobj['pk']
+                newobj = {}
+                for field in fields:
+                    newobj[field] = fields[field]
+                if keep_ids:
+                    newobj['id'] = serobj['pk']
 
-            if (not parent and depth == 1) or\
-               (parent and depth == parent.depth):
-                ret.append(newobj)
-            else:
-                parentobj = pyobj.get_parent()
-                parentser = lnk[parentobj.pk]
-                if 'nodes' not in parentser:
-                    parentser['nodes'] = []
-                parentser['nodes'].append(newobj)
-            lnk[pyobj.pk] = newobj
+                if (not parent and depth == 1) or\
+                   (parent and depth == parent.depth):
+                    ret.append(newobj)
+                else:
+                    parentobj = pyobj.get_parent()
+                    parentser = lnk[parentobj.pk]
+                    if 'nodes' not in parentser:
+                        parentser['nodes'] = []
+                    parentser['nodes'].append(newobj)
+                lnk[pyobj.pk] = newobj
+        except BaseException:
+            pass
         return ret
 
 
@@ -887,13 +890,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         for required_field in required_fields:
             field = getattr(self, required_field, None)
             if field:
-                if required_field is 'license':
-                    if field.name is 'Not Specified':
+                if required_field == 'license':
+                    if field.name == 'Not Specified':
                         continue
-                if required_field is 'regions':
+                if required_field == 'regions':
                     if not field.all():
                         continue
-                if required_field is 'category':
+                if required_field == 'category':
                     if not field.identifier:
                         continue
                 filled_fields.append(field)
@@ -1293,9 +1296,6 @@ class LinkManager(models.Manager):
 
     def original(self):
         return self.get_queryset().filter(link_type='original')
-
-    def geogig(self):
-        return self.get_queryset().filter(name__icontains='geogig')
 
     def ows(self):
         return self.get_queryset().filter(

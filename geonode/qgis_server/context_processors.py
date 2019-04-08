@@ -38,7 +38,6 @@ def qgis_server_urls(request):
         MAPFISH_PRINT_ENABLED=getattr(ogc_server_settings, 'MAPFISH_PRINT_ENABLED', False),
         PRINT_NG_ENABLED=getattr(ogc_server_settings, 'PRINT_NG_ENABLED', False),
         GEONODE_SECURITY_ENABLED=getattr(ogc_server_settings, 'GEONODE_SECURITY_ENABLED', False),
-        GEOGIG_ENABLED=getattr(ogc_server_settings, 'GEOGIG_ENABLED', False),
         TIME_ENABLED=getattr(
                 settings,
                 'UPLOADER',

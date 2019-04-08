@@ -54,8 +54,6 @@ class LayerUploadForm(forms.Form):
     if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         qml_file = forms.FileField(required=False)
 
-    geogig = forms.BooleanField(required=False)
-    geogig_store = forms.CharField(required=False)
     time = forms.BooleanField(required=False)
 
     mosaic = forms.BooleanField(required=False)

@@ -31,6 +31,7 @@ from user_messages.models import Message
 
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
+from geonode.base.auth import get_or_create_token
 
 from geonode.utils import forward_mercator, inverse_mercator
 
@@ -56,13 +57,6 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
         if 'geonode.contrib.metadataxsl' in settings.INSTALLED_APPS:
             try:
                 import geonode.contrib.metadataxsl  # noqa
-                self.assertTrue(True)
-            except BaseException:
-                self.assertTrue(False)
-
-        if 'geonode.contrib.api_basemaps' in settings.INSTALLED_APPS:
-            try:
-                import geonode.contrib.api_basemaps  # noqa
                 self.assertTrue(True)
             except BaseException:
                 self.assertTrue(False)
@@ -316,9 +310,15 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
 
         self.user_password = "somepass"
         self.first_user = get_user_model().objects.create_user(
-            "someuser", "someuser@fakemail.com", self.user_password)
+            "someuser",
+            "someuser@fakemail.com",
+            self.user_password,
+            is_active=True)
         self.second_user = get_user_model().objects.create_user(
-            "otheruser", "otheruser@fakemail.com", self.user_password)
+            "otheruser",
+            "otheruser@fakemail.com",
+            self.user_password,
+            is_active=True)
         first_message = Message.objects.new_message(
             from_user=self.first_user,
             subject="testing message",
@@ -327,9 +327,14 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
         )
         self.thread = first_message.thread
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_inbox_renders(self):
-        self.client.login(
+        logged_in = self.client.login(
             username=self.first_user.username, password=self.user_password)
+        self.assertTrue(logged_in)
+        session = self.client.session
+        session['access_token'] = get_or_create_token(self.first_user)
+        session.save()
         response = self.client.get(reverse("messages_inbox"))
         self.assertTemplateUsed(response, "user_messages/inbox.html")
         self.assertEqual(response.status_code, 200)
@@ -342,9 +347,14 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
             "{}{}?next=http%3A//testserver{}".format(settings.SITEURL[:-1], reverse("account_login"), target_url)
         )
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_new_message_renders(self):
-        self.client.login(
+        logged_in = self.client.login(
             username=self.first_user.username, password=self.user_password)
+        self.assertTrue(logged_in)
+        session = self.client.session
+        session['access_token'] = get_or_create_token(self.first_user)
+        session.save()
         response = self.client.get(
             reverse("message_create", args=(self.first_user.id,)))
         self.assertTemplateUsed(response, "user_messages/message_create.html")
@@ -358,9 +368,14 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
             "{}{}?next=http%3A//testserver{}".format(settings.SITEURL[:-1], reverse("account_login"), target_url)
         )
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_thread_detail_renders(self):
-        self.client.login(
+        logged_in = self.client.login(
             username=self.first_user.username, password=self.user_password)
+        self.assertTrue(logged_in)
+        session = self.client.session
+        session['access_token'] = get_or_create_token(self.first_user)
+        session.save()
         response = self.client.get(
             reverse("messages_thread_detail", args=(self.thread.id,)))
         self.assertTemplateUsed(response, "user_messages/thread_detail.html")

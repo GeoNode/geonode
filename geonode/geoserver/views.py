@@ -44,6 +44,7 @@ from django.utils.translation import ugettext as _
 from guardian.shortcuts import get_objects_for_user
 from .utils import requests_retry
 from geonode.base.models import ResourceBase
+from geonode.base.auth import get_or_create_token
 from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
@@ -294,7 +295,7 @@ def layer_style_manage(request, layername):
                    'to manage style information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer.name)
                    )
-            logger.warn(msg)
+            logger.debug(msg)
             # If geoserver is not online, return an error
             return render(
                 request,
@@ -371,7 +372,7 @@ def feature_edit_check(request, layername):
         return HttpResponse(
             json.dumps({'authorized': False}), content_type="application/json")
     datastore = ogc_server_settings.DATASTORE
-    feature_edit = getattr(settings, "GEOGIG_DATASTORE", None) or datastore
+    feature_edit = datastore
     is_admin = False
     is_staff = False
     is_owner = False
@@ -555,7 +556,10 @@ def geoserver_proxy(request,
                     logger.warn("Could not find any Layer %s on DB" % os.path.basename(request.path))
 
     kwargs = {'affected_layers': affected_layers}
-    return proxy(request, url=raw_url, response_callback=_response_callback, **kwargs)
+    import urllib
+    raw_url = urllib.unquote(raw_url).decode('utf8')
+    timeout = getattr(ogc_server_settings, 'TIMEOUT') or 10
+    return proxy(request, url=raw_url, response_callback=_response_callback, timeout=timeout, **kwargs)
 
 
 def _response_callback(**kwargs):
@@ -571,7 +575,7 @@ def _response_callback(**kwargs):
             layer.save()
 
     # Replace Proxy URL
-    if content_type in ('application/xml', 'text/xml', 'text/plain'):
+    if content_type in ('application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json'):
         _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
         content = content\
             .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
@@ -622,8 +626,7 @@ def layer_batch_download(request):
         }
 
         url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        req = http_client.post(url, data=json.dumps(fake_map))
-        content = req.content
+        req, content = http_client.post(url, data=json.dumps(fake_map))
         return HttpResponse(content, status=req.status_code)
 
     if request.method == 'GET':
@@ -634,8 +637,7 @@ def layer_batch_download(request):
 
         url = "%srest/process/batchDownload/status/%s" % (
             ogc_server_settings.LOCATION, download_id)
-        req = http_client.get(url)
-        content = req.content
+        req, content = http_client.get(url)
         return HttpResponse(content, status=req.status_code)
 
 
@@ -659,7 +661,7 @@ def resolve_user(request):
                                 content_type="text/plain")
 
     if not any([user, geoserver, superuser]
-               ) and not request.user.is_anonymous():
+               ) and not request.user.is_anonymous:
         user = request.user.username
         superuser = request.user.is_superuser
 
@@ -763,15 +765,16 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
     session = requests_retry()
     req = session.get(wms_url)
     getcap = req.content
-    if tolerant and ('ServiceException' in getcap or req.status_code == 404):
-        # WARNING Please make sure to have enabled DJANGO CACHE as per
-        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-        wms_url = '%s%s/ows?service=wms&version=%s&request=GetCapabilities&layers=%s'\
-            % (ogc_server_settings.public_url, workspace, version, layer)
-        if access_token:
-            wms_url += ('&access_token=%s' % access_token)
-        req = session.get(wms_url)
-        getcap = req.content
+    if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+        if tolerant and ('ServiceException' in getcap or req.status_code == 404):
+            # WARNING Please make sure to have enabled DJANGO CACHE as per
+            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+            wms_url = '%s%s/ows?service=wms&version=%s&request=GetCapabilities&layers=%s'\
+                % (ogc_server_settings.public_url, workspace, version, layer)
+            if access_token:
+                wms_url += ('&access_token=%s' % access_token)
+            req = session.get(wms_url)
+            getcap = req.content
 
     if 'ServiceException' in getcap or req.status_code == 404:
         return None
@@ -832,12 +835,11 @@ def get_capabilities(request, layerid=None, user=None,
     for layer in layers:
         if request.user.has_perm('view_resourcebase',
                                  layer.get_self_resource()):
-            access_token = None
-            if request and 'access_token' in request.session:
-                access_token = request.session['access_token']
+            access_token = get_or_create_token(request.user)
+            if access_token and not access_token.is_expired():
+                access_token = access_token.token
             else:
                 access_token = None
-
             try:
                 workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
                 layercap = get_layer_capabilities(layer,

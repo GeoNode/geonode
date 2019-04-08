@@ -17,16 +17,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import re
 import os
 import sys
 import logging
 import shutil
 import base64
 import traceback
-import uuid
 import decimal
-import re
 import cPickle as pickle
 from django.db.models import Q
 from celery.exceptions import TimeoutError
@@ -62,9 +60,9 @@ from django.forms.models import inlineformset_factory
 from django.db import transaction
 from django.db.models import F
 from django.forms.utils import ErrorList
-
 from geonode.services.models import Service
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
+from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.layers.models import Layer, Attribute, UploadSession
 from geonode.base.enumerations import CHARSETS
@@ -598,11 +596,13 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         # "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
     }
 
-    if request and 'access_token' in request.session:
-        access_token = request.session['access_token']
-    else:
-        u = uuid.uuid1()
-        access_token = u.hex
+    access_token = None
+    if request and request.user:
+        access_token = get_or_create_token(request.user)
+        if access_token and not access_token.is_expired():
+            access_token = access_token.token
+        else:
+            access_token = None
 
     context_dict["viewer"] = json.dumps(map_obj.viewer_json(
         request, * (NON_WMS_BASE_LAYERS + [maplayer])))
@@ -617,11 +617,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # provide bbox in EPSG:4326 for leaflet
     if context_dict["preview"] == 'leaflet':
-        srid, wkt = layer.geographic_bounding_box.split(';')
-        srid = re.findall(r'\d+', srid)
-        geom = GEOSGeometry(wkt, srid=int(srid[0]))
-        geom.transform(4326)
-        context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
+        try:
+            srid, wkt = layer.geographic_bounding_box.split(';')
+            srid = re.findall(r'\d+', srid)
+            geom = GEOSGeometry(wkt, srid=int(srid[0]))
+            geom.transform(4326)
+            context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
+        except BaseException:
+            pass
 
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
@@ -632,9 +635,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             Q(name__in=settings.DOWNLOAD_FORMATS_RASTER) |
             Q(link_type='original'))
     links_view = [item for idx, item in enumerate(links) if
-                  item.url and 'wms' in item.url or 'gwc' in item.url]
+                  item.link_type == 'image']
     links_download = [item for idx, item in enumerate(
-        links) if item.url and 'wms' not in item.url and 'gwc' not in item.url]
+        links) if item.link_type in ('data', 'original')]
     for item in links_view:
         if item.url and access_token and 'access_token' not in item.url:
             params = {'access_token': access_token}
@@ -729,23 +732,24 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     context_dict = {}
     data_dict = json.loads(request.POST.get('json_data'))
     layername = data_dict['layer_name']
-    filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
-    workspace, name = layername.split(':')
+    filtered_attributes = ''
+    if not isinstance(data_dict['filtered_attributes'], basestring):
+        filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
+    name = layername if ':' not in layername else layername.split(':')[1]
     location = "{location}{service}".format(** {
         'location': settings.OGC_SERVER['default']['LOCATION'],
         'service': 'wms',
     })
+    access_token = None
+    if request and 'access_token' in request.session:
+        access_token = request.session['access_token']
+    if access_token and 'access_token' not in location:
+        location = '%s?access_token=%s' % (location, access_token)
 
     try:
-        # TODO: should be improved by using OAuth2 token (or at least user
-        # related to it) instead of super-powers
-        username = settings.OGC_SERVER['default']['USER']
-        password = settings.OGC_SERVER['default']['PASSWORD']
         wfs = WebFeatureService(
             location,
-            version='1.1.0',
-            username=username,
-            password=password)
+            version='1.1.0')
         response = wfs.getfeature(
             typename=name,
             propertyname=filtered_attributes,

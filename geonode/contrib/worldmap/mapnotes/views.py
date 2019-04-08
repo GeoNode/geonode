@@ -57,7 +57,7 @@ def annotations(request, mapid, id=None):
                 return HttpResponse(status=403)
         return HttpResponse(serialize([obj], ['title', 'content', 'owner_id']), status=200)
     if request.method == "GET":
-        bbox = [float(n) for n in re.findall('[0-9\.\-]+', request.GET["bbox"])]
+        bbox = [float(n) for n in re.findall(r'[0-9\.\-]+', request.GET["bbox"])]
         features = MapNote.objects.filter(map=Map.objects.get(pk=mapid), geometry__intersects=Envelope(bbox).wkt)
     else:
         if request.user.id is not None:
