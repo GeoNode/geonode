@@ -33,7 +33,7 @@ Steps to enable Favorites in GeoNode:
 3a. template - add link to the Favorite tab on the 'tab switcher' on geonode/templates/_actions.html:
 (this single change gets included on each detail pages)
 
-    after GeoGig, approx ln 15, add:
+    after approx ln 15, add:
 
     <li><a href="#favorite" data-toggle="tab"><i class="fa fa-star"></i>{% trans "Favorite" %}</a></li>
 
@@ -47,7 +47,7 @@ Steps to enable Favorites in GeoNode:
     if request.user.is_authenticated():
         context_dict["favorite_info"] = get_favorite_info(request.user, map_obj)
 
-3c. template - include the Favorite html and js.  Using Map as example, geonode/maps/templates/maps/map_detail.html: 
+3c. template - include the Favorite html and js.  Using Map as example, geonode/maps/templates/maps/map_detail.html:
 
     after the social_links block for map (or after ratings block for document/map), add:
 
@@ -73,7 +73,7 @@ Steps to enable Favorites in GeoNode:
 
     after notifications, approx ln 216, add:
 
-    <li><a href="{% url "favorite_list" %}"><i class="fa fa-star"></i> {% trans "Favorites" %}</a></li> 
+    <li><a href="{% url "favorite_list" %}"><i class="fa fa-star"></i> {% trans "Favorites" %}</a></li>
 
 
 6. Run migrate to create the new favorite_favorite table.

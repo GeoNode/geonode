@@ -295,7 +295,7 @@ def layer_style_manage(request, layername):
                    'to manage style information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer.name)
                    )
-            logger.warn(msg)
+            logger.debug(msg)
             # If geoserver is not online, return an error
             return render(
                 request,
@@ -372,7 +372,7 @@ def feature_edit_check(request, layername):
         return HttpResponse(
             json.dumps({'authorized': False}), content_type="application/json")
     datastore = ogc_server_settings.DATASTORE
-    feature_edit = getattr(settings, "GEOGIG_DATASTORE", None) or datastore
+    feature_edit = datastore
     is_admin = False
     is_staff = False
     is_owner = False
@@ -558,8 +558,8 @@ def geoserver_proxy(request,
     kwargs = {'affected_layers': affected_layers}
     import urllib
     raw_url = urllib.unquote(raw_url).decode('utf8')
-
-    return proxy(request, url=raw_url, response_callback=_response_callback, timeout=3, **kwargs)
+    timeout = getattr(ogc_server_settings, 'TIMEOUT') or 10
+    return proxy(request, url=raw_url, response_callback=_response_callback, timeout=timeout, **kwargs)
 
 
 def _response_callback(**kwargs):
@@ -765,15 +765,16 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
     session = requests_retry()
     req = session.get(wms_url)
     getcap = req.content
-    if tolerant and ('ServiceException' in getcap or req.status_code == 404):
-        # WARNING Please make sure to have enabled DJANGO CACHE as per
-        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-        wms_url = '%s%s/ows?service=wms&version=%s&request=GetCapabilities&layers=%s'\
-            % (ogc_server_settings.public_url, workspace, version, layer)
-        if access_token:
-            wms_url += ('&access_token=%s' % access_token)
-        req = session.get(wms_url)
-        getcap = req.content
+    if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+        if tolerant and ('ServiceException' in getcap or req.status_code == 404):
+            # WARNING Please make sure to have enabled DJANGO CACHE as per
+            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+            wms_url = '%s%s/ows?service=wms&version=%s&request=GetCapabilities&layers=%s'\
+                % (ogc_server_settings.public_url, workspace, version, layer)
+            if access_token:
+                wms_url += ('&access_token=%s' % access_token)
+            req = session.get(wms_url)
+            getcap = req.content
 
     if 'ServiceException' in getcap or req.status_code == 404:
         return None

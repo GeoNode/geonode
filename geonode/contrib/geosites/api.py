@@ -29,11 +29,11 @@ from tastypie.authorization import DjangoAuthorization
 from guardian.shortcuts import get_objects_for_user
 
 from geonode.api.resourcebase_api import CommonModelApi, LayerResource, MapResource, DocumentResource, \
-                                         ResourceBaseResource
+    ResourceBaseResource
 from geonode.base.models import ResourceBase
 from geonode.api.urls import api
 from geonode.api.api import TagResource, TopicCategoryResource, RegionResource, CountJSONSerializer, \
-                            ProfileResource
+    ProfileResource
 
 from .utils import resources_for_site, users_for_site
 

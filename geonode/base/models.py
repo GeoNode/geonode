@@ -890,13 +890,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         for required_field in required_fields:
             field = getattr(self, required_field, None)
             if field:
-                if required_field is 'license':
-                    if field.name is 'Not Specified':
+                if required_field == 'license':
+                    if field.name == 'Not Specified':
                         continue
-                if required_field is 'regions':
+                if required_field == 'regions':
                     if not field.all():
                         continue
-                if required_field is 'category':
+                if required_field == 'category':
                     if not field.identifier:
                         continue
                 filled_fields.append(field)
@@ -1296,9 +1296,6 @@ class LinkManager(models.Manager):
 
     def original(self):
         return self.get_queryset().filter(link_type='original')
-
-    def geogig(self):
-        return self.get_queryset().filter(name__icontains='geogig')
 
     def ows(self):
         return self.get_queryset().filter(

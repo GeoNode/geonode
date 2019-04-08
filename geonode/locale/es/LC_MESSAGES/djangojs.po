@@ -184,10 +184,6 @@ msgstr "Realizando Configuración del GeoServer"
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Archivo de capas cargado, configurando en GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr "Selecciona o crea un repositorio Geogig ."
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "Remover"

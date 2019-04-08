@@ -399,7 +399,7 @@ def cascading_delete(cat, layer_name):
                    'to save information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer_name)
                    )
-            logger.warn(msg)
+            logger.debug(msg)
             return None
         else:
             raise e
@@ -459,10 +459,6 @@ def cascading_delete(cat, layer_name):
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and \
                 store.connection_parameters['dbtype'] == 'postgis':
             delete_from_postgis(resource_name, store)
-        elif store.type and store.type.lower() == 'geogig':
-            # Prevent the entire store from being removed when the store is a
-            # GeoGig repository.
-            return
         else:
             if store.resource_type == 'coverageStore':
                 try:
@@ -906,7 +902,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             logger.debug(tb)
             attribute_map = []
     elif layer.storeType in ["dataStore", "remoteStore", "wmsStore"]:
-        dft_url = re.sub("\/wms\/?$",
+        dft_url = re.sub(r"\/wms\/?$",
                          "/",
                          server_url) + "ows?" + urllib.urlencode({"service": "wfs",
                                                                   "version": "1.0.0",
@@ -1017,7 +1013,7 @@ def set_styles(layer, gs_catalog):
         if not default_style:
             try:
                 default_style = gs_catalog.get_style(layer.name, workspace=layer.workspace) \
-                                or gs_catalog.get_style(layer.name)
+                    or gs_catalog.get_style(layer.name)
                 gs_layer.default_style = default_style
                 gs_catalog.save(gs_layer)
             except BaseException:
@@ -1473,13 +1469,12 @@ class OGC_Servers_Handler(object):
         server.setdefault('USER', 'admin')
         server.setdefault('PASSWORD', 'geoserver')
         server.setdefault('DATASTORE', str())
-        server.setdefault('GEOGIG_DATASTORE_DIR', str())
 
         for option in ['MAPFISH_PRINT_ENABLED', 'PRINT_NG_ENABLED', 'GEONODE_SECURITY_ENABLED',
                        'GEOFENCE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:
             server.setdefault(option, True)
 
-        for option in ['GEOGIG_ENABLED', 'WMST_ENABLED', 'WPS_ENABLED']:
+        for option in ['WMST_ENABLED', 'WPS_ENABLED']:
             server.setdefault(option, False)
 
     def __getitem__(self, alias):

@@ -191,10 +191,6 @@ msgstr "展示GeoServer的配置步骤"
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "图层文件上传，配置在GeoServer的"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr "选择或者创建一个Geoig仓库。"
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "删除"
@@ -990,6 +986,3 @@ msgid "Updated Date:"
 msgstr "更新时间："
 msgid "Popular Count:"
 msgstr "浏览量："
-
-
-

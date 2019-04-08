@@ -165,6 +165,7 @@ matrix:
 branches:
   only:
     - master
+    - 2.20.x
     - 2.8.x
     - 2.6.x
 
@@ -180,11 +181,17 @@ before_install:
       mkdir -p $HOME/buildout-cache/{eggs,downloads};
       scripts/misc/geoserver_server_setup.sh before_install;
       scripts/misc/qgis_server_setup.sh before_install;
-      chmod +x scripts/misc/bdd_setup.sh;
-      scripts/misc/bdd_setup.sh before_install;
     fi
 
 install:
+  - if [ "$TEST_RUN_INTEGRATION_BDD" = "True" ]; then
+      /usr/bin/Xvfb :99 -ac -screen 0 1024x768x8 & export DISPLAY=":99";
+      GECKODRIVER_VERSION="v0.24.0";
+      wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -O geckodriver.tar.gz;
+      mkdir bin;
+      tar zxf geckodriver.tar.gz -C bin;
+      export PATH=$PATH:$PWD/bin;
+    fi
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
       pip install -r geonode-selenium/requirements.txt;
       wget https://download.osgeo.org/geotiff/samples/spot/chicago/UTM2GTIF.TIF -P geonode-selenium/data;
@@ -195,7 +202,7 @@ install:
     else
       sudo apt-get -qq -y update;
       sudo apt-get install -y libgdal1i python-gdal gdal-bin spatialite-bin;
-      sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext;
+      sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-httplib2 python-httplib2 gettext;
       sudo apt-get install -y python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk;
       sudo apt-add-repository -y ppa:webupd8team/java; sudo apt update;
       echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections;
@@ -222,7 +229,6 @@ before_script:
       scripts/misc/geoserver_server_setup.sh before_script;
       echo "For QGIS Server Travis steps";
       scripts/misc/qgis_server_setup.sh before_script;
-      scripts/misc/bdd_setup.sh before_script;
       echo "Start NGINX server";
       sudo nginx -s stop;
       sudo nginx -c `pwd`/scripts/misc/nginx_integration.conf;
@@ -251,17 +257,11 @@ after_script:
       paver reset_hard;
     fi
 
-# after_success:
-  # - codecov
-  # - bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8
+after_success:
+  - codecov
+  - bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8
 
 notifications:
-  # irc:
-  #   channels:
-  #     - "irc.freenode.org#geonode"
-  #   use_notice: true
   email:
     - alessio.fabiani@gmail.com
-  #   - ingenieroariel@gmail.com
-  #   - simone.dalmasso@gmail.com
-  # slack: geonode-sprint:oQylJRkU9feZ8JruGi6czWwe
+  slack: geonode-sprint:oQylJRkU9feZ8JruGi6czWwe

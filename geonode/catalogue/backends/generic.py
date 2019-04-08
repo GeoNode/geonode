@@ -401,7 +401,7 @@ class Catalogue(CatalogueServiceWeb):
 
         links = []
         # extract subset of description value for user-friendly display
-        format_re = re.compile(".*\((.*)(\s*Format*\s*)\).*?")
+        format_re = re.compile(r".*\((.*)(\s*Format*\s*)\).*?")
 
         if not hasattr(rec, 'distribution'):
             return None

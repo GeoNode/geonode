@@ -472,10 +472,42 @@ def map_embed_widget(request, mapid,
     else:
         map_bbox = llbbox_to_mercator([float(coord) for coord in map_bbox])
 
-    if map_bbox[1] == float('-inf'):
-        map_bbox[1] = 0
-    if map_bbox[3] == float('-inf'):
-        map_bbox[3] = 0
+    if map_bbox and len(map_bbox) >= 4:
+        minx, miny, maxx, maxy = [float(coord) for coord in map_bbox]
+        x = (minx + maxx) / 2
+        y = (miny + maxy) / 2
+
+        if getattr(settings, 'DEFAULT_MAP_CRS') == "EPSG:3857":
+            center = list((x, y))
+        else:
+            center = list(forward_mercator((x, y)))
+
+        if center[1] == float('-inf'):
+            center[1] = 0
+
+        BBOX_DIFFERENCE_THRESHOLD = 1e-5
+
+        # Check if the bbox is invalid
+        valid_x = (maxx - minx) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+        valid_y = (maxy - miny) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+
+        width_zoom = 15
+        if valid_x:
+            try:
+                width_zoom = math.log(360 / abs(maxx - minx), 2)
+            except BaseException:
+                pass
+
+        height_zoom = 15
+        if valid_y:
+            try:
+                height_zoom = math.log(360 / abs(maxy - miny), 2)
+            except BaseException:
+                pass
+
+        map_obj.center_x = center[0]
+        map_obj.center_y = center[1]
+        map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
 
     context = {
         'resource': map_obj,
@@ -993,7 +1025,7 @@ def add_layers_to_map_config(
                                 layer_params=json.dumps(config),
                                 visibility=True,
                                 source_params=json.dumps(source_params)
-            )
+                                )
         else:
             ogc_server_url = urlparse.urlsplit(
                 ogc_server_settings.PUBLIC_LOCATION).netloc

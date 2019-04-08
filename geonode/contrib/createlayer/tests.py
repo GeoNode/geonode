@@ -32,7 +32,7 @@ from geonode.layers.models import Layer
 from .utils import create_layer
 
 
-"""
+r"""
 How to run the tests
 --------------------
 

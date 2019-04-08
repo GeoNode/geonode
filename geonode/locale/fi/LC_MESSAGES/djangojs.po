@@ -181,10 +181,6 @@ msgstr "Esittävät GeoServer Config Vaihe"
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Kerros ladatut tiedostot, konfigurointiin vuonna GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr "Valitse tai luo Geogig etäkirjasto."
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "Poistaa"

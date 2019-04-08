@@ -174,7 +174,6 @@ Upgrade Development Environment
             ------------------------------------------------------------------------
             94          'GEOFENCE_SECURITY_ENABLED' : True,                                                                          +-
             ------------------------------------------------------------------------
-            95          'GEOGIG_ENABLED' : False,                                                                                    =  69          'GEOGIG_ENABLED' : False,
             96          'WMST_ENABLED' : False,                                                                                         70          'WMST_ENABLED' : False,
             97          'BACKEND_WRITE_ENABLED': True,                                                                                  71          'BACKEND_WRITE_ENABLED': True,
             98          'WPS_ENABLED': False,                                                                                           72          'WPS_ENABLED' : False,
@@ -182,7 +181,6 @@ Upgrade Development Environment
             100         # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable            74          # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
             101         'DATASTORE': '',  # 'datastore',                                                                                75          'DATASTORE': '', #'datastore',
             ------------------------------------------------------------------------
-            102         'PG_GEOGIG': False,                                                                                          +-
             103         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
             ------------------------------------------------------------------------
             104     }                                                                                                                =  76      }
@@ -196,7 +194,6 @@ Upgrade Development Environment
             111     'OPTIONS': {                                                                                                        83  #    'OPTIONS': {
             112         'TIME_ENABLED': True,                                                                                           84  #        'TIME_ENABLED': True,
             113         'MOSAIC_ENABLED': False,                                                                                        85  #        'MOSAIC_ENABLED': True,
-            114         'GEOGIG_ENABLED': False,                                                                                        86  #        'GEOGIG_ENABLED': False,
             115     },                                                                                                                  87  #    }
             116     'SUPPORTED_CRS': [
             117         'EPSG:4326',
@@ -369,10 +366,6 @@ Upgrade Development Environment
             ------------------------------------------------------------------------
             270                                                                                                                      =
             ------------------------------------------------------------------------
-            271 ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)                                                         +-
-            272 CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
-            273 STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
-            274 THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
             275 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
             276 BING_API_KEY = os.environ.get('BING_API_KEY', None)
             ------------------------------------------------------------------------
@@ -861,7 +854,6 @@ Upgrade Development Environment
                 293     # 'geonode.contrib.dynamic',                      <> 280     'geonode.contrib.dynamic',
                 294     # 'geonode.contrib.exif',                            281     'geonode.contrib.exif',
                 295     # 'geonode.contrib.favorite',                        282     'geonode.contrib.favorite',
-                296     # 'geonode.contrib.geogig',                          283     'geonode.contrib.geogig',
                 297     # 'geonode.contrib.geosites',                        284     'geonode.contrib.geosites',
                 298     # 'geonode.contrib.nlp',                             285     'geonode.contrib.nlp',
                 299     # 'geonode.contrib.slack',                           286     'geonode.contrib.slack',
@@ -1107,7 +1099,6 @@ Upgrade Development Environment
                     'OPTIONS': {
                         'TIME_ENABLED': False,
                         'MOSAIC_ENABLED': False,
-                        'GEOGIG_ENABLED': False,
                     },
                     'SUPPORTED_CRS': [
                         'EPSG:4326',

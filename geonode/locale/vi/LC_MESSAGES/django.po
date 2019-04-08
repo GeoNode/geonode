@@ -3718,10 +3718,6 @@ msgstr "Cổ phiếu"
 msgid "Ratings"
 msgstr "Xếp hạng"
 
-#: geonode/templates/_actions.html:20
-msgid "GeoGig"
-msgstr ""
-
 #: geonode/templates/_actions.html:23
 msgid "Exif"
 msgstr ""

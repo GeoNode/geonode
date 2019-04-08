@@ -3714,10 +3714,6 @@ msgstr "シェア"
 msgid "Ratings"
 msgstr "評価"
 
-#: geonode/templates/_actions.html:20
-msgid "GeoGig"
-msgstr ""
-
 #: geonode/templates/_actions.html:23
 msgid "Exif"
 msgstr ""

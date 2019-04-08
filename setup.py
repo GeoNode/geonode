@@ -18,11 +18,10 @@
 #
 #########################################################################
 
-import os
-try: # for pip >= 10
+try:  # for pip >= 10
     from pip._internal.req import parse_requirements
     from pip._internal.download import PipSession
-except ImportError: # for pip <= 9.0.3
+except ImportError:  # for pip <= 9.0.3
     from pip.req import parse_requirements
     from pip.download import PipSession
 from distutils.core import setup
@@ -46,12 +45,12 @@ setup(name='GeoNode',
       url='http://geonode.org',
       license='GPL',
       packages=find_packages(),
-      package_data = {
-        '': ['*.*'],
-        '': ['static/*.*'],
-        'static': ['*.*'],
-        '': ['templates/*.*'],
-        'templates': ['*.*'],
+      package_data={
+          '': ['*.*'], # noqa
+          '': ['static/*.*'], # noqa
+          'static': ['*.*'],
+          '': ['templates/*.*'], # noqa
+          'templates': ['*.*'],
       },
       include_package_data=True,
       install_requires=REQUIREMENTS,

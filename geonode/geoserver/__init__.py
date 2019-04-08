@@ -18,11 +18,16 @@
 #
 #########################################################################
 
+import logging
 from django.utils.translation import ugettext_noop as _
 from geonode.notifications_helper import NotificationsAppConfigBase
 
 
+logger = logging.getLogger(__name__)
+
+
 def run_setup_hooks(*args, **kwargs):
+
     from django.db.models import signals
 
     from geonode.base.models import ResourceBase
@@ -43,6 +48,27 @@ def run_setup_hooks(*args, **kwargs):
     signals.post_save.connect(geoserver_post_save_map, sender=Map)
 
 
+def set_resource_links(*args, **kwargs):
+
+    from geonode.utils import set_resource_default_links
+    from geonode.catalogue.models import catalogue_post_save
+    from geonode.layers.models import Layer
+
+    _all_layers = Layer.objects.all()
+    for index, layer in enumerate(_all_layers, start=1):
+        _lyr_name = layer.name
+        message = "[%s / %s] Updating Layer [%s] ..." % (index, len(_all_layers), _lyr_name)
+        print(message)
+        logger.debug(message)
+        try:
+            set_resource_default_links(layer, layer)
+            catalogue_post_save(instance=layer, sender=layer.__class__)
+        except BaseException:
+            logger.exception(
+                "[ERROR] Layer [%s] couldn't be updated" % _lyr_name
+            )
+
+
 class GeoserverAppConfig(NotificationsAppConfigBase):
     name = 'geonode.geoserver'
     NOTIFICATIONS = (("layer_uploaded", _("Layer Uploaded"), _("A layer was uploaded"),),
@@ -53,6 +79,10 @@ class GeoserverAppConfig(NotificationsAppConfigBase):
     def ready(self):
         super(GeoserverAppConfig, self).ready()
         run_setup_hooks()
+        # Connect the post_migrate signal with the _set_resource_links
+        # method to update links for each resource
+        from django.db.models import signals
+        signals.post_migrate.connect(set_resource_links, sender=self)
 
 
 default_app_config = 'geonode.geoserver.GeoserverAppConfig'
