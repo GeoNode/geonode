@@ -892,3 +892,15 @@ def get_capabilities(request, layerid=None, user=None,
             pretty_print=True)
         return HttpResponse(capabilities, content_type="text/xml")
     return HttpResponse(status=200)
+
+
+def server_online(request):
+    """
+    Returns {success} whenever the LOCAL_GEOSERVER is up and running
+    """
+    from .helpers import check_geoserver_is_up
+    try:
+        check_geoserver_is_up()
+        return HttpResponse(json.dumps({'online': True}), content_type="application/json")
+    except BaseException:
+        return HttpResponse(json.dumps({'online': False}), content_type="application/json")
