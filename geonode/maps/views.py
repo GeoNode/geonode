@@ -727,7 +727,6 @@ def new_map(request, template='maps/map_new.html'):
             geoserver_layers.append(dict)
     else:
         geoserver_layers.append(myResponse)
-    
     context_dict = {
         'config': config,
         'map': map_obj,
