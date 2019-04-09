@@ -422,10 +422,36 @@ DEFAULT_MAP_CRS
 
     TBD
 
+* DELAYED_SECURITY_INTERVAL
+--------------------------
+
+    Default: ``60``
+
+    Env: ``DELAYED_SECURITY_INTERVAL``
+
+    This settings works only when ``DELAYED_SECURITY_SIGNALS`` has been activated and the Celery worker is running.
+    It defines the time interval in seconds for the Celery task to check if there are resources to be synchronized.
+
+    For more details see ``DELAYED_SECURITY_SIGNALS``
+
 * DELAYED_SECURITY_SIGNALS
 --------------------------
 
-    TBD
+    Default: ``False``
+
+    Env: ``DELAYED_SECURITY_SIGNALS``
+
+    This settings works only when ``GEOFENCE_SECURITY_ENABLED`` has been set to ``True`` and GeoNode is making use of the ``GeoServer BACKEND``.
+
+    By setting this to ``True``, every time the permissions will be updated / changed for a Layer, they won't be applied immediately but only and only if
+    either:
+
+    a. A Celery Worker is running and it is able to execute the ``geonode.security.tasks.synch_guardian`` periodic task;
+       notice that the task will be executed every ``DELAYED_SECURITY_INTERVAL`` seconds.
+
+    b. A periodic ``cron`` job runs the ``sync_security_rules`` management command, or either it is manually executed from the Django shell.
+
+    c. The user, owner of the Layer or with rights to change its permissions, clicks on the GeoNode UI button ``Sync permissions immediately``
 
 * DISPLAY_COMMENTS
 ------------------
