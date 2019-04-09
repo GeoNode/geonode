@@ -685,7 +685,6 @@ def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
 
 # NEW MAPS #
 
-
 def clean_config(conf):
     if isinstance(conf, basestring):
         config = json.loads(conf)
