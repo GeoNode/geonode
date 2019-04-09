@@ -453,6 +453,8 @@ DEFAULT_MAP_CRS
 
     c. The user, owner of the Layer or with rights to change its permissions, clicks on the GeoNode UI button ``Sync permissions immediately``
 
+    .. warning:: Layers won't be accessible to public users anymore until the Security Rules are not synchronized!
+
 * DISPLAY_COMMENTS
 ------------------
 
