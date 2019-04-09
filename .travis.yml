@@ -166,6 +166,7 @@ branches:
   only:
     - master
     - 2.20.x
+    - 2.10.x
     - 2.8.x
     - 2.6.x
 
