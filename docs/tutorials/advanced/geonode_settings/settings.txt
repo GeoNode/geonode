@@ -23,47 +23,80 @@ A
 * ACCESS_TOKEN_EXPIRE_SECONDS
 -----------------------------
 
-    TBD
+    Default: ``86400``
+
+    Env: ``ACCESS_TOKEN_EXPIRE_SECONDS``
+
+    When a user logs into GeoNode, if no ``ACCESS_TOKEN`` exists, a new one will be created with a default expiration time of ``ACCESS_TOKEN_EXPIRE_SECONDS`` seconds (1 day by default).
 
 * ACCOUNT_APPROVAL_REQUIRED
 ---------------------------
 
-    TBD
+    Default: ``False``
+
+    Env: ``ACCESS_TOKEN_EXPIRE_SECONDS``
+
+    If ``ACCESS_TOKEN_EXPIRE_SECONDS`` equals ``True``, new registered users must be activated by a superuser through the Admin gui, before they can access GeoNode.
 
 * ACCOUNT_CONFIRM_EMAIL_ON_GET
 -------------------------------
 
-    TBD
+    Default: ``True``
+
+    This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+    It allows specifying the HTTP method used when confirming e-mail addresses.
 
 * ACCOUNT_EMAIL_REQUIRED
 ------------------------
 
-    TBD
+    Default: ``True``
+
+    This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+    Controls whether the user is required to provide an e-mail address upon registration.
 
 * ACCOUNT_EMAIL_VERIFICATION
 ----------------------------
 
-    TBD
+    Default: ``optional``
+
+    This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
 
 * ACCOUNT_LOGIN_REDIRECT_URL
 ----------------------------
 
-    TBD
+    Default: ``SITEURL``
+
+    Env: ``LOGIN_REDIRECT_URL``
+
+    This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`_.
+    It allows to specify the default redirect URL after a successful login.
 
 * ACCOUNT_LOGOUT_REDIRECT_URL
 -----------------------------
 
-    TBD
+    Default: ``SITEURL``
+
+    Env: ``LOGOUT_REDIRECT_URL``
+
+    This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`_.
+    It allows to specify the default redirect URL after a successful logout.
 
 * ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE
 -----------------------------------
 
-    TBD
+    Default: ``True``
+
+    Env: ``ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE``
+
+    This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`_.
 
 * ACCOUNT_OPEN_SIGNUP
 ---------------------
 
-    TBD
+    Default: ``True``
+
+    This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`_.
+    Whether or not people is allowed to self-register to GeoNode or not.
 
 * ACTSTREAM_SETTINGS
 --------------------
@@ -73,7 +106,14 @@ A
 * ADMIN_MODERATE_UPLOADS
 ------------------------
 
-    TBD
+    Default: ``False``
+
+    When this variable is set to ``True``, every uploaded resource must be approved before becoming visible to the public users.
+
+    Until a resource is in ``PENDING APPROVAL`` state, only the superusers, owner and group members can access it, unless specific edit permissions have been set for other users or groups.
+
+    A ``Group Manager`` **can** approve the resource, but he cannot publish it whenever the setting ``RESOURCE_PUBLISHING`` is set to ``True``.
+    Otherwise if ``RESOURCE_PUBLISHING`` is set to ``False`` the resource becomes accessible as soon as it is approved.
 
 * AGON_RATINGS_CATEGORY_CHOICES
 -------------------------------
@@ -99,17 +139,27 @@ A
 * API_INCLUDE_REGIONS_COUNT
 ---------------------------
 
-    TBD
+    Default: ``False``
+
+    Env: ``API_INCLUDE_REGIONS_COUNT``
+
+    If set to ``True``, a counter with the total number of available regions will be added to the API JSON Serializer.
 
 * API_LIMIT_PER_PAGE
 --------------------
 
-    TBD
+    Default: ``200``
+
+    Env: ``API_LIMIT_PER_PAGE``
+
+    Number of items returned by the APIs 0 equals no limit. Different from ``CLIENT_RESULTS_LIMIT``, affecting the number of items per page in resource list.
 
 * ASYNC_SIGNALS
 ---------------
 
-    TBD
+    Default: ``True``
+
+    Env: ``ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE``
 
 * AUTH_EXEMPT_URLS
 ------------------
@@ -328,7 +378,11 @@ C
 * CLIENT_RESULTS_LIMIT
 ----------------------
 
-    TBD
+    Default: ``20``
+
+    Env: ``CLIENT_RESULTS_LIMIT``
+
+    Number of results per page listed in the GeoNode search pages. Different from ``API_LIMIT_PER_PAGE``, affecting the number of items returned by the APIs.
 
 * CKAN_ORIGINS
 --------------
@@ -399,7 +453,10 @@ D
     A 2-tuple with the latitude/longitude coordinates of the center-point to use
     in newly created maps.
 
-DEFAULT_MAP_CRS
+* DEFAULT_MAP_CRS
+-----------------
+
+    TBD
 
 * DEFAULT_MAP_ZOOM
 ------------------
@@ -1265,7 +1322,10 @@ S
 * SOCIALACCOUNT_ADAPTER
 -----------------------
 
-    TBD
+    Default: ``geonode.people.adapters.SocialAccountAdapter``
+
+    This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+    It allows specifying a custom class to handle authentication for social accounts.
 
 * SOCIALACCOUNT_AUTO_SIGNUP
 ---------------------------
@@ -1275,7 +1335,65 @@ S
 * SOCIALACCOUNT_PROVIDERS
 -------------------------
 
-    TBD
+  Default::
+
+      {
+          'linkedin_oauth2': {
+              'SCOPE': [
+                  'r_emailaddress',
+                  'r_basicprofile',
+              ],
+              'PROFILE_FIELDS': [
+                  'emailAddress',
+                  'firstName',
+                  'headline',
+                  'id',
+                  'industry',
+                  'lastName',
+                  'pictureUrl',
+                  'positions',
+                  'publicProfileUrl',
+                  'location',
+                  'specialties',
+                  'summary',
+              ]
+          },
+          'facebook': {
+              'METHOD': 'oauth2',
+              'SCOPE': [
+                  'email',
+                  'public_profile',
+              ],
+              'FIELDS': [
+                  'id',
+                  'email',
+                  'name',
+                  'first_name',
+                  'last_name',
+                  'verified',
+                  'locale',
+                  'timezone',
+                  'link',
+                  'gender',
+              ]
+          },
+      }
+
+  This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+  It should be a dictionary with provider specific settings
+
+* SOCIALACCOUNT_PROFILE_EXTRACTORS
+----------------------------------
+
+  Default::
+
+      {
+          "facebook": "geonode.people.profileextractors.FacebookExtractor",
+          "linkedin_oauth2": "geonode.people.profileextractors.LinkedInExtractor",
+      }
+
+  A dictionary with provider ids as keys and path to custom profile extractor
+  classes as values.
 
 * SOCIAL_BUTTONS
 ----------------
