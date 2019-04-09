@@ -141,7 +141,7 @@ def resource_urls(request):
             dict()).get(
             'METADATA',
             'never'),
-        USE_GEOSERVER=settings.USE_GEOSERVER,
+        USE_GEOSERVER=getattr(settings, 'USE_GEOSERVER', False),
         USE_NOTIFICATIONS=has_notifications,
         USE_MONITORING='geonode.contrib.monitoring' in settings.INSTALLED_APPS and settings.MONITORING_ENABLED,
         USE_WORLDMAP=settings.USE_WORLDMAP,
@@ -170,6 +170,7 @@ def resource_urls(request):
             False
         ),
         OGC_SERVER=getattr(settings, 'OGC_SERVER', None),
+        DELAYED_SECURITY_SIGNALS=getattr(settings, 'DELAYED_SECURITY_SIGNALS', False),
     )
     if settings.USE_WORLDMAP:
         defaults['GEONODE_CLIENT_LOCATION'] = getattr(
