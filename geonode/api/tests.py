@@ -213,7 +213,7 @@ class OAuthApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_outh_token(self):
-        with with self.settings(SESSION_EXPIRED_CONTROL_ENABLED=False, DELAYED_SECURITY_SIGNALS=False):
+        with self.settings(SESSION_EXPIRED_CONTROL_ENABLED=False, DELAYED_SECURITY_SIGNALS=False):
             # all public
             resp = self.api_client.get(self.list_url)
             self.assertValidJSONResponse(resp)
