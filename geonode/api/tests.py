@@ -213,22 +213,23 @@ class OAuthApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_outh_token(self):
-        # all public
-        resp = self.api_client.get(self.list_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+        with with self.settings(SESSION_EXPIRED_CONTROL_ENABLED=False, DELAYED_SECURITY_SIGNALS=False):
+            # all public
+            resp = self.api_client.get(self.list_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
 
-        perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
-        layer = Layer.objects.all()[0]
-        layer.set_permissions(perm_spec)
-        resp = self.api_client.get(self.list_url)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+            perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
+            layer = Layer.objects.all()[0]
+            layer.set_permissions(perm_spec)
+            resp = self.api_client.get(self.list_url)
+            self.assertEquals(len(self.deserialize(resp)['objects']), 7)
 
-        resp = self.api_client.get(self.list_url, authentication=self.auth_header)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+            resp = self.api_client.get(self.list_url, authentication=self.auth_header)
+            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
 
-        layer.is_published = False
-        layer.save()
+            layer.is_published = False
+            layer.save()
 
 
 class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
