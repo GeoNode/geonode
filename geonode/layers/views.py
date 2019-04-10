@@ -24,6 +24,7 @@ import logging
 import shutil
 import base64
 import traceback
+from types import TracebackType
 import decimal
 import cPickle as pickle
 from django.db.models import Q
@@ -172,6 +173,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
         tempdir = None
         saved_layer = None
         errormsgs = []
+        input_charset = None
         out = {'success': False}
         if form.is_valid():
             title = form.cleaned_data["layer_title"]
@@ -193,6 +195,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
             else:
                 abstract = "No abstract provided."
 
+            # charset
+            input_charset = form.cleaned_data["charset"]
+
             try:
                 # Moved this inside the try/except block because it can raise
                 # exceptions when unicode characters are present.
@@ -204,7 +209,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         name=name,
                         user=request.user,
                         overwrite=False,
-                        charset=form.cleaned_data["charset"],
+                        charset=input_charset,
                         abstract=abstract,
                         title=title,
                         metadata_uploaded_preserve=form.cleaned_data[
@@ -222,6 +227,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
                 out['success'] = False
+                out['errormsgs'] = _('Failed to upload the layer')
                 try:
                     out['errors'] = u''.join(error).encode('utf-8')
                 except BaseException:
@@ -240,7 +246,13 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     user=request.user).order_by('-date')
                 if latest_uploads.count() > 0:
                     upload_session = latest_uploads[0]
-                    upload_session.error = pickle.dumps(error).decode("utf-8", "replace")
+                    # Ref issue #4232
+                    if not isinstance(error, TracebackType):
+                        upload_session.error = pickle.dumps(error).decode("utf-8", "replace")
+                    else:
+                        err_msg = 'The error could not be parsed'
+                        upload_session.error = err_msg
+                        logger.error("TypeError: can't pickle traceback objects")
                     upload_session.traceback = traceback.format_exc(tb)
                     upload_session.context = log_snippet(CONTEXT_LOG_FILE)
                     upload_session.save()
@@ -248,28 +260,30 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     out['context'] = upload_session.context
                     out['upload_session'] = upload_session.id
             else:
-                out['success'] = True
-                if hasattr(saved_layer, 'info'):
-                    out['info'] = saved_layer.info
-                out['url'] = reverse(
-                    'layer_detail', args=[
-                        saved_layer.service_typename])
-                if hasattr(saved_layer, 'bbox_string'):
-                    out['bbox'] = saved_layer.bbox_string
-                if hasattr(saved_layer, 'srid'):
-                    out['crs'] = {
-                        'type': 'name',
-                        'properties': saved_layer.srid
-                    }
-                out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
-                upload_session = saved_layer.upload_session
-                if upload_session:
-                    upload_session.processed = True
-                    upload_session.save()
-                permissions = form.cleaned_data["permissions"]
-                if permissions is not None and len(permissions.keys()) > 0:
-                    saved_layer.set_permissions(permissions)
-                saved_layer.handle_moderated_uploads()
+                # Prevent calls to None
+                if saved_layer:
+                    out['success'] = True
+                    if hasattr(saved_layer, 'info'):
+                        out['info'] = saved_layer.info
+                    out['url'] = reverse(
+                        'layer_detail', args=[
+                            saved_layer.service_typename])
+                    if hasattr(saved_layer, 'bbox_string'):
+                        out['bbox'] = saved_layer.bbox_string
+                    if hasattr(saved_layer, 'srid'):
+                        out['crs'] = {
+                            'type': 'name',
+                            'properties': saved_layer.srid
+                        }
+                    out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
+                    upload_session = saved_layer.upload_session
+                    if upload_session:
+                        upload_session.processed = True
+                        upload_session.save()
+                    permissions = form.cleaned_data["permissions"]
+                    if permissions is not None and len(permissions.keys()) > 0:
+                        saved_layer.set_permissions(permissions)
+                    saved_layer.handle_moderated_uploads()
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
@@ -283,20 +297,40 @@ def layer_upload(request, template='upload/layer_upload.html'):
         else:
             status_code = 400
         if settings.MONITORING_ENABLED:
-            if saved_layer or name:
-                layer_name = saved_layer.alternate if hasattr(
-                    saved_layer, 'alternate') else name
+            layer_name = None
+            if saved_layer and hasattr(saved_layer, 'alternate'):
+                layer_name = saved_layer.alternate
+            elif name:
+                layer_name = name
+            if layer_name:
                 request.add_resource('layer', layer_name)
+
+        # null-safe charset
+        layer_charset = 'UTF-8'
+        if saved_layer and hasattr(saved_layer, 'charset'):
+            layer_charset = saved_layer.charset
+        elif input_charset:
+            layer_charset = input_charset
+
         _keys = ['info', 'errors']
         for _k in _keys:
             if _k in out:
                 if isinstance(out[_k], unicode) or isinstance(
                         out[_k], str):
-                    out[_k] = out[_k].decode(saved_layer.charset).encode("utf-8")
+                    out[_k] = out[_k].decode(layer_charset).encode("utf-8")
                 elif isinstance(out[_k], dict):
                     for key, value in out[_k].iteritems():
-                        out[_k][key] = out[_k][key].decode(saved_layer.charset).encode("utf-8")
-                        out[_k][key.decode(saved_layer.charset).encode("utf-8")] = out[_k].pop(key)
+                        try:
+                            item = out[_k][key]
+                            # Ref issue #4241
+                            if isinstance(item, ErrorList):
+                                out[_k][key] = item.as_text().decode(layer_charset).encode("utf-8")
+                            else:
+                                out[_k][key] = item.decode(layer_charset).encode("utf-8")
+                            out[_k][key.decode(layer_charset).encode("utf-8")] = out[_k].pop(key)
+                        except BaseException as e:
+                            logger.exception(e)
+
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',
