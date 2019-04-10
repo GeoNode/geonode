@@ -64,7 +64,7 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
 
 # SECRET_KEY = '************************'
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = os.getenv('SECRET_KEY', "{{ secret_key }}")
+SECRET_KEY = os.getenv('SECRET_KEY', "123456")
 
 # per-deployment settings should go here
 SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'localhost')
