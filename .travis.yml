@@ -37,7 +37,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_CORE: 'True'
             MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
     - name: "GeoServer-backend Contrib Apps Smoke Tests"
       python: 2.7
       virtualenv:
@@ -81,7 +81,7 @@ matrix:
             TEST_RUN_INTEGRATION_CSW: 'True'
             TEST_RUN_INTEGRATION_BDD: 'False'
             MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "GeoServer-backend Integration BDD Tests"
       python: 2.7
@@ -98,7 +98,7 @@ matrix:
             TEST_RUN_INTEGRATION_CSW: 'False'
             TEST_RUN_INTEGRATION_BDD: 'True'
             MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Core Modules Smoke Tests"
       python: 2.7
@@ -117,7 +117,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_CORE: 'True'
             MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Contrib Apps Smoke Tests"
       python: 2.7
@@ -136,7 +136,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_INTERNAL_APPS: 'True'
             MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Integration Tests"
       python: 2.7
@@ -155,7 +155,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_INTEGRATION: 'True'
             MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "Selenium Integration Tests"
       python: 3.5
@@ -166,6 +166,7 @@ branches:
   only:
     - master
     - 2.20.x
+    - 2.10.x
     - 2.8.x
     - 2.6.x
 

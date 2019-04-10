@@ -23,7 +23,7 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth.models import Group
-
+from geonode.decorators import on_ogc_backend
 from guardian.shortcuts import get_anonymous_user
 
 from geonode import geoserver
@@ -32,13 +32,13 @@ from geonode.utils import check_ogc_backend
 from geonode.groups.models import GroupProfile
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import all_public
+from geonode.base.auth import get_or_create_token
 
 
 class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(PermissionsApiTests, self).setUp()
-
         self.user = 'admin'
         self.passwd = 'admin'
         self.list_url = reverse(
@@ -192,6 +192,44 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     self.assertEquals(len(self.deserialize(resp)['objects']), 7)
             finally:
                 _ogc_geofence_enabled['default']['GEOFENCE_SECURITY_ENABLED'] = False
+
+
+class OAuthApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    def setUp(self):
+        super(OAuthApiTests, self).setUp()
+
+        self.user = 'admin'
+        self.passwd = 'admin'
+        self._user = get_user_model().objects.get(username=self.user)
+        self.token = get_or_create_token(self._user)
+        self.auth_header = 'Bearer {}'.format(self.token)
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
+        all_public()
+        self.perm_spec = {"users": {}, "groups": {}}
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_outh_token(self):
+        with self.settings(SESSION_EXPIRED_CONTROL_ENABLED=False, DELAYED_SECURITY_SIGNALS=False):
+            # all public
+            resp = self.api_client.get(self.list_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
+            perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
+            layer = Layer.objects.all()[0]
+            layer.set_permissions(perm_spec)
+            resp = self.api_client.get(self.list_url)
+            self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+
+            resp = self.api_client.get(self.list_url, authentication=self.auth_header)
+            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
+            layer.is_published = False
+            layer.save()
 
 
 class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):

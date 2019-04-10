@@ -7,42 +7,1100 @@ Settings
 Here’s a list of settings available in GeoNode and their default values.  This includes settings for some external applications that
 GeoNode depends on.
 
+For the most of them, default values are good. Those should be changed only for advanced configurations in production or heavily hardened systems.
+
+The most common ones can be set through ``environment`` variables in order to avoid touching the ``settings.py`` file at all.
+This is a good practice and also the preferred one to configure GeoNode (and Django apps in general).
+Whenever you need to change them, configure the environment variable accordingly (where it is available) instead of overriding it through the ``local_settings``.
+
 .. comment:
     :local:
     :depth: 1
 
-Documents settings
-==================
+A
+=
 
-Here's a list of settings available for the Documents app in GeoNode.
+* ACCESS_TOKEN_EXPIRE_SECONDS
+-----------------------------
 
-ALLOWED_DOCUMENT_TYPES
-----------------------
-Default: ``['doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
+    TBD
 
-A list of acceptable file extensions that can be uploaded to the Documents app.
+* ACCOUNT_APPROVAL_REQUIRED
+---------------------------
 
-MAX_DOCUMENT_SIZE
+    TBD
+
+* ACCOUNT_CONFIRM_EMAIL_ON_GET
+-------------------------------
+
+    TBD
+
+* ACCOUNT_EMAIL_REQUIRED
+------------------------
+
+    TBD
+
+* ACCOUNT_EMAIL_VERIFICATION
+----------------------------
+
+    TBD
+
+* ACCOUNT_LOGIN_REDIRECT_URL
+----------------------------
+
+    TBD
+
+* ACCOUNT_LOGOUT_REDIRECT_URL
+-----------------------------
+
+    TBD
+
+* ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE
+-----------------------------------
+
+    TBD
+
+* ACCOUNT_OPEN_SIGNUP
+---------------------
+
+    TBD
+
+* ACTSTREAM_SETTINGS
+--------------------
+
+    TBD
+
+* ADMIN_MODERATE_UPLOADS
+------------------------
+
+    TBD
+
+* AGON_RATINGS_CATEGORY_CHOICES
+-------------------------------
+
+    TBD
+
+* ALLOWED_DOCUMENT_TYPES
+------------------------
+
+    Default::
+
+        ['doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png',
+        'ppt', 'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml',
+        'zip', 'gz', 'qml']
+
+    A list of acceptable file extensions that can be uploaded to the Documents app.
+
+* ANONYMOUS_USER_ID
+-------------------
+
+    TBD
+
+* API_INCLUDE_REGIONS_COUNT
+---------------------------
+
+    TBD
+
+* API_LIMIT_PER_PAGE
+--------------------
+
+    TBD
+
+* ASYNC_SIGNALS
+---------------
+
+    TBD
+
+* AUTH_EXEMPT_URLS
+------------------
+
+    Default::
+
+        (r'^/?$',
+        '/gs/*',
+        '/static/*',
+        '/o/*',
+        '/api/o/*',
+        '/api/roles',
+        '/api/adminRole',
+        '/api/users',
+        '/api/layers',)
+
+    A tuple of URL patterns that the user can visit without being authenticated.
+    This setting has no effect if ``LOCKDOWN_GEONODE`` is not True.  For example,
+    ``AUTH_EXEMPT_URLS = ('/maps',)`` will allow unauthenticated users to
+    browse maps.
+
+* AUTO_GENERATE_AVATAR_SIZES
+----------------------------
+
+    TBD
+
+* AWS_ACCESS_KEY_ID
+-------------------
+
+    TBD
+
+* AWS_BUCKET_NAME
 -----------------
-Default: ``2``
 
-Metadata settings
-=================
+    TBD
 
-CATALOGUE
+* AWS_QUERYSTRING_AUTH
+----------------------
+
+    TBD
+
+* AWS_S3_BUCKET_DOMAIN
+----------------------
+
+    TBD
+
+* AWS_SECRET_ACCESS_KEY
+-----------------------
+
+    TBD
+
+* AWS_STORAGE_BUCKET_NAME
+-------------------------
+
+    TBD
+
+B
+=
+
+* BING_API_KEY
+--------------
+
+    TBD
+
+* BROKER_HEARTBEAT
+------------------
+
+    TBD
+
+* BROKER_TRANSPORT_OPTIONS
+---------------------------
+
+    TBD
+
+C
+=
+
+* CACHES
+--------
+
+    TBD
+
+* CACHE_TIME
+------------
+
+    TBD
+
+* CASCADE_WORKSPACE
+-------------------
+
+    TBD
+
+* CATALOGUE
+-----------
+
+    A dict with the following keys:
+
+    * ENGINE: The CSW backend (default is ``geonode.catalogue.backends.pycsw_local``)
+    * URL: The FULLY QUALIFIED base URL to the CSW instance for this GeoNode
+    * USERNAME: login credentials (if required)
+    * PASSWORD: login credentials (if required)
+
+    pycsw is the default CSW enabled in GeoNode. pycsw configuration directives
+    are managed in the PYCSW entry.
+
+* CELERYD_POOL_RESTARTS
+-----------------------
+
+    TBD
+
+* CELERY_ACCEPT_CONTENT
+-----------------------
+
+    TBD
+
+* CELERY_ACKS_LATE
+------------------
+
+    TBD
+
+* CELERY_BEAT_SCHEDULE
+----------------------
+
+    TBD
+
+* CELERY_DISABLE_RATE_LIMITS
+----------------------------
+
+    TBD
+
+* CELERY_ENABLE_UTC
+-------------------
+
+    TBD
+
+* CELERY_MAX_CACHED_RESULTS
+---------------------------
+
+    TBD
+
+* CELERY_MESSAGE_COMPRESSION
+----------------------------
+
+    TBD
+
+* CELERY_RESULT_PERSISTENT
+--------------------------
+
+    TBD
+
+* CELERY_RESULT_SERIALIZER
+--------------------------
+
+    TBD
+
+* CELERY_SEND_TASK_EVENTS
+-------------------------
+
+    TBD
+
+* CELERY_SEND_TASK_SENT_EVENT
+-----------------------------
+
+    TBD
+
+* CELERY_TASK_ALWAYS_EAGER
+--------------------------
+
+    TBD
+
+* CELERY_TASK_CREATE_MISSING_QUEUES
+-----------------------------------
+
+    TBD
+
+* CELERY_TASK_IGNORE_RESULT
+---------------------------
+
+    TBD
+
+* CELERY_TASK_QUEUES
+--------------------
+
+    TBD
+
+* CELERY_TASK_RESULT_EXPIRES
+----------------------------
+
+    TBD
+
+* CELERY_TASK_SERIALIZER
+------------------------
+
+    TBD
+
+* CELERY_TIMEZONE
+-----------------
+
+    TBD
+
+* CELERY_TRACK_STARTED
+----------------------
+
+    TBD
+
+* CELERY_WORKER_DISABLE_RATE_LIMITS
+------------------------------------
+
+    TBD
+
+* CELERY_WORKER_SEND_TASK_EVENTS
+--------------------------------
+
+    TBD
+
+* CLIENT_RESULTS_LIMIT
+----------------------
+
+    TBD
+
+* CKAN_ORIGINS
+--------------
+
+    Default::
+
+        CKAN_ORIGINS = [{
+            "label":"Humanitarian Data Exchange (HDX)",
+            "url":"https://data.hdx.rwlabs.org/dataset/new?title={name}&notes={abstract}",
+            "css_class":"hdx"
+        }]
+
+    A list of dictionaries that is used to generate the links to CKAN instances displayed in the Share tab.  For each origin, the name and abstract format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).  This is not enabled by default.  To enabled, uncomment the following line: SOCIAL_ORIGINS.extend(CKAN_ORIGINS).
+
+* CSRF_COOKIE_HTTPONLY
+----------------------
+
+    TBD
+
+* CSRF_COOKIE_SECURE
+--------------------
+
+    TBD
+
+D
+=
+
+* DATA_UPLOAD_MAX_NUMBER_FIELDS
+-------------------------------
+
+    TBD
+
+* DEBUG
+-------
+
+    TBD
+
+* DEBUG_STATIC
+--------------
+
+    TBD
+
+* DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+---------------------------------------
+
+    TBD
+
+* DEFAULT_ANONYMOUS_VIEW_PERMISSION
+-----------------------------------
+
+    TBD
+
+* DEFAULT_LAYER_FORMAT
+----------------------
+
+    TBD
+
+* DEFAULT_MAP_BASE_LAYER
+------------------------
+
+    The name of the background layer to include in newly created maps.
+
+* DEFAULT_MAP_CENTER
+--------------------
+
+    Default: ``(0, 0)``
+
+    A 2-tuple with the latitude/longitude coordinates of the center-point to use
+    in newly created maps.
+
+DEFAULT_MAP_CRS
+
+* DEFAULT_MAP_ZOOM
+------------------
+
+    Default: ``0``
+
+    The zoom-level to use in newly created maps.  This works like the OpenLayers
+    zoom level setting; 0 is at the world extent and each additional level cuts
+    the viewport in half in each direction.
+
+* DEFAULT_SEARCH_SIZE
+---------------------
+
+    Default: ``10``
+
+    An integer that specifies the default search size when using ``geonode.search`` for querying data.
+
+* DEFAULT_WORKSPACE
+-------------------
+
+    TBD
+
+* DELAYED_SECURITY_INTERVAL
+--------------------------
+
+    Default: ``60``
+
+    Env: ``DELAYED_SECURITY_INTERVAL``
+
+    This settings works only when ``DELAYED_SECURITY_SIGNALS`` has been activated and the Celery worker is running.
+    It defines the time interval in seconds for the Celery task to check if there are resources to be synchronized.
+
+    For more details see ``DELAYED_SECURITY_SIGNALS``
+
+* DELAYED_SECURITY_SIGNALS
+--------------------------
+
+    Default: ``False``
+
+    Env: ``DELAYED_SECURITY_SIGNALS``
+
+    This settings works only when ``GEOFENCE_SECURITY_ENABLED`` has been set to ``True`` and GeoNode is making use of the ``GeoServer BACKEND``.
+
+    By setting this to ``True``, every time the permissions will be updated / changed for a Layer, they won't be applied immediately but only and only if
+    either:
+
+    a. A Celery Worker is running and it is able to execute the ``geonode.security.tasks.synch_guardian`` periodic task;
+       notice that the task will be executed every ``DELAYED_SECURITY_INTERVAL`` seconds.
+
+    b. A periodic ``cron`` job runs the ``sync_security_rules`` management command, or either it is manually executed from the Django shell.
+
+    c. The user, owner of the Layer or with rights to change its permissions, clicks on the GeoNode UI button ``Sync permissions immediately``
+
+    .. warning:: Layers won't be accessible to public users anymore until the Security Rules are not synchronized!
+
+* DISPLAY_COMMENTS
+------------------
+
+    TBD
+
+* DISPLAY_RATINGS
+-----------------
+    TBD
+
+* DISPLAY_SOCIAL
+----------------
+
+    TBD
+
+* DISPLAY_WMS_LINKS
+-------------------
+
+    TBD
+
+* DOWNLOAD_FORMATS_METADATA
+---------------------------
+
+    Specifies which metadata formats are available for users to download.
+
+    Default::
+
+        DOWNLOAD_FORMATS_METADATA = [
+            'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO',
+        ]
+
+* DOWNLOAD_FORMATS_VECTOR
+-------------------------
+
+    Specifies which formats for vector data are available for users to download.
+
+    Default::
+
+        DOWNLOAD_FORMATS_VECTOR = [
+            'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
+            'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
+        ]
+
+* DOWNLOAD_FORMATS_RASTER
+-------------------------
+
+    Specifies which formats for raster data are available for users to download.
+
+    Default::
+
+        DOWNLOAD_FORMATS_RASTER = [
+            'JPEG', 'PDF', 'PNG' 'Tiles',
+        ]
+
+E
+=
+
+* EMAIL_ENABLE
+--------------
+
+    Default: ``False``
+
+    Options:
+
+        * EMAIL_BACKEND
+        ...............
+
+            Default: ``django.core.mail.backends.smtp.EmailBackend``
+
+            Env: ``DJANGO_EMAIL_BACKEND``
+
+        * EMAIL_HOST
+        ............
+
+            Default: ``localhost``
+
+        * EMAIL_PORT
+        ............
+
+            Default: ``25``
+
+        * EMAIL_HOST_USER
+        .................
+
+            Default: ``''``
+
+        * EMAIL_HOST_PASSWORD
+        .....................
+
+            Default: ``''``
+
+        * EMAIL_USE_TLS
+        ...............
+
+            Default: ``False``
+
+        * DEFAULT_FROM_EMAIL
+        ....................
+
+            Default: ``GeoNode <no-reply@geonode.org>``
+
+* EXIF_ENABED
+-------------
+
+    Default: ``False``
+
+    A boolean that specifies whether the Exif contrib app is enabled.  If enabled, metadata is generated from Exif tags when documents are uploaded.
+
+F
+=
+
+* FREETEXT_KEYWORDS_READONLY
+----------------------------
+
+    TBD
+
+G
+=
+
+* GEOFENCE_SECURITY_ENABLED
+---------------------------
+
+    TBD
+
+* GEOIP_PATH
+------------
+
+    TBD
+
+* GEONODE_APPS
+--------------
+
+    TBD
+
+* GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY
+--------------------------------------
+
+    Default:  ``"geoext"``
+
+    The library to use for display preview images of layers.  The library choices are:
+
+    * ``"leaflet"``
+    * ``"geoext"``
+
+* GEONODE_EXCHANGE
+------------------
+
+    TBD
+
+* GEOSERVER_EXCHANGE
+--------------------
+
+    TBD
+
+* GEOSERVER_LOCATION
+--------------------
+
+    TBD
+
+* GEOSERVER_PUBLIC_HOST
+-----------------------
+
+    TBD
+
+* GEOSERVER_PUBLIC_LOCATION
+---------------------------
+
+    TBD
+
+* GEOSERVER_PUBLIC_PORT
+-----------------------
+
+    TBD
+
+* GEOSERVER_WEB_UI_LOCATION
+---------------------------
+
+    TBD
+
+* GEOTIFF_IO_ENABLED
+--------------------
+
+    TBD
+
+* GOOGLE_API_KEY
+----------------
+
+    TBD
+
+* GOOGLE_MAPS_API_KEY
+---------------------
+
+    TBD
+
+* GROUP_PRIVATE_RESOURCES
+-------------------------
+
+    TBD
+
+H
+=
+
+* HAYSTACK_FACET_COUNTS
+-----------------------
+
+    TBD
+
+* HAYSTACK_SEARCH
+-----------------
+
+    TBD
+
+* HYPERMAP_REGISTRY_URL
+-----------------------
+
+    TBD
+
+L
+=
+
+* LEAFLET_CONFIG
+----------------
+
+    TBD
+
+* LICENSES
+----------
+
+    TBD
+
+* LOCAL_SIGNALS_BROKER_URL
+--------------------------
+
+    TBD
+
+* LOCKDOWN_GEONODE
+------------------
+
+    Default: ``False``
+
+    By default, the GeoNode application allows visitors to view most pages without being authenticated. If this is set to ``True``
+    users must be authenticated before accessing URL routes not included in ``AUTH_EXEMPT_URLS``.
+
+* LOGIN_URL
+-----------
+
+    TBD
+
+* LOGOUT_URL
+------------
+
+    TBD
+
+M
+=
+
+* MAPBOX_ACCESS_TOKEN
+---------------------
+
+    TBD
+
+* MAPPROXY_URL
+--------------
+
+    TBD
+
+* MAP_BASELAYERS
+----------------
+
+    Default::
+
+        MAP_BASELAYERS = [{
+        "source": {
+            "ptype": "gxp_wmscsource",
+            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+            "restUrl": "/gs/rest"
+         }
+          },{
+            "source": {"ptype": "gxp_olsource"},
+            "type":"OpenLayers.Layer",
+            "args":["No background"],
+            "visibility": False,
+            "fixed": True,
+            "group":"background"
+          }, {
+            "source": {"ptype": "gxp_osmsource"},
+            "type":"OpenLayers.Layer.OSM",
+            "name":"mapnik",
+            "visibility": False,
+            "fixed": True,
+            "group":"background"
+          }, {
+            "source": {"ptype": "gxp_mapquestsource"},
+            "name":"osm",
+            "group":"background",
+            "visibility": True
+          }, {
+            "source": {"ptype": "gxp_mapquestsource"},
+            "name":"naip",
+            "group":"background",
+            "visibility": False
+          }, {
+            "source": {"ptype": "gxp_bingsource"},
+            "name": "AerialWithLabels",
+            "fixed": True,
+            "visibility": False,
+            "group":"background"
+          },{
+            "source": {"ptype": "gxp_mapboxsource"},
+          }, {
+            "source": {"ptype": "gxp_olsource"},
+            "type":"OpenLayers.Layer.WMS",
+            "group":"background",
+            "visibility": False,
+            "fixed": True,
+            "args":[
+              "bluemarble",
+              "http://maps.opengeo.org/geowebcache/service/wms",
+              {
+                "layers":["bluemarble"],
+                "format":"image/png",
+                "tiled": True,
+                "tilesOrigin": [-20037508.34, -20037508.34]
+              },
+              {"buffer": 0}
+            ]
+
+        }]
+
+    A list of dictionaries that specify the default map layers.
+
+* MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS
+-----------------------------------------
+
+    TBD
+
+* MAX_DOCUMENT_SIZE
+-------------------
+
+    Default: ``2``
+
+* MISSING_THUMBNAIL
+-------------------
+
+    TBD
+
+* MODIFY_TOPICCATEGORY
+----------------------
+
+    Default: ``False``
+
+    Metadata Topic Categories list should not be modified, as it is strictly defined
+    by ISO (See: http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml
+    and check the <CodeListDictionary gml:id="MD_MD_TopicCategoryCode"> element).
+
+    Some customisation it is still possible changing the is_choice and the GeoNode
+    description fields.
+
+    In case it is absolutely necessary to add/delete/update categories, it is
+    possible to set the MODIFY_TOPICCATEGORY setting to True.
+
+* MONITORING_ENABLED
+--------------------
+
+    Default: ``False``
+
+    Enable internal monitoring application (`geonode.contrib.monitoring`). If set to `True`, add following code to your local settings:
+
+    .. code::
+
+        MONITORING_ENABLED = True
+        # add following lines to your local settings to enable monitoring
+        if MONITORING_ENABLED:
+            INSTALLED_APPS + ('geonode.contrib.monitoring',)
+            MIDDLEWARE_CLASSES + ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+
+    See :ref:`geonode_monitoring` for details.
+
+* MONITORING_DATA_TTL
+---------------------
+
+    TBD
+
+* MONITORING_DISABLE_CSRF
+-------------------------
+
+    TBD
+
+N
+=
+
+* NLP_ENABLED
+-------------
+
+    Default: ``False``
+
+    A boolean that specifies whether the NLP (Natural Language Processing) contrib app is enabled.  If enabled, NLP (specifically MITIE) is used to infer additional metadata from uploaded documents to help fill metadata gaps.
+
+* NLP_LOCATION_THRESHOLD
+------------------------
+
+    Default: ``1.0``
+
+    A float that specifies the threshold for location matches.
+
+* NLP_LIBRARY_PATH
+------------------
+
+    Default:: ``'/opt/MITIE/mitielib'``
+
+    A string that specifies the location of the MITIE library
+
+* NLP_MODEL_PATH
+----------------
+
+    Default:: ``'/opt/MITIE/MITIE-models/english/ner_model.dat'``
+
+    A string that specifies the location of the NER (Named Entity Resolver).  MITIE comes with English and Spanish NER models.  Other models can be trained.
+
+* NOTIFICATIONS_MODULE
+----------------------
+
+    TBD
+
+* NOTIFICATION_ENABLED
+----------------------
+
+    TBD
+
+O
+=
+
+* OAUTH2_PROVIDER
+-----------------
+
+    TBD
+
+* OGC_SERVER_DEFAULT_PASSWORD
+-----------------------------
+
+    TBD
+
+* OGC_SERVER_DEFAULT_USER
+-------------------------
+
+    TBD
+
+* OGC_SERVER
+------------
+
+    Default: ``{}`` (Empty dictionary)
+
+    A dictionary of OGC servers and their options.  The main
+    server should be listed in the 'default' key.  If there is no 'default'
+    key or if the ``OGC_SERVER`` setting does not exist Geonode will raise
+    an Improperly Configured exception.  Below is an example of the ``OGC_SERVER``
+    setting::
+
+       OGC_SERVER = {
+         'default' : {
+             'LOCATION' : 'http://localhost:8080/geoserver/',
+             'USER' : 'admin',
+             'PASSWORD' : 'geoserver',
+         }
+       }
+
+    * BACKEND
+    .........
+
+        Default: ``"geonode.geoserver"``
+
+        The OGC server backend to use.  The backend choices are:
+
+        * ``'geonode.geoserver'``
+
+    * BACKEND_WRITE_ENABLED
+    .......................
+
+        Default: ``True``
+
+        Specifies whether the OGC server can be written to.  If False, actions that modify
+        data on the OGC server will not execute.
+
+    * DATASTORE
+    ...........
+
+        Default: ``''`` (Empty string)
+
+        An optional string that represents the name of a vector datastore that Geonode uploads
+        are imported into.  In order to support vector datastore imports there also needs to be an
+        entry for the datastore in the ``DATABASES`` dictionary with the same name.  Example::
+
+         OGC_SERVER = {
+           'default' : {
+              'LOCATION' : 'http://localhost:8080/geoserver/',
+              'USER' : 'admin',
+              'PASSWORD' : 'geoserver',
+              'DATASTORE': 'geonode_imports'
+           }
+         }
+
+         DATABASES = {
+          'default': {
+              'ENGINE': 'django.db.backends.sqlite3',
+              'NAME': 'development.db',
+          },
+          'geonode_imports' : {
+              'ENGINE': 'django.contrib.gis.db.backends.postgis',
+              'NAME': 'geonode_imports',
+              'USER' : 'geonode_user',
+              'PASSWORD' : 'a_password',
+              'HOST' : 'localhost',
+              'PORT' : '5432',
+           }
+          }
+
+    * GEONODE_SECURITY_ENABLED
+    ..........................
+
+        Default: ``True``
+
+        A boolean that represents whether GeoNode's security application is enabled.
+
+    * LOCATION
+    ..........
+
+        Default: ``"http://localhost:8080/geoserver/"``
+
+        A base URL from which GeoNode can construct OGC service URLs.
+        If using GeoServer you can determine this by
+        visiting the GeoServer administration home page without the
+        /web/ at the end.  For example, if your GeoServer administration app is at
+        http://example.com/geoserver/web/, your server's location is http://example.com/geoserver.
+
+    * MAPFISH_PRINT_ENABLED
+    .......................
+
+        Default: ``True``
+
+        A boolean that represents whether the MapFish printing extension is enabled on the server.
+
+    * PASSWORD
+    ..........
+
+        Default: ``'geoserver'``
+
+        The administrative password for the OGC server as a string.
+
+    * PRINT_NG_ENABLED
+    ..................
+
+        Default: ``True``
+
+        A boolean that represents whether printing of maps and layers is enabled.
+
+    * PUBLIC_LOCATION
+    .................
+
+        Default: ``"http://localhost:8080/geoserver/"``
+
+        The URL used to in most public requests from Geonode.  This settings allows a user to write to one OGC server (the LOCATION setting)
+        and read from a separate server or the PUBLIC_LOCATION.
+
+    * USER
+    ......
+
+        Default: ``'admin'``
+
+        The administrative username for the OGC server as a string.
+
+    * WMST_ENABLED
+    ..............
+
+        Default: ``False``
+
+        Not implemented.
+
+    * WPS_ENABLED
+    .............
+
+        Default: ``False``
+
+        Not implemented.
+
+    * TIMEOUT
+    .........
+
+        Default: ``10``
+
+        The maximum time, in seconds, to wait for the server to respond.
+
+* OGP_URL
 ---------
-A dict with the following keys:
 
-* ENGINE: The CSW backend (default is ``geonode.catalogue.backends.pycsw_local``)
-* URL: The FULLY QUALIFIED base URL to the CSW instance for this GeoNode
-* USERNAME: login credentials (if required)
-* PASSWORD: login credentials (if required)
+    TBD
 
-pycsw is the default CSW enabled in GeoNode. pycsw configuration directives
-are managed in the PYCSW entry.
+* OPENGRAPH_ENABLED
+-------------------
 
-PYCSW
------
+    Default:: ``True``
+
+    A boolean that specifies whether Open Graph is enabled.  Open Graph is used by Facebook and Slack.
+
+P
+=
+
+* PINAX_NOTIFICATIONS_BACKENDS
+------------------------------
+
+    TBD
+
+* PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT
+---------------------------------------
+
+    TBD
+
+* PINAX_NOTIFICATIONS_QUEUE_ALL
+-------------------------------
+
+    TBD
+
+* PROXY_ALLOWED_HOSTS
+---------------------
+
+    Default: ``()`` (Empty tuple)
+
+    A tuple of strings representing the host/domain names that GeoNode can proxy requests to. This is a security measure
+    to prevent an attacker from using the GeoNode proxy to render malicious code or access internal sites.
+
+    Values in this tuple can be fully qualified names (e.g. 'www.geonode.org'), in which case they will be matched against
+    the request’s Host header exactly (case-insensitive, not including port). A value beginning with a period can be used
+    as a subdomain wildcard: ``.geonode.org`` will match geonode.org, www.geonode.org, and any other subdomain of
+    geonode.org. A value of '*' will match anything and is not recommended for production deployments.
+
+
+* PROXY_URL
+-----------
+
+    Default ``/proxy/?url=``
+
+    The URL to a proxy that will be used when making client-side requests in GeoNode.  By default, the
+    internal GeoNode proxy is used but administrators may favor using their own, less restrictive proxies.
+
+
+* PYCSW
+-------
+
   A dict with pycsw's configuration.  Of note are the sections
   ``metadata:main`` to set CSW server metadata and ``metadata:inspire``
   to set INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true``
@@ -50,548 +1108,332 @@ PYCSW
   in the ``server`` section.  See http://docs.pycsw.org/en/latest/configuration.html
   for full pycsw configuration details.
 
-MODIFY_TOPICCATEGORY
---------------------
-Default: ``False``
+R
+=
 
-Metadata Topic Categories list should not be modified, as it is strictly defined
-by ISO (See: http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml
-and check the <CodeListDictionary gml:id="MD_MD_TopicCategoryCode"> element).
+* RABBITMQ_SIGNALS_BROKER_URL
+-----------------------------
 
-Some customisation it is still possible changing the is_choice and the GeoNode
-description fields.
+    TBD
 
-In case it is absolutely necessary to add/delete/update categories, it is
-possible to set the MODIFY_TOPICCATEGORY setting to True.
+* REDIS_SIGNALS_BROKER_URL
+--------------------------
 
-Maps settings
-=============
+    TBD
 
-DEFAULT_MAP_BASE_LAYER
-----------------------
-The name of the background layer to include in newly created maps.
+* REGISTRATION_OPEN
+-------------------
 
-DEFAULT_MAP_CENTER
+    Default: ``False``
+
+    A boolean that specifies whether users can self-register for an account on your site.
+
+* RESOURCE_PUBLISHING
+---------------------
+
+    Default: ``False``
+
+    By default, the GeoNode application allows GeoNode staff members to
+    publish/unpublish resources.
+    By default resources are published when created. When this settings is set to
+    True the staff members will be able to unpublish a resource (and eventually
+    publish it back).
+
+* RISKS
+-------
+
+    TBD
+
+S
+=
+
+* S3_MEDIA_ENABLED
 ------------------
-Default: ``(0, 0)``
 
-A 2-tuple with the latitude/longitude coordinates of the center-point to use
-in newly created maps.
+    TBD
 
-DEFAULT_MAP_ZOOM
+* S3_STATIC_ENABLED
+-------------------
+
+    TBD
+
+* SEARCH_FILTERS
 ----------------
-Default: ``0``
 
-The zoom-level to use in newly created maps.  This works like the OpenLayers
-zoom level setting; 0 is at the world extent and each additional level cuts
-the viewport in half in each direction.
+    TBD
 
-MAP_BASELAYERS
---------------
-Default::
+* SECURE_BROWSER_XSS_FILTER
+---------------------------
 
+    TBD
 
-    MAP_BASELAYERS = [{
-    "source": {
-        "ptype": "gxp_wmscsource",
-        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
-        "restUrl": "/gs/rest"
-     }
-      },{
-        "source": {"ptype": "gxp_olsource"},
-        "type":"OpenLayers.Layer",
-        "args":["No background"],
-        "visibility": False,
-        "fixed": True,
-        "group":"background"
-      }, {
-        "source": {"ptype": "gxp_osmsource"},
-        "type":"OpenLayers.Layer.OSM",
-        "name":"mapnik",
-        "visibility": False,
-        "fixed": True,
-        "group":"background"
-      }, {
-        "source": {"ptype": "gxp_mapquestsource"},
-        "name":"osm",
-        "group":"background",
-        "visibility": True
-      }, {
-        "source": {"ptype": "gxp_mapquestsource"},
-        "name":"naip",
-        "group":"background",
-        "visibility": False
-      }, {
-        "source": {"ptype": "gxp_bingsource"},
-        "name": "AerialWithLabels",
-        "fixed": True,
-        "visibility": False,
-        "group":"background"
-      },{
-        "source": {"ptype": "gxp_mapboxsource"},
-      }, {
-        "source": {"ptype": "gxp_olsource"},
-        "type":"OpenLayers.Layer.WMS",
-        "group":"background",
-        "visibility": False,
-        "fixed": True,
-        "args":[
-          "bluemarble",
-          "http://maps.opengeo.org/geowebcache/service/wms",
-          {
-            "layers":["bluemarble"],
-            "format":"image/png",
-            "tiled": True,
-            "tilesOrigin": [-20037508.34, -20037508.34]
-          },
-          {"buffer": 0}
+* SECURE_CONTENT_TYPE_NOSNIFF
+-----------------------------
+
+    TBD
+
+* SECURE_HSTS_INCLUDE_SUBDOMAINS
+--------------------------------
+
+    TBD
+
+* SECURE_HSTS_SECONDS
+---------------------
+
+    TBD
+
+* SECURE_SSL_REDIRECT
+---------------------
+
+    TBD
+
+* SERVICE_UPDATE_INTERVAL
+-------------------------
+
+    TBD
+
+* SESSION_COOKIE_SECURE
+-----------------------
+
+    TBD
+
+* SESSION_EXPIRED_CONTROL_ENABLED
+---------------------------------
+
+    Default: ``False``
+
+    Env: ``SESSION_EXPIRED_CONTROL_ENABLED``
+
+    By enabling this variable, a new middleware ``geonode.security.middleware.SessionControlMiddleware`` will be added to the ``MIDDLEWARE_CLASSES``.
+    The class will check every request to GeoNode and it will force a logout whenever one of the following conditions occurs:
+
+    #. The OAuth2 Access Token is not valid anymore or it is expired.
+
+       .. warning:: The Access Token might be invalid for various reasons. Usually a misconfiguration of the OAuth2 ``GeoServer`` application.
+                    The latter is tipically installed and configured automatically at GeoNode bootstrap through the default fixtures.
+    #. The user has been de-activated for some reason; an Admin has disabled it or its password has expired.
+
+    Whenever the session is terminated by the middleware and the user forced to logout, a message will appear to the GeoNode interface.
+
+* SHOW_PROFILE_EMAIL
+--------------------
+
+    Default: ``False``
+
+    A boolean which specifies wether to display the email in user's profile.
+
+* SITE_HOST_NAME
+----------------
+
+    TBD
+
+* SITE_HOST_PORT
+----------------
+
+    TBD
+
+* SITEURL
+---------
+
+    Default: ``'http://localhost:8000/'``
+
+    A base URL for use in creating absolute links to Django views and generating links in metadata.
+
+* SKIP_PERMS_FILTER
+-------------------
+
+    TBD
+
+* SLACK_ENABLED
+---------------
+
+    Default: ``False``
+
+    A boolean that specifies whether the Slack contrib app is enabled.  If enabled, GeoNode will send messages to the slack channels specified in SLACK_WEBHOOK_URLS when a document is uploaded, metadata is updated, etc.  Coverage of events is still incomplete.
+
+* SLACK_WEBHOOK_URLS
+--------------------
+
+    A list that specifies the URLs to post Slack messages to.  Each URL is for a different channel.  The default URL should be replaced when slack integration is enabled.
+
+    Default::
+
+        SLACK_WEBHOOK_URLS = [
+            "https://hooks.slack.com/services/T000/B000/XX"
         ]
 
-    }]
+* SOCIALACCOUNT_ADAPTER
+-----------------------
 
-A list of dictionaries that specify the default map layers.
+    TBD
 
-GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY
-------------------------------------
-Default:  ``"geoext"``
-
-The library to use for display preview images of layers.  The library choices are:
-
-* ``"leaflet"``
-* ``"geoext"``
-
-OGC_SERVER
-----------
-Default: ``{}`` (Empty dictionary)
-
-A dictionary of OGC servers and their options.  The main
-server should be listed in the 'default' key.  If there is no 'default'
-key or if the ``OGC_SERVER`` setting does not exist Geonode will raise
-an Improperly Configured exception.  Below is an example of the ``OGC_SERVER``
-setting::
-
-   OGC_SERVER = {
-     'default' : {
-         'LOCATION' : 'http://localhost:8080/geoserver/',
-         'USER' : 'admin',
-         'PASSWORD' : 'geoserver',
-     }
-   }
-
-BACKEND
-.......
-Default: ``"geonode.geoserver"``
-
-The OGC server backend to use.  The backend choices are:
-
-* ``'geonode.geoserver'``
-
-BACKEND_WRITE_ENABLED
-.....................
-Default: ``True``
-
-Specifies whether the OGC server can be written to.  If False, actions that modify
-data on the OGC server will not execute.
-
-DATASTORE
-.........
-Default: ``''`` (Empty string)
-
-An optional string that represents the name of a vector datastore that Geonode uploads
-are imported into.  In order to support vector datastore imports there also needs to be an
-entry for the datastore in the ``DATABASES`` dictionary with the same name.  Example::
-
- OGC_SERVER = {
-   'default' : {
-      'LOCATION' : 'http://localhost:8080/geoserver/',
-      'USER' : 'admin',
-      'PASSWORD' : 'geoserver',
-      'DATASTORE': 'geonode_imports'
-   }
- }
-
- DATABASES = {
-  'default': {
-      'ENGINE': 'django.db.backends.sqlite3',
-      'NAME': 'development.db',
-  },
-  'geonode_imports' : {
-      'ENGINE': 'django.contrib.gis.db.backends.postgis',
-      'NAME': 'geonode_imports',
-      'USER' : 'geonode_user',
-      'PASSWORD' : 'a_password',
-      'HOST' : 'localhost',
-      'PORT' : '5432',
-   }
-  }
-
-GEONODE_SECURITY_ENABLED
-........................
-Default: ``True``
-
-A boolean that represents whether GeoNode's security application is enabled.
-
-LOCATION
-........
-Default: ``"http://localhost:8080/geoserver/"``
-
-A base URL from which GeoNode can construct OGC service URLs.
-If using GeoServer you can determine this by
-visiting the GeoServer administration home page without the
-/web/ at the end.  For example, if your GeoServer administration app is at
-http://example.com/geoserver/web/, your server's location is http://example.com/geoserver.
-
-MAPFISH_PRINT_ENABLED
-.....................
-Default: ``True``
-
-A boolean that represents whether the MapFish printing extension is enabled on the server.
-
-PASSWORD
-........
-Default: ``'geoserver'``
-
-The administrative password for the OGC server as a string.
-
-PRINT_NG_ENABLED
-................
-Default: ``True``
-
-A boolean that represents whether printing of maps and layers is enabled.
-
-
-PUBLIC_LOCATION
-...............
-Default: ``"http://localhost:8080/geoserver/"``
-
-The URL used to in most public requests from Geonode.  This settings allows a user to write to one OGC server (the LOCATION setting)
-and read from a separate server or the PUBLIC_LOCATION.
-
-USER
-....
-Default: ``'admin'``
-
-The administrative username for the OGC server as a string.
-
-WMST_ENABLED
-............
-Default: ``False``
-
-Not implemented.
-
-WPS_ENABLED
-...........
-Default: ``False``
-
-Not implemented.
-
-TIMEOUT
-.......
-Default: ``10``
-
-The maximum time, in seconds, to wait for the server to respond.
-
-SITEURL
--------
-Default: ``'http://localhost:8000/'``
-
-A base URL for use in creating absolute links to Django views and generating links in metadata.
-
-Proxy settings
-==============
-
-PROXY_ALLOWED_HOSTS
--------------------
-Default: ``()`` (Empty tuple)
-
-A tuple of strings representing the host/domain names that GeoNode can proxy requests to. This is a security measure
-to prevent an attacker from using the GeoNode proxy to render malicious code or access internal sites.
-
-Values in this tuple can be fully qualified names (e.g. 'www.geonode.org'), in which case they will be matched against
-the request’s Host header exactly (case-insensitive, not including port). A value beginning with a period can be used
-as a subdomain wildcard: ``.geonode.org`` will match geonode.org, www.geonode.org, and any other subdomain of
-geonode.org. A value of '*' will match anything and is not recommended for production deployments.
-
-
-PROXY_URL
----------
-Default ``/proxy/?url=``
-
-The URL to a proxy that will be used when making client-side requests in GeoNode.  By default, the
-internal GeoNode proxy is used but administrators may favor using their own, less restrictive proxies.
-
-Search settings
-===============
-
-DEFAULT_SEARCH_SIZE
--------------------
-Default: ``10``
-
-An integer that specifies the default search size when using ``geonode.search`` for querying data.
-
-Security settings
-=================
-
-AUTH_EXEMPT_URLS
-----------------
-Default: ``()`` (Empty tuple)
-
-A tuple of URL patterns that the user can visit without being authenticated.
-This setting has no effect if ``LOCKDOWN_GEONODE`` is not True.  For example,
-``AUTH_EXEMPT_URLS = ('/maps',)`` will allow unauthenticated users to
-browse maps.
-
-LOCKDOWN_GEONODE
-----------------
-Default: ``False``
-
-By default, the GeoNode application allows visitors to view most pages without being authenticated. If this is set to ``True``
-users must be authenticated before accessing URL routes not included in ``AUTH_EXEMPT_URLS``.
-
-RESOURCE_PUBLISHING
--------------------
-Default: ``True``
-
-By default, the GeoNode application allows GeoNode staff members to
-publish/unpublish resources.
-By default resources are published when created. When this settings is set to
-True the staff members will be able to unpublish a resource (and eventually
-publish it back).
-
-Social settings
-===============
-
-SOCIAL_BUTTONS
---------------
-Default: ``True``
-
-A boolean which specifies whether the social media icons and JavaScript should be rendered in GeoNode.
-
-SOCIAL_ORIGINS
---------------
-Default::
-
-    SOCIAL_ORIGINS = [{
-        "label":"Email",
-        "url":"mailto:?subject={name}&body={url}",
-        "css_class":"email"
-    }, {
-        "label":"Facebook",
-        "url":"http://www.facebook.com/sharer.php?u={url}",
-        "css_class":"fb"
-    }, {
-        "label":"Twitter",
-        "url":"https://twitter.com/share?url={url}",
-        "css_class":"tw"
-    }, {
-        "label":"Google +",
-        "url":"https://plus.google.com/share?url={url}",
-        "css_class":"gp"
-    }]
-
-A list of dictionaries that is used to generate the social links displayed in the Share tab.  For each origin, the name and URL format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).
-
-SHOW_PROFILE_EMAIL
-------------------
-Default: ``False``
-
-A boolean which specifies wether to display the email in user's profile.
-
-CKAN_ORIGINS
---------------
-Default::
-
-    CKAN_ORIGINS = [{
-        "label":"Humanitarian Data Exchange (HDX)",
-        "url":"https://data.hdx.rwlabs.org/dataset/new?title={name}&notes={abstract}",
-        "css_class":"hdx"
-    }]
-
-A list of dictionaries that is used to generate the links to CKAN instances displayed in the Share tab.  For each origin, the name and abstract format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).  This is not enabled by default.  To enabled, uncomment the following line: SOCIAL_ORIGINS.extend(CKAN_ORIGINS).
-
-TWITTER_CARD
-------------
-Default:: ``True``
-
-A boolean that specifies whether Twitter cards are enabled.
-
-TWITTER_SITE
-------------
-Default:: ``'@GeoNode'``
-
-A string that specifies the site to for the twitter:site meta tag for Twitter Cards.
-
-TWITTER_HASHTAGS
-----------------
-
-Default:: ``['geonode']``
-
-A list that specifies the hashtags to use when sharing a resource when clicking on a social link.
-
-OPENGRAPH_ENABLED
------------------
-
-Default:: ``True``
-
-A boolean that specifies whether Open Graph is enabled.  Open Graph is used by Facebook and Slack.
-
-Upload settings
-===============
-
-UPLOADER
---------
-Default::
-
-    {
-        'BACKEND' : 'geonode.rest',
-        'OPTIONS' : {
-            'TIME_ENABLED': False,
-        }
-    }
-
-A dictionary of Uploader settings and their values.
-
-BACKEND
-.......
-Default: ``'geonode.rest'``
-
-The uploader backend to use.  The backend choices are:
-
-* ``'geonode.importer'``
-* ``'geonode.rest'``
-
-The importer backend requires the GeoServer importer extension to be enabled.
-
-OPTIONS
--------
-Default::
-
-    'OPTIONS' : {
-        'TIME_ENABLED': False,
-    }
-
-TIME_ENABED
-...........
-Default: ``False``
-
-A boolean that specifies whether the upload should allow the user to enable time support when uploading data.
-
-User Account settings
-=====================
-
-REGISTRATION_OPEN
------------------
-Default: ``False``
-
-A boolean that specifies whether users can self-register for an account on your site.
-
-THEME_ACCOUNT_CONTACT_EMAIL
+* SOCIALACCOUNT_AUTO_SIGNUP
 ---------------------------
-Default: ``'admin@example.com'``
 
-This email address is added to the bottom of the password reset page in case users have trouble unlocking their account.
+    TBD
 
-Download settings
-=================
-
-DOWNLOAD_FORMATS_METADATA
+* SOCIALACCOUNT_PROVIDERS
 -------------------------
 
-Specifies which metadata formats are available for users to download.
+    TBD
 
-Default::
-
-    DOWNLOAD_FORMATS_METADATA = [
-        'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO',
-    ]
-
-DOWNLOAD_FORMATS_VECTOR
--------------------------
-
-Specifies which formats for vector data are available for users to download.
-
-Default::
-
-    DOWNLOAD_FORMATS_VECTOR = [
-        'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
-        'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
-    ]
-
-DOWNLOAD_FORMATS_RASTER
--------------------------
-
-Specifies which formats for raster data are available for users to download.
-
-Default::
-
-    DOWNLOAD_FORMATS_RASTER = [
-        'JPEG', 'PDF', 'PNG' 'Tiles',
-    ]
-
-Contrib settings
-=================
-
-EXIF_ENABED
------------
-Default: ``False``
-
-A boolean that specifies whether the Exif contrib app is enabled.  If enabled, metadata is generated from Exif tags when documents are uploaded.
-
-NLP_ENABED
-----------
-Default: ``False``
-
-A boolean that specifies whether the NLP (Natural Language Processing) contrib app is enabled.  If enabled, NLP (specifically MITIE) is used to infer additional metadata from uploaded documents to help fill metadata gaps.
-
-NLP_LOCATION_THRESHOLD
-----------------------
-Default: ``1.0``
-
-A float that specifies the threshold for location matches.
-
-NLP_LIBRARY_PATH
+* SOCIAL_BUTTONS
 ----------------
-Default:: ``'/opt/MITIE/mitielib'``
 
-A string that specifies the location of the MITIE library
+    Default: ``True``
 
-NLP_MODEL_PATH
+    A boolean which specifies whether the social media icons and JavaScript should be rendered in GeoNode.
+
+* SOCIAL_ORIGINS
+----------------
+
+    Default::
+
+        SOCIAL_ORIGINS = [{
+            "label":"Email",
+            "url":"mailto:?subject={name}&body={url}",
+            "css_class":"email"
+        }, {
+            "label":"Facebook",
+            "url":"http://www.facebook.com/sharer.php?u={url}",
+            "css_class":"fb"
+        }, {
+            "label":"Twitter",
+            "url":"https://twitter.com/share?url={url}",
+            "css_class":"tw"
+        }, {
+            "label":"Google +",
+            "url":"https://plus.google.com/share?url={url}",
+            "css_class":"gp"
+        }]
+
+    A list of dictionaries that is used to generate the social links displayed in the Share tab.  For each origin, the name and URL format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).
+
+* SOLR_URL
+----------
+
+    TBD
+
+* SRID
+------
+
+    TBD
+
+T
+=
+
+* TASTYPIE_DEFAULT_FORMATS
+--------------------------
+
+    TBD
+
+* THEME_ACCOUNT_CONTACT_EMAIL
+-----------------------------
+
+    Default: ``'admin@example.com'``
+
+    This email address is added to the bottom of the password reset page in case users have trouble unlocking their account.
+
+* THESAURI
+----------
+
+    TBD
+
+* TWITTER_CARD
 --------------
-Default:: ``'/opt/MITIE/MITIE-models/english/ner_model.dat'``
 
-A string that specifies the location of the NER (Named Entity Resolver).  MITIE comes with English and Spanish NER models.  Other models can be trained.
+    Default:: ``True``
 
-SLACK_ENABED
-------------
-Default: ``False``
+    A boolean that specifies whether Twitter cards are enabled.
 
-A boolean that specifies whether the Slack contrib app is enabled.  If enabled, GeoNode will send messages to the slack channels specified in SLACK_WEBHOOK_URLS when a document is uploaded, metadata is updated, etc.  Coverage of events is still incomplete.
+* TWITTER_SITE
+--------------
 
-SLACK_WEBHOOK_URLS
+    Default:: ``'@GeoNode'``
+
+    A string that specifies the site to for the twitter:site meta tag for Twitter Cards.
+
+* TWITTER_HASHTAGS
 ------------------
 
-A list that specifies the URLs to post Slack messages to.  Each URL is for a different channel.  The default URL should be replaced when slack integration is enabled.
+    Default:: ``['geonode']``
 
-Default::
+    A list that specifies the hashtags to use when sharing a resource when clicking on a social link.
 
-    SLACK_WEBHOOK_URLS = [
-        "https://hooks.slack.com/services/T000/B000/XX"
-    ]
+U
+=
 
+* UNOCONV_ENABLE
+----------------
 
-MONITORING_ENABLED
-------------------
+    TBD
 
-Default: ``False``
+* UPLOADER
+----------
 
-Enable internal monitoring application (`geonode.contrib.monitoring`). If set to `True`, add following code to your local settings:
+    Default::
 
-.. code::
+        {
+            'BACKEND' : 'geonode.rest',
+            'OPTIONS' : {
+                'TIME_ENABLED': False,
+            }
+        }
 
-    MONITORING_ENABLED = True
-    # add following lines to your local settings to enable monitoring
-    if MONITORING_ENABLED:
-        INSTALLED_APPS + ('geonode.contrib.monitoring',)
-        MIDDLEWARE_CLASSES + ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+    A dictionary of Uploader settings and their values.
 
-See :ref:`geonode_monitoring` for details.
+    * BACKEND
+    .........
+
+        Default: ``'geonode.rest'``
+
+        The uploader backend to use.  The backend choices are:
+
+        * ``'geonode.importer'``
+        * ``'geonode.rest'``
+
+        The importer backend requires the GeoServer importer extension to be enabled.
+
+    * OPTIONS
+    ---------
+
+        Default::
+
+            'OPTIONS' : {
+                'TIME_ENABLED': False,
+            }
+
+        * TIME_ENABLED
+        ..............
+
+            Default: ``False``
+
+            A boolean that specifies whether the upload should allow the user to enable time support when uploading data.
+
+* USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS
+-----------------------------------------
+
+    TBD
+
+* USE_GOOGLE_STREET_VIEW
+------------------------
+
+    TBD
+
+* USE_HYPERMAP
+--------------
+
+    TBD
+
+* USE_WORLDMAP
+--------------
+
+    TBD
+
+X
+=
+
+* X_FRAME_OPTIONS
+-----------------
+
+    TBD

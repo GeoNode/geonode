@@ -25,6 +25,12 @@
         window.location = siteUrl + 'maps/new?' + params;
       }
 
+      $scope.securityRefreshButton = function($event) {
+          $event.preventDefault();
+          sessionStorage.setItem("security_refresh_trigger", true);
+          window.location.href = $event.target.href;
+      };
+
       $scope.bulk_perms_submit = function(){
         var items = cart.getCart().items;
         var permissions = permissionsString($('#permission_form'), 'base');
