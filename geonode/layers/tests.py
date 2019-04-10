@@ -1229,6 +1229,7 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
         self.passwd = 'admin'
         self.anonymous_user = get_anonymous_user()
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
     def test_geonode_rest_layer_uploader(self):
         layer_upload_url = reverse('layer_upload')
