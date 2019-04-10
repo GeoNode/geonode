@@ -34,6 +34,9 @@
     <meta Http-Equiv="Cache-directive: no-cache">
 
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+
+    <link rel="shortcut icon" href="{% static 'geonode/img/favicon.ico' %}" />
+
     {% block head %}
       {% if DEBUG_STATIC %}
           <link href="{% static "lib/css/jquery.dataTables.css" %}?v={{ VERSION }}" rel="stylesheet" />
