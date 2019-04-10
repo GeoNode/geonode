@@ -38,7 +38,9 @@ from ..utils import json_response
 
 def verify_access_token(request, key):
     try:
-        token = get_token_object_from_session(request.session)
+        token = None
+        if request:
+            token = get_token_object_from_session(request.session)
         if not token or token.key != key:
             token = AccessToken.objects.get(token=key)
         if not token.is_valid():
