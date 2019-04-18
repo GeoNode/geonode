@@ -34,7 +34,7 @@ django-downloadview<=1.9
 django-polymorphic==2.0.3
 django-tastypie<=0.14.0
 django-invitations<=1.9.2
-geonode-oauth-toolkit>=1.1.2rc0
+geonode-oauth-toolkit==1.1.2rc0
 oauthlib==3.0.1
 pyopenssl==19.0.0
 
