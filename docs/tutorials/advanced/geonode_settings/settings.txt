@@ -46,8 +46,8 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET
     This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
     It allows specifying the HTTP method used when confirming e-mail addresses.
 
- ACCOUNT_EMAIL_REQUIRED
-------------------------
+ACCOUNT_EMAIL_REQUIRED
+----------------------
 
     Default: ``True``
 
@@ -575,40 +575,33 @@ EMAIL_ENABLE
 
     Options:
 
-        EMAIL_BACKEND
-        .............
+        * EMAIL_BACKEND
 
             Default: ``django.core.mail.backends.smtp.EmailBackend``
 
             Env: ``DJANGO_EMAIL_BACKEND``
 
-        EMAIL_HOST
-        ..........
+        * EMAIL_HOST
 
             Default: ``localhost``
 
-        EMAIL_PORT
-        ..........
+        * EMAIL_PORT
 
             Default: ``25``
 
-        EMAIL_HOST_USER
-        ...............
+        * EMAIL_HOST_USER
 
             Default: ``''``
 
-        EMAIL_HOST_PASSWORD
-        ...................
+        * EMAIL_HOST_PASSWORD
 
             Default: ``''``
 
-        EMAIL_USE_TLS
-        .............
+        * EMAIL_USE_TLS
 
             Default: ``False``
 
-        DEFAULT_FROM_EMAIL
-        ..................
+        * DEFAULT_FROM_EMAIL
 
             Default: ``GeoNode <no-reply@geonode.org>``
 
@@ -949,8 +942,7 @@ OGC_SERVER
          }
        }
 
-    BACKEND
-    .......
+    * BACKEND
 
         Default: ``"geonode.geoserver"``
 
@@ -958,16 +950,14 @@ OGC_SERVER
 
          ``'geonode.geoserver'``
 
-    BACKEND_WRITE_ENABLED
-    .....................
+    * BACKEND_WRITE_ENABLED
 
         Default: ``True``
 
         Specifies whether the OGC server can be written to.  If False, actions that modify
         data on the OGC server will not execute.
 
-    DATASTORE
-    .........
+    * DATASTORE
 
         Default: ``''`` (Empty string)
 
@@ -999,15 +989,13 @@ OGC_SERVER
            }
           }
 
-    GEONODE_SECURITY_ENABLED
-    ........................
+    * GEONODE_SECURITY_ENABLED
 
         Default: ``True``
 
         A boolean that represents whether GeoNode's security application is enabled.
 
-    LOCATION
-    ........
+    * LOCATION
 
         Default: ``"http://localhost:8080/geoserver/"``
 
@@ -1017,58 +1005,50 @@ OGC_SERVER
         /web/ at the end.  For example, if your GeoServer administration app is at
         http://example.com/geoserver/web/, your server's location is http://example.com/geoserver.
 
-    MAPFISH_PRINT_ENABLED
-    .....................
+    * MAPFISH_PRINT_ENABLED
 
         Default: ``True``
 
         A boolean that represents whether the MapFish printing extension is enabled on the server.
 
-    PASSWORD
-    ........
+    * PASSWORD
 
         Default: ``'geoserver'``
 
         The administrative password for the OGC server as a string.
 
-    PRINT_NG_ENABLED
-    ................
+    * PRINT_NG_ENABLED
 
         Default: ``True``
 
         A boolean that represents whether printing of maps and layers is enabled.
 
-    PUBLIC_LOCATION
-    ...............
+    * PUBLIC_LOCATION
 
         Default: ``"http://localhost:8080/geoserver/"``
 
         The URL used to in most public requests from Geonode.  This settings allows a user to write to one OGC server (the LOCATION setting)
         and read from a separate server or the PUBLIC_LOCATION.
 
-    USER
-    ....
+    * USER
 
         Default: ``'admin'``
 
         The administrative username for the OGC server as a string.
 
-    WMST_ENABLED
-    ............
+    * WMST_ENABLED
 
         Default: ``False``
 
         Not implemented.
 
-    WPS_ENABLED
-    ...........
+    * WPS_ENABLED
 
         Default: ``False``
 
         Not implemented.
 
-    TIMEOUT
-    .......
+    * TIMEOUT
 
         Default: ``10``
 
@@ -1454,8 +1434,7 @@ UPLOADER
 
     A dictionary of Uploader settings and their values.
 
-    BACKEND
-    .......
+    * BACKEND
 
         Default: ``'geonode.rest'``
 
@@ -1466,8 +1445,7 @@ UPLOADER
 
         The importer backend requires the GeoServer importer extension to be enabled.
 
-    OPTIONS
-    -------
+    * OPTIONS
 
         Default::
 
@@ -1475,8 +1453,7 @@ UPLOADER
                 'TIME_ENABLED': False,
             }
 
-         TIME_ENABLED
-        ..............
+        * TIME_ENABLED
 
             Default: ``False``
 
