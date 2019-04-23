@@ -41,9 +41,10 @@ packages
     $ sudo apt-get install python-virtualenv python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev git default-jdk
     $ sudo apt-get install build-essential openssh-server gettext nano vim unzip zip patch git-core postfix
 
-    $ sudo apt-add-repository ppa:webupd8team/java
-    $ sudo apt-get update
-    $ sudo apt-get install oracle-java8-installer
+    $ sudo apt install -y openjdk-8-jre openjdk-8-jdk
+    $ sudo update-java-alternatives --set java-1.8.0-openjdk-amd64
+    $ export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
+    $ export PATH=$JAVA_HOME'bin/java':$PATH
 
     $ sudo apt-add-repository ppa:ubuntugis && sudo apt-get update && sudo apt-get upgrade
     $ sudo apt-add-repository ppa:ubuntugis/ppa && sudo apt-get update && sudo apt-get upgrade
