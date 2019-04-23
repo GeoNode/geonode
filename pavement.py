@@ -694,15 +694,15 @@ def start_geoserver(options):
             javapath = "java"
             if on_travis:
                 sh((
-                    'echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections;'
-                    ' echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections;'
-                    ' sudo apt install -y oracle-java8-set-default ant maven;'
-                    ' sudo update-java-alternatives --set java-8-oracle'
+                    'sudo apt install -y openjdk-8-jre openjdk-8-jdk;'
+                    ' sudo update-java-alternatives --set java-1.8.0-openjdk-amd64;'
+                    ' export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");'
+                    ' export PATH=$JAVA_HOME\'bin/java\':$PATH;'
                 ))
                 # import subprocess
                 # result = subprocess.run(['update-alternatives', '--list', 'java'], stdout=subprocess.PIPE)
                 # javapath = result.stdout
-                javapath = "/usr/lib/jvm/java-8-oracle/jre/bin/java"
+                javapath = "/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java"
             loggernullpath = os.devnull
 
             # checking if our loggernullpath exists and if not, reset it to

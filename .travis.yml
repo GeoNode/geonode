@@ -205,13 +205,10 @@ install:
       sudo apt-get install -y libgdal1i python-gdal gdal-bin spatialite-bin;
       sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-httplib2 python-httplib2 gettext;
       sudo apt-get install -y python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk;
-      sudo apt-add-repository -y ppa:webupd8team/java; sudo apt update;
-      echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections;
-      echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections;
-      sudo apt install -y oracle-java8-set-default ant maven;
-      sudo update-java-alternatives --set java-8-oracle;
-      export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
-      export PATH=$JAVA_HOME'bin/java':$PATH
+      sudo apt install -y openjdk-8-jre openjdk-8-jdk ant maven;
+      sudo update-java-alternatives --set java-1.8.0-openjdk-amd64;
+      export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");
+      export PATH=$JAVA_HOME'bin/java':$PATH;
       pip install -r requirements.txt --upgrade;
       pip install -e . --upgrade;
       pip install pygdal==`gdal-config --version`.*;
