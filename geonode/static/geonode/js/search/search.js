@@ -376,7 +376,7 @@
         }, true);
     }
 
-    // Hyerarchical keywords listeners
+    // Hierarchical keyword listeners
     $scope.$on('select_h_keyword', function($event, element){
       var data_filter = 'keywords__slug__in';
       var query_entry = [];
