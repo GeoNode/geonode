@@ -36,6 +36,7 @@ from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
+from django.conf import settings
 
 from django.db.models import Count
 from django.contrib.auth import get_user_model
@@ -59,6 +60,7 @@ from geonode.utils import check_ogc_backend, set_resource_default_links
 from geonode.layers import LayersAppConfig
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.populate_layers_data import create_layer_data
+from geonode.base.enumerations import CHARSETS
 
 logger = logging.getLogger(__name__)
 
@@ -1187,3 +1189,90 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             comment.save()
 
             self.assertTrue(self.check_notification_out('layer_comment', self.u))
+
+
+class LayersUploaderTests(GeoNodeBaseTestSupport):
+
+    GEONODE_REST_UPLOADER = {
+        'BACKEND': 'geonode.rest',
+        'OPTIONS': {
+            'TIME_ENABLED': True,
+            'MOSAIC_ENABLED': False,
+            'GEOGIG_ENABLED': False,
+        },
+        'SUPPORTED_CRS': [
+            'EPSG:4326',
+            'EPSG:3785',
+            'EPSG:3857',
+            'EPSG:32647',
+            'EPSG:32736'
+        ],
+        'SUPPORTED_EXT': [
+            '.shp',
+            '.csv',
+            '.kml',
+            '.kmz',
+            '.json',
+            '.geojson',
+            '.tif',
+            '.tiff',
+            '.geotiff',
+            '.gml',
+            '.xml'
+        ]
+    }
+
+    def setUp(self):
+        super(LayersUploaderTests, self).setUp()
+        create_layer_data()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        self.anonymous_user = get_anonymous_user()
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
+    def test_geonode_rest_layer_uploader(self):
+        layer_upload_url = reverse('layer_upload')
+        self.client.login(username=self.user, password=self.passwd)
+        # Check upload for each charset
+        for charset in CHARSETS:
+            files = dict(
+                base_file=SimpleUploadedFile('foo.shp', ' '),
+                shx_file=SimpleUploadedFile('foo.shx', ' '),
+                dbf_file=SimpleUploadedFile('foo.dbf', ' '),
+                prj_file=SimpleUploadedFile('foo.prj', ' '))
+            files['permissions'] = '{}'
+            files['charset'] = charset[0]
+            files['layer_title'] = 'test layer_{}'.format(charset[0])
+            resp = self.client.post(layer_upload_url, data=files)
+            # Check response status code
+            self.assertEqual(resp.status_code, 200)
+            # Retrieve the layer from DB
+            data = json.loads(resp.content)
+            # Check success
+            self.assertTrue(data['success'])
+            _lname = data['url'].split(':')[-1]
+            _l = Layer.objects.get(name=_lname)
+            # Check the layer has been published
+            self.assertTrue(_l.is_published)
+            # Check errors
+            self.assertNotIn('errors', data)
+            self.assertNotIn('errormsgs', data)
+            self.assertNotIn('traceback', data)
+            self.assertNotIn('context', data)
+            self.assertNotIn('upload_session', data)
+            if 'info' in data:
+                self.assertEqual(data['info'], _l.info)
+            self.assertEqual(data['bbox'], _l.bbox_string)
+            self.assertEqual(
+                data['crs'],
+                {
+                    'type': 'name',
+                    'properties': _l.srid
+                }
+            )
+            self.assertEqual(
+                data['ogc_backend'],
+                settings.OGC_SERVER['default']['BACKEND']
+            )
+            _l.delete()
