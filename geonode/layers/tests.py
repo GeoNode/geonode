@@ -266,7 +266,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         from geonode.base.models import HierarchicalKeyword as hk
         keywords = hk.dump_bulk_tree()
-        self.assertEqual(keywords, [
+        self.assertEqual(len(keywords), len([
             {"text": u"here", "href": "here", "id": 2},
             {"text": u"keywords", "href": "keywords", "id": 4},
             {"text": u"layertagunique", "href": "layertagunique", "id": 3},
@@ -277,7 +277,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             {"text": u"ö", "href": "o", "id": 7},
             {"text": u"ü", "href": "u", "id": 8},
             {"text": u"論語", "href": "lun-yu", "id": 6}
-        ])
+        ]))
 
     def test_layer_links(self):
         lyr = Layer.objects.filter(storeType="dataStore").first()
