@@ -52,7 +52,7 @@
             <div class="col-md-3 pad0">
                 <div class="options-panel newmap">
                     <div class="form-group">
-                        <label for="add_layer_select">Available layers</label>
+                        <label for="add_layer_select">{% trans "Available layers" %}</label>
                         <select class="form-control" id="add_layer_select">
                             {% for layer in layers %}
                                 <option value="{{ layer.alternate }}"
@@ -73,9 +73,9 @@
                         </ul>
                     </div>
                     <div class="buttons">
-                        <button class="btn btn-info" data-toggle="modal" data-target="#save-map-modal">Save</button>
-                        {#                        <button class="btn btn-info">Load</button>#}
-                        {#                        <button class="btn btn-info">Publish</button>#}
+                        <button class="btn btn-info" data-toggle="modal" data-target="#save-map-modal">{% trans "Save" %}</button>
+                        {#                        <button class="btn btn-info">{% trans "Load" %}</button>#}
+                        {#                        <button class="btn btn-info">{% trans "Publish" %}</button>#}
                     </div>
                 </div>
             </div>
@@ -93,17 +93,17 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Save Map</h4>
+                    <h4 class="modal-title">{% trans "Save Map" %}</h4>
                 </div>
                 <div class="modal-body">
                     <form role="form" id="save-map-form" action="{% url 'new_map_json' %}" method="post">
                         <div class="form-group">
-                            <label for="map-title-input">Title:</label>
+                            <label for="map-title-input">{% trans "Title" %}:</label>
                             <input name="map-title" type="text" class="form-control" id="map-title-input"
                                    placeholder="Enter map title">
                         </div>
                         <div class="form-group">
-                            <label for="map-abstract-input">Abstract:</label>
+                            <label for="map-abstract-input">{% trans "Abstract" %}:</label>
                             <textarea name="map-abstract" class="form-control" rows="5" id="map-abstract-input"
                                       placeholder="Enter map abstract"></textarea>
                         </div>
@@ -111,8 +111,8 @@
                             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                             <span id="error-message-content"></span>
                         </div>
-                        <button type="submit" class="btn btn-default">Save</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-default">{% trans "Save" %}</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
                     </form>
                 </div>
             </div>

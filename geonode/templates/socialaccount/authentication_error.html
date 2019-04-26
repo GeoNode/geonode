@@ -8,5 +8,5 @@
 <h1>{% trans "Social Network Login Failure" %}</h1>
 
 <p>{% trans "An error occurred while attempting to login via your social network account." %}</p>
-    Code:{{ auth_error.code }}, Error {{ auth_error.exception }}
+    {% trans "Code" %}:{{ auth_error.code }}, {% trans "Error" %}: {{ auth_error.exception }}
 {% endblock %}
