@@ -20,7 +20,7 @@
 {{ block.super }}
 {% endblock %}
 
-{% block body_class %}documents{% endblock %}
+{% block body_class %}{% trans "documents" %}{% endblock %}
 
 {% block body_outer %}
 
@@ -38,9 +38,9 @@
         </a>
       </div>
       {% elif resource.doc_file %}
-      <p><a href="{% url "document_download" resource.id %}" target="_blank">Download the {{ resource }} document</a></p>
+      <p><a href="{% url "document_download" resource.id %}" target="_blank">{% trans "Download the" %} {{ resource }} {% trans "document" %}</a></p>
       {% elif  resource.doc_url %}
-      <p><a href="{{ resource.doc_url }}" target="_blank">Download the {{ resource }} document.</a> <small>({% trans 'External Resource' %})</small></p>
+      <p><a href="{{ resource.doc_url }}" target="_blank">{% trans "Download the" %} {{ resource }} {% trans "document" %}.</a> <small>({% trans 'External Resource' %})</small></p>
       {%  endif %}
     {%  endif %}
 
@@ -178,15 +178,15 @@
             <div class="modal-body">
 			    <div style="margin-bottom:20px">
 					<h5 class="modal-title" id="myModalLabel">
-					Full metadata
+					{% trans "Full metadata" %}
 					</h5>
 					<ul style="list-style: outside none none;padding: 0;">
-						<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> Text format </a></li>
-						<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> HTML format </a></li>
+						<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> {% trans "Text format" %} </a></li>
+						<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> {% trans "HTML format" %} </a></li>
 					</ul>
 				</div>
 			  <h5 class="modal-title" id="myModalLabel">
-			  Standard Metadata - XML format
+			  {% trans "Standard Metadata - XML format" %}
 			  </h5>
               <ul style="list-style: outside none none;padding: 0;">
                 {% for link in metadata %}
