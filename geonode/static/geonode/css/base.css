@@ -7017,6 +7017,9 @@ article.tab-pane {
   margin-top: -60px;
   padding-bottom: 0;
 }
+.home #site_wide_announcements {
+  margin-top: 60px;
+}
 .home .jumbotron {
   position: relative;
   background: #2c689c;
@@ -7250,6 +7253,9 @@ article.tab-pane {
 ----------------------- */
 .item-container {
   padding: 1em;
+}
+.avatar.pull-left {
+  margin-right: 5px;
 }
 .profile-avatar {
   background: white;
