@@ -29,10 +29,10 @@
             {% endblocktrans %}
             </p>
             <pre>
-            {% if native_crs %}{{ native_crs }}{% else %}Native CRS could not be found!{% endif %}
+            {% if native_crs %}{{ native_crs }}{% else %}{% trans "Native CRS could not be found!" %}{% endif %}
             </pre>
         {% endif %}
-        <div title="Provide EPSG code for Source SRS">
+        <div title="{% trans "Provide EPSG code for Source SRS" %}">
             <label for="id_source" style="display: inline-block; width: 275px">{% trans "EPSG Code (Source SRS)" %}  :</label>
             <select id="id_source" name="source" style="display: inline-block; max-width: 500px">
               <option value="">{% trans "Select a Source SRS" %}</option>
@@ -75,7 +75,7 @@
                           {% for option in supported_crs %}
                           <option value="{{ option }}">{{ option|crs_labels }}</option>
                           {% endfor %}
-                        </select><em><i>&nbsp;&nbsp;leave it empty to use only Source SRS</i></em>
+                        </select><em><i>&nbsp;&nbsp;{% trans "leave it empty to use only Source SRS" %}</i></em>
                     </div>
                 </div>
 

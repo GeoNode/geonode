@@ -27,7 +27,7 @@
                     <td>
                         {{ style.name|safe }}
                         {% if resource.qgis_layer.default_style.name == style.name %}
-                            (default style)
+                            {% trans "(default style)" %}
                         {% endif %}
                     </td>
                     <td>{{ style.title|safe }}</td>

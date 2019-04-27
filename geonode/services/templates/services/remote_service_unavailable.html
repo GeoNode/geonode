@@ -8,5 +8,5 @@
     <div class="page-header">
         <h3>{% trans "Service unavailable" %}<small> {{ service.name }}</small></h3>
     </div>
-    <p>Could not contact <a href="{{ service.base_url }}" target="_blank">{{ service.base_url }}</a></p>
+    <p>{% trans "Could not contact" %} <a href="{{ service.base_url }}" target="_blank">{{ service.base_url }}</a></p>
 {% endblock %}
