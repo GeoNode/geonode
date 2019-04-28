@@ -7,7 +7,7 @@
 {% load i18n %}
 <div id="comments_section" class="comments paginate paginate-manual">
   <header>
-    <h3>{% trans 'Comments' %} <span class="total">({% comment_count resource %} total)</span></h3>
+    <h3>{% trans 'Comments' %} <span class="total">({% comment_count resource %} {% trans 'total' %})</span></h3>
   </header>
 
   {% if user.is_authenticated %}
@@ -22,19 +22,19 @@
   <div class="paginate-contents">
   {% comments resource as comment_list %}
   {% autopaginate comment_list 5 %}
-  {% for comment in comment_list %}      
+  {% for comment in comment_list %}
     <article class="col-md-8 comment">
       <div class="avatar pull-left"><a href="{{ comment.author.get_absolute_url }}">{% autoescape off %}{% avatar comment.author 40 %}{% endautoescape %}</a></div>
       <p class="comment-description">
         {{ comment.comment }}
           <div class="comment-author">
-            <p>{% trans 'By' %} <a href="{{ comment.author.get_absolute_url }}" rel="author">{{ comment.author }}</a> on <time>{{ comment.submit_date|date:"M j, Y" }}</time></p>
+            <p>{% trans 'By' %} <a href="{{ comment.author.get_absolute_url }}" rel="author">{{ comment.author }}</a> {% trans "on" %} <time>{{ comment.submit_date|date:"M j, Y" }}</time></p>
           </div>
           {% if comment|can_delete_comment:request.user %}
           <div class="comment-manage">
             <form method="POST" action="{% url 'delete_comment' comment.id %}">
               {% csrf_token %}
-              <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+              <button type="submit" class="btn btn-danger btn-xs">{% trans "Delete" %}</button>
             </form>
           </div>
           {% endif %}
