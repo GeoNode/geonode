@@ -80,6 +80,7 @@ def post_save_site(instance, sender, **kwargs):
     """Signal to create the SiteResources on site save"""
     SiteResources.objects.get_or_create(site=instance)
     SitePeople.objects.get_or_create(site=instance)
+    SiteGroups.objects.get_or_create(site=instance)
 
 
 def post_delete_resource(instance, sender, **kwargs):
