@@ -19,7 +19,6 @@
 #########################################################################
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.db.models import Count
 from guardian.shortcuts import get_objects_for_user
@@ -34,7 +33,6 @@ from geonode.api.resourcebase_api import CommonModelApi, LayerResource, MapResou
 
 from geonode.api.urls import api
 from geonode.base.models import ResourceBase
-from geonode.groups.models import GroupProfile
 from .utils import resources_for_site, users_for_site, groups_for_site
 
 
