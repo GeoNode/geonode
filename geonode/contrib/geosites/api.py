@@ -141,14 +141,22 @@ class SiteProfileResource(ProfileResource):
     """Site aware Profile API"""
 
     class Meta(ProfileResource.Meta):
-        queryset = get_user_model().objects.exclude(username='AnonymousUser').filter(id__in=users_for_site())
+        pass
+
+    def apply_filters(self, request, applicable_filters):
+        qs = super(SiteProfileResource, self).apply_filters(request, applicable_filters)
+        return qs.filter(id__in=users_for_site())
 
 
 class SiteGroupResource(GroupResource):
     """Site aware Group API"""
 
     class Meta(GroupResource.Meta):
-        queryset = GroupProfile.objects.filter(id__in=groups_for_site())
+        pass
+
+    def apply_filters(self, request, applicable_filters):
+        qs = super(SiteGroupResource, self).apply_filters(request, applicable_filters)
+        return qs.filter(id__in=groups_for_site())
 
 
 api.register(SiteLayerResource())
