@@ -4,7 +4,7 @@
 {% load i18n %}
 {% load guardian_tags %}
 
-{% block title %}Import resources{% endblock %}
+{% block title %}{% trans "Import resources" %}{% endblock %}
 {% block body %}
     <div class="twocol">
         <div class="page-header">
@@ -72,7 +72,7 @@
 
                         <div align="center">
                             <div class="btn-group">
-                                <button id="btnClearFilter" type="button" class="btn btn-default">Clear Filter</button>
+                                <button id="btnClearFilter" type="button" class="btn btn-default">{% trans "Clear Filter" %}</button>
                                 <a class="btn btn-default"
                                    href="{% url "service_detail" service.id %}">{% trans "Back to service details" %}</a>
                                 <input type="submit" class="btn btn-primary" value="{% trans "Import Resources" %}"/>
@@ -84,18 +84,18 @@
                             <nav aria-label="importable resources pages">
                                 <ul class="pagination hidden-xs pull-right">
                                     {% if resources.has_previous %}
-                                        <li><a id="previous" aria-label="Previous"
-                                               href="?page={{ resources.previous_page_number }}">previous</a></li>
+                                        <li><a id="previous" aria-label="{% trans "Previous" %}"
+                                               href="?page={{ resources.previous_page_number }}">{% trans "previous" %}</a></li>
                                     {% else %}
-                                        <li class="disabled"><a aria-label="Previous" href="#">previous</a></li>
+                                        <li class="disabled"><a aria-label="{% trans "Previous" %}" href="#">{% trans "previous" %}</a></li>
                                     {% endif %}
                                     <li class="active"><a
                                             href="#">{{ resources.number }}/{{ resources.paginator.num_pages }}</a></li>
                                     {% if resources.has_next %}
-                                        <li><a id="next" aria-label="Next"
-                                               href="?page={{ resources.next_page_number }}">next</a></li>
+                                        <li><a id="next" aria-label="{% trans "Next" %}"
+                                               href="?page={{ resources.next_page_number }}">{% trans "next" %}</a></li>
                                     {% else %}
-                                        <li class="disabled"><a aria-label="Next" href="#">next</a></li>
+                                        <li class="disabled"><a aria-label="{% trans "Next" %}" href="#">{% trans "next" %}</a></li>
                                     {% endif %}
                                 </ul>
                             </nav>

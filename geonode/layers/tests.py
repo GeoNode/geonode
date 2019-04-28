@@ -249,6 +249,36 @@ class LayersTest(GeoNodeBaseTestSupport):
             lyr.keyword_list(), [
                 u'here', u'keywords', u'populartag', u'saving'])
 
+        # Test exotic encoding Keywords
+        lyr.keywords.add(*[u'論語', u'ä', u'ö', u'ü', u'ß'])
+        lyr.save()
+        self.assertEqual(
+            lyr.keyword_list(), [
+                u'here', u'keywords', u'populartag', u'saving',
+                u'ß', u'ä', u'ö', u'ü', u'論語'])
+
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(reverse('layer_detail', args=(lyr.alternate,)))
+        self.failUnlessEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('layer_metadata', args=(lyr.alternate,)))
+        self.failUnlessEqual(response.status_code, 200)
+
+        from geonode.base.models import HierarchicalKeyword as hk
+        keywords = hk.dump_bulk_tree()
+        self.assertEqual(len(keywords), len([
+            {"text": u"here", "href": "here", "id": 2},
+            {"text": u"keywords", "href": "keywords", "id": 4},
+            {"text": u"layertagunique", "href": "layertagunique", "id": 3},
+            {"text": u"populartag", "href": "populartag", "id": 1},
+            {"text": u"saving", "href": "saving", "id": 5},
+            {"text": u"ß", "href": "ss", "id": 9},
+            {"text": u"ä", "href": "a", "id": 10},
+            {"text": u"ö", "href": "o", "id": 7},
+            {"text": u"ü", "href": "u", "id": 8},
+            {"text": u"論語", "href": "lun-yu", "id": 6}
+        ]))
+
     def test_layer_links(self):
         lyr = Layer.objects.filter(storeType="dataStore").first()
         self.assertEquals(lyr.storeType, "dataStore")

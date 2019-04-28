@@ -1215,14 +1215,20 @@ def cleanup(name, uuid):
 def _create_featurestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
 
     cat = gs_catalog
-    cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
+    try:
+        cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
+    except BaseException as e:
+        logger.exception(e)
     store = get_store(cat, name, workspace=workspace)
     return store, cat.get_resource(name, store=store, workspace=workspace)
 
 
 def _create_coveragestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     cat = gs_catalog
-    cat.create_coveragestore(name, data, overwrite=overwrite)
+    try:
+        cat.create_coveragestore(name, data, overwrite=overwrite)
+    except BaseException as e:
+        logger.exception(e)
     store = get_store(cat, name, workspace=workspace)
     return store, cat.get_resource(name, store=store, workspace=workspace)
 

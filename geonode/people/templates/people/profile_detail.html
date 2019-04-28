@@ -17,7 +17,7 @@
   {{ block.super }}
 {% endblock %}
 
-{% block body_class %}people explore{% endblock %}
+{% block body_class %}{% trans "people explore" %}{% endblock %}
 
 {% block body %}
 
@@ -90,7 +90,7 @@
         {% if profile.voice %}
             <td><a href="tel:{{ profile.voice }}">{{ profile.voice }}</a></td>
         {% else %}
-            <td>Not provided.</td>
+            <td>{% trans "Not provided" %}.</td>
         {% endif %}
       </tr>
       <tr>

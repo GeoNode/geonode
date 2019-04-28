@@ -25,7 +25,7 @@
 {% endblock %}
 
 
-{% block body_class %}layers{% endblock %}
+{% block body_class %}{% trans "layers" %}{% endblock %}
 
 {% block body_outer %}
 <div class="page-header">
@@ -96,8 +96,8 @@
                     <td>{% if feature.properties.time %}{{ feature.properties.time }}{% endif %}</td>
                     <!-- td>{% if feature.properties.elevation %}{{ feature.properties.elevation }}{% endif %}</td -->
                     <td>
-                        <a class="btn btn-xs" href="#" onclick="doPreview('{{ resource.service_typename }}', '{{ feature.id }}', '{{ granules.crs.properties.name }}', '{{ feature.geometry.coordinates }}', {% if feature.properties.time %}'{{ feature.properties.time }}'{% else %}null{% endif %});"><img alt="Granule Preview" title="Granule Preview" src="{% static 'lib/img/map_go.png' %}"/></a>
-                        <a class="btn btn-xs" href="{% url "layer_granule_remove" feature.id resource.service_typename %}"><img alt="Granule Remove" title="Granule Remove" src="{% static 'lib/img/cancel-on.png' %}"/></a>
+                        <a class="btn btn-xs" href="#" onclick="doPreview('{{ resource.service_typename }}', '{{ feature.id }}', '{{ granules.crs.properties.name }}', '{{ feature.geometry.coordinates }}', {% if feature.properties.time %}'{{ feature.properties.time }}'{% else %}null{% endif %});"><img alt="{% trans "Granule Preview" %}" title="{% trans "Granule Preview" %}" src="{% static 'lib/img/map_go.png' %}"/></a>
+                        <a class="btn btn-xs" href="{% url "layer_granule_remove" feature.id resource.service_typename %}"><img alt="{% trans "Granule Remove" %}" title="{% trans "Granule Remove" %}" src="{% static 'lib/img/cancel-on.png' %}"/></a>
                         <script language="Javascript">
                             function doPreview(layer_name, feature_id, srs, the_geom, time) {
                                 var map = app.mapPanel.map;
@@ -271,10 +271,10 @@
             <div class="tabbable">
                 <ul class="nav nav-tabs">
                     {% if links %}
-                    <li class="active"><a href="#download_tab1" data-toggle="tab">Images</a></li>
+                    <li class="active"><a href="#download_tab1" data-toggle="tab">{% trans "Images" %}</a></li>
                     {% endif %}
                     {% if links_download %}
-                    <li><a href="#download_tab2" data-toggle="tab">Data</a></li>
+                    <li><a href="#download_tab2" data-toggle="tab">{% trans "Data" %}</a></li>
                     {% endif %}
                 </ul>
                 <div class="tab-content">
@@ -298,7 +298,7 @@
                     {% endif %}
                       </br>
                       {% if layer_type == "vector" %}
-                        <button type="button" id = "button-toggle" class="btn btn-primary btn-circle" data-toggle="button" data-toggle="tooltip" title="Click to filter the layer">
+                        <button type="button" id = "button-toggle" class="btn btn-primary btn-circle" data-toggle="button" data-toggle="tooltip" title="{% trans "Click to filter the layer" %}">
                           {% trans "Do you want to filter it?" %}
                         </button>
                         <img src="{% static 'lib/css/geonode_icon.png' %}" class="gear pull-right loading_msg" witdth="30" height="30" style="margin-right:10px; display:none"/>
@@ -321,8 +321,8 @@
                                     <button class="btn btn-primary btn-xs dropdown-toggle" id="modal-button-and-or" type="button" data-toggle="dropdown" data-target="#" value="AND">
                                       <span class="caret"></span></button>
                                       <ul class="dropdown-menu dropdown-menu-and-or" id="and-or_list" data-modal-button-id="and-or">
-                                       <li><a href="#" id="AND">all</a></li>
-                                       <li><a href="#" id="OR">any</a></li>
+                                       <li><a href="#" id="AND">{% trans "all" %}</a></li>
+                                       <li><a href="#" id="OR">{% trans "any" %}</a></li>
                                       </ul>
                                   </div>
                                 </div>
@@ -379,9 +379,9 @@
                                 <p id="whole_query"> </p>
                             </div>
                           </div>
-                          <label style="font-weight: normal;">Feature limit: </label>
+                          <label style="font-weight: normal;">{% trans "Feature limit" %}: </label>
                           <input type="text" id="max_features" name="filter" style="width: 50px"/>
-                          <a href='#' id="clear_filter" style="float:right;">Clear</a> </br>
+                          <a href='#' id="clear_filter" style="float:right;">{% trans "Clear" %}</a> </br>
                         </div>
                         <hr id="hr_filter_layer" />
                       </div>
@@ -520,16 +520,16 @@
           <div class="modal-body">
 		    <div style="margin-bottom:20px">
 				 <h5 class="modal-title" id="myModalLabel">
-				Full metadata
+				{% trans "Full metadata" %}
 				 </h5>
                  <ul>
- 					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> Text format </a></li>
- 					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> HTML format </a></li>
+ 					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> {% trans "Text format" %} </a></li>
+ 					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> {% trans "HTML format" %} </a></li>
  				</ul>
 			</div>
 		    <div style="margin-bottom:20px">
 			<h5 class="modal-title" id="myModalLabel">
-			Standard Metadata - XML format
+			{% trans "Standard Metadata - XML format" %}
 			</h5>
             <ul>
               {% for link in metadata %}
@@ -538,9 +538,9 @@
             <ul>
             </div>
             {% if resource.storeType == 'dataStore' %}
-            <h5 class="modal-title" id="myModalLabel">Attribute Information</h5>
+            <h5 class="modal-title" id="myModalLabel">{% trans "Attribute Information" %}</h5>
             <ul>
-              <li><a href="{{ resource.get_absolute_url }}/feature_catalogue" target="_blank">ISO Feature Catalogue</a></li>
+              <li><a href="{{ resource.get_absolute_url }}/feature_catalogue" target="_blank">{% trans "ISO Feature Catalogue" %}</a></li>
             <ul>
             {% endif %}
           </div>
@@ -636,7 +636,7 @@
             <li>
               {% if resource.default_style == style %}
               <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.sld_title|default_if_none:style.name }}"/>
-              (default style)
+              {% trans "(default style)" %}
               {% else %}
               <input type="radio" name="style" id="{{ style.name }}" value="{{ style.sld_title|default_if_none:style.name }}"/>
               {% endif %}
@@ -650,7 +650,7 @@
             <li>
               {% if resource.qgis_layer.default_style == style %}
               <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
-              (default style)
+              {% trans "(default style)" %}
               {% else %}
               <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
               {% endif %}
