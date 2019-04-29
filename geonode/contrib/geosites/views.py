@@ -20,29 +20,27 @@
 
 import json
 
-from django.contrib.sites.models import get_current_site
-from django.http import Http404, HttpResponse
-from django.contrib.auth import authenticate, get_user_model, login
-from django.utils.translation import ugettext as _
+from allauth.account.views import LoginView
 from django.conf import settings
-from django.shortcuts import redirect
+from django.contrib.auth import authenticate, get_user_model, login
+from django.contrib.sites.shortcuts import get_current_site
 from django.db.models import Q
-
+from django.http import Http404, HttpResponse
+from django.shortcuts import redirect
+from django.utils.translation import ugettext as _
 from guardian.shortcuts import get_objects_for_user
-from account.views import LoginView
 
-from geonode.utils import _get_basic_auth_info
-from geonode.layers.views import _resolve_layer, layer_detail
-from geonode.documents.views import _resolve_document, document_detail
-from geonode.maps.views import _resolve_map, map_detail
 from geonode.base.models import ResourceBase
-from geonode.layers.models import Layer
+from geonode.documents.views import _resolve_document, document_detail
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.groups.models import GroupProfile
+from geonode.layers.models import Layer
+from geonode.layers.views import _resolve_layer, layer_detail
+from geonode.maps.views import _resolve_map, map_detail
+from geonode.utils import _get_basic_auth_info
 from geonode.views import AjaxLoginForm
-
 from .models import SiteResources
-from .utils import resources_for_site, users_for_site
+from .utils import resources_for_site, users_for_site, groups_for_site
 
 _PERMISSION_MSG_VIEW = ('You don\'t have permissions to view this document')
 
@@ -212,8 +210,9 @@ def ajax_lookup(request):
                          Q(first_name__icontains=keyword) |
                          Q(organization__icontains=keyword)).exclude(username='AnonymousUser')
 
-    groups = GroupProfile.objects.filter(Q(title__istartswith=keyword) |
-                                         Q(description__icontains=keyword))
+    groups = GroupProfile.objects.filter(id__in=groups_for_site())
+    groups = groups.filter(Q(title__istartswith=keyword) |
+                           Q(description__icontains=keyword))
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),
@@ -229,9 +228,8 @@ def ajax_lookup(request):
 class SiteLoginView(LoginView):
 
     def form_valid(self, form):
+        # check if user exists and belongs to current site
         if not users_for_site().filter(username=form.user.username).exists() and not form.user.is_superuser:
-            return redirect(settings.ACCOUNT_LOGIN_URL)
+            return redirect(settings.LOGIN_URL)
 
-        self.login_user(form)
-        self.after_login(form)
-        return redirect(self.get_success_url())
+        return super(SiteLoginView, self).form_valid(form)

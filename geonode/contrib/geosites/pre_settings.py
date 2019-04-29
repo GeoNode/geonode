@@ -48,7 +48,8 @@ DATASTORE = ''
 # override urls for individual sites if needed
 ROOT_URLCONF = 'geonode.contrib.geosites.urls'
 
-INSTALLED_APPS = INSTALLED_APPS + ('geonode.contrib.geosites',)
+if 'geonode.contrib.geosites' not in INSTALLED_APPS:
+    INSTALLED_APPS = INSTALLED_APPS + ('geonode.contrib.geosites',)
 
 # put development database in common location for all sites
 DATABASES['default']['NAME'] = os.path.join(SITE_ROOT, '..', 'development.db')

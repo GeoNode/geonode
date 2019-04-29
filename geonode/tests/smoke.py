@@ -68,6 +68,13 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
             except BaseException:
                 self.assertTrue(False)
 
+        if 'geonode.contrib.geosites' in settings.INSTALLED_APPS:
+            try:
+                import geonode.contrib.geosites  # noqa
+                self.assertTrue(True)
+            except BaseException:
+                self.assertTrue(False)
+
     # Basic Pages #
 
     def test_home_page(self):
