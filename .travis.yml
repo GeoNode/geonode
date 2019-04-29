@@ -182,6 +182,7 @@ before_install:
       mkdir -p $HOME/buildout-cache/{eggs,downloads};
       scripts/misc/geoserver_server_setup.sh before_install;
       scripts/misc/qgis_server_setup.sh before_install;
+      sudo apt-get autoremove sqlite3;
     fi
 
 install:
@@ -205,6 +206,8 @@ install:
       sudo apt-get install -y libgdal1i python-gdal gdal-bin spatialite-bin;
       sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-httplib2 python-httplib2 gettext;
       sudo apt-get install -y python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk;
+      sudo apt-add-repository -y ppa:jonathonf/backports;
+      sudo apt-get -y update && sudo apt-get install -y sqlite3;
       sudo apt install -y openjdk-8-jre openjdk-8-jdk ant maven;
       sudo update-java-alternatives --set java-1.8.0-openjdk-amd64;
       export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");

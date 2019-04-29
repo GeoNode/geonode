@@ -28,28 +28,28 @@ from django.core.urlresolvers import reverse
 from guardian.shortcuts import get_anonymous_user
 from guardian.shortcuts import remove_perm
 
-from geonode.base.populate_test_data import create_models
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
-from geonode.groups.models import Group
+from geonode.groups.models import Group, GroupProfile
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 from .populate_sites_data import create_sites
-from .models import SiteResources, SitePeople
+from .models import SiteResources, SitePeople, SiteGroups
 
 
 @override_settings(SITE_NAME='Slave')
 @override_settings(SITE_ID=2)
-class SiteTests(ResourceTestCaseMixin):
+@override_settings(ROOT_URLCONF='geonode.contrib.geosites.urls')
+class SiteTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     """Tests the sites functionality
     """
 
-    fixtures = ['bobby']
+    fixtures = ['initial_data.json', 'initial_sites_data.json']
 
     def setUp(self):
-        super(SiteTests, self).setUp()
         create_sites()
-        create_models(type='layer')
+        super(SiteTests, self).setUp()
 
         self.user = 'admin'
         self.passwd = 'admin'
@@ -146,13 +146,16 @@ class SiteTests(ResourceTestCaseMixin):
         """
         Test that the master site owns all the layers available in the database
         """
-        self.assertEqual(SiteResources.objects.get(site=self.master_site).resources.count(), 8)
+        layers_ids = Layer.objects.values('id')
+        self.assertEqual(SiteResources.objects.get(site=self.master_site)
+                         .resources.filter(id__in=layers_ids).count(), 8)
 
     def test_normal_site_subset_layers(self):
         """
         Test that a normal site can see to the correct subset of layers
         """
-        self.assertEqual(SiteResources.objects.get(site=self.slave_site).resources.count(), 7)
+        layers_ids = Layer.objects.values('id')
+        self.assertEqual(SiteResources.objects.get(site=self.slave_site).resources.filter(id__in=layers_ids).count(), 7)
 
     def test_non_superuser_normal_site_subset_layers(self):
         """
@@ -195,8 +198,8 @@ class SiteTests(ResourceTestCaseMixin):
         self.client.login(username='bobby', password='bob')
         response = self.client.get(acls_site_url)
         self.assertValidJSONResponse(response)
-        self.assertEqual(len(self.deserialize(response)['rw']), 0)
-        self.assertEqual(len(self.deserialize(response)['ro']), 7)
+        self.assertEqual(len(self.deserialize(response)['rw']), 1)
+        self.assertEqual(len(self.deserialize(response)['ro']), 6)
         # then as admin
         self.client.logout()
         self.client.login(username=self.user, password=self.passwd)
@@ -218,8 +221,8 @@ class SiteTests(ResourceTestCaseMixin):
         self.client.login(username='bobby', password='bob')
         response = self.client.get(acls_site_url)
         self.assertValidJSONResponse(response)
-        self.assertEqual(len(self.deserialize(response)['rw']), 0)
-        self.assertEqual(len(self.deserialize(response)['ro']), 8)
+        self.assertEqual(len(self.deserialize(response)['rw']), 2)
+        self.assertEqual(len(self.deserialize(response)['ro']), 6)
         # then as admin
         self.client.logout()
         self.client.login(username=self.user, password=self.passwd)
@@ -237,9 +240,21 @@ class SiteTests(ResourceTestCaseMixin):
         slave_siteppl.people.add(self.admin)
         slave_siteppl.people.add(self.bobby)
         self.assertEqual(master_siteppl.people.count(), 2)
-        self.assertEqual(slave_siteppl.people.count(), 7)
+        self.assertEqual(slave_siteppl.people.count(), 8)
 
         Profile.objects.create(username='testsite', password='test1')
 
         self.assertEqual(master_siteppl.people.count(), 2)
-        self.assertEqual(slave_siteppl.people.count(), 8)
+        self.assertEqual(slave_siteppl.people.count(), 9)
+
+    def test_groups_belong_to_correct_site(self):
+        """Test that the users belong to the correct site"""
+        master_groups = SiteGroups.objects.get(site=self.master_site)
+        slave_groups = SiteGroups.objects.get(site=self.slave_site)
+        self.assertEqual(master_groups.groups.count(), 0)
+        self.assertEqual(slave_groups.groups.count(), 1)
+
+        GroupProfile.objects.create(name='test group')
+
+        self.assertEqual(master_groups.groups.count(), 0)
+        self.assertEqual(slave_groups.groups.count(), 2)

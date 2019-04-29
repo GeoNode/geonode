@@ -36,6 +36,8 @@ except BaseException:
     pass
 
 # master local_settings
+from urlparse import urljoin
+
 try:
     # load in local_settings (usually for setting SITEURL and DATABASES for production)
     execfile(os.path.join(SITE_ROOT, '../', 'local_settings.py'))
@@ -51,17 +53,39 @@ except BaseException:
     # there are no site local_settings to import
     pass
 
-OGC_SERVER['default']['LOCATION'] = GEOSERVER_URL
-#OGC_SERVER['default']['LOCATION'] = os.path.join(SITEURL, 'geoserver/')
-OGC_SERVER['default']['PUBLIC_LOCATION'] = os.path.join(SITEURL, 'geoserver/')
-CATALOGUE['default']['URL'] = '%scatalogue/csw' % SITEURL
+
+# Login and logout urls override
+LOGIN_URL = os.getenv('LOGIN_URL', urljoin(SITEURL, 'account/login/'))
+LOGOUT_URL = os.getenv('LOGOUT_URL', urljoin(SITEURL, 'account/logout/'))
+
+ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
+ACCOUNT_LOGOUT_REDIRECT_URL =  os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
+
+
+OGC_SERVER['default']['location'] = GEOSERVER_LOCATION
+OGC_SERVER['default']['WEB_UI_LOCATION'] = GEOSERVER_WEB_UI_LOCATION
+OGC_SERVER['default']['PUBLIC_LOCATION'] = GEOSERVER_PUBLIC_LOCATION
+OGC_SERVER['default']['USER'] = OGC_SERVER_DEFAULT_USER
+OGC_SERVER['default']['PASSWORD'] = OGC_SERVER_DEFAULT_PASSWORD
+OGC_SERVER['default']['DATASTORE'] = 'datastore'
+CATALOGUE['default']['URL'] = urljoin(SITEURL, '/catalogue/csw')
+PYCSW['CONFIGURATION']['server']['url'] = CATALOGUE['default']['URL']
 PYCSW['CONFIGURATION']['metadata:main']['provider_url'] = SITEURL
-LOCAL_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + 'ows'
+
+if USE_GEOSERVER:
+    LOCAL_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms"
+    PUBLIC_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows"
+    baselayers = MAP_BASELAYERS
+    # MAP_BASELAYERS = [PUBLIC_GEOSERVER, LOCAL_GEOSERVER]
+    MAP_BASELAYERS = [PUBLIC_GEOSERVER]
+    MAP_BASELAYERS.extend(baselayers)
+
 
 # Directories to search for templates
-TEMPLATE_DIRS = (
+TEMPLATES[0]['DIRS'] += (
     os.path.join(SITE_ROOT, 'templates/'),
     os.path.join(PROJECT_ROOT, 'templates/'),
+    os.path.join(GEOSITES_ROOT, 'templates/'),
     os.path.join(GEONODE_ROOT, 'templates/'),
 )
 
@@ -85,9 +109,6 @@ STATIC_ROOT = os.path.join(SERVE_PATH, 'static')
 
 # Put media files in root
 MEDIA_ROOT = os.path.join(SERVE_PATH, 'uploaded')
-
-#OGC_SERVER['default']['LOCATION'] = os.path.join(GEOSERVER_URL, 'geoserver/')
-
 
 # add datastore if defined
 if DATASTORE in DATABASES.keys():
