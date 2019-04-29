@@ -209,7 +209,7 @@ def proxy(request, url=None, response_callback=None,
                                             headers=headers,
                                             timeout=timeout,
                                             user=request.user)
-    content = response.content
+    content = response.content or response.reason
     status = response.status_code
     content_type = response.headers.get('Content-Type')
 
@@ -244,6 +244,7 @@ def proxy(request, url=None, response_callback=None,
         else:
             return HttpResponse(
                 content=content,
+                reason=response.reason,
                 status=status,
                 content_type=content_type)
 
