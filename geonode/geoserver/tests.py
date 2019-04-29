@@ -34,7 +34,7 @@ from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
 from django.core.exceptions import ImproperlyConfigured
 
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, remove_perm
 
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
@@ -639,8 +639,9 @@ class LayerTests(GeoNodeBaseTestSupport):
         """
 
         # Setup some layer names to work with
-        valid_layer_typename = Layer.objects.all()[0].alternate
-        Layer.objects.all()[0].set_default_permissions()
+        layer = Layer.objects.all()[0]
+        valid_layer_typename = layer.alternate
+        layer.set_default_permissions()
         invalid_layer_typename = "n0ch@nc3"
 
         # Test that an invalid layer.typename is handled for properly
@@ -664,12 +665,40 @@ class LayerTests(GeoNodeBaseTestSupport):
         response_json = json.loads(response.content)
         self.assertEquals(response_json['authorized'], False)
 
-        # Next Test with a user that does NOT have the proper perms
+        # Next Test with a user that has the proper perms (is owner)
         logged_in = self.client.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
         response = self.client.post(
             reverse(
                 'feature_edit_check',
+                args=(
+                    valid_layer_typename,
+                )))
+        response_json = json.loads(response.content)
+        self.assertEquals(response_json['authorized'], True)
+
+        # Let's change layer permissions and try again with non-owner
+        norman = get_user_model().objects.get(username='norman')
+        remove_perm('change_layer_data', norman, layer)
+        assign_perm('change_layer_style', norman, layer)
+        perms = layer.get_all_level_info()
+        self.assertIn('change_layer_style', perms['users'][norman])
+        self.assertNotIn('change_layer_data', perms['users'][norman])
+
+        logged_in = self.client.login(username='norman', password='norman')
+        self.assertEquals(logged_in, True)
+        response = self.client.post(
+            reverse(
+                'feature_edit_check',
+                args=(
+                    valid_layer_typename,
+                )))
+        response_json = json.loads(response.content)
+        self.assertEquals(response_json['authorized'], False)
+
+        response = self.client.post(
+            reverse(
+                'style_edit_check',
                 args=(
                     valid_layer_typename,
                 )))
