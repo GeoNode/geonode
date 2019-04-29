@@ -360,7 +360,7 @@ def layer_style_manage(request, layername):
             )
 
 
-def feature_edit_check(request, layername):
+def feature_edit_check(request, layername, permission='change_layer_data'):
     """
     If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
     Otherwise, return a status of 401 (unauthorized).
@@ -387,13 +387,23 @@ def feature_edit_check(request, layername):
         except BaseException:
             is_manager = False
     if is_admin or is_staff or is_owner or is_manager or request.user.has_perm(
-            'change_layer_data',
-            obj=layer) and layer.storeType == 'dataStore' and feature_edit:
+            permission,
+            obj=layer) and \
+            ((permission == 'change_layer_data' and layer.storeType == 'dataStore' and feature_edit) or
+             True):
         return HttpResponse(
             json.dumps({'authorized': True}), content_type="application/json")
     else:
         return HttpResponse(
             json.dumps({'authorized': False}), content_type="application/json")
+
+
+def style_edit_check(request, layername):
+    """
+    If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
+    Otherwise, return a status of 401 (unauthorized).
+    """
+    return feature_edit_check(request, layername, permission='change_layer_style')
 
 
 def style_change_check(request, path):
@@ -411,16 +421,14 @@ def style_change_check(request, path):
     # we will suppose that a user can create a new style only if he is an
     # authenticated (we need to discuss about it)
     authorized = True
-    if request.method == 'POST':
-        # new style
+    if request.method in ('PUT', 'POST'):
         if not request.user.is_authenticated:
             authorized = False
-    if request.method == 'PUT':
-        if path == 'rest/layers':
+        elif path == 'rest/layers' and request.method == 'PUT':
             # layer update, should be safe to always authorize it
             authorized = True
         else:
-            # style update
+            # style new/update
             # we will iterate all layers (should be just one if not using GS)
             # to which the posted style is associated
             # and check if the user has change_style_layer permissions on each
