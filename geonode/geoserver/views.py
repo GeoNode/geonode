@@ -444,7 +444,7 @@ def style_change_check(request, path):
                                 'change_layer_style', obj=layer):
                             authorized = False
                 except BaseException:
-                    authorized = False
+                    authorized = (request.method == 'POST')  # The user is probably trying to create a new style
                     logger.warn(
                         'There is not a style with such a name: %s.' % style_name)
     return authorized
