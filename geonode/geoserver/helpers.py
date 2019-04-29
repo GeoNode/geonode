@@ -430,7 +430,9 @@ def cascading_delete(cat, layer_name):
                     _name = s.name[:-len(m.group())] if m else s.name
                     _s = "%s_%s" % (settings.DEFAULT_WORKSPACE, _name)
                     for _gs in gs_styles:
-                        if _s in _gs.name and _gs not in styles:
+                        if ((_gs.name and _gs.name.startswith("%s_" % settings.DEFAULT_WORKSPACE)) or
+                            (_s in _gs.name)) and\
+                        _gs not in styles:
                             ws_styles.append(_gs)
             styles = styles + ws_styles
         cat.delete(lyr)
@@ -454,7 +456,6 @@ def cascading_delete(cat, layer_name):
         except BaseException:
             cat._cache.clear()
             cat.reset()
-        #    cat.reload()  # this preservers the integrity of geoserver
 
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and \
                 store.connection_parameters['dbtype'] == 'postgis':
@@ -1036,7 +1037,6 @@ def set_styles(layer, gs_catalog):
                 style = default_style
             if style:
                 layer.default_style = save_style(style)
-                # FIXME: This should remove styles that are no longer valid
                 style_set.append(layer.default_style)
         try:
             if gs_layer.styles:
