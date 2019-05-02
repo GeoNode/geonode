@@ -39,7 +39,8 @@ from geonode.geoserver.helpers import (gs_catalog,
                                        gs_uploader,
                                        ogc_server_settings,
                                        get_store,
-                                       set_time_dimension)  # mosaic_delete_first_granule
+                                       set_time_dimension,
+                                       create_geoserver_db_featurestore)  # mosaic_delete_first_granule
 
 ogr.UseExceptions()
 
@@ -616,44 +617,6 @@ def run_response(req, upload_session):
         return progress_redirect(next, upload_session.import_session.id)
 
     return next_step_response(req, upload_session)
-
-
-"""
-    GeoServer Utilities
-"""
-
-
-def create_geoserver_db_featurestore(
-        store_type=None, store_name=None,
-        author_name='admin', author_email='admin@geonode.org'):
-    cat = gs_catalog
-    dsname = store_name or ogc_server_settings.DATASTORE
-    # get or create datastore
-    try:
-        if dsname:
-            ds = cat.get_store(dsname)
-        else:
-            return None
-        if ds is None:
-            raise FailedRequestError
-    except FailedRequestError:
-        logging.info(
-            'Creating target datastore %s' % dsname)
-        db = ogc_server_settings.datastore_db
-        ds = cat.create_datastore(dsname)
-        ds.connection_parameters.update(
-            host=db['HOST'],
-            port=db['PORT'] if isinstance(
-                db['PORT'], basestring) else str(db['PORT']) or '5432',
-            database=db['NAME'],
-            user=db['USER'],
-            passwd=db['PASSWORD'],
-            dbtype='postgis')
-        cat.save(ds)
-        ds = cat.get_store(dsname)
-        assert ds.enabled
-
-    return ds
 
 
 """
