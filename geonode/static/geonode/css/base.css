@@ -7442,9 +7442,6 @@ article.tab-pane {
   background: white;
   color: #333333;
 }
-.profile-details small {
-    word-wrap: break-word;
-}
 .profile-details .group-logo {
   margin: 0.5em;
   padding: 0;
