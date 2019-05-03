@@ -1,0 +1,84 @@
+.. _development_install:
+
+=======================
+Install for Development
+=======================
+
+To install Geonode in development mode following steps are required to start the build in Server:
+
+GeoNode Project
+===============
+
+`GeoNode Project <https://github.com/GeoNode/geonode-project>`_ is the right choice if you plan to work on a custom Theme. This setup will GeoNode as dependency.
+
+1. Prepare the Environment
+
+  .. code:: bash
+
+    git clone https://github.com/GeoNode/geonode-project.git -b master
+    mkvirtualenv my_geonode
+    pip install Django==1.11.20
+
+    django-admin startproject --template=./geonode-project -e py,rst,json,yml,ini,env,sample -n Dockerfile my_geonode
+
+    cd my_geonode
+
+2. Setup the Python Dependencies
+
+  .. code:: bash
+
+    pip install -r requirements.txt --upgrade
+    pip install -e . --upgrade
+
+    GDAL_VERSION=`gdal-config --version`
+    PYGDAL_VERSION="$(pip install pygdal==$GDAL_VERSION 2>&1 | grep -oP '(?<=: )(.*)(?=\))' | grep -oh $GDAL_VERSION\.[0-9])"
+    pip install pygdal==$PYGDAL_VERSION
+
+    # Using Default Settings
+    DJANGO_SETTINGS_MODULE=my_geonode.settings paver reset
+    DJANGO_SETTINGS_MODULE=my_geonode.settings paver setup
+    DJANGO_SETTINGS_MODULE=my_geonode.settings paver sync
+    DJANGO_SETTINGS_MODULE=my_geonode.settings paver start
+
+3. Access GeoNode from browser::
+
+    http://localhost:8000/
+
+.. note:: default admin user is ``admin`` (with pw: ``admin``)
+
+
+GeoNode Core
+============
+If you plan working on Core features the Development Server for `GeoNode <https://github.com/GeoNode/geonode>`_  can be started similar to GeoNode Project.
+
+1. Prepare the Environment
+
+  .. code:: bash
+
+    git clone https://github.com/GeoNode/geonode -b master
+    mkvirtualenv geonode_master
+
+    cd geonode_master
+
+2. Setup the Python Dependencies
+
+  .. code:: bash
+
+    pip install -r requirements.txt --upgrade
+    pip install -e . --upgrade
+
+    GDAL_VERSION=`gdal-config --version`
+    PYGDAL_VERSION="$(pip install pygdal==$GDAL_VERSION 2>&1 | grep -oP '(?<=: )(.*)(?=\))' | grep -oh $GDAL_VERSION\.[0-9])"
+    pip install pygdal==$PYGDAL_VERSION
+
+    # Using Default Settings
+    paver reset
+    paver setup
+    paver sync
+    paver start
+
+3. Access GeoNode from browser::
+
+    http://localhost:8000/
+
+.. note:: default admin user is ``admin`` (with pw: ``admin``)
