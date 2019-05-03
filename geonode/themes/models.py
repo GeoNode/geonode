@@ -103,6 +103,11 @@ class GeoNodeThemeCustomization(models.Model):
     cookie_law_info_leave_url = models.TextField(null=False, blank=False, default="#")
     cookie_law_info_showagain_head = models.TextField(null=False, blank=False, default="Privacy & Cookies Policy")
 
+    cookie_law_info_data_controller = models.TextField(null=False, blank=False, default="#DATA_CONTROLLER")
+    cookie_law_info_data_controller_address = models.TextField(null=False, blank=False, default="#DATA_CONTROLLER_ADDRESS")
+    cookie_law_info_data_controller_phone = models.TextField(null=False, blank=False, default="#DATA_CONTROLLER_PHONE")
+    cookie_law_info_data_controller_email = models.TextField(null=False, blank=False, default="#DATA_CONTROLLER_EMAIL")
+
     # Cookies Law Info Bar settings
     cookie_law_info_animate_speed_hide = models.CharField(max_length=30, default="500")
     cookie_law_info_animate_speed_show = models.CharField(max_length=30, default="500")
