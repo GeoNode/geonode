@@ -1,7 +1,7 @@
 .. _geonode_install:
 
 ===================================================
-GeoNode (v\ |release|) installation on Ubuntu 16.04
+GeoNode (v\ |release|) installation on Ubuntu 18.04
 ===================================================
 
 This part of the documentation describes the complete setup process for GeoNode
