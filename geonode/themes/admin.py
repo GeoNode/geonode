@@ -37,6 +37,23 @@ class GeonodeThemCustomizationForm(forms.ModelForm):
             'navbar_color': forms.TextInput(attrs={'type': 'color'}),
             'jumbotron_color': forms.TextInput(attrs={'type': 'color'}),
             'copyright_color': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_background': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_border': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_button_1_button_colour': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_button_1_button_hover': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_button_1_link_colour': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_button_2_button_colour': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_button_2_button_hover': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_button_2_link_colour': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_button_3_button_colour': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_button_3_button_hover': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_button_3_link_colour': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_button_4_button_colour': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_button_4_button_hover': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_button_4_link_colour': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_showagain_background': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_showagain_border': forms.TextInput(attrs={'type': 'color'}),
+            'cookie_law_info_text': forms.TextInput(attrs={'type': 'color'}),
         }
         fields = '__all__'
 

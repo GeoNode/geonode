@@ -70,6 +70,9 @@ urlpatterns = [
     url(r'^about/$',
         TemplateView.as_view(template_name='about.html'),
         name='about'),
+    url(r'^privacy_cookies/$',
+        TemplateView.as_view(template_name='privacy-cookies.html'),
+        name='privacy-cookies'),
 ]
 
 # WorldMap
