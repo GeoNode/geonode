@@ -1,0 +1,62 @@
+{% extends "geonode_base.html" %}
+
+{% load i18n %}
+{% block title %} {% trans "Privacy &#038; Cookies Policy" %} — {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <h2>{% trans "Privacy &#038; Cookies Policy" %}</h2>
+</div>
+<p class="lead">{% trans "Privacy &#038; Cookies Policy." %}</p>
+
+<p style="text-align: justify;"><strong>This site</strong> agrees to respect the privacy of the Website user in accordance with the applicable regulations on the protection of personal data and in particular EU Regulation 2016/679 (hereinafter the &#8220;Regulation&#8221;, &#8220;GDPR&#8221;).</p>
+<p style="text-align: justify;">This document (&#8220;Privacy &amp; Cookies Policy&#8221;) provides information on the processing of personal data collected through this Website (hereinafter &#8220;Website&#8221;) and therefore constitutes information to the data subjects in accordance with the aforementioned regulations. Within the specific area of the Website, which collects the personal information of the user, a specific policy is normally published. The following information applies only to this Website and not to other websites accessed via links.</p>
+<p style="text-align: justify;">Pursuant to Article 13 of the Regulation, we hereby provide the following information:</p>
+<p style="text-align: justify;"><strong>DATA CONTROLLER</strong></p>
+<p style="text-align: justify;">The Data Controller is <strong>{{ custom_theme.cookie_law_info_data_controller|safe }}</strong>, {{ custom_theme.cookie_law_info_data_controller_address|safe }};  Tel. #{{ custom_theme.cookie_law_info_data_controller_phone|safe }} e-mail: <a href="mailto:{{ custom_theme.cookie_law_info_data_controller_email|safe }}">{{ custom_theme.cookie_law_info_data_controller_email|safe }}</a>.</p>
+<p style="text-align: justify;"><strong>WHAT DATA DO WE PROCESS?</strong></p>
+<p style="text-align: justify;">The following data may be subject to processing:</p>
+<p style="text-align: justify;"><strong>Browsing Data</strong></p>
+<p style="text-align: justify;">The processing of personal data of users who visit only the Website (i.e. without sending communications or using reserved areas) is limited to the navigation data, i.e. those for which the transmission to the Website is necessary for the operation of IT systems responsible for the management of the Website and the Internet communication protocols. This category includes the IP addresses or domain of the computer used to visit the Website and other parameters relative to the operating system used by the user to connect to the Website. The Company collects these and other data (such as, for example, the number of visits and the time spent on the Website) only for statistical purposes and in anonymous form in order to control the operation of the Website and improve its functionality. This is information that is not collected for the association with other information about users and to identify the latter; however, by their very nature, these data can allow the identification of users through processing and association with data held by third parties.</p>
+<p style="text-align: justify;">The legal basis for this processing is the legitimate interest of the Data Controller in the technical management related to the functionality and safety of the Website as defined by Art. 6.1. (f) of the Regulation</p>
+<p style="text-align: justify;"><strong>Cookies</strong></p>
+<p style="text-align: justify;">Cookies are small text files, which the Web site places on the devices in use, such as computers or mobile devices, stored in directories used by the user&#8217;s web browser. There are various types of cookies, some make the Website experience more efficient, others to enable certain functions.</p>
+<p style="text-align: justify;">The Website uses &#8220;technical&#8221; cookies, such as navigation or session cookies, or tools to make functional and optimize the navigation and use of the Website.</p>
+<p style="text-align: justify;">There are also analytical cookies that collect aggregated informationabout on the number of users and how they visit the Website. In particular, the site uses the WordPress JetPack service, whose privacy policy can be viewed at <a href="https://jetpack.com/support/privacy/">https://jetpack.com/support/privacy/</a>.</p>
+<p style="text-align: justify;">There are no profiling cookies.</p>
+<p style="text-align: justify;">Users may choose to enable or disable cookies by acting on their browser&#8217;s settings according to the instructions provided by the respective providers to the following links:</p>
+<ul style="text-align: justify;">
+<li>Cookie settings in Internet Explorer: <a href="http://windows.microsoft.com/it-it/windows7/how-to-manage-cookies-in-internet-explorer-9">http://windows.microsoft.com/it-it/windows7/how-to-manage-cookies-in-internet-explorer-9</a></li>
+<li>Cookie settings in Firefox: <a href="https://support.mozilla.org/it/kb/Gestione%20dei%20cookies">https://support.mozilla.org/it/kb/Gestione%20dei%20cookies</a></li>
+<li>Cookie settings in Chrome: <a href="https://support.google.com/chrome/answer/95647?hl=it">https://support.google.com/chrome/answer/95647?hl=it</a></li>
+<li>Cookie settings in Safari and iOS: <a href="http://support.apple.com/kb/HT1677?viewlocale=it_IT">http://support.apple.com/kb/HT1677?viewlocale=it_IT</a></li>
+</ul>
+<p style="text-align: justify;">The legal basis for this processing for technical management purposes and statistical analysis is the legitimate interest of the Data Controller as defined by Art. 6.1. (f) of the Regulation.</p>
+<p style="text-align: justify;">There may also be additional cookies inherent in the services and applications used by the Website (e.g. for map management). More information on using these cookies can be found at <a href="https://policies.google.com/privacy?gl=it">https://policies.google.com/privacy?gl=it</a> .</p>
+<p style="text-align: justify;"><strong>NECESSARY AND OPTIONAL PROCESSING</strong></p>
+<p style="text-align: justify;">The forms to be filled out on this Website include data that are strictly necessary to manage communications and user requests, of which the failure to indicate said data does not allow to proceed which such requests, and optional data that are not strictly necessary to proceed with the requests of thedata subjects. Failure to provide the latter will not entail any consequence.</p>
+<p style="text-align: justify;"><strong>HOW DO WE STORE THE DATA AND FOR HOW LONG?</strong></p>
+<p style="text-align: justify;">In accordance with the provisions of Art. 5.1. (c) of the Regulation, the information systems and computer programs used by the Data Controller are configured to minimise the use of personal and identifying data; the data will be kept for the period of time strictly necessary to achieve the specific objectives pursued and in any case, the criterion used to determine the retention period is based on compliance with the terms allowed by applicable laws and principles of minimization of processing, limitation of conservation and rational management of archives.</p>
+<p style="text-align: justify;">The navigation data are kept for any technical analysis related to the functionality and security of the Website; upon request they might be made available to the judicial authorities to ascertain and identify the perpetrators of any cyber offences committed against the Website or through the Website.</p>
+<p style="text-align: justify;">The data obtained from the analytical cookies are anonymized and do not allow to trace the user&#8217;s identity.</p>
+<p style="text-align: justify;"><strong>HOW DO WE ASSURE THE SAFETY AND QUALITY OF PERSONAL DATA?</strong></p>
+<p style="text-align: justify;">The data controller undertakes to protect the safety of the user&#8217;s personal information and complies with the safety provisions of the applicable law in order to avoid data loss, illegitimate or unlawful use of data and unauthorized access to the same, with particular, but not exclusive, reference to Arts. 25-32 of the Regulation.</p>
+<p style="text-align: justify;"><strong>RECIPIENTS OF PERSONAL DATA</strong></p>
+<p style="text-align: justify;">Your personal data may be shared, when strictly necessary for the purposes indicated with:</p>
+<ol style="text-align: justify;">
+<li>persons appointed by the Data Controller to the specific processing of personal data necessary to carry out activities strictly related to the provision of Services, suitably trained, and committed to confidentiality;</li>
+<li>third parties providing instrumental services to the Company, which typically act as data controllers, such as managers of communication services, e-mail, correspondence delivery, technical services for the management of Website, IT service providers or, depending on the subject of requests, suggestions or complaints, to suppliers of products or services inherent in the nature of the complaint or suggestion.</li>
+<li>persons, bodies or authorities who require the communication of your personal data in accordance with the provisions of law or by order of the authorities;</li>
+</ol>
+<p style="text-align: justify;">These subjects will only receive the necessary data for their functions and will undertake to use them only for the above-mentioned purposes and to process them in accordance with the applicable privacy regulations. The updated list of data controllers is available by sending a written request to the Data Controller.</p>
+<p style="text-align: justify;"><strong>TRANSFER OF PERSONAL DATA</strong></p>
+<p style="text-align: justify;">No transfer of personal data is provided outside the European Union.</p>
+<p style="text-align: justify;"><strong>USERS’ RIGHTS</strong></p>
+<p style="text-align: justify;">Users can exercise the rights provided by CHAPTER III of the Regulation at any time. In particular, they have the right to ask the Data Controller for access to the data concerning them, their correction or deletion, the integration of incomplete data, the limitation of processing; to receive the data provided in a structured format, commonly used and readable by an automatic device; to withdraw any consent given with respect to the processing of their data and to oppose all or part of the use of the data; and to exercise the other rights that are recognised by the applicable regulations. These rights may be exercised by sending an e-mail to the following e-mail address: <a href="mailto:{{ custom_theme.cookie_law_info_data_controller_email|safe }}">{{ custom_theme.cookie_law_info_data_controller_email|safe }}</a> . Pursuant to Art. 77 of the Regulation, moreover, the user the right to lodge a complaint with the Data Protection Authority if they believe that the processing violates the aforementioned Regulation.</p>
+<p style="text-align: justify;"><strong>UPDATING OF THE INFORMATION</strong></p>
+<p style="text-align: justify;"><strong>This site</strong> will keep this information constantly updated. The &#8220;LAST UPDATE&#8221; section at the bottom of the page indicates the date on which the information was updated.</p>
+<p style="text-align: justify;"><strong>LAST UPDATE</strong></p>
+<p style="text-align: justify;">This information was updated on:      <strong>03/05/2019</strong></p>
+<p style="text-align: justify;"><a class="navbar-brand" style="background-color: #028BAF" href="/">GeoNode</a></p>
+
+{% endblock %}
