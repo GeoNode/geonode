@@ -4,40 +4,85 @@
 Finish installation
 ===================
 
-In previous sections you' ve setup all the applications we need to run GeoNode.
-
-Test the installation
-=====================
-
-We are ready to restart GeoNode (Apache) and test the installation.
-Restart Apache
+In previous sections, you've set up all the applications we need to run GeoNode. A view more configurations are needed to wire everything together.
+As GeoNode is based on Django a central point of control is its settings file. The Code is already shipped with a boilerplate settings file which can be used in combination with GeoServer.
 
 .. code-block:: bash
 
-    $ sudo service apache2 restart
+    cd /home/geonode/my_geonode/my_geonode/
+    mv local_settings.py.sample local_settings.py
 
-Open the browser and navigate to http://localhost/
+Update this file to match your credentials. A full list of settings can be found here: :doc:`/reference/developers/settings`
 
-GeoNode User interface will show up. Login with admin username and password you
-just set.
+.. code-block:: bash
+
+    vim local_settings.py
+
+    # Set correct IP or hostname
+    SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'example.com')
+    ...
+	LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
+	TEMPLATES[0]['DIRS'].insert(0, os.path.join(LOCAL_ROOT, "templates"))
+	ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'my_geonode.urls')
+
+    # Attention: Change the GeoServer password and set it in GeoServer as well (GUI)
+    OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
+        'GEOSERVER_ADMIN_PASSWORD', 'TOP_SECRET'
+    )
+
+    # At the end of the file add
+    # Set correct IP or hostname
+    ALLOWED_HOSTS = ['example.com']
+
+Once more paver helps us to sync and migrate Geonodes Database Tables
+
+.. code-block:: bash
+
+	cd /home/geonode/my_geonode
+    DJANGO_SETTINGS_MODULE=my_geonode.local_settings paver sync
+
+    # collect the static files
+    ./manage.py collectstatic
+
+Finally we tell wsgi to use the local_settings.py file and restart Apache
+
+.. code-block:: bash
+
+    sed -i -e 's/my_geonode\.settings/my_geonode\.local_settings/g' /home/geonode/my_geonode/my_geonode/wsgi.py
+    sudo service apache2 restart
+
+
+oAuth2 integration
+===================
+
+We are ready to test the installation. Open the browser and navigate to http://example.com
+GeoNode User interface will show up. 
+Login with admin/admin.
 
 .. image:: img/test_geonode2.png
    :width: 600px
-   :alt: Test GeoNode 2
+   :alt: GeoServer application
 
-.. image:: img/geonode_signin.png
+In the last step, we need to make sure GeoNode oauth2 settings match which GeoServer. In the top right menu bar click 'Admin' from the drop-down and navigate to applications.
+
+.. image:: img/geonode_application.png
    :width: 600px
-   :alt: GeoNode admin signin
+   :alt: Test GeoNode
 
-Now open the main menu and click on `GeoServer`
-
-.. image:: img/access_geoserver.png
+.. image:: img/geoserver_application_settings.png
    :width: 600px
-   :alt: GeoServer admin login
+   :alt: GeoServer oAuth2 settings
 
-You will be redirected to GeoServer user interface. You will automatically be
-logged in as administrator in GeoServer.
 
-.. image:: img/geoserver_admin.png
+The GeoServer application must exactly be named `GeoServer`. Within the application configuration correct `Client id`, `Client secret` and `Redirect uris` to match with GeoServers oAuth2 settings as shown in the second image. 
+
+You can review your GeoServer oauth2 settings by navigating to `security/authentication/geonode-oauth2.` 
+
+.. image:: img/geonode-oauth2.png
    :width: 600px
-   :alt: GeoServer Admin
+   :alt: geonode-oauth2
+
+
+.. image:: img/geoserver-oauth2settings.png
+   :width: 600px
+   :alt: geonode-oauth2
