@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-03 23:36+0300\n"
-"PO-Revision-Date: 2019-05-06 21:15+0300\n"
+"PO-Revision-Date: 2019-05-06 21:33+0300\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Greek (http://www.transifex.com/geonode/geonode/language/"
 "el/)\n"
@@ -1296,7 +1296,7 @@ msgstr "Προσθήκη εγγράφων"
 #: geonode/contrib/geosites/templates/master_index.html:86
 #: geonode/templates/index.html:284
 msgid "Explore documents"
-msgstr "Εξερεύνηση έγγραφα"
+msgstr "Εξερεύνηση εγγράφων"
 
 #: geonode/contrib/geosites/templates/master_index.html:91
 #: geonode/templates/index.html:289
@@ -5096,11 +5096,11 @@ msgstr "Άλλος ένας χρήστης άρχισε αν σας ακολου
 
 #: geonode/people/__init__.py:27
 msgid "User requested access"
-msgstr ""
+msgstr "Χρήστης ζήτησε πρόσβαση"
 
 #: geonode/people/__init__.py:28
 msgid "A new user has requested access to the site"
-msgstr ""
+msgstr "Ένας νέος χρήστης ζήτησε πρόσβαση στην ιστοσελίδα"
 
 #: geonode/people/__init__.py:29
 msgid "Account activated"
@@ -5285,10 +5285,8 @@ msgid "ZIP or other postal code"
 msgstr "ταχυδρομικός κώδικας"
 
 #: geonode/people/models.py:115
-#, fuzzy
-#| msgid "count"
 msgid "Country"
-msgstr "υπολογίζω"
+msgstr "Χώρα"
 
 #: geonode/people/models.py:120
 msgid "country of the physical address"
@@ -5304,24 +5302,20 @@ msgstr ""
 "κόμμα"
 
 #: geonode/people/models.py:131
-#, fuzzy
-#| msgid "Time Options"
 msgid "Timezone"
-msgstr "Επιλογές Ώρα"
+msgstr "Ζώνη Ώρας"
 
 #: geonode/people/templates/people/_profile_about_item.html:17
 msgid "No Group"
-msgstr "Δεν Ομάδα"
+msgstr "Χωρίς Ομάδα"
 
 #: geonode/people/templates/people/_profile_filters.html:4
 msgid "All contents"
 msgstr "Όλα τα περιεχόμενα"
 
 #: geonode/people/templates/people/_profile_list_item.html:18
-#, fuzzy
-#| msgid "Organization"
 msgid "No Organization Info"
-msgstr "Οργανισμός"
+msgstr "Χωρίς Πληροφορία Οργανισμού"
 
 #: geonode/people/templates/people/forgot_username_form.html:6
 msgid "Forgot Username"
@@ -5421,13 +5415,11 @@ msgstr "Αλλαγή κωδικού πρόσβασης"
 
 #: geonode/people/templates/people/profile_detail.html:142
 msgid "Upload new layers"
-msgstr "Ανεβάστε Νέα Επιφάνεια"
+msgstr "Μεταφόρτωση νέου επιπέδου"
 
 #: geonode/people/templates/people/profile_detail.html:144
-#, fuzzy
-#| msgid "Create a new map"
 msgid "Create a new layer"
-msgstr "Δημιουργήστε ένα νέο χάρτη"
+msgstr "Δημιουργία νέου επιπέδου"
 
 #: geonode/people/templates/people/profile_detail.html:146
 msgid "Create a new map"
@@ -5490,7 +5482,7 @@ msgstr "Ενημέρωση προφίλ"
 #: geonode/people/templates/people/profile_list.html:4
 #: geonode/people/templates/people/profile_list.html:10
 msgid "Explore People"
-msgstr "Εξερευνήστε Άνθρωποι"
+msgstr "Εξερεύνηση Χρηστών"
 
 #: geonode/people/views.py:91
 msgid "Your username for "
@@ -5538,10 +5530,8 @@ msgid "You may also use browser reload."
 msgstr ""
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:21
-#, fuzzy
-#| msgid "Actions"
 msgid "Action"
-msgstr "Ενέργειες"
+msgstr "Ενέργεια"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:36
 #, fuzzy
@@ -5550,16 +5540,12 @@ msgid "Set As Default Style"
 msgstr "Layer Default Style"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:38
-#, fuzzy
-#| msgid "Download Layer"
 msgid "Download Style"
-msgstr "Μεταφόρτωση (κατέβασμα) Επιφανειών"
+msgstr "Μεταφόρτωση Στυλ"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:39
-#, fuzzy
-#| msgid "Remove Service"
 msgid "Remove Style"
-msgstr "Αφαιρέστε Υπηρεσία"
+msgstr "Διαγραφή Στυλ"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:50
 msgid "Reload to see changes"
@@ -5746,12 +5732,12 @@ msgstr "Υπηρεσίες απομακρυσμένης"
 
 #: geonode/services/templates/services/service_detail.html:115
 msgid "Remove Service"
-msgstr "Αφαιρέστε Υπηρεσία"
+msgstr "Διαγραφή Υπηρεσίας"
 
 #: geonode/services/templates/services/service_edit.html:11
 #: geonode/services/templates/services/service_edit.html:15
 msgid "Edit Service"
-msgstr ""
+msgstr "Επεξεργασία Υπηρεσίας"
 
 #: geonode/services/templates/services/service_list.html:4
 msgid "Services"
@@ -5829,20 +5815,16 @@ msgid "Id"
 msgstr ""
 
 #: geonode/services/templates/services/service_resources_harvest.html:75
-#, fuzzy
-#| msgid "Clear all filters"
 msgid "Clear Filter"
-msgstr "Clear all filters"
+msgstr "Καθαρισμός Φίλτρου"
 
 #: geonode/services/templates/services/service_resources_harvest.html:77
 msgid "Back to service details"
 msgstr ""
 
 #: geonode/services/templates/services/service_resources_harvest.html:78
-#, fuzzy
-#| msgid "Resources"
 msgid "Import Resources"
-msgstr "Πόροι"
+msgstr "Εισαγωγή Πόρων"
 
 #: geonode/services/templates/services/service_resources_harvest.html:87
 #: geonode/services/templates/services/service_resources_harvest.html:90
@@ -6655,11 +6637,11 @@ msgstr "Ναι, είμαι βέβαιος"
 
 #: geonode/templates/admin/base_site.html:4
 msgid "GeoNode site admin"
-msgstr "GeoNode διαχειριστή του site"
+msgstr "Διαχειριστής του GeoNode"
 
 #: geonode/templates/admin/base_site.html:7
 msgid "GeoNode administration"
-msgstr "Διοίκηση GeoNode"
+msgstr "Διαχείριση GeoNode"
 
 #: geonode/templates/announcements/announcement_confirm_delete.html:9
 msgid "Delete Announcement?"
@@ -6913,15 +6895,15 @@ msgstr "Αναζήτηση μεταδεδομένων μέσω CSW:"
 
 #: geonode/templates/developer.html:85
 msgid "Metadata search via OpenSearch:"
-msgstr ""
+msgstr "Αναζήτηση μεταδεδομένων μέσω OpenSearch:"
 
 #: geonode/templates/developer.html:89
 msgid "Metadata search via OAI-PMH:"
-msgstr ""
+msgstr "Αναζήτηση μεταδεδομένων μέσω OAI-PMH:"
 
 #: geonode/templates/developer.html:93
 msgid "Open Data:"
-msgstr ""
+msgstr "Ανοιχτά Δεδομένα:"
 
 #: geonode/templates/developer.html:97
 msgid "Cached tiles via WMTS:"
