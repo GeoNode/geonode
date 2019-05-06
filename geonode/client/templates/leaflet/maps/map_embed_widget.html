@@ -1,13 +1,18 @@
+{% load bootstrap_tags %}
 {% load static from staticfiles %}
+{% load i18n %}
+{% load leaflet_tags %}
 <div class="map-container">
-    <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}"/>
+    {% leaflet_js %}
+    {% leaflet_css %}
 	<link href='http://fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
 	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.15/proj4-src.js"></script>
-    <script src="{% static 'lib/js/L.Control.Pan.js' %}"></script>
-    <script src="{% static "lib/js/L.TileLayer.BetterWMS.js" %}"></script>
+
+    <link rel="stylesheet" href="{% static 'lib/css/leaflet-plugins.min.css' %}" />
+    <script src="{% static 'lib/js/leaflet-plugins.min.js' %}" type="text/javascript"></script>
+
     <script type="text/javascript">
         $(document).ready(function () {
             var wmsLayer = null;
@@ -29,7 +34,7 @@ options = {
        };
 }
 			map.addLayer(L.tileLayer('{{layer.ows_url}}'.replace(/&amp;/g,'&'), options));
-		    }    
+		    }
                 }
 		else {
   		layer_url = '{{  layer.ows_url }}';
@@ -50,12 +55,12 @@ options = {
                 if (wmsLayer != null) {
                     map.addLayer(wmsLayer);
                 }
-		}	 
+		}
             {% endfor %}
 		var scale_bar = L.control.scale().addTo(map);
  		if (L.control.hasOwnProperty('fullscreen')) {
             	    L.control.fullscreen().addTo(map);
-        	}	
+        	}
         });
         function zoom_to_box(map, bbox) {
             var bounds = [

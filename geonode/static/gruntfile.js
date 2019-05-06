@@ -287,10 +287,13 @@ module.exports = function(grunt) {
             'lib/css/select2.css'
           ],
           'lib/css/leaflet-plugins.min.css': [
+            'lib/css/leaflet.draw.css',
             'lib/css/leaflet.fullscreen.css',
             'lib/css/Leaflet.NavBar.css',
             'lib/css/leaflet-measure.css',
+            'lib/css/Control.Geocoder.css',
             'lib/css/Control.Opacity.css',
+            'lib/css/L.Control.Pan.css',
             'lib/css/easy-button.css'
           ]
         }
@@ -344,8 +347,16 @@ module.exports = function(grunt) {
             'lib/js/Leaflet.fullscreen.min.js',
             'lib/js/Leaflet.NavBar.js',
             'lib/js/leaflet-measure.js',
+            'lib/js/Control.Geocoder.js',
             'lib/js/Control.Opacity.js',
-            'lib/js/easy-button.js'
+            'lib/js/L.Control.Pan.js',
+            'L.TileLayer.BetterWMS.js',
+            'lib/js/leaflet-hash.js',
+            'lib/js/easy-button.js',
+            'lib/js/printjs/leaflet.browser.print.js',
+            'lib/js/printjs/leaflet.browser.print.sizes.js',
+            'lib/js/printjs/leaflet.browser.print.utils.js',
+            'lib/js/printjs/leaflet.draw.js'
           ]
         }
       }

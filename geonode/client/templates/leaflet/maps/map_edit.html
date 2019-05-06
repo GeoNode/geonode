@@ -11,10 +11,10 @@
 {% endblock head %}
 
 {% block extra_head %}
+    {% leaflet_js %}
     {% leaflet_css %}
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css"
-          media="all"/>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all"/>
     <link rel="stylesheet"
           href="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/css/leaflet.control.orderlayers.min.css"
           type="text/css"/>
@@ -22,8 +22,11 @@
             type="text/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"
             type="text/javascript"></script>
-    <link rel="stylesheet" href="{% static 'lib/css/L.Control.Pan.css' %}"/>
-    <link href="{% static "geonode/css/map_leaflet.css" %}" rel="stylesheet"/>
+
+    <link rel="stylesheet" href="{% static 'geonode/css/map_leaflet.css' %}"/>
+    <link rel="stylesheet" href="{% static 'lib/css/leaflet-plugins.min.css' %}" />
+    <script src="{% static 'lib/js/leaflet-plugins.min.js' %}" type="text/javascript"></script>
+
     <style type="text/css">
         html, body, #wrap2 {
             height: 100%;
@@ -124,15 +127,10 @@
 {% endblock footer %}
 
 {% block extra_script %}
-    {% leaflet_js %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"
-            type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
     <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
     <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
-
-    <script src="{% static 'lib/js/L.Control.Pan.js' %}"></script>
-    <script src="{% static "lib/js/L.TileLayer.BetterWMS.js" %}"></script>
 
     <script type="text/javascript">
         jQuery.fn.extend({
@@ -231,8 +229,8 @@
                     var layer_url = json['url'];
                     var layer_title = layer_typename;
 		var manual_name = layer_typename;
-		if (add_manual){ 
-		manual_name=$('#add_layer_select').val();		
+		if (add_manual){
+		manual_name=$('#add_layer_select').val();
 		}
  		      var tile_layer = L.tileLayer.betterWms(layer_url,
                       {
@@ -302,12 +300,12 @@
                 success: function (json) {
                     var layer_url = json['url'];
                     var layer_title = json['title'];
-		    	
+
                     // Add layer to leaflet
                     //var tile_layer = L.tileLayer(layer_url);
 		var manual_name = layer_typename;
-		if (add_manual){ 
-		manual_name=$('#add_layer_select').val();		
+		if (add_manual){
+		manual_name=$('#add_layer_select').val();
 		}
  		      var tile_layer = L.tileLayer.betterWms(layer_url,
                       {
@@ -614,7 +612,7 @@
                                 }),
                         {% else %}
 	         	    layer: L.tileLayer('{{ layer.ows_url }}'.replace(/&amp;/g,'&').replace(/&amp;/g,'&'), {}),
-			{% endif%}						
+			{% endif%}
                     {% else %}
 			layer: L.tileLayer.betterWms('{{layer.ows_url}}'.replace(/&amp;/g,'&').replace(/&amp;/g,'&'),
                         {

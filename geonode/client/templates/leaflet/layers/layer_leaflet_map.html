@@ -5,11 +5,9 @@
 {% leaflet_js %}
 {% leaflet_css %}
 
-    <link rel="stylesheet" href="/static/lib/css/leaflet.draw.css" />
-    <script src="/static/lib/js/printjs/leaflet.browser.print.js"></script>
-    <script src="/static/lib/js/printjs/leaflet.browser.print.sizes.js"></script>
-    <script src="/static/lib/js/printjs/leaflet.browser.print.utils.js"></script>
-    <script src="/static/lib/js/printjs/leaflet.draw.js"></script>
+<link rel="stylesheet" href="{% static 'lib/css/leaflet-plugins.min.css' %}" />
+<script src="{% static 'lib/js/leaflet-plugins.min.js' %}" type="text/javascript"></script>
+
 <style>
     .leaflet-container { /* all maps */
         height: 400px;
@@ -173,7 +171,7 @@
 
       	//add elements to maps page
         var scale_bar = L.control.scale().addTo(map);
-      	map.attributionControl.addAttribution('<a href="http://en.unesco.org/themes/water-security/hydrology", class="your_class">UNESCO-IHP-Wins</a>');
+      	map.attributionControl.addAttribution('<a href="/", class="your_class">GeoNode</a>');
 
         L.Control.Watermark = L.Control.extend({
           onAdd: function(map) {

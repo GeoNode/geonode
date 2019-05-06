@@ -15,6 +15,7 @@
 {% endblock head %}
 
 {% block extra_head %}
+    {% leaflet_js %}
     {% leaflet_css %}
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css"
@@ -22,8 +23,11 @@
     <link rel="stylesheet"
           href="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/css/leaflet.control.orderlayers.min.css"
           type="text/css"/>
-    <link rel="stylesheet" href="{% static 'lib/css/L.Control.Pan.css' %}"/>
-    <link href="{% static "geonode/css/map_leaflet.css" %}" rel="stylesheet"/>
+
+    <link rel="stylesheet" href="{% static 'geonode/css/map_leaflet.css' %}"/>
+    <link rel="stylesheet" href="{% static 'lib/css/leaflet-plugins.min.css' %}" />
+    <script src="{% static 'lib/js/leaflet-plugins.min.js' %}" type="text/javascript"></script>
+
     <style type="text/css">
         html, body, #wrap2 {
             height: 100%;
@@ -65,7 +69,7 @@
                     <div class="form-group">
                         <label for="add_layer_select">{% trans "Available layers" %}</label>
                         <select class="form-control" id="add_layer_select">
-			
+
                                 <script>
 				var alternate = '';
                                 </script>
@@ -311,12 +315,12 @@
 					dataType: 'json',
                 success: function (json) {
                         layer_url = json['url'];
-                layer_title = layer_typename;                        
+                layer_title = layer_typename;
 				var tile_layer = L.tileLayer.betterWms(layer_url,
                 {
                     crs: L.CRS.EPSG4326, format: 'image/png', transparent: true, layers:$('#add_layer_select').val()
                 });
-			//Montenegro bounds	
+			//Montenegro bounds
 			var bounds = [18.2, 41.9, 20.5, 43.5];
 
 			var hidden_layers = $("#hidden-layer-list > input");
@@ -386,7 +390,7 @@
                         // Hide from available layer
                         document.getElementById("option_" + layer_typename).style.display = 'none';
                         $('#add_layer_select').prop('selectedIndex', -1);
-	}});	
+	}});
 			}else{
             $.ajax({
                 type: 'GET',
@@ -395,14 +399,14 @@
                 dataType: 'json',
                 success: function (json) {
                     var layer_url = json['url'];
-                    var layer_title = json['title'];		    
+                    var layer_title = json['title'];
 
                     // Add layer to leaflet
                     // var tile_layer = L.tileLayer(layer_url);
 					var tile_layer = L.tileLayer.betterWms(layer_url,
                     {
 						crs: L.CRS.EPSG4326, format: 'image/png', transparent: true, layers:$('#add_layer_select').val()
-                    });		     
+                    });
                     if (tile_layer != null) {
                         // Set view to new added layer
                         var bounds = [json['bbox_x0'], json['bbox_y0'],
