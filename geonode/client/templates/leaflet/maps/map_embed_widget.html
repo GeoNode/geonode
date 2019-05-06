@@ -1,25 +1,40 @@
+{% load static from staticfiles %}
 <div class="map-container">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css"/>
+    <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}"/>
+	<link href='http://fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.15/proj4-src.js"></script>
+    <script src="{% static 'lib/js/L.Control.Pan.js' %}"></script>
+    <script src="{% static "lib/js/L.TileLayer.BetterWMS.js" %}"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             var wmsLayer = null;
-
-            var map = L.map('map').setView([{{ resource.center_y }}, {{ resource.center_x }}], {{ resource.zoom }});
+	    var map = L.map('the_map',{measureControl: true}).setView([{{ resource.center_x }}, {{ resource.center_y }}], {{ resource.zoom }});
             var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
             });
-            map.addLayer(osm);
-
-            var bbox = {{ map_bbox }};
-
+            var bbox = {{map_bbox}};
             zoom_to_box(map, bbox);
-
+	    var layer_url;
+            var options;
             {% for layer in map_layers %}
-                var layer_url = '{{  layer.ows_url }}';
-                var options = {
+                if ('{{layer.group}}' == 'background') {
+		    if ('{{layer.visibility}}' == 'True') {
+			if('{{layer.ows_url}}'.indexOf('&')>0){
+options = {
+           maxZoom: 20,
+           subdomains:['mt0','mt1','mt2','mt3']
+       };
+}
+			map.addLayer(L.tileLayer('{{layer.ows_url}}'.replace(/&amp;/g,'&'), options));
+		    }    
+                }
+		else {
+  		layer_url = '{{  layer.ows_url }}';
+                options = {
+		    tiled: true,
                     format: 'image/png',
                     transparent: true,
                     layers: '{{ layer.name }}',
@@ -29,14 +44,19 @@
                     wmsLayer = L.tileLayer(layer_url, options);
                 }
                 else {
-                    wmsLayer = L.tileLayer.wms(layer_url, options);
+                  //  wmsLayer = L.tileLayer.wms(layer_url, options);
+		      wmsLayer = L.tileLayer.betterWms(layer_url, options);
                 }
                 if (wmsLayer != null) {
                     map.addLayer(wmsLayer);
                 }
+		}	 
             {% endfor %}
+		var scale_bar = L.control.scale().addTo(map);
+ 		if (L.control.hasOwnProperty('fullscreen')) {
+            	    L.control.fullscreen().addTo(map);
+        	}	
         });
-
         function zoom_to_box(map, bbox) {
             var bounds = [
                 [bbox[1], bbox[0]],
@@ -45,9 +65,12 @@
         }
     </script>
     <style type="text/css">
-        #map {
-            height: 800px;
+        #the_map {
+            height: 563px;
         }
+	.leaflet-popup-content{
+	   overflow: auto !important;
+	}
     </style>
     <div id="map"></div>
 </div>

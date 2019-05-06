@@ -279,7 +279,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if settings.RESOURCE_PUBLISHING:
         if instance.is_published != gs_resource.advertised:
             if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-                gs_resource.advertised = 'true'
+                gs_resource.advertised = 'true' if instance.is_published else 'false'
                 gs_catalog.save(gs_resource)
 
     if not settings.FREETEXT_KEYWORDS_READONLY:

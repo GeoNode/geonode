@@ -5,6 +5,11 @@
 {% leaflet_js %}
 {% leaflet_css %}
 
+    <link rel="stylesheet" href="/static/lib/css/leaflet.draw.css" />
+    <script src="/static/lib/js/printjs/leaflet.browser.print.js"></script>
+    <script src="/static/lib/js/printjs/leaflet.browser.print.sizes.js"></script>
+    <script src="/static/lib/js/printjs/leaflet.browser.print.utils.js"></script>
+    <script src="/static/lib/js/printjs/leaflet.draw.js"></script>
 <style>
     .leaflet-container { /* all maps */
         height: 400px;
@@ -14,14 +19,17 @@
         position: relative;
         left: 0px !important;
     }
+    .leaflet-popup-content{
+	overflow: auto !important;
+    }
 </style>
 <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function (event) {
-      L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
+     document.addEventListener("DOMContentLoaded", function (event) {
+ 	L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
 
         onAdd: function (map) {
           // Triggered when the layer is added to a map.
-          // Register a click listener, then do all the upstream WMS things
+// Register a click listener, then do all the upstream WMS things
           L.TileLayer.WMS.prototype.onAdd.call(this, map);
           map.on('click', this.getFeatureInfo, this);
         },
@@ -29,7 +37,7 @@
         onRemove: function (map) {
           // Triggered when the layer is removed from a map.
           // Unregister a click listener, then do all the upstream WMS things
-          L.TileLayer.WMS.prototype.onRemove.call(this, map);
+ L.TileLayer.WMS.prototype.onRemove.call(this, map);
           map.off('click', this.getFeatureInfo, this);
         },
 
@@ -37,12 +45,13 @@
           // Make an AJAX request to the server and hope for the best
           var url = this.getFeatureInfoUrl(evt.containerPoint),
               showResults = L.Util.bind(this.showGetFeatureInfo, this);
-          // console.log(url);
           $.ajax({
             url: url,
             success: function (data, status, xhr) {
               var err = typeof data === 'string' ? null : data;
-              showResults(err, evt.latlng, data);
+		if(data.includes('<table class=')){
+	            showResults(err, evt.latlng, data);
+		}
             },
             error: function (xhr, status, error) {
               showResults(error);
@@ -79,6 +88,7 @@
                 height: size.y,
                 width: size.x,
                 layers: this.wmsParams.layers,
+		feature_count: '5',
                 query_layers: this.wmsParams.layers,
                 info_format: 'text/html'
               };
@@ -123,30 +133,46 @@
             attribution: '&copy; unesco'
         });
 
-        var OpenMapSurfer_Roads = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
+        // not yet available
+           var unesco_white = L.tileLayer(
+               'http://en.unesco.org/tiles/white/{z}/{x}/{y}.png', {
+               attribution: '&copy; unesco'
+           });
+
+       var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+           maxZoom: 19,
+           subdomains:['mt0','mt1','mt2','mt3']
+       });
+
+       var googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+           maxZoom: 20,
+           subdomains:['mt0','mt1','mt2','mt3']
+       })
+
+       var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+           maxZoom: 20,
+           subdomains:['mt0','mt1','mt2','mt3']
+       });
+
+        var googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
             maxZoom: 20,
-            attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            subdomains:['mt0','mt1','mt2','mt3']
         });
 
-        // not yet available
-        // var unesco_white = L.tileLayer(
-        //     'http://en.unesco.org/tiles/white/{z}/{x}/{y}.png', {
-        //     attribution: '&copy; unesco'
-        // });
-
         var base_maps = {
-            "OpenMapSurfer_Roads": OpenMapSurfer_Roads,
-            'OpenStreetMap': osm
+            'OpenStreetMap': osm,
+	    'SATELLITE': googleSat,
+            'TERRAIN': googleTerrain,
+            'HYBRID': googleHybrid,
+            'ROAD': googleStreets
         };
 
         var overlay_layer = {};
-
         var map = L.map('preview_map',{measureControl: true});
+	map.addLayer(googleSat);
 
       	//add elements to maps page
         var scale_bar = L.control.scale().addTo(map);
-       	//var attribution = L.control.attribution({prefix: 'UNESCO-IHP-Wins'}).addTo(map);
-      	//on surcharge attribution
       	map.attributionControl.addAttribution('<a href="http://en.unesco.org/themes/water-security/hydrology", class="your_class">UNESCO-IHP-Wins</a>');
 
         L.Control.Watermark = L.Control.extend({
@@ -171,18 +197,15 @@
 
         L.control.watermark({ position: 'bottomright' }).addTo(map);
 
-        // L.control.measureControl.addTo(map);
-        map.addLayer(OpenMapSurfer_Roads);
-
         {% if layer_bbox %}
             zoom_to_box(map, [{{ layer_bbox }}]);
         {% endif %}
 
         var tile_layer;
         {% if resource.get_tiles_url %}
-            tile_layer = L.tileLayer("{{ resource.get_tiles_url|safe }}",
+            tile_layer = L.tileLayer.betterWms("{{ resource.get_tiles_url|safe }}",
                     {
-                        'opacity': 0.8
+                    tiled: true, format: 'image/png', transparent: true, layers:'{{resource.alternate}}'
                     });
         {%  elif resource.ptype == "gxp_wmscsource"  %}
             tile_layer = L.tileLayer.betterWms('{{ resource.ows_url|safe }}', {
@@ -213,10 +236,48 @@
         var layerControl = L.control.layers(
                 base_maps, overlay_layer
         ).addTo(map);
-
+	$('.leaflet-control-layers-selector')[1].click();
         if (L.control.hasOwnProperty('fullscreen')) {
             L.control.fullscreen().addTo(map);
         }
+
+        var print_control = L.control.browserPrint({
+            printLayer: googleSat,
+            closePopupsOnPrint: false,
+            printModes: [
+                L.control.browserPrint.mode.landscape(),
+                "PORTrait",
+                L.control.browserPrint.mode.auto("Auto", "B4"),
+                L.control.browserPrint.mode.custom("Selektuj oblast za štampu", "B5")
+            ]
+        }).addTo(map);
+	map.on('baselayerchange', function(e){
+            print_control.options.printLayer = e.layer;
+	});
+
+        var drawnItems = new L.FeatureGroup();
+        var drawControl = new L.Control.Draw({
+            position: 'bottomright',
+            edit: {
+                featureGroup: drawnItems,
+                remove: false,
+                edit: false
+            },
+            draw: {
+                circlemarker: false,
+            }
+        });
+        map.addControl(drawControl);
+        map.createPane("new-pane");
+        map.on(L.Draw.Event.CREATED, function (e) {
+            var type = e.layerType,
+            layer = e.layer;
+            if (type === 'marker') {
+                layer.bindPopup('A popup!');
+            }
+            drawnItems.addLayer(layer);
+            map.addLayer(drawnItems);
+        });
 
         if(L.Control.hasOwnProperty('opacitySlider')) {
             //adjust opacity
@@ -275,18 +336,16 @@
           map.fitBounds(bounds);
       }
 
-
-  {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
-
-    function createMapThumbnail() {
-        {# Use map extent #}
-        var map = window.preview_map;
+function createMapThumbnail() {
+        var map = $('#preview_map');
         var bbox = map.getBounds().toBBoxString();
         var data = {
             'bbox': bbox
         };
-        $.post('{% url "qgis_server:set-thumbnail" layername=resource.name %}', data);
     }
+
+
+  {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
 
     {# Event handler for style editing #}
     function edit_style_on_submit(event){

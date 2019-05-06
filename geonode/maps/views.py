@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# yer-*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -21,6 +21,10 @@
 import math
 import logging
 import urlparse
+
+import requests
+from requests.auth import HTTPBasicAuth
+
 from itertools import chain
 
 from guardian.shortcuts import get_perms
@@ -30,12 +34,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError, Http404
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from django.utils.translation import ugettext as _
-from django.views.decorators.http import require_http_methods
-
 try:
     # Django >= 1.7
     import json
@@ -46,6 +48,8 @@ from django.utils.html import strip_tags
 from django.db.models import F
 from django.views.decorators.clickjacking import (xframe_options_exempt,
                                                   xframe_options_sameorigin)
+from django.views.decorators.http import require_http_methods
+
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.layers.views import _resolve_layer
@@ -102,11 +106,10 @@ def _resolve_map(request, id, permission='base.change_resourcebase',
     '''
     Resolve the Map by the provided typename and check the optional permission.
     '''
-    if Map.objects.filter(urlsuffix=id).count() > 0:
-        key = 'urlsuffix'
-    else:
+    if id.isdigit():
         key = 'pk'
-
+    else:
+        key = 'urlsuffix'
     return resolve_object(request, Map, {key: id}, permission=permission,
                           permission_msg=msg, **kwargs)
 
@@ -139,6 +142,26 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     layers = MapLayer.objects.filter(map=map_obj.id)
     links = map_obj.link_set.download()
 
+    map_bbox = map_obj.bbox_string.split(',')
+
+    # Sanity Checks
+    for coord in map_bbox:
+        if not coord:
+            return
+    map_layers = layers
+    layers1 = []
+    for layer in map_layers:
+        layers1.append(layer)
+    if map_obj.srid != 'EPSG:3857':
+        map_bbox = [float(coord) for coord in map_bbox]
+    else:
+        map_bbox = llbbox_to_mercator([float(coord) for coord in map_bbox])
+
+    if map_bbox[1] == float('-inf'):
+        map_bbox[1] = 0
+    if map_bbox[3] == float('-inf'):
+        map_bbox[3] = 0
+
     group = None
     if map_obj.group:
         try:
@@ -150,9 +173,11 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         'resource': map_obj,
         'group': group,
         'layers': layers,
+        'map_layers': layers1,
+        'map_bbox': map_bbox,
         'perms_list': get_perms(request.user, map_obj.get_self_resource()),
         'permissions_json': _perms_info_json(map_obj),
-        "documents": get_related_documents(map_obj),
+        'documents': get_related_documents(map_obj),
         'links': links,
         'preview': getattr(
             settings,
@@ -399,14 +424,16 @@ def map_embed(
             'base.view_resourcebase',
             _PERMISSION_MSG_VIEW)
 
+        layers = MapLayer.objects.filter(map=mapid)
         if snapshot is None:
             config = map_obj.viewer_json(request)
         else:
             config = snapshot_config(
                 snapshot, map_obj, request)
-
     return render(request, template, context={
-        'config': json.dumps(config)
+        'config': json.dumps(config),
+        'resource': map_obj,
+        'map_layers': layers
     })
 
 
@@ -568,7 +595,7 @@ def map_json(request, mapid, snapshot=None):
         return HttpResponse(
             json.dumps(
                 map_obj.viewer_json(request)))
-    elif request.method == 'PUT':
+    elif request.method == 'POST':
         if not request.user.is_authenticated():
             return HttpResponse(
                 _PERMISSION_MSG_LOGIN,
@@ -611,6 +638,26 @@ def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
     The view that returns the map composer opened to
     the map with the given map ID.
     """
+    map_layers = MapLayer.objects.filter(map=mapid)
+
+    geoserver_layers = []
+
+    url = "%srest/layergroups" % (settings.GEOSERVER_PUBLIC_LOCATION)
+
+    myResponse = requests.get(url, auth=HTTPBasicAuth(
+        "%s" % (settings.OGC_SERVER_DEFAULT_USER), "%s" % (settings.OGC_SERVER_DEFAULT_PASSWORD)))
+    if(myResponse.ok):
+        jData = json.loads(myResponse.content)
+        for key in jData["layerGroups"]["layerGroup"]:
+            dict = {}
+            dict["title"] = str(key["name"])
+            dict["alternate"] = str(key["name"])
+            dict["url"] = "%swms/" % (settings.GEOSERVER_PUBLIC_LOCATION)
+            geoserver_layers.append(dict)
+    else:
+        geoserver_layers.append(myResponse)
+
+    layers = Layer.objects.filter()
     map_obj = _resolve_map(
         request,
         mapid,
@@ -623,6 +670,9 @@ def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
         config = snapshot_config(snapshot, map_obj, request)
 
     return render(request, template, context={
+        'map_layers': map_layers,
+        'layers': layers,
+        'geoserver_layers': geoserver_layers,
         'mapId': mapid,
         'config': json.dumps(config),
         'map': map_obj,
@@ -634,7 +684,6 @@ def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
 
 
 # NEW MAPS #
-
 
 def clean_config(conf):
     if isinstance(conf, basestring):
@@ -660,9 +709,28 @@ def clean_config(conf):
 
 def new_map(request, template='maps/map_new.html'):
     map_obj, config = new_map_config(request)
+    layers = Layer.objects.filter()
+    geoserver_layers = []
+
+    url = "%srest/layergroups" % (settings.GEOSERVER_PUBLIC_LOCATION)
+
+    myResponse = requests.get(url, auth=HTTPBasicAuth(
+        "%s" % (settings.OGC_SERVER_DEFAULT_USER), "%s" % (settings.OGC_SERVER_DEFAULT_PASSWORD)))
+    if(myResponse.ok):
+        jData = json.loads(myResponse.content)
+        for key in jData["layerGroups"]["layerGroup"]:
+            dict = {}
+            dict["title"] = str(key["name"])
+            dict["alternate"] = str(key["name"])
+            dict["url"] = "%swms/" % (settings.GEOSERVER_PUBLIC_LOCATION)
+            geoserver_layers.append(dict)
+    else:
+        geoserver_layers.append(myResponse)
     context_dict = {
         'config': config,
-        'map': map_obj
+        'map': map_obj,
+        'layers': layers,
+        'geoserver_layers': geoserver_layers
     }
     context_dict["preview"] = getattr(
         settings,
@@ -777,9 +845,6 @@ def add_layers_to_map_config(
             layer = _resolve_layer(request, layer_name)
         except ObjectDoesNotExist:
             # bad layer, skip
-            continue
-        except Http404:
-            # can't find the layer, skip it.
             continue
 
         if not request.user.has_perm(
@@ -966,7 +1031,7 @@ def add_layers_to_map_config(
 
             access_token = request.session['access_token'] if request and 'access_token' in request.session else None
             if access_token and ogc_server_url == layer_url and 'access_token' not in layer.ows_url:
-                url = '%s?access_token=%s' % (layer.ows_url, access_token)
+                url = layer.ows_url + '?access_token=' + access_token
             else:
                 url = layer.ows_url
             maplayer = MapLayer(
@@ -1359,33 +1424,29 @@ def ajax_url_lookup(request):
     )
 
 
-@require_http_methods(["POST"])
 def map_thumbnail(request, mapid):
-    map_obj = _resolve_map(request, mapid)
-    try:
-        image = None
+    if request.method == 'POST':
+        map_obj = _resolve_map(request, mapid)
         try:
-            image = _prepare_thumbnail_body_from_opts(
-                request.body, request=request)
-        except BaseException:
-            image = _render_thumbnail(request.body)
+            image = None
+            try:
+                image = _prepare_thumbnail_body_from_opts(request.body,
+                                                          request=request)
+            except BaseException:
+                image = _render_thumbnail(request.body)
 
-        if not image:
+            if not image:
+                return
+            filename = "map-%s-thumb.png" % map_obj.uuid
+            map_obj.save_thumbnail(filename, image)
+
+            return HttpResponse(_('Thumbnail saved'))
+        except BaseException:
             return HttpResponse(
-                content=_('couldn\'t generate thumbnail'),
+                content=_('error saving thumbnail'),
                 status=500,
                 content_type='text/plain'
             )
-        filename = "map-%s-thumb.png" % map_obj.uuid
-        map_obj.save_thumbnail(filename, image)
-
-        return HttpResponse(_('Thumbnail saved'))
-    except BaseException:
-        return HttpResponse(
-            content=_('error saving thumbnail'),
-            status=500,
-            content_type='text/plain'
-        )
 
 
 def map_metadata_detail(

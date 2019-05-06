@@ -1,11 +1,28 @@
-{% if for_download %}
 <html>
 <head>
-    <title>{{ resource.id }}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
+    <title>Mapa</title>
+    <link rel="stylesheet" href="/static/leaflet/leaflet.css" />
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/lib/css/leaflet.draw.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>-->
+    <link rel="stylesheet" href="/static/lib/css/leaflet-plugins.min.css" type="text/css" />
+    <link rel="stylesheet" href="/static/lib/css/L.Control.Pan.css" type="text/css" />
+    <script src="/static/leaflet/leaflet.js" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.15/proj4-src.js"></script>
+    <script src="/static/lib/js/leaflet-plugins.min.js" type="text/javascript"></script>
+    <script src="/static/leaflet/leaflet.extras.js" type="text/javascript"></script>
+    <script src="/static/lib/js/L.Control.Pan.js"></script>
+    <script src="/static/lib/js/printjs/leaflet.browser.print.js"></script>
+    <script src="/static/lib/js/printjs/leaflet.browser.print.sizes.js"></script>
+    <script src="/static/lib/js/printjs/leaflet.browser.print.utils.js"></script>
+    <script src="/static/lib/js/printjs/leaflet.draw.js"></script>
+    <script src="/static/lib/js/leaflet-hash.js"></script>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.mapbox.css' rel='stylesheet' />  
+    <script src='/static/lib/js/Control.Geocoder.js'></script>
+    <link href='/static/lib/css/Control.Geocoder.css' rel='stylesheet' />
+
     <script type="text/javascript">
         $(document).ready(function () {
             /* init custom layer */
@@ -13,63 +30,290 @@
             /* set coordinate systems */
             var firstProjection = proj4('EPSG:3857');   // google mercator
             var secondProjection = proj4('EPSG:4326');  // WGS84 web mercator
+            var point_wsg84 = [{{resource.center_y}},{{resource.center_x}}]; 
+            var map = L.map('map').setView([point_wsg84[1], point_wsg84[0]],{{resource.zoom}});
+			var geocoder = L.Control.Geocoder.nominatim(),
+			control = L.Control.geocoder({
+				geocoder: geocoder
+			}).addTo(map),
+			marker;
 
-            var point_wsg84 = proj4(firstProjection,secondProjection,[{{ resource.center_x }}, {{ resource.center_y }}]);
-            var map = L.map('map').setView([point_wsg84[1], point_wsg84[0]],6);
-            var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-            });
-            map.addLayer(osm)
+	var ind = 0;
+	var evtLayer = []; 
+L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
+  
+    onAdd: function (map) {
+      // Triggered when the layer is added to a map.
+      //   Register a click listener, then do all the upstream WMS things
+      L.TileLayer.WMS.prototype.onAdd.call(this, map);
+      map.on('click', this.getFeatureInfo, this);
+    },
+    
+    onRemove: function (map) {
+      // Triggered when the layer is removed from a map.
+      //   Unregister a click listener, then do all the upstream WMS things
+      L.TileLayer.WMS.prototype.onRemove.call(this, map);
+      map.off('click', this.getFeatureInfo, this);
+    },
+    
+    getFeatureInfo: function (evt) {
+     
+	// Make an AJAX request to the server and hope for the best
+      var url = this.getFeatureInfoUrl(evt.latlng),
+          showResults = L.Util.bind(this.showGetFeatureInfo, this);
+      $.ajax({
+        url: url,
+        success: function (data, status, xhr) {  
+	var err = typeof data === 'string' ? null : data;
+          showResults(err, evt.latlng, data);
+        },
+        error: function (xhr, status, error) {
+          showResults(error);  
+        }
+      }); 
+    },
+    
+    getFeatureInfoUrl: function (latlng) {
+      // Construct a GetFeatureInfo request URL given a point
+      var point = this._map.latLngToContainerPoint(latlng, this._map.getZoom()),
+          size = this._map.getSize(),
+          
+          params = {
+            request: 'GetFeatureInfo',
+            service: 'WMS',
+            srs: 'EPSG:4326',
+            styles: this.wmsParams.styles,
+            transparent: this.wmsParams.transparent,
+            version: this.wmsParams.version,      
+            format: this.wmsParams.format,
+            bbox: this._map.getBounds().toBBoxString(),
+            height: size.y,
+            width: size.x,
+	    feature_count: '5',
+            layers: this.wmsParams.layers,
+            query_layers: this.wmsParams.layers,
+            info_format: 'text/html'
+          };
+      
+      params[params.version === '1.3.0' ? 'i' : 'x'] = point.x;
+      params[params.version === '1.3.0' ? 'j' : 'y'] = point.y;
+      
+      return this._url + L.Util.getParamString(params, this._url, true);
+    },
+    
+    showGetFeatureInfo: function (err, latlng, content) {
+      if (err) { console.log(err); return; } // do nothing if there's an error
 
-            /* zoom to bbox */
-            firstProjection = proj4('{{ resource.srid }}');
-            var corner0 = [{{ resource.bbox_x0 }}, {{ resource.bbox_y0 }}];
-            var corner1 = [{{ resource.bbox_x1 }}, {{ resource.bbox_y1 }}];
+	if(latlng != evtLayer){
+		evtLayer = latlng;
+		ind=0;
+	}
 
-            corner0 = proj4(firstProjection, secondProjection, corner0);
-            corner1 = proj4(firstProjection, secondProjection, corner1);
-
-            var bbox = [
-                corner0[0],
-                corner0[1],
-                corner1[0],
-                corner1[1]
-            ];
-
-            zoom_to_box(map, bbox);
-
-            {% for layer in map_layers %}
-                var layer_url = '{{  layer.ows_url }}';
-                var options = {
-                    format: 'image/png',
-                    transparent: true,
-                    layers: '{{ layer.name }}',
-                    opacity: 0.8
-                };
-                /* Determine type of tileLayer */
-                if(layer_url.includes('{z}') && layer_url.includes('{y}') && layer_url.includes('{x}')){
-                    wmsLayer = L.tileLayer(layer_url, options);
+      if(content.includes('<table class=')){
+      // Otherwise show the content in a popup, or something.
+      L.popup({ maxWidth: 900, maxHeight:200})
+        .setLatLng(latlng)
+        .setContent(content)
+        .openOn(this._map);
+	ind=1;
+	map.removeLayer(marker);
+	}else{
+	   
+		geocoder.reverse(latlng, map.options.crs.scale(map.getZoom()), function(results) {
+                var r = results[0];
+                if (r) {
+                    if(ind==0){
+                        if (marker) {
+                                	marker.setLatLng(r.center).setPopupContent(r.html + '<br/>' + r.center || r.name + '<br/>' + r.center).addTo(map).openPopup();
+			} else {
+                                	marker = L.marker(r.center).bindPopup(r.name).addTo(map).openPopup();
+			 }
+		    }
                 }
+                })
+	    
+	}
+    }
+  });
+  
+  L.tileLayer.betterWms = function (url, options) {
+    return new L.TileLayer.BetterWMS(url, options);  
+  };
+
+
+	    var scale_bar = L.control.scale().addTo(map);
+            var fs=L.control.fullscreen().addTo(map);
+               var locateMe= L.control.locate({
+                    strings: {
+                        title: "Locate me"
+                    }
+                }).addTo(map);
+
+	    var nb=L.control.navbar().addTo(map);
+	    var podloga;
+
+	var osm = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+        });
+
+        var unesco = L.tileLayer(
+            'https://en.unesco.org/tiles/{z}/{x}/{y}.png', {
+            attribution: '&copy; unesco'
+        });
+
+        var unesco_geodata = L.tileLayer(
+            'https://en.unesco.org/tiles/geodata/{z}/{x}/{y}.png', {
+            attribution: '&copy; unesco'
+        });
+
+        var OpenMapSurfer_Roads = L.tileLayer('', {
+        });
+
+        // not yet available
+           var unesco_white = L.tileLayer(
+               'https://en.unesco.org/tiles/white/{z}/{x}/{y}.png', {
+               attribution: '&copy; unesco'
+           });
+
+       var googleSat = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+           maxZoom: 19,
+           subdomains:['mt0','mt1','mt2','mt3']
+       });
+
+       var googleTerrain = L.tileLayer('https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+           maxZoom: 20,
+           subdomains:['mt0','mt1','mt2','mt3']
+       })
+
+       var googleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+           maxZoom: 20,
+           subdomains:['mt0','mt1','mt2','mt3']
+       });
+
+        var googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+            maxZoom: 20,
+            subdomains:['mt0','mt1','mt2','mt3']
+        });
+
+        var base_maps = {
+            "BEZ PODLOGE": OpenMapSurfer_Roads,
+            'OpenStreetMap': osm,
+	    'SATELLITE': googleSat,
+            'TERRAIN': googleTerrain,
+            'HYBRID': googleHybrid,
+            'ROAD': googleStreets
+        };
+	    var overlay_layer = {};
+	    var options = {};
+            /* zoom to bbox */
+		var brojac = 0;
+		var i=0;
+            firstProjection = proj4('EPSG:3857');
+	    {%for layer in map_layers%}	
+                var layer_url = '{{  layer.ows_url }}';
+
+		if ('{{layer.group}}' == 'background') {
+               	for(var key in base_maps){
+			if(base_maps[key]._url == '{{layer.ows_url}}'.replace(/&amp;/g,'&').replace(/&amp;/g,'&')){
+			    if ('{{layer.visibility}}' == 'True') {
+				brojac=i;
+				podloga = base_maps[key];
+				map.addLayer(base_maps[key]);
+			    }
+			}
+		    }
+			i++;
+                }
+
                 else {
-                    wmsLayer = L.tileLayer.wms(layer_url, options);
+                   // wmsLayer = L.tileLayer.wms(layer_url, options);
+			if (window.location.href.includes('https:')){
+			wmsLayer = L.tileLayer.betterWms(layer_url.replace('http:','https:').replace(':80',''),
+                    {
+                        format: 'image/png', transparent: true, layers:'{{ layer.name }}'
+                    });} else
+		{
+ 			wmsLayer = L.tileLayer.betterWms(layer_url,
+                    {
+                       format: 'image/png', transparent: true, layers:'{{ layer.name }}'
+                    });
+		}	
+
+		overlay_layer["{{ layer.name }}"] = wmsLayer;
                 }
                 /* add wmsLayer to the map object itself */
                 if (wmsLayer != null) {
                     map.addLayer(wmsLayer);
                 }
             {% endfor %}
+	 var layerControl = L.control.layers(
+                base_maps, overlay_layer
+         ).addTo(map);
+	 $('.leaflet-control-layers-selector')[brojac].click();
+	var hash = new L.Hash(map);
+	var plugin = L.control.measure({
+        position: 'topright',
+		primaryLengthUnit: 'meters',
+		secondaryLengthUnit: null,
+		primaryAreaUnit: 'sqmeters',
+		activeColor: "#ff0000",
+		completedColor: "#000000",
+      }).addTo(map);
+        var drawnItems = new L.FeatureGroup();
+        var drawControl = new L.Control.Draw({
+                position: 'bottomright',
+                edit: {
+                        featureGroup: drawnItems,
+                        remove: false,
+                        edit: false
+                },
+                draw: {
+                        circlemarker: false,
+                }
+        });
+        map.addControl(drawControl);
+        map.createPane("new-pane");
+        map.on(L.Draw.Event.CREATED, function (e) {
+                var type = e.layerType,
+                layer = e.layer;
+                        if (type === 'marker') {
+                                layer.bindPopup('A popup!');
+                            }
+                            drawnItems.addLayer(layer);
+                                map.addLayer(drawnItems);
+                        });
+
+            var print_control = L.control.browserPrint({
+                printLayer: L.tileLayer(podloga._url,podloga.options),
+                closePopupsOnPrint: false,
+                                printModes: [
+                                        L.control.browserPrint.mode.landscape(),
+                                        "PORTrait",
+                                        L.control.browserPrint.mode.auto("Auto", "B4"),
+                                        L.control.browserPrint.mode.custom("Selektuj oblast za štampu", "B5")
+                                ]
+
+            }).addTo(map);
+		map.on('baselayerchange', function(e){
+			print_control.options.printLayer = e.layer;				
+		});
+
+        var canvasRenderer = L.canvas();
+
+                        L.Control.BrowserPrint.Utils.registerLayer(L.TileLayer.WMS, 'L.TileLayer.WMS', function(layer) {
+                                return L.tileLayer.wms(layer._url, layer.options);
+                        });
 
         });
-    function zoom_to_box(map, bbox) {
-        var bounds = [
-            [bbox[1], bbox[0]],
-            [bbox[3], bbox[2]]
-        ];
-        map.fitBounds(bounds);
-    }
     </script>
     <style>
-        #map { height: 640px; }
+        #map { height: 100%; }
+.leaflet-control-locate a {
+    padding: 8px 0 0 0px !important;
+}
+	.leaflet-popup-content{
+            overflow: auto !important;
+	}
     </style>
 </head>
 
@@ -77,4 +321,3 @@
     <div id="map"></div>
 </body>
 </html>
-{% endif %}
