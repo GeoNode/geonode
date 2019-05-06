@@ -38,7 +38,7 @@ class OAuthAuthentication(Authentication):
     def token_is_valid(self, token):
         valid = False
         try:
-            verify_access_token(token)
+            verify_access_token(None, token)
             valid = True
         except Exception:
             pass

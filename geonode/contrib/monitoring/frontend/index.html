@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static from staticfiles %}
 
 <!DOCTYPE html>
@@ -36,7 +37,7 @@
         }
       </style>
     <![endif]-->
-    <link rel="search" type="application/opensearchdescription+xml" href="{{ SITEURL }}catalogue/opensearch" title="GeoNode Search"/>
+    <link rel="search" type="application/opensearchdescription+xml" href="{{ SITEURL }}catalogue/opensearch" title="{% trans "GeoNode Search" %}"/>
   </head>
 
   <body class="monitoring">
@@ -48,7 +49,7 @@
 	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
 	        <i class="fa fa-navicon fa-lg"></i>
 	      </button>
-	      <a class="navbar-brand" href="{{ SITEURL }}">GeoNode</a>
+	      <a class="navbar-brand" href="{{ SITEURL }}">{% trans "GeoNode" %}</a>
 	    </div>
 	    <div id="navbar" class="navbar-collapse collapse">
 	      <ul class="nav navbar-nav toolbar">
@@ -56,8 +57,8 @@
 	        <li id="nav_layers">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Data<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
-                <li><a href="{{ SITEURL }}layers/">Layers</a></li>
-                <li><a href="{{ SITEURL }}documents/">Documents</a></li>
+                <li><a href="{{ SITEURL }}layers/">{% trans "Layers" %}</a></li>
+                <li><a href="{{ SITEURL }}documents/">{% trans "Documents" %}</a></li>
               </ul>
             </li>
 	        <li id="nav_maps">
@@ -66,9 +67,9 @@
             <li>
 	          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">About<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
-                <li><a href="{{ SITEURL }}people/">People</a></li>
-                <li><a href="{{ SITEURL }}groups/">Groups</a></li>
-                <li><a href="{{ SITEURL }}groups/categories/">Group Categories</a></li>
+                <li><a href="{{ SITEURL }}people/">{% trans "People" %}</a></li>
+                <li><a href="{{ SITEURL }}groups/">{% trans "Groups" %}</a></li>
+                <li><a href="{{ SITEURL }}groups/categories/">{% trans "Group Categories" %}</a></li>
               </ul>
             </li>
           </ul>
@@ -89,15 +90,15 @@
       <!-- End of Navbar -->
     <div class="alert alert-danger alert-dismissible" role="alert" id="ieflag" style="display:none">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h1>You are using an outdated browser that is not supported by GeoNode.</h1>
-      <p>Please use a <strong>modern browser</strong> like Mozilla Firefox, Google Chrome or Safari.</p>
+      <h1>{% trans "You are using an outdated browser that is not supported by GeoNode." %}</h1>
+      <p>{% trans "Please use a <strong>modern browser</strong> like Mozilla Firefox, Google Chrome or Safari." %}</p>
     </div>
   <div id="wrap">
     <div class="container">
       <div class="alert alert-warn" id="status-message" hidden="hidden">
     <a class="close" onclick="$('.alert').hide()">×</a>
-    <strong><p id="status-message-text">Placeholder for status-message</p></strong>
-    <p id="status-message-text-body">Placeholder for status-message-body</p>
+    <strong><p id="status-message-text">{% trans "Placeholder for status-message" %}</p></strong>
+    <p id="status-message-text-body">{% trans "Placeholder for status-message-body" %}</p>
 </div>
       <div class="row">
         <div class="col-md-8">
@@ -117,31 +118,31 @@
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>Data</li>
-            <li><a href="{{ SITEURL }}layers/">Layers</a></li>
-            <li><a href="{{ SITEURL }}documents/">Documents</a></li>
+            <li><a href="{{ SITEURL }}layers/">{% trans "Layers" %}</a></li>
+            <li><a href="{{ SITEURL }}documents/">{% trans "Documents" %}</a></li>
           </ul>
         </div>
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>Maps</li>
-            <li><a href="{{ SITEURL }}maps/">Explore Maps</a></li>
+            <li><a href="{{ SITEURL }}maps/">{% trans "Explore Maps" %}</a></li>
           </ul>
         </div>
 		<div class="col-md-2">
           <ul class="list-unstyled">
             <li>About</li>
-            <li><a href="{{ SITEURL }}people/">People</a></li>
-            <li><a href="{{ SITEURL }}groups/">Groups</a></li>
+            <li><a href="{{ SITEURL }}people/">{% trans "People" %}</a></li>
+            <li><a href="{{ SITEURL }}groups/">{% trans "Groups" %}</a></li>
 
 
           </ul>
         </div>
         <div class="col-md-6 text-right">
           <ul class="list-unstyled">
-            <li>Powered by <a href="http://geonode.org">GeoNode</a> <em>version {{ VERSION }}</em></li>
-            <li><a href="{{ SITEURL }}developer/">Developers</a> | <a href="{{ SITEURL }}about/">About</a><li>
+            <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em></li>
+            <li><a href="{{ SITEURL }}developer/">{% trans "Developers" %}</a> | <a href="{{ SITEURL }}about/">{% trans "About" %}</a><li>
           </ul>
-          <label class="hidden">Language</label>
+          <label class="hidden">{% trans "Language" %}</label>
           <form class="form-inline" action="/i18n/setlang/" method="post">
           <input type='hidden' name='csrfmiddlewaretoken' value='RkQFJyyuw8Jre2PwWXQBk55C8otvt9wM' />
             <select class="col-md-6 pull-right" name="language" onchange="javascript:form.submit()">
@@ -282,26 +283,26 @@
       <div class="modal-dialog modal-sm">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="myModalLabel">Sign in</h4>
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>
+            <h4 class="modal-title" id="myModalLabel">{% trans "Sign in" %}</h4>
           </div>
           <form class="form-signin" role="form" action="/account/login/?next=/monitoring/" method="post">
             <div class="modal-body">
               <input type='hidden' name='csrfmiddlewaretoken' value='RkQFJyyuw8Jre2PwWXQBk55C8otvt9wM' />
               <div class="form-group">
-                <label for="id_username" class="sr-only">Username:</label>
+                <label for="id_username" class="sr-only">{% trans "Username" %}:</label>
                 <input id="id_username" class="form-control" name="username" placeholder="Username" type="text" />
               </div>
               <div class="form-group">
-                <label for="id_password" class="sr-only">Password:</label>
+                <label for="id_password" class="sr-only">{% trans "Password" %}:</label>
                 <input id="id_password" class="form-control" name="password" placeholder="Password" type="password" />
               </div>
               <label class="checkbox">
-                <input type="checkbox" /> Remember Me
+                <input type="checkbox" /> {% trans "Remember Me" %}
               </label>
             </div>
             <div class="modal-footer">
-              <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+              <button type="submit" class="btn btn-primary btn-block">{% trans "Sign in" %}</button>
             </div>
           </form>
         </div>

@@ -14,6 +14,9 @@
     <meta Http-Equiv="Cache-directive: no-cache">
 
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+
+    <link rel="shortcut icon" href="{% static 'geonode/img/favicon.ico' %}" />
+
     {% block head %}
       {% if DEBUG_STATIC %}
           <link href="{% static "lib/css/jquery.dataTables.css" %}?v={{ VERSION }}" rel="stylesheet" />
@@ -27,6 +30,10 @@
       <link href="{% static "geonode/css/ext-compatibility.css" %}?v={{ VERSION }}" rel="stylesheet" />
       <link href="{% static "geonode/css/ux-all.css" %}?v={{ VERSION }}" rel="stylesheet" />
       <link href="{% static "geonode/css/base.css" %}?v={{ VERSION }}" rel="stylesheet" />
+
+      <link rel='stylesheet' id='cookie-law-info-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-public.css" %}?v={{ VERSION }}" type='text/css' media='all' />
+      <link rel='stylesheet' id='cookie-law-info-gdpr-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-gdpr.css" %}?v={{ VERSION }}" type='text/css' media='all' />
+
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
       <style type="text/css">
         /* Additional styles by custom themes */
@@ -106,7 +113,7 @@
         }
       </style>
     <![endif]-->
-    <link rel="search" type="application/opensearchdescription+xml" href="{{SITEURL}}catalogue/opensearch" title="GeoNode Search"/>
+    <link rel="search" type="application/opensearchdescription+xml" href="{{SITEURL}}catalogue/opensearch" title="{% trans "GeoNode Search" %}"/>
 
     <script>
         var siteUrl = '{{ SITEURL }}'.replace(/\/?$/, '/');
@@ -136,11 +143,11 @@
                 <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
                 {% if user.is_authenticated %}
                     <li role="separator" class="divider"></li>
-                    <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
+                    <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
                     {% if 'geonode.contrib.createlayer' in INSTALLED_APPS %}
                         <li><a href="{% url "layer_create" %}">{% trans "Create Layer" %}</a></li>
                     {% endif %}
-                    <li><a href="{% url "document_upload" %}">Upload Document</a></li>
+                    <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
                 {% endif %}
                 {% if user.is_superuser or user.is_staff %}
                     <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
@@ -325,7 +332,7 @@
           {% block contactus %}
           {% if custom_theme.contactus %}
           <ul class="list-unstyled">
-              <li style="text-align: left;"><h2 style="margin-top: 0px;">Contact Us </h2> </li>
+              <li style="text-align: left;"><h2 style="margin-top: 0px;">{% trans "Contact Us" %} </h2> </li>
               {% if custom_theme.contact_name %}<li style="text-align: left;">{{ custom_theme.contact_name }}</li>{% endif %}
               {% if custom_theme.contact_position %}<li style="text-align: left;">{{ custom_theme.contact_position }}</li>{% endif %}
               {% if custom_theme.contact_administrative_area %}<li style="text-align: left;">{{ custom_theme.contact_administrative_area }}</li>{% endif %}
@@ -334,9 +341,9 @@
               {% if custom_theme.contact_postal_code %}<li style="text-align: left;">{{ custom_theme.contact_postal_code }}</li>{% endif %}
               {% if custom_theme.contact_country %}<li style="text-align: left;">{{ custom_theme.contact_country }}</li>{% endif %}
               {% if custom_theme.contact_delivery_point %}<li style="text-align: left;">{{ custom_theme.contact_delivery_point }}</li>{% endif %}
-              {% if custom_theme.contact_voice %}<li style="text-align: left;">Tel: {{ custom_theme.contact_voice }}</li>{% endif %}
-              {% if custom_theme.contact_facsimile %}<li style="text-align: left;">Fax: {{ custom_theme.contact_facsimile }}</li>{% endif %}
-              {% if custom_theme.contact_email %}<li style="text-align: left;">E-mail: {{ custom_theme.contact_email }}</li>{% endif %}
+              {% if custom_theme.contact_voice %}<li style="text-align: left;">{% trans "Tel" %}: {{ custom_theme.contact_voice }}</li>{% endif %}
+              {% if custom_theme.contact_facsimile %}<li style="text-align: left;">{% trans "Fax" %}: {{ custom_theme.contact_facsimile }}</li>{% endif %}
+              {% if custom_theme.contact_email %}<li style="text-align: left;">{% trans "E-mail" %}: {{ custom_theme.contact_email }}</li>{% endif %}
           </ul>
           {% endif %}
           {% endblock contactus %}

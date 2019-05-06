@@ -167,6 +167,8 @@ def geoserver_upload(
         gs_resource = gs_catalog.get_resource(
             name,
             workspace=workspace)
+        if not gs_resource:
+            gs_resource = gs_catalog.get_resource(name)
     if gs_resource is not None:
         assert gs_resource.name == name
     else:

@@ -37,7 +37,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_CORE: 'True'
             MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
     - name: "GeoServer-backend Contrib Apps Smoke Tests"
       python: 2.7
       virtualenv:
@@ -81,7 +81,7 @@ matrix:
             TEST_RUN_INTEGRATION_CSW: 'True'
             TEST_RUN_INTEGRATION_BDD: 'False'
             MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "GeoServer-backend Integration BDD Tests"
       python: 2.7
@@ -98,7 +98,7 @@ matrix:
             TEST_RUN_INTEGRATION_CSW: 'False'
             TEST_RUN_INTEGRATION_BDD: 'True'
             MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Core Modules Smoke Tests"
       python: 2.7
@@ -117,7 +117,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_CORE: 'True'
             MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Contrib Apps Smoke Tests"
       python: 2.7
@@ -136,7 +136,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_INTERNAL_APPS: 'True'
             MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Integration Tests"
       python: 2.7
@@ -155,7 +155,7 @@ matrix:
             ON_TRAVIS: 'True'
             TEST_RUN_INTEGRATION: 'True'
             MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'False'
+            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "Selenium Integration Tests"
       python: 3.5
@@ -166,6 +166,7 @@ branches:
   only:
     - master
     - 2.20.x
+    - 2.10.x
     - 2.8.x
     - 2.6.x
 
@@ -181,6 +182,7 @@ before_install:
       mkdir -p $HOME/buildout-cache/{eggs,downloads};
       scripts/misc/geoserver_server_setup.sh before_install;
       scripts/misc/qgis_server_setup.sh before_install;
+      sudo apt-get autoremove sqlite3;
     fi
 
 install:
@@ -204,13 +206,12 @@ install:
       sudo apt-get install -y libgdal1i python-gdal gdal-bin spatialite-bin;
       sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-httplib2 python-httplib2 gettext;
       sudo apt-get install -y python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk;
-      sudo apt-add-repository -y ppa:webupd8team/java; sudo apt update;
-      echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections;
-      echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections;
-      sudo apt install -y oracle-java8-set-default ant maven;
-      sudo update-java-alternatives --set java-8-oracle;
-      export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
-      export PATH=$JAVA_HOME'bin/java':$PATH
+      sudo apt-add-repository -y ppa:jonathonf/backports;
+      sudo apt-get -y update && sudo apt-get install -y sqlite3;
+      sudo apt install -y openjdk-8-jre openjdk-8-jdk ant maven;
+      sudo update-java-alternatives --set java-1.8.0-openjdk-amd64;
+      export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");
+      export PATH=$JAVA_HOME'bin/java':$PATH;
       pip install -r requirements.txt --upgrade;
       pip install -e . --upgrade;
       pip install pygdal==`gdal-config --version`.*;

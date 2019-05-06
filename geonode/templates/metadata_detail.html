@@ -4,7 +4,7 @@
 
 {% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
-{% block body_class %}data{% endblock %}
+{% block body_class %}{% trans "data" %}{% endblock %}
 
 {% block body_outer %}
 
@@ -62,7 +62,7 @@
             {{ bullet }}<br/><br/>
             {% endfor %}
             {% if resource.license.url %}
-            + For more info see <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
+            + {% trans "For more info see" %} <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
             {% endif %}
         </dd>
 
@@ -204,7 +204,7 @@
             {{ bullet }}<br/><br/>
             {% endfor %}
             {% if resource.license.url %}
-            + For more info see <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
+            + {% trans "For more info see" %} <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
             {% endif %}
         </dd>
         {% endif %}

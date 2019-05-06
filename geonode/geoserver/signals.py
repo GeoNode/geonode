@@ -293,7 +293,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
     if any(instance.keyword_list()):
         keywords = instance.keyword_list()
-        gs_resource.keywords = [kw.decode("utf-8", "replace") for kw in list(set(keywords))]
+        gs_resource.keywords = [kw for kw in list(set(keywords))]
 
         # gs_resource should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True

@@ -209,7 +209,7 @@ def proxy(request, url=None, response_callback=None,
                                             headers=headers,
                                             timeout=timeout,
                                             user=request.user)
-    content = response.content
+    content = response.content or response.reason
     status = response.status_code
     content_type = response.headers.get('Content-Type')
 
@@ -242,8 +242,17 @@ def proxy(request, url=None, response_callback=None,
             _response['Location'] = response.getheader('Location')
             return _response
         else:
+            def _get_message(text):
+                _s = text.decode("utf-8", "replace")
+                try:
+                    found = re.search('<b>Message</b>(.+?)</p>', _s).group(1).strip()
+                except BaseException:
+                    found = _s
+                return found
+
             return HttpResponse(
                 content=content,
+                reason=_get_message(content) if status not in (200, 201) else None,
                 status=status,
                 content_type=content_type)
 

@@ -1031,7 +1031,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     if local_bboxes:
         for _bbox in local_bboxes:
             if bbox is None:
-                bbox = _bbox
+                bbox = list(_bbox)
             else:
                 if bbox[0] > _bbox[0]:
                     bbox[0] = _bbox[0]

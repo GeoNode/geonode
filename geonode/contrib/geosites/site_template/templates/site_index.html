@@ -3,13 +3,17 @@
 {% comment %}
 This is where you can override the hero area block. You can simply modify the content below or replace it wholesale to meet your own needs. 
 {% endcomment %}
-  {% block hero %}
-  <div class="jumbotron">
-    <div class="container">
-      <h1>{% trans "Welcome" %}</h1>
-      <p>{% blocktrans %}GeoNode is an open source platform for sharing geospatial data and maps.{% endblocktrans %}</p>
-      <p>{% blocktrans %}If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.{% endblocktrans %}</p>
-      <span>{% trans 'Need help?' %} <a href="http://docs.geonode.org/en/latest/tutorials/users/quickstart/index.html">{% trans 'Getting Started' %}</a></span>
+{% block hero %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>{{ custom_theme.jumbotron_welcome_title|default:_("Welcome") }}</h1>
+            <p></p>
+            <p>{{ custom_theme.jumbotron_welcome_content|default:_("GeoNode is an open source platform for sharing geospatial data and maps.") }}</p>
+            {% if not custom_theme.jumbotron_cta_hide %}
+                <p><a class="btn btn-default btn-lg" target="_blank"
+                      href="{{ custom_theme.jumbotron_cta_link|default:_("http://docs.geonode.org/en/master/tutorials/users/index.html") }}"
+                      role="button">{{ custom_theme.jumbotron_cta_text|default:_("Get Started &raquo;") }}</a></p>
+            {% endif %}
+        </div>
     </div>
-  </div>
-  {% endblock %}
+{% endblock %}
