@@ -27,11 +27,12 @@ At the end of this section you will be able to setup from scratch the whole GeoN
 
     quick_install
     linux_admin_intro/index
+    vm_setup_virtualbox
+    development_install/index
+    geonode_install/index
     running_ansible
     running_docker/index
-    vm_setup_virtualbox
     vm_running_vagrant
-    geonode_install/index
     setup_on_centos/index
     network_conf_issues
     geonode_update/index
@@ -42,11 +43,20 @@ At the end of this section you will be able to setup from scratch the whole GeoN
 :ref:`linux_admin_intro`
     This section describes how to setup a Virtual Machine running Ubuntu.
 
-:ref:`running_docker`
-    This section describes how to setup GeoNode on Docker
+:ref:`vm_setup_virtualbox`
+    This section describes how to setup a local Virtual Server 
+
+:ref:`development_install`
+    This section describes how to setup GeoNode for Development
 
 :ref:`geonode_install`
     This section will guide the user through the steps necessary to install GeoNode on Ubuntu.
+
+:ref:`running_ansible`
+    This section describes how to setup GeoNode by use of Ansible
+
+:ref:`running_docker`
+    This section describes how to setup GeoNode on Docker
 
 :ref:`setup_on_centos`
     This section will guide the user through the steps necessary to install GeoNode on CentOS.
