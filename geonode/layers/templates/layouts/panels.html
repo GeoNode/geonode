@@ -1,7 +1,8 @@
+{% load static from staticfiles %}
 {% load floppyforms %}
 {% load i18n %}
-<!--<link href="{{ STATIC_URL }}lib/css/bootstrap-select.min.css?v={{ VERSION }}" rel="stylesheet" />-->
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+<!--<link href="{% static "lib/css/bootstrap-select.min.css" %}?v={{ VERSION }}" rel="stylesheet" />-->
+<script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
 <style>
 /* general panel styles */
 #mdeditor_form .panel-group .panel{
@@ -307,7 +308,7 @@ span.grippy::after {
                                     <div id="basicCategoryInfo" class="col-lg-12">
                                         <span><label for="{{ category_form.category_choice_field|id }}" class="control-label required-field">{% trans "Category" %}</label></span>
                                         <select
-                                            title="Choose one of the following..."
+                                            title="{% trans "Choose one of the following..." %}"
                                             data-live-search="true"
                                             data-size="5"
                                             name="category_choice_field"
@@ -327,7 +328,7 @@ span.grippy::after {
                                     <div id="basicGroupInfo" class="col-lg-12">
                                         <span><label for="id_resource-group" class="control-label required-field">{% trans "Group" %}</label></span>
                                         <select
-                                            title="Choose one of the following..."
+                                            title="{% trans "Choose one of the following..." %}"
                                             data-live-search="true"
                                             data-size="5"
                                             name="resource-group"
@@ -488,13 +489,13 @@ span.grippy::after {
                                   <div class="modal-content">
                                     <div class="modal-header">
                                       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                      <h4 class="modal-title" id="exampleModalLabel">Message box</h4>
+                                      <h4 class="modal-title" id="exampleModalLabel">{% trans "Message box" %}</h4>
                                     </div>
                                     <div class="modal-body">
                                       ...
                                     </div>
                                     <div class="modal-footer">
-                                      <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "OK" %}</button>
                                     </div>
                                   </div>
                                 </div>

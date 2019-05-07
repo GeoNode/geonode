@@ -1,0 +1,25 @@
+{% load i18n %}
+{% load client_lib_tags %}
+{% load static from staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static "worldmap_client/theme/site.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "worldmap_client/externals/ext/resources/css/ext-all.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "worldmap_client/externals/openlayers/theme/default/style.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "worldmap_client/externals/geoext/resources/css/geoext-all.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "worldmap_client/externals/gxp/theme/all.css" %}?v={{ VERSION }}">
+<link rel="stylesheet" type="text/css" href="{% static "worldmap_client/externals/ext/resources/css/xtheme-white.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "worldmap_client/theme/app/geoexplorer_white.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "worldmap_client/theme/ux/colorpicker/color-picker.ux.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "worldmap_client/theme/ux/spinner/Spinner.css" %}?v={{ VERSION }}" />
+
+<script src="http://localhost:9090/script/OpenLayers.js" type="text/javascript"></script>
+<script src="http://localhost:9090/script/GeoExt.js" type="text/javascript"></script>
+<script src="http://localhost:9090/script/gxp.js" type="text/javascript"></script>
+<script src="http://localhost:9090/script/GeoExplorer.js" type="text/javascript"></script>
+<script src="http://localhost:9090/script/GeoNode.js" type="text/javascript"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key={% google_api_key %}" type="text/javascript"></script>
+
+<script type="text/javascript" src="{% static 'geonode/js/utils/thumbnail.js' %}"></script>
+<script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
+<script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>

@@ -3795,10 +3795,6 @@ msgstr "Compartir"
 msgid "Ratings"
 msgstr "Puntaje"
 
-#: geonode/templates/_actions.html:20
-msgid "GeoGig"
-msgstr "GeoGig"
-
 #: geonode/templates/_actions.html:23
 msgid "Exif"
 msgstr "Exif"

@@ -23,10 +23,11 @@ We are assuming a Ubuntu 16.04.1 LTS development environment, but these instruct
     sudo apt-get update
     sudo apt-get install python-virtualenv python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk postgresql postgis
 
-    # Install Java 8 (needed by latest GeoServer 2.13)
-    sudo apt-add-repository ppa:webupd8team/java
-    sudo apt-get update
-    sudo apt-get install oracle-java8-installer
+    # Install Java 8 (needed by latest GeoServer 2.14)
+    sudo apt install -y openjdk-8-jre openjdk-8-jdk
+    sudo update-java-alternatives --set java-1.8.0-openjdk-amd64
+    export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
+    export PATH=$JAVA_HOME'bin/java':$PATH
 
 Virtual environment creation and installation of Python packages
 ----------------------------------------------------------------
@@ -59,7 +60,7 @@ Set the following environment variables as needed (change SITE_NAME and SERVER_I
       export OWNER=$PG_USERNAME
       export ALLOWED_HOSTS="localhost, $SERVER_IP, "
       export GEOSERVER_LOCATION=http://localhost:8080/geoserver/
-      export GEOSERVER_PUBLIC_LOCATION=http://$SERVER_IP/geoserver/
+      export GEOSERVER_PUBLIC_LOCATION=http://$SERVER_IP/gs/
       export SOLR_URL =http://localhost:8983/solr/hypermap/select/
       export HYPERMAP_REGISTRY_URL =http://localhost:8001
       export MAPPROXY_URL=http://localhost:8001
@@ -123,7 +124,7 @@ Hypermap Registry
 
 GeoNode with the WorldMap contribute module requires a Hypermap Registry (Hypermap) running instance.
 
-You can install Hypermap by following these instructions (use the "Manual Installation" section): https://github.com/cga-harvard/HHypermap/blob/master/_docs/developers.md
+You can install Hypermap by following these instructions (use the "Manual Installation" section): http://cga-harvard.github.io/Hypermap-Registry/installation.html
 
 Note that you can bypass Java 8 installation as it was installed previously. As a search engine you should install Solr, as we haven't tested Elasticsearch with WorldMap so far. Create a specific virtual environment for Hypermap in order not to interfere with the GeoNode/WorldMap virtual environment.
 

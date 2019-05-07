@@ -37,6 +37,7 @@ from tastypie import http
 from tastypie.exceptions import BadRequest
 
 from geonode import qgis_server, geoserver
+from geonode.api.paginator import CrossSiteXHRPaginator
 from geonode.api.authorization import GeoNodeStyleAuthorization
 from geonode.qgis_server.models import QGISServerStyle
 from guardian.shortcuts import get_objects_for_user
@@ -87,11 +88,12 @@ class CountJSONSerializer(Serializer):
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
-        if options['title_filter']:
-            resources = resources.filter(title__icontains=options['title_filter'])
+        if resources and resources.count() > 0:
+            if options['title_filter']:
+                resources = resources.filter(title__icontains=options['title_filter'])
 
-        if options['type_filter']:
-            resources = resources.instance_of(options['type_filter'])
+            if options['type_filter']:
+                resources = resources.instance_of(options['type_filter'])
 
         counts = list(resources.values(options['count_type']).annotate(count=Count(options['count_type'])))
 
@@ -520,6 +522,7 @@ class QGISStyleResource(ModelResource):
     type = fields.CharField(attribute='type')
 
     class Meta:
+        paginator_class = CrossSiteXHRPaginator
         queryset = QGISServerStyle.objects.all()
         resource_name = 'styles'
         detail_uri_name = 'id'
@@ -699,6 +702,7 @@ class GeoserverStyleResource(ModelResource):
     type = fields.CharField(attribute='type')
 
     class Meta:
+        paginator_class = CrossSiteXHRPaginator
         queryset = Style.objects.all()
         resource_name = 'styles'
         detail_uri_name = 'id'

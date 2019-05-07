@@ -1,0 +1,1 @@
+http://128.31.22.46:8080/geoserver/wfs?access_token=TCSt2nAzYCZeeSF9jTDULPff6YUWrI?outputFormat=SHAPE-ZIP&service=WFS&srs=EPSG%3A4610&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Azhejiang_yangcan_yanyu&version=1.0.0&access_token=TCSt2nAzYCZeeSF9jTDULPff6YUWrI

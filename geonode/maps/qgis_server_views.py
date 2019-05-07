@@ -64,7 +64,7 @@ class MapCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         request = self.request
-        if 'access_token' in request.session:
+        if request and 'access_token' in request.session:
             access_token = request.session['access_token']
         else:
             access_token = None
@@ -84,10 +84,9 @@ class MapCreateView(CreateView):
                 request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
             if snapshot is None:
-                config = map_obj.viewer_json(request.user, access_token)
+                config = map_obj.viewer_json(request)
             else:
-                config = snapshot_config(snapshot, map_obj, request.user,
-                                         access_token)
+                config = snapshot_config(snapshot, map_obj, request)
             # list all required layers
             map_layers = MapLayer.objects.filter(
                 map_id=mapid).order_by('stack_order')
@@ -162,8 +161,7 @@ class MapCreateView(CreateView):
 
                         if access_token and ogc_server_url == service_url and \
                                 'access_token' not in service.base_url:
-                            url = service.base_url + \
-                                  '?access_token=' + access_token
+                            url = '%s?access_token=%s' % (service.base_url, access_token)
                         else:
                             url = service.base_url
                         map_layers = MapLayer(map=map_obj,
@@ -172,11 +170,11 @@ class MapCreateView(CreateView):
                                               layer_params=json.dumps(config),
                                               visibility=True,
                                               source_params=json.dumps({
-                                                "ptype": service.ptype,
-                                                "remote": True,
-                                                "url": url,
-                                                "name": service.name,
-                                                "title": "[R] %s" % service.title}))
+                                                  "ptype": service.ptype,
+                                                  "remote": True,
+                                                  "url": url,
+                                                  "name": service.name,
+                                                  "title": "[R] %s" % service.title}))
                     else:
                         ogc_server_url = urlparse.urlsplit(
                             ogc_server_settings.PUBLIC_LOCATION).netloc
@@ -185,7 +183,7 @@ class MapCreateView(CreateView):
                         if access_token and ogc_server_url == layer_url and \
                                 'access_token' not in layer.ows_url:
                             url = layer.ows_url + '?access_token=' + \
-                                  access_token
+                                access_token
                         else:
                             url = layer.ows_url
                         map_layers = MapLayer(
@@ -236,10 +234,9 @@ class MapCreateView(CreateView):
                 map_obj.handle_moderated_uploads()
 
                 if snapshot is None:
-                    config = map_obj.viewer_json(request.user, access_token)
+                    config = map_obj.viewer_json(request)
                 else:
-                    config = snapshot_config(snapshot, map_obj, request.user,
-                                             access_token)
+                    config = snapshot_config(snapshot, map_obj, request)
 
                 config['fromLayer'] = True
                 context = {
@@ -286,16 +283,10 @@ class MapDetailView(DetailView):
         map_obj = _resolve_map(
             request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
-        if 'access_token' in request.session:
-            access_token = request.session['access_token']
-        else:
-            access_token = None
-
         if snapshot is None:
-            config = map_obj.viewer_json(request.user, access_token)
+            config = map_obj.viewer_json(request)
         else:
-            config = snapshot_config(snapshot, map_obj, request.user,
-                                     access_token)
+            config = snapshot_config(snapshot, map_obj, request)
         # list all required layers
         layers = Layer.objects.all()
         map_layers = MapLayer.objects.filter(
@@ -332,16 +323,10 @@ class MapEmbedView(DetailView):
         map_obj = _resolve_map(
             request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
-        if 'access_token' in request.session:
-            access_token = request.session['access_token']
-        else:
-            access_token = None
-
         if snapshot is None:
-            config = map_obj.viewer_json(request.user, access_token)
+            config = map_obj.viewer_json(request)
         else:
-            config = snapshot_config(snapshot, map_obj, request.user,
-                                     access_token)
+            config = snapshot_config(snapshot, map_obj, request)
         # list all required layers
         map_layers = MapLayer.objects.filter(
             map_id=mapid).order_by('stack_order')
@@ -381,19 +366,12 @@ class MapEditView(UpdateView):
                                'base.view_resourcebase',
                                _PERMISSION_MSG_VIEW)
 
-        if 'access_token' in request.session:
-            access_token = request.session['access_token']
-        else:
-            access_token = None
-
         if snapshot is None:
-            config = map_obj.viewer_json(request.user,
-                                         access_token)
+            config = map_obj.viewer_json(request)
         else:
             config = snapshot_config(snapshot,
                                      map_obj,
-                                     request.user,
-                                     access_token)
+                                     request)
 
         layers = Layer.objects.all()
         map_layers = MapLayer.objects.filter(
@@ -463,7 +441,9 @@ class MapUpdateView(UpdateView):
                 body = ''
 
             try:
-                map_obj.update_from_viewer(body)
+                # Call the base implementation first to get a context
+                context = super(UpdateView, self).get_context_data(**kwargs)
+                map_obj.update_from_viewer(body, context=context)
             except ValueError as e:
                 return self.render_to_response(str(e), status=400)
             else:

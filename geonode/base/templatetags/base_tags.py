@@ -33,8 +33,11 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
-from geonode.base.models import HierarchicalKeyword
+from geonode.base.models import (
+    HierarchicalKeyword, Menu, MenuItem
+)
 from geonode.security.utils import get_visible_resources
+from collections import OrderedDict
 
 register = template.Library()
 
@@ -69,8 +72,12 @@ def facets(context):
     facet_type = context['facet_type'] if 'facet_type' in context else 'all'
 
     if not settings.SKIP_PERMS_FILTER:
-        authorized = get_objects_for_user(
-            request.user, 'base.view_resourcebase').values('id')
+        authorized = []
+        try:
+            authorized = get_objects_for_user(
+                request.user, 'base.view_resourcebase').values('id')
+        except BaseException:
+            pass
 
     if facet_type == 'documents':
 
@@ -173,7 +180,15 @@ def facets(context):
             layers = layers.filter(id__in=authorized)
 
         counts = layers.values('storeType').annotate(count=Count('storeType'))
-        count_dict = dict([(count['storeType'], count['count']) for count in counts])
+
+        counts_array = []
+        try:
+            for count in counts:
+                counts_array.append((count['storeType'], count['count']))
+        except BaseException:
+            pass
+
+        count_dict = dict(counts_array)
 
         vector_time_series = layers.exclude(has_time=False).filter(storeType='dataStore'). \
             values('storeType').annotate(count=Count('storeType'))
@@ -306,3 +321,26 @@ def fullurl(context, url):
         return ''
     r = context['request']
     return r.build_absolute_uri(url)
+
+
+@register.assignment_tag
+def get_menu(placeholder_name):
+    menus = {
+        m: MenuItem.objects.filter(menu=m)
+        for m in Menu.objects.filter(placeholder__name=placeholder_name)
+    }
+    return OrderedDict(sorted(menus.items(), key=lambda k_v1: (k_v1[1], k_v1[0])))
+
+
+@register.inclusion_tag(filename='base/menu.html')
+def render_nav_menu(placeholder_name):
+    menus = {}
+    try:
+        menus = {
+            m: MenuItem.objects.filter(menu=m)
+            for m in Menu.objects.filter(placeholder__name=placeholder_name)
+        }
+    except BaseException:
+        pass
+
+    return {'menus': OrderedDict(sorted(menus.items(), key=lambda k_v: (k_v[1], k_v[0])))}

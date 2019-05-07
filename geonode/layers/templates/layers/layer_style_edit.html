@@ -1,0 +1,27 @@
+{% extends "layers/layer_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load bootstrap_tags %}
+{% load pagination_tags %}
+{% load base_tags %}
+{% load guardian_tags %}
+{% load client_lib_tags %}
+
+{% block title %}{{ resource.title|default:resource.alternate }} — {{ block.super }}{% endblock %}
+
+{% block head %}
+  {% if TWITTER_CARD %}
+    {% include "base/_resourcebase_twittercard.html" %}
+  {% endif %}
+
+  {% if OPENGRAPH_ENABLED %}
+    {% include "base/_resourcebase_opengraph.html" %}
+  {% endif %}
+
+  {% get_layer_style_edit %}
+{{ block.super }}
+{% endblock %}
+
+{% block body_class %}{% trans "layers" %}{% endblock %}

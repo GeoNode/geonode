@@ -17,4 +17,4 @@
 #
 #########################################################################
 
-from .handler import get_service_handler  # flake8: noqa
+from .handler import get_service_handler  # noqa

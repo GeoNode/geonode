@@ -30,9 +30,9 @@ from django.db.models import signals
 from django.core import mail
 from django.conf import settings
 
-from geonode.geoserver.signals import geoserver_post_save
 from geonode.maps.models import Layer
-from geonode.utils import set_attributes
+from geonode.geoserver.helpers import set_attributes
+from geonode.geoserver.signals import geoserver_post_save
 from geonode.notifications_helper import has_notifications, notifications
 
 

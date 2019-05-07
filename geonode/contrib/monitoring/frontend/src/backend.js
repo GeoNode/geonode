@@ -1,1 +1,1 @@
-export default '/monitoring/api';
+export default './api';

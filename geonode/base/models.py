@@ -18,25 +18,18 @@
 #
 #########################################################################
 
-import datetime
 import math
 import os
 import re
 import logging
 import traceback
-import uuid
-import urllib
-import urllib2
-import cookielib
 
-from geonode.decorators import on_ogc_backend
 from pyproj import transform, Proj
 from urlparse import urljoin, urlsplit
 
 from django.db import models
 from django.core import serializers
 from django.db.models import Q, signals
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -44,7 +37,6 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
 from django.contrib.gis.geos import GEOSGeometry
@@ -56,7 +48,6 @@ from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 from agon_ratings.models import OverallRating
 
-from geonode import geoserver
 from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
@@ -68,9 +59,6 @@ from taggit.models import TagBase, ItemBase
 from treebeard.mp_tree import MP_Node
 
 from geonode.people.enumerations import ROLE_VALUES
-
-from oauthlib.common import generate_token
-from oauth2_provider.models import AccessToken, get_application_model
 
 logger = logging.getLogger(__name__)
 
@@ -158,7 +146,7 @@ class SpatialRepresentationType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.gn_description
+        return u"{0}".format(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -211,7 +199,7 @@ class Region(MPTTModel):
         default='EPSG:4326')
 
     def __unicode__(self):
-        return self.name
+        return u"{0}".format(self.name)
 
     @property
     def bbox(self):
@@ -260,7 +248,7 @@ class RestrictionCodeType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.gn_description
+        return u"{0}".format(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -289,7 +277,7 @@ class License(models.Model):
     license_text = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.name
+        return u"{0}".format(self.name)
 
     @property
     def name_long(self):
@@ -322,38 +310,41 @@ class HierarchicalKeyword(TagBase, MP_Node):
         """Dumps a tree branch to a python data structure."""
         qset = cls._get_serializable_model().get_tree(parent)
         ret, lnk = [], {}
-        for pyobj in qset:
-            serobj = serializers.serialize('python', [pyobj])[0]
-            # django's serializer stores the attributes in 'fields'
-            fields = serobj['fields']
-            depth = fields['depth'] or 1
-            fields['text'] = fields['name']
-            fields['href'] = fields['slug']
-            del fields['name']
-            del fields['slug']
-            del fields['path']
-            del fields['numchild']
-            del fields['depth']
-            if 'id' in fields:
-                # this happens immediately after a load_bulk
-                del fields['id']
+        try:
+            for pyobj in qset:
+                serobj = serializers.serialize('python', [pyobj])[0]
+                # django's serializer stores the attributes in 'fields'
+                fields = serobj['fields']
+                depth = fields['depth'] or 1
+                fields['text'] = fields['name']
+                fields['href'] = fields['slug']
+                del fields['name']
+                del fields['slug']
+                del fields['path']
+                del fields['numchild']
+                del fields['depth']
+                if 'id' in fields:
+                    # this happens immediately after a load_bulk
+                    del fields['id']
 
-            newobj = {}
-            for field in fields:
-                newobj[field] = fields[field]
-            if keep_ids:
-                newobj['id'] = serobj['pk']
+                newobj = {}
+                for field in fields:
+                    newobj[field] = fields[field]
+                if keep_ids:
+                    newobj['id'] = serobj['pk']
 
-            if (not parent and depth == 1) or\
-               (parent and depth == parent.depth):
-                ret.append(newobj)
-            else:
-                parentobj = pyobj.get_parent()
-                parentser = lnk[parentobj.pk]
-                if 'nodes' not in parentser:
-                    parentser['nodes'] = []
-                parentser['nodes'].append(newobj)
-            lnk[pyobj.pk] = newobj
+                if (not parent and depth == 1) or\
+                   (parent and depth == parent.depth):
+                    ret.append(newobj)
+                else:
+                    parentobj = pyobj.get_parent()
+                    parentser = lnk[parentobj.pk]
+                    if 'nodes' not in parentser:
+                        parentser['nodes'] = []
+                    parentser['nodes'].append(newobj)
+                lnk[pyobj.pk] = newobj
+        except BaseException:
+            pass
         return ret
 
 
@@ -763,10 +754,20 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     rating = models.IntegerField(default=0, null=True, blank=True)
 
     def __unicode__(self):
-        return self.title
+        return u"{0}".format(self.title)
+
+    # fields controlling security state
+    dirty_state = models.BooleanField(
+        _("Dirty State"),
+        default=False,
+        help_text=_('Security Rules Are Not Synched with GeoServer!'))
 
     def get_upload_session(self):
         raise NotImplementedError()
+
+    @property
+    def site_url(self):
+        return settings.SITEURL
 
     @property
     def creator(self):
@@ -799,7 +800,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def group_name(self):
         if self.group:
-            return str(self.group)
+            return str(self.group).encode("utf-8", "replace")
         return None
 
     @property
@@ -889,13 +890,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         for required_field in required_fields:
             field = getattr(self, required_field, None)
             if field:
-                if required_field is 'license':
-                    if field.name is 'Not Specified':
+                if required_field == 'license':
+                    if field.name == 'Not Specified':
                         continue
-                if required_field is 'regions':
+                if required_field == 'regions':
                     if not field.all():
                         continue
-                if required_field is 'category':
+                if required_field == 'category':
                     if not field.identifier:
                         continue
                 filled_fields.append(field)
@@ -920,6 +921,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 return 'vector'
             else:
                 return None
+
+    def set_dirty_state(self):
+        if not self.dirty_state:
+            self.dirty_state = True
+            self.save()
+
+    def clear_dirty_state(self):
+        if self.dirty_state:
+            self.dirty_state = False
+            self.save()
 
     @property
     def keyword_csv(self):
@@ -969,6 +980,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.bbox_x1 = lon + distance_x_degrees
         self.bbox_y0 = lat - distance_y_degrees
         self.bbox_y1 = lat + distance_y_degrees
+        self.srid = 'EPSG:4326'
 
     def set_bounds_from_bbox(self, bbox, srid):
         """
@@ -993,46 +1005,53 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.bbox_y1 = bbox[3]
         self.srid = srid
 
-        minx, maxx, miny, maxy = [float(c) for c in bbox]
-        x = (minx + maxx) / 2
-        y = (miny + maxy) / 2
-        (center_x, center_y) = forward_mercator((x, y))
+        if srid == "EPSG:4326":
+            minx, maxx, miny, maxy = [float(c) for c in bbox]
+            x = (minx + maxx) / 2
+            y = (miny + maxy) / 2
+            (center_x, center_y) = forward_mercator((x, y))
 
-        xdiff = maxx - minx
-        ydiff = maxy - miny
+            xdiff = maxx - minx
+            ydiff = maxy - miny
 
-        zoom = 0
+            zoom = 0
 
-        if xdiff > 0 and ydiff > 0:
-            width_zoom = math.log(360 / xdiff, 2)
-            height_zoom = math.log(360 / ydiff, 2)
-            zoom = math.ceil(min(width_zoom, height_zoom))
+            if xdiff > 0 and ydiff > 0:
+                width_zoom = math.log(360 / xdiff, 2)
+                height_zoom = math.log(360 / ydiff, 2)
+                zoom = math.ceil(min(width_zoom, height_zoom))
 
-        self.zoom = zoom
-        self.center_x = center_x
-        self.center_y = center_y
+            try:
+                self.zoom = zoom
+                self.center_x = center_x
+                self.center_y = center_y
+            except BaseException:
+                pass
 
     def download_links(self):
         """assemble download links for pycsw"""
         links = []
-        for url in self.link_set.all():
-            if url.link_type == 'metadata':  # avoid recursion
+        for link in self.link_set.all():
+            if link.link_type == 'metadata':  # avoid recursion
                 continue
-            if url.link_type == 'html':
+            if link.link_type == 'html':
                 links.append(
                     (self.title,
                      'Web address (URL)',
                      'WWW:LINK-1.0-http--link',
-                     url.url))
-            elif url.link_type in ('OGC:WMS', 'OGC:WFS', 'OGC:WCS'):
-                links.append((self.title, url.name, url.link_type, url.url))
+                     link.url))
+            elif link.link_type in ('OGC:WMS', 'OGC:WFS', 'OGC:WCS'):
+                links.append((self.title, link.name, link.link_type, link.url))
             else:
-                description = '%s (%s Format)' % (self.title, url.name)
+                _link_type = 'WWW:DOWNLOAD-1.0-http--download'
+                if self.storeType == 'remoteStore' and link.extension in ('html'):
+                    _link_type = 'WWW:DOWNLOAD-%s' % self.remote_service.type
+                description = '%s (%s Format)' % (self.title, link.name)
                 links.append(
                     (self.title,
                      description,
-                     'WWW:DOWNLOAD-1.0-http--download',
-                     url.url))
+                     _link_type,
+                     link.url))
         return links
 
     def get_tiles_url(self):
@@ -1049,15 +1068,19 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """Return Link for legend or None if it does not exist.
         """
         try:
-            legends_link = self.link_set.get(name='Legend')
+            legends_link = self.link_set.filter(name='Legend')
         except Link.DoesNotExist:
+            tb = traceback.format_exc()
+            logger.debug(tb)
             return None
         except Link.MultipleObjectsReturned:
+            tb = traceback.format_exc()
+            logger.debug(tb)
             return None
         else:
             return legends_link
 
-    def get_legend_url(self):
+    def get_legend_url(self, style_name=None):
         """Return URL for legend or None if it does not exist.
 
            The legend can be either an image (for Geoserver's WMS)
@@ -1068,6 +1091,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if legend is None:
             return None
 
+        if legend.count() > 0:
+            if not style_name:
+                return legend[0].url
+            else:
+                for _legend in legend:
+                    if style_name in _legend.url:
+                        return _legend.url
         return legend.url
 
     def get_ows_url(self):
@@ -1267,9 +1297,6 @@ class LinkManager(models.Manager):
     def original(self):
         return self.get_queryset().filter(link_type='original')
 
-    def geogig(self):
-        return self.get_queryset().filter(name__icontains='geogig')
-
     def ows(self):
         return self.get_queryset().filter(
             link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
@@ -1305,8 +1332,81 @@ class Link(models.Model):
 
     objects = LinkManager()
 
+    def __unicode__(self):
+        return u"{0} link".format(self.link_type)
+
+
+class MenuPlaceholder(models.Model):
+
+    name = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        unique=True
+    )
+
     def __str__(self):
-        return '%s link' % self.link_type
+        return self.name
+
+
+class Menu(models.Model):
+
+    title = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False
+    )
+    placeholder = models.ForeignKey(
+        to='MenuPlaceholder',
+        on_delete=models.CASCADE,
+        null=False
+    )
+    order = models.IntegerField(
+        null=False,
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        unique_together = (
+            ('placeholder', 'order'),
+            ('placeholder', 'title'),
+        )
+        ordering = ['order']
+
+
+class MenuItem(models.Model):
+
+    title = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False
+    )
+    menu = models.ForeignKey(
+        to='Menu',
+        on_delete=models.CASCADE,
+        null=False
+    )
+    order = models.IntegerField(
+        null=False
+    )
+    blank_target = models.BooleanField()
+    url = models.CharField(
+        max_length=2000,
+        null=False,
+        blank=False
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        unique_together = (
+            ('menu', 'order'),
+            ('menu', 'title'),
+        )
+        ordering = ['order']
 
 
 def resourcebase_post_save(instance, *args, **kwargs):
@@ -1408,130 +1508,3 @@ def rating_post_save(instance, *args, **kwargs):
 
 
 signals.post_save.connect(rating_post_save, sender=OverallRating)
-
-
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def do_login(sender, user, request, **kwargs):
-    """
-    Take action on user login. Generate a new user access_token to be shared
-    with GeoServer, and store it into the request.session
-    """
-    if user and user.is_authenticated():
-        token = None
-        try:
-            Application = get_application_model()
-            app = Application.objects.get(name="GeoServer")
-
-            # Lets create a new one
-            token = generate_token()
-
-            AccessToken.objects.get_or_create(
-                user=user,
-                application=app,
-                expires=datetime.datetime.now(timezone.get_current_timezone()) +
-                datetime.timedelta(
-                    days=1),
-                token=token)
-        except BaseException:
-            u = uuid.uuid1()
-            token = u.hex
-
-        # Do GeoServer Login
-        url = "%s%s&access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                                        'ows?service=wms&version=1.3.0&request=GetCapabilities',
-                                        token)
-
-        cj = cookielib.CookieJar()
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-
-        jsessionid = None
-        try:
-            opener.open(url)
-            for c in cj:
-                if c.name == "JSESSIONID":
-                    jsessionid = c.value
-        except BaseException:
-            u = uuid.uuid1()
-            jsessionid = u.hex
-
-        request.session['access_token'] = token
-        request.session['JSESSIONID'] = jsessionid
-
-
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def do_logout(sender, user, request, **kwargs):
-    """
-    Take action on user logout. Cleanup user access_token and send logout
-    request to GeoServer
-    """
-    if 'access_token' in request.session:
-        try:
-            Application = get_application_model()
-            app = Application.objects.get(name="GeoServer")
-
-            # Lets delete the old one
-            try:
-                old = AccessToken.objects.get(user=user, application=app)
-            except BaseException:
-                pass
-            else:
-                old.delete()
-        except BaseException:
-            pass
-
-        # Do GeoServer Logout
-        if 'access_token' in request.session:
-            access_token = request.session['access_token']
-        else:
-            access_token = None
-
-        if access_token:
-            url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                                            settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'],
-                                            access_token)
-            header_params = {
-                "Authorization": ("Bearer %s" % access_token)
-            }
-        else:
-            url = "%s%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                            settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'])
-
-        param = {}
-        data = urllib.urlencode(param)
-
-        cookies = None
-        for cook in request.COOKIES:
-            name = str(cook)
-            value = request.COOKIES.get(name)
-            if name == 'csrftoken':
-                header_params['X-CSRFToken'] = value
-
-            cook = "%s=%s" % (name, value)
-            if not cookies:
-                cookies = cook
-            else:
-                cookies = cookies + '; ' + cook
-
-        if cookies:
-            if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
-                cookies = cookies + '; JSESSIONID=' + \
-                    request.session['JSESSIONID']
-            header_params['Cookie'] = cookies
-
-        gs_request = urllib2.Request(url, data, header_params)
-
-        try:
-            urllib2.urlopen(gs_request)
-        except BaseException:
-            tb = traceback.format_exc()
-            if tb:
-                logger.debug(tb)
-
-        if 'access_token' in request.session:
-            del request.session['access_token']
-
-        request.session.modified = True
-
-
-user_logged_in.connect(do_login)
-user_logged_out.connect(do_logout)

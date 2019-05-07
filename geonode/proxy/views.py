@@ -23,13 +23,11 @@ import re
 import json
 import shutil
 import logging
-import requests
 import tempfile
 import traceback
 
-from slugify import Slugify
-from httplib import HTTPConnection, HTTPSConnection
-from urlparse import urlsplit, urljoin
+from slugify import slugify
+from urlparse import urlparse, urlsplit, urljoin
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils.http import is_safe_url
@@ -44,22 +42,96 @@ from geonode.layers.models import Layer, LayerFile
 from geonode.utils import (resolve_object,
                            check_ogc_backend,
                            get_dir_time_suffix,
-                           zip_dir)
+                           zip_dir,
+                           http_client)
+from geonode.base.auth import (extend_token,
+                               get_token_from_auth_header,
+                               get_token_object_from_session)
 from geonode import geoserver, qgis_server  # noqa
 
-TIMEOUT = 30
+TIMEOUT = 300
 
 logger = logging.getLogger(__name__)
 
-custom_slugify = Slugify(separator='_')
-
 ows_regexp = re.compile(
-    "^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
+    r"^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
+
+
+def get_headers(request, url, raw_url):
+    headers = {}
+    cookies = None
+    csrftoken = None
+
+    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(
+            url=raw_url, host=url.hostname):
+        cookies = request.META["HTTP_COOKIE"]
+
+    for cook in request.COOKIES:
+        name = str(cook)
+        value = request.COOKIES.get(name)
+        if name == 'csrftoken':
+            csrftoken = value
+        cook = "%s=%s" % (name, value)
+        cookies = cook if not cookies else (cookies + '; ' + cook)
+
+    csrftoken = get_token(request) if not csrftoken else csrftoken
+
+    if csrftoken:
+        headers['X-Requested-With'] = "XMLHttpRequest"
+        headers['X-CSRFToken'] = csrftoken
+        cook = "%s=%s" % ('csrftoken', csrftoken)
+        cookies = cook if not cookies else (cookies + '; ' + cook)
+
+    if cookies:
+        if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
+            cookies = cookies + '; JSESSIONID=' + \
+                request.session['JSESSIONID']
+        headers['Cookie'] = cookies
+
+    if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
+        headers["Content-Type"] = request.META["CONTENT_TYPE"]
+
+    access_token = None
+    # we give precedence to obtained from Aithorization headers
+    if 'HTTP_AUTHORIZATION' in request.META:
+        auth_header = request.META.get(
+            'HTTP_AUTHORIZATION',
+            request.META.get('HTTP_AUTHORIZATION2'))
+        if auth_header:
+            access_token = get_token_from_auth_header(auth_header)
+    # otherwise we check if a session is active
+    elif request and request.user.is_authenticated:
+        access_token = get_token_object_from_session(request.session)
+
+        # we extend the token in case the session is active but the token expired
+        if access_token and access_token.is_expired():
+            extend_token(access_token)
+
+    if access_token:
+        headers['Authorization'] = 'Bearer %s' % access_token
+
+    site_url = urlsplit(settings.SITEURL)
+    pragma = "no-cache"
+    referer = request.META[
+        "HTTP_REFERER"] if "HTTP_REFERER" in request.META else \
+        "{scheme}://{netloc}/".format(scheme=site_url.scheme,
+                                      netloc=site_url.netloc)
+    encoding = request.META["HTTP_ACCEPT_ENCODING"] if "HTTP_ACCEPT_ENCODING" in request.META else "gzip"
+    headers.update({"Pragma": pragma,
+                    "Referer": referer,
+                    "Accept-encoding": encoding,
+    })
+
+    return (headers, access_token)
 
 
 @requires_csrf_token
 def proxy(request, url=None, response_callback=None,
-          sec_chk_hosts=True, sec_chk_rules=True, **kwargs):
+          sec_chk_hosts=True, sec_chk_rules=True, timeout=None, **kwargs):
+    # Request default timeout
+    if not timeout:
+        timeout = TIMEOUT
+
     # Security rules and settings
     PROXY_ALLOWED_HOSTS = getattr(settings, 'PROXY_ALLOWED_HOSTS', ())
 
@@ -80,10 +152,6 @@ def proxy(request, url=None, response_callback=None,
         locator += '?' + url.query
     if url.fragment != "":
         locator += '#' + url.fragment
-
-    access_token = None
-    if 'access_token' in request.session:
-        access_token = request.session['access_token']
 
     # White-Black Listing Hosts
     if sec_chk_hosts and not settings.DEBUG:
@@ -122,90 +190,39 @@ def proxy(request, url=None, response_callback=None,
         pass
 
     # Collecting headers and cookies
-    headers = {}
-    cookies = None
-    csrftoken = None
+    headers, access_token = get_headers(request, url, raw_url)
 
-    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(
-            url=raw_url, host=url.hostname):
-        cookies = request.META["HTTP_COOKIE"]
+    # Inject access_token if necessary
+    parsed = urlparse(raw_url)
+    parsed._replace(path=locator.encode('utf8'))
 
-    for cook in request.COOKIES:
-        name = str(cook)
-        value = request.COOKIES.get(name)
-        if name == 'csrftoken':
-            csrftoken = value
-        cook = "%s=%s" % (name, value)
-        cookies = cook if not cookies else (cookies + '; ' + cook)
+    _url = parsed.geturl()
 
-    csrftoken = get_token(request) if not csrftoken else csrftoken
+    if request.method == "GET" and access_token and 'access_token' not in _url:
+        query_separator = '&' if '?' in _url else '?'
+        _url = ('%s%saccess_token=%s' %
+                (_url, query_separator, access_token))
 
-    if csrftoken:
-        headers['X-Requested-With'] = "XMLHttpRequest"
-        headers['X-CSRFToken'] = csrftoken
-        cook = "%s=%s" % ('csrftoken', csrftoken)
-        cookies = cook if not cookies else (cookies + '; ' + cook)
-
-    if cookies:
-        if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
-            cookies = cookies + '; JSESSIONID=' + \
-                request.session['JSESSIONID']
-        headers['Cookie'] = cookies
-
-    if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
-        headers["Content-Type"] = request.META["CONTENT_TYPE"]
-
-    access_token = None
-    if 'access_token' in request.session:
-        access_token = request.session['access_token']    #
-
-    if access_token:
-        # TODO: Bearer is currently cutted of by Djano / GeoServer
-        if request.method in ("POST", "PUT"):
-            headers['Authorization'] = 'Bearer %s' % access_token
-        if access_token and 'access_token' not in locator:
-            query_separator = '&' if '?' in locator else '?'
-            locator = ('%s%saccess_token=%s' %
-                       (locator, query_separator, access_token))
-    elif 'HTTP_AUTHORIZATION' in request.META:
-        auth = request.META.get(
-            'HTTP_AUTHORIZATION',
-            request.META.get('HTTP_AUTHORIZATION2'))
-        if auth:
-            headers['Authorization'] = auth
-
-    site_url = urlsplit(settings.SITEURL)
-
-    pragma = "no-cache"
-    referer = request.META[
-        "HTTP_REFERER"] if "HTTP_REFERER" in request.META else \
-        "{scheme}://{netloc}/".format(scheme=site_url.scheme,
-                                      netloc=site_url.netloc)
-    encoding = request.META["HTTP_ACCEPT_ENCODING"] if "HTTP_ACCEPT_ENCODING" in request.META else "gzip"
-
-    headers.update({"Pragma": pragma,
-                    "Referer": referer,
-                    "Accept-encoding": encoding, })
-
-    if url.scheme == 'https':
-        conn = HTTPSConnection(url.hostname, url.port)
-    else:
-        conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator.encode('utf8'), request.body, headers)
-    response = conn.getresponse()
-    content = response.read()
-    status = response.status
-    content_type = response.getheader("Content-Type", "text/plain")
+    response, content = http_client.request(_url,
+                                            method=request.method,
+                                            data=request.body,
+                                            headers=headers,
+                                            timeout=timeout,
+                                            user=request.user)
+    content = response.content or response.reason
+    status = response.status_code
+    content_type = response.headers.get('Content-Type')
 
     # decompress GZipped responses if not enabled
-    if content and response.getheader('Content-Encoding') == 'gzip':
+    # if content and response and response.getheader('Content-Encoding') == 'gzip':
+    if content and content_type and content_type == 'gzip':
         from StringIO import StringIO
         import gzip
         buf = StringIO(content)
         f = gzip.GzipFile(fileobj=buf)
         content = f.read()
 
-    if response_callback:
+    if response and response_callback:
         kwargs = {} if not kwargs else kwargs
         kwargs.update({
             'response': response,
@@ -216,7 +233,7 @@ def proxy(request, url=None, response_callback=None,
         return response_callback(**kwargs)
     else:
         # If we get a redirect, let's add a useful message.
-        if status in (301, 302, 303, 307):
+        if status and status in (301, 302, 303, 307):
             _response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
                                       'asked for a redirect to "%s"' % (url, response.getheader('Location'))),
                                      status=status,
@@ -225,8 +242,17 @@ def proxy(request, url=None, response_callback=None,
             _response['Location'] = response.getheader('Location')
             return _response
         else:
+            def _get_message(text):
+                _s = text.decode("utf-8", "replace")
+                try:
+                    found = re.search('<b>Message</b>(.+?)</p>', _s).group(1).strip()
+                except BaseException:
+                    found = _s
+                return found
+
             return HttpResponse(
                 content=content,
+                reason=_get_message(content) if status not in (200, 201) else None,
                 status=status,
                 content_type=content_type)
 
@@ -268,7 +294,15 @@ def download(request, resourceid, sender=Layer):
 
                     try:
                         sld_file = open(sld_file_path, "r")
-                        response = requests.get(s.sld_url, timeout=TIMEOUT)
+
+                        # Collecting headers and cookies
+                        headers, access_token = get_headers(request, urlsplit(s.sld_url), s.sld_url)
+
+                        response, content = http_client.get(
+                            s.sld_url,
+                            headers=headers,
+                            timeout=TIMEOUT,
+                            user=request.user)
                         sld_remote_content = response.text
                         sld_file_path = os.path.join(target_folder, "".join([s.name, "_remote.sld"]))
                         sld_file = open(sld_file_path, "w")
@@ -292,7 +326,7 @@ def download(request, resourceid, sender=Layer):
             try:
                 links = Link.objects.filter(resource=instance.resourcebase_ptr)
                 for link in links:
-                    link_name = custom_slugify(link.name)
+                    link_name = slugify(link.name)
                     link_file = os.path.join(target_md_folder, "".join([link_name, ".%s" % link.extension]))
                     if link.link_type in ('data'):
                         # Skipping 'data' download links
@@ -301,9 +335,17 @@ def download(request, resourceid, sender=Layer):
                         # Dumping metadata files and images
                         link_file = open(link_file, "wb")
                         try:
-                            response = requests.get(link.url, stream=True, timeout=TIMEOUT)
-                            response.raw.decode_content = True
-                            shutil.copyfileobj(response.raw, link_file)
+                            # Collecting headers and cookies
+                            headers, access_token = get_headers(request, urlsplit(link.url), link.url)
+
+                            response, raw = http_client.get(
+                                link.url,
+                                stream=True,
+                                headers=headers,
+                                timeout=TIMEOUT,
+                                user=request.user)
+                            raw.decode_content = True
+                            shutil.copyfileobj(raw, link_file)
                         except BaseException:
                             traceback.print_exc()
                             tb = traceback.format_exc()

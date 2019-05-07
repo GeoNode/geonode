@@ -43,7 +43,11 @@ from geonode.base.models import (
     Link,
     Backup,
     License,
-    HierarchicalKeyword)
+    HierarchicalKeyword,
+    MenuPlaceholder,
+    Menu,
+    MenuItem
+)
 from django.http import HttpResponseRedirect
 
 
@@ -245,7 +249,23 @@ class LinkAdmin(admin.ModelAdmin):
 
 
 class HierarchicalKeywordAdmin(TreeAdmin):
+    search_fields = ('name', )
     form = movenodeform_factory(HierarchicalKeyword)
+
+
+class MenuPlaceholderAdmin(admin.ModelAdmin):
+    model = MenuPlaceholder
+    list_display = ('name', )
+
+
+class MenuAdmin(admin.ModelAdmin):
+    model = Menu
+    list_display = ('title', 'placeholder', 'order')
+
+
+class MenuItemAdmin(admin.ModelAdmin):
+    model = MenuItem
+    list_display = ('title', 'menu', 'order', 'blank_target', 'url')
 
 
 admin.site.register(TopicCategory, TopicCategoryAdmin)
@@ -257,6 +277,9 @@ admin.site.register(Link, LinkAdmin)
 admin.site.register(Backup, BackupAdmin)
 admin.site.register(License, LicenseAdmin)
 admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
+admin.site.register(MenuPlaceholder, MenuPlaceholderAdmin)
+admin.site.register(Menu, MenuAdmin)
+admin.site.register(MenuItem, MenuItemAdmin)
 
 
 class ResourceBaseAdminForm(ModelForm):

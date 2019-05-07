@@ -19,7 +19,7 @@
 #
 #########################################################################
 
-##### Settings to be included last
+# Settings to be included last
 
 ###############################################
 # Master Geosite settings
@@ -31,15 +31,17 @@
 try:
     # load in local_settings from system installed geonode
     execfile(os.path.join(GEONODE_ROOT, 'local_settings.py'))
-except:
+except BaseException:
     # there are no system geonode local_settings to import
     pass
 
 # master local_settings
+from urlparse import urljoin
+
 try:
     # load in local_settings (usually for setting SITEURL and DATABASES for production)
     execfile(os.path.join(SITE_ROOT, '../', 'local_settings.py'))
-except:
+except BaseException:
     # there are no master local_settings to import
     pass
 
@@ -47,21 +49,43 @@ except:
 try:
     # load in local_settings (usually for setting SITEURL and DATABASES for production)
     execfile(os.path.join(SITE_ROOT, 'local_settings.py'))
-except:
+except BaseException:
     # there are no site local_settings to import
     pass
 
-OGC_SERVER['default']['LOCATION'] = GEOSERVER_URL
-#OGC_SERVER['default']['LOCATION'] = os.path.join(SITEURL, 'geoserver/')
-OGC_SERVER['default']['PUBLIC_LOCATION'] = os.path.join(SITEURL, 'geoserver/')
-CATALOGUE['default']['URL'] = '%scatalogue/csw' % SITEURL
+
+# Login and logout urls override
+LOGIN_URL = os.getenv('LOGIN_URL', urljoin(SITEURL, 'account/login/'))
+LOGOUT_URL = os.getenv('LOGOUT_URL', urljoin(SITEURL, 'account/logout/'))
+
+ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
+ACCOUNT_LOGOUT_REDIRECT_URL =  os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
+
+
+OGC_SERVER['default']['location'] = GEOSERVER_LOCATION
+OGC_SERVER['default']['WEB_UI_LOCATION'] = GEOSERVER_WEB_UI_LOCATION
+OGC_SERVER['default']['PUBLIC_LOCATION'] = GEOSERVER_PUBLIC_LOCATION
+OGC_SERVER['default']['USER'] = OGC_SERVER_DEFAULT_USER
+OGC_SERVER['default']['PASSWORD'] = OGC_SERVER_DEFAULT_PASSWORD
+OGC_SERVER['default']['DATASTORE'] = 'datastore'
+CATALOGUE['default']['URL'] = urljoin(SITEURL, '/catalogue/csw')
+PYCSW['CONFIGURATION']['server']['url'] = CATALOGUE['default']['URL']
 PYCSW['CONFIGURATION']['metadata:main']['provider_url'] = SITEURL
-LOCAL_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + 'ows'
+
+if USE_GEOSERVER:
+    LOCAL_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms"
+    PUBLIC_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows"
+    baselayers = MAP_BASELAYERS
+    # MAP_BASELAYERS = [PUBLIC_GEOSERVER, LOCAL_GEOSERVER]
+    MAP_BASELAYERS = [PUBLIC_GEOSERVER]
+    MAP_BASELAYERS.extend(baselayers)
+
 
 # Directories to search for templates
-TEMPLATE_DIRS = (
+TEMPLATES[0]['DIRS'] += (
     os.path.join(SITE_ROOT, 'templates/'),
     os.path.join(PROJECT_ROOT, 'templates/'),
+    os.path.join(GEOSITES_ROOT, 'templates/'),
     os.path.join(GEONODE_ROOT, 'templates/'),
 )
 
@@ -78,16 +102,13 @@ if SITE_DATABASES:
 
 # Update apps if site has own apps
 if SITE_APPS:
-	INSTALLED_APPS += SITE_APPS
+    INSTALLED_APPS += SITE_APPS
 
 # Put static files in root
 STATIC_ROOT = os.path.join(SERVE_PATH, 'static')
 
 # Put media files in root
 MEDIA_ROOT = os.path.join(SERVE_PATH, 'uploaded')
-
-#OGC_SERVER['default']['LOCATION'] = os.path.join(GEOSERVER_URL, 'geoserver/')
-
 
 # add datastore if defined
 if DATASTORE in DATABASES.keys():
@@ -111,6 +132,7 @@ if DATASTORE in DATABASES.keys():
 # DEBUG_TOOLBAR can interfere with Django - keep it off until needed
 if DEBUG_TOOLBAR:
     DEBUG_TOOLBAR_PATCH_SETTINGS = False
+
     def show_if_superuser(request):
         return True if request.user.is_superuser else False
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)

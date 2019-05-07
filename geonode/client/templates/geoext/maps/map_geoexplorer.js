@@ -1,10 +1,13 @@
-{% include 'geoext/ext_header.html' %}
-{% include 'geoext/geo_header.html' %}
-<link href="{{ STATIC_URL}}geonode/css/geoexplorer/map_geoexplorer.css" rel="stylesheet"/>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-mixin.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/Geonode-CatalogueApiSearch.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-GeoExplorer.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+{% include "geoext/ext_header.html" %}
+{% include "geoext/app_header.html" %}
+{% include "geoext/geo_header.html" %}
+{% load static from staticfiles %}
+
+<link href="{% static "geonode/css/geoexplorer/map_geoexplorer.css" %}" rel="stylesheet"/>
+<script type="text/javascript" src="{% static "geonode/js/extjs/GeoNode-mixin.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/Geonode-CatalogueApiSearch.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/extjs/GeoNode-GeoExplorer.js" %}"></script>
+<script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
@@ -49,7 +52,8 @@ Ext.onReady(function() {
                       305.74811309814453, 152.87405654907226, 76.43702827453613,
                       38.218514137268066, 19.109257068634033, 9.554628534317017,
                       4.777314267158508, 2.388657133579254, 1.194328566789627,
-                      0.5971642833948135, 0.25, 0.1, 0.05];
+                      0.5971642833948135, 0.2985821416974067, 0.1492910708487033,
+                      0.0746455354243516];
                 }
                 app.mapPanel.map.getServerResolutions = function() {
                       return [156543.03390625, 78271.516953125, 39135.7584765625,
@@ -66,13 +70,13 @@ Ext.onReady(function() {
                     return 156543.0339 * 2;
                 }
                 app.mapPanel.map.getNumZoomLevels  = function() {
-                    return 28;
+                    return 30;
                 }
                 app.mapPanel.map.getMinZoom  = function() {
                     return 0;
                 }
                 app.mapPanel.map.getMaxZoom  = function() {
-                    return 28;
+                    return 30;
                 }
                 app.mapPanel.map.getResolutionForZoom = function(zoom) {
                     zoom = Math.max(0, Math.min(zoom, this.getResolutions().length - 1));
@@ -89,7 +93,7 @@ Ext.onReady(function() {
                     return resolution;
                 }
                 app.mapPanel.map.adjustZoom  = function(zoom) {
-                    var maxResolution = 156543.0339 * 4;
+                    var maxResolution = 156543.0339 * 2;
                     if (this.baseLayer && this.baseLayer.wrapDateLine) {
                         var resolution, resolutions = this.getResolutions(),
                             // maxResolution = this.getMaxExtent().getWidth() / this.size.w;

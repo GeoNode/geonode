@@ -1,49 +1,15 @@
 {% extends "services/services_base.html" %}
 {% load i18n %}
 {% load guardian_tags %}
-{% block head %}
-
-{{ block.super }}
-<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-var app;
-{% autoescape off %}
-Ext.onReady(function() {
-
-{% if can_change_permissions %}
-       new GeoNode.WorldMapPermissionsEditor({
-                renderTo: "permissions_form",
-                submitTo: "{% url "geonode.services.views.ajax_service_permissions" service.id %}",
-                userLookup: "{% url "account_ajax_lookup" %}",
-                customGroup: "{{ customGroup }}",
-                permissions: {{ permissions_json }},
-        levels: {
-            'admin': 'layer_admin',
-                    'readwrite': 'layer_readwrite',
-                    'readonly': 'layer_readonly',
-                    'none': '_none'
-        },
-        listeners: {
-            updated: function(perms) {
-                var submitTo = "{% url "geonode.services.views.ajax_service_permissions" service.id %}";
-                Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
-            }
-        }
-    });
-    {% endif %}
-});
-{% endautoescape %}
-</script>
-{% endblock %}
 
 {% block body %}
 <div class="twocol">
   <h3>{{service.title|default:service.name}}</h3>
-      <p><strong>{% trans "Type:" %}</strong> {{service.service_type}}</p>
-      <p><strong>{% trans "URL:" %}</strong> {{service.base_url}}</p>
-      <p><strong>{% trans "Abstract:" %}</strong> {{service.abstract}}</p>
-      <p><strong>{% trans "Keywords:" %}</strong> {{ service.keywords.all|join:", " }}</p>
-      <p><strong>{% trans "Contact:" %}</strong> <a href="{% url "profile_detail" service.owner.username %}">{{ service.owner }}</a></p>
-
+      <p><strong>{% trans "Type" %}:</strong> {{service.service_type}}</p>
+      <p><strong>{% trans "URL" %}:</strong> {{service.base_url}}</p>
+      <p><strong>{% trans "Abstract" %}:</strong> {{service.abstract}}</p>
+      <p><strong>{% trans "Keywords" %}:</strong> {{ service.keywords.all|join:", " }}</p>
+      <p><strong>{% trans "Contact" %}:</strong> <a href="{% url "profile_detail" service.owner.username %}">{{ service.owner }}</a></p>
 
     {% autoescape off %}
         <h3>{% trans "Service Resources" %} <span class="badge">{{ total_resources }}</span></h3>
@@ -53,8 +19,8 @@ Ext.onReady(function() {
             <div class="row">
             <table class="table">
                 <thead>
-                <th>Title</th>
-                <th>Description</th>
+                <th>{% trans "Title" %}</th>
+                <th>{% trans "Description" %}</th>
                 </thead>
                 {% for job in resource_jobs %}
                     <tr>
@@ -66,7 +32,7 @@ Ext.onReady(function() {
                                 </div>
                                 {% if job.status == 'FAILED' %}
                                     <div class="btn-group pull-right">
-                                        <button title="Retry job" class="btn" name="retry-{{ job.resource_id }}"><i class="fa fa-refresh fa-fw" aria-hidden="true"></i></button>
+                                        <button title="{% trans "Retry job" %}" class="btn" name="retry-{{ job.resource_id }}"><i class="fa fa-refresh fa-fw" aria-hidden="true"></i></button>
                                     </div>
                                 {% endif %}
                             </div>
@@ -95,15 +61,15 @@ Ext.onReady(function() {
             <nav aria-label="importable resources pages">
                 <ul class="pagination hidden-xs pull-right">
                     {% if resources.has_previous %}
-                        <li><a id="previous" aria-label="Previous" href="?page={{ resources.previous_page_number }}">previous</a></li>
+                        <li><a id="previous" aria-label="Previous" href="?page={{ resources.previous_page_number }}">{% trans "previous" %}</a></li>
                     {% else %}
-                        <li class="disabled"><a aria-label="Previous" href="#">previous</a></li>
+                        <li class="disabled"><a aria-label="Previous" href="#">{% trans "previous" %}</a></li>
                     {% endif %}
                     <li class="active"><a href="#">{{ resources.number }}/{{ resources.paginator.num_pages }}</a></li>
                     {% if resources.has_next %}
-                        <li><a aria-label="Next" href="?page={{ resources.next_page_number }}">next</a></li>
+                        <li><a aria-label="{% trans "Next" %}" href="?page={{ resources.next_page_number }}">{% trans "next" %}</a></li>
                     {% else %}
-                        <li class="disabled"><a aria-label="Next" href="#">next</a></li>
+                        <li class="disabled"><a aria-label="{% trans "Next" %}" href="#">{% trans "next" %}</a></li>
                     {% endif %}
                 </ul>
             </nav>

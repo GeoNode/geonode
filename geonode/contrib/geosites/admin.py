@@ -20,7 +20,7 @@
 
 from django.contrib import admin
 
-from .models import SiteResources, SitePeople
+from .models import SiteResources, SitePeople, SiteGroups
 
 
 class SiteResourceAdmin(admin.ModelAdmin):
@@ -33,5 +33,11 @@ class SitePeopleAdmin(admin.ModelAdmin):
     readonly_fields = ('site',)
 
 
+class SiteGroupAdmin(admin.ModelAdmin):
+    filter_horizontal = ('groups',)
+    readonly_fields = ('site',)
+
+
 admin.site.register(SiteResources, SiteResourceAdmin)
 admin.site.register(SitePeople, SitePeopleAdmin)
+admin.site.register(SiteGroups, SiteGroupAdmin)

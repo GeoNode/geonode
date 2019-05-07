@@ -1,0 +1,114 @@
+#cookie-law-info-bar {
+	/*border: 0; */
+	font-size: 12pt;
+	margin: 0 auto;
+	padding: 13px 10px;
+	position: absolute;
+	text-align: center;
+	box-sizing: border-box;
+	width:100%;
+	z-index: 9999;
+	box-shadow:rgba(0,0,0,.5) 0px 5px 50px;
+	display: none;
+	left:0px;
+	font-weight:300;
+}
+#cookie-law-info-again {
+	font-size: 10pt;
+	margin: 0;
+	padding:5px 10px;
+	text-align: center;
+	z-index: 9999;
+	cursor: pointer;
+	box-shadow: #161616 2px 2px 5px 2px;
+}
+#cookie-law-info-bar span {
+	vertical-align: middle;
+}
+
+/** Buttons (http://papermashup.com/demos/css-buttons) */
+.cli-plugin-button, .cli-plugin-button:visited {
+	display: inline-block;
+	padding:10px 16px 10px;
+	color: #fff;
+	text-decoration: none;
+	position: relative;
+	cursor: pointer;
+	margin-left: 0px;
+	text-decoration: none;
+}
+.cli-plugin-main-link {
+	margin-left:0px;
+	font-weight: 550; text-decoration: underline;
+}
+.cli-plugin-button:hover {
+	background-color: #111;
+	color: #fff;
+	text-decoration: none;
+}
+.small.cli-plugin-button, .small.cli-plugin-button:visited {
+	font-size: 11px;
+}
+.cli-plugin-button, .cli-plugin-button:visited,
+	.medium.cli-plugin-button, .medium.cli-plugin-button:visited {
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1;
+}
+.large.cli-plugin-button, .large.cli-plugin-button:visited {
+	font-size: 14px;
+	padding: 8px 14px 9px;
+}
+.super.cli-plugin-button, .super.cli-plugin-button:visited {
+	font-size: 34px;
+	padding: 8px 14px 9px;
+}
+.pink.cli-plugin-button, .magenta.cli-plugin-button:visited {
+	background-color: #e22092;
+}
+.pink.cli-plugin-button:hover {
+	background-color: #c81e82;
+}
+.green.cli-plugin-button, .green.cli-plugin-button:visited {
+	background-color: #91bd09;
+}
+.green.cli-plugin-button:hover {
+	background-color: #749a02;
+}
+.red.cli-plugin-button, .red.cli-plugin-button:visited {
+	background-color: #e62727;
+}
+.red.cli-plugin-button:hover {
+	background-color: #cf2525;
+}
+.orange.cli-plugin-button, .orange.cli-plugin-button:visited {
+	background-color: #ff5c00;
+}
+.orange.cli-plugin-button:hover {
+	background-color: #d45500;
+}
+.blue.cli-plugin-button, .blue.cli-plugin-button:visited {
+	background-color: #2981e4;
+}
+.blue.cli-plugin-button:hover {
+	background-color: #2575cf;
+}
+.yellow.cli-plugin-button, .yellow.cli-plugin-button:visited {
+	background-color: #ffb515;
+}
+.yellow.cli-plugin-button:hover {
+	background-color: #fc9200;
+}
+.cli-plugin-button{ margin-top:5px; }
+.cli-bar-popup{
+	-moz-background-clip: padding;
+	-webkit-background-clip: padding;
+	background-clip: padding-box;
+	border:20px solid rgba(0,0,0,0.5) !important;
+	-webkit-border-radius:30px;
+	-moz-border-radius:30px;
+	border-radius:30px;
+	padding:20px;
+}
+.cli-powered_by_p{width:100% !important; display:block !important; color:#333; clear:both; font-style:italic !important; font-size:12px !important; margin-top:15px !important; }
+.cli-powered_by_a{color:#333; font-weight:600 !important; font-size:12px !important;}

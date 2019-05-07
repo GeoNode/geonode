@@ -151,8 +151,10 @@ article.tab-pane {
 	}
 }
 .navbar-brand {
-	background: url(../img/logo.png) 0 10px no-repeat;
-	background-size: 100%;
+	background: url(../img/logo.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
 	text-indent: -9999px;
 	height: 65px;
 	width: 200px;
@@ -180,7 +182,11 @@ article.tab-pane {
 	  margin-top: -60px;
 	  padding-bottom: 0;
 	}
+  #site_wide_announcements {
+    margin-top: 60px;
+  }
 	.jumbotron {
+    position: relative;
 		background: @brand-primary;
 		color: white;
 		margin-bottom: 0;
@@ -230,7 +236,7 @@ article.tab-pane {
 		.search input { text-indent: 64px;}
 		.search .fa-search {
 		  position: absolute;
-		  top: 10px;
+		  top: 3px;
 		  left: 15px;
 		}
 		.btn-default {
@@ -281,7 +287,7 @@ article.tab-pane {
 			}
 		}
 		p {font-size: 18px;}
-	}
+  }
 }
 /* autocomplete
 ------------------------*/
@@ -328,6 +334,12 @@ article.tab-pane {
       text-decoration: none;
     }
   }
+}
+.partner_logo {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  height: 250px;
 }
 /* Items
 ----------------------- */
@@ -403,6 +415,11 @@ article.tab-pane {
 .item-container {
   padding: 1em;
 }
+
+.avatar.pull-left {
+    margin-right: 5px;
+}
+
 .profile-avatar {
   background: white;
   border: 1px solid @gray-light;
@@ -449,6 +466,9 @@ article.tab-pane {
       font-size: 12px;
       text-transform: uppercase;
     }
+  }
+  h4 a {
+    word-wrap: break-word;
   }
   .btn-sm {
     margin-right: -17px;
@@ -726,6 +746,11 @@ nav.filter {
   margin-top: 20px;
 }
 
+/* overwrite bootstrap styling, save updates */
+#id_metadata_uploaded_preserve{
+  margin-left: 5px;
+}
+
 /* Upload Documents
 ----------------------- */
 #upload_form {
@@ -830,6 +855,21 @@ footer {
   }
   form {
 	  color: @text-color;
+  }
+}
+
+/* Copyright
+----------------------- */
+.footer-copyright {
+  padding: 30px 0;
+  .copyright {
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .copyright small {
+    text-transform: uppercase;
+    font-size: 14px;
   }
 }
 

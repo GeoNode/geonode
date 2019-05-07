@@ -42,6 +42,7 @@ function reorganize_configuration() {
     cp -rp $INSTALL_DIR/support/geonode.wsgi $GEONODE_WWW/wsgi/
     cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
     cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
+    cp -rp $INSTALL_DIR/support/packages/*.* $GEONODE_SHARE
     cp -rp $INSTALL_DIR/GeoNode*.zip $GEONODE_SHARE
     cp -rp $INSTALL_DIR/support/geonode.updateip $GEONODE_BIN/geonode-updateip
     cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
@@ -70,6 +71,7 @@ psql -d geonode_data -c 'CREATE EXTENSION postgis'
 EOF
 su - postgres -c "psql" <<EOF
 CREATE ROLE geonode WITH LOGIN PASSWORD '$psqlpass' SUPERUSER INHERIT;
+ALTER USER geonode WITH PASSWORD '$psqlpass';
 EOF
 }
 
@@ -85,6 +87,9 @@ function setup_django_once() {
 function setup_django_every_time() {
     pip install pip==9.0.3 --quiet
     pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies --quiet
+    pip install $GEONODE_SHARE/jwcrypto-0.5.0-py2.py3-none-any.whl --no-dependencies --no-cache-dir --quiet
+    pip install $GEONODE_SHARE/xmltodict-0.10.2.tar.gz --no-dependencies --no-cache-dir --quiet
+    pip install $GEONODE_SHARE/lxml-3.6.2.tar.gz --no-dependencies --no-cache-dir --quiet
 
     geonodedir=`python -c "import geonode;import os;print os.path.dirname(geonode.__file__)"`
 
@@ -134,7 +139,7 @@ function setup_apache_once() {
     $APACHE_SERVICE restart
     sleep 15
 
-    $GEONODE_BIN/geonode-updateip localhost
+    $GEONODE_BIN/geonode-updateip -p localhost
 
     $TOMCAT_SERVICE restart
     sleep 30

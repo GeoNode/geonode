@@ -32,11 +32,11 @@ SITE_ROOT = os.path.dirname(__file__)
 try:
     # read in project pre_settings
     execfile(os.path.join(SITE_ROOT, '../', 'pre_settings.py'))
-except:
+except BaseException:
     # if not available, read in GeoSites pre_settings
     execfile(os.path.join(GEOSITES_ROOT, 'pre_settings.py'))
 
-SITE_ID = $SITE_ID  # flake8: noqa
+SITE_ID = '$SITE_ID'  # flake8: noqa
 SITE_NAME = '$SITE_NAME'
 # Should be unique for each site
 SECRET_KEY = "fbk3CC3N6jt1AU9mGIcI"
@@ -67,6 +67,6 @@ SITE_DATABASES = {}
 try:
     # read in project pre_settings
     execfile(os.path.join(SITE_ROOT, '../', 'post_settings.py'))
-except:
+except BaseException:
     # if not available, read in GeoSites pre_settings
     execfile(os.path.join(GEOSITES_ROOT, 'post_settings.py'))

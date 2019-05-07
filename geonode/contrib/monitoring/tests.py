@@ -305,8 +305,8 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
                         value=10)
         uthreshold = [(
             self.metric.name, 'min_value', False, False, False, False, 0, 100, None, "Min number of request"),
-                      (self.metric.name, 'max_value', False, False, False, False,
-                       1000, None, None, "Max number of request"), ]
+            (self.metric.name, 'max_value', False, False, False, False,
+             1000, None, None, "Max number of request"), ]
         notification_data = {'name': 'check requests name',
                              'description': 'check requests description',
                              'severity': 'warning',
@@ -452,8 +452,8 @@ class MonitoringChecksTestCase(GeoNodeBaseTestSupport):
         notification_url = reverse('monitoring:api_user_notifications')
         uthreshold = [(
             'request.count', 'min_value', False, False, False, False, 0, 100, None, "Min number of request"),
-                      ('request.count', 'max_value', False, False, False, False,
-                       1000, None, None, "Max number of request"), ]
+            ('request.count', 'max_value', False, False, False, False,
+             1000, None, None, "Max number of request"), ]
         notification_data = {'name': 'test',
                              'description': 'more test',
                              'severity': 'warning',

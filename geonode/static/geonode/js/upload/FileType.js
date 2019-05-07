@@ -2,7 +2,7 @@
 'use strict';
 
 define(function (require, exports) {
-    var getExt = require('upload/path').getExt,
+    var getExt = require('./path').getExt,
         FileType;
 
     /** Create an instance of a FileType object

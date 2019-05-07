@@ -1,0 +1,61 @@
+{% include "worldmap/ext_header.html" %}
+{% include "worldmap/app_header.html" %}
+{% include "worldmap/geo_header.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+<script type="text/javascript">
+{% autoescape off %}
+
+var styleEditor, modified = false;
+Ext.onReady(function() {
+  var config = {
+      tools: [{
+          ptype: "gxp_wmsgetfeatureinfo",
+          format: "grid",
+          actionTarget: "main.tbar",
+          outputConfig: {width: 400, height: 200, panIn: false}
+      }],
+      proxy: "/proxy/?url=",
+      siteUrl: "{{ SITE_URL }}".replace(/\/?$/, '/'),
+      localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+      rest: "/maps/",
+      portalConfig: {
+          renderTo: "preview_map",
+          height: 350
+      },
+      createTools: function() {
+          return [new Ext.Button({
+              tooltip: GeoExplorer.prototype.backgroundContainerText,
+              iconCls: 'icon-layer-switcher',
+              menu: new gxp.menu.LayerMenu({
+                  layers: this.mapPanel.layers
+              })
+          })]
+      },
+      listeners: {
+          "ready": function() {
+              var map = app.mapPanel.map;
+              layerExtent = map.layers.slice(-1)[0].maxExtent;
+              if (layerExtent.left <= map.maxExtent.left || layerExtent.right >= map.maxExtent.right || layerExtent.top >= map.maxExtent.top || layerExtent.bottom <= map.maxExtent.bottom)
+              {map.zoomTo(1)}
+              else
+              {map.zoomToExtent(layerExtent)};
+          },
+          "beforeunload": function() {
+              if (modified) {
+                  styleEditor.show();
+                  return false;
+              }
+          }
+      }
+  };
+
+  config = Ext.apply(config, {{ viewer|safe }});
+  app = new GeoExplorer.Viewer(config);
+
+});
+
+{% endautoescape %}
+</script>

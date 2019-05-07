@@ -1,5 +1,6 @@
 import json
 from dicttoxml import dicttoxml
+import logging
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -9,6 +10,8 @@ from geonode.layers.views import _resolve_layer
 
 from .utils import add_to_gazetteer, getGazetteerResults, getGazetteerEntry, getExternalServiceResults
 from .models import GazetteerAttribute
+
+logger = logging.getLogger("geonode.contrib.worldmap.gazetteer.views")
 
 
 def search(request, place_name, map=None, layer=None,
@@ -24,10 +27,12 @@ def search(request, place_name, map=None, layer=None,
     if out_format not in ('xml', 'json'):
         out_format = 'json'
 
-    if place_name.isdigit():
-        posts = getGazetteerEntry(place_name)
-    else:
-        posts = getGazetteerResults(place_name, map, layer, start_date, end_date, project, user)
+    posts = []
+    if 'worldmap' in services:
+        if place_name.isdigit():
+            posts = getGazetteerEntry(place_name)
+        else:
+            posts = getGazetteerResults(place_name, map, layer, start_date, end_date, project, user)
     if services is not None:
         posts.extend(getExternalServiceResults(place_name, services))
     if out_format == 'json':
@@ -68,7 +73,7 @@ def edit_layer_gazetteer(
         attributes_list = request.POST.getlist('attributes')
         for attribute in layer.attributes:
             if attribute.attribute in attributes_list:
-                print 'Adding %s to gazetteer...' % attribute
+                logger.debug('Adding %s to gazetteer...' % attribute.attribute)
                 gaz_att, created = GazetteerAttribute.objects.get_or_create(attribute=attribute)
                 gaz_att.in_gazetteer = True
                 if start_attribute == attribute.attribute:
@@ -80,7 +85,7 @@ def edit_layer_gazetteer(
                 gaz_att.save()
                 status_message += ' %s' % attribute.attribute
             else:
-                print 'Removing %s from gazetteer...' % attribute
+                logger.debug('Removing %s from gazetteer...' % attribute.attribute)
                 gaz_att, created = GazetteerAttribute.objects.get_or_create(attribute=attribute)
                 gaz_att.in_gazetteer = False
                 gaz_att.save()

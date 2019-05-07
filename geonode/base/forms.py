@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from fields import MultiThesauriField
 from widgets import MultiThesauriWidget
 
@@ -112,14 +111,14 @@ class TreeWidget(TaggitWidget):
         if isinstance(value, basestring):
             vals = value
         elif value:
-            vals = ','.join([str(i.tag.name) for i in value])
+            vals = ','.join([i.tag.name for i in value])
         else:
             vals = ""
         output = ["""<div class="keywords-container"><span class="input-group">
-                <input class='form-control'
-                       id='id_resource-keywords'
-                       name='resource-keywords'
-                       value='%s'><br/>""" % (vals)]
+                <input class="form-control"
+                       id="id_resource-keywords"
+                       name="resource-keywords"
+                       value="%s"><br/>""" % (vals)]
         output.append(
             '<div id="treeview" class="" style="display: none"></div>')
         output.append(
@@ -420,11 +419,12 @@ class ResourceBaseForm(TranslationModelForm):
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
-            _k = urllib.unquote((u'%s' % k).encode('utf-8')).split(",")
+            _k = urllib.unquote(('%s' % k)).split(",")
             if not isinstance(_k, basestring):
                 for _kk in [x.strip() for x in _k]:
                     _kk = HTMLParser.HTMLParser().unescape(unicode_escape(_kk))
-                    # _hk = HierarchicalKeyword.objects.extra(where=["%s LIKE name||'%%'"], params=[_kk])
+                    # Simulate JS Unescape
+                    _kk = _kk.replace('%u', r'\u').decode('unicode-escape') if '%u' in _kk else _kk
                     _hk = HierarchicalKeyword.objects.filter(name__contains='%s' % _kk.strip())
                     if _hk and len(_hk) > 0:
                         _unsescaped_kwds.append(_hk[0])
@@ -462,7 +462,8 @@ class ResourceBaseForm(TranslationModelForm):
             'thumbnail',
             'charset',
             'rating',
-            'detail_url'
+            'detail_url',
+            'tkeywords',
         )
 
 

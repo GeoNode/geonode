@@ -17,26 +17,28 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.conf import settings
 from datetime import datetime, timedelta
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth.models import Group
-from geonode.groups.models import GroupProfile
-
+from geonode.decorators import on_ogc_backend
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.tests.base import GeoNodeBaseTestSupport
-
-from geonode.base.populate_test_data import all_public
+from geonode import geoserver
 from geonode.layers.models import Layer
+from geonode.utils import check_ogc_backend
+from geonode.groups.models import GroupProfile
+from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.base.populate_test_data import all_public
+from geonode.base.auth import get_or_create_token
 
 
 class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(PermissionsApiTests, self).setUp()
-
         self.user = 'admin'
         self.passwd = 'admin'
         self.list_url = reverse(
@@ -130,6 +132,29 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(self.list_url + str(layer.id) + '/')
         self.assertValidJSONResponse(resp)
 
+        # with delayed security
+        with self.settings(DELAYED_SECURITY_SIGNALS=True):
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                from geonode.security.utils import sync_geofence_with_guardian
+                sync_geofence_with_guardian(layer, self.perm_spec)
+                self.assertTrue(layer.dirty_state)
+
+                self.client.login(username=self.user, password=self.passwd)
+                resp = self.client.get(self.list_url)
+                self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
+                self.client.logout()
+                resp = self.client.get(self.list_url)
+                self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+
+                from geonode.people.models import Profile
+                Profile.objects.create(username='imnew',
+                                       password='pbkdf2_sha256$12000$UE4gAxckVj4Z$N\
+                    6NbOXIQWWblfInIoq/Ta34FdRiPhawCIZ+sOO3YQs=')
+                self.client.login(username='imnew', password='thepwd')
+                resp = self.client.get(self.list_url)
+                self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+
     def test_new_user_has_access_to_old_layers(self):
         """Test that a new user can access the public available layers"""
         from geonode.people.models import Profile
@@ -140,6 +165,71 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(self.list_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
+        # with delayed security
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            _ogc_geofence_enabled = settings.OGC_SERVER
+            try:
+                _ogc_geofence_enabled['default']['GEOFENCE_SECURITY_ENABLED'] = True
+                with self.settings(DELAYED_SECURITY_SIGNALS=True,
+                                   OGC_SERVER=_ogc_geofence_enabled,
+                                   DEFAULT_ANONYMOUS_VIEW_PERMISSION=True):
+                    layer = Layer.objects.all()[0]
+                    layer.set_default_permissions()
+                    layer.refresh_from_db()
+                    self.assertTrue(layer.dirty_state)
+
+                    self.client.login(username=self.user, password=self.passwd)
+                    resp = self.client.get(self.list_url)
+                    self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
+                    self.client.logout()
+                    resp = self.client.get(self.list_url)
+                    self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+
+                    self.client.login(username='imnew', password='thepwd')
+                    resp = self.client.get(self.list_url)
+                    self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+            finally:
+                _ogc_geofence_enabled['default']['GEOFENCE_SECURITY_ENABLED'] = False
+
+
+class OAuthApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    def setUp(self):
+        super(OAuthApiTests, self).setUp()
+
+        self.user = 'admin'
+        self.passwd = 'admin'
+        self._user = get_user_model().objects.get(username=self.user)
+        self.token = get_or_create_token(self._user)
+        self.auth_header = 'Bearer {}'.format(self.token)
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
+        all_public()
+        self.perm_spec = {"users": {}, "groups": {}}
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_outh_token(self):
+        with self.settings(SESSION_EXPIRED_CONTROL_ENABLED=False, DELAYED_SECURITY_SIGNALS=False):
+            # all public
+            resp = self.api_client.get(self.list_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
+            perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
+            layer = Layer.objects.all()[0]
+            layer.set_permissions(perm_spec)
+            resp = self.api_client.get(self.list_url)
+            self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+
+            resp = self.api_client.get(self.list_url, authentication=self.auth_header)
+            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
+            layer.is_published = False
+            layer.save()
 
 
 class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):

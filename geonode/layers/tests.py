@@ -21,21 +21,22 @@
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
+import json
 import shutil
-import tempfile
+import gisdata
+import logging
 import zipfile
+import tempfile
 import StringIO
 import contextlib
-import json
+
 from datetime import datetime
-
-import gisdata
-
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
+from django.conf import settings
 
 from django.db.models import Count
 from django.contrib.auth import get_user_model
@@ -55,10 +56,13 @@ from geonode.people.utils import get_valid_user
 from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.base.populate_test_data import all_public
 from geonode.layers.forms import JSONField, LayerUploadForm
-from geonode.utils import check_ogc_backend
-from .populate_layers_data import create_layer_data
-from geonode.tests.utils import NotificationsTestsHelper
+from geonode.utils import check_ogc_backend, set_resource_default_links
 from geonode.layers import LayersAppConfig
+from geonode.tests.utils import NotificationsTestsHelper
+from geonode.layers.populate_layers_data import create_layer_data
+from geonode.base.enumerations import CHARSETS
+
+logger = logging.getLogger(__name__)
 
 
 class LayersTest(GeoNodeBaseTestSupport):
@@ -123,6 +127,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         # Test redirection to login form when not logged in
         response = self.client.get(reverse('layer_upload'))
         self.assertEquals(response.status_code, 302)
+
         # Test return of upload form when logged in
         self.client.login(username="bobby", password="bob")
         response = self.client.get(reverse('layer_upload'))
@@ -162,6 +167,35 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(custom_attributes[1].stddev, "NA")
         self.assertEqual(custom_attributes[1].sum, "NA")
         self.assertEqual(custom_attributes[1].unique_values, "NA")
+
+    def test_layer_bbox(self):
+        lyr = Layer.objects.all().first()
+        layer_bbox = lyr.bbox[0:4]
+        logger.info(layer_bbox)
+
+        def decimal_encode(bbox):
+            import decimal
+            _bbox = []
+            for o in [float(coord) for coord in bbox]:
+                if isinstance(o, decimal.Decimal):
+                    o = (str(o) for o in [o])
+                _bbox.append(o)
+            # Must be in the form : [x0, x1, y0, y1
+            return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
+
+        from geonode.utils import bbox_to_projection
+        projected_bbox = decimal_encode(
+            bbox_to_projection([float(coord) for coord in layer_bbox] + [lyr.srid, ],
+                               target_srid=4326)[:4])
+        logger.info(projected_bbox)
+        self.assertEquals(projected_bbox, [-180.0, -90.0, 180.0, 90.0])
+        logger.info(lyr.ll_bbox)
+        self.assertEquals(lyr.ll_bbox, [-180.0, 180.0, -90.0, 90.0, u'EPSG:4326'])
+        projected_bbox = decimal_encode(
+            bbox_to_projection([float(coord) for coord in layer_bbox] + [lyr.srid, ],
+                               target_srid=3857)[:4])
+        logger.info(projected_bbox)
+        self.assertEquals(projected_bbox, [-20037397.0233, -74299743.4007, 20037397.0233, 74299743.4006])
 
     def test_layer_attributes_feature_catalogue(self):
         """ Test layer feature catalogue functionality
@@ -215,6 +249,36 @@ class LayersTest(GeoNodeBaseTestSupport):
             lyr.keyword_list(), [
                 u'here', u'keywords', u'populartag', u'saving'])
 
+        # Test exotic encoding Keywords
+        lyr.keywords.add(*[u'論語', u'ä', u'ö', u'ü', u'ß'])
+        lyr.save()
+        self.assertEqual(
+            lyr.keyword_list(), [
+                u'here', u'keywords', u'populartag', u'saving',
+                u'ß', u'ä', u'ö', u'ü', u'論語'])
+
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(reverse('layer_detail', args=(lyr.alternate,)))
+        self.failUnlessEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('layer_metadata', args=(lyr.alternate,)))
+        self.failUnlessEqual(response.status_code, 200)
+
+        from geonode.base.models import HierarchicalKeyword as hk
+        keywords = hk.dump_bulk_tree()
+        self.assertEqual(len(keywords), len([
+            {"text": u"here", "href": "here", "id": 2},
+            {"text": u"keywords", "href": "keywords", "id": 4},
+            {"text": u"layertagunique", "href": "layertagunique", "id": 3},
+            {"text": u"populartag", "href": "populartag", "id": 1},
+            {"text": u"saving", "href": "saving", "id": 5},
+            {"text": u"ß", "href": "ss", "id": 9},
+            {"text": u"ä", "href": "a", "id": 10},
+            {"text": u"ö", "href": "o", "id": 7},
+            {"text": u"ü", "href": "u", "id": 8},
+            {"text": u"論語", "href": "lun-yu", "id": 6}
+        ]))
+
     def test_layer_links(self):
         lyr = Layer.objects.filter(storeType="dataStore").first()
         self.assertEquals(lyr.storeType, "dataStore")
@@ -225,6 +289,29 @@ class LayersTest(GeoNodeBaseTestSupport):
             for ll in links:
                 self.assertEquals(ll.link_type, "metadata")
 
+            _def_link_types = (
+                'data', 'image', 'original', 'html', 'OGC:WMS', 'OGC:WFS', 'OGC:WCS')
+            Link.objects.filter(resource=lyr.resourcebase_ptr, link_type__in=_def_link_types).delete()
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="data")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 0)
+
+            set_resource_default_links(lyr, lyr)
+
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="metadata")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 7)
+            for ll in links:
+                self.assertEquals(ll.link_type, "metadata")
+
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="data")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 6)
+
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 3)
+
         lyr = Layer.objects.filter(storeType="coverageStore").first()
         self.assertEquals(lyr.storeType, "coverageStore")
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -233,6 +320,29 @@ class LayersTest(GeoNodeBaseTestSupport):
             self.assertEquals(len(links), 7)
             for ll in links:
                 self.assertEquals(ll.link_type, "metadata")
+
+            _def_link_types = (
+                'data', 'image', 'original', 'html', 'OGC:WMS', 'OGC:WFS', 'OGC:WCS')
+            Link.objects.filter(resource=lyr.resourcebase_ptr, link_type__in=_def_link_types).delete()
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="data")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 0)
+
+            set_resource_default_links(lyr, lyr)
+
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="metadata")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 7)
+            for ll in links:
+                self.assertEquals(ll.link_type, "metadata")
+
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="data")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 2)
+
+            links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
+            self.assertIsNotNone(links)
+            self.assertEquals(len(links), 7)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
@@ -1109,3 +1219,90 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             comment.save()
 
             self.assertTrue(self.check_notification_out('layer_comment', self.u))
+
+
+class LayersUploaderTests(GeoNodeBaseTestSupport):
+
+    GEONODE_REST_UPLOADER = {
+        'BACKEND': 'geonode.rest',
+        'OPTIONS': {
+            'TIME_ENABLED': True,
+            'MOSAIC_ENABLED': False,
+            'GEOGIG_ENABLED': False,
+        },
+        'SUPPORTED_CRS': [
+            'EPSG:4326',
+            'EPSG:3785',
+            'EPSG:3857',
+            'EPSG:32647',
+            'EPSG:32736'
+        ],
+        'SUPPORTED_EXT': [
+            '.shp',
+            '.csv',
+            '.kml',
+            '.kmz',
+            '.json',
+            '.geojson',
+            '.tif',
+            '.tiff',
+            '.geotiff',
+            '.gml',
+            '.xml'
+        ]
+    }
+
+    def setUp(self):
+        super(LayersUploaderTests, self).setUp()
+        create_layer_data()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        self.anonymous_user = get_anonymous_user()
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
+    def test_geonode_rest_layer_uploader(self):
+        layer_upload_url = reverse('layer_upload')
+        self.client.login(username=self.user, password=self.passwd)
+        # Check upload for each charset
+        for charset in CHARSETS:
+            files = dict(
+                base_file=SimpleUploadedFile('foo.shp', ' '),
+                shx_file=SimpleUploadedFile('foo.shx', ' '),
+                dbf_file=SimpleUploadedFile('foo.dbf', ' '),
+                prj_file=SimpleUploadedFile('foo.prj', ' '))
+            files['permissions'] = '{}'
+            files['charset'] = charset[0]
+            files['layer_title'] = 'test layer_{}'.format(charset[0])
+            resp = self.client.post(layer_upload_url, data=files)
+            # Check response status code
+            self.assertEqual(resp.status_code, 200)
+            # Retrieve the layer from DB
+            data = json.loads(resp.content)
+            # Check success
+            self.assertTrue(data['success'])
+            _lname = data['url'].split(':')[-1]
+            _l = Layer.objects.get(name=_lname)
+            # Check the layer has been published
+            self.assertTrue(_l.is_published)
+            # Check errors
+            self.assertNotIn('errors', data)
+            self.assertNotIn('errormsgs', data)
+            self.assertNotIn('traceback', data)
+            self.assertNotIn('context', data)
+            self.assertNotIn('upload_session', data)
+            if 'info' in data:
+                self.assertEqual(data['info'], _l.info)
+            self.assertEqual(data['bbox'], _l.bbox_string)
+            self.assertEqual(
+                data['crs'],
+                {
+                    'type': 'name',
+                    'properties': _l.srid
+                }
+            )
+            self.assertEqual(
+                data['ogc_backend'],
+                settings.OGC_SERVER['default']['BACKEND']
+            )
+            _l.delete()

@@ -181,10 +181,6 @@ msgstr "Thực hiện GeoServer Config Bước"
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Các tập tin tải lên lớp, cấu hình trong GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr ""
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "Tẩy"

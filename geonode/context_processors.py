@@ -141,7 +141,7 @@ def resource_urls(request):
             dict()).get(
             'METADATA',
             'never'),
-        USE_GEOSERVER=settings.USE_GEOSERVER,
+        USE_GEOSERVER=getattr(settings, 'USE_GEOSERVER', False),
         USE_NOTIFICATIONS=has_notifications,
         USE_MONITORING='geonode.contrib.monitoring' in settings.INSTALLED_APPS and settings.MONITORING_ENABLED,
         USE_WORLDMAP=settings.USE_WORLDMAP,
@@ -170,6 +170,7 @@ def resource_urls(request):
             False
         ),
         OGC_SERVER=getattr(settings, 'OGC_SERVER', None),
+        DELAYED_SECURITY_SIGNALS=getattr(settings, 'DELAYED_SECURITY_SIGNALS', False),
     )
     if settings.USE_WORLDMAP:
         defaults['GEONODE_CLIENT_LOCATION'] = getattr(
@@ -195,21 +196,29 @@ def resource_urls(request):
 
         defaults['USE_GAZETTEER'] = settings.USE_GAZETTEER
 
+        defaults['GAZETTEER_SERVICES'] = getattr(
+            settings,
+            'GAZETTEER_SERVICES',
+            'worldmap,geonames,nominatim'
+        )
+
+        defaults['USE_GOOGLE_STREET_VIEW'] = settings.USE_GOOGLE_STREET_VIEW
+
         defaults['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
 
         defaults['GOOGLE_MAPS_API_KEY'] = settings.GOOGLE_MAPS_API_KEY
 
         defaults['WM_COPYRIGHT_URL'] = getattr(
-                                                   settings,
-                                                   'WM_COPYRIGHT_URL',
-                                                   'http://gis.harvard.edu/'
-                                               )
+            settings,
+            'WM_COPYRIGHT_URL',
+            'http://gis.harvard.edu/'
+        )
 
         defaults['WM_COPYRIGHT_TEXT'] = getattr(
-                                                    settings,
-                                                    'WM_COPYRIGHT_TEXT',
-                                                    'Center for Geographic Analysis'
-                                                )
+            settings,
+            'WM_COPYRIGHT_TEXT',
+            'Center for Geographic Analysis'
+        )
 
         defaults['HYPERMAP_REGISTRY_URL'] = settings.HYPERMAP_REGISTRY_URL
 

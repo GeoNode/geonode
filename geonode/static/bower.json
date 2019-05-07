@@ -1,6 +1,6 @@
 {
   "name": "geonode",
-  "version": "2.6.0",
+  "version": "2.10.0",
   "main": "geonode/css/base.css",
   "componentsDirectory": ".components",
   "dependencies": {
@@ -11,10 +11,11 @@
     "jquery-ui": "1.10.4",
     "requirejs": "2.1.2",
     "requirejs-text": "2.0.3",
-    "underscore": "1.4.2",
+    "underscore": "^1.9.1",
     "jquery-waypoints": "2.0.5",
     "bootstrap": "3.3.7",
     "moment": "2.17.1",
+    "mime": "~> 1.4.1",
     "raty": "2.5.2",
     "json2": "43d7836c8ec9b31a02a31ae0c400bdae04d3650d",
     "bootstrap-wysiwyghtml5": "https://github.com/jhollingworth/bootstrap-wysihtml5.git",
@@ -38,13 +39,14 @@
     "bootstrap-multiselect": "https://github.com/davidstutz/bootstrap-multiselect",
     "bootstrap-table": "1.11.1",
     "bootstrap-toggle": "2.2.2",
+    "bootstrap3-typeahead": "^4.0.2",
     "fastselect": "https://github.com/dbrekalo/fastselect.git",
     "clipboard": "^1.7.1",
     "Leaflet.EasyButton": "^2.2.4"
   },
   "resolutions": {
     "angular": "1.4.0",
-    "leaflet": "~1.0.1",
-    "bootstrap": "3.3.7"
+    "bootstrap": "3.3.7",
+    "leaflet": "~1.0.1"
   }
 }

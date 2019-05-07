@@ -18,6 +18,12 @@
 #
 #########################################################################
 
+""" There are 3 ways to override GeoNode settings:
+   1. Using environment variables, if your changes to GeoNode are minimal.
+   2. Creating a downstream project, if you are doing a lot of customization.
+   3. Override settings in a local_settings.py file, legacy.
+"""
+
 # flake8: noqa
 # Disable flake8 check, since this is just a custom settings file
 

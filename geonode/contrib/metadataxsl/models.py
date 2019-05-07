@@ -50,12 +50,12 @@ def add_xsl_link(resourcebase):
     url = urljoin(site_url, urlpath)
 
     link, created = Link.objects.get_or_create(
-                        resource=resourcebase,
-                        url=url,
-                        defaults=dict(name=ISO_XSL_NAME,
-                                      extension='xml',
-                                      mime='text/xml',
-                                      link_type='metadata'))
+        resource=resourcebase,
+        url=url,
+        defaults=dict(name=ISO_XSL_NAME,
+                      extension='xml',
+                      mime='text/xml',
+                      link_type='metadata'))
     return created
 
 

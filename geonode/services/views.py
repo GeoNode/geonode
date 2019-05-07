@@ -157,6 +157,10 @@ def harvest_resources(request, service_id):
             harvestable_resources = paginator.page(1)
         except EmptyPage:
             harvestable_resources = paginator.page(paginator.num_pages)
+
+        filter_row = [{}, {"id": 'id-filter', "data_key": "id"},
+                      {"id": 'name-filter', "data_key": "title"},
+                      {"id": 'desc-filter', "data_key": "abstract"}]
         result = render(
             request,
             "services/service_resources_harvest.html",
@@ -165,12 +169,17 @@ def harvest_resources(request, service_id):
                 "service": service,
                 "importable": not_yet_harvested,
                 "resources": harvestable_resources,
+                "requested": request.GET.getlist("resource_list"),
                 "is_sync": is_sync,
                 "errored_state": errored_state,
+                "filter_row": filter_row,
             }
         )
     elif request.method == "POST":
         requested = request.POST.getlist("resource_list")
+        requested.extend(request.GET.getlist("resource_list"))
+        # Let's remove duplicates
+        requested = list(set(requested))
         resources_to_harvest = []
         for id in _gen_harvestable_ids(requested, available_resources):
             logger.debug("id: {}".format(id))
@@ -319,9 +328,9 @@ def edit_service(request, service_id):
         return HttpResponse(
             loader.render_to_string(
                 '401.html', context={
-                        'error_message': _(
-                            "You are not permitted to change this service."
-                        )}, request=request), status=401)
+                    'error_message': _(
+                        "You are not permitted to change this service."
+                    )}, request=request), status=401)
     if request.method == "POST":
         service_form = forms.ServiceForm(
             request.POST, instance=service, prefix="service")
@@ -347,9 +356,9 @@ def remove_service(request, service_id):
         return HttpResponse(
             loader.render_to_string(
                 '401.html', context={
-                        'error_message': _(
-                            "You are not permitted to remove this service."
-                        )}, request=request), status=401)
+                    'error_message': _(
+                        "You are not permitted to remove this service."
+                    )}, request=request), status=401)
     if request.method == 'GET':
         return render(request, "services/service_remove.html",
                       {"service": service})

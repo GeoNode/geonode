@@ -38,8 +38,9 @@ class Command(BaseCommand):
         client_secret = None
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import ogc_server_settings
+            redirect_uris = '%s\n%s' % (ogc_server_settings.LOCATION, ogc_server_settings.public_url)
             if Application.objects.filter(name='GeoServer').exists():
-                Application.objects.filter(name='GeoServer').update(redirect_uris=ogc_server_settings.public_url)
+                Application.objects.filter(name='GeoServer').update(redirect_uris=redirect_uris)
                 app = Application.objects.filter(name='GeoServer')[0]
                 client_id = app.client_id
                 client_secret = app.client_secret
@@ -48,7 +49,7 @@ class Command(BaseCommand):
                 client_secret = generate_client_secret()
                 Application.objects.create(
                     skip_authorization=True,
-                    redirect_uris=ogc_server_settings.public_url,
+                    redirect_uris=redirect_uris,
                     name='GeoServer',
                     authorization_grant_type='authorization-code',
                     client_type='confidential',

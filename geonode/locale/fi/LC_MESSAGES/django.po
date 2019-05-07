@@ -3708,10 +3708,6 @@ msgstr "Osake"
 msgid "Ratings"
 msgstr "Luokitukset"
 
-#: geonode/templates/_actions.html:20
-msgid "GeoGig"
-msgstr ""
-
 #: geonode/templates/_actions.html:23
 msgid "Exif"
 msgstr ""

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#
+#########################################################################
 #
 # Copyright (C) 2016 OSGeo
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-#
+#########################################################################
 
 from django.conf import settings
 from django.conf.urls import url
@@ -43,12 +43,16 @@ urlpatterns = [  # 'geonode.geoserver.views',
     # OWS Endpoints
     url(r'^ows', views.geoserver_proxy, dict(proxy_path='/gs/ows',
                                              downstream_path='ows'), name='ows_endpoint'),
+    url(r'^gwc', views.geoserver_proxy, dict(proxy_path='/gs/gwc',
+                                             downstream_path='gwc'), name='gwc_endpoint'),
     url(r'^wms', views.geoserver_protected_proxy, dict(proxy_path='/gs/wms',
                                                        downstream_path='wms'), name='wms_endpoint'),
     url(r'^wfs', views.geoserver_protected_proxy, dict(proxy_path='/gs/wfs',
                                                        downstream_path='wfs'), name='wfs_endpoint'),
     url(r'^wcs', views.geoserver_protected_proxy, dict(proxy_path='/gs/wcs',
                                                        downstream_path='wcs'), name='wcs_endpoint'),
+    url(r'^wps', views.geoserver_proxy, dict(proxy_path='/gs/wps',
+                                             downstream_path='wps'), name='wps_endpoint'),
     url(r'^pdf', views.geoserver_proxy, dict(proxy_path='/gs/pdf',
                                              downstream_path='pdf'), name='pdf_endpoint'),
     url(r'^(?P<workspace>[^/]*)/(?P<layername>[^/]*)/wms',
@@ -65,9 +69,12 @@ urlpatterns = [  # 'geonode.geoserver.views',
         views.layer_style_manage, name='layer_style_manage'),
     url(r'^(?P<layername>[^/]*)/edit-check?$',
         views.feature_edit_check, name="feature_edit_check"),
+    url(r'^(?P<layername>[^/]*)/style-check?$',
+        views.style_edit_check, name="style_edit_check"),
     url(r'^acls/?$', views.layer_acls, name='layer_acls'),
     url(r'^resolve_user/?$', views.resolve_user,
         name='layer_resolve_user'),
     url(r'^download$', views.layer_batch_download,
         name='layer_batch_download'),
+    url(r'^online/?$', views.server_online, name='server_online'),
 ]

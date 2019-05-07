@@ -25,6 +25,7 @@
       <li class="active"><a href="#all" data-toggle="tab"><i class=""></i>{% trans "All" %}</a></li>
       <li><a href="#layers" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "Layers" %}</a></li>
       <li><a href="#maps" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Maps" %}</a></li>
+      <li><a href="#documents" data-toggle="tab"><i class="fa fa-file-text-o"></i> {% trans "Documents" %}</a></li>
       <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
     </ul>
     <div class="tab-content">
@@ -49,6 +50,15 @@
       <article id="maps" class="tab-pane">
         <ul class="no-style-list">
         {% for action in action_list_maps %}
+          {% activity_item action %}
+          {% empty %}
+          <p>{% trans "No actions yet" %}</p>
+        {% endfor %}
+        </ul>
+      </article>
+      <article id="documents" class="tab-pane">
+        <ul class="no-style-list">
+        {% for action in action_list_documents %}
           {% activity_item action %}
           {% empty %}
           <p>{% trans "No actions yet" %}</p>

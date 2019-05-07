@@ -18,10 +18,14 @@
 #
 #########################################################################
 
+import logging
+
 from functools import wraps
 from django.utils.decorators import classonlymethod
 from django.core.exceptions import PermissionDenied
 from geonode.utils import check_ogc_backend
+
+logger = logging.getLogger(__name__)
 
 
 def on_ogc_backend(backend_package):
@@ -95,3 +99,12 @@ def superuser_only(function):
             raise PermissionDenied
         return function(request, *args, **kwargs)
     return _inner
+
+
+def dump_func_name(func):
+    def echo_func(*func_args, **func_kwargs):
+        logger.info(" ---------------------------------------------------------- ")
+        logger.info('Start func: {}'.format(func.__name__))
+        logger.info(" ---------------------------------------------------------- ")
+        return func(*func_args, **func_kwargs)
+    return echo_func

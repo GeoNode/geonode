@@ -8,6 +8,6 @@
     <p>Add {{ facetType | default_if_blank : 'objects' }} through the "checkboxes".</p>
   </div>
   <ul class="list-group">
-    <li class="list-group-item" ng-repeat="resource in cart.getCart().items">{{ resource.title | limitTo: 25}}{{ resource.title.length > 25 ? '...' : '' }}<button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource)"><i class="fa fa-remove fa-lg"></i></button></li>
+    <li class="list-group-item clearfix" ng-if="resource && resource.title" ng-repeat="resource in cart.getCart().items">{{ resource.title | limitTo: 25}}{{ resource.title.length > 25 ? '...' : '' }}<button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource)"><i class="fa fa-remove fa-lg"></i></button></li>
   </ul>
 </div>
