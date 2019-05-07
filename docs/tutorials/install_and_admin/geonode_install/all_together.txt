@@ -9,8 +9,8 @@ As GeoNode is based on Django a central point of control is its settings file. T
 
 .. code-block:: bash
 
-    cd /home/geonode/my_geonode/my_geonode/
-    mv local_settings.py.sample local_settings.py
+    cd ~/my_geonode/my_geonode/
+    cp local_settings.py.sample local_settings.py
 
 Update this file to match your credentials. A full list of settings can be found here: :doc:`/reference/developers/settings`
 
@@ -38,7 +38,7 @@ Once more paver helps us to sync and migrate Geonodes Database Tables
 
 .. code-block:: bash
 
-	cd /home/geonode/my_geonode
+	cd /my_geonode
     DJANGO_SETTINGS_MODULE=my_geonode.local_settings paver sync
 
     # collect the static files

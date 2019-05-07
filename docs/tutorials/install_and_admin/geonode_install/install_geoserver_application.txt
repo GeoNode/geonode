@@ -42,13 +42,13 @@ Download and Setup
 
     .. code-block:: bash
 
-        sudo mkdir -p /data/geoserver-data;
-        sudo mkdir -p /data/geoserver-logs;
-        sudo mkdir -p /data/gwc_cache_dir;
-        sudo cp -Rf /home/geonode/my_geonode/geoserver/data/* /data/geoserver-data/;
-        sudo chown -Rf tomcat8:tomcat8 /data/geoserver-data/;
-        sudo chown -Rf tomcat8:tomcat8 /data/geoserver-logs/;
-        sudo chown -Rf tomcat8:tomcat8 /data/gwc_cache_dir/;
+        sudo mkdir -p /data/geoserver-data
+        sudo mkdir -p /data/geoserver-logs
+        sudo mkdir -p /data/gwc_cache_dir
+        sudo cp -Rf /home/geonode/my_geonode/geoserver/data/* /data/geoserver-data/
+        sudo chown -Rf tomcat8:tomcat8 /data/geoserver-data/
+        sudo chown -Rf tomcat8:tomcat8 /data/geoserver-logs/
+        sudo chown -Rf tomcat8:tomcat8 /data/gwc_cache_dir/
 
 #. Set default `Java` settings
 

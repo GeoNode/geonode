@@ -33,59 +33,18 @@ Packages Installation
 =====================
 
 First, we are going to install all the software packages we are going to need
-for the GeoNode setup. Among others `Tomcat 8`, `PostgreSQL`, `PostGIS`,
-`Apache HTTP server` and `Git`. Run the following command to install all the
-packages
+for the GeoNode setup. 
 
 .. code-block:: bash
 
+    # Install Openjdk
     sudo -i apt update
     sudo apt install openjdk-8-jdk-headless default-jdk-headless -y
     sudo update-java-alternatives --set /usr/lib/jvm/java-1.8.0-openjdk-amd64
 
-    sudo apt install apache2 \
-        build-essential \
-        default-jdk \
-        gcc \
-        gdal-bin \
-        gettext \
-        git \
-        git-core \
-        libapache2-mod-wsgi \
-        libgdal-dev \
-        libgdal20 \
-        libgeos-dev \
-        libjpeg-dev \
-        libpng-dev \
-        libpq-dev \
-        libproj-dev \
-        libxml2 \
-        libxml2-dev \
-        libxslt-dev \
-        libxslt1-dev \
-        nano \
-        openssh-server \
-        patch \
-        postfix \
-        postgis \
-        postgresql \
-        postgresql-10-postgis-2.4-scripts \
-        postgresql-contrib \
-        python-dev \
-        python-gdal \
-        python-pastescript \
-        python-pil \
-        python-pip \
-        python-psycopg2 \
-        python-pycurl \
-        python-urlgrabber \
-        python-virtualenv \
-        software-properties-common \
-        tomcat8 \
-        unzip \
-        vim \
-        zip \
-        zlib1g-dev
+    # Install packages from GeoNode core 
+    apt_packages="$VIRTUAL_ENV/src/geonode/apt-packages.txt"
+    apt-get install $(grep -vE "^\s*#" $aptpackages | tr "\n" " ")
 
     sudo apt update;
     sudo apt upgrade;
@@ -98,7 +57,7 @@ packages
 
 GeoNode Installation
 ====================
-First of all, we need to prepare a new Python Virtual Environment:
+Next we need to prepare a new Python Virtual Environment:
 
 .. code-block:: bash
 
@@ -110,7 +69,8 @@ First of all, we need to prepare a new Python Virtual Environment:
     # Through this command we have created a new Virual Environment for GeoNode
 
 
-Let's activate the new `geonode` Python Virtual Environment:
+Let's activate the new `my_geonode` Python Virtual Environment, and make sure we're starting
+in the users home directory.
 
 .. code-block:: bash
 
@@ -130,7 +90,7 @@ We are going to install GeoNode as a dependency of a **Customized Django Project
 
 .. code-block:: bash
 
-    pip install Django==1.11.20
+    pip install Django==1.11.*
     git clone https://github.com/GeoNode/geonode-project.git -b master
     django-admin startproject --template=./geonode-project -e py,rst,json,yml,ini,env,sample -n Dockerfile my_geonode
 
@@ -142,7 +102,7 @@ Let's install the GeoNode dependencies and packages into the Python Virtual Envi
     pip install -r requirements.txt --upgrade;
     pip install -e . --upgrade --no-cache
     # Install correct gdal version 
-    GDAL_VERSION=`gdal-config --version`
+    GDAL_VERSION=$(gdal-config --version)
     PYGDAL_VERSION="$(pip install pygdal==$GDAL_VERSION 2>&1 | grep -oP '(?<=: )(.*)(?=\))' | grep -oh $GDAL_VERSION\.[0-9])"
     pip install pygdal==$PYGDAL_VERSION
 
