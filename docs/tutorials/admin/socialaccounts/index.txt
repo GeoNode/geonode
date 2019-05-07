@@ -245,7 +245,7 @@ Facebook Application
     .. code:: python
 
         ClientID      <--> App Id
-    	Client Secret <--> Secret Key
+        Client Secret <--> Secret Key
 
 .. image:: img/018_socialaouth.png
 

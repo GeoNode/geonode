@@ -42,19 +42,19 @@ This section covers the task of adding and publishing a ImageMosaic file with Ge
 
    .. note:: Change the :guilabel:`Name` and :guilabel:`Title` into **boulder_bg** as shown in the figure.
       
-	The CRS and BBox fields are auto-filled with information taken from the underlying files. The coverage options section is filled with default parameters (which will be discussed later on in the training).
-	
+    The CRS and BBox fields are auto-filled with information taken from the underlying files. The coverage options section is filled with default parameters (which will be discussed later on in the training).
+    
    .. figure:: img/raster5.png
    
    .. figure:: img/raster5b.png
-	
-		The coverage layer gui for the boulder_bg layer.
+    
+        The coverage layer gui for the boulder_bg layer.
    
    .. figure:: img/raster5bis.png  
-		:width: 800
-		
-		The coverage bands details
-	  
+        :width: 800
+        
+        The coverage bands details
+      
 #. Scroll to the bottom of the page and then click :guilabel:`Save`. If all went well you should see something like this:
 
    .. figure:: img/raster6.png

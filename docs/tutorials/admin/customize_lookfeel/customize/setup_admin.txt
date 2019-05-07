@@ -296,12 +296,12 @@ One of the primary reasons to set up your own GeoNode project using this method 
 
     Upgrade GeoNode::
 
-    	$ apt-get update
-    	$ apt-get install geonode
+        $ apt-get update
+        $ apt-get install geonode
 
     Verify that your new project works with the upgraded GeoNode::
 
-    	$ python manage.py runserver
+        $ python manage.py runserver
 
     Navigate to http://localhost:8000.
 
@@ -311,11 +311,11 @@ Upgrading from source code repo:
 
     Upgrade GeoNode::
 
-    	$ cd /home/geonode/geonode
-    	$ git pull origin master
+        $ cd /home/geonode/geonode
+        $ git pull origin master
 
     Verify that your new project works with the upgraded GeoNode::
 
-    	$ python manage.py runserver
+        $ python manage.py runserver
 
     Navigate to http://localhost:8000.

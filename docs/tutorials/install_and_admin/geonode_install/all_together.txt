@@ -21,9 +21,9 @@ Update this file to match your credentials. A full list of settings can be found
     # Set correct IP or hostname
     SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'example.com')
     ...
-	LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
-	TEMPLATES[0]['DIRS'].insert(0, os.path.join(LOCAL_ROOT, "templates"))
-	ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'my_geonode.urls')
+    LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
+    TEMPLATES[0]['DIRS'].insert(0, os.path.join(LOCAL_ROOT, "templates"))
+    ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'my_geonode.urls')
 
     # Attention: Change the GeoServer password and set it in GeoServer as well (GUI)
     OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
@@ -38,7 +38,7 @@ Once more paver helps us to sync and migrate Geonodes Database Tables
 
 .. code-block:: bash
 
-	cd /my_geonode
+    cd /my_geonode
     DJANGO_SETTINGS_MODULE=my_geonode.local_settings paver sync
 
     # collect the static files

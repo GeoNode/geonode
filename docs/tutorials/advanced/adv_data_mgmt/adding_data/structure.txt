@@ -8,29 +8,29 @@ Structure of the GeoServer Data Directory
 
 The following is the GEOSERVER_DATA_DIR structure::
 
-	data_directory/
-		coverages/
-   		data/
-   		demo/
-		gwc/
-		gwc-layers/
-   		layergroups/
-   		logs/
-		palettes/
-   		security/
-   		styles/
-   		temp/
-   		user_projections/
-   		validation/
-   		workspaces/
-   		www/
-   		global.xml
-   		gwc-gs.xml
-   		logging.xml
-   		wcs.xml
-   		wfs.xml
-   		wms.xml
-   		wps.xml
+    data_directory/
+        coverages/
+           data/
+           demo/
+        gwc/
+        gwc-layers/
+           layergroups/
+           logs/
+        palettes/
+           security/
+           styles/
+           temp/
+           user_projections/
+           validation/
+           workspaces/
+           www/
+           global.xml
+           gwc-gs.xml
+           logging.xml
+           wcs.xml
+           wfs.xml
+           wms.xml
+           wps.xml
 
 .. list-table::
    :widths: 20 80

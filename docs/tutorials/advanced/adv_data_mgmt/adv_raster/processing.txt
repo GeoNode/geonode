@@ -291,26 +291,26 @@ Instead of manually repeating these 2 steps (retile + add overviews) for each fi
       
       cd aerial
       
-	  notepad optimize.bat
-	  
+      notepad optimize.bat
+      
     will open a text editor. Copy the following content::
   
-	  for %%F in (*.tif) do  (
-		echo Processing file %%F
+      for %%F in (*.tif) do  (
+        echo Processing file %%F
 
-		REM translate
-		echo Performing gdal_translate on file %%F to file %%~nF.tiff
-		gdal_translate -co "TILED=YES" -co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512" -co "COMPRESS=DEFLATE" %%F ..\optimized\%%~nF.tiff
+        REM translate
+        echo Performing gdal_translate on file %%F to file %%~nF.tiff
+        gdal_translate -co "TILED=YES" -co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512" -co "COMPRESS=DEFLATE" %%F ..\optimized\%%~nF.tiff
 
-		REM add overviews
-		echo Adding overviews on file %%~nF.tiff
-		gdaladdo -r average --config COMPRESS_OVERVIEW DEFLATE ..\optimized\%%~nF.tiff 2 4 8 16 32
+        REM add overviews
+        echo Adding overviews on file %%~nF.tiff
+        gdaladdo -r average --config COMPRESS_OVERVIEW DEFLATE ..\optimized\%%~nF.tiff 2 4 8 16 32
 
-	  )
+      )
   
     Then save the file and run the created .bat file::
-	
-		optimize.bat
+    
+        optimize.bat
 
 #. You should see a list of run like this::
 
@@ -380,7 +380,7 @@ Where the meaning of the main parameters is summarized below:
 
      cd %TRAINING_ROOT%/data/user_data/retiled
 
-     gdalwarp -t_srs "EPSG:4326" -co "TILED=YES" 13tde815295_200803_0x6000m_cl.tif 13tde815295_200803_0x6000m_cl_warped.tif	 
+     gdalwarp -t_srs "EPSG:4326" -co "TILED=YES" 13tde815295_200803_0x6000m_cl.tif 13tde815295_200803_0x6000m_cl_warped.tif     
 
    to reproject the specified aerial dataset to WGS84 coordinate reference system.
 

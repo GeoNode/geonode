@@ -63,13 +63,13 @@ The log contents are driven by three FreeMarker templates. We can customize them
 
 #. Open ``header.ftl`` in the text editor of your choice and enter the following content::
 
-	# start time,services,version,operation,url,response content type,total time,response length,error flag
-	
+    # start time,services,version,operation,url,response content type,total time,response length,error flag
+    
 #. Create another file named ``content.ftl``.
 
 #. Open ``content.ftl`` in the text editor of your choice and enter the following content::
 
-	${startTime?datetime?iso_utc_ms},${service!""},${owsVersion!""},${operation!""},"${path!""}${queryString!""}",${responseContentType!""},${totalTime},${responseLength?c},<#if error??>failed<#else>success</#if>
+    ${startTime?datetime?iso_utc_ms},${service!""},${owsVersion!""},${operation!""},"${path!""}${queryString!""}",${responseContentType!""},${totalTime},${responseLength?c},<#if error??>failed<#else>success</#if>
     
 #. Create a last file named ``footer.ftl``, and leave its contents empty
 
@@ -78,5 +78,5 @@ The log contents are driven by three FreeMarker templates. We can customize them
     # start time,services,version,operation,url,response content type,total time,response lenght,error flag
     2012-06-07T10:37:09.725Z,WMS,1.1.1,GetMap,"/geosolutions/wmsLAYERS=geosolutions:ccounties&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4269&BBOX=-106.17254516602,39.489453002927,-105.18378466798,40.054948608395&WIDTH=577&HEIGHT=330",image/png,59,30420,success
     2012-06-07T10:37:10.075Z,WMS,1.1.1,GetMap,"/geosolutions/wmsLAYERS=geosolutions:ccounties&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4269&BBOX=-105.84010229493,39.543136352537,-105.34572204591,39.825884155271&WIDTH=577&HEIGHT=330",image/png,45,18692,success
-	
+    
 

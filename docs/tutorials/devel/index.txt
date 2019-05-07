@@ -59,13 +59,13 @@ This module will introduce you to the components that GeoNode is built with, the
 
 :ref:`geonode_testing`
     This section explain how to run the tests on GeoNode.
-	
+    
 :ref:`projects.intro`
     GeoNode enables you to set up a complete site simply by installing the packages and adding your data. 
-	
+    
     If you want to create your own project based on GeoNode, there are a several options available that enable you to customize the look and feel of your GeoNode site. 
-	
+    
     You can add additional modules that are necessary for your own use case and to integrate your GeoNode project with other external sites and services.
-	
+    
 :ref:`release`
     Making a GeoNode release.

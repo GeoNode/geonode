@@ -173,7 +173,7 @@ Modifying Feature Types using a Desktop GIS client
 #. On uDig look the Feature attribute values using the :guilabel:`Info` tool.
 
    .. figure:: img/wfs-t11.png
-	  
+      
       Retrieving Feature Type info from uDig interface
 
 #. Now open/create the ``request.xml`` file in the training root directory and set in the following request, which will be used to issue an **Update** Feature type request to the WFS-T updating all roads labelled as ``Monarch Rd`` to ``Monarch Road``

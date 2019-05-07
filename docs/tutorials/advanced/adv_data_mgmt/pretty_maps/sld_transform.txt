@@ -10,7 +10,7 @@ Extracting vertices
 ^^^^^^^^^^^^^^^^^^^
 
 #. Using skills learned in the :ref:`adding styles <geoserver.add_style>` section, create a new style named :guilabel:`mainrd_transform` using the following SLD:
- 		  
+           
    .. code-block:: xml
 
     <?xml version="1.0" encoding="ISO-8859-1"?>
@@ -68,38 +68,38 @@ Line buffer
 
 #. Using skills learned in the geoserver.addstyle section, create a new style :guilabel:`mainrd_buffer` using the following SLD
 
-	.. code-block:: xml
+    .. code-block:: xml
 
-	  <?xml version="1.0" encoding="ISO-8859-1"?>
-	  <StyledLayerDescriptor version="1.0.0"
-	  xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
-	  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
-		<NamedLayer>
-		  <Name>Roads and vertices</Name>
-		  <UserStyle>
-			<FeatureTypeStyle>
-			  <Rule>
-				<PolygonSymbolizer>
-				  <Geometry>
-					<ogc:Function name="buffer">
-					  <ogc:PropertyName>the_geom</ogc:PropertyName>
-					  <ogc:Literal>200</ogc:Literal>
-					</ogc:Function>
-				  </Geometry>
-				   <Fill>
-					<CssParameter name="fill">#7F7F7F</CssParameter>
-					<CssParameter name="fill-opacity">0.3</CssParameter>
-				  </Fill>
-				</PolygonSymbolizer>
-				<LineSymbolizer>
-				  <Stroke />
-				</LineSymbolizer>
-			  </Rule>
-			</FeatureTypeStyle>
-		  </UserStyle>
-		</NamedLayer>
-	  </StyledLayerDescriptor>
+      <?xml version="1.0" encoding="ISO-8859-1"?>
+      <StyledLayerDescriptor version="1.0.0"
+      xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+      xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+        <NamedLayer>
+          <Name>Roads and vertices</Name>
+          <UserStyle>
+            <FeatureTypeStyle>
+              <Rule>
+                <PolygonSymbolizer>
+                  <Geometry>
+                    <ogc:Function name="buffer">
+                      <ogc:PropertyName>the_geom</ogc:PropertyName>
+                      <ogc:Literal>200</ogc:Literal>
+                    </ogc:Function>
+                  </Geometry>
+                   <Fill>
+                    <CssParameter name="fill">#7F7F7F</CssParameter>
+                    <CssParameter name="fill-opacity">0.3</CssParameter>
+                  </Fill>
+                </PolygonSymbolizer>
+                <LineSymbolizer>
+                  <Stroke />
+                </LineSymbolizer>
+              </Rule>
+            </FeatureTypeStyle>
+          </UserStyle>
+        </NamedLayer>
+      </StyledLayerDescriptor>
 
 
    .. note:: The ``buffer`` function builds a polygon of all the points that are withing the specified distance from the original geometry.

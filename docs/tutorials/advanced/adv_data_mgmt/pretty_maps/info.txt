@@ -22,9 +22,9 @@ Templating is concerned with the HTML one.
 
 #. In order to configure a custom template of the GetFeatureInfo results create three .ftl files in :guilabel:`$GEOSERVER_DATA_DIR/workspaces/geosolutions` directory named::
 
-	- header.ftl
-  	- content.ftl
-	- footer.ftl
+    - header.ftl
+      - content.ftl
+    - footer.ftl
 
 
    .. note:: The Template is managed using `Freemarker <https://sourceforge.net/projects/freemarker/>`_. This is a simple yet powerful template engine that GeoServer uses whenever developers allowed user customization of textual outputs. In particular, at the time of writing it's used to allow customization of GetFeatureInfo, GeoRSS and KML outputs.
@@ -35,78 +35,78 @@ Templating is concerned with the HTML one.
 
    .. code-block:: html
 
-	<#--
-	Header section of the GetFeatureInfo HTML output. Should have the <head> section, and
-	a starter of the <body>. It is advised that eventual CSS uses a special class for featureInfo,
-	since the generated HTML may blend with another page changing its aspect when using generic classes
-	like td, tr, and so on.
-	-->
-	<html>
-  		<head>
-    			<title>Geoserver GetFeatureInfo output</title>
-  		</head>
-  		<style type="text/css">
-        		table.featureInfo, table.featureInfo td, table.featureInfo th {
-                		border:1px solid #ddd;
-                		border-collapse:collapse;
-                		margin:0;
-                		padding:0;
-                		font-size: 90%;
-                		padding:.2em .1em;
-        		}
+    <#--
+    Header section of the GetFeatureInfo HTML output. Should have the <head> section, and
+    a starter of the <body>. It is advised that eventual CSS uses a special class for featureInfo,
+    since the generated HTML may blend with another page changing its aspect when using generic classes
+    like td, tr, and so on.
+    -->
+    <html>
+          <head>
+                <title>Geoserver GetFeatureInfo output</title>
+          </head>
+          <style type="text/css">
+                table.featureInfo, table.featureInfo td, table.featureInfo th {
+                        border:1px solid #ddd;
+                        border-collapse:collapse;
+                        margin:0;
+                        padding:0;
+                        font-size: 90%;
+                        padding:.2em .1em;
+                }
         
-			table.featureInfo th{
-            			padding:.2em .2em;
-                		text-transform:uppercase;
-                		font-weight:bold;
-                		background:#eee;
-        		}
+            table.featureInfo th{
+                        padding:.2em .2em;
+                        text-transform:uppercase;
+                        font-weight:bold;
+                        background:#eee;
+                }
         
-			table.featureInfo td{
-                		background:#fff;
-        		}
-	
-        		table.featureInfo tr.odd td{
-                		background:#eee;
-        		}
-	
-       			table.featureInfo caption{
-                		text-align:left;
-                		font-size:100%;
-                		font-weight:bold;
-                		text-transform:uppercase;
-                		padding:.2em .2em;
-        		}
-  		</style>
-  		<body>
+            table.featureInfo td{
+                        background:#fff;
+                }
+    
+                table.featureInfo tr.odd td{
+                        background:#eee;
+                }
+    
+                   table.featureInfo caption{
+                        text-align:left;
+                        font-size:100%;
+                        font-weight:bold;
+                        text-transform:uppercase;
+                        padding:.2em .2em;
+                }
+          </style>
+          <body>
 
 #. In :guilabel:`content.ftl` file enter the following HTML:
 
    .. code-block:: html
 
-	<ul>
-	<#list features as feature>
-  		<li><b>Type: ${type.name}</b> (id: <em>${feature.fid}</em>):
-  		<ul>
-  		<#list feature.attributes as attribute>
-    			<#if !attribute.isGeometry>
-      				<li>${attribute.name}: ${attribute.value}</li>
-    			</#if>
-  		</#list>
-  		</ul>
-  		</li>
-	</#list>
-	</ul>
+    <ul>
+    <#list features as feature>
+          <li><b>Type: ${type.name}</b> (id: <em>${feature.fid}</em>):
+          <ul>
+          <#list feature.attributes as attribute>
+                <#if !attribute.isGeometry>
+                      <li>${attribute.name}: ${attribute.value}</li>
+                </#if>
+          </#list>
+          </ul>
+          </li>
+    </#list>
+    </ul>
 
 #. In :guilabel:`footer.ftl` file enter the following HTML:
 
    .. code-block:: html
 
-	<#--
-	Footer section of the GetFeatureInfo HTML output. Should close the body and the html tag.
-	-->
-  		</body>
-	</html>
+    <#--
+    Footer section of the GetFeatureInfo HTML output. Should close the body and the html tag.
+    -->
+          </body>
+    </html>
 
 
 #. Go to the Map Preview  to show :guilabel:`geosolutions:bplandmarks` layer.

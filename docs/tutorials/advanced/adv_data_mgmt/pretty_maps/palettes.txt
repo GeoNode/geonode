@@ -38,7 +38,7 @@ Enough theory, let's have a look at how to deal with paletted images in practice
 
 1) The standard PNG full color output::
 
-	http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:BoulderCityLimits,geosolutions:blakes,geosolutions:bplandmarks,geosolutions:brivers,geosolutions:Mainrd&styles=&bbox=3056181.93510,1237476.92868,3080671.07513,1260141.38768&width=512&height=475&srs=EPSG:2876&format=image/png
+    http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:BoulderCityLimits,geosolutions:blakes,geosolutions:bplandmarks,geosolutions:brivers,geosolutions:Mainrd&styles=&bbox=3056181.93510,1237476.92868,3080671.07513,1260141.38768&width=512&height=475&srs=EPSG:2876&format=image/png
 .. figure:: img/palette1.png
    :align: center
 
@@ -49,7 +49,7 @@ Enough theory, let's have a look at how to deal with paletted images in practice
 
 2) JPEG output::
 
-	http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:BoulderCityLimits,geosolutions:blakes,geosolutions:bplandmarks,geosolutions:brivers,geosolutions:Mainrd&styles=&bbox=3056181.93510,1237476.92868,3080671.07513,1260141.38768&width=512&height=475&srs=EPSG:2876&format=image/jpeg
+    http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:BoulderCityLimits,geosolutions:blakes,geosolutions:bplandmarks,geosolutions:brivers,geosolutions:Mainrd&styles=&bbox=3056181.93510,1237476.92868,3080671.07513,1260141.38768&width=512&height=475&srs=EPSG:2876&format=image/jpeg
 
 .. figure:: img/palette2.png
    :align: center
@@ -60,7 +60,7 @@ Enough theory, let's have a look at how to deal with paletted images in practice
 
 3) The PNG8 output::
 
-	http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:BoulderCityLimits,geosolutions:blakes,geosolutions:bplandmarks,geosolutions:brivers,geosolutions:Mainrd&styles=&bbox=3056181.93510,1237476.92868,3080671.07513,1260141.38768&width=512&height=475&srs=EPSG:2876&format=image/png8
+    http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:BoulderCityLimits,geosolutions:blakes,geosolutions:bplandmarks,geosolutions:brivers,geosolutions:Mainrd&styles=&bbox=3056181.93510,1237476.92868,3080671.07513,1260141.38768&width=512&height=475&srs=EPSG:2876&format=image/png8
 
 .. figure:: img/palette3.png
    :align: center
@@ -72,7 +72,7 @@ Enough theory, let's have a look at how to deal with paletted images in practice
 
 4) PNG + internet safe palette::
 
-	http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:BoulderCityLimits,geosolutions:blakes,geosolutions:bplandmarks,geosolutions:brivers,geosolutions:Mainrd&styles=&bbox=3056181.93510,1237476.92868,3080671.07513,1260141.38768&width=512&height=475&srs=EPSG:2876&format=image/png&palette=safe
+    http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:BoulderCityLimits,geosolutions:blakes,geosolutions:bplandmarks,geosolutions:brivers,geosolutions:Mainrd&styles=&bbox=3056181.93510,1237476.92868,3080671.07513,1260141.38768&width=512&height=475&srs=EPSG:2876&format=image/png&palette=safe
 
 .. figure:: img/palette4.png
    :align: center
@@ -84,7 +84,7 @@ Enough theory, let's have a look at how to deal with paletted images in practice
 
 5) PNG + palette by example::
 
-	http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:BoulderCityLimits,geosolutions:blakes,geosolutions:bplandmarks,geosolutions:brivers,geosolutions:Mainrd&styles=&bbox=3056181.93510,1237476.92868,3080671.07513,1260141.38768&width=512&height=475&srs=EPSG:2876&format=image/png&palette=boulder
+    http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:BoulderCityLimits,geosolutions:blakes,geosolutions:bplandmarks,geosolutions:brivers,geosolutions:Mainrd&styles=&bbox=3056181.93510,1237476.92868,3080671.07513,1260141.38768&width=512&height=475&srs=EPSG:2876&format=image/png&palette=boulder
 
 .. figure:: img/palette5.png
    :align: center
@@ -112,7 +112,7 @@ To give you an example when paletted images may not fit the bill, let's consider
 
 1) The standard PNG full color output::
 
-	http://localhost:8083/geoserver/geosolutions/wms?LAYERS=geosolutions%3A13tde815295_200803_0x6000m_cl&STYLES=&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A26913&BBOX=482574.82910157,4429949.7070313,482949.82910157,4430324.7070313&WIDTH=512&HEIGHT=512&FORMAT=image%2Fpng
+    http://localhost:8083/geoserver/geosolutions/wms?LAYERS=geosolutions%3A13tde815295_200803_0x6000m_cl&STYLES=&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A26913&BBOX=482574.82910157,4429949.7070313,482949.82910157,4430324.7070313&WIDTH=512&HEIGHT=512&FORMAT=image%2Fpng
 
 .. figure:: img/palette6.png
    :align: center
@@ -125,7 +125,7 @@ To give you an example when paletted images may not fit the bill, let's consider
 
 2) JPEG output::
 
-	http://localhost:8083/geoserver/geosolutions/wms?LAYERS=geosolutions%3A13tde815295_200803_0x6000m_cl&STYLES=&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A26913&BBOX=482574.82910157,4429949.7070313,482949.82910157,4430324.7070313&WIDTH=512&HEIGHT=512&FORMAT=image%2Fjpeg
+    http://localhost:8083/geoserver/geosolutions/wms?LAYERS=geosolutions%3A13tde815295_200803_0x6000m_cl&STYLES=&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A26913&BBOX=482574.82910157,4429949.7070313,482949.82910157,4430324.7070313&WIDTH=512&HEIGHT=512&FORMAT=image%2Fjpeg
 
 
 .. figure:: img/palette7.png
@@ -137,7 +137,7 @@ To give you an example when paletted images may not fit the bill, let's consider
 
 3) PNG8 output (the output using a "palette by example would be the same")::
 
-	http://localhost:8083/geoserver/geosolutions/wms?LAYERS=geosolutions%3A13tde815295_200803_0x6000m_cl&STYLES=&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A26913&BBOX=482574.82910157,4429949.7070313,482949.82910157,4430324.7070313&WIDTH=512&HEIGHT=512&FORMAT=image%2Fpng8
+    http://localhost:8083/geoserver/geosolutions/wms?LAYERS=geosolutions%3A13tde815295_200803_0x6000m_cl&STYLES=&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A26913&BBOX=482574.82910157,4429949.7070313,482949.82910157,4430324.7070313&WIDTH=512&HEIGHT=512&FORMAT=image%2Fpng8
 
 .. figure:: img/palette8.png
    :align: center
@@ -148,7 +148,7 @@ To give you an example when paletted images may not fit the bill, let's consider
 
 4) PNG output + safe palette::
 
-	http://localhost:8083/geoserver/geosolutions/wms?LAYERS=geosolutions%3A13tde815295_200803_0x6000m_cl&STYLES=&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A26913&BBOX=482574.82910157,4429949.7070313,482949.82910157,4430324.7070313&WIDTH=512&HEIGHT=512&FORMAT=image%2Fpng&palette=safe
+    http://localhost:8083/geoserver/geosolutions/wms?LAYERS=geosolutions%3A13tde815295_200803_0x6000m_cl&STYLES=&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A26913&BBOX=482574.82910157,4429949.7070313,482949.82910157,4430324.7070313&WIDTH=512&HEIGHT=512&FORMAT=image%2Fpng&palette=safe
 
 .. figure:: img/palette9.png
    :align: center

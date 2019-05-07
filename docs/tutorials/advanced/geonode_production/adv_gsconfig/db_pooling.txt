@@ -30,9 +30,9 @@ Whenever a data store backed by a database is added to GeoServer an internal con
         - The maximum number of connections the pool can hold. When the maximum number of connections is exceeded, additional requests that require a database connection will be halted until a connection from the pool becomes available and eventually times out if that’s not possible within the time specified in the connection time-out. *The maximum number of connections limits the number of concurrent requests that can be made against the database*.
       * - **min connections**
         - The minimum number of connections the pool will hold. This number of connections is held even when there are no active requests. When this number of connections is exceeded due to serving incoming requests additional connections are opened until the pool reaches its maximum size (described above). The implications of this number are multiple: 
-		-1- If it is very far from the max connections this might limit the ability of the GeoServer to respond quickly to unexpected or random heavy load situations due to the fact that it takes a non negligible time to create a new connections. However this set up is very good when the DBMS is quite loaded since it tends to use as less connections as possible at all times. 
-		
-		-2- If it is very close to the max connections value the GeoServer will be very fast to respond to random load situation. However in this case the GeoServer would put a big burden on DBMS shoulders as the the poll will try to hold all needed connections at all times.
+        -1- If it is very far from the max connections this might limit the ability of the GeoServer to respond quickly to unexpected or random heavy load situations due to the fact that it takes a non negligible time to create a new connections. However this set up is very good when the DBMS is quite loaded since it tends to use as less connections as possible at all times. 
+        
+        -2- If it is very close to the max connections value the GeoServer will be very fast to respond to random load situation. However in this case the GeoServer would put a big burden on DBMS shoulders as the the poll will try to hold all needed connections at all times.
       * - **validate connections**
         - Flag indicating whether connections from the pool should be validated before they are used. A connection in the pool can become invalid for a number of reasons including network breakdown, database server timeout, etc.. The benefit of setting this flag is that an invalid connection will never be used which can prevent client errors. The downside of setting the flag is that a small performance penalty is paid in order to validate connections when the connection is borrowed from the pool since the validation is done by sending smal query to the server. However the cost of this query is usually small, as an instance on PostGis the validation query is *Select 1*.
       * - **fetch size**
@@ -102,21 +102,21 @@ Tomcat Set-up
 The first step to perform for creating a JNDI datasource (connection pool) is to edit the **context.xml** file inside ``$TOMCAT_HOME/conf`` directory. This file contains the different JNDI resources configured for Tomcat.
 In this case, we are going to configure a JNDI datasource for a PostgreSQL database. If the file is not present you should create it and add a content similar to the following::
 
-	<Context>
-		<Resource
-		 name="jdbc/postgres" auth="Container" type="javax.sql.DataSource"
-		 driverClassName="org.postgresql.Driver"
-		 url="jdbc:postgresql://localhost:5432/testdb"
-		 username="admin" 
-		 password="admin"
-		 maxActive="20" 
-		 maxIdle="10" 
-		 maxWait="10000"
-		 minEvictableIdleTimeMillis="300000"
-		 timeBetweenEvictionRunsMillis="300000"
-		 validationQuery="SELECT 1"/>
-	</Context>
-	 
+    <Context>
+        <Resource
+         name="jdbc/postgres" auth="Container" type="javax.sql.DataSource"
+         driverClassName="org.postgresql.Driver"
+         url="jdbc:postgresql://localhost:5432/testdb"
+         username="admin" 
+         password="admin"
+         maxActive="20" 
+         maxIdle="10" 
+         maxWait="10000"
+         minEvictableIdleTimeMillis="300000"
+         timeBetweenEvictionRunsMillis="300000"
+         validationQuery="SELECT 1"/>
+    </Context>
+     
 .. note:: If the file is already present, do not add the `<Context></Context>` labels.
 
 In the previous XML snippet, we configured a connection to a PostgreSQL database called **testdb** which have the host name as *localhost* and port number equal to *5432*.
@@ -125,20 +125,20 @@ In the previous XML snippet, we configured a connection to a PostgreSQL database
 
 Some of the parameters that can be configured for the JNDI connection pool are as follows:
 
-	* **maxActive** : The number of maximum active connections to use.
-	* **maxIdle** : The number of maximum unused connections.
-	* **maxWait** : The maximum number of **milliseconds** that the pool will wait.
-	* **poolPreparedStatements** : Enable the prepared statement pooling (very important for good performance).
-	* **maxOpenPreparedStatements** : The maximum number of prepared statements in pool.
-	* **validationQuery** : (default null) A validation query that double checks the connection is still alive before actually using it.
-	* **timeBetweenEvictionRunsMillis** : (default -1) The number of **milliseconds** to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run.
-	* **numTestsPerEvictionRun** : (default 3) The number of objects to examine during each run of the idle object evictor thread (if any).
-	* **minEvictableIdleTimeMillis** : : (default 1000 * 60 * 30) The minimum amount of time, in **milliseconds**, an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any).
-	* **removeAbandoned** : (default false) Flag to remove abandoned connections if they exceed the removeAbandonedTimeout. If set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection.
-	* **removeAbandonedTimeout** : (default 300) Timeout in **seconds** before an abandoned connection can be removed.
-	* **logAbandoned** : (default false) Flag to log stack traces for application code which abandoned a Statement or Connection.
-	* **testWhileIdle** : (default false) Flag used to test connections when idle.
-	
+    * **maxActive** : The number of maximum active connections to use.
+    * **maxIdle** : The number of maximum unused connections.
+    * **maxWait** : The maximum number of **milliseconds** that the pool will wait.
+    * **poolPreparedStatements** : Enable the prepared statement pooling (very important for good performance).
+    * **maxOpenPreparedStatements** : The maximum number of prepared statements in pool.
+    * **validationQuery** : (default null) A validation query that double checks the connection is still alive before actually using it.
+    * **timeBetweenEvictionRunsMillis** : (default -1) The number of **milliseconds** to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run.
+    * **numTestsPerEvictionRun** : (default 3) The number of objects to examine during each run of the idle object evictor thread (if any).
+    * **minEvictableIdleTimeMillis** : : (default 1000 * 60 * 30) The minimum amount of time, in **milliseconds**, an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any).
+    * **removeAbandoned** : (default false) Flag to remove abandoned connections if they exceed the removeAbandonedTimeout. If set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection.
+    * **removeAbandonedTimeout** : (default 300) Timeout in **seconds** before an abandoned connection can be removed.
+    * **logAbandoned** : (default false) Flag to log stack traces for application code which abandoned a Statement or Connection.
+    * **testWhileIdle** : (default false) Flag used to test connections when idle.
+    
 .. warning:: The previous settings should be modified only by experienced users. Using wrong low values for **removedAbandonedTimeout** and **minEvictableIdleTimeMillis** may result in connection failures; if so try it is important to set-up **logAbandoned** to true and check your catalina.out log file.
 
 More informations about the parameters can be found at the `DBCP documentation <http://commons.apache.org/proper/commons-dbcp/configuration.html>`_.
@@ -151,19 +151,19 @@ Launch GeoServer and navigate to the :menuselection:`Stores --> Add new Store` s
 First, choose the *PostGIS (JNDI)* datastore and give it a name:
 
 .. figure:: img/postgis_start.png
-	:align: center
-	
-	PostGIS JNDI Store Configuration
+    :align: center
+    
+    PostGIS JNDI Store Configuration
 
 And then you can configure the connection pool:
 
 .. figure:: img/postgis_conf.png
-	:align: center
-	
-	PostGIS JNDI Store Configuration
+    :align: center
+    
+    PostGIS JNDI Store Configuration
 
 When you are doing this, make sure the schema is properly configured, or the datastore will list all the tables it can find in the schema it is given access to.
-		
+        
 Microsoft SQLServer JNDI Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -177,23 +177,23 @@ Tomcat Set-up
 In this case, we are going to configure a JNDI datasource for a SQLServer database. You shall create/edit the **context.xml** file inside ``$TOMCAT_HOME/conf`` directory
 with the following lines::
 
-	<Context>
-		 <Resource 
-			name="jdbc/sqlserver" 
-			auth="Container" 
-			type="javax.sql.DataSource"
-			url="jdbc:sqlserver://localhost:1433;databaseName=test;user=admin;password=admin;"
-			driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-			username="admin" 
-			password="admin"
-			maxActive="20" 
-			maxIdle="10" 
-			maxWait="10000"
-			minEvictableIdleTimeMillis="300000"
-			timeBetweenEvictionRunsMillis="300000"
-			validationQuery="SELECT 1"/>
-	</Context>
-	
+    <Context>
+         <Resource 
+            name="jdbc/sqlserver" 
+            auth="Container" 
+            type="javax.sql.DataSource"
+            url="jdbc:sqlserver://localhost:1433;databaseName=test;user=admin;password=admin;"
+            driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+            username="admin" 
+            password="admin"
+            maxActive="20" 
+            maxIdle="10" 
+            maxWait="10000"
+            minEvictableIdleTimeMillis="300000"
+            timeBetweenEvictionRunsMillis="300000"
+            validationQuery="SELECT 1"/>
+    </Context>
+    
 .. note::  Note that **database name**, **username** and **password** must be defined directly in the URL.
 
 GeoServer Set-up
@@ -203,17 +203,17 @@ Launch GeoServer and navigate to the :menuselection:`Stores --> Add new Store` s
 Then choose the *Microsoft SQL Server (JNDI)* datastore and give it a name:
 
 .. figure:: img/sqlserver_start.png
-	:align: center
-	
-	Microsoft SQLServer JNDI Store Configuration
+    :align: center
+    
+    Microsoft SQLServer JNDI Store Configuration
 
 After, you can configure the connection pool:
 
 .. figure:: img/sqlserver_conf.png
-	:align: center
+    :align: center
 
-	Microsoft SQLServer JNDI Store Configuration
-	
+    Microsoft SQLServer JNDI Store Configuration
+    
 Oracle JNDI Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -227,23 +227,23 @@ Tomcat Set-up
 
 First you must create/edit the **context.xml** file inside ``$TOMCAT_HOME/conf`` directory with the following lines::
 
-	<Context>
-		   <Resource 
-				name="jdbc/oralocal" 
-				auth="Container" type="javax.sql.DataSource"
-				url="jdbc:oracle:thin:@localhost:1521:xe"
-				driverClassName="oracle.jdbc.driver.OracleDriver"
-				username="dbuser" 
-				password="dbpasswd"
-				maxActive="20" 
-				maxIdle="3" 
-				maxWait="10000"
-				minEvictableIdleTimeMillis="300000"
-				timeBetweenEvictionRunsMillis="300000"
-				poolPreparedStatements="true"
-				maxOpenPreparedStatements="100"
-				validationQuery="SELECT SYSDATE FROM DUAL" />
-	</Context>
+    <Context>
+           <Resource 
+                name="jdbc/oralocal" 
+                auth="Container" type="javax.sql.DataSource"
+                url="jdbc:oracle:thin:@localhost:1521:xe"
+                driverClassName="oracle.jdbc.driver.OracleDriver"
+                username="dbuser" 
+                password="dbpasswd"
+                maxActive="20" 
+                maxIdle="3" 
+                maxWait="10000"
+                minEvictableIdleTimeMillis="300000"
+                timeBetweenEvictionRunsMillis="300000"
+                poolPreparedStatements="true"
+                maxOpenPreparedStatements="100"
+                validationQuery="SELECT SYSDATE FROM DUAL" />
+    </Context>
 
 GeoServer Set-up
 ````````````````
@@ -253,17 +253,17 @@ Launch GeoServer and navigate to the :menuselection:`Stores --> Add new Store` s
 Then choose the *Oracle NG (JNDI)* datastore and give it a name:
 
 .. figure:: img/oracle_start.png
-	:align: center
-	
-	Oracle JNDI Store Configuration
+    :align: center
+    
+    Oracle JNDI Store Configuration
 
 After, you can configure the connection pool:
 
 .. figure:: img/oracle_conf.png
-	:align: center
-	
-	Oracle JNDI Store Configuration
-	
+    :align: center
+    
+    Oracle JNDI Store Configuration
+    
 .. note:: In Oracle the schema is usually the user name, upper cased.
 
 Configuring Connection Pools for production usage

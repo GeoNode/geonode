@@ -16,26 +16,26 @@ WMS Decorations provide a framework for visually annotating images from WMS with
 
    .. code-block:: xml
 
-	<layout>
-			<decoration type="image" affinity="top,left" offset="45,8"
-					size="174,60">
-				<option name="url"
-					value="${GEOSERVER_DATA_DIR}/geosolutions-logo-tx.png" />
-			</decoration>
+    <layout>
+            <decoration type="image" affinity="top,left" offset="45,8"
+                    size="174,60">
+                <option name="url"
+                    value="${GEOSERVER_DATA_DIR}/geosolutions-logo-tx.png" />
+            </decoration>
 
-			<decoration type="text" affinity="bottom,right" offset="3,3">
-				<option name="message" value="Boulder City" />
-				<option name="font-size" value="14" />
-				<option name="font-color" value="#FFFFFF" />
-				<option name="halo-radius" value="1" />
-				<option name="halo-color" value="#000000" />
-			</decoration>
+            <decoration type="text" affinity="bottom,right" offset="3,3">
+                <option name="message" value="Boulder City" />
+                <option name="font-size" value="14" />
+                <option name="font-color" value="#FFFFFF" />
+                <option name="halo-radius" value="1" />
+                <option name="halo-color" value="#000000" />
+            </decoration>
 
-			<decoration type="scaleline" affinity="bottom,left" offset="3,3" />
+            <decoration type="scaleline" affinity="bottom,left" offset="3,3" />
 
-			<decoration type="legend" affinity="top,right"
-					offset="6,6" size="auto" />
-	</layout>
+            <decoration type="legend" affinity="top,right"
+                    offset="6,6" size="auto" />
+    </layout>
 
 #. Save and close the file. 
 

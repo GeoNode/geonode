@@ -13,8 +13,8 @@ This section provides instructions to add and publish MrSID, ECW and JPEG 2000 d
    .. warning::
     
       This assumes the GeoServer image GDAL plug-in is already installed. The GDAL plugin is normally an extension.
-	  
-	  If the store described in this section are not avaiable, install the 'geoserver-2.2-SNAPSHOT-gdal-plugin' from :file:`%TRAINING_ROOT%\\data\\plugins\\`. Just decompress the zip file into  :file:`%TRAINING_ROOT%\\webapps\\geoserver\\WEB-INF\\lib\\` and restart GeoServer.
+      
+      If the store described in this section are not avaiable, install the 'geoserver-2.2-SNAPSHOT-gdal-plugin' from :file:`%TRAINING_ROOT%\\data\\plugins\\`. Just decompress the zip file into  :file:`%TRAINING_ROOT%\\webapps\\geoserver\\WEB-INF\\lib\\` and restart GeoServer.
 
 MrSID Data Set
 ^^^^^^^^^^^^^^

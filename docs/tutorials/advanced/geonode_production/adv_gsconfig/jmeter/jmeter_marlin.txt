@@ -17,7 +17,7 @@ The `Marlin <https://github.com/bourgesl/marlin-renderer>`_ renderer is an impro
 
 Configure JMeter
 ----------------
-	
+    
 #. Go to ``$TRAINING_ROOT/data/jmeter_data`` and copy the file ``template.jmx`` file creating a ``marlin.jmx`` file
 
 #. From the training root, on the command line, run ``jmeter.bat`` (or ``jmeter.sh`` if you're on Linux) to start JMeter
@@ -27,20 +27,20 @@ Configure JMeter
 #. Disable **View Results Tree** section
 
 #. In the ``CSV Data Set Config`` element, modify the **path** of the CSV file by setting the path for the file ``controlflow.csv`` in the ``$TRAINING_ROOT/data/jmeter_data`` directory
-	  
+      
 #. In the **HTTP Request Default** element modify the following parameters:
 
-	.. list-table::
-		  :widths: 30 50
+    .. list-table::
+          :widths: 30 50
 
-		  * - **Name**
-		    - **Value**
-		  * - layers
-		    - boulder
-		  * - srs
-		    - EPSG:2876
-	
-	
+          * - **Name**
+            - **Value**
+          * - layers
+            - boulder
+          * - srs
+            - EPSG:2876
+    
+    
 Test without Marlin
 -------------------
 
@@ -48,7 +48,7 @@ Test without Marlin
 
 #. Run the test
 
-	.. note:: Remember to run and stop the test a few times for having stable results
+    .. note:: Remember to run and stop the test a few times for having stable results
    
 #. When the test is completed, Save the results in a text file. 
 
@@ -56,7 +56,7 @@ Test without Marlin
       :align: center
       
       *Throughput without Marlin (Note the results may be different in other machines)*
-	
+    
 #. Remove the result from JMeter by clicking on :guilabel:`Run --> Clear All` on the menu
 
 #. Stop GeoServer
@@ -73,7 +73,7 @@ Setup Marlin
             REM Marlin support
             set JAVA_OPTS=%JAVA_OPTS% -Xbootclasspath/p:"%ROOT%\data\marlin-0.4.4.jar" 
             set JAVA_OPTS=%JAVA_OPTS% -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine
-		
+        
 #. Start GeoServer again
 
 #. Go to the map preview and open the ``boulder`` layer, you should see the following in the Tomcat console::
@@ -97,15 +97,15 @@ Setup Marlin
             INFO: sun.java2d.renderer.logCreateContext = false
             INFO: sun.java2d.renderer.logUnsafeMalloc  = false
             INFO: ===============================================================================
-		
+        
 Test with Marlin renderer
 -------------------------
 
 #. Run again the test.
-		
-	You may see that the throughput got significantly higher, especially at mid-high thread counts
-	
+        
+    You may see that the throughput got significantly higher, especially at mid-high thread counts
+    
    .. figure:: img/marlin.png
       :align: center
    
-      *Throughput with Marlin (Note the results may be different in other machines)*		
+      *Throughput with Marlin (Note the results may be different in other machines)*        

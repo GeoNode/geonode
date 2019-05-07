@@ -28,30 +28,30 @@ The SQL can also be parametrized, and parameter values passed in along with a WM
 #. Selecting the link :guilabel:`Configure new SQL view` will open a new page where the SQL statement can be specified:
 
    .. figure:: img/sqlviews_plainsql_params.png
-	  
-	 Plain SQL View configuration
+      
+     Plain SQL View configuration
 
    .. code-block:: sql
 
     SELECT st.obs_year, 
-				st.storm_num, 
-				st.storm_name,
-				min(st.obs_datetime)
-				AS storm_start, max(st.obs_datetime)
-				AS storm_end, max(st.wind)
-				AS max_wind, st_makeline(st.geom) 
-				AS the_route
+                st.storm_num, 
+                st.storm_name,
+                min(st.obs_datetime)
+                AS storm_start, max(st.obs_datetime)
+                AS storm_end, max(st.wind)
+                AS max_wind, st_makeline(st.geom) 
+                AS the_route
     FROM ( SELECT storm_obs.storm_num, 
-				storm_obs.storm_name,
-				storm_obs.wind, 
-				storm_obs.press, 
-				storm_obs.obs_datetime, 
-				date_part('year'::text, storm_obs.obs_datetime)
-				AS obs_year, storm_obs.geom
+                storm_obs.storm_name,
+                storm_obs.wind, 
+                storm_obs.press, 
+                storm_obs.obs_datetime, 
+                date_part('year'::text, storm_obs.obs_datetime)
+                AS obs_year, storm_obs.geom
            FROM storm_obs
           ORDER BY date_part('year'::text, storm_obs.obs_datetime),
-					storm_obs.storm_num, 
-					storm_obs.obs_datetime) st
+                    storm_obs.storm_num, 
+                    storm_obs.obs_datetime) st
     GROUP BY st.obs_year, st.storm_num, st.storm_name
     ORDER BY st.obs_year, st.storm_num
 
@@ -76,7 +76,7 @@ The SQL can also be parametrized, and parameter values passed in along with a WM
 
    .. figure:: img/sqlviews_plainsql_featuretype.png
       
-	 
+     
 #. Make sure the CRS is ``EPSG:4326`` and **write manually** ``(-180,-90,180,90)`` values in the :guilabel:`Bounding Boxes` sections. 
 
    .. figure:: img/sqlviews_plainsql_bbox.png
@@ -95,18 +95,18 @@ A parametric SQL view is based on a SQL query containing parameters whose values
 #. In order to create a parametric SQL view performs the steps 1 and 2 like before and then insert the following parameters: 
 
    .. figure:: img/sqlviews_parametricsql_params.png
-	  
-	 Parametric SQL View configuration
+      
+     Parametric SQL View configuration
 
    .. code-block:: sql
 
-	SELECT date_part('year'::text, t1.obs_datetime) AS obs_year, t1.storm_num, t1.storm_name, t1.wind, t2.wind AS wind_end, t1.press, t2.press AS press_end, t1.obs_datetime, t2.obs_datetime AS obs_datetime_end, st_makeline(t1.geom, t2.geom) AS geom
-	FROM storm_obs t1
-	JOIN ( SELECT storm_obs.id, storm_obs.storm_num, storm_obs.storm_name, storm_obs.wind, storm_obs.press, storm_obs.obs_datetime, storm_obs.geom
-		   FROM storm_obs) t2 ON (t1.obs_datetime + '06:00:00'::interval) = t2.obs_datetime AND t1.storm_name::text = t2.storm_name::text
-	WHERE 
-		date_part('year'::text, t1.obs_datetime) BETWEEN %MIN_OBS_YEAR% AND %MAX_OBS_YEAR%
-	ORDER BY date_part('year'::text, t1.obs_datetime), t1.storm_num, t1.obs_datetime
+    SELECT date_part('year'::text, t1.obs_datetime) AS obs_year, t1.storm_num, t1.storm_name, t1.wind, t2.wind AS wind_end, t1.press, t2.press AS press_end, t1.obs_datetime, t2.obs_datetime AS obs_datetime_end, st_makeline(t1.geom, t2.geom) AS geom
+    FROM storm_obs t1
+    JOIN ( SELECT storm_obs.id, storm_obs.storm_num, storm_obs.storm_name, storm_obs.wind, storm_obs.press, storm_obs.obs_datetime, storm_obs.geom
+           FROM storm_obs) t2 ON (t1.obs_datetime + '06:00:00'::interval) = t2.obs_datetime AND t1.storm_name::text = t2.storm_name::text
+    WHERE 
+        date_part('year'::text, t1.obs_datetime) BETWEEN %MIN_OBS_YEAR% AND %MAX_OBS_YEAR%
+    ORDER BY date_part('year'::text, t1.obs_datetime), t1.storm_num, t1.obs_datetime
 
    .. note:: The query defines two parameters ``%MIN_OBS_YEAR%`` and ``%MAX_OBS_YEAR%``.
 
@@ -114,14 +114,14 @@ A parametric SQL view is based on a SQL query containing parameters whose values
 
    .. figure:: img/sqlviews_parametricsql_guess_params.png
       
-	  
+      
    .. note:: Always provide default values for each parameter in order to let the layer work properly and also be sure the regular expression for the values validation are correct.
 
 
-	Examples of Regular Expressions:
+    Examples of Regular Expressions:
 
-		* ``^[\d\.\+-eE]+$`` will check that the parameter value is composed with valid elements for a floating point number, eventually in scientific notation, but will not check that the provided value is actually a valid floating point number
-		* ``[^;']+`` will check the parameter value does not contain quotes or semicolumn, preventing common sql injection attacks, without actually imposing much on the parameter value structure
+        * ``^[\d\.\+-eE]+$`` will check that the parameter value is composed with valid elements for a floating point number, eventually in scientific notation, but will not check that the provided value is actually a valid floating point number
+        * ``[^;']+`` will check the parameter value does not contain quotes or semicolumn, preventing common sql injection attacks, without actually imposing much on the parameter value structure
 
 #. Fill in some default values for the parameters, so that GeoServer can run the query and inspect the results in the next steps. Set ``MAX_OBS_YEAR`` to 2020 and ``MIN_OBS_YEAR`` to 0.
 
@@ -148,4 +148,4 @@ Now you are able to see the hurricanes from the parametric view and also dynamic
 
    .. figure:: img/sqlviews_parametricsql_preview.png
       
-	 Parametric SQL View OL preview
+     Parametric SQL View OL preview

@@ -51,7 +51,7 @@ Until now we've only created superusers. So how do you create an ordinary user? 
 
 #. Django Admin Interface
 
-   First we will create a user via the *Django Admin Interface* because we've still got it open. Therefore go back to *Auth* -> *Users* and      	you should find a button on the right that says *Add user*.    
+   First we will create a user via the *Django Admin Interface* because we've still got it open. Therefore go back to *Auth* -> *Users* and          you should find a button on the right that says *Add user*.    
 
    .. figure:: img/add_user.png
  
@@ -137,8 +137,8 @@ In the section *Who can edit this data* you write down the names of the users yo
 
 .. img/layer_test_permission.png
 .. todo:: CREATE THIS IMAGE! settings: view and download = everybody
-					edit = geonode_user
-					manage = your_superuser (you could leave this empty as well)
+                    edit = geonode_user
+                    manage = your_superuser (you could leave this empty as well)
 
 .. todo:: BUG about view => only users who can edit => not working; have to set it to any registered users!
 
@@ -167,8 +167,8 @@ Now set the permissions of this layer using the following settings:
 
 ..  img/permission_test_layer_2.png
 .. todo:: CREATE THIS IMG!! view and download = only who can edit
-	 			edit = test_user
-				manage = owner (or empty)
+                 edit = test_user
+                manage = owner (or empty)
 
 .. todo:: add more details?!
 
@@ -222,8 +222,8 @@ Here you can set the same permissions as known from the layer permissions! Set t
 
 .. img/test_map_permissions.png
 .. todo:: CREATE THIS IMAGE:: view = anybody
-				edit = *geonode_user* and *test_user*
-				manage = *geonode_user*
+                edit = *geonode_user* and *test_user*
+                manage = *geonode_user*
 
 Save your changes and then log out and log in as *test_user*. You should now be able to view the *test_map* and click on to *Edit map*.
 

@@ -67,9 +67,9 @@ At this point the ImageMosaic is being published with GeoServer. Next step is ch
 
 #. Play with the map preview by zooming and panning: 
 
-	* Check how the **performances have been improved** leveraging on both overviews and tiling. 
-	
-	* Note the **better image quality** of the lowest resolution views, having used an average interpolation algorithm when creating the overviews.
+    * Check how the **performances have been improved** leveraging on both overviews and tiling. 
+    
+    * Note the **better image quality** of the lowest resolution views, having used an average interpolation algorithm when creating the overviews.
 
 
 Configuring an Image Pyramid
@@ -121,9 +121,9 @@ GeoServer can efficiently deal with large TIFF with overviews, as long as the TI
 
    .. warning::
     
-		  This assumes the GeoServer image pyramid plug-in is already installed. The pyramid is normally an extension.
-	  
-		  If the ImagePyramid store is not avaiable, before doing the exercise install the geoserver pyramid plugin from :file:`{%TRAINING_ROOT%/data/plugins/}` . Just decompress the zip file into :file:`{%TRAINING_ROOT%/webapps/geoserver/WEB-INF/lib/}` and restart GeoServer.
+          This assumes the GeoServer image pyramid plug-in is already installed. The pyramid is normally an extension.
+      
+          If the ImagePyramid store is not avaiable, before doing the exercise install the geoserver pyramid plugin from :file:`{%TRAINING_ROOT%/data/plugins/}` . Just decompress the zip file into :file:`{%TRAINING_ROOT%/webapps/geoserver/WEB-INF/lib/}` and restart GeoServer.
 
 4. Specify a proper name (``bm_pyramid``) in the Data Source Name field of the interface and specify a proper URL with the pyramid data directory 
 
@@ -145,8 +145,8 @@ GeoServer can efficiently deal with large TIFF with overviews, as long as the TI
    .. note:: 
     
       When clicking save the store will look into the directory, recognize a ``gdal_retile`` generated structure and perform some background operations::
-      	
-      		- move all tiff files in the root to a newly create directory 0
+          
+              - move all tiff files in the root to a newly create directory 0
                 - create an image mosaic in all sub-directories (shapefile index plus property file)
                 - create the root property file describing the whole pyramid structure
 

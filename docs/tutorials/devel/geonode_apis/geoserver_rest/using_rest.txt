@@ -17,7 +17,7 @@ The examples in this section use the `cURL <https://curl.haxx.se/>`_ utility, wh
 
 #. Open the Terminal and enter the following command::
 
-   	curl -u admin:geoserver -v -XPOST -H "Content-type: text/xml" -d "<workspace><name>myworkspace</name></workspace>" http://localhost:8083/geoserver/rest/workspaces
+       curl -u admin:geoserver -v -XPOST -H "Content-type: text/xml" -d "<workspace><name>myworkspace</name></workspace>" http://localhost:8083/geoserver/rest/workspaces
 
   The response should contain the following:
 
@@ -33,7 +33,7 @@ The examples in this section use the `cURL <https://curl.haxx.se/>`_ utility, wh
 
 #. Get the new created workspace details entering the following::
 
-	curl -u admin:geoserver -XGET -H "Accept: text/xml" http://localhost:8083/geoserver/rest/workspaces/myworkspace
+    curl -u admin:geoserver -XGET -H "Accept: text/xml" http://localhost:8083/geoserver/rest/workspaces/myworkspace
 
    .. figure:: img/workspace3.png
 
@@ -63,27 +63,27 @@ The examples in this section use the `cURL <https://curl.haxx.se/>`_ utility, wh
 
 #. Retrieves the created data store as XML entering the following::
 
-		curl -u admin:geoserver -XGET http://localhost:8083/geoserver/rest/workspaces/myworkspace/datastores/pointlands.xml
+        curl -u admin:geoserver -XGET http://localhost:8083/geoserver/rest/workspaces/myworkspace/datastores/pointlands.xml
 
    .. code-block:: xml
 
-		<dataStore>
-		  <name>pointlands</name>
-		  <type>Shapefile</type>
-		  <enabled>true</enabled>
-		  <workspace>
-			<name>myworkspace</name>
-			<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8083/geoserver/rest/workspaces/myworkspace.xml" type="application/xml"/>
-		  </workspace>
-		  <connectionParameters>
-			<entry key="url">file:${TRAINING_ROOT}/geoserver_data/data/myworkspace/pointlands/</entry>
-			<entry key="namespace">http://myworkspace</entry>
-		  </connectionParameters>
-		  <__default>false</__default>
-		  <featureTypes>
-			<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8083/geoserver/rest/workspaces/myworkspace/datastores/pointlands/featuretypes.xml" type="application/xml"/>
-		  </featureTypes>
-		</dataStore>
+        <dataStore>
+          <name>pointlands</name>
+          <type>Shapefile</type>
+          <enabled>true</enabled>
+          <workspace>
+            <name>myworkspace</name>
+            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8083/geoserver/rest/workspaces/myworkspace.xml" type="application/xml"/>
+          </workspace>
+          <connectionParameters>
+            <entry key="url">file:${TRAINING_ROOT}/geoserver_data/data/myworkspace/pointlands/</entry>
+            <entry key="namespace">http://myworkspace</entry>
+          </connectionParameters>
+          <__default>false</__default>
+          <featureTypes>
+            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8083/geoserver/rest/workspaces/myworkspace/datastores/pointlands/featuretypes.xml" type="application/xml"/>
+          </featureTypes>
+        </dataStore>
 
    .. note::
 
@@ -91,26 +91,26 @@ The examples in this section use the `cURL <https://curl.haxx.se/>`_ utility, wh
 
 #. Retrieve the layer as XML entering the following::
 
-		curl -u admin:geoserver -XGET http://localhost:8083/geoserver/rest/layers/myworkspace:pointlands.xml
+        curl -u admin:geoserver -XGET http://localhost:8083/geoserver/rest/layers/myworkspace:pointlands.xml
 
    .. code-block:: xml
 
-		<layer>
-		  <name>pointlands</name>
-		  <type>VECTOR</type>
-		  <defaultStyle>
-			<name>point</name>
-			<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8083/geoserver/rest/styles/point.xml" type="application/xml"/>
-		  </defaultStyle>
-		  <resource class="featureType">
-			<name>pointlands</name>
-			<atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8083/geoserver/rest/workspaces/myworkspace/datastores/pointlands/featuretypes/pointlands.xml" type="application/xml"/>
-		  </resource>
-		  <attribution>
-			<logoWidth>0</logoWidth>
-			<logoHeight>0</logoHeight>
-		  </attribution>
-		</layer>
+        <layer>
+          <name>pointlands</name>
+          <type>VECTOR</type>
+          <defaultStyle>
+            <name>point</name>
+            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8083/geoserver/rest/styles/point.xml" type="application/xml"/>
+          </defaultStyle>
+          <resource class="featureType">
+            <name>pointlands</name>
+            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8083/geoserver/rest/workspaces/myworkspace/datastores/pointlands/featuretypes/pointlands.xml" type="application/xml"/>
+          </resource>
+          <attribution>
+            <logoWidth>0</logoWidth>
+            <logoHeight>0</logoHeight>
+          </attribution>
+        </layer>
 
    .. note::
 
@@ -120,46 +120,46 @@ The examples in this section use the `cURL <https://curl.haxx.se/>`_ utility, wh
 
    .. code-block:: xml
 
-		<?xml version="1.0" encoding="ISO-8859-1"?>
-		<StyledLayerDescriptor version="1.0.0"
-		 xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
-		 xmlns="http://www.opengis.net/sld"
-		 xmlns:ogc="http://www.opengis.net/ogc"
-		 xmlns:xlink="http://www.w3.org/1999/xlink"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-		  <!-- a Named Layer is the basic building block of an SLD document -->
-		  <NamedLayer>
-			<Name>default_point</Name>
-			<UserStyle>
-			<!-- Styles can have names, titles and abstracts -->
-			  <Title>Default Point</Title>
-			  <Abstract>A sample style that draws a point</Abstract>
-			  <!-- FeatureTypeStyles describe how to render different features -->
-			  <!-- A FeatureTypeStyle for rendering points -->
-			  <FeatureTypeStyle>
-				<Rule>
-				  <Name>rule1</Name>
-				  <Title>Red Square</Title>
-				  <Abstract>A 6 pixel square with a red fill and no stroke</Abstract>
-					<PointSymbolizer>
-					  <Graphic>
-						<Mark>
-						  <WellKnownName>triangle</WellKnownName>
-						  <Stroke>
-							<CssParameter name="stroke">#66FF66</CssParameter>
-						  </Stroke>
-						  <Fill>
-							<CssParameter name="fill">#66FF66</CssParameter>
-						  </Fill>
-						</Mark>
-					  <Size>10</Size>
-					</Graphic>
-				  </PointSymbolizer>
-				</Rule>
-			  </FeatureTypeStyle>
-			</UserStyle>
-		  </NamedLayer>
-		</StyledLayerDescriptor>
+        <?xml version="1.0" encoding="ISO-8859-1"?>
+        <StyledLayerDescriptor version="1.0.0"
+         xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+         xmlns="http://www.opengis.net/sld"
+         xmlns:ogc="http://www.opengis.net/ogc"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <!-- a Named Layer is the basic building block of an SLD document -->
+          <NamedLayer>
+            <Name>default_point</Name>
+            <UserStyle>
+            <!-- Styles can have names, titles and abstracts -->
+              <Title>Default Point</Title>
+              <Abstract>A sample style that draws a point</Abstract>
+              <!-- FeatureTypeStyles describe how to render different features -->
+              <!-- A FeatureTypeStyle for rendering points -->
+              <FeatureTypeStyle>
+                <Rule>
+                  <Name>rule1</Name>
+                  <Title>Red Square</Title>
+                  <Abstract>A 6 pixel square with a red fill and no stroke</Abstract>
+                    <PointSymbolizer>
+                      <Graphic>
+                        <Mark>
+                          <WellKnownName>triangle</WellKnownName>
+                          <Stroke>
+                            <CssParameter name="stroke">#66FF66</CssParameter>
+                          </Stroke>
+                          <Fill>
+                            <CssParameter name="fill">#66FF66</CssParameter>
+                          </Fill>
+                        </Mark>
+                      <Size>10</Size>
+                    </Graphic>
+                  </PointSymbolizer>
+                </Rule>
+              </FeatureTypeStyle>
+            </UserStyle>
+          </NamedLayer>
+        </StyledLayerDescriptor>
 
 
 #. Apply the existing ``landmarks`` style to the layer created ``myworkspace:pointlands`` (this operation does not overwrite the entire layer definition, updates it instead)::
