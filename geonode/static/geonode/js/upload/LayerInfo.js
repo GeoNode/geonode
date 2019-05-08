@@ -614,7 +614,7 @@ define(function (require, exports) {
                 type: this.type.name,
                 format: this.type.format,
                 time: time_enabled,
-				mosaic: mosaic_enabled
+                mosaic: mosaic_enabled
             });
         file_queue.append(li);
         this.errors = this.collectErrors();
