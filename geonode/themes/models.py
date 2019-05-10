@@ -72,6 +72,7 @@ class GeoNodeThemeCustomization(models.Model):
     jumbotron_cta_text = models.CharField(max_length=255, null=True, blank=True, verbose_name="Call to action text")
     jumbotron_cta_link = models.CharField(max_length=255, null=True, blank=True, verbose_name="Call to action link")
     body_color = models.CharField(max_length=10, default="#333333")
+    body_text_color = models.CharField(max_length=10, default="#3a3a3a")
     navbar_color = models.CharField(max_length=10, default="#333333")
     navbar_text_color = models.CharField(max_length=10, default="#ffffff")
     navbar_text_hover = models.CharField(max_length=10, default="#2c689c")

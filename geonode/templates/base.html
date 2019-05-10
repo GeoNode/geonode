@@ -60,8 +60,8 @@
         {% if custom_theme.body_color %}
         body {
           background: {{ custom_theme.body_color }};
-          {% if custom_theme.body_text %}
-          color: {{ custom_theme.body_text }};
+          {% if custom_theme.body_text_color %}
+          color: {{ custom_theme.body_text_color }};
           {% endif %}
         }
         {% endif %}

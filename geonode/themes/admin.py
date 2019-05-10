@@ -34,6 +34,7 @@ class GeonodeThemCustomizationForm(forms.ModelForm):
         model = GeoNodeThemeCustomization
         widgets = {
             'body_color': forms.TextInput(attrs={'type': 'color'}),
+            'body_text_color': forms.TextInput(attrs={'type': 'color'}),
             'navbar_color': forms.TextInput(attrs={'type': 'color'}),
             'navbar_text_color': forms.TextInput(attrs={'type': 'color'}),
             'navbar_text_hover': forms.TextInput(attrs={'type': 'color'}),
