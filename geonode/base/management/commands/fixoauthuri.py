@@ -32,13 +32,26 @@ class Command(BaseCommand):
     """
     can_import_settings = True
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--target-address',
+            dest='target_address',
+            help='Target Address (the one to be changed e.g. http://my-public.geonode.org)')
+
     def handle(self, *args, **options):
+
+        target_address = options.get('target_address')
+
         from django.conf import settings
         client_id = None
         client_secret = None
+
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import ogc_server_settings
-            redirect_uris = '%s\n%s' % (ogc_server_settings.LOCATION, ogc_server_settings.public_url)
+            redirect_uris = '%s\n%s\n%s' % (
+                ogc_server_settings.LOCATION,
+                ogc_server_settings.public_url,
+                "http://{}/geoserver/".format(target_address))
             if Application.objects.filter(name='GeoServer').exists():
                 Application.objects.filter(name='GeoServer').update(redirect_uris=redirect_uris)
                 app = Application.objects.filter(name='GeoServer')[0]
