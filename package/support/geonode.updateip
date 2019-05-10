@@ -172,7 +172,7 @@ geonode fixsitename
 
 echo "Setting up oauth"
 # Set oauth keys
-oauth_keys=$(geonode fixoauthuri 2>&1)
+oauth_keys=$(geonode fixoauthuri -f --target-address $NEW_EXT_IP 2>&1)
 client_id=`echo $oauth_keys | cut -d \, -f 1`
 client_secret=`echo $oauth_keys | cut -d \, -f 2`
 
