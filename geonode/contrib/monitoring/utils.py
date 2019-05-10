@@ -19,22 +19,23 @@
 #########################################################################
 
 import os
+import re
 import pytz
-import threading
-import traceback
+import types
 import Queue
 import logging
 import xmljson
-import types
-import re
-from urllib import urlencode
-from datetime import datetime, timedelta
-from math import floor, ceil
+import requests
+import threading
+import traceback
 
-from xml.etree import ElementTree as etree
+from math import floor, ceil
+from urllib import urlencode
+from urlparse import urlsplit
 from bs4 import BeautifulSoup as bs
 from requests.auth import HTTPBasicAuth
-import requests
+from datetime import datetime, timedelta
+from xml.etree import ElementTree as etree
 
 from django.conf import settings
 from django.db.models.fields.related import RelatedField
@@ -116,11 +117,14 @@ class GeoServerMonitorClient(object):
         self.base_url = base_url
 
     def get_href(self, link, format=None):
-        href = link['href']
+        href = urlsplit(link['href'])
+        base_url = urlsplit(self.base_url)
+        if href and href.netloc != base_url.netloc:
+            href = href._replace(netloc=base_url.netloc)
         if format is None:
-            return href
+            return href.geturl()
         if format in self.REPORT_FORMATS:
-            href, ext = os.path.splitext(href)
+            href, ext = os.path.splitext(href.geturl())
             return '{}.{}'.format(href, format)
         return format
 
@@ -142,13 +146,13 @@ class GeoServerMonitorClient(object):
         print('checking', rest_url)
         username = settings.OGC_SERVER['default']['USER']
         password = settings.OGC_SERVER['default']['PASSWORD']
-        resp = requests.get(rest_url, auth=HTTPBasicAuth(username, password))
+        resp = requests.get(
+            rest_url,
+            auth=HTTPBasicAuth(username, password),
+            timeout=30)
         doc = bs(resp.content)
         links = doc.find_all('a')
         for l in links:
-            # we're skipping this check, as gs can generate
-            # url with other base url
-            # if l.get('href').startswith(self.base_url):
             href = self.get_href(l, format)
             data = self.get_request(href, format=format)
             if data:
@@ -159,7 +163,10 @@ class GeoServerMonitorClient(object):
     def get_request(self, href, format=format):
         username = settings.OGC_SERVER['default']['USER']
         password = settings.OGC_SERVER['default']['PASSWORD']
-        r = requests.get(href, auth=HTTPBasicAuth(username, password))
+        r = requests.get(
+            href,
+            auth=HTTPBasicAuth(username, password),
+            timeout=30)
         if r.status_code != 200:
             log.warning('Invalid response for %s: %s', href, r)
             return

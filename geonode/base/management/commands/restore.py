@@ -121,7 +121,8 @@ class Command(BaseCommand):
 
             gs_bk_exec_id = gs_backup['restore']['execution']['id']
             r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
-                             auth=HTTPBasicAuth(user, passwd))
+                             auth=HTTPBasicAuth(user, passwd),
+                             timeout=10)
             if (r.status_code == 200):
 
                 try:
@@ -143,7 +144,8 @@ class Command(BaseCommand):
 
             gs_bk_exec_id = gs_backup['restore']['execution']['id']
             r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
-                             auth=HTTPBasicAuth(user, passwd))
+                             auth=HTTPBasicAuth(user, passwd),
+                             timeout=10)
             if (r.status_code == 200):
                 gs_bk_exec_status = gs_backup['restore']['execution']['status']
                 gs_bk_exec_progress = gs_backup['restore']['execution']['progress']
@@ -152,7 +154,8 @@ class Command(BaseCommand):
                     if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
                         gs_bk_exec_progress_updated = gs_bk_exec_progress
                     r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
-                                     auth=HTTPBasicAuth(user, passwd))
+                                     auth=HTTPBasicAuth(user, passwd),
+                                     timeout=10)
                     if (r.status_code == 200):
 
                         try:

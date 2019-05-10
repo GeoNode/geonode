@@ -182,7 +182,8 @@ def get_geofence_rules_count():
         headers = {'Content-type': 'application/json'}
         r = requests.get(url + 'rest/geofence/rules/count.json',
                          headers=headers,
-                         auth=HTTPBasicAuth(user, passwd))
+                         auth=HTTPBasicAuth(user, passwd),
+                         timeout=10)
         if (r.status_code < 200 or r.status_code > 201):
             logger.warning("Could not retrieve GeoFence Rules count.")
 
@@ -212,7 +213,8 @@ def get_highest_priority():
         headers = {'Content-type': 'application/json'}
         r = requests.get(url + 'rest/geofence/rules.json?page=' + str(rules_count - 1) + '&entries=1',
                          headers=headers,
-                         auth=HTTPBasicAuth(user, passwd))
+                         auth=HTTPBasicAuth(user, passwd),
+                         timeout=10)
         if (r.status_code < 200 or r.status_code > 201):
             logger.warning("Could not retrieve GeoFence Rules count.")
 
@@ -243,7 +245,8 @@ def purge_geofence_all():
             headers = {'Content-type': 'application/json'}
             r = requests.get(url + 'rest/geofence/rules.json',
                              headers=headers,
-                             auth=HTTPBasicAuth(user, passwd))
+                             auth=HTTPBasicAuth(user, passwd),
+                             timeout=10)
             if (r.status_code < 200 or r.status_code > 201):
                 logger.warning("Could not Retrieve GeoFence Rules")
             else:
@@ -287,7 +290,8 @@ def purge_geofence_layer_rules(resource):
         "{}rest/geofence/rules.json?workspace={}&layer={}".format(
             url, workspace, resource.layer.name),
         headers=headers,
-        auth=HTTPBasicAuth(user, passwd)
+        auth=HTTPBasicAuth(user, passwd),
+        timeout=10
     )
     if (r.status_code >= 200 and r.status_code < 300):
         gs_rules = r.json()
