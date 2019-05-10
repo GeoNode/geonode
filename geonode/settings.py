@@ -1539,7 +1539,7 @@ ADMIN_MODERATE_UPLOADS = False
 # add following lines to your local settings to enable monitoring
 MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'False'))
 MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
-MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'local-geoserver')
+MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'local-geonode')
 
 # how long monitoring data should be stored
 MONITORING_DATA_TTL = timedelta(days=7)
