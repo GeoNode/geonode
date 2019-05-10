@@ -60,11 +60,14 @@
         {% if custom_theme.body_color %}
         body {
           background: {{ custom_theme.body_color }};
+          {% if custom_theme.body_text %}
+          color: {{ custom_theme.body_text }};
+          {% endif %}
         }
         {% endif %}
 
         {% if custom_theme.navbar_color %}
-        .navbar-inverse , .navbar-inverse {
+        .home .navbar-inverse , .navbar-inverse {
           background-color: {{ custom_theme.navbar_color }};
         }
         {% endif %}
@@ -76,7 +79,7 @@
           padding-top: 25px;
           padding-bottom: 25px;
         }
-        {% endif
+        {% endif %}
 
         {% if custom_theme.navbar_text_hover %}
         .navbar-inverse .navbar-nav > li > a:hover {
