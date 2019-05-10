@@ -136,6 +136,20 @@
         }
         {% endif %}
 
+        {% if custom_theme.jumbotron_title_color %}
+        .home .jumbotron h1,
+        .home .jumbotron h2,
+        .home .jumbotron h3 {
+          color: {{ custom_theme.jumbotron_title_color }}
+        }
+        {% endif %}
+
+        {% if custom_theme.jumbotron_text_color %}
+        .home .jumbotron p {
+          color: {{ custom_theme.jumbotron_text_color }}
+        }
+        {% endif %}
+
         {% if custom_theme.jumbotron_welcome_hide %}
         .home .jumbotron .container {
           visibility: hidden;

@@ -82,6 +82,8 @@ class GeoNodeThemeCustomization(models.Model):
     navbar_dropdown_menu_hover = models.CharField(max_length=10, default="#204d74")
     navbar_dropdown_menu_divider = models.CharField(max_length=10, default="#204d74")
     jumbotron_color = models.CharField(max_length=10, default="#2c689c")
+    jumbotron_title_color = models.CharField(max_length=10, default="#ffffff")
+    jumbotron_text_color = models.CharField(max_length=10, default="#ffffff")
     contactus = models.BooleanField(default=False, verbose_name="Enable contact us box")
     contact_name = models.CharField(max_length=255, null=True, blank=True)
     contact_position = models.CharField(max_length=255, null=True, blank=True)
