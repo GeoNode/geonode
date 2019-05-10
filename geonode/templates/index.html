@@ -318,9 +318,15 @@
           <h2>{{ custom_theme.partners_title|default:_("Our partners") }}</h2>
           <div class="row">
               {% for partner in custom_theme.partners.all %}
-              <div class="col-md-6">
-                  <div class="partner_logo" style="background-image: url({% if partner.logo %}{{partner.logo.url}}{% else %}{% static 'geonode/img/missing_thumb.png' %}{% endif %})"></div>
-                  <div><a href="{{ partner.partner_link }}" target="_blank">{{ partner.title }}</a></div>
+              <div class="col-md-2">
+                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+                  {% if partner.logo %}
+                  <div class="partner_logo" style="background-image: url({{partner.logo.url}})">
+                  {% else %}
+                  {{ partner.title|safe }}
+                  {% endif %}
+                  </div>
+                </a>
               </div>
               {% endfor %}
           </div>

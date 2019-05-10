@@ -44,6 +44,8 @@ class GeonodeThemCustomizationForm(forms.ModelForm):
             'navbar_dropdown_menu_hover': forms.TextInput(attrs={'type': 'color'}),
             'navbar_dropdown_menu_divider': forms.TextInput(attrs={'type': 'color'}),
             'jumbotron_color': forms.TextInput(attrs={'type': 'color'}),
+            'jumbotron_title_color': forms.TextInput(attrs={'type': 'color'}),
+            'jumbotron_text_color': forms.TextInput(attrs={'type': 'color'}),
             'copyright_color': forms.TextInput(attrs={'type': 'color'}),
             'cookie_law_info_background': forms.TextInput(attrs={'type': 'color'}),
             'cookie_law_info_border': forms.TextInput(attrs={'type': 'color'}),
