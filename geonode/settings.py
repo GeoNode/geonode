@@ -311,7 +311,6 @@ GEONODE_INTERNAL_APPS = (
 
 GEONODE_CONTRIB_APPS = (
     # GeoNode Contrib Apps
-    'geonode.contrib.geosites',
     'geonode.contrib.metadataxsl',
     'geonode.contrib.ows_api',
 )
