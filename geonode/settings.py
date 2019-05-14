@@ -1282,7 +1282,7 @@ SEARCH_FILTERS = {
 
 # Make Free-Text Kaywords writable from users or read-only
 # - if True only admins can edit free-text kwds from admin dashboard
-FREETEXT_KEYWORDS_READONLY = ast.literal_eval(os.environ.get('FREETEXT_KEYWORDS_READONLY', 'True'))
+FREETEXT_KEYWORDS_READONLY = ast.literal_eval(os.environ.get('FREETEXT_KEYWORDS_READONLY', 'False'))
 
 # notification settings
 NOTIFICATION_ENABLED = ast.literal_eval(os.environ.get('NOTIFICATION_ENABLED', 'True')) or TEST
@@ -1546,7 +1546,7 @@ RISKS = {'DEFAULT_LOCATION': None,
                            'ARGS': []}}
 
 # Each uploaded Layer must be approved by an Admin before becoming visible
-ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'True'))
+ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
 
 # add following lines to your local settings to enable monitoring
 MONITORING_CONFIG = None
