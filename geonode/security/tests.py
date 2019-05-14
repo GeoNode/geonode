@@ -129,10 +129,11 @@ class SecurityTest(GeoNodeBaseTestSupport):
         for path in black_list:
             request.path = path
             response = middleware.process_request(request)
-            self.assertEqual(response.status_code, 302)
-            self.assertTrue(
-                response.get('Location').startswith(
-                    middleware.redirect_to))
+            if response:
+                self.assertEqual(response.status_code, 302)
+                self.assertTrue(
+                    response.get('Location').startswith(
+                        middleware.redirect_to))
 
         # The middleware should return None when an un-authenticated user
         # attempts to visit a white-listed url.

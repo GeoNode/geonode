@@ -29,31 +29,6 @@ import os
 from urlparse import urlparse, urlunparse
 from geonode.settings import *
 
-# Require users to authenticate before using Geonode
-LOCKDOWN_GEONODE = strtobool(os.getenv('LOCKDOWN_GEONODE', 'False'))
-
-# Require users to authenticate before using Geonode
-if LOCKDOWN_GEONODE:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
-        ('geonode.security.middleware.LoginRequiredMiddleware',)
-
-# Add additional paths (as regular expressions) that don't require
-# authentication.
-# - authorized exempt urls needed for oauth when GeoNode is set to lockdown
-FORCE_SCRIPT_NAME = os.getenv('FORCE_SCRIPT_NAME', '')
-AUTH_EXEMPT_URLS = (
-    r'^%s/?$' % FORCE_SCRIPT_NAME,
-    '%s/o/*' % FORCE_SCRIPT_NAME,
-    '%s/gs/*' % FORCE_SCRIPT_NAME,
-    '%s/account/*' % FORCE_SCRIPT_NAME,
-    '%s/static/*' % FORCE_SCRIPT_NAME,
-    '%s/api/o/*' % FORCE_SCRIPT_NAME,
-    '%s/api/roles' % FORCE_SCRIPT_NAME,
-    '%s/api/adminRole' % FORCE_SCRIPT_NAME,
-    '%s/api/users' % FORCE_SCRIPT_NAME,
-    '%s/api/layers' % FORCE_SCRIPT_NAME,
-)
-
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(PROJECT_ROOT, "uploaded"))
@@ -62,40 +37,7 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
                         os.path.join(PROJECT_ROOT, "static_root")
                         )
 
-# SECRET_KEY = '************************'
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = os.getenv('SECRET_KEY', "123456")
-
-# per-deployment settings should go here
-SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'localhost')
-SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', None)
-_default_siteurl = "http://%s:%s/" % (SITE_HOST_NAME, SITE_HOST_PORT) if SITE_HOST_PORT else "http://%s/" % SITE_HOST_NAME
-SITEURL = os.getenv('SITEURL', _default_siteurl)
-
-# we need hostname for deployed
-_surl = urlparse(SITEURL)
-HOSTNAME = _surl.hostname
-
-# add trailing slash to site url. geoserver url will be relative to this
-if not SITEURL.endswith('/'):
-    SITEURL = '{}/'.format(SITEURL)
-
-try:
-    # try to parse python notation, default in dockerized env
-    ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
-except ValueError:
-    # fallback to regular list of values separated with misc chars
-    ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
-        else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
-
 TIME_ZONE = 'UTC'
-
-# Login and logout urls override
-LOGIN_URL = os.getenv('LOGIN_URL', '{}account/login/'.format(SITEURL))
-LOGOUT_URL = os.getenv('LOGOUT_URL', '{}account/logout/'.format(SITEURL))
-
-ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
-ACCOUNT_LOGOUT_REDIRECT_URL =  os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
 
 # Backend
 DATABASES = {
@@ -513,27 +455,6 @@ X_FRAME_OPTIONS = 'ALLOW-FROM %s' % SITEURL
 CORS_ORIGIN_ALLOW_ALL = True
 
 GEOIP_PATH = "/usr/local/share/GeoIP"
-
-# add following lines to your local settings to enable monitoring
-MONITORING_ENABLED = True
-
-if MONITORING_ENABLED:
-    if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
-        INSTALLED_APPS += ('geonode.contrib.monitoring',)
-    if 'geonode.contrib.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
-        MIDDLEWARE_CLASSES += \
-            ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
-    MONITORING_CONFIG = None
-    MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
-    MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'local-geonode')
-
-
-# Documents Thumbnails
-UNOCONV_ENABLE = True
-
-if UNOCONV_ENABLE:
-    UNOCONV_EXECUTABLE = os.getenv('UNOCONV_EXECUTABLE', '/usr/bin/unoconv')
-    UNOCONV_TIMEOUT = os.getenv('UNOCONV_TIMEOUT', 30)  # seconds
 
 # Advanced Security Workflow Settings
 DELAYED_SECURITY_SIGNALS = False
