@@ -308,3 +308,55 @@ Usage::
 
   # remove layers which are broken
   python manage.py find_geoserver_broken_layers --remove
+
+
+set_layers_permissions
+======================
+
+Set/Unset permissions on layers for users and groups.
+
+Usage::
+
+    python manage.py set_layers_permissions [-h] [--version] [-v {0,1,2,3}]
+                                            [--settings SETTINGS]
+                                            [--pythonpath PYTHONPATH]
+                                            [--traceback] [--no-color]
+                                            [-r [RESOURCES [RESOURCES ...]]]
+                                            [-p PERMISSION]
+                                            [-u [USERS [USERS ...]]]
+                                            [-g [GROUPS [GROUPS ...]]]
+                                            [-d]
+
+    At least one user or one group is required.
+    If no resources are typed all the layers will be considered.
+    At least one permission must be typed.
+    Multiple inputs can be typed with white space separator.
+    To unset permissions use the '--delete (-d)' option.
+
+
+Arguments::
+
+    -h, --help            show this help message and exit
+    --version             show program's version number and exit
+    -v {0,1,2,3}, --verbosity {0,1,2,3}
+                        Verbosity level; 0=minimal output, 1=normal output, 2=verbose output, 3=very verbose output
+    --settings SETTINGS     The Python path to a settings module, e.g. "myproject.settings.main".
+                            If this isn't provided, the DJANGO_SETTINGS_MODULE environment variable will be used.
+    --pythonpath PYTHONPATH
+                        A directory to add to the Python path, e.g. "/home/djangoprojects/myproject".
+    --traceback           Raise on CommandError exceptions
+    --no-color            Don't colorize the command output.
+    -r [RESOURCES [RESOURCES ...]], --resources [RESOURCES [RESOURCES ...]]
+                        Resources names for which permissions will be assigned to.
+                        Default value: None (all the layers will be considered).
+                        Multiple choices can be typed with white space separator.
+                        A Note: names with white spaces must be typed inside quotation marks.
+    -p PERMISSION, --permission PERMISSION
+                        Permissions to be assigned. Allowed values are: read (r), write (w), download (d) and owner (o).
+    -u [USERS [USERS ...]], --users [USERS [USERS ...]]
+                        Users for which permissions will be assigned to.
+                        Multiple choices can be typed with white space separator.
+    -g [GROUPS [GROUPS ...]], --groups [GROUPS [GROUPS ...]]
+                        Groups for which permissions will be assigned to.
+                        Multiple choices can be typed with white space separator.
+    -d, --delete          Delete permission if it exists.
