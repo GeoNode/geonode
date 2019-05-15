@@ -621,8 +621,11 @@ class GXPLayerBase(object):
         if self.opacity:
             cfg['opacity'] = self.opacity
         if self.styles:
-            cfg['styles'] = ast.literal_eval(self.styles) \
-                if isinstance(self.styles, six.string_types) else self.styles
+            try:
+                cfg['styles'] = ast.literal_eval(self.styles) \
+                    if isinstance(self.styles, six.string_types) else self.styles
+            except BaseException:
+                pass
         if self.transparent:
             cfg['transparent'] = True
 
