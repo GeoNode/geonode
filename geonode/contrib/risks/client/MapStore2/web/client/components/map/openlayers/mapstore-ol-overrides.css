@@ -1,0 +1,41 @@
+.ol-control button:hover, .ol-control button:focus {
+    background-color: #f4f4f4;
+}
+.ol-zoom .ol-zoom-out, .ol-zoom .ol-zoom-in{
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    display: block;
+
+    color: black;
+    background-color: #fff;
+    border-width: 0;
+    margin:0;
+}
+.ol-zoom.ol-unselectable.ol-control .ol-zoom-in, .ol-zoom.ol-unselectable.ol-control .ol-zoom-out {
+    font-family: 'Lucida Console', Monaco, monospace;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.ol-zoom .ol-zoom-out{
+    font-size: 18px;
+    border-radius: 0 0 4px 4px;
+}
+.ol-zoom .ol-zoom-in{
+    border-bottom: 1px solid #ccc;
+    border-radius: 4px 4px 0 0;
+    font-size: 20px;
+}
+.ol-zoom.ol-unselectable.ol-control{
+    top:10px;
+    left:10px;
+    padding:0;
+    box-shadow: rgba(0, 0, 0, 0.65098) 0px 1px 5px 0px;
+    border-radius: 4px;
+}
+
+.ol-scale-line.ol-unselectable{
+    background-color: rgba(255, 255, 255, 0.8);
+}

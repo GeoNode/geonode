@@ -152,7 +152,6 @@ class PermissionLevelMixin(object):
         """
         Sets an object's the permission levels based on the perm_spec JSON.
 
-
         the mapping looks like:
         {
             'users': {

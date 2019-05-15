@@ -1,0 +1,108 @@
+html, body, #container, .fill {
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.viewer, #map {
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.react-draggable .panel-heading {
+    cursor: move;
+}
+
+#mapstore-scalebox {
+    z-index: 10;
+    bottom: 6px;
+    left: -2px;
+    position: absolute;
+    margin: 8px;
+}
+#mapstore-globalspinner  {
+    width: 28px;
+    height: 28px;
+    box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.2);
+    background: url("../img/spinner.gif") no-repeat scroll center center #FFF;
+    background-size: 80px 80px;
+    background-repeat: no-repeat;
+    border-radius: 4px;
+    border: 1px solid #999;
+    z-index: 10;
+    top: 90px;
+    left: 2px;
+    position: absolute;
+    margin: 8px;
+}
+#mapstore-zoomtomaxextent {
+    box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    top: 67px;
+    left: 0px;
+    position: absolute;
+    margin-left: 10px;
+}
+
+.btn-xs {
+    font-size: 15px;
+}
+.ol-attribution li:first-child{
+    display:none;
+    visibility: hidden;
+}
+.leaflet-control-attribution a:first-child{
+    display:none;
+    visibility: hidden;
+}
+.Sortable {
+  position: relative;
+  display: block;
+  overflow: visible;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.SortableItem {
+  cursor: -webkit-grab; cursor:-moz-grab; cursor: grab;
+}
+
+.SortableItem.is-dragging {
+  cursor: move;
+  position: absolute;
+  z-index: 1688;
+  background-color: rgba(218, 218, 218, 0.8);;
+  border: 1px dashed #8E8E8E;
+  border-radius: 5px;
+  box-shadow: 4px 4px 9px rgba(0, 0, 0, 0.28);
+}
+
+.SortableItem.is-placeholder {
+  border: 1px dashed #8E8E8E;
+  border-radius: 5px;
+}
+
+.SortableItem.is-undraggable {
+  cursor: not-allowed;
+}
+
+#mapstore-madewithlove {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    height: 0;
+    width: 100%;
+    overflow: visible;
+    text-align: center;
+}

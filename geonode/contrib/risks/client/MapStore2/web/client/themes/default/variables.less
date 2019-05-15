@@ -1,0 +1,68 @@
+
+@ms2-color-background: #ffffff;
+@ms2-color-code: #c7254e;
+
+@ms2-color-text-primary: #ffffff;
+@ms2-color-text-placeholder: #999999;
+@ms2-color-text: #333333;
+
+@ms2-color-disabled: #5C9FB4;
+@ms2-color-text-disabled: #ffffff;
+
+@ms2-color-primary: #078aa3;
+@ms2-color-info: #5a9aab;
+@ms2-color-success: #398439;
+@ms2-color-warning: #ebbc35;
+@ms2-color-danger: #bb4940;
+
+@ms2-color-primary-hover: lighten(@ms2-color-primary, 10%);
+@ms2-color-info-hover: lighten(@ms2-color-info, 10%);
+@ms2-color-success-hover: lighten(@ms2-color-success, 10%);
+@ms2-color-warning-hover: lighten(@ms2-color-warning, 10%);
+@ms2-color-danger-hover: lighten(@ms2-color-danger, 10%);
+
+@ms2-color-primary-light: lighten(@ms2-color-primary, 40%);
+@ms2-color-info-light: lighten(@ms2-color-info, 40%);
+@ms2-color-success-light: lighten(@ms2-color-success, 40%);
+@ms2-color-warning-light: lighten(@ms2-color-warning, 40%);
+@ms2-color-danger-light: lighten(@ms2-color-danger, 40%);
+
+@ms2-color-primary-active: darken(@ms2-color-primary, 20%);
+
+@ms2-color-shade: #555555;
+@ms2-color-shade-darker: #222222;
+@ms2-color-shade-dark: #333333;
+@ms2-color-shade-light: #999999;
+@ms2-color-shade-lighter: #eeeeee;
+
+@font-family-base: 'Raleway', sans-serif;
+@font-size-base: 14px;
+@font-size-large: ceil(@font-size-base * 1.25);
+@font-size-small: ceil(@font-size-base * 0.85);
+@font-size-h1: floor((@font-size-base * 1.9));
+@font-size-h2: floor((@font-size-base * 1.7));
+@font-size-h3: floor((@font-size-base * 1.5));
+@font-size-h4: floor((@font-size-base * 1.25));
+@font-size-h5: @font-size-base;
+@font-size-h6: floor((@font-size-base * 0.85));
+@line-height-computed: floor(@font-size-base * 1.428571429);
+
+@btn-font-weight: normal;
+@icon-margin-ratio: 2;
+@icon-resize-ratio: 1.5;
+
+@icon-size: 26px;
+@padding-left-square: floor(@icon-size/@icon-margin-ratio);
+@square-btn-size: @padding-left-square * 2 + @icon-size;
+
+@icon-size-md: floor(@icon-size / @icon-resize-ratio);
+@padding-left-square-md: floor(@icon-size-md / @icon-margin-ratio);
+@square-btn-medium-size: @padding-left-square-md * 2 + @icon-size-md;
+
+@icon-size-sm: floor(@icon-size-md / @icon-resize-ratio);
+@padding-left-square-sm: floor(@icon-size-sm / @icon-margin-ratio);
+@square-btn-small-size: @padding-left-square-sm * 2 + @icon-size-sm;
+
+@grid-icon-size: 18px;
+@grid-btn-padding-left: 6px;
+@grid-btn-size: @grid-btn-padding-left * 2 + @grid-icon-size;

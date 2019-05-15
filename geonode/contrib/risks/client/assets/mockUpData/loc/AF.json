@@ -1,0 +1,49 @@
+{
+    "navItems": [{
+      "label": "Afghanistan",
+      "href": "./assets/mockupData/loc/AF"
+     }],
+    "riskItems": [
+        {
+            "mnemonic": "FL",
+            "title": "River flood",
+            "riskAnalysis": 1,
+            "href": "./assets/mockupData/loc/AF/ht/FL/at/loss_impact"
+        },{
+            "mnemonic": "EQ",
+            "title": "Earthquake",
+            "riskAnalysis": 2,
+            "href": "./assets/mockupData/loc/AF/ht/EQ/at/loss_impact"
+        },{
+            "mnemonic": "DG",
+            "title": "Water scarcity",
+            "riskAnalysis": 0,
+            "href": "./assets/mockupData/loc/AF/ht/DG/at/loss_impact"
+        },{
+            "mnemonic": "CY",
+            "title": "Cyclone",
+            "riskAnalysis": 0,
+            "href": "./assets/mockupData/loc/AF/ht/CY/at/loss_impact"
+        },{
+            "mnemonic": "CF",
+            "title": "Coastal flood",
+            "riskAnalysis": 0,
+            "href": "./assets/mockupData/loc/AF/ht/CF/at/loss_impact"
+        },{
+            "mnemonic": "TS",
+            "title": "Tsunami",
+            "riskAnalysis": 3,
+            "href": "./assets/mockupData/loc/AF/ht/TS/at/loss_impact"
+        },{
+            "mnemonic": "VA",
+            "title": "Vulcano",
+            "riskAnalysis": 5,
+            "href": "./assets/mockupData/loc/AF/ht/VA/at/loss_impact"
+        },{
+            "mnemonic": "LS",
+            "title": "Landslide",
+            "riskAnalysis": 0,
+            "href": "./assets/mockupData/loc/AF/ht/LS/at/loss_impact"
+        }
+    ]
+}

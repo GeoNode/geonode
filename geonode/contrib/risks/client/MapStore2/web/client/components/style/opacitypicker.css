@@ -1,0 +1,22 @@
+.opacity-picker .noUi-tooltip {
+  display: block;
+  position: absolute;
+  border: 1px solid #D9D9D9;
+  border-radius: 3px;
+  background: #fff;
+  padding: 5px;
+  left: -1px;
+  text-align: center;
+  width: 34px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 700;
+  font-stretch: normal;
+  font-size: 10px;
+  line-height: 12px;
+  font-family: Arial;
+        }
+
+.opacity-picker .noUi-handle-lower .noUi-tooltip {
+  top: 28px;
+}

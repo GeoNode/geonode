@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>it.geosolutions.__PROJECTNAME__</groupId>
+    <artifactId>__PROJECTNAME__-root</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>__PROJECTDESCRIPTION__ - Root Project</name>
+    <url>http://www.geo-solutions.it</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+
+    <build>
+    </build>
+
+    <modules>
+        <module>web</module>
+    </modules>
+
+</project>

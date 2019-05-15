@@ -1,0 +1,20 @@
+.ag-fresh .ag-paging-button {
+    padding: 5px;
+}
+.featuregrid-tools {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+.ag-body {
+    /* !important is needed, we need to override inline attributes of ag-grid */
+    padding-top: 55px !important;
+}
+.ag-header, .ag-header-row, .ag-header-container .ag-header-row {
+    /* !important is needed, we need to override inline attributes of ag-grid */
+    height:55px !important;
+}
+.ag-fresh .ag-header-cell-label {
+    padding-top: 17px;
+    cursor: pointer;
+}

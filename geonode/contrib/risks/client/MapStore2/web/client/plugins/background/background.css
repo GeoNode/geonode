@@ -1,0 +1,28 @@
+.nav-content .BackgroundSwitcherComponent {
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+.nav-content .BackgroundSwitcherComponent .thumbnail {
+    border-radius: 50px;
+    margin-bottom: 40px;
+    width: 105px;
+}
+.nav-content .BackgroundSwitcherComponent .thumbnail img {
+    border-radius: 50px;
+    height: 90px;
+    width: 90px;
+}
+.nav-content .BackgroundSwitcherComponent .thumbnail .caption {
+    font-size: 10px;
+    text-align: center;
+    text-overflow: ellipsis;
+    padding: 0;
+    height: 0;
+    overflow: visible;
+    top: 10px;
+    max-width: 100%;
+    position: relative;
+}
+.nav-menu >  div.nav-content .panel-body{
+    padding:0px;
+}

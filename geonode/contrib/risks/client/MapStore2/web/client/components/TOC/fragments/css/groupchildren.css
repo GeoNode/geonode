@@ -1,0 +1,53 @@
+.toc-group-children {
+    margin-left: 15px;
+}
+
+.Sortable {
+  position: relative;
+  display: block;
+  overflow: visible;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.SortableItem {
+  cursor: -webkit-grab; cursor:-moz-grab; cursor: grab;
+}
+
+.SortableItem.is-dragging {
+  cursor: move;
+  position: absolute;
+  z-index: 1688;
+  background-color: rgba(218, 218, 218, 0.8);;
+  border: 1px dashed #8E8E8E;
+  border-radius: 5px;
+  box-shadow: 4px 4px 9px rgba(0, 0, 0, 0.28);
+}
+
+.SortableItem.is-placeholder {
+  border: 1px dashed #8E8E8E;
+  border-radius: 5px;
+}
+
+.SortableItem.is-undraggable {
+  cursor: not-allowed;
+}
+
+.TOC-Node-enter, .TOC-Node-leave {
+    transition: all 250ms ease-out;
+    -o-transition: all 250ms ease-out;
+    -moz-transition: all 250ms ease-out;
+    -webkit-transition: all 250ms ease-out;
+    overflow: hidden;
+}
+.TOC-Node-enter,.TOC-Node-leave.TOC-Node-leave-active {
+    opacity: 0;
+    transform: scale(1, 0);
+    transform-origin: top;
+}
+.TOC-Node-leave, .TOC-Node-enter.TOC-Node-enter-active {
+    opacity: 1;
+    transform: scale(1, 1);
+    transform-origin: top;
+}

@@ -30,10 +30,17 @@ from django.db.models import signals
 from django.core import mail
 from django.conf import settings
 
-from geonode.geoserver.signals import geoserver_post_save
 from geonode.maps.models import Layer
-from geonode.utils import set_attributes
+
+from geonode.geoserver.signals import geoserver_post_save
 from geonode.notifications_helper import has_notifications, notifications
+
+from geonode import geoserver, qgis_server  # noqa
+from geonode.utils import check_ogc_backend
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    from geonode.geoserver.helpers import set_attributes_from_geoserver as set_attributes
+elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+    from geonode.qgis_server.gis_tools import set_attributes
 
 
 def get_web_page(url, username=None, password=None, login_url=None):

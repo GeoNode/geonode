@@ -39,6 +39,7 @@ import os.path
 import shutil
 import uuid
 import zipfile
+import traceback
 
 from django.conf import settings
 from django.db.models import Max
@@ -101,12 +102,6 @@ class UploaderSession(object):
 
     # defaults to REPLACE if not provided. Accepts APPEND, too
     update_mode = None
-
-    # Import to GeoGig repository
-    geogig = None
-
-    # GeoGig Repository to import to
-    geogig_store = None
 
     # Configure Time for this Layer
     time = None
@@ -213,7 +208,7 @@ def upload(
               end_time_transform_type=end_time_transform_type,
               time_format=None, srs=None, use_big_date=use_big_date)
 
-    utils.run_import(upload_session, async=False)
+    utils.run_import(upload_session, async_upload=False)
 
     final_step(upload_session, user)
 
@@ -397,7 +392,9 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
         # @todo once the random tmp9723481758915 type of name is not
         # around, need to track the name computed above, for now, the
         # target store name can be used
-    except Exception as e:
+    except BaseException as e:
+        tb = traceback.format_exc()
+        logger.debug(tb)
         logger.exception('Error creating import session')
         raise e
 
@@ -453,7 +450,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
     use_big_date = getattr(
         settings,
         'USE_BIG_DATE',
-        False) and not upload_session.geogig
+        False)
 
     if time_attribute:
         if time_transform_type:
@@ -937,11 +934,7 @@ def final_step(upload_session, user):
         saved_layer.upload_session = geonode_upload_session
 
     signals.upload_complete.send(sender=final_step, layer=saved_layer)
-
     geonode_upload_session.save()
     saved_layer.save()
-
     cat._cache.clear()
-    cat.reload()
-
     return saved_layer

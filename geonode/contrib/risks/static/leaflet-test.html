@@ -1,0 +1,135 @@
+<html>
+    <head>
+        <title>Leaflet test</title>
+
+        <script src="https://unpkg.com/jquery"></script>
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+
+        <script type="text/javascript">
+
+            var ZoomOutControl = L.Control.extend({
+                    options: {
+                            gsource: null,
+                    },
+
+                    initialize: function (options) {
+                    		L.Util.setOptions(this, options);
+                    },
+
+                    onAdd: function(map){
+                        var that = this;
+                        var onclick = function(evt){
+                            var g = that.options.gsource;
+                            g.handle_layer_zoom_out();
+                            return false;
+                        };
+                        var c = L.DomUtil.create('div', 'leaflet-control leaflet-control-zoomout');
+                        $(c).html('<div class="ctl-zoom-out"><a href="#">Zoom out</a></div>');
+                        $(c).find('.ctl-zoom-out a').on('click', onclick);
+                        this._container = c;
+                        return c;
+                    },
+                });
+
+            var GeoJSONSource = function(initial_url, map){
+                this.url = initial_url;
+                this.parent_url = null;
+                this.map = map;
+                this.layer = null;
+                var _p = $.proxy;
+
+                this.onload = _p(function(data){
+                    if (this.layer != null){
+                        this.map.removeLayer(this.layer);
+                        this.layer = null;
+                    }
+                    var that = this;
+                    var opts = { onEachFeature: function(feat, layer){
+                                   layer.on('click', that.handle_layer_click);
+                                   }
+                               }
+                    var g = L.geoJson(data,opts);
+                    g.addTo(map);
+                    var b = g.getBounds();
+                    var c = b.getCenter();
+                    this.layer = g;
+                    this.map.fitBounds(b);
+                    this.map.panTo(c);
+                    }, this);
+
+                this.handle_layer_zoom_out = _p(function(){
+                    if (this.layer == null){
+                        return;
+                    }
+                    var parent_url = null;
+                    var current_url = this.url;
+                    this.layer.eachLayer(function(l){
+                            if (l.feature.properties.geom == current_url){
+                                parent_url = l.feature.properties.parent_geom
+                            }
+                        });
+                    if (parent_url != null){
+                        this.url = parent_url;
+                        this.init();
+                    }
+
+
+                    }, this);
+
+                this.handle_layer_click = _p(function(evt){
+                    var l = evt.target;
+                    var url = l.feature.properties.geom;
+                    if (typeof url == 'string' || url instanceof String){
+                        this.parent_url = this.url;
+                        this.url = url;
+                        this.init();
+                    }
+                    }, this);
+
+                this.init = _p(function(){
+                    $.get(this.url, this.onload);
+                    }, this);
+                this.init();
+            }
+
+            function init_map(){
+                var container = $('#map');
+                var layers = [ L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {minZoom: 5, maxZoom: 21}),
+                                ];
+                var map_opts = {'layers': layers, zoom: 10, center: [0, 0], };
+                var map = L.map(container[0], map_opts);
+                _gs = new GeoJSONSource('/risks/geom/loc/AF/', map);
+                var z = new ZoomOutControl({gsource: _gs});
+                z.addTo(map);
+            };
+
+            $(init_map);
+        </script>
+
+        <style type="text/css">
+            .wrap { padding: 5px}
+            #map {width: 100%; height: 100%}
+
+            .leaflet-control-zoomout {
+
+                background-color: #fff;
+                padding: 5px;
+                border-radius: 2px;
+                border: solid 1px #898;
+                
+                }
+
+        </style>
+
+    </head>
+    <body>
+        
+        <div class="wrap">
+            <div id="map"></div>
+        </div>
+
+
+    </body>
+</html>

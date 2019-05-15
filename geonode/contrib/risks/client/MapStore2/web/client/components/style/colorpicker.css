@@ -1,0 +1,45 @@
+ .cp-color
+ {
+  width: 24px;
+  height: 24px;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  border-radius: 12px;
+}
+.cp-swatch
+{
+  padding: 6px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.2);
+  display: inline-block;
+  cursor: pointer;
+  min-width: 60px;
+  min-height: 34px;
+  text-align: center;
+}
+.cp-disabled
+{
+  padding: 6px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.2);
+  display: inline-block;
+  cursor: not-allowed;
+  min-width: 60px;
+  min-height: 34px;
+  text-align: center;
+}
+.cp-popover
+{
+  position: fixed;
+  z-index: 1000;
+}
+.cp-cover
+{
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}

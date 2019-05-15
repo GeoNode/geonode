@@ -1,0 +1,10 @@
+#mapstore-burger-menu {
+    position: absolute;
+    left: 200px;
+}
+
+#mapstore-navbar #mapstore-burger-menu {
+    position: relative;
+    float: right;
+    left: 0;
+}

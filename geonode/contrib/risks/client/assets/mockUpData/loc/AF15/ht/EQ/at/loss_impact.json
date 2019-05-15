@@ -1,0 +1,79 @@
+{
+    "navItems": [{
+      "label": "Afghanistan",
+      "href": "./assets/mockupData/loc/AF"
+     }, {
+      "label": "Badakhshan ",
+      "href": "./assets/mockupData/loc/AF15"
+     }],
+    "overview": [
+        {
+            "mnemonic": "FL",
+            "title": "River flood",
+            "riskAnalysis": 1,
+            "href": "./assets/mockupData/loc/AF15/ht/FL/at/loss_impact"
+        },{
+            "mnemonic": "EQ",
+            "title": "Earthquake",
+            "riskAnalysis": 2,
+            "href": "./assets/mockupData/loc/AF15/ht/EQ/at/loss_impact"
+        },{
+            "mnemonic": "DG",
+            "title": "Water scarcity",
+            "riskAnalysis": 0,
+            "href": "./assets/mockupData/loc/AF15/ht/DG/at/loss_impact"
+        },{
+            "mnemonic": "CY",
+            "title": "Cyclone",
+            "riskAnalysis": 0,
+            "href": "./assets/mockupData/loc/AF15/ht/CY/at/loss_impact"
+        },{
+            "mnemonic": "CF",
+            "title": "Coastal flood",
+            "riskAnalysis": 0,
+            "href": "./assets/mockupData/loc/AF15/ht/CF/at/loss_impact"
+        },{
+            "mnemonic": "TS",
+            "title": "Tsunami",
+            "riskAnalysis": 3,
+            "href": "./assets/mockupData/loc/AF15/ht/TS/at/loss_impact"
+        },{
+            "mnemonic": "VA",
+            "title": "Vulcano",
+            "riskAnalysis": 5,
+            "href": "./assets/mockupData/loc/AF15/ht/VA/at/loss_impact"
+        },{
+            "mnemonic": "LS",
+            "title": "Landslide",
+            "riskAnalysis": 0,
+            "href": "./assets/mockupData/loc/AF15/ht/LS/at/loss_impact"
+        }
+    ],
+    "hazardType": {
+            "mnemonic": "EQ",
+            "description": "Lorem ipsum dolor, .....",
+            "analysisTypes": [{
+                    "name": "loss_impact",
+                    "title": "Loss Impact",
+                    "href": "./assets/mockupData/loc/AF15/ht/EQ/at/loss_impact"
+                },{
+                    "name": "impact",
+                    "title": "Impact Analysis",
+                    "href": "./assets/mockupData/loc/AF15/ht/EQ/at/impact"}
+                ]},
+    "analysisType":{
+        "name": "loss_impact",
+        "description": "Lorem ipsum dolor, .....",
+        "riskAnalysis": [{
+            "name": "WP6_future_proj_Hospital",
+            "hazardSet": {
+                "title": "Afghanistan Hazard-Exposures for provinces and districts for affected hospitals in future projections for SSPs 1-5 in 2050.",
+                "abstract": "This table shows the aggregated results of affected hospitals for the Afghanistan districts and provinces from 1km resolution results in the locations over PGA=0.075g. These are measured in USD. The results are created as future projections for SSPs 1-5 in 2050.",
+                "category": "economic",
+                "fa_icon": "fa_economic"
+            },
+            "href": "./assets/mockupData/loc/AF15/ht/EQ/at/loss_impact/an/1/"
+            }
+            ]
+    }
+}

@@ -1,0 +1,41 @@
+{% load static %}
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+     
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,600' rel='stylesheet' type='text/css'>
+    <link href="{% static "assets/css/disaster.css" %}" rel="stylesheet" />
+    <link href="{% static "assets/css/print.css" %}" rel="stylesheet" />
+
+
+</head>
+<body class="{% block body_class %}printable{% endblock %}">
+
+    <div class="header {% block extra_header_class %}{% endblock %}">
+        <div class="text block green">
+        {{ context.parts.loc.name }} | {{ context.parts.ht.title }} | {{ context.parts.at.title }}
+        </div>
+    </div>
+
+    <div class="footer {% block extra_footer_class %}{% endblock %}">
+        <div class="text block green">Afghanistan Disaster Risk Info 
+            | report generated for {{ risk_analysis.name }} on {% now 'j m d' %}
+        </div>
+    </div>
+
+
+    
+
+    <div class="wrapper">
+        <div id="content {% block extra_content_class %}{% endblock %}">
+            {% block content %}
+
+            {% endblock %}
+        </div>
+    </div>
+
+<div class="page-break"></div>
+
+</body>
+</html>

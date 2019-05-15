@@ -1,0 +1,27 @@
+{
+  "map": {
+    "projection": "EPSG:900913",
+		"units": "m",
+    "center": {"x": -10976101, "y": 4251421, "crs": "EPSG:900913"},
+    "zoom":4,
+    "layers": [
+      {
+        "type": "osm",
+        "title": "Open Street Map",
+        "name": "mapnik",
+        "group": "background",
+        "visibility": true
+      },
+      {
+        "type": "wms",
+        "url":"http://demo.geo-solutions.it/geoserver/wms",
+        "visibility": true,
+        "opacity": 0.8,
+        "title": "USA Population",
+        "name": "topp:states",
+        "group": "Overlays",
+        "format": "image/png"
+      }
+    ]
+  }
+}

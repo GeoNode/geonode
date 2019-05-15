@@ -1,0 +1,10 @@
+{
+   "style":{
+      "name":"test_TEST_LAYER_1",
+      "format":"sld",
+      "languageVersion":{
+         "version":"1.0.0"
+      },
+      "filename":"test_TEST_LAYER_1.sld"
+   }
+}

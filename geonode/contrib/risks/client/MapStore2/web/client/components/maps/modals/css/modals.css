@@ -1,0 +1,12 @@
+
+/* MODAL */
+
+#MetadataModal .modal-dialog {
+	width:600px;
+}
+
+@media screen and (max-width: 600px) {
+    #MetadataModal .modal-dialog {
+    	width:100%;
+    }
+}

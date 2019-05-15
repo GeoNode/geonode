@@ -1,0 +1,9 @@
+.toc-layer-tool {
+    float: right;
+     margin-top: 5px;
+     cursor: pointer;
+     width:27px;
+}
+.collapsible-toc {
+    border-left: 1px solid lightblue;
+}

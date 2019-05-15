@@ -1,0 +1,194 @@
+
+/* General Mobile Usability styles */
+body {
+    font-size: 14px;
+}
+input[type=checkbox], input[type=radio] {
+    width: 20px;
+    height: 20px;
+    vertical-align: bottom;
+}
+
+
+/* search bar override */
+div.MapSearchBar {
+    left: 5px;
+
+    position: absolute;
+    right: 60px;
+    top: 10px;
+}
+div.MapSearchBar input {
+    padding-left:35px;
+}
+
+/* Layer tree */
+.nav-menu >  div.nav-content .panel-body{
+    padding:0px;
+}
+
+
+.nav-menu >  div.nav-content .layer-expanded,.nav-menu >  div.nav-content .layer-collapsed{
+    margin: 10px;
+    border-bottom: thin solid #FAFAFA;
+}
+
+.nav-menu >  div.nav-content .group-expanded > div:first-child, .nav-menu >  div.nav-content .group-collapsed > div:first-child {
+    background-color: #C1C1C1 !important;
+}
+
+/* Layer tree animations */
+
+
+.layertree-group-content-enter {
+  opacity: 0.01;
+}
+
+.layertree-group-content-enter.layertree-group-content-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.layertree-group-content-leave {
+  opacity: 1;
+}
+
+.layertree-group-content-leave.layertree-group-content-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}
+
+/** Background switcher **/
+.nav-content .BackgroundSwitcherComponent {
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+.nav-content .BackgroundSwitcherComponent .thumbnail {
+    border-radius: 50px;
+    margin-bottom: 40px;
+}
+.nav-content .BackgroundSwitcherComponent .thumbnail img {
+    border-radius: 50px;
+    height: 90px;
+    width: 90px;
+}
+.nav-content .BackgroundSwitcherComponent .thumbnail .caption {
+    font-size: 10px;
+    text-align: center;
+    text-overflow: ellipsis;
+    padding: 0;
+    height: 0;
+    overflow: visible;
+    top: 10px;
+    max-width: 100%;
+    position: relative;
+}
+
+#mapstore-globalspinner{
+    top: 40px;
+}
+
+/* Menu Button */
+#drawer-menu-button {
+    position: absolute;
+    z-index:2;
+    left: 3px;
+    top: 8px;
+    margin: 5px;
+    width:30px;
+    background: transparent;
+    outline: none;
+    border: transparent;
+    font-size: 14px;
+
+}
+
+#drawer-menu-button:active{
+    box-shadow: none;
+}
+/* Locate Me button */
+
+#locateMeButton{
+    position: absolute;
+    right:15px;
+    bottom: 40px;
+    width: auto;
+    height:50px;
+    font-size: 17px;
+    border-radius: 30px;
+    padding: 10px 16px 7px 16px;
+    background-color: rgba(255, 255, 255, 0.50);
+    box-shadow: 2px 2px 4px #A7A7A7;
+    transition: color 1s ease, background-color 1s ease;
+}
+#locateMeButton:active,#locateMeButton:focus{
+    outline: none;
+}
+#locateMeButton.btn-primary{
+    background-color:rgba(51,122,183,0.5);
+}
+#locateMeButton.btn-info{
+    background-color:rgba(91, 192, 222, 0.5);
+}
+
+#mapstore-mouseposition-mobile {
+        z-index: 1;
+        top: 40px;
+        position: absolute;
+        text-shadow: -1px -1px 1px #000,
+                      1px -1px 1px #000,
+                     -1px  1px 1px #000,
+                      1px  1px 1px #000;
+    }
+
+#mapstore-mouseposition-mobile .label {
+        display: inline-block;
+        max-width: 280px;
+        min-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+}
+
+#mapstore-mouseposition-mobile .label-info {
+        background-color:rgba(91,192,222,0);
+        color: white;
+        font-size: 90%;
+    }
+.search-result-list{
+    z-index:2 !important;
+    left: 5px !important;
+    right:5px !important;
+}
+#mapstore-getfeatureinfo {
+    margin-bottom: 0;
+}
+#mapstore-getfeatureinfo > .panel-body{
+    padding: 0;
+}
+#mapstore-getfeatureinfo > .panel-body .panel-heading {
+    text-align: center;
+}
+#mapstore-getfeatureinfo > .panel-body .panel-body{
+    max-height: 170px;
+    overflow-y: auto;
+}
+
+#home-button {
+    position: absolute;
+    width: 40px !important;
+    height: 40px;
+    top: 8px;
+    right: 10px;
+    border-radius: 20px;
+    z-index: 1000;
+}
+
+
+#mapstore-drawermenu {
+    z-index: 3;
+    position: relative;
+    height: 100%;
+    width: 0;
+}

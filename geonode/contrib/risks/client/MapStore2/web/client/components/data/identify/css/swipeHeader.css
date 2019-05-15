@@ -1,0 +1,14 @@
+
+.swipe-header-left-button {
+    float: none !important;
+    right: 45px;
+    top: 4px;
+    position: absolute;
+}
+
+.swipe-header-right-button {
+    float: none !important;
+    position: absolute;
+    top: 4px;
+    right: 5px;
+}

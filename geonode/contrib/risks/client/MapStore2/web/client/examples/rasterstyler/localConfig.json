@@ -1,0 +1,69 @@
+{
+    "proxyUrl": "/mapstore/proxy/?url=",
+    "geoStoreUrl": "/mapstore/rest/geostore/",
+    "printUrl": "https://demo.geo-solutions.it/geoserver/pdf/info.json",
+    "translationsPath": "../../translations",
+    "plugins": {
+        "mobile": [{
+            "name": "Map",
+            "cfg": {
+                    "zoomControl": false
+            }
+         }, {
+                "name": "TOC",
+                "hide": true
+         }, {
+                "name": "Settings",
+                "hide": true,
+                "cfg": {
+                    "overrideSettings": {
+                "language": true,
+                "history": false
+            },
+                    "style": {
+                        "width": "auto"
+                    }
+                }
+         },{
+                "name": "Identify",
+                "hideFrom": ["Settings"],
+                "cfg": {
+                    "style": {
+                          "position": "absolute",
+                            "width": "100%",
+                            "bottom": "0px",
+                            "zIndex": 1010,
+                            "maxHeight": "70%",
+                            "marginBottom": 0
+                    },
+                    "draggable": false,
+                    "collapsible": true,
+                    "viewerOptions": {
+                        "container": "{context.ReactSwipe}",
+                        "header": "{context.SwipeHeader}",
+                        "collapsible": false
+                    },
+                    "bodyClass": "mobile-feature-info"
+                }
+         },
+         "Toolbar",
+         {
+                "name": "RasterStyler",
+                "hide": false
+        }
+     ],
+        "desktop": ["Map", {
+                "name": "TOC",
+                "hide": true
+        }, {
+                "name": "RasterStyler",
+                "hide": true
+        },{
+                "name": "Settings",
+                "hide": true
+        }, "Toolbar", "Identify", {
+          "name": "MapLoading",
+          "hideFrom": ["Toolbar"]
+        }]
+    }
+}

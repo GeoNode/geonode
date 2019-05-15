@@ -1,0 +1,31 @@
+.mapstore-home-description {
+    margin-top: -50px;
+    margin-bottom: 50px;
+    margin-left: 20px;
+    margin-right: 20px;
+
+}
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px ) {
+    .mapstore-home-description {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .mapstore-home-description {
+        margin-left: 100px;
+        margin-right: 100px;
+    }
+}
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    .mapstore-home-description {
+        margin-left: 300px;
+        margin-right: 300px;
+    }
+
+}

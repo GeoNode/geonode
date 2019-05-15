@@ -1,0 +1,84 @@
+body.printable {
+    font-family: "Source Sans Pro", sans-serif;
+}
+
+@page {
+    margin: 20pt;
+    padding: 40pt;
+}
+
+.cover {
+    padding-top: 50pt;
+    padding-bottom: 30pt;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    margin-top: 1.1em;
+    margin-bottom: 1.2em;
+}
+.break-page {
+    page-break-after: always;
+}
+.chart-container {
+    padding: 1em;
+}
+.fp-footer {
+    position: absolute;
+    bottom: 10%;
+}
+
+
+.table {
+    width: 60%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+.table td {
+    color: #445;
+}
+
+.table tr, .table td, .table th {
+    margin: 0;
+    border: 1pt solid #343;
+    border-spacing: 0;
+}
+
+.table .thead {
+        font-size: 1.1em;
+    }
+.table .selected {
+        font-weight: bold;
+    }
+
+.header {
+    position: fixed;
+    width: 100%;
+    top: -20pt;
+    padding-left: 20pt;
+}
+
+.footer {
+    position: fixed;
+    float: right;
+    width: 100%;
+    bottom: -25pt;
+}
+
+.header .block, .footer .block {
+    margin: auto;
+    line-height: 14pt;
+}
+
+.block.green {
+    font-size: 9pt;
+    border-right: solid 3pt #2a4;
+}
+
+.gray {
+    color: #454;
+}
+
+.text-center {
+    text-align: center;
+}

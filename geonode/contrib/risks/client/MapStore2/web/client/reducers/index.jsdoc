@@ -1,0 +1,6 @@
+/**
+ * Redux reducers.
+ * @see {@link http://redux.js.org/docs/basics/Reducers.html|the redux documentation} for details
+ * @name reducers
+ *
+ */

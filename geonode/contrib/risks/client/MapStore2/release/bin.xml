@@ -1,0 +1,80 @@
+<assembly>
+  <id>bin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <!-- the main webapp -->
+      <directory>../web/target/mapstore</directory>
+      <outputDirectory>mapstore2/webapps/mapstore</outputDirectory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <!-- the main database -->
+      <directory>target</directory>
+      <outputDirectory>mapstore2/webapps/mapstore</outputDirectory>
+      <includes>
+        <include>geostore.h2.db</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <!-- JRE's -->
+      <directory>target/jre</directory>
+      <outputDirectory>mapstore2/jre</outputDirectory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <!-- the libs needed to run tomcat -->
+      <directory>target/dependency</directory>
+      <outputDirectory>mapstore2/lib</outputDirectory>
+      <includes>
+        <include>tomcat-*.jar</include>
+        <include>ecj-*.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <!-- windows batch files -->
+      <directory>bin</directory>
+      <lineEnding>keep</lineEnding>
+      <outputDirectory>mapstore2/</outputDirectory>
+      <includes>
+        <include>mapstore2-*.bat</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <!-- unix shell scripts -->
+      <directory>bin</directory>
+      <lineEnding>unix</lineEnding>
+      <outputDirectory>mapstore2/</outputDirectory>
+      <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
+      <includes>
+        <include>mapstore2-*.sh</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <!-- tomcat configuration -->
+      <directory>tomcat</directory>
+      <outputDirectory>mapstore2</outputDirectory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <!-- empty log directory -->
+      <directory>logs</directory>
+      <outputDirectory>mapstore2</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <!-- empty work directory -->
+      <directory>work</directory>
+      <outputDirectory>mapstore2</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>

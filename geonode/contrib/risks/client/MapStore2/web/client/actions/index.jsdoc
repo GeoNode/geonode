@@ -1,0 +1,6 @@
+/**
+ * Redux actions.
+ * @see {@link http://redux.js.org/docs/basics/Actions.html|the redux documentation} for details
+ * @name actions
+ *
+ */

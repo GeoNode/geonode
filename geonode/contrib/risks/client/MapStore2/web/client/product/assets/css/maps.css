@@ -1,0 +1,81 @@
+.page-maps .mapstore-header {
+    background-image: url('../img/mapstore-header.jpg');
+    height: 300px;
+    width: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    background-position: center;
+    position: relative;
+    top: -20px;
+}
+
+.page-maps .MapSearchBar.maps-search {
+    top: -80px;
+}
+.page-maps  .navbar-home {
+    z-index: 1;
+}
+.page-maps > .container-fluid {
+    width: 80%
+}
+
+#mapstore-navbar #mapstore-langselector {
+    float: right;
+    margin-top: 8px;
+    margin-right: 10px;
+    width: auto;
+}
+
+div#mailinglists {
+    max-width: 745px;
+    text-align: center;
+    padding-top: 50px;
+}
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    div#mailinglists {
+        max-width: 500px;
+    }
+
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    div#mailinglists {
+        max-width: 600px;
+    }
+
+}
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    div#mailinglists {
+        max-width: 600px;
+    }
+
+}
+
+/* small devices (mobiles, 375px and down) */
+@media (max-width: 375px) {
+    .page-maps .ms-fork-button {
+        top: 85px!important;
+    }
+}
+
+div#mailinglists h1 {
+    font-size: 26px;
+    text-align: center;
+}
+
+div#mapstore-maptype {
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+    margin-top: -35px;
+}
+.mapstore-home-examples .carousel-caption{
+    background-color: rgba(0,0,0,0.4);
+    box-shadow: 0 0 12px rgba(0,0,0,0.4);
+}

@@ -23,12 +23,10 @@ import os
 import json
 import logging
 import zipfile
-import httplib2
 import traceback
 
 from lxml import etree
 from osgeo import ogr
-from urlparse import urlparse
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -41,7 +39,8 @@ from geonode.geoserver.helpers import (gs_catalog,
                                        gs_uploader,
                                        ogc_server_settings,
                                        get_store,
-                                       set_time_dimension)  # mosaic_delete_first_granule
+                                       set_time_dimension,
+                                       create_geoserver_db_featurestore)  # mosaic_delete_first_granule
 
 ogr.UseExceptions()
 
@@ -53,9 +52,9 @@ def _log(msg, *args):
 
 
 iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012]))' +
-                     '([/-]?(?P<mday>(0[1-9])|([12]\d)|(3[01])))?)?(?:T(?P<hour>([01][0-9])' +
-                     '|(?:2[0123]))(\:?(?P<min>[0-5][0-9])(\:?(?P<sec>[0-5][0-9]([\,\.]\d{1,10})?))?)' +
-                     '?(?:Z|([\-+](?:([01][0-9])|(?:2[0123]))(\:?(?:[0-5][0-9]))?))?)?))$').match
+                     r'([/-]?(?P<mday>(0[1-9])|([12]\d)|(3[01])))?)?(?:T(?P<hour>([01][0-9])' +
+                     r'|(?:2[0123]))(\:?(?P<min>[0-5][0-9])(\:?(?P<sec>[0-5][0-9]([\,\.]\d{1,10})?))?)' +
+                     r'?(?:Z|([\-+](?:([01][0-9])|(?:2[0123]))(\:?(?:[0-5][0-9]))?))?)?))$').match
 
 _SUPPORTED_CRS = getattr(settings, 'UPLOADER', None)
 if _SUPPORTED_CRS:
@@ -313,7 +312,7 @@ def next_step_response(req, upload_session, force_ajax=True):
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': '/upload/check' + "?id=%s" % import_session.id,
+             'redirect_to': settings.SITEURL + 'upload/check' + "?id=%s" % import_session.id,
              }
         )
 
@@ -338,7 +337,7 @@ def next_step_response(req, upload_session, force_ajax=True):
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': '/upload/time' + "?id=%s" % import_session.id,
+             'redirect_to': settings.SITEURL + 'upload/time' + "?id=%s" % import_session.id,
              }
         )
 
@@ -349,7 +348,7 @@ def next_step_response(req, upload_session, force_ajax=True):
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': '/upload/mosaic' + "?id=%s" % import_session.id,
+             'redirect_to': settings.SITEURL + 'upload/mosaic' + "?id=%s" % import_session.id,
              }
         )
 
@@ -360,7 +359,7 @@ def next_step_response(req, upload_session, force_ajax=True):
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': '/upload/srs' + "?id=%s" % import_session.id,
+             'redirect_to': settings.SITEURL + 'upload/srs' + "?id=%s" % import_session.id,
              }
         )
 
@@ -371,7 +370,7 @@ def next_step_response(req, upload_session, force_ajax=True):
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': '/upload/csv' + "?id=%s" % import_session.id,
+             'redirect_to': settings.SITEURL + 'upload/csv' + "?id=%s" % import_session.id,
              }
         )
 
@@ -383,7 +382,7 @@ def next_step_response(req, upload_session, force_ajax=True):
             return run_response(req, upload_session)
         else:
             # on sync we want to run the import and advance to the next step
-            run_import(upload_session, async=False)
+            run_import(upload_session, async_upload=False)
             return next_step_response(req, upload_session,
                                       force_ajax=force_ajax)
     session_id = None
@@ -411,11 +410,11 @@ def next_step_response(req, upload_session, force_ajax=True):
 
 
 def is_latitude(colname):
-    return colname.lower() in _latitude_names
+    return any([_l in colname.lower() for _l in _latitude_names])
 
 
 def is_longitude(colname):
-    return colname.lower() in _longitude_names
+    return any([_l in colname.lower() for _l in _longitude_names])
 
 
 def is_async_step(upload_session):
@@ -468,7 +467,7 @@ def _get_time_dimensions(layer, upload_session):
         'enddate']
 
     def filter_name(b):
-        return [kw for kw in date_time_keywords if kw in b]
+        return any([_kw in b for _kw in date_time_keywords])
 
     att_list = []
     try:
@@ -477,7 +476,7 @@ def _get_time_dimensions(layer, upload_session):
             ft = layer_values[0]
             attributes = [{'name': k, 'binding': ft[k]['binding'] or 0} for k in ft.keys()]
             for a in attributes:
-                if (('Integer' in a['binding'] or 'Long' in a['binding']) and 'id' != a['name'].lower()) \
+                if ((('Integer' in a['binding'] or 'Long' in a['binding']) and 'id' != a['name'].lower())) \
                         and filter_name(a['name'].lower()):
                     if layer_values:
                         for feat in layer_values:
@@ -490,7 +489,8 @@ def _get_time_dimensions(layer, upload_session):
                         and filter_name(a['name'].lower()):
                     if layer_values:
                         for feat in layer_values:
-                            if iso8601(str(feat.get(a['name'])['value'])):
+                            if feat.get(a['name'])['value'] and \
+                                    iso8601(str(feat.get(a['name'])['value'])):
                                 if a not in att_list:
                                     att_list.append(a)
                     else:
@@ -548,7 +548,7 @@ def layer_eligible_for_time_dimension(
     return (_is_eligible, layer_values)
 
 
-def run_import(upload_session, async=_ASYNC_UPLOAD):
+def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
     """Run the import, possibly asynchronously.
 
     Returns the target datastore.
@@ -563,7 +563,7 @@ def run_import(upload_session, async=_ASYNC_UPLOAD):
             raise Exception(_('unknown item state: %s' % task.state))
     elif import_session.state == 'PENDING' and task.target.store_type == 'coverageStore':
         if task.state == 'READY':
-            import_session.commit(async)
+            import_session.commit(async_upload)
             import_execution_requested = True
         if task.state == 'ERROR':
             progress = task.get_progress()
@@ -573,19 +573,7 @@ def run_import(upload_session, async=_ASYNC_UPLOAD):
 
     # if a target datastore is configured, ensure the datastore exists
     # in geoserver and set the uploader target appropriately
-    if ogc_server_settings.GEOGIG_ENABLED and upload_session.geogig is True \
-            and task.target.store_type != 'coverageStore':
-        target = create_geoserver_db_featurestore(
-            store_type='geogig',
-            store_name=upload_session.geogig_store,
-            author_name=upload_session.user.username,
-            author_email=upload_session.user.email)
-        _log(
-            'setting target datastore %s %s',
-            target.name,
-            target.workspace.name)
-        task.set_target(target.name, target.workspace.name)
-    elif ogc_server_settings.datastore_db and task.target.store_type != 'coverageStore':
+    if ogc_server_settings.datastore_db and task.target.store_type != 'coverageStore':
         target = create_geoserver_db_featurestore(
             # store_name=ogc_server_settings.DATASTORE,
             store_name=ogc_server_settings.datastore_db['NAME']
@@ -605,7 +593,7 @@ def run_import(upload_session, async=_ASYNC_UPLOAD):
     _log('running import session')
     # run async if using a database
     if not import_execution_requested:
-        import_session.commit(async)
+        import_session.commit(async_upload)
 
     # @todo check status of import session - it may fail, but due to protocol,
     # this will not be reported during the commit
@@ -629,129 +617,6 @@ def run_response(req, upload_session):
         return progress_redirect(next, upload_session.import_session.id)
 
     return next_step_response(req, upload_session)
-
-
-"""
-    GeoServer Utilities
-"""
-
-
-def create_geoserver_db_featurestore(
-        store_type=None, store_name=None,
-        author_name='admin', author_email='admin@geonode.org'):
-    cat = gs_catalog
-    dsname = store_name or ogc_server_settings.DATASTORE
-    # get or create datastore
-    try:
-        if store_type == 'geogig' and ogc_server_settings.GEOGIG_ENABLED:
-            if store_name is not None:
-                ds = cat.get_store(store_name)
-            else:
-                ds = cat.get_store(settings.GEOGIG_DATASTORE_NAME)
-        elif dsname:
-            ds = cat.get_store(dsname)
-        else:
-            return None
-        if ds is None:
-            raise FailedRequestError
-    except FailedRequestError:
-        if store_type == 'geogig':
-            if store_name is None and hasattr(
-                    settings,
-                    'GEOGIG_DATASTORE_NAME'):
-                store_name = settings.GEOGIG_DATASTORE_NAME
-            logger.debug(
-                'Creating target datastore %s' %
-                store_name)
-
-            payload = make_geogig_rest_payload(author_name, author_email)
-            response = init_geogig_repo(payload, store_name)
-
-            headers, body = response
-            if 400 <= int(headers['status']) < 600:
-                raise FailedRequestError(_(
-                    "Error code (%s) from GeoServer: %s" %
-                    (headers['status'], body)))
-
-            ds = cat.create_datastore(store_name)
-            ds.type = "GeoGig"
-            ds.connection_parameters.update(
-                geogig_repository=("geoserver://%s" % store_name),
-                branch="master",
-                create="true")
-            cat.save(ds)
-            ds = cat.get_store(store_name)
-        else:
-            logging.info(
-                'Creating target datastore %s' % dsname)
-            db = ogc_server_settings.datastore_db
-            ds = cat.create_datastore(dsname)
-            ds.connection_parameters.update(
-                host=db['HOST'],
-                port=db['PORT'] if isinstance(
-                    db['PORT'], basestring) else str(db['PORT']) or '5432',
-                database=db['NAME'],
-                user=db['USER'],
-                passwd=db['PASSWORD'],
-                dbtype='postgis')
-            cat.save(ds)
-            ds = cat.get_store(dsname)
-            assert ds.enabled
-
-    return ds
-
-
-"""
-    GeoGig Utilities
-"""
-
-
-def init_geogig_repo(payload, store_name):
-    username = ogc_server_settings.credentials.username
-    password = ogc_server_settings.credentials.password
-    url = ogc_server_settings.rest
-    http = httplib2.Http(disable_ssl_certificate_validation=False)
-    http.add_credentials(username, password)
-    netloc = urlparse(url).netloc
-    http.authorizations.append(
-        httplib2.BasicAuthentication(
-            (username, password),
-            netloc,
-            url,
-            {},
-            None,
-            None,
-            http
-        ))
-    rest_url = ogc_server_settings.LOCATION + "geogig/repos/" \
-        + store_name + "/init.json"
-    headers = {
-        "Content-type": "application/json",
-        "Accept": "application/json"
-    }
-    return http.request(rest_url, 'PUT',
-                        json.dumps(payload), headers)
-
-
-def make_geogig_rest_payload(author_name='admin',
-                             author_email='admin@geonode.org'):
-    payload = {
-        "authorName": author_name,
-        "authorEmail": author_email
-    }
-    if settings.OGC_SERVER['default']['PG_GEOGIG'] is True:
-        datastore = settings.OGC_SERVER['default']['DATASTORE']
-        pg_geogig_db = settings.DATABASES[datastore]
-        payload["dbHost"] = pg_geogig_db['HOST']
-        payload["dbPort"] = pg_geogig_db.get('PORT', '5432')
-        payload["dbName"] = pg_geogig_db['NAME']
-        payload["dbSchema"] = pg_geogig_db.get('SCHEMA', 'public')
-        payload["dbUser"] = pg_geogig_db['USER']
-        payload["dbPassword"] = pg_geogig_db['PASSWORD']
-    else:
-        payload["parentDirectory"] = \
-            ogc_server_settings.GEOGIG_DATASTORE_DIR
-    return payload
 
 
 """
@@ -912,7 +777,7 @@ Schema= the_geom:Polygon,location:String,{time_attr}
 CheckAuxiliaryMetadata={aux_metadata_flag}
 SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi"""
 
-    datastore_template = """SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
+    datastore_template = r"""SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
 host={db_host}
 port={db_port}
 database={db_name}

@@ -1,0 +1,7 @@
+.numberpicker {
+    font-size: small;
+    -ms-transform: scaleY(0.9) translateY(-2px); /* IE 9 */
+    -webkit-transform: scaleY(0.9) translateY(-2px); /* Chrome, Safari, Opera */
+    transform: scaleY(0.9) translateY(-2px);
+
+}

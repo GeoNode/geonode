@@ -1,0 +1,72 @@
+{
+ "furtherResources": {
+  "analysisType": []
+ },
+ "overview": [{
+  "mnemonic": "EQ",
+  "defaultAnalysisType": {
+   "href": "/risks/cost_benefit_analysis/loc/AF/ht/EQ/at/schools/"
+  },
+  "riskAnalysis": 1,
+  "href": "/risks/cost_benefit_analysis/loc/AF/ht/EQ/",
+  "title": "Earthquake"
+ }, {
+  "mnemonic": "FL",
+  "defaultAnalysisType": {},
+  "riskAnalysis": 0,
+  "href": "/risks/cost_benefit_analysis/loc/AF/ht/FL/",
+  "title": "River flood"
+ }, {
+  "mnemonic": "DG",
+  "defaultAnalysisType": {
+   "href": "/risks/cost_benefit_analysis/loc/AF/ht/DG/"
+  },
+  "riskAnalysis": 0,
+  "href": "/risks/cost_benefit_analysis/loc/AF/ht/DG/",
+  "title": "Water scarcity"
+ }, {
+  "mnemonic": "AH",
+  "defaultAnalysisType": {},
+  "riskAnalysis": 0,
+  "href": "/risks/data_extraction/loc/AF/ht/AH/",
+  "title": "Avalanche"
+ }, {
+  "mnemonic": "LS",
+  "defaultAnalysisType": {
+   "href": "/risks/cost_benefit_analysis/loc/AF/hs/LS/"
+  },
+  "riskAnalysis": 0,
+  "href": "/risks/cost_benefit_analysis/loc/AF/ht/LS/",
+  "title": "Landslide"
+ }],
+ "context": "ht/EQ/at/schools/",
+ "hazardType": {
+  "mnemonic": "EQ",
+  "analysisTypes": [{
+   "description": "Number of Buildings and USD damages",
+   "href": "/risks/cost_benefit_analysis/loc/AF/ht/EQ/at/schools/",
+   "faIcon": "graduation-cap",
+   "name": "schools",
+   "title": "Schools"
+  }],
+  "description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,"
+ },
+ "analysisType": {
+  "description": "Number of Buildings and USD damages",
+  "title": "Schools",
+  "faIcon": "graduation-cap",
+  "href": "/risks/cost_benefit_analysis/loc/AF/ht/EQ/at/schools/",
+  "riskAnalysis": [{
+   "hazardSet": {
+    "category": "economy",
+    "abstract": "This spreadsheet shows Capital Stock losses for schools for return periods 10, 25, 50 ,100, 250, 500, 1000, 2500 years in Afghanistan provinces expressed in USD, and normalising to the 2016 value. This includes 6 scenarios as described in the final report, with one base scenario and also 5 subsequent scenarios. In spreadsheet 1, the PML curves and the AALs for each scenario are given. In spreadsheet 2 and 3, different representations of the PML data, and in spreadsheet 4 and 5, the economic AALs per spatial unit, and a summary of the fatality results.",
+    "fa_icon": "fa-shopping-cart",
+    "title": "Afghanistan PML Spreadsheet including national level results for the schools risk assessment."
+   },
+   "unitOfMeasure": "Schools",
+   "href": "/risks/cost_benefit_analysis/loc/AF/ht/EQ/at/schools/an/1/",
+   "name": "WP6_Schools_Analysis_Results"
+  }],
+  "name": "schools"
+ }
+}

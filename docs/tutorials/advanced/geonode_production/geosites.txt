@@ -40,17 +40,19 @@ Settings which are common to all GeoSites, but differ from the default GeoNode, 
 * App settings: Any further settings required for the above sites
 * Other site specific settings, such as REGISTRATION_OPEN
 
-A GeoSite therefore has three layers of imports, which is used for settings as well as the search path for templates. First it uses the individual site files, then the master GeoSite, then default GeoNode. These are specified via variables defined in settings:
+A GeoSite therefore has four layers of imports, which is used for settings as well as the search path for templates. First it uses the individual site files, then the master GeoSite, then geosites contrib app, then default GeoNode. These are specified via variables defined in settings:
 
 * SITE_ROOT: The directory where the site specific settings and files are located (templates, static)
 * PROJECT_ROOT: The top-level directory of all the GeoSites which should include the global settings file as well as template and static files
+* GEOSITES_ROOT: Geosites app directory.
 * GEONODE_ROOT: The GeoNode directory.
 
 The TEMPLATE_DIRS, and STATICFILES_DIRS will then include all three directories as shown::
 
     TEMPLATE_DIRS = (
         os.path.join(SITE_ROOT, 'templates/'),
-        os.path.join(PROJECT_ROOT,'templates/'),  # files common to all sites
+        os.path.join(PROJECT_ROOT, 'templates/'),  # files common to all sites
+        os.path.join(GEOSITES_ROOT, 'templates/'),
         os.path.join(GEONODE_ROOT, 'templates/')
     )
 
@@ -62,16 +64,53 @@ The TEMPLATE_DIRS, and STATICFILES_DIRS will then include all three directories 
 
 At the end of the post_settings.py the following variables will be set based on site specific settings::
 
-    STATIC_URL = os.path.join(SITEURL,’static/’)
-    GEONODE_CLIENT_LOCATION = os.path.join(STATIC_URL,’geonode/’)
-    GEOSERVER_BASE_URL = SITEURL + ‘geoserver/’
+    # Login and logout urls override
+    LOGIN_URL = os.getenv('LOGIN_URL', urljoin(SITEURL, 'account/login/'))
+    LOGOUT_URL = os.getenv('LOGOUT_URL', urljoin(SITEURL, 'account/logout/'))
+
+    ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
+    ACCOUNT_LOGOUT_REDIRECT_URL =  os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
+
+
+    OGC_SERVER['default']['location'] = GEOSERVER_LOCATION
+    OGC_SERVER['default']['WEB_UI_LOCATION'] = GEOSERVER_WEB_UI_LOCATION
+    OGC_SERVER['default']['PUBLIC_LOCATION'] = GEOSERVER_PUBLIC_LOCATION
+    OGC_SERVER['default']['USER'] = OGC_SERVER_DEFAULT_USER
+    OGC_SERVER['default']['PASSWORD'] = OGC_SERVER_DEFAULT_PASSWORD
+    OGC_SERVER['default']['DATASTORE'] = 'datastore'
+    CATALOGUE['default']['URL'] = urljoin(SITEURL, '/catalogue/csw')
+    PYCSW['CONFIGURATION']['server']['url'] = CATALOGUE['default']['URL']
+    PYCSW['CONFIGURATION']['metadata:main']['provider_url'] = SITEURL
+
+    if USE_GEOSERVER:
+        LOCAL_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms"
+        PUBLIC_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows"
+        baselayers = MAP_BASELAYERS
+        MAP_BASELAYERS = [PUBLIC_GEOSERVER]
+        MAP_BASELAYERS.extend(baselayers)
+
+    # Update databases if site has own database
+    if SITE_DATABASES:
+        DATABASES.update(SITE_DATABASES)
+
+    # Update apps if site has own apps
     if SITE_APPS:
         INSTALLED_APPS += SITE_APPS
+
+    # Put static files in root
+    STATIC_ROOT = os.path.join(SERVE_PATH, 'static')
+
+    # Put media files in root
+    MEDIA_ROOT = os.path.join(SERVE_PATH, 'uploaded')
+
+    # add datastore if defined
+    if DATASTORE in DATABASES.keys():
+        OGC_SERVER['default']['DATASTORE'] = DATASTORE
 
 Templates and Static Files
 ==========================
 
-As mentioned above for each website there will be three directories used for template and static files.  The first template file found will be the one used so templates in the SITE_ROOT/templates directory will override those in PROJECT_ROOT/templates, which will override those in GEONODE_ROOT/templates.
+As mentioned above for each website there will be four directories used for template and static files.  The first template file found will be the one used so templates in the SITE_ROOT/templates directory will override those in PROJECT_ROOT/templates, which will override those in GEOSITES_ROOT/templates, which will override those in GEONODE_ROOT/templates.
 
 Static files work differently because (at least on a production server) they are collected and stored in a single location.  Because of this care must be taken to avoid clobbering of files between sites, so each site directory should contain all static files in a subdirectory with the name of the site (e.g., static_root/siteA/logo.png )
 

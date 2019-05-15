@@ -1,0 +1,107 @@
+/* Menu Button */
+.drawer-menu-button {
+    position: absolute;
+    z-index:1000;
+    left: 30px;
+    top: 8px;
+    width:30px;
+    background: transparent;
+    outline: none;
+    border: transparent;
+    font-size: 14px;
+}
+
+.drawer-menu-button:hover {
+    background: transparent;
+}
+
+#drawer-menu-button:active{
+    box-shadow: none;
+}
+
+#mapstore-drawermenu > div > div:nth-child(2) {
+    display: none;
+}
+
+.nav-content #background-switcher .thumbnail {
+    border-radius: 0 !important;
+    margin-bottom: 40px;
+    width: 220px !important;
+}
+.nav-content #background-switcher .thumbnail img {
+    border-radius: 0 !important;
+    height: 90px;
+    width: 220px !important;
+}
+
+.nav-content #background-switcher .thumbnail .caption {
+    font-size: 14px !important;
+    text-align: left !important;
+    top: -20px !important;
+    position: absolute !important;
+}
+
+.nav-content #background-switcher {
+    margin-top: 10px;
+}
+
+#mapstore-drawermenu .panel {
+    border: none;
+    box-shadow: none;
+}
+
+div.nav-menu {
+    -webkit-transform:   translate3d(300px, 0, 0);
+    -moz-transform: 	 translate3d(300px, 0, 0);
+    -ms-transform: 		 translate3d(300px, 0, 0);
+    -o-transform: 		 translate3d(300px, 0, 0);
+    box-shadow: 2px 0px 15px #A7A7A7;
+}
+
+.nav-menu  .navHeader {
+    height: 50px;
+}
+.nav-menu > .nav-content .navHeader .title{
+    font-size: 16px;
+    position: absolute;
+    margin: 13px;
+    font-weight: bold;
+}
+.nav-content  .section {
+    margin-bottom: 2px;
+}
+.nav-content  .section .sectionHeader{
+    padding: 5px;
+    cursor: pointer;
+}
+.nav-content .section .sectionHeader>.glyphicon{
+    /* Firefox */
+    -moz-transition: all .3s ease;
+    /* WebKit */
+    -webkit-transition: all .3s ease;
+    /* Opera */
+    -o-transition: all .3s ease;
+    /* Standard */
+    transition: all .3s ease;
+}
+.nav-content  .section .sectionTitle{
+    padding-left: 10px;
+
+}
+.nav-content  .section .sectionContent{
+    -moz-transition: max-height .3s ease;
+    -webkit-transition: max-height .3s ease;
+    -o-transition: max-height .3s ease;
+    transition: max-height .3s ease;
+
+    box-shadow: inset 0px 0px 10px rgba(0,0,0,.5);
+    padding: 5px;
+}
+
+.navButtons {
+    float: right;
+}
+
+#drawer-menu-button {
+     position: absolute;
+}

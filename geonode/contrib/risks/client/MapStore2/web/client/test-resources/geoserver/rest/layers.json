@@ -1,0 +1,10 @@
+{
+   "layers":{
+      "layer":[
+         {
+            "name":"TEST_LAYER_1",
+            "href":"http:\/\/localhost:8080\/geoserver\/rest\/layers\/TEST_LAYER_1.json"
+         }
+      ]
+   }
+}

@@ -1,0 +1,28 @@
+#page-manager .mapstore-header {
+    background-image: url('../img/manager-header.jpg');
+    height: 200px;
+    z-index: -100;
+    width: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    background-position: center;
+    position: relative;
+    top: -20px;
+}
+
+#page-manager .MapSearchBar.user-search {
+    top: -100px;
+    height: 0;
+    overflow: visible;
+}
+#page-manager .MapSearchBar.user-search .input-group {
+    box-shadow: -1px 1px 5px 1px rgba(94,94,94,1);
+}
+#page-manager .Manager-Container {
+    margin: 0;
+}
+
+#page-manager #home-button {
+    float: right;
+}

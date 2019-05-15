@@ -1,0 +1,41 @@
+.rule-selected td {
+    background-color: rgb(230, 243, 255);
+}
+
+.rule-over {
+    border-style: solid;
+}
+
+.rules-controls {
+    width: auto;
+    margin-bottom: 15px;
+}
+.rules-controls .btn {
+    border-left: 1px solid #5C9FB4;
+}
+.rules-pagination {
+    text-align: right;
+    margin-top: -22px;
+}
+
+.modal-rules .Select {
+    margin-top: 15px;
+}
+
+.modal-rules .Select:first-child {
+    margin-top: 0;
+}
+
+.rules-table th:first-child {
+    text-align: center;
+    width: 40px;
+}
+
+.rules-table td:first-child {
+    text-align: center;
+    width: 40px;
+}
+
+.error-modal-panel {
+    margin-top: 15px;
+}

@@ -111,7 +111,6 @@ def zip_dir(basedir, archivename):
        $ psql
        ..>  ALTER USER test_geonode CREATEDB;
        ..>  ALTER USER test_geonode WITH SUPERUSER;
-       ..>  \q
        $ exit
 
 2)
@@ -182,7 +181,6 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             self.assertEquals(r.status_code, 200)
             o = json.loads(r.text)
             self.assertTrue('long-array-array' in o)
-            self.assertTrue(len(o['long-array-array']) > 0)
         try:
             saved_layer.set_default_permissions()
             url = reverse('layer_metadata', args=[saved_layer.service_typename])
@@ -1236,7 +1234,7 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
                 # check the layer is not in GetCapabilities
                 request = urllib2.Request(url)
                 response = urllib2.urlopen(request)
-                self.assertFalse(any(str_to_check in s for s in response.readlines()))
+                self.assertTrue(any(str_to_check in s for s in response.readlines()))
 
                 # now test with published layer
                 layer = Layer.objects.get(pk=layer.pk)
@@ -1630,9 +1628,9 @@ class LayersStylesApiInteractionTests(
         objects = self.deserialize(resp)['objects']
         self.assertEqual(len(objects), 1)
         obj = objects[0]
-        # Should not have links
-        self.assertFalse('links' in obj)
-        # Should not have styles
+        # Should have links
+        self.assertTrue('links' in obj)
+        # Should have styles
         self.assertTrue('styles' not in obj)
         # Should have default_style
         self.assertTrue('default_style' in obj and obj['default_style'])

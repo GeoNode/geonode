@@ -17,7 +17,7 @@
   {{ block.super }}
 {% endblock %}
 
-{% block body_class %}people explore{% endblock %}
+{% block body_class %}{% trans "people explore" %}{% endblock %}
 
 {% block body %}
 
@@ -90,7 +90,7 @@
         {% if profile.voice %}
             <td><a href="tel:{{ profile.voice }}">{{ profile.voice }}</a></td>
         {% else %}
-            <td>Not provided.</td>
+            <td>{% trans "Not provided" %}.</td>
         {% endif %}
       </tr>
       <tr>
@@ -148,7 +148,7 @@
     </ul>
     <ul class="list-group">
       {% if USE_NOTIFICATIONS %}
-      <li class="list-group-item"><a href="{% url "notice_settings" %}"><i class="fa fa-bell"></i> {% trans "Notifications" %}</a></li>
+      <li class="list-group-item"><a href="{% url "pinax_notifications:notice_settings" %}"><i class="fa fa-bell"></i> {% trans "Notifications" %}</a></li>
       {% endif %}
       {% if perms.announcements.can_manage %}
       <li class="list-group-item"><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>

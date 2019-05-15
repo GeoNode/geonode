@@ -1,0 +1,9 @@
+title: Mapstore 2
+description: Create, save and share maps and mashup in a simple and intuitive way!
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-cayman
+repository: geosolutions-it/geosolutions-it.github.io
+
+gems:
+  - jekyll-mentions

@@ -32,20 +32,25 @@ from guardian.models import Group
 
 from allauth.account.utils import user_field, user_email, user_username
 
+from ..base.auth import get_token_object_from_session
 from ..utils import json_response
 
 
-def verify_access_token(key):
+def verify_access_token(request, key):
     try:
-        token = AccessToken.objects.get(token=key)
-
+        token = None
+        if request:
+            token = get_token_object_from_session(request.session)
+        if not token or token.key != key:
+            token = AccessToken.objects.get(token=key)
         if not token.is_valid():
             raise OAuthToolkitError('AccessToken is not valid.')
         if token.is_expired():
             raise OAuthToolkitError('AccessToken has expired.')
     except AccessToken.DoesNotExist:
         raise FatalClientError("AccessToken not found at all.")
-
+    except BaseException:
+        return None
     return token
 
 
@@ -141,7 +146,7 @@ def verify_token(request):
         token = None
         try:
             access_token = request.POST.get('token')
-            token = verify_access_token(access_token)
+            token = verify_access_token(request, access_token)
         except Exception as e:
             return HttpResponse(
                 json.dumps({

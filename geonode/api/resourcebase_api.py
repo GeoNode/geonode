@@ -55,7 +55,7 @@ from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
-
+from .authentication import OAuthAuthentication
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
 from .api import (TagResource,
@@ -142,6 +142,7 @@ class CommonModelApi(ModelResource):
         'bbox_y1',
         'category__gn_description',
         'supplemental_information',
+        'site_url',
         'thumbnail_url',
         'detail_url',
         'rating',
@@ -323,6 +324,9 @@ class CommonModelApi(ModelResource):
                 elif type in LAYER_SUBTYPES.keys():
                     subtypes.append(type)
 
+            if 'vector' in subtypes and 'vector_time' not in subtypes:
+                subtypes.append('vector_time')
+
             if len(subtypes) > 0:
                 types.append("layer")
                 sqs = SearchQuerySet().narrow("subtype:%s" %
@@ -347,7 +351,7 @@ class CommonModelApi(ModelResource):
             else:
                 words = [
                     w for w in re.split(
-                        '\W',
+                        r'\W',
                         query,
                         flags=re.UNICODE) if w]
                 for i, search_word in enumerate(words):
@@ -573,13 +577,16 @@ class CommonModelApi(ModelResource):
         """
         Format the objects for output in a response.
         """
-        if 'has_time' in self.VALUES:
-            idx = self.VALUES.index('has_time')
-            del self.VALUES[idx]
+        for key in ('site_url', 'has_time'):
+            if key in self.VALUES:
+                idx = self.VALUES.index(key)
+                del self.VALUES[idx]
         objects_json = objects.values(*self.VALUES)
 
         # hack needed because dehydrate does not seem to work in CommonModelApi
         for item in objects_json:
+            if 'site_url' not in item or len(item['site_url']) == 0:
+                item['site_url'] = settings.SITEURL
             if item['thumbnail_url'] and len(item['thumbnail_url']) == 0:
                 item['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
             if item['title'] and len(item['title']) == 0:
@@ -608,10 +615,13 @@ class CommonModelApi(ModelResource):
         # If an user does not have at least view permissions, he won't be able
         # to see the resource at all.
         filtered_objects_ids = None
-        if response_objects:
-            filtered_objects_ids = [
-                item.id for item in response_objects if request.user.has_perm(
-                    'view_resourcebase', item.get_self_resource())]
+        try:
+            if data['objects']:
+                filtered_objects_ids = [
+                    item.id for item in data['objects'] if request.user.has_perm(
+                        'view_resourcebase', item.get_self_resource())]
+        except BaseException:
+            pass
 
         if isinstance(
                 data,
@@ -659,7 +669,9 @@ class ResourceBaseResource(CommonModelApi):
             .distinct().order_by('-date')
         resource_name = 'base'
         excludes = ['csw_anytext', 'metadata_xml']
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())
 
 
 class FeaturedResourceBaseResource(CommonModelApi):
@@ -670,7 +682,9 @@ class FeaturedResourceBaseResource(CommonModelApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = ResourceBase.objects.filter(featured=True).order_by('-date')
         resource_name = 'featured'
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())
 
 
 class LayerResource(CommonModelApi):
@@ -679,7 +693,7 @@ class LayerResource(CommonModelApi):
     links = fields.ListField(
         attribute='links',
         null=True,
-        use_in='detail',
+        use_in='all',
         default=[])
     if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         default_style = fields.ForeignKey(
@@ -704,7 +718,7 @@ class LayerResource(CommonModelApi):
 
     def format_objects(self, objects):
         """
-        Formats the object then adds a geogig_link as necessary.
+        Formats the object.
         """
         formatted_objects = []
         for obj in objects:
@@ -731,19 +745,18 @@ class LayerResource(CommonModelApi):
             formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
             formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
 
-            # add the geogig link
-            formatted_obj['geogig_link'] = obj.geogig_link
-
             # provide style information
             bundle = self.build_bundle(obj=obj)
             formatted_obj['default_style'] = self.default_style.dehydrate(
                 bundle, for_list=True)
 
-            if self.links.use_in == 'all' or self.links.use_in == 'list':
-                formatted_obj['links'] = self.dehydrate_links(
-                    bundle)
             # Add resource uri
             formatted_obj['resource_uri'] = self.get_resource_uri(bundle)
+
+            formatted_obj['links'] = self.dehydrate_ogc_links(bundle)
+
+            if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
+                formatted_obj['site_url'] = settings.SITEURL
 
             # Probe Remote Services
             formatted_obj['store_type'] = 'dataset'
@@ -762,7 +775,7 @@ class LayerResource(CommonModelApi):
             formatted_objects.append(formatted_obj)
         return formatted_objects
 
-    def dehydrate_links(self, bundle):
+    def _dehydrate_links(self, bundle, link_types=None):
         """Dehydrate links field."""
 
         dehydrated = []
@@ -774,11 +787,21 @@ class LayerResource(CommonModelApi):
             'mime',
             'url'
         ]
-        for l in obj.link_set.all():
+
+        links = obj.link_set.all()
+        if link_types:
+            links = links.filter(link_type__in=link_types)
+        for l in links:
             formatted_link = model_to_dict(l, fields=link_fields)
             dehydrated.append(formatted_link)
 
         return dehydrated
+
+    def dehydrate_links(self, bundle):
+        return self._dehydrate_links(bundle)
+
+    def dehydrate_ogc_links(self, bundle):
+        return self._dehydrate_links(bundle, ['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
 
     def dehydrate_gtype(self, bundle):
         return bundle.obj.gtype
@@ -877,7 +900,9 @@ class LayerResource(CommonModelApi):
         include_resource_uri = True
         allowed_methods = ['get', 'patch']
         excludes = ['csw_anytext', 'metadata_xml']
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())
         filtering = CommonMetaApi.filtering
         # Allow filtering using ID
         filtering.update({
@@ -918,6 +943,9 @@ class MapResource(CommonModelApi):
             formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
             formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
 
+            if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
+                formatted_obj['site_url'] = settings.SITEURL
+
             # Probe Remote Services
             formatted_obj['store_type'] = 'map'
             formatted_obj['online'] = True
@@ -941,7 +969,7 @@ class MapResource(CommonModelApi):
             ]
             for layer in map_layers:
                 formatted_map_layer = model_to_dict(
-                     layer, fields=map_layer_fields)
+                    layer, fields=map_layer_fields)
                 formatted_layers.append(formatted_map_layer)
             formatted_obj['layers'] = formatted_layers
             formatted_objects.append(formatted_obj)
@@ -951,7 +979,9 @@ class MapResource(CommonModelApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = Map.objects.distinct().order_by('-date')
         resource_name = 'maps'
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())
 
 
 class DocumentResource(CommonModelApi):
@@ -985,6 +1015,9 @@ class DocumentResource(CommonModelApi):
             formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
             formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
 
+            if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
+                formatted_obj['site_url'] = settings.SITEURL
+
             # Probe Remote Services
             formatted_obj['store_type'] = 'dataset'
             formatted_obj['online'] = True
@@ -998,4 +1031,6 @@ class DocumentResource(CommonModelApi):
         filtering.update({'doc_type': ALL})
         queryset = Document.objects.distinct().order_by('-date')
         resource_name = 'documents'
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())

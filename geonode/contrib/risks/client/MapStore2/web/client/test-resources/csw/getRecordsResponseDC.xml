@@ -1,0 +1,40 @@
+<csw:GetRecordsResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd">
+  <csw:SearchStatus timestamp="2016-05-11T13:00:06" />
+  <csw:SearchResults numberOfRecordsMatched="100" numberOfRecordsReturned="2" elementSet="full" nextRecord="3">
+    <csw:Record xmlns:geonet="http://www.fao.org/geonetwork" xmlns:ows="http://www.opengis.net/ows" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://purl.org/dc/terms/">
+      <dc:identifier>0171b07a-8cf1-4950-8a71-b01e6a6aee38</dc:identifier>
+      <dc:title>c1020047_title</dc:title>
+      <dc:type>dataset</dc:type>
+      <dc:subject>sub1, sub2, sub3</dc:subject>
+      <dc:subject>sub4</dc:subject>
+      <dc:format />
+      <dct:abstract>Abstract</dct:abstract>
+      <dc:language />
+      <dc:source />
+      <dc:format />
+      <ows:BoundingBox crs="urn:ogc:def:crs:EPSG:6.6:4326">
+        <ows:LowerCorner>12.718 45.542</ows:LowerCorner>
+        <ows:UpperCorner>11.874 46.026</ows:UpperCorner>
+      </ows:BoundingBox>
+      <dc:URI protocol="OGC:WMS-1.1.1-http-get-map" name="workspace:layer_name1" description="desc1">http://ows.domain.it:80/geoserver/wms?SERVICE=WMS&amp;</dc:URI>
+      <dc:URI protocol="image/png" name="thumbnail">resources.get?id=187146&amp;fname=0171b07a-8cf1-4950-8a71-b01e6a6aee38_s.png&amp;access=public</dc:URI>
+    </csw:Record>
+    <csw:Record xmlns:geonet="http://www.fao.org/geonetwork" xmlns:ows="http://www.opengis.net/ows" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://purl.org/dc/terms/">
+      <dc:identifier>d698f693-6e7e-47a9-a138-918068d0b082</dc:identifier>
+      <dc:title>Title2</dc:title>
+      <dc:type>dataset</dc:type>
+      <dc:subject>geoscientificInformation</dc:subject>
+      <dc:format />
+      <dct:abstract />
+      <dc:language />
+      <dc:source />
+      <dc:format />
+      <ows:BoundingBox crs="urn:ogc:def:crs:EPSG:6.6:4326">
+        <ows:LowerCorner>12.429282000000002 45.760718</ows:LowerCorner>
+        <ows:UpperCorner>12.002717999999996 46.187282</ows:UpperCorner>
+      </ows:BoundingBox>
+      <dc:URI protocol="OGC:WMS-1.1.1-http-get-map" name="workspace:layer_name2" description="desc2">http://ows.domain.it:80/geoserver/wms?SERVICE=WMS&amp;</dc:URI>
+      <dc:URI protocol="image/png" name="thumbnail">resources.get?id=187049&amp;fname=d698f693-6e7e-47a9-a138-918068d0b082_s.png&amp;access=public</dc:URI>
+    </csw:Record>
+  </csw:SearchResults>
+</csw:GetRecordsResponse>

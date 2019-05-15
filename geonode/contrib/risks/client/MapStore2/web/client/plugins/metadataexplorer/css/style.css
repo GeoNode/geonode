@@ -1,0 +1,50 @@
+div.record-grid {
+    max-height: 400px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+div.record-grid:after {
+    content:"";
+    position: absolute;
+    bottom:110px;
+    left:0;
+    height:40px;
+    width:100%;
+    background: -webkit-linear-gradient(#fff, #fff);
+    background: linear-gradient(rgba(0,0,0,0), #fff);
+}
+
+div.record-grid .record-item{
+    height: auto;
+}
+
+div.record-grid .record-item .record-item-description {
+    display: block; /* Fallback for non-webkit */
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    font-size: 14px;
+    line-height: 1.4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 115px;
+}
+
+div.record-grid .record-item .record-buttons {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+}
+
+#mapstore-catalog-panel button.search-button {
+    margin-bottom: 10px;
+}
+.catalog_window .modal-dialog {
+    width: 98%;
+    margin-top: 10px;
+}
+
+#mapstore-catalog-panel .record-item {
+    min-height: 150px;
+}

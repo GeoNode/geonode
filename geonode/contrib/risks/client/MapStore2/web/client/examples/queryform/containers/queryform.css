@@ -1,0 +1,45 @@
+#map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.info {
+    z-index: 2;
+    position: absolute;
+    right: 15px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+    opacity: 0.7;
+    top: 5px;
+}
+
+.links {
+    z-index: 2;
+    position: absolute;
+    left: 50px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+    opacity: 0.7;
+    top: 5px;
+}
+
+/* Query Panel */
+
+.querypanel-container{
+    width: 850px;
+}
+
+.querypanel-container .panel-title{
+    font-size: 20px;
+}
+
+.querypanel-container .panel-title a{
+    cursor: text;
+    text-decoration:none;
+}

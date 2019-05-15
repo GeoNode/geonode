@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - 4
+script: npm run travis
+addons:  
+  firefox: latest
+before_install:
+    - export DISPLAY=:99.0
+    - sh -e /etc/init.d/xvfb start
+    - if [[ `npm -v` != 3* ]]; then npm i -g npm@3; fi
+    - npm -v
+branches:
+  only:
+    - master

@@ -1,0 +1,30 @@
+.map-thumb {
+    max-width: 100%;
+    overflow: hidden;
+    height: 180px;
+    cursor: pointer;
+}
+
+
+.map-thumb-description {
+    /* ellipsis for description */
+    display: block; /* Fallback for non-webkit */
+    display: -webkit-box;
+    padding: 5px;
+    magin: 0 auto;
+    height: 80px; /* font-size * webkit-line-clamp + padding */
+    font-size: 15px;
+    line-height: 1;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: justify;
+    /* end ellipsis for description */
+    /* gradient */
+    background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=0 ); /* IE6-9 */
+    /* end gradient */
+    }

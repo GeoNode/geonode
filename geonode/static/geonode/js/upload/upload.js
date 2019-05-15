@@ -5,13 +5,11 @@
 
 var layers = {};
 
-var geogig_stores = {};
-
 define(['underscore',
-        'upload/LayerInfo',
-        'upload/FileTypes',
-        'upload/path',
-        'upload/common',
+        './LayerInfo',
+        './FileTypes',
+        './path',
+        './common',
         'text!templates/upload.html'], function (_, LayerInfo, fileTypes, path, common, uploadTemplate) {
 
     var templates = {},
@@ -22,7 +20,6 @@ define(['underscore',
         types,
         buildFileInfo,
         displayFiles,
-        init_geogig_stores,
         doUploads,
         doSrs,
         doDelete,
@@ -30,7 +27,6 @@ define(['underscore',
         doSuccessfulUpload,
         attach_events,
         checkFiles,
-        checkGeogig
         fileTypes = fileTypes;
 
     $('body').append(uploadTemplate);
@@ -108,7 +104,6 @@ define(['underscore',
             }
         }
     };
-
 
     /** Function to ...
      *
@@ -193,33 +188,10 @@ define(['underscore',
         return matched;
     }
 
-    /** Function to check that a geogig repo has been named, or that
-     *  "Import to Geogig" is not checked.
-     *
-     *  @params
-     *  @returns {boolean}
-     */
-    checkGeogig = function() {
-        if(geogig_enabled) {
-            var files = layers[Object.keys(layers)[0]]['files'];
-            for (var i = 0; i<files.length; i++){
-                var base_name = files[i].name.split('.')[0].replace(/\[|\]|\(|\)| /g, '_');
-                var geogig_store = $('#' + base_name + '\\:geogig_store').val();
-                var geogig = $('#' + base_name + '\\:geogig_toggle').is(':checked');
-                if (geogig) {
-                    if (geogig_store.length == 0) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
     doDelete = function(event) {
         var target = event.target || event.srcElement;
         var id = target.id.split("-")[1];
-        var target = "/upload/delete/" + id;
+        var target = siteUrl + "upload/delete/" + id;
         $.ajaxQueue({
             url: target,
             async: false,
@@ -240,7 +212,7 @@ define(['underscore',
     doResume = function(event) {
         var target = event.target || event.srcElement;
         var id = target.id.split("-")[1];
-        var target = "/upload/?id=" + id;
+        var target = siteUrl + "upload/?id=" + id;
         $.ajaxQueue({
             url: target,
             async: false,
@@ -271,7 +243,7 @@ define(['underscore',
         var form = $("#srsForm")
         $.ajaxQueue({
            type: "POST",
-           url: '/upload/srs',
+           url: siteUrl + 'upload/srs',
            data: form.serialize(), // serializes the form's elements.
            success: function(data)
            {
@@ -308,7 +280,7 @@ define(['underscore',
             return false;
         }
 
-        var checked = checkFiles() && checkGeogig();
+        var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
             alert(gettext('You are trying to upload an incomplete set of files or not all mandatory options have been validated.\n\nPlease check for errors in the form!'));
         } else {
@@ -317,22 +289,6 @@ define(['underscore',
             });
         }
         return false;
-    };
-
-    /** Function to ...
-     *
-     *  @returns false
-     */
-    init_geogig_stores = function() {
-        $.ajax({
-            url: '/gs/rest/stores/geogig/',
-            async: true,
-            contentType: false,
-        }).done(function (resp) {
-            geogig_stores = JSON.parse(resp);
-        }).fail(function (resp) {
-            //
-        });
     };
 
 
@@ -390,13 +346,9 @@ define(['underscore',
         $(options.upload_button).on('click', doUploads);
         $("[id^=delete]").on('click', doDelete);
         $("[id^=resume]").on('click', doResume);
-        if (geogig_enabled) {
-            init_geogig_stores();
-        }
     };
 
     // public api
-
     return {
         initialize: initialize,
         doSrs: doSrs,

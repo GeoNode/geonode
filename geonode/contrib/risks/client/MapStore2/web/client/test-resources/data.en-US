@@ -1,0 +1,19 @@
+{
+    "locale": "it-IT",
+    "messages": {
+        "msgId0": "{name} took {numPhotos, plural, =0 {no photos} =1 {one photo} other {# photos}} on {takenDate, date, long}.",
+        "htmlTest": "{name} {surname}",
+        "about_title": "About this app...",
+        "aboutLbl": "About",
+        "about_p0-0": "MapStore 2 is a framework to build web mapping applications using standard mapping libraries, such as",
+        "about_p0-1": "and",
+        "about_p1": "MapStore 2 has several example applications:",
+        "about_ul0_li0": "MapViewer is a simple viewer of preconfigured maps (optionally stored in a database using GeoStore)",
+        "about_ul0_li1": "MapPublisher has been developed to create, save and share in a simple and intuitive way maps and mashups created selecting contents by server like OpenStreetMap, Google Maps, MapQuest or specific servers provided by your organization or third party. For more information check the",
+        "about_h20": "License",
+        "about_p3": "MapStore 2 is Free and Open Source software, it is based on OpenLayers 3, Leaflet and ReactJS, and is licensed under the Simplified BSD License.",
+        "about_p5-0": "For more information check",
+        "about_a0": "this",
+        "about_p5-1": "page."
+    }
+}

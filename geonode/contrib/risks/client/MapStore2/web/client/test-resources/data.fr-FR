@@ -1,0 +1,19 @@
+{
+    "locale": "fr-FR",
+    "messages": {
+        "msgId0": "{name} a pris {numPhotos, plural, =0 {aucune photo} =1 {une photo} other {# photos}} le {takenDate, date, long}.",
+        "htmlTest": "{name} {surname}",
+        "about_title": "A propos de cette app...",
+        "aboutLbl": "A propos",
+        "about_p0-0": "MapStore 2 est un cadriciel permettant de développer des applications cartographiques web à l'aide des librairies standards cartographiques telles que",
+        "about_p0-1": "et",
+        "about_p1": "MapStore 2 a plusieurs exemples d'applications:",
+        "about_ul0_li0": "MapViewer est un visualiseur simple de cartes préconfigurées (contenues optionnellement dans une base de données GeoStore)",
+        "about_ul0_li1": "MapPublisher a été développé pour créer, sauver et partager de façon simple et intuitive cartes et assemblages créés à partir des contenus de serveurs tel que OpenStreetMap, Google Maps, MapQuest ou tout autre serveur spécifique fourni par votre organisation ou une organisation tierce. Pour plus d'information: ",
+        "about_h20": "License",
+        "about_p3": "MapStore 2 est un logiciel libre de droit à sources ouverts, basé sur OpenLayers 3, Leaflet et ReactJS, et est disponible sous Licence Simplifiée BSD.",
+        "about_p5-0": "Pour plus d'informations, consultez",
+        "about_a0": "ceci",
+        "about_p5-1": "page."
+    }
+}

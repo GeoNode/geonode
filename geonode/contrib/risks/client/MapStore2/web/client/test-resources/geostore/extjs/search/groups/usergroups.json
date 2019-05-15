@@ -1,0 +1,18 @@
+{
+  "ExtGroupList": {
+    "GroupCount": 2,
+    "Group": [
+      {
+        "description": "Group for Test",
+        "enabled": true,
+        "groupName": "TESTGROUP_1",
+        "id": 524
+      },
+      {
+        "enabled": true,
+        "groupName": "TESTGROUP_2",
+        "id": 933
+      }
+    ]
+  }
+}

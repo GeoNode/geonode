@@ -1,0 +1,20 @@
+
+{% block cover %}
+    <h2 class="text text-center">{{ app.description }} report</h2>
+    <h3 class="text text-center">{{ context.parts.ht.title }} hazard / {{ context.parts.at.title }} analysis</h3>
+
+
+    <h3 class="text text-center">{{ context.parts.loc.name }}</h3>
+
+    {% if context.parts.loc.parent %}
+    <h4 class="text text-center gray">{{ context.parts.loc.region.name }}</h4>
+    {% endif %}
+{% endblock %}
+
+
+<div class="fp-footer">
+
+    <p class="text-center">Report generated on {% now "j m d" %}</p>
+    <p class="text-center">from <a href="{{ resources.permalink }}">Afghanistan Disaster Risks Info</a></p>
+</div>
+

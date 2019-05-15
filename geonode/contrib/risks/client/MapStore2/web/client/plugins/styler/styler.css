@@ -1,0 +1,29 @@
+.mapstore-styler-panel {
+    width: 600px;
+    position: absolute;
+    top: 10px;
+    right: 60px;
+    z-index: 1000;
+}
+.mapstore-styler-panel button{
+    font-size:14px !important;
+    border-radius: 4px;
+    height: 30px;
+    padding-bottom: 5px;
+}
+.mapstore-styler-panel button:disabled{
+    color:white;
+}
+.mapstore-styler-panel .panel-heading{
+    background-color: #078AA3 !important;
+    color:white !important;
+}
+
+.mapstore-styler-panel .form-control{
+    height: 32px !important;
+
+}
+
+.mapstore-styler-panel, .panel, .panel-default{
+    overflow: visible !important;
+}

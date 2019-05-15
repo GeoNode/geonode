@@ -13,7 +13,7 @@
   {{ block.super }}
 {% endblock %}
 
-{% block body_class %}groups{% endblock %}
+{% block body_class %}{% trans "groups" %}{% endblock %}
 
 {% block body_outer %}
 <div class="page-header">
@@ -80,7 +80,7 @@
             <form class="uniForm" method="POST" action="{% url "group_join" object.slug %}">
               {% csrf_token %}
               {% if not is_member %}
-              <input type="submit" class="btn btn-default btn-md btn-block" value="Join Group" />
+              <input type="submit" class="btn btn-default btn-md btn-block" value="{% trans "Join Group" %}" />
               {% endif %}
             </form>
           {% else %} {% if object.access == "public-invite" %}

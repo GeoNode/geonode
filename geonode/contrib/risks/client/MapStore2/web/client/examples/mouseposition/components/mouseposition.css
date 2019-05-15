@@ -1,0 +1,153 @@
+        .mousepositionsbar {
+            position:absolute;
+            z-index: 100;
+            top:0px;
+            left:30px;
+            width: calc(100% - 30px);
+        }
+        #sGeoS {
+            float:left;
+        }
+        #geoslable {
+            font-family: 'Rancho' !important;
+            font-size: 1.8em;
+            font-style:  normal;
+            font-weight: 400;
+
+        }
+        #sGeoS .label {
+            display: inline-block;
+            max-height: 60px;
+            height: auto;
+            font-size: 1.2em;
+            font-family: 'PT Sans' !important;
+            font-style:  italic;
+            font-weight: 700;
+        }
+        #sGeoS .label-info {
+            color:rgba(0,0,0,1);
+            background-color:rgba(236,225,150,.6);
+        }
+         #wgs84 {
+            font-family: 'Droid Sans' !important;
+            font-style:  normal;
+            font-weight: 400;
+        }
+        #wgs84 .label {
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+            height: 53px;
+            font-size: 1.5em;
+        }
+        #wgs84 .label-info {
+            background-color:rgba(0,0,0,.8);
+        }
+
+        #wgs84 h5 {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        #degreedecimal {
+            font-family: 'PT Sans' !important;
+            font-style:  italic;
+            font-weight: 700;
+
+        }
+        @media (min-width: 1200px){
+            #degreedecimal{
+                float:right;
+            }
+        }
+        #degreedecimal .label {
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+            height: 30px;
+            font-size: 1.5em;
+        }
+        #degreedecimal .label-info {
+            color:rgba(0,0,0,1);
+            background-color:rgba(255,255,255,.8);
+        }
+        #degreeminute {
+            z-index: 10;
+            bottom: 0px;
+            left: 0px;
+            position: absolute;
+            font-family: 'Droid Sans' !important;
+            font-style:  normal;
+            font-weight: 400;
+            margin:5px
+        }
+        #degreeminute .label {
+            display: inline-block;
+            width: 350px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+            height: 30px;
+            font-size: 1.3em;
+        }
+        #degreeminute .label-info {
+            background-color:rgba(0,0,0,0);
+        }
+        #dmsnw {
+            z-index: 10;
+            bottom: calc(50% - 30px);
+            left: -155px;
+            position: absolute;
+            margin: 8px;
+            -moz-transform: rotate(90deg);
+            transform: rotate(90deg);
+            font-family: 'PT Sans' !important;
+            font-style:  italic;
+            font-weight: 700;
+        }
+        #dmsnw .label {
+            display: inline-block;
+            width: 350px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+            height: 30px;
+            font-size: 1.5em;
+        }
+        #dmsnw .label-info {
+            color:rgba(10,10,10,.8);
+            background-color:rgba(255,255,255,.8);
+        }
+        #google {
+            z-index: 10;
+            bottom: 13px;
+            right: 5px;
+            position: absolute;
+            font-family: 'PT Sans' !important;
+            font-style:  normal;
+            font-weight: 400;
+
+        }
+        #google .label {
+            display: inline-block;
+            width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+            font-size: 1.2em;
+        }
+        #google .label-info {
+            color:rgba(10,10,10,1);
+            background-color:rgba(180,180,180,.6);
+        }
+        #google h5 {
+            display: inline-block;
+            margin-right: 10px;
+        }

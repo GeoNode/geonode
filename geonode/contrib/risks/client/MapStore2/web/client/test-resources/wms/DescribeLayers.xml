@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE WMS_DescribeLayerResponse SYSTEM "http://some.geoserver.org:80/geoserver/schemas/wms/1.1.1/WMS_DescribeLayerResponse.dtd">
+<WMS_DescribeLayerResponse version="1.1.1">
+    <LayerDescription name="workspace:vector_layer" wfs="http://some.geoserver.org:80/geoserver/wfs?" owsURL="http://some.geoserver.org:80/geoserver/wfs?" owsType="WFS">
+        <Query typeName="workspace:vector_layer"/>
+    </LayerDescription>
+    <LayerDescription name="workspace:raster_layer" owsURL="http://demo.geo-solutions.it:80/geoserver/wcs?" owsType="WCS">
+        <Query typeName="workspace:raster_layer"/>
+    </LayerDescription>
+</WMS_DescribeLayerResponse>

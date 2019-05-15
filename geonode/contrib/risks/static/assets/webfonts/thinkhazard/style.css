@@ -1,0 +1,102 @@
+@font-face {
+  font-family: 'thinkhazard';
+  src:  url('fonts/thinkhazard.eot?p4sbt7');
+  src:  url('fonts/thinkhazard.eot?p4sbt7#iefix') format('embedded-opentype'),
+    url('fonts/thinkhazard.ttf?p4sbt7') format('truetype'),
+    url('fonts/thinkhazard.woff?p4sbt7') format('woff'),
+    url('fonts/thinkhazard.svg?p4sbt7#thinkhazard') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'thinkhazard' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-Pollution2c:before {
+  content: "\e900";
+}
+.icon-Earthquake:before {
+  content: "\e601";
+}
+.icon-Flood:before {
+  content: "\e602";
+}
+.icon-Landslide:before {
+  content: "\e603";
+}
+.icon-StormSurge:before {
+  content: "\e604";
+}
+.icon-Tsunami:before {
+  content: "\e605";
+}
+.icon-VolcanicAsh:before {
+  content: "\e606";
+}
+.icon-Cyclone:before {
+  content: "\e607";
+}
+.icon-cross:before {
+  content: "\e608";
+}
+.icon-download-arrow:before {
+  content: "\e609";
+}
+.icon-house:before {
+  content: "\e60a";
+}
+.icon-list-arrow:before {
+  content: "\e60b";
+}
+.icon-magnifying-glass:before {
+  content: "\e60c";
+}
+.icon-pin:before {
+  content: "\e60d";
+}
+.icon-selector-arrow:before {
+  content: "\e60e";
+}
+.icon-separator:before {
+  content: "\e60f";
+}
+.icon-zoom-in:before {
+  content: "\e610";
+}
+.icon-zoom-out:before {
+  content: "\e613";
+}
+.icon-extreme_heat:before {
+  content: "\e901";
+}
+.icon-urban_flood:before {
+  content: "\e902";
+}
+.icon-wildfire:before {
+  content: "\e907";
+}
+.icon-water_scarcity:before {
+  content: "\e908";
+}
+.icon-Overview:before {
+  content: "\e909";
+}
+.icon-stop:before {
+  content: "\f04d";
+}
+.icon-spinner:before {
+  content: "\f110";
+}
+

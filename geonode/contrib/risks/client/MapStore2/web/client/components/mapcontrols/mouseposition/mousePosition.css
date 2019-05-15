@@ -1,0 +1,99 @@
+ #mapstore-mouseposition {
+    z-index: 10;
+    top: -10px;
+    right: 45%;
+    position: absolute;
+    margin: 8px;
+    text-shadow: -1px -1px 1px #000,
+                  1px -1px 1px #000,
+                 -1px  1px 1px #000,
+                  1px  1px 1px #000;
+}
+
+#mapstore-mouseposition .label {
+    max-width: 350px;
+    min-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+
+}
+
+#mapstore-mouseposition .label-info {
+    background-color:rgba(91,192,222,0);
+    color: white;
+    font-size: 110%;
+}
+
+#mapstore-mouseposition h5 {
+    display: inline-block;
+}
+
+
+#mapstore-mousepositionsettings .form-group {
+    margin-bottom: 0 !important;
+}
+
+#mapstore-mousepositionsettings select, #mapstore-mousepositionsettings button {
+    width: 60% !important;
+    float: right;
+    height: 35px;
+}
+
+#mapstore-mousepositionsettings label {
+    width: 100% !important;
+}
+
+
+#mapstore-mouseposition .label-info {
+    white-space: normal !important;
+    color: black !important;
+    font-size: 110%;
+    padding: 0 !important;
+}
+
+#mapstore-mouseposition {
+    bottom: 5px !important;
+    right: 264px !important;
+    top: auto !important;
+    margin: 0 !important;
+    text-shadow: none !important;
+    background-color: white !important;
+    width: 160px !important;
+    height: 46px !important;
+    padding-left: 5px;
+    padding-top: 2px;
+}
+
+#mapstore-mouseposition h5 {
+    margin-top: 5px !important;
+}
+
+.mouseposition-separator {
+    display: block;
+}
+
+#mapstore-mouseposition-mobile {
+        bottom: 25px;
+        right: 30px;
+        z-index: 10;
+        position: absolute;
+        text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;
+    }
+
+#mapstore-mouseposition-mobile .label {
+        display: inline-block;
+        max-width: 280px;
+        min-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+}
+
+#mapstore-mouseposition-mobile .label-info {
+        background-color:rgba(91,192,222,0);
+        color: white;
+        font-size: 90%;
+}

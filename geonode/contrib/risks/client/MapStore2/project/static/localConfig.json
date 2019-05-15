@@ -1,0 +1,9 @@
+{
+	"proxyUrl": "/mapstore/proxy/?url=",
+	"geoStoreUrl": "/mapstore/rest/geostore",
+	"printUrl": "https://demo.geo-solutions.it/geoserver/pdf/info.json",
+	"translationsPath": "./MapStore2/web/client/translations",
+	"plugins": {
+			"desktop": ["Map", "Home"]
+	}
+}

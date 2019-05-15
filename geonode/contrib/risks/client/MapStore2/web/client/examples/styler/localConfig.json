@@ -1,0 +1,92 @@
+{
+    "geoStoreUrl": "/mapstore/rest/geostore/",
+    "plugins": {
+        "desktop": [
+            "Map",
+            {
+                "cfg": {
+                    "asPanel": false,
+                    "bodyClassName": "modal-body info-wrap",
+                    "className": "square-button",
+                    "closeGlyph": "1-close",
+                    "enableRevGeocode": true,
+                    "glyph": "map-marker",
+                    "headerClassName": "modal-header",
+                    "headerGlyph": "",
+                    "panelClassName": "modal-dialog info-panel modal-content",
+                    "viewerOptions": {
+                        "collapsible": false,
+                        "container": "{context.ReactSwipe}",
+                        "header": "{context.SwipeHeader}",
+                        "headerOptions": {
+                            "useButtons": true
+                        }
+                    },
+                    "wrapRevGeocode": false
+                },
+                "name": "Identify",
+                "showIn": [
+                    "Toolbar",
+                    "Settings"
+                ]
+            },"TOC","Styler",
+            {
+                "cfg": {
+                    "buttonStyle": "primary",
+                    "id": "navigationBar"
+                },
+                "id": "NavigationBar",
+                "name": "Toolbar",
+                "stateSelector": "toolbar"
+            },
+            {
+                "name": "Settings"
+            },
+            {
+            "name": "MapLoading",
+            "hide": true,
+            "cfg": {
+                "className": "ms2-loading"
+            },
+            "override": {
+                "Toolbar": {
+                    "alwaysVisible": true
+                }
+            }
+        },"ScaleBox"
+        ],
+        "mobile": [
+            {
+                "cfg": {
+                    "zoomControl": false
+                },
+                "name": "Map"
+            },
+            {
+                "hide": true,
+                "name": "TOC"
+            },
+            {
+                "cfg": {
+                    "closeGlyph": "1-close",
+                    "overrideSettings": {
+                        "history": false
+                    },
+                    "wrap": true,
+                    "wrapWithPanel": true
+                },
+                "hideFrom": [
+                    "DrawerMenu"
+                ],
+                "name": "Settings"
+            },
+            {
+                "hide": false,
+                "name": "Styler"
+            }
+        ]
+    },
+    "printUrl": "https://demo.geo-solutions.it/geoserver/pdf/info.json",
+    "proxyUrl": "/mapstore/proxy/?url=",
+    "translationsPath": "../../translations"
+}

@@ -1,0 +1,73 @@
+.disaster {
+  @import (less) "./risk.css";
+}
+
+.disaster {
+  font-family: @font-family-sans-serif;
+  margin: 0;
+  font-size: @font-size-base;
+  line-height: @line-height-base;
+  color: @text-color;
+  background-color: @body-bg;
+}
+
+@import (less) "../../node_modules/react-nouislider/example/nouislider.css";
+@import "./variables.less";
+@import "./font-awesome.min.css";
+
+.noUi-handle {
+    border: 2px solid @brand-geonode-o;
+    background: @brand-primary;
+    box-shadow: none;
+    cursor: pointer;
+    width: 28px !important;
+    height: 28px !important;
+    left: -14px !important;
+}
+
+.disaster-header .noUi-handle {
+    border: 1px solid @brand-geonode-b;
+    background: @brand-geonode-b;
+    color: @brand-geonode-o;
+}
+
+.disaster-header .noUi-handle:hover {
+    border: 1px solid @brand-geonode-o;
+    background: @brand-geonode-o;
+    color: @brand-geonode-b;
+}
+
+.noUi-handle:before, .noUi-handle:after {
+  background-color: transparent;
+}
+
+.disaster-header .noUi-handle:before{
+  font-family: FontAwesome;
+  content: "\f080";
+  display: block;
+  position: absolute;
+  height: 14px;
+  width: 1px;
+  left: 5px;
+  top: 4px;
+}
+
+.noUi-value-horizontal {
+    margin-left: -30px;
+    margin-top: 40px;
+    padding-top: 0;
+    transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -ms-transform-origin: right, top;
+    -webkit-transform: rotate(-90deg);
+    -webkit-transform-origin: right, top;
+    text-align: right;
+}
+
+.noUi-value {
+    width: 60px;
+}
+
+.noUi-value-horizontal.noUi-value-sub {
+    padding-top: 0;
+}

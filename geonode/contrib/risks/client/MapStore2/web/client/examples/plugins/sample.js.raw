@@ -1,0 +1,36 @@
+const clickHandler = () => ({type: 'CLICKED'});
+
+const ToggleButton = require('./components/buttons/ToggleButton.jsx');
+
+const Comp = connect((state) => ({
+    msg: state.custom.comp && state.custom.comp.msg || "Click me!"
+}), {
+    onClick: clickHandler
+})(
+  React.createClass({
+      render() {
+          return (
+            <div style={{position:"absolute",bottom:"100px",left:"200px"}}>
+              {this.props.msg} <ToggleButton glyphicon="plus" onClick={this.props.onClick}/>
+            </div>);
+      }
+  })
+);
+
+module.exports = {
+    Plugin: <Comp/>,
+    reducers: {
+        comp: (state = {msg: '', counter: 0}, action)  => {
+            switch(action.type) {
+                case 'CLICKED': {
+                    return {
+                        counter: state.counter + 1,
+                        msg: 'CLICKED ' + (state.counter + 1) + ' times'
+                    };
+                }
+                default:
+                    return state;
+            }
+        }
+    }
+};

@@ -1,0 +1,13 @@
+{
+    "locale": "it-IT",
+    "messages": {
+        "msgId0": "{name} ha scattato {numPhotos, plural, =0 {nessuna foto} other {# foto}} il {takenDate, date, long}.",
+        "htmlTest": "{name} {surname}",
+        "about_title": "Riguardo a questa app...",
+        "aboutLbl": "Info",
+        "about_p0-0": "MapStore 2 un framework per realizzare applicazioni di web mapping usando librerie di mapping standard, come",
+        "about_p0-1": "e",
+        "about_p1": "MapStore 2 contiene alcune applicazioni di esempio:",
+        "about_ul0_li0": "MapViewer è un semplice visualizzatore di mappe preconfigurate (opzionalmente memorizzare in un database usando GeoStore)",
+        "about_ul0_li1": "MapPublisher è stato sviluppato per creare, salvare a condividere in modo semplice ed intuitivo mappe e mashups creati selezionando contenuti da server come OpenStreetMap, Google Maps, MapQuest o da specifici servizi forniti dalla tua organizzazione o da terze parti. Per maggiori informazioni controlla la",
+        "about_h20": "Licenza",

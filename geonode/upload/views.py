@@ -64,7 +64,7 @@ from .forms import (
 from .models import Upload, UploadFile
 from .files import (get_scan_hint,
                     scan_file
-)
+                    )
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
@@ -214,8 +214,6 @@ def save_step_view(req, session):
             permissions=form.cleaned_data["permissions"],
             import_sld_file=sld,
             upload_type=spatial_files[0].file_type.code,
-            geogig=form.cleaned_data['geogig'],
-            geogig_store=form.cleaned_data['geogig_store'],
             time=form.cleaned_data['time'],
             mosaic=form.cleaned_data['mosaic'],
             append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
@@ -342,11 +340,14 @@ def csv_step_view(request, upload_session):
         for candidate in attributes:
             if not isinstance(candidate.name, basestring):
                 non_str_in_headers.append(str(candidate.name))
-            if candidate.name in point_candidates:
-                if is_latitude(candidate.name):
-                    lat_candidate = candidate.name
-                elif is_longitude(candidate.name):
-                    lng_candidate = candidate.name
+            if is_latitude(candidate.name):
+                lat_candidate = candidate.name
+                if lat_candidate and lat_candidate not in point_candidates:
+                    point_candidates.append(lat_candidate)
+            elif is_longitude(candidate.name):
+                lng_candidate = candidate.name
+                if lng_candidate and lng_candidate not in point_candidates:
+                    point_candidates.append(lng_candidate)
         if request.method == 'POST':
             guessed_lat_or_lng = False
             selected_lat = lat_field
@@ -377,9 +378,9 @@ def csv_step_view(request, upload_session):
     elif request.method == 'POST':
         if not lat_field or not lng_field:
             error = 'Please choose which columns contain the latitude and longitude data.'
-        elif (lat_field not in point_candidates or
-              lng_field not in point_candidates):
-            error = 'Invalid latitude/longitude columns'
+        # elif (lat_field not in point_candidates or
+        #       lng_field not in point_candidates):
+        #     error = 'Invalid latitude/longitude columns'
         elif lat_field == lng_field:
             error = 'You cannot select the same column for latitude and longitude data.'
 
@@ -465,13 +466,14 @@ def time_step_view(request, upload_session):
                     'layer_attributes': layer_values[0].keys(),
                     'async_upload': is_async_step(upload_session)
                 }
+                upload_session.completed_step = 'check'
                 return render(request, 'upload/layer_upload_time.html', context=context)
             else:
                 upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
                 return next_step_response(request, upload_session)
         else:
             # TODO: Error
-            upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
+            upload_session.completed_step = 'check'
             return next_step_response(request, upload_session)
     elif request.method != 'POST':
         raise Exception()
@@ -505,8 +507,6 @@ def time_step_view(request, upload_session):
     upload_session.import_session = import_session.reload()
 
     if start_attribute_and_type:
-        upload_session.completed_step = 'check'
-
         def tx(type_name):
             # return None if type_name is None or type_name == 'Date' \
             return None if type_name is None \
@@ -524,9 +524,8 @@ def time_step_view(request, upload_session):
             precision_value=cleaned['precision_value'],
             precision_step=cleaned['precision_step'],
         )
-    else:
-        upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
 
+    upload_session.completed_step = 'check'
     return next_step_response(request, upload_session)
 
 

@@ -1,0 +1,45 @@
+{
+   "User":{
+      "attribute":[
+         {
+            "name":"email",
+            "value":"test@domain.org"
+         },
+         {
+            "name":"expires",
+            "value":"09\/23\/2036"
+         },
+         {
+            "name":"notes",
+            "value":""
+         },
+         {
+            "name":"company",
+            "value":"MapStore 2"
+         },
+         {
+            "name":"UUID",
+            "value":"4e2b89a1-3eaf-ef0f-e3b0-3764639c8445"
+         }
+      ],
+      "enabled":true,
+      "groups":{
+         "group":[
+            {
+               "description":"description",
+               "enabled":true,
+               "groupName":"testGroup1",
+               "id":4
+            },
+            {
+               "enabled":true,
+               "groupName":"authenticated",
+               "id":82
+            }
+         ]
+      },
+      "id":1,
+      "name":"test",
+      "role":"USER"
+   }
+}

@@ -1,0 +1,20 @@
+{
+  "map": {
+    "projection": "EPSG:900913",
+    "units": "m",
+    "center": {"x": 1250000.000000, "y": 5370000.000000, "crs": "EPSG:900913"},
+    "zoom":5,
+    "maxExtent": [
+      -20037508.34, -20037508.34,
+      20037508.34, 20037508.34
+    ],
+    "layers": [{
+      "type": "osm",
+      "title": "Open Street Map",
+      "name": "mapnik",
+            "source": "osm",
+      "group": "background",
+            "visibility": true
+        }]
+  }
+}
