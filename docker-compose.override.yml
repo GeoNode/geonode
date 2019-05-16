@@ -12,6 +12,7 @@ services:
       - DEBUG=False
       - GEONODE_LB_HOST_IP=localhost
       - GEONODE_LB_PORT=80
+      - GEONODE_LB_PROTOCOL=http
       - SITEURL=http://localhost/
       - ALLOWED_HOSTS=['localhost', ]
       - GEOSERVER_PUBLIC_LOCATION=http://localhost/gs/
@@ -25,6 +26,7 @@ services:
       - DEBUG=False
       - GEONODE_LB_HOST_IP=localhost
       - GEONODE_LB_PORT=80
+      - GEONODE_LB_PROTOCOL=http
       - SITEURL=http://localhost/
       - ALLOWED_HOSTS=['localhost', ]
       - GEOSERVER_PUBLIC_LOCATION=http://localhost/gs/
@@ -34,4 +36,5 @@ services:
     environment:
       - GEONODE_LB_HOST_IP=localhost
       - GEONODE_LB_PORT=80
+      - GEONODE_LB_PROTOCOL=http
   #    - NGINX_BASE_URL=
