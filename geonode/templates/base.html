@@ -60,12 +60,64 @@
         {% if custom_theme.body_color %}
         body {
           background: {{ custom_theme.body_color }};
+          {% if custom_theme.body_text_color %}
+          color: {{ custom_theme.body_text_color }};
+          {% endif %}
         }
         {% endif %}
 
         {% if custom_theme.navbar_color %}
         .home .navbar-inverse , .navbar-inverse {
           background-color: {{ custom_theme.navbar_color }};
+        }
+        {% endif %}
+
+        {% if custom_theme.navbar_text_color %}
+        .navbar-inverse .navbar-nav > li > a {
+          color: {{ custom_theme.navbar_text_color }};
+          font-weight: 600;
+          padding-top: 25px;
+          padding-bottom: 25px;
+        }
+        {% endif %}
+
+        {% if custom_theme.navbar_text_hover %}
+        .navbar-inverse .navbar-nav > li > a:hover {
+          background-color: {{ custom_theme.navbar_text_hover }};
+        }
+        {% endif %}
+
+        {% if custom_theme.navbar_text_hover_focus %}
+        .navbar-inverse .navbar-nav > .open > a,
+        .navbar-inverse .navbar-nav > .open > a:hover,
+        .navbar-inverse .navbar-nav > .open > a:focus {
+          background-color: {{ custom_theme.navbar_text_hover_focus }};
+        }
+        {% endif %}
+
+        {% if custom_theme.navbar_dropdown_menu %}
+        .navbar-nav .dropdown-menu {
+          background-color: {{ custom_theme.navbar_dropdown_menu }};
+          border-top: 1px solid {{ custom_theme.navbar_dropdown_menu }};
+        }
+        {% endif %}
+
+        {% if custom_theme.navbar_dropdown_menu_text %}
+        .navbar-nav .dropdown-menu a {
+          color: {{ custom_theme.navbar_dropdown_menu_text }};
+        }
+        {% endif %}
+
+        {% if custom_theme.navbar_dropdown_menu_hover %}
+        .navbar-nav .dropdown-menu li a:hover {
+          background-color: {{ custom_theme.navbar_dropdown_menu_hover }};
+          color: {{ custom_theme.navbar_dropdown_menu_text }};
+        }
+        {% endif %}
+
+        {% if custom_theme.navbar_dropdown_menu_divider %}
+        .navbar-nav .dropdown-menu .divider {
+          background-color: {{ custom_theme.navbar_dropdown_menu_divider }};
         }
         {% endif %}
 
@@ -81,6 +133,20 @@
         {% if custom_theme.jumbotron_color %}
         .home .jumbotron {
           background-color: {{ custom_theme.jumbotron_color }}
+        }
+        {% endif %}
+
+        {% if custom_theme.jumbotron_title_color %}
+        .home .jumbotron h1,
+        .home .jumbotron h2,
+        .home .jumbotron h3 {
+          color: {{ custom_theme.jumbotron_title_color }}
+        }
+        {% endif %}
+
+        {% if custom_theme.jumbotron_text_color %}
+        .home .jumbotron p {
+          color: {{ custom_theme.jumbotron_text_color }}
         }
         {% endif %}
 
@@ -408,7 +474,7 @@
         <div class="row">
           <div class="col-md-12 copyright ">
             <div class="module">
-              <small>{{ custom_theme.copyright }}</small>
+              <small>{{ custom_theme.copyright|safe }}</small>
             </div>
           </div>
         </div>

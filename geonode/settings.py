@@ -55,18 +55,20 @@ DEBUG = strtobool(os.getenv('DEBUG', 'True'))
 # otherwise it will raise errors for the missing non-minified dependencies
 DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
 
+FORCE_SCRIPT_NAME = os.getenv('FORCE_SCRIPT_NAME', '')
+
 # Define email service on GeoNode
 EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'False'))
 
 if EMAIL_ENABLE:
     EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
                               default='django.core.mail.backends.smtp.EmailBackend')
-    EMAIL_HOST = 'localhost'
-    EMAIL_PORT = 25
-    EMAIL_HOST_USER = ''
-    EMAIL_HOST_PASSWORD = ''
-    EMAIL_USE_TLS = False
-    DEFAULT_FROM_EMAIL = 'GeoNode <no-reply@geonode.org>'
+    EMAIL_HOST = os.getenv('DJANGO_EMAIL_HOST', 'localhost')
+    EMAIL_PORT = os.getenv('DJANGO_EMAIL_PORT', 25)
+    EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_HOST_PASSWORD', '')
+    EMAIL_USE_TLS = strtobool(os.getenv('DJANGO_EMAIL_USE_TLS', 'False'))
+    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'GeoNode <no-reply@geonode.org>')
 else:
     EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
                               default='django.core.mail.backends.console.EmailBackend')
@@ -77,25 +79,6 @@ if django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2
     pass
 else:
     DJANGO_LIVE_TEST_SERVER_ADDRESS = 'localhost:8000'
-
-try:
-    # try to parse python notation, default in dockerized env
-    ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
-except ValueError:
-    # fallback to regular list of values separated with misc chars
-    ALLOWED_HOSTS = ['localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
-        else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
-
-# AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
-# to only whitelisted IP addresses.
-#
-# Empty list means 'allow all'
-#
-# If you need to limit 'api' REST calls to only some specific IPs
-# fill the list like below:
-#
-# AUTH_IP_WHITELIST = ['192.168.1.158', '192.168.1.159']
-AUTH_IP_WHITELIST = []
 
 # Make this unique, and don't share it with anybody.
 _DEFAULT_SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
@@ -237,8 +220,8 @@ MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(PROJECT_ROOT, "uploaded"))
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = os.getenv('MEDIA_URL', "/uploaded/")
-LOCAL_MEDIA_URL = os.getenv('LOCAL_MEDIA_URL', "/uploaded/")
+MEDIA_URL = os.getenv('MEDIA_URL', '%s/uploaded/' % FORCE_SCRIPT_NAME)
+LOCAL_MEDIA_URL = os.getenv('LOCAL_MEDIA_URL', '%s/uploaded/' % FORCE_SCRIPT_NAME)
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
@@ -248,7 +231,7 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
 
 # URL that handles the static files like app media.
 # Example: "http://media.lawrence.com"
-STATIC_URL = os.getenv('STATIC_URL', "/static/")
+STATIC_URL = os.getenv('STATIC_URL', '%s/static/' % FORCE_SCRIPT_NAME)
 
 # Additional directories which hold static files
 _DEFAULT_STATICFILES_DIRS = [
@@ -311,7 +294,6 @@ GEONODE_INTERNAL_APPS = (
 
 GEONODE_CONTRIB_APPS = (
     # GeoNode Contrib Apps
-    'geonode.contrib.geosites',
     'geonode.contrib.metadataxsl',
     'geonode.contrib.ows_api',
 )
@@ -636,15 +618,18 @@ LOCKDOWN_GEONODE = strtobool(os.getenv('LOCKDOWN_GEONODE', 'False'))
 # authentication.
 # - authorized exempt urls needed for oauth when GeoNode is set to lockdown
 AUTH_EXEMPT_URLS = (
-    r'^/?$',
-    '/gs/*',
-    '/static/*',
-    '/o/*',
-    '/api/o/*',
-    '/api/roles',
-    '/api/adminRole',
-    '/api/users',
-    '/api/layers',
+    r'^%s/?$' % FORCE_SCRIPT_NAME,
+    '%s/o/*' % FORCE_SCRIPT_NAME,
+    '%s/gs/*' % FORCE_SCRIPT_NAME,
+    '%s/account/*' % FORCE_SCRIPT_NAME,
+    '%s/static/*' % FORCE_SCRIPT_NAME,
+    '%s/api/o/*' % FORCE_SCRIPT_NAME,
+    '%s/api/roles' % FORCE_SCRIPT_NAME,
+    '%s/api/adminRole' % FORCE_SCRIPT_NAME,
+    '%s/api/users' % FORCE_SCRIPT_NAME,
+    '%s/api/layers' % FORCE_SCRIPT_NAME,
+    '%s/mps_index' % FORCE_SCRIPT_NAME,
+    '%s/mps-hub' % FORCE_SCRIPT_NAME,
 )
 
 ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID', '-1')
@@ -1054,8 +1039,34 @@ SRID = {
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
+try:
+    # try to parse python notation, default in dockerized env
+    ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
+except ValueError:
+    # fallback to regular list of values separated with misc chars
+    ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
+        else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
+
+# AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
+# to only whitelisted IP addresses.
+#
+# Empty list means 'allow all'
+#
+# If you need to limit 'api' REST calls to only some specific IPs
+# fill the list like below:
+#
+# AUTH_IP_WHITELIST = ['192.168.1.158', '192.168.1.159']
+AUTH_IP_WHITELIST = [] if os.getenv('AUTH_IP_WHITELIST') is None \
+        else re.split(r' *[,|:|;] *', os.getenv('AUTH_IP_WHITELIST'))
+
 # A tuple of hosts the proxy can send requests to.
-PROXY_ALLOWED_HOSTS = ()
+try:
+    # try to parse python notation, default in dockerized env
+    PROXY_ALLOWED_HOSTS = ast.literal_eval(os.getenv('PROXY_ALLOWED_HOSTS'))
+except ValueError:
+    # fallback to regular list of values separated with misc chars
+    PROXY_ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode', 'nominatim.openstreetmap.org'] if os.getenv('PROXY_ALLOWED_HOSTS') is None \
+        else re.split(r' *[,|:|;] *', os.getenv('PROXY_ALLOWED_HOSTS'))
 
 # The proxy to use when making cross origin requests.
 PROXY_URL = '/proxy/?url=' if DEBUG else None
@@ -1271,10 +1282,10 @@ SEARCH_FILTERS = {
 
 # Make Free-Text Kaywords writable from users or read-only
 # - if True only admins can edit free-text kwds from admin dashboard
-FREETEXT_KEYWORDS_READONLY = False
+FREETEXT_KEYWORDS_READONLY = ast.literal_eval(os.environ.get('FREETEXT_KEYWORDS_READONLY', 'False'))
 
 # notification settings
-NOTIFICATION_ENABLED = True or TEST
+NOTIFICATION_ENABLED = ast.literal_eval(os.environ.get('NOTIFICATION_ENABLED', 'True')) or TEST
 #PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "people.Profile"
 
 # notifications backends
@@ -1285,8 +1296,8 @@ PINAX_NOTIFICATIONS_BACKENDS = [
 PINAX_NOTIFICATIONS_HOOKSET = "pinax.notifications.hooks.DefaultHookSet"
 
 # Queue non-blocking notifications.
-PINAX_NOTIFICATIONS_QUEUE_ALL = False
-PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = -1
+PINAX_NOTIFICATIONS_QUEUE_ALL = ast.literal_eval(os.environ.get('NOTIFICATIONS_QUEUE_ALL', 'False'))
+PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = os.environ.get('NOTIFICATIONS_LOCK_WAIT_TIMEOUT', -1)
 
 # explicitly define NOTIFICATION_LOCK_LOCATION
 # NOTIFICATION_LOCK_LOCATION = <path>
@@ -1296,7 +1307,8 @@ PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = -1
 NOTIFICATIONS_MODULE = 'pinax.notifications'
 
 # set to true to have multiple recipients in /message/create/
-USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = False
+USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = ast.literal_eval(
+    os.environ.get('USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS', 'True'))
 
 if NOTIFICATION_ENABLED:
     if NOTIFICATIONS_MODULE not in INSTALLED_APPS:
@@ -1534,19 +1546,21 @@ RISKS = {'DEFAULT_LOCATION': None,
                            'ARGS': []}}
 
 # Each uploaded Layer must be approved by an Admin before becoming visible
-ADMIN_MODERATE_UPLOADS = False
+ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
 
 # add following lines to your local settings to enable monitoring
+MONITORING_CONFIG = None
 MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'False'))
 MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
-MONITORING_SERVICE_NAME = 'geonode'
+MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'local-geonode')
 
 # how long monitoring data should be stored
 MONITORING_DATA_TTL = timedelta(days=7)
 
 # this will disable csrf check for notification config views,
 # use with caution - for dev purpose only
-MONITORING_DISABLE_CSRF = False
+CORS_ORIGIN_ALLOW_ALL = ast.literal_eval(os.environ.get('CORS_ORIGIN_ALLOW_ALL', 'True'))
+MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get('MONITORING_DISABLE_CSRF', 'False'))
 
 if MONITORING_ENABLED:
     if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
@@ -1555,17 +1569,18 @@ if MONITORING_ENABLED:
         MIDDLEWARE_CLASSES += \
             ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
 
-GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIPCities.dat')
+GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
+
 # If this option is enabled, Resources belonging to a Group won't be
 # visible by others
-GROUP_PRIVATE_RESOURCES = False
+GROUP_PRIVATE_RESOURCES = ast.literal_eval(os.environ.get('GROUP_PRIVATE_RESOURCES', 'False'))
 
 # If this option is enabled, Groups will become strictly Mandatory on
 # Metadata Wizard
-GROUP_MANDATORY_RESOURCES = False
+GROUP_MANDATORY_RESOURCES = ast.literal_eval(os.environ.get('GROUP_MANDATORY_RESOURCES', 'False'))
 
 # A boolean which specifies wether to display the email in user's profile
-SHOW_PROFILE_EMAIL = False
+SHOW_PROFILE_EMAIL = ast.literal_eval(os.environ.get('SHOW_PROFILE_EMAIL', 'False'))
 
 # Enables cross origin requests for geonode-client
 MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = strtobool(os.getenv(
@@ -1573,7 +1588,7 @@ MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = strtobool(os.getenv(
     'False'
 ))
 
-ACCOUNT_OPEN_SIGNUP = True
+ACCOUNT_OPEN_SIGNUP = ast.literal_eval(os.environ.get('ACCOUNT_OPEN_SIGNUP', 'True'))
 ACCOUNT_APPROVAL_REQUIRED = strtobool(
     os.getenv('ACCOUNT_APPROVAL_REQUIRED', 'False')
 )

@@ -172,7 +172,7 @@ geonode fixsitename
 
 echo "Setting up oauth"
 # Set oauth keys
-oauth_keys=$(geonode fixoauthuri 2>&1)
+oauth_keys=$(geonode fixoauthuri -f --target-address $NEW_EXT_IP 2>&1)
 client_id=`echo $oauth_keys | cut -d \, -f 1`
 client_secret=`echo $oauth_keys | cut -d \, -f 2`
 
@@ -180,14 +180,14 @@ client_secret=`echo $oauth_keys | cut -d \, -f 2`
 oauth_config="$GEOSERVER_DATA_DIR/security/filter/geonode-oauth2/config.xml"
 sed -i "s|<cliendId>.*</cliendId>|<cliendId>$client_id</cliendId>|g" $oauth_config
 sed -i "s|<clientSecret>.*</clientSecret>|<clientSecret>$client_secret</clientSecret>|g" $oauth_config
-sed -i "s|<accessTokenUri>.*</accessTokenUri>|<accessTokenUri>$NEW_INT_IP/o/token/</accessTokenUri>|g" $oauth_config
+sed -i "s|<accessTokenUri>.*</accessTokenUri>|<accessTokenUri>$NEW_EXT_IP/o/token/</accessTokenUri>|g" $oauth_config
 sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>$NEW_EXT_IP/o/authorize/</userAuthorizationUri>|g" $oauth_config
 sed -i "s|<redirectUri>.*</redirectUri>|<redirectUri>$NEW_EXT_IP/geoserver/</redirectUri>|g" $oauth_config
-sed -i "s|<checkTokenEndpointUrl>.*</checkTokenEndpointUrl>|<checkTokenEndpointUrl>$NEW_INT_IP/api/o/v4/tokeninfo/</checkTokenEndpointUrl>|g" $oauth_config
+sed -i "s|<checkTokenEndpointUrl>.*</checkTokenEndpointUrl>|<checkTokenEndpointUrl>$NEW_EXT_IP/api/o/v4/tokeninfo/</checkTokenEndpointUrl>|g" $oauth_config
 sed -i "s|<logoutUri>.*</logoutUri>|<logoutUri>$NEW_EXT_IP/account/logout/</logoutUri>|g" $oauth_config
 
 # Updating REST Role Service Config
-sed -i "s|<baseUrl>.*</baseUrl>|<baseUrl>$NEW_INT_IP</baseUrl>|g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
+sed -i "s|<baseUrl>.*</baseUrl>|<baseUrl>$NEW_EXT_IP</baseUrl>|g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
 
 # Updating GeoServer Global Config
 global_config="$GEOSERVER_DATA_DIR/global.xml"

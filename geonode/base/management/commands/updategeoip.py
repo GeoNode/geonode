@@ -37,7 +37,7 @@ try:
 except ImportError:
     try:
         from django.contrib.gis.geoip import GeoIP
-        URL = 'http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz'
+        URL = 'https://build.geo-solutions.it/geonode/geoserver/latest/GeoLiteCity.dat.gz'
         OLD_FORMAT = True
     except:
         URL = None
@@ -70,7 +70,7 @@ class Command(BaseCommand):
         import requests
         import math
         # Streaming, so we can iterate over the response.
-        r = requests.get(options['url'], stream=True, timeout=10)
+        r = requests.get(options['url'], stream=True, timeout=10, verify=False)
         # Total size in bytes.
         total_size = int(r.headers.get('content-length', 0))
         logger.info("Requesting %s", options['url'])

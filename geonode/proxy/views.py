@@ -92,25 +92,27 @@ def get_headers(request, url, raw_url):
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     access_token = None
-    # we give precedence to obtained from Aithorization headers
-    if 'HTTP_AUTHORIZATION' in request.META:
-        auth_header = request.META.get(
-            'HTTP_AUTHORIZATION',
-            request.META.get('HTTP_AUTHORIZATION2'))
-        if auth_header:
-            access_token = get_token_from_auth_header(auth_header)
-    # otherwise we check if a session is active
-    elif request and request.user.is_authenticated:
-        access_token = get_token_object_from_session(request.session)
 
-        # we extend the token in case the session is active but the token expired
-        if access_token and access_token.is_expired():
-            extend_token(access_token)
+    site_url = urlsplit(settings.SITEURL)
+    if site_url.netloc == url.netloc:
+        # we give precedence to obtained from Aithorization headers
+        if 'HTTP_AUTHORIZATION' in request.META:
+            auth_header = request.META.get(
+                'HTTP_AUTHORIZATION',
+                request.META.get('HTTP_AUTHORIZATION2'))
+            if auth_header:
+                access_token = get_token_from_auth_header(auth_header)
+        # otherwise we check if a session is active
+        elif request and request.user.is_authenticated:
+            access_token = get_token_object_from_session(request.session)
+
+            # we extend the token in case the session is active but the token expired
+            if access_token and access_token.is_expired():
+                extend_token(access_token)
 
     if access_token:
         headers['Authorization'] = 'Bearer %s' % access_token
 
-    site_url = urlsplit(settings.SITEURL)
     pragma = "no-cache"
     referer = request.META[
         "HTTP_REFERER"] if "HTTP_REFERER" in request.META else \

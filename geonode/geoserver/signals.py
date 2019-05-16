@@ -91,7 +91,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         if instance.storeType != 'remoteStore':
             logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
             try:
-                create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
+                create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
             except BaseException:
                 logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance.alternate))
 
