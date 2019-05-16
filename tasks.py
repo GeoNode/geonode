@@ -20,6 +20,8 @@ def waitfordbs(ctx):
 def update(ctx):
     print "***************************initial*********************************"
     ctx.run("env", pty=True)
+    pub_protocol = _geonode_public_protocol()
+    print "Public protocol is {0}".format(pub_protocol)
     pub_ip = _geonode_public_host_ip()
     print "Public Hostname or IP is {0}".format(pub_ip)
     pub_port = _geonode_public_port()
@@ -30,6 +32,7 @@ def update(ctx):
     envs = {
         "public_fqdn": "{0}:{1}".format(pub_ip, pub_port or 80),
         "public_host": "{0}".format(pub_ip),
+        "public_protcl": "{0}".format(pub_protocol),
         "dburl": db_url,
         "geodburl": geodb_url,
         "override_fn": override_env
@@ -40,11 +43,11 @@ def update(ctx):
         'GEONODE_LB_PORT'
     ):
         ctx.run("echo export GEOSERVER_PUBLIC_LOCATION=\
-http://{public_fqdn}/gs/ >> {override_fn}".format(**envs), pty=True)
+{public_protcl}://{public_fqdn}/gs/ >> {override_fn}".format(**envs), pty=True)
         ctx.run("echo export GEOSERVER_WEB_UI_LOCATION=\
-http://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
+{public_protcl}://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
         ctx.run("echo export SITEURL=\
-http://{public_fqdn}/ >> {override_fn}".format(**envs), pty=True)
+{public_protcl}://{public_fqdn}/ >> {override_fn}".format(**envs), pty=True)
 
     try:
         current_allowed = ast.literal_eval(
@@ -198,7 +201,16 @@ def _geonode_public_port():
     return gn_pub_port
 
 
+def _geonode_public_protocol():
+    gn_pub_protocol = os.getenv('GEONODE_LB_PROTOCOL', '')
+    if not gn_pub_protocol:
+        gn_pub_protocol = 'http'
+    return gn_pub_protocol
+
+
 def _prepare_oauth_fixture():
+    pub_protocol = _geonode_public_protocol()
+    print "Public protocol is {0}".format(pub_protocol)
     pub_ip = _geonode_public_host_ip()
     print "Public Hostname or IP is {0}".format(pub_ip)
     pub_port = _geonode_public_port()
@@ -212,8 +224,8 @@ def _prepare_oauth_fixture():
                 "created": "2018-05-31T10:00:31.661Z",
                 "updated": "2018-05-31T11:30:31.245Z",
                 "algorithm": "RS256",
-                "redirect_uris": "http://{0}:{1}/geoserver/index.html".format(
-                    pub_ip, pub_port
+                "redirect_uris": "{0}://{1}:{2}/geoserver/index.html".format(
+                    pub_protocol, pub_ip, pub_port
                 ),
                 "name": "GeoServer",
                 "authorization_grant_type": "authorization-code",
