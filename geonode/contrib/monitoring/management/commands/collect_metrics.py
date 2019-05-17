@@ -18,8 +18,11 @@
 #
 #########################################################################
 from __future__ import print_function
-import logging
+
 import pytz
+import logging
+import timeout_decorator
+
 from datetime import datetime
 from dateutil.tz import tzlocal
 
@@ -32,6 +35,8 @@ from geonode.contrib.monitoring.models import Service
 from geonode.contrib.monitoring.service_handlers import get_for_service
 from geonode.contrib.monitoring.collector import CollectorAPI
 from geonode.contrib.monitoring.utils import TypeChecks
+
+LOCAL_TIMEOUT = 300
 
 log = logging.getLogger(__name__)
 
@@ -64,6 +69,7 @@ class Command(BaseCommand):
         parser.add_argument('service', type=TypeChecks.service_type, nargs="?",
                             help=_("Collect data from this service only"))
 
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def handle(self, *args, **options):
         oservice = options['service']
         if not oservice:
@@ -106,6 +112,7 @@ class Command(BaseCommand):
             notifications_check = now - interval
             c.emit_notifications() #notifications_check)
 
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def run_check(self, service, collector, since=None, until=None, force_check=None, format=None):
         utc = pytz.utc
         try:
@@ -137,4 +144,3 @@ class Command(BaseCommand):
                 return collector.process(service, data_in, last_check, until)
             finally:
                 h.mark_as_checked()
-
