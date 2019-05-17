@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import json
 from django import template
 from django.utils.translation import ugettext_lazy as _
 register = template.Library()
@@ -29,7 +30,10 @@ def get_data(action, key, default=None):
     """
 
     if hasattr(action, 'data') and action.data:
-        return action.data.get(key, default)
+        if hasattr(action.data, 'get'):
+            return action.data.get(key, default)
+        else:
+            return json.loads(action.data).get(key, default)
     else:
         return default
 

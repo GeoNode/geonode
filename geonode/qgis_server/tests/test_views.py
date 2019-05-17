@@ -60,7 +60,6 @@ class DefaultViewsTest(GeoNodeBaseTestSupport):
         self.assertIn('MAPFISH_PRINT_ENABLED', context)
         self.assertIn('PRINT_NG_ENABLED', context)
         self.assertIn('GEONODE_SECURITY_ENABLED', context)
-        self.assertIn('GEOGIG_ENABLED', context)
         self.assertIn('TIME_ENABLED', context)
         self.assertIn('MOSAIC_ENABLED', context)
 

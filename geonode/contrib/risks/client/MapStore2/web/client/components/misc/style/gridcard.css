@@ -1,0 +1,29 @@
+.gridcard {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    transition: box-shadow 250ms;
+}
+
+.gridcard:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+
+
+.gridcard-title {
+    padding-left: 10px;
+    padding-top: 3px;
+    min-height: 40px;
+}
+.gridcard-tools {
+    height: 30px;
+    position: absolute;
+    bottom: 0;
+    right: 15px;
+}
+
+.gridcard-tools .spinner{
+    left: -8px
+}
+.gridcard-tools .spinner div:before{
+    background-color: white
+}

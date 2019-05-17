@@ -32,15 +32,44 @@ class Command(BaseCommand):
     """
     can_import_settings = True
 
+    def add_arguments(self, parser):
+
+        # Named (optional) arguments
+        parser.add_argument(
+            '-f',
+            '--force',
+            action='store_true',
+            dest='force_exec',
+            default=False,
+            help='Forces the regeneration of OAUth keys.')
+
+        parser.add_argument(
+            '--target-address',
+            dest='target_address',
+            help='Target Address (the one to be changed e.g. http://my-public.geonode.org)')
+
     def handle(self, *args, **options):
+
+        force_exec = options.get('force_exec')
+        target_address = options.get('target_address')
+
         from django.conf import settings
         client_id = None
         client_secret = None
+
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import ogc_server_settings
-            redirect_uris = '%s\n%s' % (ogc_server_settings.LOCATION, ogc_server_settings.public_url)
+            redirect_uris = '%s\n%s\n%s' % (
+                ogc_server_settings.LOCATION,
+                ogc_server_settings.public_url,
+                "{0}/geoserver/".format(target_address))
             if Application.objects.filter(name='GeoServer').exists():
                 Application.objects.filter(name='GeoServer').update(redirect_uris=redirect_uris)
+                if force_exec:
+                    Application.objects.filter(name='GeoServer').update(
+                        client_id=generate_client_id(),
+                        client_secret=generate_client_secret()
+                    )
                 app = Application.objects.filter(name='GeoServer')[0]
                 client_id = app.client_id
                 client_secret = app.client_secret

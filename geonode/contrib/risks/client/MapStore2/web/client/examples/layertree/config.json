@@ -1,0 +1,282 @@
+{
+  "sources": {
+      "google": {
+          "projection": "EPSG:900913",
+          "ptype": "gxp_googlesource"
+      },
+      "mapquest": {
+          "projection": "EPSG:900913",
+          "ptype": "gxp_mapquestsource"
+      },
+      "bing": {
+          "projection": "EPSG:900913",
+          "ptype": "gxp_bingsource",
+          "apiKey": "Aho3tqsH5LrbKxQIAVbkqJjQQMOvjVRlIL9OqcuIrpgFfwcAWWEW5FMkHsjAScB_"
+      },
+      "ol": {
+          "projection": "EPSG:900913",
+          "ptype": "gxp_olsource"
+      },
+      "osm": {
+          "projection": "EPSG:900913",
+          "ptype": "gxp_osmsource"
+      },
+      "gxp-source-393": {
+          "projection": "EPSG:900913",
+          "url": "http://tms.comune.fi.it/tiles/service/wms?SERVICE=WMS&REQUEST=GetCapabilities"
+      }
+  },
+  "layers": [
+  {
+      "selected": false,
+      "title": "Open Street Map",
+      "source": "osm",
+      "visibility": true,
+      "name": "mapnik",
+      "group": "background",
+      "fixed": true
+  },
+  {
+      "selected": false,
+      "title": "Google Roadmap",
+      "source": "google",
+      "visibility": false,
+      "name": "ROADMAP",
+      "group": "background",
+      "fixed": true
+  },
+  {
+      "selected": false,
+      "title": "Google Terrain",
+      "source": "google",
+      "visibility": false,
+      "name": "TERRAIN",
+      "group": "background",
+      "fixed": true
+  },
+  {
+      "selected": false,
+      "title": "Google Hybrid",
+      "source": "google",
+      "visibility": false,
+      "name": "HYBRID",
+      "group": "background",
+      "fixed": true
+  },
+  {
+      "selected": false,
+      "title": "ciclabili:percorsi_ciclabili",
+      "source": "gxp-source-393",
+      "visibility": false,
+      "name": "ciclabili:percorsi_ciclabili",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Toponomastica_stradale"
+  },
+  {
+      "selected": false,
+      "title": "mobilita:tram_linee",
+      "source": "gxp-source-393",
+      "visibility": false,
+      "name": "mobilita:tram_linee",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Toponomastica_stradale"
+  },
+  {
+      "selected": false,
+      "title": "toponomastica:strade",
+      "source": "gxp-source-393",
+      "visibility": false,
+      "name": "toponomastica:strade",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Toponomastica_stradale"
+  },
+  {
+      "selected": false,
+      "title": "mobilita:varchi_ztl",
+      "source": "gxp-source-393",
+      "visibility": false,
+      "name": "mobilita:varchi_ztl",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Mobilita"
+  },
+  {
+      "selected": false,
+      "title": "mobilita:soste",
+      "source": "gxp-source-393",
+      "visibility": false,
+      "name": "mobilita:soste",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Mobilita"
+  },
+  {
+      "selected": false,
+      "title": "mobilita:areepedonali",
+      "source": "gxp-source-393",
+      "visibility": false,
+      "name": "mobilita:areepedonali",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Mobilita"
+  },
+  {
+      "selected": false,
+      "title": "limiti_amministrativi:cap",
+      "source": "gxp-source-393",
+      "visibility": true,
+      "name": "limiti_amministrativi:cap",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Limiti_amministrativi"
+  },
+  {
+      "selected": false,
+      "title": "limiti_amministrativi:rioni",
+      "source": "gxp-source-393",
+      "visibility": true,
+      "name": "limiti_amministrativi:rioni",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Limiti_amministrativi"
+  },
+  {
+      "selected": false,
+      "title": "ambiente:coloniefeline",
+      "source": "gxp-source-393",
+      "visibility": false,
+      "name": "ambiente:coloniefeline",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Ambiente"
+  },
+  {
+      "selected": false,
+      "title": "ambiente:giochi",
+      "source": "gxp-source-393",
+      "visibility": false,
+      "name": "ambiente:giochi",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Ambiente"
+  },
+  {
+      "selected": false,
+      "title": "ambiente:verde_arredo",
+      "source": "gxp-source-393",
+      "visibility": false,
+      "name": "ambiente:verde_arredo",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Ambiente"
+  },
+  {
+      "selected": false,
+      "title": "turismo:teatri",
+      "source": "gxp-source-393",
+      "visibility": false,
+      "name": "turismo:teatri",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Turismo"
+  },
+  {
+      "selected": false,
+      "title": "turismo:musei",
+      "source": "gxp-source-393",
+      "visibility": false,
+      "name": "turismo:musei",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Turismo"
+  },
+  {
+      "selected": false,
+      "title": "turismo:chiese",
+      "source": "gxp-source-393",
+      "visibility": false,
+      "name": "turismo:chiese",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Turismo"
+  },
+  {
+      "selected": false,
+      "title": "archeologia:scavi_archeo",
+      "source": "gxp-source-393",
+      "visibility": true,
+      "name": "archeologia:scavi_archeo",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Altri.Primo"
+  },
+  {
+      "selected": false,
+      "title": "arredo_urbano:colonninericarica",
+      "source": "gxp-source-393",
+      "visibility": true,
+      "name": "arredo_urbano:colonninericarica",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Altri.Primo"
+  },
+  {
+      "selected": false,
+      "title": "cultura:biblioteche",
+      "source": "gxp-source-393",
+      "visibility": true,
+      "name": "cultura:biblioteche",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Altri.Secondo"
+  },
+  {
+      "selected": false,
+      "title": "socio_sanitario:ospedali",
+      "source": "gxp-source-393",
+      "visibility": true,
+      "name": "socio_sanitario:ospedali",
+      "opacity": 1,
+      "styles": "",
+      "format": "image/png",
+      "transparent": true,
+      "group": "Altri.Secondo"
+  }]
+}

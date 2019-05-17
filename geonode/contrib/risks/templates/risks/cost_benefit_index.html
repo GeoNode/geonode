@@ -1,0 +1,8 @@
+{% extends 'risks_main.html' %}
+{% load i18n static %}
+{% load url from future %}
+
+{% block body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static "js/costs.js" %}"></script>
+{% endblock body %}

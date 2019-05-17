@@ -1,0 +1,129 @@
+{
+	"proxyUrl": "/mapstore/proxy/?url=",
+	"geoStoreUrl": "/mapstore/rest/geostore",
+	"printUrl": "https://demo.geo-solutions.it/geoserver/pdf/info.json",
+	"bingApiKey": "AhuXBu7ipR1gNbBfXhtUAyCZ6rkC5PkWpxs2MnMRZ1ZupxQfivjLCch22ozKSCAn",
+	"translationsPath": "/static/assets/translations",
+	"plugins": {
+			"home": [
+				{
+					"name" : "Tutorial",
+					"cfg":{
+						"scrollOffset": 100,
+						"rawSteps": [
+							{
+	            	"translationHTML": "costIntro",
+	            	"selector": "#intro-tutorial"
+	        		},
+							{
+			        	"translationHTML": "riskSelector",
+			        	"selector": "#disaster-risk-selector-menu"
+			      	},
+					    {
+					      "translationHTML": "riskOverview",
+					      "selector": "#disaster-overview-list"
+					    },
+					    {
+					      "translationHTML": "riskMap",
+					      "selector": "#disaster-map-main-container"
+					    },
+					    {
+					      "translationHTML": "riskPageTool",
+					      "selector": "#disaster-page-tools"
+					    },
+					    {
+					      "translationHTML": "riskHelp",
+					      "selector": "#disaster-show-tutorial"
+					    }
+						]
+					}
+				}
+			],
+			"mobile": [
+      	{
+					"name": "Map",
+          "cfg": {
+            "tools": [
+          		"scalebar"
+            ],
+            "toolsOptions": {
+            	"scalebar": {
+            		"leaflet": {
+            			"position": "bottomleft"
+            		}
+            	}
+            },
+            "options": {
+							"interactive": true
+						},
+            "zoomControl": true
+					}
+        },
+				"TOC",
+				{
+					"name": "Identify",
+					"cfg": {
+						"style": {
+								"position": "fixed",
+								"width": "100%",
+								"bottom": "0",
+								"left": "0",
+								"zIndex": 1023,
+								"maxHeight": "70%",
+								"marginBottom": 0
+						},
+						"viewerOptions": {
+							"container": "{context.ReactSwipe}",
+							"header": "{context.SwipeHeader}",
+							"headerOptions": {
+								"useButtons": true
+							}
+						}
+					}
+				}
+			],
+			"desktop": [
+      	{
+					"name": "Map",
+          "cfg": {
+            "tools": [
+          		"scalebar"
+            ],
+            "toolsOptions": {
+            	"scalebar": {
+            		"leaflet": {
+            			"position": "bottomleft"
+            		}
+            	}
+            },
+            "options": {
+							"interactive": true
+						},
+            "zoomControl": true
+					}
+        },
+				"TOC",
+				{
+					"name": "Identify",
+					"cfg": {
+						"style": {
+								"position": "fixed",
+								"width": "100%",
+								"bottom": "0",
+								"left": "0",
+								"zIndex": 1023,
+								"maxHeight": "70%",
+								"marginBottom": 0
+						},
+						"viewerOptions": {
+							"container": "{context.ReactSwipe}",
+							"header": "{context.SwipeHeader}",
+							"headerOptions": {
+								"useButtons": true
+							}
+						}
+					}
+				}
+			]
+	 }
+}

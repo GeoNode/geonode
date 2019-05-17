@@ -1,0 +1,75 @@
+{% load base_tags %}
+{% block report %}
+
+
+
+<h3 class="text text-center disaster"><i class="disaster-category fa fa-{{ risk_analysis.hazardset.get_fa_class }}"></i> {{ risk_analysis.hazardset.title|default:risk_analysis.name }}</h3>
+{% if risk_analysis.unit_of_measure %}<p class="text"> Unit: {{ risk_analysis.unit_of_measure }}</p>{% endif %}
+
+<h4 class="text disaster">Hazard Type: <i class="icon-{{context.parts.ht.mnemonic|lower}}"></i> {{ context.parts.ht.title }}</h4>
+<p class="text text-justify">{{ context.parts.ht.description }}</p>
+
+
+<h4 class="text disaster">Analysis Type: <i class="fa fa-{{context.parts.at.fa_icon|lower}}"></i> {{ context.parts.at.title }}</h4>
+<p class="text text-justify">   {{ context.parts.at.description }}</p>
+
+<div class="map-container">
+    <img class="map" style="width:58%" src="{{ paths.map }}" alt="map for risk analysis"/>
+
+    <img class="legend" style="width:40%" src="{{ paths.legend }}" alt="legend for risk analysis"/>
+</div>
+
+Data:
+
+{% for chart in paths.charts %}
+<div class="chart-container">
+    <img class="chart" src="{{ chart }}" alt="chart for risk analysis"/>
+</div>
+{% endfor %}
+
+<div class="dimensions-container">
+    <h4>Dimensions</h4>
+    <table class="table dimensions">
+        <thead>
+            <tr>
+                {% for dim in dimensions.headers %}
+                    <th>{{ dim.name }} ({{ dim.unit }})</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for dim_row in dimensions.values %}
+            <tr>
+                {% for dim in dim_row %}
+                    <td {% if dim.selected %}class="selected"{% endif %}>{{ dim.value }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+
+    </table>
+</div>
+
+<h5 class="text">Hazardset</h5>
+
+<p class="text text-justify">{{ risk_analysis.hazardset.title }}</p>
+
+{% with hz=risk_analysis.hazardset.export %}
+<div class="further-resources disaster">
+    <p><span class="{{ hz.fa_icon }}"></span> {{ hz.abstract }}</p>
+</div>
+{% endwith %}
+
+
+<h5 class="text">Further resources</h5>
+{% for fr in context.further_resources %}
+    <p class="text"> <span class="text-left">{{ fr.title }}</span> 
+                     <a href="{% fullurl fr.resource.detail_url %}"> {{ fr.text }} </a>
+    </p>
+{% endfor %} 
+
+
+{% endblock %}
+

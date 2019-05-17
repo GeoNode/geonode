@@ -1,0 +1,10 @@
+{
+   "workspaces":{
+      "workspace":[
+         {
+            "name":"test",
+            "href":"https:\/\/test.geoserver.org\/geoserver\/rest\/workspaces\/test.json"
+         }
+      ]
+   }
+}

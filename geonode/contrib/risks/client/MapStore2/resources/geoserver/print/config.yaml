@@ -1,0 +1,1161 @@
+ #===========================================================================
+# allowed DPIs
+#===========================================================================
+dpis:
+  - 96
+  - 150
+  - 300
+
+#===========================================================================
+# the allowed scales
+#===========================================================================
+scales:
+  - 500
+  - 1000
+  - 2000
+  - 5000
+  - 10000
+  - 20000
+  - 50000
+  - 100000
+  - 200000
+  - 500000
+  - 100000
+  - 500000
+  - 1000000
+  - 2000000
+  - 4000000
+  - 10000000
+  - 20000000
+  
+#===========================================================================
+# the list of allowed hosts
+#===========================================================================
+hosts:
+  - !localMatch
+    dummy: true
+ 
+  - !ipMatch
+    host: 127.0.0.1
+    # Allow to all hosts
+    mask: 0.0.0.0
+   
+  - !acceptAll
+    dummy: true
+
+brokenUrlPlaceholder: http://demo.geo-solutions.it/print/blank.gif
+disableScaleLocking: true
+
+layouts:
+  #=======A4 portrait with legend=============================================
+  A4 :
+  #===========================================================================
+    mainPage:
+      rotation: true
+      pageSize: 595 842 
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 30
+          absoluteY: 800
+          width: 550
+          items:
+            - !image
+              maxWidth: 550
+              url: '/${configDir}/print_header.png'
+        - !map
+          height: 600
+          width: 400
+          absoluteX: 30
+          absoluteY: 670
+        #legend panel            
+        - !columns               
+          config:
+            borderWidth: 1
+            cells:
+              - borderWidth: 2
+                borderWidthLeft: 1
+                borderColor: black
+                padding: 4
+                backgroundColor: white
+                vertAlign: bottom
+          widths: [155]
+          absoluteX: 435
+          absoluteY: 670
+          width: 155
+          items:
+            - !legends
+              horizontalAlignment: left
+              #iconMaxWidth: 150
+              iconMaxHeight: 0
+              layerSpace: 5
+              layerFontSize: 12
+              classIndentation: 5
+              classFontSize: 8
+              classSpace: 4
+              backgroundColor: #ffffff
+              failOnBrokenUrl: false
+        - !columns
+          absoluteX: 370
+          absoluteY: 140
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file:/${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'     
+        - !columns
+          absoluteX: 30
+          absoluteY: 740
+          width: 395
+          widths: [395]
+          items:
+            - !text
+              align: left
+              vertAlign: middle
+              fontSize: 14
+              text: '${mapTitle}'
+        - !columns
+          absoluteX: 30
+          absoluteY: 710
+          width: 395
+          widths: [395]
+          items:
+            - !text
+              width: 300
+              text: '${comment}'  
+              fontEncoding: Cp1252
+              fontSize: 9                     
+              align: left
+              vertAlign: middle   
+        - !columns
+          absoluteX: 30
+          absoluteY: 55
+          width: 395
+          widths: [240, 240]
+          items:
+            - !columns
+              nbColumns: 1
+              items:            
+                - !text
+                  width: 300
+                  text: '${now MM.dd.yyyy}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 200
+              type: 'bar sub'
+              intervals: 5
+  #=======A4 landscape with legend============================================
+  A4_landscape :
+  #===========================================================================
+    mainPage:
+      rotation: true
+      pageSize: 842 595
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 30
+          absoluteY: 575
+          width: 782
+          items:
+            - !image
+              maxWidth: 782
+              url: '/${configDir}/print_header.png'
+        - !map
+          width: 592
+          height: 400
+          absoluteX:30
+          absoluteY:475
+        #legend panel            
+        - !columns               
+          config:
+            borderWidth: 1
+            cells:
+              - borderWidth: 2
+                borderWidthLeft: 1
+                borderColor: black
+                padding: 4
+                backgroundColor: white
+                vertAlign: bottom
+          widths: [170]
+          absoluteX: 642
+          absoluteY: 475
+          width: 170
+          items:
+            - !legends
+              horizontalAlignment: left
+              #iconMaxWidth: 150
+              iconMaxHeight: 0
+              layerSpace: 5
+              layerFontSize: 12
+              classIndentation: 5
+              classFontSize: 8
+              classSpace: 4
+              backgroundColor: #ffffff
+              failOnBrokenUrl: false
+        - !columns
+          absoluteX: 590
+          absoluteY: 140
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file:/${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'          
+        - !columns
+          absoluteX: 30
+          absoluteY: 55
+          width: 782
+          widths: [240, 300, 240]
+          items:
+            - !columns
+              nbColumns: 1
+              items:
+                - !text
+                  width: 300
+                  text: '${comment}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle               
+                - !text
+                  width: 300
+                  text: '${now MM.dd.yyyy}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle
+            - !text
+              align: center
+              vertAlign: middle
+              fontSize: 14
+              text: '${mapTitle}'
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 200
+              type: 'bar sub'
+              intervals: 5
+  #=======A4 portrait no legend=============================================
+  A4_no_legend :
+  #=========================================================================
+    mainPage:
+      rotation: true
+      pageSize: 595 842 
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 30
+          absoluteY: 800
+          width: 550
+          items:
+            - !image
+              maxWidth: 550
+              url: '/${configDir}/print_header.png'
+        - !map
+          height: 600
+          width: 535
+          absoluteX: 30
+          absoluteY: 670
+        - !columns
+          absoluteX: 510
+          absoluteY: 140
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file:/${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'     
+        - !columns
+          absoluteX: 30
+          absoluteY: 740
+          width: 395
+          widths: [395]
+          items:
+            - !text
+              align: left
+              vertAlign: middle
+              fontSize: 14
+              text: '${mapTitle}'
+        - !columns
+          absoluteX: 30
+          absoluteY: 710
+          width: 395
+          widths: [395]
+          items:
+            - !text
+              width: 300
+              text: '${comment}'  
+              fontEncoding: Cp1252
+              fontSize: 9                     
+              align: left
+              vertAlign: middle   
+        - !columns
+          absoluteX: 30
+          absoluteY: 55
+          width: 535
+          widths: [240, 240]
+          items:
+            - !columns
+              nbColumns: 1
+              items:            
+                - !text
+                  width: 300
+                  text: '${now MM.dd.yyyy}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 200
+              type: 'bar sub'
+              intervals: 5
+  #=======A4 landscape no legend=============================================
+  A4_no_legend_landscape :
+  #===========================================================================
+    mainPage:
+      rotation: true
+      pageSize: 842 595
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 30
+          absoluteY: 575
+          width: 782
+          items:
+            - !image
+              maxWidth: 782
+              url: '/${configDir}/print_header.png'
+        - !map
+          width: 780
+          height: 400
+          absoluteX:30
+          absoluteY:475
+        - !columns
+          absoluteX: 750
+          absoluteY: 140
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file:/${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'          
+        - !columns
+          absoluteX: 30
+          absoluteY: 55
+          width: 782
+          widths: [240, 300, 240]
+          items:
+            - !columns
+              nbColumns: 1
+              items:
+                - !text
+                  width: 300
+                  text: '${comment}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle               
+                - !text
+                  width: 300
+                  text: '${now MM.dd.yyyy}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle
+            - !text
+              align: center
+              vertAlign: middle
+              fontSize: 14
+              text: '${mapTitle}'
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 200
+              type: 'bar sub'
+              intervals: 5
+  #=======A4 portrait with 2 pages legend=====================================
+  A4_2_pages_legend :
+  #===========================================================================
+    mainPage:
+      rotation: true
+      pageSize: 595 842 
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 30
+          absoluteY: 800
+          width: 550
+          items:
+            - !image
+              maxWidth: 550
+              url: '/${configDir}/print_header.png'
+        - !map
+          height: 600
+          width: 535
+          absoluteX: 30
+          absoluteY: 670
+        - !columns
+          absoluteX: 510
+          absoluteY: 140
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file:/${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'     
+        - !columns
+          absoluteX: 30
+          absoluteY: 740
+          width: 395
+          widths: [395]
+          items:
+            - !text
+              align: left
+              vertAlign: middle
+              fontSize: 14
+              text: '${mapTitle}'
+        - !columns
+          absoluteX: 30
+          absoluteY: 710
+          width: 395
+          widths: [395]
+          items:
+            - !text
+              width: 300
+              text: '${comment}'  
+              fontEncoding: Cp1252
+              fontSize: 9                     
+              align: left
+              vertAlign: middle   
+        - !columns
+          absoluteX: 30
+          absoluteY: 55
+          width: 535
+          widths: [240, 240]
+          items:
+            - !columns
+              nbColumns: 1
+              items:            
+                - !text
+                  width: 300
+                  text: '${now MM.dd.yyyy}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 200
+              type: 'bar sub'
+              intervals: 5
+    lastPage:
+      rotation: true
+      pageSize: 595 842 
+      landscape: false
+      items: 
+        #legend panel            
+        - !columns
+          config:
+            borderWidth: 0
+            cells:
+              - borderWidth: 0
+                borderWidthLeft: 0
+                borderColor: black
+                padding: 4
+                backgroundColor: white
+                vertAlign: bottom
+          widths: [800]
+          absoluteX: 30
+          absoluteY: 800
+          width: 800
+          items:
+            - !legends      
+              failOnBrokenUrl: false
+              horizontalAlignment: left
+              iconMaxWidth: 0
+              iconMaxHeight: 700
+              maxHeight: 750
+              maxColumns: 1
+              maxWidth: 800
+              layerSpace: 5
+              layerFontSize: 12
+              classIndentation: 5
+              classFontSize: 8
+              classSpace: 4
+              backgroundColor: #ffffff                
+              reorderColumns: true    
+              dontBreakItems: true  
+              overflow: true
+  #=======A4 landscape with 2 pages legend====================================
+  A4_2_pages_legend_landscape :
+  #===========================================================================
+    mainPage:
+      rotation: true
+      pageSize: 842 595
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 30
+          absoluteY: 575
+          width: 782
+          items:
+            - !image
+              maxWidth: 782
+              url: '/${configDir}/print_header.png'
+        - !map
+          width: 780
+          height: 400
+          absoluteX:30
+          absoluteY:475
+        - !columns
+          absoluteX: 750
+          absoluteY: 140
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file:/${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'          
+        - !columns
+          absoluteX: 30
+          absoluteY: 55
+          width: 782
+          widths: [240, 300, 240]
+          items:
+            - !columns
+              nbColumns: 1
+              items:
+                - !text
+                  width: 300
+                  text: '${comment}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle               
+                - !text
+                  width: 300
+                  text: '${now MM.dd.yyyy}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle
+            - !text
+              align: center
+              vertAlign: middle
+              fontSize: 14
+              text: '${mapTitle}'
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 200
+              type: 'bar sub'
+              intervals: 5
+    lastPage:
+      rotation: true
+      pageSize: 842 595
+      landscape: false
+      items: 
+        #legend panel            
+        - !columns
+          config:
+            borderWidth: 0
+            cells:
+              - borderWidth: 0
+                borderWidthLeft: 0
+                borderColor: black
+                padding: 4
+                backgroundColor: white
+                vertAlign: bottom
+          absoluteX:30
+          absoluteY: 535
+          width: 780
+          widths: [780]
+          items:
+            - !legends      
+              failOnBrokenUrl: false
+              horizontalAlignment: left
+              iconMaxWidth: 0
+              iconMaxHeight: 500
+              maxHeight: 535
+              maxColumns: 2
+              maxWidth: 780
+              layerSpace: 5
+              layerFontSize: 12
+              classIndentation: 5
+              classFontSize: 8
+              classSpace: 4
+              backgroundColor: #ffffff   
+              reorderColumns: true    
+              dontBreakItems: true    
+              overflow: true
+  #=======A3 portrait with legend=============================================
+  A3 :
+  #===========================================================================
+    mainPage:
+      rotation: true
+      pageSize: 842 1190
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 42
+          absoluteY: 1150
+          width: 800
+          items:
+            - !image
+              maxWidth: 800
+              url: '/${configDir}/print_header.png'
+        - !map
+          width: 550
+          height: 850
+          absoluteX: 42
+          absoluteY: 950
+        #legend panel            
+        - !columns               
+          config:
+            borderWidth: 1
+            cells:
+              - borderWidth: 2
+                borderWidthLeft: 1
+                borderColor: black
+                padding: 4
+                backgroundColor: white
+                vertAlign: bottom
+          widths: [241]
+          absoluteX: 598
+          absoluteY: 950
+          width: 240
+          items:
+            - !legends
+              horizontalAlignment: left
+              #iconMaxWidth: 150
+              iconMaxHeight: 0
+              layerSpace: 5
+              layerFontSize: 12
+              classIndentation: 5
+              classFontSize: 8
+              classSpace: 4
+              backgroundColor: #ffffff
+              failOnBrokenUrl: false  
+        - !columns
+          absoluteX: 540
+          absoluteY: 180
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file:/${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'
+        - !columns
+          absoluteX: 42
+          absoluteY: 1050
+          width: 424
+          widths: [424]
+          items:
+            - !text
+              align: left
+              vertAlign: middle
+              fontSize: 14
+              text: '${mapTitle}'
+        - !columns
+          absoluteX: 42
+          absoluteY: 1000
+          width: 424
+          widths: [424]
+          items:
+            - !text
+              width: 424
+              text: '${comment}'  
+              fontEncoding: Cp1252
+              fontSize: 9                     
+              align: left
+              vertAlign: middle         
+        - !columns
+          absoluteX: 42
+          absoluteY: 50
+          width: 550
+          widths: [340, 424]
+          items:
+            - !columns
+              nbColumns: 1
+              items:            
+                - !text
+                  width: 424
+                  text: '${now MM.dd.yyyy}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 200
+              type: 'bar sub'
+              intervals: 5         
+  #=======A3 landscape with legend============================================
+  A3_landscape :
+  #===========================================================================
+    mainPage:
+      rotation: true
+      pageSize: 1190 842
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 42
+          absoluteY: 814
+          width: 1105
+          items:
+            - !image
+              maxWidth: 1105
+              url: '/${configDir}/print_header.png'
+        - !map
+          width: 837
+          height: 594
+          absoluteX:42
+          absoluteY:700
+        #legend panel            
+        - !columns               
+          config:
+            borderWidth: 1
+            cells:
+              - borderWidth: 2
+                borderWidthLeft: 1
+                borderColor: black
+                padding: 4
+                backgroundColor: white
+                vertAlign: bottom
+          widths: [241]
+          absoluteX: 907
+          absoluteY: 700
+          width: 240
+          items:
+            - !legends
+              horizontalAlignment: left
+              #iconMaxWidth: 150
+              iconMaxHeight: 0
+              layerSpace: 5
+              layerFontSize: 12
+              classIndentation: 5
+              classFontSize: 8
+              classSpace: 4
+              backgroundColor: #ffffff
+              failOnBrokenUrl: false  
+        - !columns
+          absoluteX: 800
+          absoluteY: 170
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file:/${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'          
+        - !columns
+          absoluteX: 42
+          absoluteY: 78
+          width: 1105
+          widths: [340, 424, 340]
+          items:
+            - !columns
+              nbColumns: 1
+              items:
+                - !text
+                  width: 424
+                  text: '${comment}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle               
+                - !text
+                  width: 424
+                  text: '${now MM.dd.yyyy}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle
+            - !text
+              align: center
+              vertAlign: middle
+              fontSize: 14
+              text: '${mapTitle}'
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 200
+              type: 'bar sub'
+              intervals: 5             
+  #=======A3 portrait no legend============================================
+  A3_no_legend :
+  #========================================================================
+    mainPage:
+      rotation: true
+      pageSize: 842 1190
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 42
+          absoluteY: 1150
+          width: 780
+          items:
+            - !image
+              maxWidth: 780
+              url: '/${configDir}/print_header.png'
+        - !map
+          width: 760
+          height: 850
+          absoluteX: 42
+          absoluteY: 950
+        - !columns
+          absoluteX: 730
+          absoluteY: 180
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file:/${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'
+        - !columns
+          absoluteX: 42
+          absoluteY: 1050
+          width: 424
+          widths: [424]
+          items:
+            - !text
+              align: left
+              vertAlign: middle
+              fontSize: 14
+              text: '${mapTitle}'
+        - !columns
+          absoluteX: 42
+          absoluteY: 1000
+          width: 424
+          widths: [424]
+          items:
+            - !text
+              width: 424
+              text: '${comment}'  
+              fontEncoding: Cp1252
+              fontSize: 9                     
+              align: left
+              vertAlign: middle         
+        - !columns
+          absoluteX: 42
+          absoluteY: 50
+          width: 760
+          widths: [340, 424]
+          items:
+            - !columns
+              nbColumns: 1
+              items:            
+                - !text
+                  width: 424
+                  text: '${now MM.dd.yyyy}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 200
+              type: 'bar sub'
+              intervals: 5    
+  #=======A3 landscape no legend============================================
+  A3_no_legend_landscape :
+  #=========================================================================
+    mainPage:
+      rotation: true
+      pageSize: 1190 842
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 42
+          absoluteY: 814
+          width: 1105
+          items:
+            - !image
+              maxWidth: 1105
+              url: '/${configDir}/print_header.png'
+        - !map
+          width: 1102
+          height: 594
+          absoluteX:42
+          absoluteY:700
+        - !columns
+          absoluteX: 1060
+          absoluteY: 198
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file:/${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'          
+        - !columns
+          absoluteX: 42
+          absoluteY: 78
+          width: 1105
+          widths: [339, 424, 339]
+          items:
+            - !columns
+              nbColumns: 1
+              items:
+                - !text
+                  width: 424
+                  text: '${comment}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle               
+                - !text
+                  width: 424
+                  text: '${now MM.dd.yyyy}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle
+            - !text
+              align: center
+              vertAlign: middle
+              fontSize: 14
+              text: '${mapTitle}'
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 200
+              type: 'bar sub'
+              intervals: 5
+  #=======A3 portrait two pages legend======================================
+  A3_2_pages_legend :
+  #=========================================================================
+    mainPage:
+      rotation: true
+      pageSize: 842 1190
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 42
+          absoluteY: 1150
+          width: 780
+          items:
+            - !image
+              maxWidth: 780
+              url: '/${configDir}/print_header.png'
+        - !map
+          width: 760
+          height: 850
+          absoluteX: 42
+          absoluteY: 950
+        - !columns
+          absoluteX: 730
+          absoluteY: 180
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file:/${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'
+        - !columns
+          absoluteX: 42
+          absoluteY: 1050
+          width: 424
+          widths: [424]
+          items:
+            - !text
+              align: left
+              vertAlign: middle
+              fontSize: 14
+              text: '${mapTitle}'
+        - !columns
+          absoluteX: 42
+          absoluteY: 1000
+          width: 424
+          widths: [424]
+          items:
+            - !text
+              width: 424
+              text: '${comment}'  
+              fontEncoding: Cp1252
+              fontSize: 9                     
+              align: left
+              vertAlign: middle         
+        - !columns
+          absoluteX: 42
+          absoluteY: 50
+          width: 760
+          widths: [340, 424]
+          items:
+            - !columns
+              nbColumns: 1
+              items:            
+                - !text
+                  width: 424
+                  text: '${now MM.dd.yyyy}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 200
+              type: 'bar sub'
+              intervals: 5   
+    lastPage:
+      rotation: true
+      pageSize: 842 1190 
+      landscape: false
+      items: 
+        #legend panel            
+        - !columns
+          config:
+            borderWidth: 0
+            cells:
+              - borderWidth: 0
+                borderWidthLeft: 0
+                borderColor: black
+                padding: 4
+                backgroundColor: white
+                vertAlign: bottom
+          widths: [440]
+          absoluteX: 30
+          absoluteY: 1150
+          width: 440
+          items:
+            - !legends      
+              failOnBrokenUrl: false
+              horizontalAlignment: left
+              iconMaxWidth: 0
+              iconMaxHeight: 1050
+              maxHeight: 1050
+              maxColumns: 2
+              maxWidth: 800
+              layerSpace: 5
+              layerFontSize: 12
+              classIndentation: 5
+              classFontSize: 8
+              classSpace: 4
+              backgroundColor: #ffffff 
+              reorderColumns: true    
+              dontBreakItems: true    
+              overflow: true
+  #===========================================================================
+  A3_2_pages_legend_landscape :
+  #===========================================================================
+    mainPage:
+      rotation: true
+      pageSize: 1190 842
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 42
+          absoluteY: 814
+          width: 1105
+          items:
+            - !image
+              maxWidth: 1105
+              url: '/${configDir}/print_header.png'
+        - !map
+          width: 1102
+          height: 594
+          absoluteX:42
+          absoluteY:700
+        - !columns
+          absoluteX: 1070
+          absoluteY: 198
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file:/${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'          
+        - !columns
+          absoluteX: 42
+          absoluteY: 78
+          width: 1105
+          widths: [339, 424, 339]
+          items:
+            - !columns
+              nbColumns: 1
+              items:
+                - !text
+                  width: 424
+                  text: '${comment}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle               
+                - !text
+                  width: 424
+                  text: '${now MM.dd.yyyy}'  
+                  fontEncoding: Cp1252
+                  fontSize: 9                     
+                  align: left
+                  vertAlign: middle
+            - !text
+              align: center
+              vertAlign: middle
+              fontSize: 14
+              text: '${mapTitle}'
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 200
+              type: 'bar sub'
+              intervals: 5
+    lastPage:
+      rotation: true
+      pageSize: 1190 842
+      landscape: false
+      items: 
+        #legend panel            
+        - !columns
+          config:
+            borderWidth: 0
+            cells:
+              - borderWidth: 0
+                borderWidthLeft: 0
+                borderColor: black
+                padding: 4
+                backgroundColor: white
+                vertAlign: bottom
+          absoluteX:30
+          absoluteY: 800
+          width: 780
+          widths: [780]
+          items:
+            - !legends      
+              failOnBrokenUrl: false
+              horizontalAlignment: left
+              iconMaxWidth: 0
+              iconMaxHeight: 700
+              maxHeight: 700
+              maxColumns: 3
+              maxWidth: 1200
+              layerSpace: 5
+              layerFontSize: 12
+              classIndentation: 5
+              classFontSize: 8
+              classSpace: 4
+              backgroundColor: #ffffff   
+              reorderColumns: true    
+              dontBreakItems: true       
+              overflow: true        

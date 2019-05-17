@@ -1,0 +1,56 @@
+{
+	"map": {
+		"projection": "EPSG:900913",
+		"units": "m",
+		"center": {"x": 1250000.000000, "y": 5370000.000000, "crs": "EPSG:900913"},
+    "zoom":5,
+		"maxExtent": [
+			-20037508.34, -20037508.34,
+			20037508.34, 20037508.34
+		],
+		"layers": [
+			{
+				"type": "osm",
+				"title": "Open Street Map",
+				"name": "mapnik",
+        "source": "osm",
+				"group": "background",
+        "visibility": true
+			},
+      {
+        "type": "google",
+        "title": "Google HYBRID",
+        "name": "HYBRID",
+        "source": "google",
+        "group": "background",
+        "visibility": false
+      },
+      {
+        "type": "mapquest",
+        "title": "MapQuest OSM",
+        "name": "osm",
+        "source": "mapquest",
+        "group": "background",
+        "visibility": false
+      },
+      {
+        "type": "tileprovider",
+        "title": "NASAGIBS Night 2012",
+        "provider": "NASAGIBS.ViirsEarthAtNight2012",
+        "name": "Night2012",
+        "source": "nasagibs",
+        "group": "background",
+        "visibility": false
+      },
+      {
+        "type": "tileprovider",
+        "title": "OpenTopoMap",
+        "provider": "OpenTopoMap",
+        "name": "OpenTopoMap",
+        "source": "OpenTopoMap",
+        "group": "background",
+        "visibility": false
+      }
+		]
+	}
+}

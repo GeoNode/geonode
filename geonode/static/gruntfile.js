@@ -161,6 +161,7 @@ module.exports = function(grunt) {
             'bootstrap-wysiwyghtml5/dist/bootstrap-wysihtml5-0.0.2.min.js',
             'bootstrap-table/dist/bootstrap-table.min.js',
             'bootstrap-toggle/js/bootstrap-toggle.min.js',
+            'bootstrap3-typeahead/bootstrap3-typeahead.min.js',
             'fastselect/dist/fastselect.standalone.min.js',
             'clipboard/dist/clipboard.js',
             'Leaflet.EasyButton/src/easy-button.js'
@@ -322,6 +323,7 @@ module.exports = function(grunt) {
             'lib/js/bootstrap-wysihtml5-0.0.2.min.js',
             'lib/js/bootstrap-table.min.js',
             'lib/js/bootstrap-toggle.min.js',
+            'lib/js/bootstrap3-typeahead.min.js',
             'lib/js/jquery.ajaxprogress.js',
             'lib/js/jquery.ajaxQueue.js',
             'lib/js/jquery.multi-select.js',
@@ -331,7 +333,8 @@ module.exports = function(grunt) {
             'lib/js/angular-cookies.js',
             'lib/js/angular-leaflet-directive.min.js',
             'lib/js/ZeroClipboard.min.js',
-            'lib/js/clipboard.js'
+            'lib/js/clipboard.js',
+            'lib/js/underscore.js'
           ],
           'lib/js/jquery.js': ['lib/js/jquery.min.js'],
           'lib/js/require.js': ['lib/js/require.js'],

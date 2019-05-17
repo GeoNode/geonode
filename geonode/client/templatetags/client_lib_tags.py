@@ -18,10 +18,26 @@
 #
 #########################################################################
 from django import template
+from django.conf import settings
 from django.template.base import FilterExpression, kwarg_re
 from ..hooks import hookset
 
 register = template.Library()
+
+
+@register.simple_tag
+def mapbox_access_token():
+    return getattr(settings, "MAPBOX_ACCESS_TOKEN", None)
+
+
+@register.simple_tag
+def bing_api_key():
+    return getattr(settings, "BING_API_KEY", None)
+
+
+@register.simple_tag
+def google_api_key():
+    return getattr(settings, "GOOGLE_API_KEY", None)
 
 
 def parse_tag(token, parser):
@@ -99,6 +115,10 @@ class GeoNodeClientLibraryTag(template.Node):
             t = context.template.engine.get_template(
                 hookset.layer_download_template(
                     context=context))
+        elif self.tag_name == 'get_layer_style_edit':
+            t = context.template.engine.get_template(
+                hookset.layer_style_edit_template(
+                    context=context))
 
         # MAPS
         if self.tag_name == 'get_map_detail':
@@ -148,6 +168,7 @@ register.tag('get_layer_edit', do_get_client_library_template)
 register.tag('get_layer_update', do_get_client_library_template)
 register.tag('get_layer_embed', do_get_client_library_template)
 register.tag('get_layer_download', do_get_client_library_template)
+register.tag('get_layer_style_edit', do_get_client_library_template)
 
 register.tag('get_map_detail', do_get_client_library_template)
 register.tag('get_map_new', do_get_client_library_template)

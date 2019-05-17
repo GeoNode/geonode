@@ -1,0 +1,10 @@
+{
+    "version": "1.0.0",
+    "exceptions": [
+        {
+            "code": "noApplicableCode",
+            "locator": "noLocator",
+            "text": "No QUERY_LAYERS has been requested, or no queriable layer in the request anyways"
+        }
+    ]
+}

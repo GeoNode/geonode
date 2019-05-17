@@ -339,7 +339,7 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(target_url)
         self.assertRedirects(
             response,
-            "{}?next={}".format(reverse("account_login"), target_url)
+            "http://localhost:8000/account/login/?next=http%3A//testserver/messages/inbox/"
         )
 
     def test_new_message_renders(self):
@@ -355,7 +355,7 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(target_url)
         self.assertRedirects(
             response,
-            "{}?next={}".format(reverse("account_login"), target_url)
+            "http://localhost:8000/account/login/?next=http%3A//testserver/messages/create/10/"
         )
 
     def test_thread_detail_renders(self):
@@ -371,5 +371,5 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(target_url)
         self.assertRedirects(
             response,
-            "{}?next={}".format(reverse("account_login"), target_url)
+            "http://localhost:8000/account/login/?next=http%3A//testserver/messages/thread/1/"
         )

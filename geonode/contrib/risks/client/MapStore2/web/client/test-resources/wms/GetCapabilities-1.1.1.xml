@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE WMT_MS_Capabilities SYSTEM "http://demo.geo-solutions.it:80/geoserver/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd">
+<WMT_MS_Capabilities version="1.1.1" updateSequence="476">
+    <Service>
+        <Name>OGC:WMS</Name>
+        <Title>GeoServer Web Map Service</Title>
+        <Abstract>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</Abstract>
+        <KeywordList>
+            <Keyword>WFS</Keyword>
+            <Keyword>WMS</Keyword>
+            <Keyword>GEOSERVER</Keyword>
+        </KeywordList>
+        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geoserver.sourceforge.net/html/index.php"/>
+        <ContactInformation>
+            <ContactPersonPrimary>
+                <ContactPerson>Claudius Ptolomaeus</ContactPerson>
+                <ContactOrganization>The ancient geographes INC</ContactOrganization>
+            </ContactPersonPrimary>
+            <ContactPosition>Chief geographer</ContactPosition>
+            <ContactAddress>
+                <AddressType>Work</AddressType>
+                <Address/>
+                <City>Alexandria</City>
+                <StateOrProvince/>
+                <PostCode/>
+                <Country>Egypt</Country>
+            </ContactAddress>
+            <ContactVoiceTelephone/>
+            <ContactFacsimileTelephone/>
+            <ContactElectronicMailAddress>claudius.ptolomaeus@gmail.com</ContactElectronicMailAddress>
+        </ContactInformation>
+        <Fees>NONE</Fees>
+        <AccessConstraints>NONE</AccessConstraints>
+    </Service>
+    <Capability>
+        <Request>
+            <GetCapabilities>
+                <Format>application/vnd.ogc.wms_xml</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/wms?SERVICE=WMS&amp;"/>
+                        </Get>
+                        <Post>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/wms?SERVICE=WMS&amp;"/>
+                        </Post>
+                    </HTTP>
+                </DCPType>
+            </GetCapabilities>
+            <GetMap>
+                <Format>image/png</Format>
+                <Format>application/atom xml</Format>
+                <Format>application/atom+xml</Format>
+                <Format>application/json;type=utfgrid</Format>
+                <Format>application/openlayers</Format>
+                <Format>application/pdf</Format>
+                <Format>application/rss xml</Format>
+                <Format>application/rss+xml</Format>
+                <Format>application/vnd.google-earth.kml</Format>
+                <Format>application/vnd.google-earth.kml xml</Format>
+                <Format>application/vnd.google-earth.kml+xml</Format>
+                <Format>application/vnd.google-earth.kml+xml;mode=networklink</Format>
+                <Format>application/vnd.google-earth.kmz</Format>
+                <Format>application/vnd.google-earth.kmz xml</Format>
+                <Format>application/vnd.google-earth.kmz+xml</Format>
+                <Format>application/vnd.google-earth.kmz;mode=networklink</Format>
+                <Format>application/x-gpkg</Format>
+                <Format>application/x-sqlite3</Format>
+                <Format>atom</Format>
+                <Format>geopackage</Format>
+                <Format>geopkg</Format>
+                <Format>gpkg</Format>
+                <Format>image/geotiff</Format>
+                <Format>image/geotiff8</Format>
+                <Format>image/gif</Format>
+                <Format>image/gif;subtype=animated</Format>
+                <Format>image/jpeg</Format>
+                <Format>image/png8</Format>
+                <Format>image/png; mode=8bit</Format>
+                <Format>image/svg</Format>
+                <Format>image/svg xml</Format>
+                <Format>image/svg+xml</Format>
+                <Format>image/tiff</Format>
+                <Format>image/tiff8</Format>
+                <Format>image/vnd.jpeg-png</Format>
+                <Format>kml</Format>
+                <Format>kmz</Format>
+                <Format>mbtiles</Format>
+                <Format>openlayers</Format>
+                <Format>rss</Format>
+                <Format>text/html; subtype=openlayers</Format>
+                <Format>utfgrid</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/wms?SERVICE=WMS&amp;"/>
+                        </Get>
+                    </HTTP>
+                </DCPType>
+            </GetMap>
+            <GetFeatureInfo>
+                <Format>text/plain</Format>
+                <Format>application/vnd.ogc.gml</Format>
+                <Format>text/xml</Format>
+                <Format>application/vnd.ogc.gml/3.1.1</Format>
+                <Format>text/xml; subtype=gml/3.1.1</Format>
+                <Format>text/html</Format>
+                <Format>application/json</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/wms?SERVICE=WMS&amp;"/>
+                        </Get>
+                        <Post>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/wms?SERVICE=WMS&amp;"/>
+                        </Post>
+                    </HTTP>
+                </DCPType>
+            </GetFeatureInfo>
+            <DescribeLayer>
+                <Format>application/vnd.ogc.wms_xml</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/wms?SERVICE=WMS&amp;"/>
+                        </Get>
+                    </HTTP>
+                </DCPType>
+            </DescribeLayer>
+            <GetLegendGraphic>
+                <Format>image/png</Format>
+                <Format>image/jpeg</Format>
+                <Format>image/gif</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/wms?SERVICE=WMS&amp;"/>
+                        </Get>
+                    </HTTP>
+                </DCPType>
+            </GetLegendGraphic>
+            <GetStyles>
+                <Format>application/vnd.ogc.sld+xml</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/wms?SERVICE=WMS&amp;"/>
+                        </Get>
+                    </HTTP>
+                </DCPType>
+            </GetStyles>
+        </Request>
+        <Exception>
+            <Format>application/vnd.ogc.se_xml</Format>
+            <Format>application/vnd.ogc.se_inimage</Format>
+            <Format>application/vnd.ogc.se_blank</Format>
+            <Format>application/json</Format>
+        </Exception>
+        <UserDefinedSymbolization SupportSLD="1" UserLayer="1" UserStyle="1" RemoteWFS="1"/>
+        <Layer>
+            <Title>GeoServer Web Map Service</Title>
+            <Abstract>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</Abstract>
+            <!--All supported EPSG projections:-->
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:3857</SRS>
+            <LatLonBoundingBox minx="-180.0" miny="-90.000000000036" maxx="180.00000000007202" maxy="90.00000000000001"/>
+            <Layer queryable="1">
+                <Title>ny-parent-group</Title>
+                <Abstract>Layer-Group type layer: ny-parent-group</Abstract>
+                <SRS>EPSG:4326</SRS>
+                <LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0"/>
+                <BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0"/>
+                <Layer queryable="1">
+                    <Name>spearfish</Name>
+                    <Title>spearfish</Title>
+                    <Abstract>Layer-Group type layer: spearfish</Abstract>
+                    <SRS>EPSG:26713</SRS>
+                    <LatLonBoundingBox minx="-103.87791475407893" miny="44.37246687108142" maxx="-103.62278893469492" maxy="44.50235105543566"/>
+                    <BoundingBox SRS="EPSG:26713" minx="589425.9342365642" miny="4913959.224611808" maxx="609518.6719560538" maxy="4928082.949945881"/>
+                </Layer>
+                <Layer queryable="1">
+                    <Name>tiger-ny</Name>
+                    <Title>tiger-ny</Title>
+                    <Abstract>Layer-Group type layer: tiger-ny</Abstract>
+                    <SRS>EPSG:4326</SRS>
+                    <LatLonBoundingBox minx="-74.047185" miny="40.679648" maxx="-73.907005" maxy="40.882078"/>
+                    <BoundingBox SRS="EPSG:4326" minx="-74.047185" miny="40.679648" maxx="-73.907005" maxy="40.882078"/>
+                </Layer>
+            </Layer>
+            <Layer queryable="1">
+                <Name>tasmania</Name>
+                <Title>tasmania</Title>
+                <Abstract>Layer-Group type layer: tasmania</Abstract>
+                <SRS>EPSG:4326</SRS>
+                <LatLonBoundingBox minx="143.83482400000003" miny="-43.648056" maxx="148.47914100000003" maxy="-39.573891"/>
+                <BoundingBox SRS="EPSG:4326" minx="143.83482400000003" miny="-43.648056" maxx="148.47914100000003" maxy="-39.573891"/>
+            </Layer>
+            <Layer queryable="1" opaque="0">
+                <Name>nurc:Arc_Sample</Name>
+                <Title>A sample ArcGrid file</Title>
+                <Abstract/>
+                <KeywordList>
+                    <Keyword>WCS</Keyword>
+                    <Keyword>arcGridSample</Keyword>
+                    <Keyword>arcGridSample_Coverage</Keyword>
+                </KeywordList>
+                <SRS>EPSG:4326</SRS>
+                <LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0"/>
+                <BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0"/>
+                <Style>
+                    <Name>rain</Name>
+                    <Title>Rain distribution</Title>
+                    <LegendURL width="27" height="121">
+                        <Format>image/png</Format>
+                        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=nurc%3AArc_Sample"/>
+                    </LegendURL>
+                </Style>
+                <Style>
+                    <Name>raster</Name>
+                    <Title>Default Raster</Title>
+                    <Abstract>A sample style that draws a raster, good for displaying imagery</Abstract>
+                    <LegendURL width="604" height="294">
+                        <Format>image/png</Format>
+                        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/styles/http://docs.geoserver.org/latest/en/user/_images/colormap3.png"/>
+                    </LegendURL>
+                </Style>
+            </Layer>
+            <Layer queryable="1" opaque="0">
+                <Name>sde:GRAY_HR_SR_OB_DR</Name>
+                <Title>GRAY_HR_SR_OB_DR</Title>
+                <Abstract>Gray Earth with Shaded Relief, Hypsography, Ocean Bottom, and Drainages</Abstract>
+                <KeywordList>
+                    <Keyword>WCS</Keyword>
+                    <Keyword>GeoTIFF</Keyword>
+                    <Keyword>GRAY_HR_SR_OB_DR</Keyword>
+                </KeywordList>
+                <SRS>EPSG:4326</SRS>
+                <LatLonBoundingBox minx="-180.0" miny="-90.000000000036" maxx="180.00000000007202" maxy="90.00000000000001"/>
+                <BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.000000000036" maxx="180.00000000007202" maxy="90.00000000000001"/>
+                <Style>
+                    <Name>raster</Name>
+                    <Title>Default Raster</Title>
+                    <Abstract>A sample style that draws a raster, good for displaying imagery</Abstract>
+                    <LegendURL width="604" height="294">
+                        <Format>image/png</Format>
+                        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/styles/http://docs.geoserver.org/latest/en/user/_images/colormap3.png"/>
+                    </LegendURL>
+                </Style>
+            </Layer>
+            <Layer queryable="1" opaque="0">
+                <Name>sde:HYP_HR_SR_OB_DR</Name>
+                <Title>HYP_HR_SR_OB_DR</Title>
+                <Abstract>Cross Blended Hypso with Relief, Water, Drains, and Ocean Bottom</Abstract>
+                <KeywordList>
+                    <Keyword>WCS</Keyword>
+                    <Keyword>GeoTIFF</Keyword>
+                    <Keyword>HYP_HR_SR_OB_DR</Keyword>
+                </KeywordList>
+                <SRS>EPSG:4326</SRS>
+                <LatLonBoundingBox minx="-180.0" miny="-90.000000000036" maxx="180.00000000007202" maxy="90.00000000000001"/>
+                <BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.000000000036" maxx="180.00000000007202" maxy="90.00000000000001"/>
+                <Style>
+                    <Name>raster</Name>
+                    <Title>Default Raster</Title>
+                    <Abstract>A sample style that draws a raster, good for displaying imagery</Abstract>
+                    <LegendURL width="604" height="294">
+                        <Format>image/png</Format>
+                        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/styles/http://docs.geoserver.org/latest/en/user/_images/colormap3.png"/>
+                    </LegendURL>
+                </Style>
+            </Layer>
+            <Layer queryable="1" opaque="0">
+                <Name>nurc:Img_Sample</Name>
+                <Title>North America sample imagery</Title>
+                <Abstract/>
+                <KeywordList>
+                    <Keyword>WCS</Keyword>
+                    <Keyword>worldImageSample</Keyword>
+                    <Keyword>worldImageSample_Coverage</Keyword>
+                </KeywordList>
+                <SRS>EPSG:4326</SRS>
+                <LatLonBoundingBox minx="-130.85168" miny="20.7052" maxx="-62.0054" maxy="54.1141"/>
+                <BoundingBox SRS="EPSG:4326" minx="-130.85168" miny="20.7052" maxx="-62.0054" maxy="54.1141"/>
+                <Style>
+                    <Name>raster</Name>
+                    <Title>Default Raster</Title>
+                    <Abstract>A sample style that draws a raster, good for displaying imagery</Abstract>
+                    <LegendURL width="604" height="294">
+                        <Format>image/png</Format>
+                        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.geo-solutions.it:80/geoserver/styles/http://docs.geoserver.org/latest/en/user/_images/colormap3.png"/>
+                    </LegendURL>
+                </Style>
+            </Layer>
+
+        </Layer>
+    </Capability>
+</WMT_MS_Capabilities>

@@ -1,0 +1,6 @@
+{
+  "type": "ReprojectTransform",
+  "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/1/transforms/0",
+  "source": null,
+  "target": "EPSG:4326"
+}

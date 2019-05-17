@@ -1,0 +1,5 @@
+/**
+ * redux-observable epics
+ * @see {@link https://redux-observable.js.org/docs/basics/Epics.html|the redux-observable documentation} for details
+ * @name epics
+ */

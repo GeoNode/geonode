@@ -1,0 +1,39 @@
+{
+  "layer": {
+  "name": "tasmania_cities",
+  "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer",
+  "title": "tasmania_cities",
+  "originalName": "tasmania_cities",
+  "nativeName": "tasmania_cities",
+  "attributes": [
+    {
+            "name": "the_geom",
+            "binding": "com.vividsolutions.jts.geom.MultiPoint"
+    },
+    {
+            "name": "CITY_NAME",
+            "binding": "java.lang.String"
+    },
+    {
+            "name": "ADMIN_NAME",
+            "binding": "java.lang.String"
+    },
+    {
+            "name": "CNTRY_NAME",
+            "binding": "java.lang.String"
+    },
+    {
+            "name": "STATUS",
+            "binding": "java.lang.String"
+    },
+    {
+            "name": "POP_CLASS",
+            "binding": "java.lang.String"
+    }
+    ],
+    "style": {
+            "name": "cite_tasmania_cities",
+            "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer/style"
+    }
+  }
+}

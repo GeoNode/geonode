@@ -1,0 +1,50 @@
+{% extends "geonode_base.html" %}
+{% load i18n static %}
+{% load url from future %}
+
+{% block title %} {{ block.super }} {% endblock %}
+
+{% block body_class %}documents{% endblock %}
+
+{% block extra_head %}
+
+    <style type="text/css">
+        .active {font-weight: bold}
+        .dropdown-menu {
+                        top: auto;
+                        left: auto}
+        #wrap .container {padding:0px}
+    </style>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+    <link rel="stylesheet" href="https://rawgit.com/Leaflet/Leaflet.draw/v0.2.4/dist/leaflet.draw.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.0.1/ol.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.10/proj4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+    <script src="https://rawgit.com/Leaflet/Leaflet.draw/v0.2.4/dist/leaflet.draw.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,600' rel='stylesheet' type='text/css'>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.0.1/ol.js"></script>
+
+    <link href="{% static "assets/css/disaster.css" %}" rel="stylesheet" />
+{% endblock extra_head %}
+
+
+
+{% block body_outer %}
+  <div class="page-header">
+    <h2 class="page-title">{% block risks_page_title %}{% endblock %}</h2>
+  </div>
+
+  {% block body %}
+
+    <div id="container"></div>
+    <script type="text/javascript">
+    var d = window.DISASTERRISK!==undefined?window.DISASTERRISK:{};
+    window.DISASTERRISK = d;
+    d['app'] = {{ app_ctx|safe }};
+    </script>
+  {% endblock body %}
+{% endblock body_outer %}

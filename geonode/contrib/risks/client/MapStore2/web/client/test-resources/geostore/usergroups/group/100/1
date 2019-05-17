@@ -1,0 +1,19 @@
+{
+   "UserGroup":{
+      "groupName":"test",
+      "id":1,
+      "restUsers":{
+         "User":{
+            "groupsNames":[
+               "test",
+               "everyone",
+               "testers",
+               "testgroup"
+            ],
+            "id":1,
+            "name":"test",
+            "role":"USER"
+         }
+      }
+   }
+}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+
+{% block extra_tab %}
+<li id="nav_partenaires">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans 'Risk Management Tools' %}<i class="fa fa-angle-down fa-lg"></i></a>
+    <ul class="dropdown-menu">
+        <li><a href="{% url 'risks:cost_benefit_analysis:index' %}">{% trans "Cost/Benefit Analysis & Decision Tool" %}</a></li>
+        <li><a href="{% url 'risks:data_extraction:index' %}">{% trans "Risk Data Extraction & Visualization" %}</a></li>
+    </ul>
+</li>
+{{ block.super }}
+{% endblock %}

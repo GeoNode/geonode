@@ -1,0 +1,31 @@
+.Sortable {
+  position: relative;
+  display: block;
+  overflow: visible;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.SortableItem {
+  cursor: -webkit-grab; cursor:-moz-grab; cursor: grab;
+}
+
+.SortableItem.is-dragging {
+  cursor: move;
+  position: absolute;
+  z-index: 1688;
+  background-color: rgba(218, 218, 218, 0.8);;
+  border: 1px dashed #8E8E8E;
+  border-radius: 5px;
+  box-shadow: 4px 4px 9px rgba(0, 0, 0, 0.28);
+}
+
+.SortableItem.is-placeholder {
+  border: 1px dashed #8E8E8E;
+  border-radius: 5px;
+}
+
+.SortableItem.is-undraggable {
+  cursor: not-allowed;
+}

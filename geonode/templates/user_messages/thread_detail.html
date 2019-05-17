@@ -11,11 +11,11 @@
 {% for message in thread.messages.all %}
   <div class="well">
     {% autoescape off %}{% avatar message.sender 50 %}{% endautoescape %}
-    {{ message.sent_at }} by {% ifequal request.user message.sender %}{% trans "me" %}{% else %}<a href="{{ message.sender.get_absolute_url }}">{{ message.sender }}</a>{% endifequal %}
+    {{ message.sent_at }} {% trans "by" %} {% ifequal request.user message.sender %}{% trans "me" %}{% else %}<a href="{{ message.sender.get_absolute_url }}">{{ message.sender }}</a>{% endifequal %}
     <p>{{ message.content }}</p>
   </div>
   {% empty %}
-  You have no messages.
+  {% trans "You have no messages" %}.
 {% endfor %}
 <div>
   <form action="{{ thread.get_absolute_url }}" method="post">

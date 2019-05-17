@@ -1,0 +1,4 @@
+#zoomin-btn, #zoomout-btn {
+    z-index: 1;
+    position: relative;
+}

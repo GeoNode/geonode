@@ -41,7 +41,7 @@ class BaseServiceExpose(object):
         pass
 
     def expose(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     @classmethod
     def get_name(cls):
@@ -130,10 +130,10 @@ class BaseServiceHandler(object):
         return self.handle_collected(_collected)
 
     def _collect(self, since, until, *args, **kwargs):
-        raise NotImplemented()
+        raise NotImplementedError
 
     def handle_collected(self):
-        raise NotImplemented()
+        raise NotImplementedError
 
     def mark_as_checked(self):
         self.service.last_check = self.now
@@ -189,7 +189,7 @@ class HostGeoServerService(BaseServiceHandler):
         if not base_url:
             raise ValueError("Service {} should have url provided".format(self.service.name))
         url = '{}{}'.format(base_url.rstrip('/'), self.PATH)
-        rdata = requests.get(url)
+        rdata = requests.get(url, timeout=10)
         if rdata.status_code != 200:
             raise ValueError("Error response from api: ({}) {}".format(url, rdata))
         data = rdata.json()['metrics']['metric']
@@ -206,7 +206,7 @@ class HostGeoNodeService(BaseServiceHandler):
         if not base_url:
             raise ValueError("Service {} should have url provided".format(self.service.name))
         url = '{}/monitoring/api/beacon/{}/'.format(base_url.rstrip('/'), self.service.service_type.name)
-        rdata = requests.get(url)
+        rdata = requests.get(url, timeout=10)
         if rdata.status_code != 200:
             raise ValueError("Error response from api: ({}) {}".format(url, rdata))
         data = rdata.json()
@@ -219,10 +219,10 @@ class HostGeoNodeService(BaseServiceHandler):
 services = dict(
     (c.get_name(), c,)
     for c in (
-            GeoNodeService,
-            GeoServerService,
-            HostGeoNodeService,
-            HostGeoServerService,))
+        GeoNodeService,
+        GeoServerService,
+        HostGeoNodeService,
+        HostGeoServerService,))
 
 
 def get_for_service(sname):

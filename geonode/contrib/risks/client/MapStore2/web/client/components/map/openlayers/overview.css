@@ -1,0 +1,43 @@
+.ol-custom-overviewmap,
+       .ol-custom-overviewmap.ol-uncollapsible {
+          bottom: 20px;
+          left: auto;
+          right: 10px;
+          top: auto;
+
+      }
+      .ol-custom-overviewmap:not(.ol-collapsed)  {
+
+           box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+           border-radius: 1px;
+           transition: all .2s;
+      }
+      .ol-custom-overviewmap .ol-overviewmap-map {
+          border: none;
+          width: 300px;
+          height: 150px;
+
+      }
+
+      .ol-custom-overviewmap .ol-overviewmap-box {
+          border: 1px solid black;
+          cursor: pointer;
+          border-radius: 5px;
+      }
+
+      .ol-custom-overviewmap:not(.ol-collapsed) button{
+          bottom: auto;
+          left: auto;
+          right: 2px;
+          bottom: 2px;
+      }
+
+      .ol-rotate {
+          top: 170px;
+          right: 0;
+      }
+      .ol-overview-dargbox{
+           border: 1px solid black;
+           background-color: rgba(125,125,0,.5);
+           border-radius: 5px;
+      }

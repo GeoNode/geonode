@@ -114,7 +114,7 @@ def get_visible_resources(queryset,
                     Q(is_published=False) & ~(
                         Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
             else:
-                filter_set = filter_set.exclude(is_published=False)
+                filter_set = filter_set.exclude(Q(is_published=False))
 
     if private_groups_not_visibile:
         if not is_admin:
@@ -169,12 +169,13 @@ def get_geofence_rules_count():
         # Check first that the rules does not exist already
         """
         curl -X GET -u admin:geoserver \
-              http://<host>:<port>/geoserver/geofence/rest/rules/count.json
+              http://<host>:<port>/geoserver/rest/geofence/rules/count.json
         """
         headers = {'Content-type': 'application/json'}
-        r = requests.get(url + 'geofence/rest/rules/count.json',
+        r = requests.get(url + 'rest/geofence/rules/count.json',
                          headers=headers,
-                         auth=HTTPBasicAuth(user, passwd))
+                         auth=HTTPBasicAuth(user, passwd),
+                         timeout=10)
         if (r.status_code < 200 or r.status_code > 201):
             logger.warning("Could not retrieve GeoFence Rules count.")
 
@@ -199,12 +200,13 @@ def get_highest_priority():
         # Check first that the rules does not exist already
         """
         curl -X GET -u admin:geoserver \
-              http://<host>:<port>/geoserver/geofence/rest/rules.json?page=(count-1)&entries=1
+              http://<host>:<port>/geoserver/rest/geofence/rules.json?page=(count-1)&entries=1
         """
         headers = {'Content-type': 'application/json'}
-        r = requests.get(url + 'geofence/rest/rules.json?page=' + str(rules_count-1) + '&entries=1',
+        r = requests.get(url + 'rest/geofence/rules.json?page=' + str(rules_count - 1) + '&entries=1',
                          headers=headers,
-                         auth=HTTPBasicAuth(user, passwd))
+                         auth=HTTPBasicAuth(user, passwd),
+                         timeout=10)
         if (r.status_code < 200 or r.status_code > 201):
             logger.warning("Could not retrieve GeoFence Rules count.")
 
@@ -230,12 +232,13 @@ def purge_geofence_all():
             passwd = settings.OGC_SERVER['default']['PASSWORD']
             """
             curl -X GET -u admin:geoserver -H "Content-Type: application/json" \
-                  http://<host>:<port>/geoserver/geofence/rest/rules.json
+                  http://<host>:<port>/geoserver/rest/geofence/rules.json
             """
             headers = {'Content-type': 'application/json'}
-            r = requests.get(url + 'geofence/rest/rules.json',
+            r = requests.get(url + 'rest/geofence/rules.json',
                              headers=headers,
-                             auth=HTTPBasicAuth(user, passwd))
+                             auth=HTTPBasicAuth(user, passwd),
+                             timeout=10)
             if (r.status_code < 200 or r.status_code > 201):
                 logger.warning("Could not Retrieve GeoFence Rules")
             else:
@@ -245,9 +248,9 @@ def purge_geofence_all():
                     rules = rules_objs['rules']
                     if rules_count > 0:
                         # Delete GeoFence Rules associated to the Layer
-                        # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/geofence/rest/rules/id/{r_id}
+                        # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
                         for i, rule in enumerate(rules):
-                            r = requests.delete(url + 'geofence/rest/rules/id/' + str(rule['id']),
+                            r = requests.delete(url + 'rest/geofence/rules/id/' + str(rule['id']),
                                                 headers=headers,
                                                 auth=HTTPBasicAuth(user, passwd))
                             if (r.status_code < 200 or r.status_code > 201):
@@ -257,7 +260,7 @@ def purge_geofence_all():
                                 raise e
                 except Exception:
                     logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-        except Exception:
+        except BaseException:
             tb = traceback.format_exc()
             logger.debug(tb)
 
@@ -268,7 +271,7 @@ def purge_geofence_layer_rules(resource):
     # Scan GeoFence Rules associated to the Layer
     """
     curl -u admin:geoserver
-    http://<host>:<port>/geoserver/geofence/rest/rules.json?workspace=geonode&layer={layer}
+    http://<host>:<port>/geoserver/rest/geofence/rules.json?workspace=geonode&layer={layer}
     """
     url = settings.OGC_SERVER['default']['LOCATION']
     user = settings.OGC_SERVER['default']['USER']
@@ -276,10 +279,11 @@ def purge_geofence_layer_rules(resource):
     headers = {'Content-type': 'application/json'}
     workspace = _get_layer_workspace(resource.layer)
     r = requests.get(
-        "{}geofence/rest/rules.json?workspace={}&layer={}".format(
+        "{}rest/geofence/rules.json?workspace={}&layer={}".format(
             url, workspace, resource.layer.name),
         headers=headers,
-        auth=HTTPBasicAuth(user, passwd)
+        auth=HTTPBasicAuth(user, passwd),
+        timeout=10
     )
     if (r.status_code >= 200 and r.status_code < 300):
         gs_rules = r.json()
@@ -290,9 +294,9 @@ def purge_geofence_layer_rules(resource):
                     r_ids.append(r['id'])
 
         # Delete GeoFence Rules associated to the Layer
-        # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/geofence/rest/rules/id/{r_id}
+        # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
         for i, r_id in enumerate(r_ids):
-            r = requests.delete(url + 'geofence/rest/rules/id/' + str(r_id),
+            r = requests.delete(url + 'rest/geofence/rules/id/' + str(r_id),
                                 headers=headers,
                                 auth=HTTPBasicAuth(user, passwd))
             if (r.status_code < 200 or r.status_code > 201):
@@ -321,9 +325,12 @@ def set_geofence_invalidate_cache():
 
             if (r.status_code < 200 or r.status_code > 201):
                 logger.warning("Could not Invalidate GeoFence Rules.")
-        except Exception:
+                return False
+            return True
+        except BaseException:
             tb = traceback.format_exc()
             logger.debug(tb)
+            return False
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -348,7 +355,7 @@ def set_geowebcache_invalidate_cache(layer_alternate):
                           auth=HTTPBasicAuth(user, passwd))
         if (r.status_code < 200 or r.status_code > 201):
             logger.warning("Could not Truncate GWC Cache for Layer '%s'." % layer_alternate)
-    except Exception:
+    except BaseException:
         tb = traceback.format_exc()
         logger.debug(tb)
 
@@ -385,7 +392,7 @@ def set_geofence_all(instance):
         """
         curl -X POST -u admin:geoserver -H "Content-Type: text/xml" -d \
         "<Rule><workspace>geonode</workspace><layer>{layer}</layer><access>ALLOW</access></Rule>" \
-        http://<host>:<port>/geoserver/geofence/rest/rules
+        http://<host>:<port>/geoserver/rest/geofence/rules
         """
         headers = {'Content-type': 'application/xml'}
         payload = _get_geofence_payload(
@@ -394,7 +401,7 @@ def set_geofence_all(instance):
             access="ALLOW"
         )
         response = requests.post(
-            url + 'geofence/rest/rules',
+            url + 'rest/geofence/rules',
             headers=headers,
             data=payload,
             auth=HTTPBasicAuth(user, passwd)
@@ -404,7 +411,7 @@ def set_geofence_all(instance):
                 "Response {!r} : {}".format(response.status_code, response.text))
             raise RuntimeError("Could not ADD GeoServer ANONYMOUS Rule "
                                "for Layer {}".format(resource.layer.name))
-    except Exception:
+    except BaseException:
         tb = traceback.format_exc()
         logger.debug(tb)
     finally:
@@ -426,7 +433,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
         and layer.is_vector()
     gf_services["WCS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
         and not layer.is_vector()
-    gf_services["WPS"] = 'download_resourcebase' or 'change_layer_data' in perms
+    gf_services["WPS"] = 'download_resourcebase' in perms or 'change_layer_data' in perms
 
     _user = None
     if user:
@@ -484,7 +491,7 @@ def remove_object_permissions(instance):
                 purge_geofence_layer_rules(resource)
         except (ObjectDoesNotExist, RuntimeError):
             pass  # This layer is not manageable by geofence
-        except Exception:
+        except BaseException:
             tb = traceback.format_exc()
             logger.debug(tb)
         finally:
@@ -547,7 +554,7 @@ def _get_geofence_payload(layer, workspace, access, user=None, group=None,
     layer_el.text = layer
     access_el = etree.SubElement(root_el, "access")
     access_el.text = access
-    if service is not None and service is not "*":
+    if service is not None and service != "*":
         service_el = etree.SubElement(root_el, "service")
         service_el.text = service
     return etree.tostring(root_el)
@@ -564,7 +571,7 @@ def _update_geofence_rule(layer, workspace, service, user=None, group=None):
     )
     logger.debug("request data: {}".format(payload))
     response = requests.post(
-        "{base_url}geofence/rest/rules".format(
+        "{base_url}rest/geofence/rules".format(
             base_url=settings.OGC_SERVER['default']['LOCATION']),
         data=payload,
         headers={
@@ -583,3 +590,46 @@ def _update_geofence_rule(layer, workspace, service, user=None, group=None):
             logger.warning(msg)
         else:
             raise RuntimeError(msg)
+
+
+def sync_resources_with_guardian(resource=None):
+    """
+    Sync resources with Guardian and clear their dirty state
+    """
+
+    from geonode.base.models import ResourceBase
+    from geonode.layers.models import Layer
+
+    if resource:
+        dirty_resources = ResourceBase.objects.filter(id=resource.id)
+    else:
+        dirty_resources = ResourceBase.objects.filter(dirty_state=True)
+    if dirty_resources and dirty_resources.count() > 0:
+        logger.debug(" --------------------------- synching with guardian!")
+        for r in dirty_resources:
+            if r.polymorphic_ctype.name == 'layer':
+                layer = None
+                try:
+                    purge_geofence_layer_rules(r)
+                    layer = Layer.objects.get(id=r.id)
+                    perm_spec = layer.get_all_level_info()
+                    logger.debug(" %s --------------------------- %s " % (layer, perm_spec))
+                    # All the other users
+                    if 'users' in perm_spec:
+                        for user, perms in perm_spec['users'].items():
+                            user = get_user_model().objects.get(username=user)
+                            # Set the GeoFence User Rules
+                            geofence_user = str(user)
+                            if "AnonymousUser" in geofence_user:
+                                geofence_user = None
+                            sync_geofence_with_guardian(layer, perms, user=geofence_user)
+                    # All the other groups
+                    if 'groups' in perm_spec:
+                        for group, perms in perm_spec['groups'].items():
+                            group = Group.objects.get(name=group)
+                            # Set the GeoFence Group Rules
+                            sync_geofence_with_guardian(layer, perms, group=group)
+                    r.clear_dirty_state()
+                except BaseException as e:
+                    logger.exception(e)
+                    logger.warn("!WARNING! - Failure Synching-up Security Rules for Resource [%s]" % (r))

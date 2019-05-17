@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE WMT_MS_Capabilities SYSTEM "https://test/geoserver/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd?authkey=260a670e-4dc0-4719-8bc9-85555d7dcbe1">
+<WMT_MS_Capabilities version="1.1.1" updateSequence="2538">
+  <Service>
+    <Name>OGC:WMS</Name>
+    <Title>GeoServer Web Map Service</Title>
+    <Abstract>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</Abstract>
+    <KeywordList>
+      <Keyword>WFS</Keyword>
+      <Keyword>WMS</Keyword>
+      <Keyword>GEOSERVER</Keyword>
+    </KeywordList>
+    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geoserver.sourceforge.net/html/index.php"/>
+    <ContactInformation>
+      <ContactPersonPrimary>
+        <ContactPerson>Claudius Ptolomaeus</ContactPerson>
+        <ContactOrganization>The ancient geographes INC</ContactOrganization>
+      </ContactPersonPrimary>
+      <ContactPosition>Chief geographer</ContactPosition>
+      <ContactAddress>
+        <AddressType>Work</AddressType>
+        <Address/>
+        <City>Alexandria</City>
+        <StateOrProvince/>
+        <PostCode/>
+        <Country>Egypt</Country>
+      </ContactAddress>
+      <ContactVoiceTelephone/>
+      <ContactFacsimileTelephone/>
+      <ContactElectronicMailAddress>claudius.ptolomaeus@gmail.com</ContactElectronicMailAddress>
+    </ContactInformation>
+    <Fees>NONE</Fees>
+    <AccessConstraints>NONE</AccessConstraints>
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <Format>application/vnd.ogc.wms_xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="base/web/client/test-resources/geoserver/testworkspace/testlayer/wms"/>
+            </Get>
+            <Post>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="base/web/client/test-resources/geoserver/testworkspace/testlayer/wms"/>
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <GetMap>
+        <Format>image/png</Format>
+        <Format>application/openlayers</Format>
+        <Format>image/jpeg</Format>
+        <Format>image/png8</Format>
+        <Format>image/png; mode=8bit</Format>
+        <Format>openlayers</Format>
+        <Format>text/html; subtype=openlayers</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="base/web/client/test-resources/geoserver/testworkspace/testlayer/wms"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetMap>
+      <GetFeatureInfo>
+        <Format>text/plain</Format>
+        <Format>application/vnd.ogc.gml</Format>
+        <Format>text/xml</Format>
+        <Format>application/vnd.ogc.gml/3.1.1</Format>
+        <Format>text/xml; subtype=gml/3.1.1</Format>
+        <Format>text/html</Format>
+        <Format>application/json</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="base/web/client/test-resources/geoserver/testworkspace/testlayer/wms?SERVICE=WMS&amp;authkey=260a670e-4dc0-4719-8bc9-85555d7dcbe1&amp;"/>
+            </Get>
+            <Post>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="base/web/client/test-resources/geoserver/testworkspace/testlayer/wms?SERVICE=WMS&amp;authkey=260a670e-4dc0-4719-8bc9-85555d7dcbe1&amp;"/>
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetFeatureInfo>
+      <DescribeLayer>
+        <Format>application/vnd.ogc.wms_xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="base/web/client/test-resources/geoserver/testworkspace/testlayer/wms?SERVICE=WMS&amp;authkey=260a670e-4dc0-4719-8bc9-85555d7dcbe1&amp;"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </DescribeLayer>
+      <GetLegendGraphic>
+        <Format>image/png</Format>
+        <Format>image/jpeg</Format>
+        <Format>image/gif</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="base/web/client/test-resources/geoserver/testworkspace/testlayer/wms?SERVICE=WMS&amp;authkey=260a670e-4dc0-4719-8bc9-85555d7dcbe1&amp;"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetLegendGraphic>
+      <GetStyles>
+        <Format>application/vnd.ogc.sld+xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="base/web/client/test-resources/geoserver/testworkspace/testlayer/wms?SERVICE=WMS&amp;authkey=260a670e-4dc0-4719-8bc9-85555d7dcbe1&amp;"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetStyles>
+    </Request>
+    <Exception>
+      <Format>application/vnd.ogc.se_xml</Format>
+      <Format>application/vnd.ogc.se_inimage</Format>
+      <Format>application/vnd.ogc.se_blank</Format>
+      <Format>application/json</Format>
+    </Exception>
+    <UserDefinedSymbolization SupportSLD="1" UserLayer="1" UserStyle="1" RemoteWFS="1"/>
+    <Layer>
+      <Title>GeoServer Web Map Service</Title>
+      <Abstract>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</Abstract>
+      <!--Limited list of EPSG projections:-->
+      <SRS>EPSG:3857</SRS>
+      <SRS>EPSG:4326</SRS>
+      <SRS>EPSG:900913</SRS>
+      <LatLonBoundingBox minx="-169.785705566406" miny="-27.1886425018311" maxx="163.041122436523" maxy="74.9355163574219"/>
+      <Layer queryable="1" opaque="0">
+        <Name>testlayer</Name>
+        <Title>Test Layer</Title>
+        <Abstract/>
+        <KeywordList>
+          <Keyword>testlayer</Keyword>
+          <Keyword>features</Keyword>
+        </KeywordList>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox minx="-169.785705566406" miny="-27.1886425018311" maxx="163.041122436523" maxy="74.9355163574219"/>
+        <BoundingBox SRS="EPSG:4326" minx="-169.785705566406" miny="-27.1886425018311" maxx="163.041122436523" maxy="74.9355163574219"/>
+        <Style>
+          <Name>style1</Name>
+          <Title>style 1</Title>
+          <Abstract>style1</Abstract>
+          <LegendURL width="169" height="140">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="base/web/client/test-resources/geoserver/testworkspace/testlayer/TODO_GET_LEGEND_GRAPHIC"/>
+          </LegendURL>
+        </Style>
+        <Style>
+          <Name>style2</Name>
+          <Title>style 2</Title>
+          <Abstract>style 2</Abstract>
+          <LegendURL width="169" height="140">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="base/web/client/test-resources/geoserver/testworkspace/testlayer/TODO_GET_LEGEND_GRAPHIC"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMT_MS_Capabilities>

@@ -1,0 +1,888 @@
+{
+    "locale": "de-DE",
+    "messages": {
+        "Language": "Sprache",
+        "msgId0": "{name} machte {numPhotos, plural, =0 {keine Fotos} =1 {ein Foto} other {# Fotos}} am {takenDate, date, long}.",
+        "htmlTest": "{name} {surname}",
+        "about_title": "Über diese App...",
+        "aboutLbl": "Über",
+        "about_p0-0": "MapStore 2 ist ein Framework zur Erstellung von webbasierten Karten-Anwendungen mit Standard-Karten-Bibliotheken wie",
+        "about_p0-1": "und",
+        "about_p1": "Für MapStore 2 gibt es verschiedene Beispiel Anwendungen :",
+        "about_ul0_li0": "MapViewer ist ein einfache Anwendung zur Ansicht von vorkonfigurierten Karten (die optional in einer Datenbank mittels GeoStore gespeichert wurden)",
+        "about_ul0_li1": "MapPublisher wurde entwickelt, um auf einfache und intuitive Weise Karten und Mashups zu erstellen, zu speichern und zu teilen, die auf Inhalten von bekannten Quellen wie Google Maps und OpenStreetMap oder von Diensten die auf offenen Protokollen wie OGC WMS, WFS, WMTS or TMS und so weiter basieren. Für mehr Informationen siehe die",
+        "about_h20": "Lizenz",
+        "about_p3": "MapStore 2 ist kostenlos und Open Source, basierend auf OpenLayers 3, Leaflet und ReactJS und ist unter der vereinfachten BSD Lizenz lizenziert.",
+        "about_p5-0": "Für mehr Informationen siehe",
+        "about_a0": "diese",
+        "about_p5-1": "Seite.",
+        "about_h21": "Quellen",
+        "about_p6": "MapStore2 ist entwickelt von:",
+        "enable": "Aktiviere",
+        "layers": "Ebenen",
+        "layerProperties": {
+            "windowTitle": "Ebenen Eigenschaften",
+            "title": "Titel",
+            "name": "Name",
+            "group": "Gruppe",
+            "general": "Generell",
+            "display": "Darstellung",
+            "style": "Stil",
+            "styleCustom": "Stil \"{value}\" nutzen",
+            "styleListLoadError": "Es gab einen Fehler beim Laden der Liste von Stilen",
+            "stylesRefreshList": "Aktualisiere die Liste von Stilen",
+            "format": "Format",
+            "delete": "Löschen",
+            "deleteLayer":"Ebene löschen",
+            "deleteLayerMessage": "Möchtest du wirklich diese Ebene löschen?",
+            "confirmDelete": "Bist du sicher?",
+            "featureTypeError": "Layerattribute können nicht geladen werden"
+        },
+        "background": "Hintergrund",
+        "language": "Sprache",
+        "mousePositionCoordinates": "Koordinatenanzeige",
+        "showMousePositionCoordinates": "Zeige Koordinaten",
+        "menu": "Menü",
+        "options": "Optionen",
+        "settings": "Einstellungen",
+        "help": "Hilfe",
+        "gohome": "Gehe zur Startseite",
+        "back": "Zurück zum Import",
+        "printbutton": "Drucken",
+        "noresultfound": "Keine Resulte gefunden",
+        "save": "Speichern",
+        "saveAs": "Speichern als...",
+        "opacity": "Deckkraft",
+        "close": "Schliessen",
+        "cancel": "Abbrechen",
+        "confirm": "Bestätigen",
+        "confirmTitle": "Bestätigst du das?",
+        "pageInfo": "{total, plural, =0 {Keine Artikel} =1 {{total} Artikel von {total}} other {Artikel {start}-{end} von {total}}}",
+        "loading": "Wird geladen...",
+        "group": "Gruppe",
+        "groups": "Gruppen",
+        "permission": "Genehmigung",
+        "permissions": "Genehmigungen",
+        "home":{
+            "open": "Öffnen",
+            "description": "MapStore 2 wurde entwickelt, um auf einfache und intuitive Weise Karten und Mashups zu erstellen, zu speichern und zu teilen die auf Inhalten von bekannten Quellen wie Google Maps und OpenStreetMap oder von Diensten die auf offenen Protokollen wie OGC WMS, WFS, WMTS or TMS und so weiter basieren.<br/>Besuche die <a href=\"http://geosolutions-it.github.io/MapStore2/\">Homepage</a> für mehr Details.",
+            "Applications": "Anwendungen",
+            "Examples": "Beispiele",
+            "LinkedinGroup": "Mapstore Linkedin Gruppe",
+            "scrollTop": "An den Anfang der Seite scrollen",
+            "ml": {
+                "title": "Bleibe in Verbindung und auf dem Laufenden mit der Mailing Liste",
+                "subscribe_users": "Abonniere die Benutzer Mailing Liste",
+                "subscribe_devel": "Abonniere die Entwickler Mailing Liste",
+                "visit_group": "Besuche diese Gruppe",
+                "subscribe": "Abonnieren",
+                "email": "Email:"
+            },
+            "examples":{
+                "viewer":{
+                    "html":"<h3>Viewer</h3><p>Einfacher Viewer</p>"
+                },
+                "3dviewer":{
+                    "html":"<h3>3D Viewer</h3><p>Einfacher CesiumJS basierter 3D Viewer</p>"
+                },
+                "manager":{
+                    "html":"<h3>Manager</h3><p>MapStore Karten durchsuchen</p>"
+                },
+                "mouseposition":{
+                    "html":"<h3>Maus Position</h3><p>Kundenspezifische Beispiele</p>"
+                },
+                "scalebar":{
+                    "html":"<h3>Scale Control</h3><p>Kundenspezifische Beispiele</p>"
+                },
+                "layertree":{
+                    "html":"<h3>Erweiterter Ebenen-Baum</h3><p>Kundenspezifische Beispiele</p>"
+                },
+                "queryform":{
+                    "html":"<h3>Query Builder</h3><p>Kundenspezifische Beispiele</p>"
+                },
+                "featuregrid":{
+                    "html":"<h3>Feature Grid</h3><p>Kundenspezifische Beispiele</p>"
+                },
+                "print":{
+                    "html":"<h3>Drucken</h3><p>Kundenspezifische Beispiele</p>"
+                },
+                "plugins":{
+                    "html":"<h3>Plugins</h3><p>Erstelle deine eigene Anwendung</p>"
+                },
+                "api":{
+                    "html":"<h3>API</h3><p>Verwenden Sie APIs, um eine MapStore2-Karte in Ihre Anwendung aufzunehmen</p>"
+                },
+                "rasterstyler":{
+                    "html":"<h3>Raster Styler</h3><p>Style deine Rasterebene</p>"
+                }
+            }
+        },
+        "manager": {
+            "openInANewTab":"Karte öffnen",
+            "deleteMap":"Karte löschen",
+            "deleteMapMessage": "Möchtest du wirklich diese Karte löschen?",
+            "editMapMetadata":"Bearbeite die Eigenschaften der Karte",
+            "mapTypes_combo": "Wähle einen Karten-Viewer: ",
+            "theme_combo": "Thema wählen:",
+            "maps_title": "Karten",
+            "locales_combo": "Sprache:"
+        },
+        "newMap": "Neue Karte",
+        "maps": {
+            "search": "Suche nach Karten..."
+        },
+        "map": {
+            "loading": "Wird geladen...",
+            "loadingerror": "Fehler während des Ladens",
+            "name": "Name",
+            "description": "Beschreibung",
+            "namePlaceholder": "Karten Name",
+            "descriptionPlaceholder": "Karten Beschreibung",
+            "saveTitle": "Karte speichern",
+            "saveText": "Aktuelle Karte speichern?",
+            "thumbnail": "Thumbnail",
+            "message": "Ein Bild klicken oder hierherbewegen",
+            "suggestion": "(möglichst 300px X 180px, max 500kb)",
+            "errorFormat": "Unterstützte Formate: png/jpg",
+            "errorSize": "Maximal zulässige Größe: 500kb",
+            "error": "Das bereitgestellte Bild ist ungültig",
+            "thumbnailError": {
+                "error403": "Du hast keine Berechtigung um Thumbnails hochzuladen",
+                "error404": "Es gab einen Fehler während der Erstellung des Thumbnails",
+                "error409": "Ein Thumbnail mit diesem Namen existiert bereits",
+                "errorDefault": "Netzwerk Fehler"
+            },
+            "mapError": {
+                "error403": "Du hast keine Berechtigung die Karte zu aktualisieren",
+                "error404": "Es gab einen Fehler während der Erstellung der Karte",
+                "error409": "Eine Karte mit diesem Namen existiert bereits",
+                "errorDefault": "Netzwerk Fehler"
+            },
+            "permissions": {
+                "noRules": "Keine Regeln",
+                "addRule": "Füge eine Regel hinzu...",
+                "selectGroup": "Wähle eine Gruppe...",
+                "canView": "kann ansehen",
+                "canWrite": "kann bearbeiten",
+                "noResult": "keine Resultate gefunden",
+                "title": "Gruppen Berechtigungen"
+            }
+        },
+        "toc": {
+            "toggleLayerVisibility": "Ändere die Ebenen Sichtbarkeit",
+            "displayLegendAndTools": "Legende und Werkzeuge zeigen",
+            "zoomToLayerExtent": "Zoome auf Ausdehung der Ebene",
+            "editLayerProperties": "Ändere Ebenen Eigenschaften",
+            "searchFeatures": "Auf dieser Ebene suchen...",
+            "removeLayer": "Ebene entfernen",
+            "loadingerror": "Diese Ebene wurde nicht korrekt geladen"
+        },
+        "print":{
+            "paneltitle": "Drucken",
+            "layout": "Layout",
+            "sheetsize": "Blatt Größe:",
+            "legendoptions": "Legenden Optionen",
+            "submit": "Drucken",
+            "title": "Titel",
+            "titleplaceholder": "Gib einen Titel ein...",
+            "description": "Beschreibung",
+            "descriptionplaceholder": "Gib eine Beschreibung ein...",
+            "resolution": "Auflösung:",
+            "defaultBackground": "Nutze OSM als Hintergrund",
+            "printtooltip": "Drucken",
+            "alternatives": {
+                "legend": "Legende einschließen",
+                "2pages": "Legende auf einer separaten Seite",
+                "landscape": "Querformat",
+                "portrait": "Hochformat"
+            },
+            "legend": {
+                "font": "Label Einstellungen:",
+                "forceLabels": "Labels erzwingen:",
+                "antiAliasing": "Anti Aliasing Schrift:",
+                "iconsSize": "Symbolgröße:",
+                "dpi": "dpi:"
+            },
+            "layoutWarning": "Layout nicht erlaubt"
+        },
+        "backgroundSwither":{
+            "tooltip": "Wähle Hintergrund"
+        },
+        "info":{
+            "tooltip": "Objekte auf der Karte abfragen"
+        },
+        "expandtoolbar": {
+            "tooltip": "Expandieren / Kollabieren"
+        },
+        "getFeatureInfoTitle": "Feature Info",
+        "identifyTitle": "Feature Info",
+        "identifyRevGeocodeHeader": "Koordinaten",
+        "identifyRevGeocodeModalTitle": "Addresse",
+        "identifyRevGeocodeSubmitText": "Mehr Informationen",
+        "identifyRevGeocodeCloseText": "Schliessen",
+        "identifyRevGeocodeError": "Konnte nicht geocodiert werden",
+        "getFeatureInfoError": {
+            "title": "Ooops! Etwas ist schiefgelaufen.",
+            "text": "Ein Fehler ist während dieser <b>GetFeatureInfo</b> Anfrage aufgetreten"
+        },
+        "noFeatureInfo": "Es sind keine Informationen für den gewählten Punkt verfügbar",
+        "noInfoForLayers": "Für die folgenden Ebenen gibt es keine Features: ",
+        "history":{
+            "barLabel": "Kartenverlauf",
+            "undoBtnTooltip": "Gehe zurück",
+            "redoBtnTooltip": "Gehe vorwärts"
+        },
+        "infoFormatLbl": "Identifiziere das Antwortformat",
+        "measureComponent": {
+            "Measure": "Messen",
+            "MeasureLength": "Distanz messen",
+            "MeasureArea": "Fläche messen",
+            "MeasureBearing": "Richtung messen",
+            "tooltip": "Länge und Fläche messen",
+            "title": "Messen",
+            "lengthButtonText": "Linie",
+            "areaButtonText": "Fläche",
+            "resetButtonText": "Zurücksetzen",
+            "lengthLabel": "Länge",
+            "areaLabel": "Fläche",
+            "bearingLabel": "Richtung"
+        },
+        "search":{
+            "placeholder": "Suche nache einer Adresse oder gib Koordinaten ein ..."
+        },
+        "drawLocal": {
+            "draw": {
+                "toolbar": {
+                    "actions": {
+                        "title": "Zeichnung abbrechen",
+                        "text": "Abbrechen"
+                    },
+                    "undo": {
+                        "title": "Letzten gezeichneten Punkt löschen",
+                        "text": "Letzten Punkt löschen"
+                    },
+                    "buttons": {
+                        "polyline": "Zeichne eine Multilinie",
+                        "polygon": "Zeichne ein Polygon",
+                        "rectangle": "Zeichne ein Rechteck",
+                        "circle": "Zeichne einen Kreis",
+                        "marker": "Zeichne einen Marker"
+                    }
+                },
+                "handlers": {
+                    "circle": {
+                        "tooltip": {
+                            "start": "Klicke und ziehe um einen Kreis zu zeichnen."
+                        }
+                    },
+                    "marker": {
+                        "tooltip": {
+                            "start": "Klicke die Karte um einen Marker zu setzen."
+                        }
+                    },
+                    "polygon": {
+                        "tooltip": {
+                            "start": "Klicke um mit dem Zeichnen einer Form zu beginnen.",
+                            "cont": "Klicke um das Zeichnen der Form fortzusetzen.",
+                            "end": "Klicke den ersten Punkt der Form um sie zu schließen."
+                        }
+                    },
+                    "polyline": {
+                        "error": "Fehler: Die Kanten der Form dürfen sich nicht überschneiden!",
+                        "tooltip": {
+                            "start": "Klicke um mit dem Zeichnen einer Linie zu beginnen.",
+                            "cont": "Klicke um das Zeichnen der Linie fortzusetzen.",
+                            "end": "Klicke den letzten Punkt um die Linie abzuschließen."
+                        }
+                    },
+                    "rectangle": {
+                        "tooltip": {
+                            "start": "Klicke und ziehe um ein Rechteck zu zeichnen."
+                        }
+                    },
+                    "simpleshape": {
+                        "tooltip": {
+                            "end": "Lass die Maustaste los um das Zeichnen zu beenden."
+                        }
+                    }
+                }
+            },
+            "edit": {
+                "toolbar": {
+                    "actions": {
+                        "save": {
+                            "title": "Änderungen speichern.",
+                            "text": "Speichern"
+                        },
+                        "cancel": {
+                            "title": "Bearbeitung abbrechen, alle Änderungen werden verworfen.",
+                            "text": "Abbrechen"
+                        }
+                    },
+                    "buttons": {
+                        "edit": "Ebenen bearbeiten.",
+                        "editDisabled": "Keine bearbeitbaren Ebenen vorhanden.",
+                        "remove": "Ebenen löschen.",
+                        "removeDisabled": "Keine löschbaren Ebenen vorhanden."
+                    }
+                },
+                "handlers": {
+                    "edit": {
+                        "tooltip": {
+                            "text": "Bewege Anfasser oder Marker um das Feature zu bearbeiten.",
+                            "subtext": "Klicke Abbrechen um Änderungen zu verwerfen."
+                        }
+                    },
+                    "remove": {
+                        "tooltip": {
+                            "text": "Klicke ein zu entfernendes Feature"
+                        }
+                    }
+                }
+            }
+        },
+        "locate": {
+            "tooltip": "Orte mich",
+            "metersUnit": "Meter",
+            "feetUnit": "Fuß",
+            "popup": "Du bist weniger als {distance} {unit} von diesem Punkt entfernt",
+            "outsideMapBoundsMsg": "Du scheinst dich außerhalb der Grenzen dieser Karte zu befinden"
+        },
+        "zoombuttons": {
+            "zoomInTooltip": "Zoom vergrößern",
+            "zoomOutTooltip": "Zoom verringern",
+            "zoomAllTooltip": "Zoom auf maximale Ausdehnung"
+        },
+        "helptexts": {
+            "scaleBox": "Das ist die Hilfe für die ScaleBox",
+            "zoomToMaxExtentButton": "Das ist die Hilfe für den ZoomToMaxExtentButton",
+            "zoomIn": "Das ist die Hilfe für ZoomIn",
+            "zoomOut": "Das ist die Hilfe für ZoomOut",
+            "searchBar": "Gib eine Adresse eines Ortes ein bspw. 'Brandenburger Tor, Berlin'. Du kannst auch Koordinaten im folgenden Format eingeben: 43.87, 10.20",
+            "metadataExplorer": "Das ist die Hilfe für den MetadataExplorer",
+            "settingsPanel": "Das ist die Hilfe für das SettingsPanel",
+            "gohome": "Das ist die Hilfe für Home",
+            "measureComponent": "Das ist die Hilfe für MeasureComponent",
+            "backgroundSwitcher": "Das ist die Hilfe für den BackgroundSwitcher",
+            "layerSwitcher": "Das ist die Hilfe für den LayerSwitcher",
+            "infoButton": "Das ist die Hilfe für den InfoButton",
+            "locateBtn": "Das ist die Hilfe für den LocateBtn",
+            "snapshot": "Das ist die Hilfe für Snapshot",
+            "print": "Das ist die Hilfe für Print",
+            "shapefile": "Das ist die Hilfe für Shapefile",
+            "rasterstyler": "Definiere Minimum, Maximum, Anzahl von Klassen und ColorRamp und generiere eine neue klassifizierte Raster Ebene",
+            "expandToolbar": "Das ist die Hilfe für Expand / Collapse",
+            "historyundo": "Nutze diesen Button um zur vorherigen Kartenansicht zu gehen",
+            "historyredo": "Nutze diesen Button um zur nächsten Kartenansicht zu gehen",
+            "vectorstyler": "Erstelle den Stil für die gewählte Vektor Ebene",
+            "styler": "Erstelle den Stil für die gewählte Ebene"
+        },
+        "queryform": {
+            "title": "Erweiterte Suche",
+            "query": "Suche",
+            "reset": "Zurücksetzen",
+            "query_request_exception": "Abfrage Fehler",
+            "config": {
+                "load_config_exception": "Fehler beim Laden der Konfiguration"
+            },
+            "form": {
+                "header": "Finde im Datensatz",
+                "dataset_header": "Datensatz"
+            },
+            "attributefilter":{
+                "add_condition": " Füge Bedingung hinzu",
+                "add_group": " Füge Gruppe hinzu",
+                "group_label_a": "Übereinstimmung",
+                "group_label_b": "der folgenden Bedingungen:",
+                "combo_placeholder": "Wähle",
+                "text_placeholder": "Gib den zu suchenden Text ein",
+                "attribute_filter_header": "Attribut Filter",
+                "groupField": {
+                    "any": "jeder",
+                    "all": "alle",
+                    "none": "keiner"
+                },
+                "numberfield": {
+                    "isRequired": "Eingabe nötig",
+                    "wrong_range": "Die untere Grenze muss kleiner als die obere Grenze sein"
+                },
+                "datefield": {
+                    "wrong_date_range": "Das Datum des Beginns muss früher als das des Endes sein"
+                }
+            },
+            "spatialfilter": {
+                "selection_method": "Auswahl Methode",
+                "geometric_operation": "Geometrische Operation",
+                "spatial_filter_header": "Räumlicher Filter",
+                "draw_start_label": "Zeichne die Region von Interesse auf der Karte",
+                "dwithin_label": "Meter",
+                "details": {
+                    "detail_button_label": "Details",
+                    "details_header": "Details der Auswahl",
+                    "details_bbox_label": "Bearbeite die Koordinaten um den gwählten Bereich zu ändern",
+                    "details_circle_label": "Bearbeite die numerischen Felder um den Radius und das Zentrum des Kreises zu ändern",
+                    "reset_bbox": "Zurücksetzen",
+                    "save_bbox": "BBOX Änderungen speichern",
+                    "save_radius": "Radius/Kreiszentrum Änderungen speichern",
+                    "radius": "Radius"
+                },
+                "methods": {
+                    "zone": "Zone",
+                    "box": "BoundingBox",
+                    "buffer": "Buffer",
+                    "circle": "Kreis",
+                    "poly": "Polygon"
+                },
+                "operations": {
+                    "intersects": "INTERSECTS",
+                    "bbox": "BBOX",
+                    "contains": "CONTAINS",
+                    "dwithin": "DWITHIN",
+                    "within": "WITHIN"
+                }
+            }
+        },
+        "user":{
+            "login": "Login",
+            "logout": "Logout",
+            "info": " Account Info",
+            "details": " Nutzer Details",
+            "noAttributesMessage": "Es gibt keine Information bezüglich deines Accounts",
+            "changePwd": "Passwort ändern",
+            "newPwd": "Neues Passwort",
+            "retypePwd": "Passwort wiederholen",
+            "passwordMinlenght": "Dein Passwort muss aus mindestens {minSize} Zeichen bestehen",
+            "passwordCheckFail": "Passwörter sind nicht identisch!",
+            "username": "Benutzername",
+            "password": "Passwort",
+            "signIn":"Anmelden",
+            "loginFail":"Anmeldung gescheitert",
+            "loginFailedStatusMessages": {
+                "usernamePwdInsert": "Bitte gib Benutzernamen und Password ein",
+                "usernamePwdIncorrect":"Benutzername oder Passwort inkorrekt"
+            }
+        },
+        "users": {
+            "title": "Accounts verwalten",
+            "users": "Benutzer",
+            "manageUsers": "Benutzer verwalten",
+            "searchUsers": "Suche nach Benutzern...",
+            "newUser": "Neuer Benutzer",
+            "editUser": "Benutzer ändern",
+            "deleteUser": "Benutzer löschen",
+            "statusTitle": "Status",
+            "enabled": "Berechtigt",
+            "groupTitle": "Gruppen:",
+            "roleTitle": "Rolle",
+            "saveUser": "Speichern",
+            "savingUser": "Speichern...",
+            "userSaved": "Gespeichert!",
+            "createUser": "Erstellen",
+            "creatingUser": "Erstellen...",
+            "userCreated": "Erstellt!",
+            "deleting": "Löschen...",
+            "delete": "Löschen",
+            "confirmDeleteUser": "Bist du sicher, das du diesen Benutzer löschen möchtest?",
+            "errorDelete": "Es gab einen Fehler beim Löschen von Benutzer:",
+            "errorSaving": "Es gab einen Fehler beim Speichern von Benutzer:",
+            "selectedGroups": "Ausgewählte Gruppen"
+        },
+        "usergroups": {
+          "searchGroups": "Suche Gruppen...",
+          "groups": "Gruppen",
+          "nameLimit": "Der Name ist auf 255 Zeichen limitiert.",
+          "descLimit": "Die Beschreibung ist auf 255 Zeichen limitiert.",
+          "editGroup": "Gruppe bearbeiten",
+          "deleteGroup": "Gruppe löschen",
+          "removeUser": "Benutzer löschen",
+          "newGroup": "Neue Gruppe",
+          "manageGroups": "Gruppen verwalten",
+          "description": "Beschreibung:",
+          "groupName": "Gruppenname",
+          "groupDescription": "Beschreibung",
+          "saveGroup": "Speichern",
+          "createGroup": "Erstellen",
+          "creatingGroup": "Erstellen...",
+          "groupMembers": "Mitglied:",
+          "addMember": "Mitglied hinzufügen",
+          "noUsers": "Keine Benutzer für diese Gruppe gefunden",
+          "errorSaving": "Es gab einen Fehler beim Speichern dieser Gruppe",
+          "errorDelete": "Es gab einen Fehler beim Löschen dieser Gruppe",
+          "confirmDeleteGroup": "Bist du sicher, das du diese Gruppe löschen möchtest?"
+        },
+        "share":{
+            "title": "Teilen",
+            "titlePanel": "Teile die Karte",
+            "socialIntro": "In deinem bevorzugten sozialen Netzwerk",
+            "directLinkTitle": "Über einen direkten Link",
+            "embeddedLinkTitle": "Über einen eingebetteten Code",
+            "QRCodeLinkTitle": "QR code",
+            "msgCopiedUrl":"Kopiert",
+            "msgToCopyUrl":"Klicke um zu kopieren"
+        },
+        "snapshot": {
+            "title": "Snapshot Vorschau",
+            "save": "Speichern",
+            "tooltip": "Speichere einen Snapshot der Karte.",
+            "googleBingError": "Google und Bing Ebenen sind aufgrund urheberrechtlicher Einschränkungen für den Snapshot nicht verfügbar.",
+            "downloadingSnapshots": "Snapshot Erstellung...",
+            "date": "Datum",
+            "layers": "Ebenen",
+            "size": "Größe",
+            "notsupported": "Snapshot nicht unterstützt",
+            "taintedMessage": "Die Snapshot Speichern Funktionalität ist aufgrund von Browser Sicherheits Beschränkungen eingeschränkt. Für ein besseres Ergebnis klicke mit der rechten Maustaste auf die Vorschau und wähle 'Bild speichern unter'(unterstützt von Firefox und Chrome)"
+        },
+        "shapefile": {
+            "title": "Shapefile hochladen",
+            "tooltip": "Füge der Karte ein Shapefile hinzu.",
+            "placeholder": "Ziehe deine Dateien hierher oder klicke Shapefile(s) die importiert werden sollen.(Shapefiles müssen in Zip-Archiven enthalten sein)",
+            "defaultStyle": "Standardstil",
+            "zoom": "Zoome auf Shapefiles",
+            "error": {"select": "Wähle ein oder mehrere Zip Archive"},
+            "add": "Hinzufügen",
+            "cancel": "Abbrechen",
+            "success": " erfolgreich importiert"
+        },
+        "catalog": {
+            "title": "Katalog",
+            "tooltip": "Katalog durchsuchen",
+            "addToMap": "Zur Karte hinzufügen",
+            "getWMSLink": "WMS Link erhalten",
+            "error": "Es gab einen Fehler beim Laden von Einträgen aus dem Katalog",
+            "pageInfo": "Resultat {start}-{end} von {total}",
+            "noRecordsMatched": "Kein passender Eintrag",
+            "wmsGetCapLink": "WMS",
+            "wfsGetCapLink": "WFS",
+            "share": "Teilen",
+            "copyToClipboard": "In die Zwischenablage kopieren",
+            "copied": "Kopiert!",
+            "catalogUrlPlaceholder": "Gib eine Katalog URL ein...",
+            "textSearchPlaceholder": "Zu suchender Text...",
+            "search": "Suche",
+            "reset": "Zurücksetzen",
+            "options": "Optionen",
+            "srs_not_allowed": "Das Koordinatensystem der Karte wird von dieser Anwendung nicht unterstützt"
+        },
+        "uploader": {
+            "filename": "Datei Name",
+            "type": "Dateiart",
+            "lastModified": "Zuletzt geändert",
+            "filesize": "Größe",
+            "beforeUpload": "Bereite Upload vor... ",
+            "uploadingFiles": "Lade Dateien hoch...",
+            "dropfile": "Ziehe Dateien für den Upload hierhier",
+            "dropfileImport": "Ziehe Dateien hierher um Sie dem Import hinzuzufügen"
+        },
+        "importer": {
+            "title": "Daten Import",
+            "imports": "Importe",
+            "importN": "Import {id}",
+            "creatingImportProcess": " Erstelle Import... ",
+            "dropfile": "Ziehe Dateien hierher um einen neunen Import zu beginnen",
+            "dropfileImport": "Ziehe Dateien hierher um Sie dem aktuellen Import hinzuzufügen",
+            "process": "Import",
+            "number": "#",
+            "workspace": {
+                "create": "Erstellen",
+                "createWS": "Erstelle einen neuen Workspace: ",
+                "target": "Ziel Workspace: ",
+                "failure": "Fehler beim Erstellen des Workspace: {statusWS}",
+                "success": "Workspace {statusWS} erfolgreich erstellt",
+                "select": "Wähle Ziel Workspace",
+                "new": "Name des neuen Workspaces..."
+            },
+            "import": {
+                "actions": "Aktionen",
+                "tasks": "Packages",
+                "runImport": "Ausführen",
+                "deleteImport": "Import löschen",
+                "deleteTask": "Löschen",
+                "status": "Status",
+                "archive": "Archiv",
+                "deleting": "Löschen...",
+                "analyzing": "Analyse des Packages...",
+                "applyingPreset": "Wende Voreinstellungen an..."
+            },
+            "task": {
+                "panelTitle": "Package Import {id}",
+                "general": "Allgemeine Info",
+                "status": "Status",
+                "updateMode": "Update Modus",
+                "originalData": "Original Datei",
+                "file": "Datei Name",
+                "format": "Format",
+                "targetStore": "Ziel",
+                "storeType": "Art des Ziels",
+                "storeName": "Name des Ziels",
+                "layer": "Ebene",
+                "transforms": "Transformationen-Kette",
+                "update": "Update",
+                "run": "Importiere dieses Package",
+                "edit": "Bearbeite Standard Stil",
+                "delete": "Lösche dieses Package"
+            },
+            "transform": {
+                "panelTitle": "Transformation {id}",
+                "type": "Transformations Art",
+                "actions": "Aktionen",
+                "options": "Transformations Optionen",
+                "overviewlevels": "Level Übersicht",
+                "delete": "Lösche diese Transformation"
+            }
+        },
+        "rasterstyler": {
+            "tooltip": "Erstelle und bearbeite den Stil der Raster Ebenen",
+            "paneltitle": "Raster Styler",
+            "layerlabel": "Ebene",
+            "typelabel": "Stil Art",
+            "opacitylabel": "Deckkraft",
+            "redtitle": "Rot",
+            "greentitle": "Grün",
+            "bluetitle": "Blau",
+            "graytitle": "Grau",
+            "pseudobandtitle": "Band Auswahl",
+            "eqinttitle": "Equal Interval Klassifikation",
+            "pseudotitle": "PseudoColor Einstellungen",
+            "applybtn": "Stil anwenden"
+        },
+        "bandselector": {
+            "band": "Band",
+            "enhancement": "Verbesserung",
+            "algorithmTitle": "Optionaler Algorithmus",
+            "value": "Wert",
+            "min": "Min",
+            "max": "Max",
+            "enha": {
+                "none": "Keine",
+                "Normalize": "Normalisieren",
+                "Histogram": "Histogram",
+                "GammaValue": "Gamma Korrektur"
+            },
+            "algorithm": {
+                "none": "Keiner",
+                "StretchToMinimumMaximum": "Stretch",
+                "ClipToMinimumMaximum": "Clip",
+                "ClipToZero": "Clip To Zero"
+            }
+        },
+        "equalinterval": {
+            "min": "Min",
+            "max": "Max",
+            "classes": "Classes",
+            "ramp": "Color Ramp",
+            "classify": "Classify",
+            "maxerror": "Maximum Wert muß größer als der Minimum Wert sein",
+            "minerror": "Minimum Wert muß größer als der Maximum Wert sein"
+        },
+        "colormapgrid": {
+            "color": "Farbe",
+            "quantity": "Quantität",
+            "label": "Beschreibung",
+            "minmaxerror": "Der Wert muss zwischen den Werten der vorherigen und der nächsten Zelle liegen"
+        },
+        "pseudocolorsettings": {
+            "type": "Art",
+            "extended": "Extended",
+            "colormap": "Color Map",
+            "add": "Eintrag hinzufügen",
+            "remove": "Eintrag entfernen"
+        },
+        "rasterstyletype": {
+            "rgb": "Rot Grün Blau",
+            "gray": "Grauwerte",
+            "pseudo": "PseudoColor",
+            "multi": "Multi Band",
+            "single": "Single Band"
+        },
+        "featuregrid": {
+            "header": "Suchresultate",
+            "tools": "Werkzeugpalette",
+            "export": "Export",
+            "selectall": "Alle auswählen",
+            "deselectall": "Auswahl aufheben",
+            "backtosearch": "Zurück zur suche",
+            "pagination": {
+                "page": "Seite",
+                "of":   "von",
+                "to":   "bis",
+                "more": "viele"
+            }
+        },
+        "vectorstyler": {
+            "tooltip": "Erstelle und bearbeite den Vektor Ebenen Stil",
+            "paneltitle": "Vektor Styler",
+            "layerlabel": "Ebene",
+            "rulelabel": "Regeln",
+            "namelabel": "Regel Name",
+            "symboltitle": "Symbol",
+            "labeltitle": "Label",
+            "conditiontitle": "Bedingungen",
+            "applybtn": "Stil anwenden",
+            "addrulebtn": "Regel hinzufügen",
+            "removerulebtn": "Regel entfernen"
+        },
+        "scaledenominator": {
+            "minlabel": "Skalierungs Minimum Nenner",
+            "maxlabel": "Skalierungs Maximum Nenner",
+            "maxerror": "Maximum Wert muß größer als der Minimum Wert sein",
+            "minerror": "Minimum Wert muß größer als der Maximum Wert sein",
+            "none": "None"
+        },
+        "markNameSelector": {
+            "circle": "Kreis",
+            "square": "Rechteck",
+            "triangle": "Dreieck",
+            "star": "Stern",
+            "cross": "Kreuz",
+            "x": "X"
+        },
+        "styler": {
+            "tooltip": "Erstelle und bearbeite den Ebenen Stil",
+            "paneltitle": "Gestalter",
+            "layerlabel": "Ebene"
+        },
+        "rulesmanager": {
+            "title": "Zugangs Regeln",
+            "role": "Rolle",
+            "user": "Benutzer",
+            "service": "Service",
+            "request": "Anfrage",
+            "workspace": "Workspace",
+            "layer": "Ebene",
+            "filters": "Filter",
+            "rules": "Regeln",
+            "access": "Zugang",
+            "newModal": "Neue Regel",
+            "editModal": "Regel bearbeiten",
+            "newButton": "Erstellen",
+            "editButton": "Speichern",
+            "close": "Schließen",
+            "previous": "vorheriger",
+            "next": "nächster",
+            "errorLoadingRoles": "Fehler beim Laden der Rollen.",
+            "errorLoadingUsers": "Fehler beim Laden der Benutzer.",
+            "errorLoadingWorkspaces": "Fehler beim Laden der Workspaces.",
+            "errorLoadingLayers": "Fehler beim Laden der Ebenen.",
+            "errorLoadingRules": "Fehler beim Laden der Regeln.",
+            "errorMovingRules": "Fehler beim Ändern der Regeln.",
+            "errorDeletingRules": "Fehler beim Löschen der Regeln.",
+            "errorAddingRule": "Fehler beim Hinzufügen der Regel.",
+            "errorUpdatingRule": "Fehler beim Ändern der Regel.",
+            "deleteModal": "Regeln löschen",
+            "selectedRulesDelete": "Ausgewählte Regeln löschen ?",
+            "deleteButton": "Löschen",
+            "cancelButton": "Abbrechen"
+        },
+        "tutorial": {
+            "title": "Tutorial",
+            "back": "Back",
+            "next": "Next",
+            "close": "Close",
+            "skip": "Skip",
+            "last": "Finish",
+            "start": "Start",
+            "checkbox": "don't show this message again",
+            "error": "Error: target not found",
+            "riskIntro": {
+                "title": "Welcome on Risk Data Extraction & Visualization",
+                "text": "click on start to initialize the tutorial"
+            },
+            "costIntro": {
+                "title": "Welcome on Cost/Benefit Analysis & Decision Tool",
+                "text": "click on start to initialize the tutorial"
+            },
+            "riskSelector": {
+                "title": "Hazard type selector",
+                "text": "Choose between these hazards to open related analyses"
+            },
+            "riskOverview": {
+                "title": "Overview",
+                "text": "This list shows the available analyses and it links to the hazard page"
+            },
+            "riskMap": {
+                "title": "Map",
+                "text": "This map is a useful tool to navigate among the analysis data.  It'll display more tools and descriptions on the analysis page"
+            },
+            "riskNavigator": {
+                "title": "Navigator",
+                "text": "It shows the current location of analysis"
+            },
+            "riskPageTool": {
+                "title": "Page toolbar",
+                "text": "Here you can find some tools related the whole page. E.g. the 'pdf button' prints the report page to a PDF file or the 'link button' copies a link of the analysis page to share"
+            },
+            "riskHelp": {
+                "title": "Help",
+                "text": "Click on help button to start the tutorial again. The tutorial will change based on the page"
+            },
+            "riskTab": {
+                "title": "Category Analysis Menu",
+                "text": "Here you can choose the category of Analysis"
+            },
+            "riskList": {
+                "title": "Analysis List",
+                "text": "Click on the analysis panel to open the abstract then click on 'Analysis Data' button to open the data page. Or click directly on the icon to open the data page"
+            },
+            "riskChart": {
+                "title": "Chart",
+                "text": "This is an interactive chart that let you change the values shown in the map. Click on the light blue button to read more about the data"
+            },
+            "riskLayer": {
+                "title": "Layers Panel",
+                "text": "Click to open the layer panel and see the available layers for this analysis"
+            },
+            "riskInfo": {
+                "title": "Get informations",
+                "text": "Click the button to activate the tool, then click on the map to get information about the chosen layers and location"
+            },
+            "riskUnit": {
+                "title": "Sub unit values",
+                "text": "Click to show or hide the sub unit values on the map"
+            },
+            "riskSwitch": {
+                "title": "Switch button",
+                "text": "Switch the values displayed on the map with the ones displayed on chart"
+            },
+            "riskMapSlider": {
+                "title": "Map Slider",
+                "text": "Change the value displayed on the map"
+            },
+            "riskLegend": {
+                "title": "Legend",
+                "text": "Here the map legend"
+            },
+            "riskFurtherResources": {
+                "title": "Further Resources",
+                "text": "Click on the resource to see more informations"
+            },
+            "riskMoreInfo": {
+                "title": "More Info",
+                "text": "Click to open a notification panel with all the information related this analysis"
+            },
+            "riskDownloadData": {
+                "title": "Download Data",
+                "text": "Download data and metadata in xlsx format"
+            },
+            "riskBack": {
+                "title": "Back button",
+                "text": "Back to analyses list"
+            },
+            "costCompare": {
+                "title": "Scenario information",
+                "text": "Click on the risk scenario to compare with the main scenario. You'll see scenarios compared in the chart below with different color"
+            },
+            "costChart": {
+                "title": "Chart",
+                "text": "Here you'll see all the chart about the current analysis"
+            },
+            "costMap": {
+                "title": "Map",
+                "text": "Navigate on the map to find the chosen scenario displayed on it"
+            },
+            "costSwitch": {
+                "title": "Switch Chart",
+                "text": "Click on the button to change the chart type displayed below"
+            }
+        }
+    }
+}

@@ -7,3 +7,5 @@ geonode/static/node_modules
 docs
 .coverage
 .celerybeat-*
+
+scripts/spcgeonode/_volume_*

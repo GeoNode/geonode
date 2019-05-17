@@ -1,0 +1,6 @@
+#mapstore-about {
+    position: fixed;
+    top: 0;
+    left: calc(50% - 500px);
+    width: 500px;
+}

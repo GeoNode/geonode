@@ -1,0 +1,60 @@
+.mapToolbar .mapstore-tb-helpbadge {
+    display: block;
+    background-color: #777;
+    position: absolute;
+    z-index: 1000;
+    top : -10px;
+    left: -10px;
+}
+
+
+#helpbadge-zoomToMaxExtent {
+    display: inline;
+    position: absolute;
+    left: 34px;
+    top: 72px;
+    z-index: 100000
+}
+
+#helpbadge-scaleBox {
+    display: inline;
+    position: absolute;
+    left: 116px;
+    bottom: 48px;
+    z-index: 100000
+}
+
+#helpbadge-seachBar {
+    display: inline;
+    position: absolute;
+    left: 46px;
+    top: 10px;
+    z-index: 100000
+}
+
+
+.btn .badge {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+}
+
+.themed .btn .badge {
+    top: -35px;
+    left: -50px;
+}
+
+.badge {
+    cursor: pointer;
+}
+
+#helpbadge-scaleBox {
+    left: 0 !important;
+}
+
+#mapstore-navbar #helpbadge-search-help {
+    position: absolute;
+    left: -10px;
+    bottom: -8px;
+    z-index: 1;
+}

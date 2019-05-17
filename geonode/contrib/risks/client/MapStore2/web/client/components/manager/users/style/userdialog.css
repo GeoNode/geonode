@@ -1,0 +1,33 @@
+.user-edit-dialog, .group-edit-dialog{
+    z-index: 1000;
+}
+
+.user-edit-dialog,.group-edit-dialog {
+    max-width: 300px;
+}
+
+.user-edit-dialog .modal-body .nav-tabs li a, .group-edit-dialog .modal-body .nav-tabs li a {
+    padding: 0;
+}
+.group-edit-dialog .user-thumb {
+    height: auto;
+    margin-bottom: 10px;
+}
+.group-edit-dialog .user-thumb .user-status {
+    display: none;
+}
+
+.user-edit-dialog .modal-header, .group-edit-dialog .modal-header {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.user-edit-dialog  .Select--multi .Select-value-label{
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.user-edit-dialog  .Select-multi-value-wrapper {
+    max-height: 300px;
+    overflow: auto;
+    min-height: 36px;
+}

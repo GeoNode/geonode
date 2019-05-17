@@ -23,11 +23,43 @@ from geonode.layers.models import Layer
 
 
 class Command(BaseCommand):
-    """Resets Permissions to Public for All Layers
-    """
+    help = 'Resets Permissions to Public for All Layers'
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '-i',
+            '--ignore-errors',
+            action='store_true',
+            dest='ignore_errors',
+            default=False,
+            help='Stop after any errors are encountered.'
+        )
+        parser.add_argument(
+            '-f',
+            '--filter',
+            dest="filter",
+            default=None,
+            help="Only update data the layers that match the given filter"),
+        parser.add_argument(
+            '-u',
+            '--username',
+            dest="username",
+            default=None,
+            help="Only update data owned by the specified username")
 
     def handle(self, *args, **options):
-        all_layers = Layer.objects.all()
+        ignore_errors = options.get('ignore_errors')
+        filter = options.get('filter')
+        if not options.get('username'):
+            username = None
+        else:
+            username = options.get('username')
+
+        all_layers = Layer.objects.all().order_by('name')
+        if filter:
+            all_layers = all_layers.filter(name__icontains=filter)
+        if username:
+            all_layers = all_layers.filter(owner__username=username)
 
         for index, layer in enumerate(all_layers):
             print "[%s / %s] Checking 'alternate' of Layer [%s] ..." % ((index + 1), len(all_layers), layer.name)
@@ -35,5 +67,10 @@ class Command(BaseCommand):
                 if not layer.alternate:
                     layer.alternate = layer.typename
                     layer.save()
-            except:
-                print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
+            except BaseException as e:
+                # import traceback
+                # traceback.print_exc()
+                if ignore_errors:
+                    print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
+                else:
+                    raise e

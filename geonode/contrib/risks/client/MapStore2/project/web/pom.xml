@@ -1,0 +1,251 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>it.geosolutions.__PROJECTNAME__</groupId>
+    <artifactId>__PROJECTNAME__-root</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>__PROJECTNAME__-web</artifactId>
+  <packaging>war</packaging>
+  <name>__PROJECTDESCRIPTION__ - WAR</name>
+  <url>http://www.geo-solutions.it</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <!-- ================================================================ -->
+    <!-- GeoStore modules -->
+    <!-- ================================================================ -->
+    <dependency>
+      <groupId>it.geosolutions.geostore</groupId>
+      <artifactId>geostore-webapp</artifactId>
+      <version>1.4-SNAPSHOT</version>
+      <type>war</type>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>proxy</groupId>
+      <artifactId>http_proxy</artifactId>
+      <version>1.1-SNAPSHOT</version>
+      <type>war</type>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- JUnit -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+      <version>4.4</version>
+    </dependency>
+    <!--  mockito -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.9.5</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- servlet -->
+    <dependency>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+          <version>2.5</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>__PROJECTNAME__</finalName>
+    <plugins>
+
+
+        <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.6</version>
+            <executions>
+                <execution>
+                    <id>html, configuration files and images</id>
+                    <phase>process-classes</phase>
+                    <goals>
+                        <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>${basedir}/target/__PROJECTNAME__</outputDirectory>
+                        <encoding>UTF-8</encoding>
+                        <resources>
+                            <resource>
+                                <directory>${basedir}/..</directory>
+                                <includes>
+                                    <include>**/*.html</include>
+                                    <include>**/*.json</include>
+                                    <include>**/img/*</include>
+                                    <include>**/*.less</include>
+                                </includes>
+                                <excludes>
+                                    <exclude>MapStore2/*</exclude>
+                                    <exclude>MapStore2/**/*</exclude>
+                                </excludes>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>js files</id>
+                    <phase>process-classes</phase>
+                    <goals>
+                        <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>${basedir}/target/__PROJECTNAME__/dist</outputDirectory>
+                        <encoding>UTF-8</encoding>
+                        <resources>
+                            <resource>
+                                <directory>${basedir}/../dist</directory>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>CSS files</id>
+                    <phase>process-classes</phase>
+                    <goals>
+                        <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>${basedir}/target/__PROJECTNAME__/assets</outputDirectory>
+                        <encoding>UTF-8</encoding>
+                        <resources>
+                            <resource>
+                                <directory>${basedir}/../assets</directory>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>translations</id>
+                    <phase>process-classes</phase>
+                    <goals>
+                        <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>${basedir}/target/__PROJECTNAME__/MapStore2/web/client</outputDirectory>
+                        <encoding>UTF-8</encoding>
+                        <resources>
+                            <resource>
+                                <directory>${basedir}/../js</directory>
+                                <includes>
+                                    <include>translations/*</include>
+                                </includes>
+                            </resource>
+                            <resource>
+                                <directory>${basedir}/../MapStore2/web/client</directory>
+                                <includes>
+                                    <include>translations/*</include>
+                                </includes>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>2.1.1</version>
+            <configuration>
+                <overlays>
+                    <overlay>
+                        <groupId>it.geosolutions.geostore</groupId>
+                        <artifactId>geostore-webapp</artifactId>
+                    </overlay>
+                    <overlay>
+                        <groupId>proxy</groupId>
+                        <artifactId>http_proxy</artifactId>
+                    </overlay>
+                </overlays>
+            </configuration>
+        </plugin>
+
+        <!-- Run the application using "mvn jetty:run" -->
+        <plugin>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>maven-jetty-plugin</artifactId>
+            <version>6.1.20</version>
+            <configuration>
+                <webAppConfig>
+                    <contextPath>/__PROJECTNAME__</contextPath>
+                </webAppConfig>
+                <connectors>
+                    <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                        <port>9191</port>
+                        <maxIdleTime>60000</maxIdleTime>
+                    </connector>
+                </connectors>
+                <reload>manual</reload>
+            </configuration>
+        </plugin>
+    </plugins>
+  </build>
+
+	<repositories>
+        <!-- GeoSolutions -->
+        <repository>
+            <id>geosolutions</id>
+            <name>GeoSolutions Repository</name>
+            <url>http://maven.geo-solutions.it</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- Apache -->
+        <repository>
+            <id>maven2-repository.dev.java.net</id>
+            <name>Java.net Repository for Maven</name>
+            <url>http://download.java.net/maven/2/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- JBoss -->
+        <repository>
+            <id>jboss-repo</id>
+            <name>JBoss Maven2 Repository</name>
+            <url>http://repository.jboss.com/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- Spring -->
+        <repository>
+            <id>spring-release</id>
+            <name>Spring Portfolio Release Repository</name>
+            <url>http://maven.springframework.org/release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-external</id>
+            <name>Spring Portfolio External Repository</name>
+            <url>http://maven.springframework.org/external</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>osgeo</id>
+            <name>Open Source Geospatial Foundation Repository</name>
+            <url>http://download.osgeo.org/webdav/geotools/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>

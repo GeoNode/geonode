@@ -1,0 +1,13 @@
+{
+  "files": {
+    "included": [
+      "web/client/plugins/*.jsx",
+      "web/client/actions/*js",
+      "web/client/reducers/*js",
+      "web/client/utils/*.js",
+      "web/client/epics/*js",
+      "web/client/jsapi/*js"
+    ]
+
+  }
+}

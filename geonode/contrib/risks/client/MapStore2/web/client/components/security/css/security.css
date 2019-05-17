@@ -1,0 +1,6 @@
+#mapstore-login-panel {
+    width: 300px;
+}
+#mapstore-login-panel button {
+    float: right !important;
+}

@@ -1,1 +1,1 @@
-Create an account on {{ current_site.name }}
+{% load i18n %}{% blocktrans with site_name=current_site.name %}Create an account on {{ site_name }}{% endblocktrans %}

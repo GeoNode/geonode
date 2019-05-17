@@ -1,0 +1,30 @@
+.BackgroundSwitcherComponent .thumbnail {
+    box-shadow: 5px 5px 5px #4C4C4C;
+    cursor: pointer;
+}
+.BackgroundSwitcherComponent .thumbnail:hover {
+    top: -1px;
+    left: -1px;
+    position: relative;
+    box-shadow: 6px 6px 6px #4c4c4c;
+}
+.BackgroundSwitcherComponent .thumbnail img {
+    border-radius: 10px;
+}
+.BackgroundSwitcherComponent .thumbnail-primary {
+
+    border-color: #337ab7;
+    background-color:#5bc0de;
+}
+
+.BackgroundSwitcherComponent .thumbnail-warning {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.BackgroundSwitcherComponent .thumbnail-warning:hover {
+    top: 0;
+    left: 0;
+    position: relative;
+    box-shadow: 5px 5px 5px #4C4C4C;
+}

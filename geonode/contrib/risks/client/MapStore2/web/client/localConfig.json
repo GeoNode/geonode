@@ -1,0 +1,270 @@
+{
+	"proxyUrl": {
+		"url": "/mapstore/proxy/?url=",
+		"useCORS": ["https://demo.geo-solutions.it/geoserver"]
+	},
+	"geoStoreUrl": "/mapstore/rest/geostore/",
+	"printUrl": "https://demo.geo-solutions.it/geoserver/pdf/info.json",
+	"bingApiKey": "AhuXBu7ipR1gNbBfXhtUAyCZ6rkC5PkWpxs2MnMRZ1ZupxQfivjLCch22ozKSCAn",
+	"mapquestApiKey": "__API_KEY_MAPQUEST__",
+	"initialMapFilter": "",
+	"ignoreMobileCss": true,
+	"useAuthenticationRules": true,
+	"authenticationRules": [{
+		"urlPattern": ".*geostore.*",
+		"method": "basic"
+	}],
+	"plugins": {
+		"mobile": [{
+				"name": "Map",
+				"cfg": {
+					"tools": ["locate"]
+				}
+			}, "DrawerMenu", {
+				"name": "Identify",
+				"showIn": ["Settings"],
+				"cfg": {
+					"style": {
+						"position": "absolute",
+						"width": "100%",
+						"bottom": "0px",
+						"zIndex": 1023,
+						"maxHeight": "70%",
+						"marginBottom": 0
+					},
+					"draggable": false,
+					"collapsible": true,
+					"viewerOptions": {
+						"container": "{context.ReactSwipe}",
+						"header": "{context.SwipeHeader}",
+						"collapsible": false
+					},
+					"bodyClass": "mobile-feature-info"
+				}
+			}, {
+				"name": "Locate",
+				"override": {
+					"Toolbar": {
+						"alwaysVisible": true
+					}
+				}
+			}, "Home", "TOC", {
+				"name": "Tutorial",
+				"cfg": {
+					"preset": "mapMobile"
+				}
+			}, "BackgroundSwitcher", {
+				"name": "Settings",
+				"cfg": {
+					"wrap": true
+				}
+			}, "About", {
+				"name": "MousePosition",
+				"cfg": {
+					"id": "mapstore-mouseposition-mobile"
+				}
+			}, {
+				"name": "Search",
+				"cfg": {
+					"withToggle": ["max-width: 768px", "min-width: 768px"]
+				}
+			}, {
+				"name": "Toolbar",
+				"id": "NavigationBar",
+				"cfg": {
+					"id": "navigationBar"
+				}
+			}, {
+				"name": "Toolbar",
+				"id": "IdentifyBar",
+				"stateSelector": "identify",
+				"cfg": {
+					"id": "identifyBar"
+				},
+				"isDefault": false
+			}, "ZoomAll", {
+				"name": "MapLoading",
+				"override": {
+					"Toolbar": {
+						"alwaysVisible": true
+					}
+				}
+			}, "Login",
+			"OmniBar", "BurgerMenu", "Expander"
+		],
+		"desktop": ["Map", "Help", "Share", "DrawerMenu", {
+				"name": "Identify",
+				"showIn": ["IdentifyBar", "Settings"],
+				"cfg": {
+					"viewerOptions": {
+						"container": "{context.ReactSwipe}",
+						"header": "{context.SwipeHeader}",
+						"headerOptions": {
+							"useButtons": true
+						}
+					}
+				}
+			},
+			"MadeWithLove", {
+				"name": "Locate",
+				"override": {
+					"Toolbar": {
+						"alwaysVisible": true
+					}
+				}
+			}, "Home", "FeatureGrid", {
+				"name": "TOC",
+				"cfg": {
+					"activateQueryTool": true
+				}
+			}, "Tutorial", "BackgroundSwitcher", {
+				"name": "Measure",
+				"cfg": {
+					"showResults": false
+				}
+			}, "MeasureResults", "Print", "ShapeFile", {
+				"name": "Settings",
+				"cfg": {
+					"wrap": true
+				}
+			}, {
+				"name": "MetadataExplorer",
+				"cfg": {
+					"wrap": true,
+					"initialCatalogURL": {
+						"csw": "http://demo.geo-solutions.it/geoserver/csw",
+						"wms": "http://demo.geo-solutions.it/geoserver/wms",
+						"wmts": "http://demo.geo-solutions.it/geoserver/gwc/service/wmts"
+					}
+				}
+			}, "About", "MousePosition", {
+				"name": "Search",
+				"cfg": {
+					"withToggle": ["max-width: 768px", "min-width: 768px"]
+				}
+			}, {
+				"name": "Toolbar",
+				"id": "NavigationBar",
+				"cfg": {
+					"id": "navigationBar"
+				}
+			}, {
+				"name": "Toolbar",
+				"id": "IdentifyBar",
+				"stateSelector": "identify",
+				"cfg": {
+					"id": "identifyBar"
+				},
+				"isDefault": false
+			},
+			"ScaleBox", "ZoomAll", {
+				"name": "MapLoading",
+				"override": {
+					"Toolbar": {
+						"alwaysVisible": true
+					}
+				}
+			}, {
+				"name": "Snapshot",
+				"cfg": {
+					"wrap": true
+				}
+			}, {
+				"name": "ZoomIn",
+				"override": {
+					"Toolbar": {
+						"alwaysVisible": true
+					}
+				}
+			}, {
+				"name": "ZoomOut",
+				"override": {
+					"Toolbar": {
+						"alwaysVisible": true
+					}
+				}
+			},
+			"OmniBar", "Login", "Save", "SaveAs", "BurgerMenu", "Expander", "Undo", "Redo"
+		],
+		"embedded": [{
+				"name": "Map",
+				"cfg": {
+					"tools": ["locate"]
+				}
+			}, "Help", "DrawerMenu", {
+				"name": "Identify",
+				"showIn": ["Settings"],
+				"cfg": {
+					"style": {
+						"position": "absolute",
+						"width": "100%",
+						"bottom": "0px",
+						"zIndex": 1010,
+						"maxHeight": "70%",
+						"marginBottom": 0
+					},
+					"draggable": false,
+					"collapsible": true,
+					"viewerOptions": {
+						"container": "{context.ReactSwipe}",
+						"header": "{context.SwipeHeader}",
+						"collapsible": false
+					},
+					"bodyClass": "mobile-feature-info"
+				}
+			}, {
+				"name": "Locate",
+				"override": {
+					"Toolbar": {
+						"alwaysVisible": true
+					}
+				}
+			}, "TOC", "BackgroundSwitcher", {
+				"name": "Settings",
+				"cfg": {
+					"wrap": true
+				}
+			}, "About", {
+				"name": "MousePosition",
+				"cfg": {
+					"id": "mapstore-mouseposition-mobile"
+				}
+			}, {
+				"name": "Search",
+				"cfg": {
+					"withToggle": ["max-width: 768px", "min-width: 768px"]
+				}
+			}, {
+				"name": "Toolbar",
+				"id": "NavigationBar",
+				"cfg": {
+					"id": "navigationBar"
+				}
+			}, {
+				"name": "Toolbar",
+				"id": "IdentifyBar",
+				"stateSelector": "identify",
+				"cfg": {
+					"id": "identifyBar"
+				},
+				"isDefault": false
+			}, {
+				"name": "MapLoading",
+				"override": {
+					"Toolbar": {
+						"alwaysVisible": true
+					}
+				}
+			},
+			"OmniBar", "BurgerMenu"
+		],
+		"common": [{
+			"name": "OmniBar",
+			"cfg": {
+				"className": "navbar shadow navbar-home"
+			}
+		}, "ManagerMenu", "Login", "Language", "Attribution"],
+		"maps": ["Header", "Fork", "MapSearch", "HomeDescription", "MapType", "ThemeSwitcher", "CreateNewMap", "Maps", "Examples", "Footer"],
+		"manager": ["Header", "Redirect", "Manager", "Home", "UserManager", "GroupManager", "Footer"]
+	}
+}

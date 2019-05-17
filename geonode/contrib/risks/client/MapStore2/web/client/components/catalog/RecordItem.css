@@ -1,0 +1,22 @@
+.record-buttons .record-button {
+    margin-right: 6px;
+}
+
+.record-buttons .links-popover {
+    margin: 0px;
+    padding: 0px;
+}
+
+.links-popover .form-group {
+    margin: 5px;
+    padding: 0px;
+}
+
+.links-popover .popover-content {
+    margin: 0px;
+    padding: 0px;
+}
+
+.link-button {
+    min-width: 70px;
+}

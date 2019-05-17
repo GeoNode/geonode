@@ -1,0 +1,10 @@
+#locate-btn {
+    position: absolute;
+    z-index: 1000;
+    right: 10px;
+    bottom: 150px;
+}
+
+#mapstore-toolbar #locate-btn {
+    position: static;
+}

@@ -1,0 +1,56 @@
+.social-links .social-box  {
+    display:inline-block;
+    text-align: center;
+    margin-right: 15px
+}
+
+.share-win{
+    width: 400px;
+}
+.share-panels .input-link .input-group-addon{
+height: 50px;
+width: 50px;
+margin-top: -8px;
+margin-left: -5px;
+border: 1px;
+border-radius: 0px;
+font-size: 28px;
+}
+
+#share-panel-dialog {
+    position: absolute;
+    margin-left: 250px;
+}
+
+.buttonCopy {
+    height: 52px;
+    width: 52px;
+    font-size: 29px;
+}
+
+.buttonCopyTextArea{
+    height: 52px;
+    width: 52px;
+    font-size: 29px;
+    float: right;
+}
+
+.row-button .col-md-2 {
+    padding: 0;
+}
+
+.share-panels > div {
+    border-top: 1px solid #eeeeee;
+    padding: 15px;
+}
+.share-win .modal-body {
+    padding: 0;
+}
+.input-link .form-group .input-group{
+    width: 100%;
+}
+
+.share-win textarea {
+    resize: vertical;
+    width: 100%;
+}

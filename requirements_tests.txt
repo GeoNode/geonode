@@ -1,1 +1,12 @@
-Twisted
+coverage==4.5.3
+parse-type==0.4.1
+poster~=0.8.1
+flake8==3.7.7
+pytest==4.3.1
+pytest-bdd==3.1.0
+splinter==0.10.0
+pytest-splinter==2.0.1
+pytest-django==3.4.8
+setuptools==40.8.0
+Twisted==18.9.0
+django-nose==1.4.6

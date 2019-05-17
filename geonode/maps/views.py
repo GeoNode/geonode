@@ -30,10 +30,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError, Http404
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from django.utils.translation import ugettext as _
+from django.views.decorators.http import require_http_methods
+
 try:
     # Django >= 1.7
     import json
@@ -44,13 +46,14 @@ from django.utils.html import strip_tags
 from django.db.models import F
 from django.views.decorators.clickjacking import (xframe_options_exempt,
                                                   xframe_options_sameorigin)
-from django.views.decorators.http import require_http_methods
-
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.layers.views import _resolve_layer
 from geonode.utils import (DEFAULT_TITLE,
                            DEFAULT_ABSTRACT,
+                           num_encode, num_decode,
+                           build_social_links,
+                           http_client,
                            forward_mercator,
                            llbbox_to_mercator,
                            bbox_to_projection,
@@ -62,31 +65,22 @@ from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
 from geonode.base.forms import CategoryForm
 from geonode.base.models import TopicCategory
-from .tasks import delete_map
+from geonode import geoserver, qgis_server
 from geonode.groups.models import GroupProfile
-
 from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
-from geonode.utils import num_encode, num_decode
-from geonode.utils import build_social_links
-from geonode import geoserver, qgis_server
 from geonode.base.views import batch_modify
-
+from .tasks import delete_map
 from requests.compat import urljoin
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
-
-    # Use the http_client with one that knows the username
-    # and password for GeoServer's management user.
-    from geonode.geoserver.helpers import (http_client,
-                                           _render_thumbnail,
+    from geonode.geoserver.helpers import (_render_thumbnail,
                                            _prepare_thumbnail_body_from_opts)
 elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.helpers import ogc_server_settings
-    from geonode.utils import http_client
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -108,10 +102,11 @@ def _resolve_map(request, id, permission='base.change_resourcebase',
     '''
     Resolve the Map by the provided typename and check the optional permission.
     '''
-    if id.isdigit():
-        key = 'pk'
-    else:
+    if Map.objects.filter(urlsuffix=id).count() > 0:
         key = 'urlsuffix'
+    else:
+        key = 'pk'
+
     return resolve_object(request, Map, {key: id}, permission=permission,
                           permission_msg=msg, **kwargs)
 
@@ -469,15 +464,19 @@ def map_embed_widget(request, mapid,
         valid_x = (maxx - minx) ** 2 > BBOX_DIFFERENCE_THRESHOLD
         valid_y = (maxy - miny) ** 2 > BBOX_DIFFERENCE_THRESHOLD
 
+        width_zoom = 15
         if valid_x:
-            width_zoom = math.log(360 / abs(maxx - minx), 2)
-        else:
-            width_zoom = 15
+            try:
+                width_zoom = math.log(360 / abs(maxx - minx), 2)
+            except BaseException:
+                pass
 
+        height_zoom = 15
         if valid_y:
-            height_zoom = math.log(360 / abs(maxy - miny), 2)
-        else:
-            height_zoom = 15
+            try:
+                height_zoom = math.log(360 / abs(maxy - miny), 2)
+            except BaseException:
+                pass
 
         map_obj.center_x = center[0]
         map_obj.center_y = center[1]
@@ -779,6 +778,9 @@ def add_layers_to_map_config(
         except ObjectDoesNotExist:
             # bad layer, skip
             continue
+        except Http404:
+            # can't find the layer, skip it.
+            continue
 
         if not request.user.has_perm(
                 'view_resourcebase',
@@ -956,7 +958,7 @@ def add_layers_to_map_config(
                                 layer_params=json.dumps(config),
                                 visibility=True,
                                 source_params=json.dumps(source_params)
-            )
+                                )
         else:
             ogc_server_url = urlparse.urlsplit(
                 ogc_server_settings.PUBLIC_LOCATION).netloc
@@ -964,7 +966,7 @@ def add_layers_to_map_config(
 
             access_token = request.session['access_token'] if request and 'access_token' in request.session else None
             if access_token and ogc_server_url == layer_url and 'access_token' not in layer.ows_url:
-                url = layer.ows_url + '?access_token=' + access_token
+                url = '%s?access_token=%s' % (layer.ows_url, access_token)
             else:
                 url = layer.ows_url
             maplayer = MapLayer(
@@ -1074,7 +1076,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
         # the path to geoserver backend continue here
         resp, content = http_client.request(url, 'POST', body=mapJson)
 
-        status = int(resp.status)
+        status = int(resp.status_code)
 
         if status == 200:
             map_status = json.loads(content)
@@ -1125,8 +1127,8 @@ def map_download_check(request):
             url = "%srest/process/batchDownload/status/%s" % (
                 ogc_server_settings.LOCATION, layer["id"])
             resp, content = http_client.request(url, 'GET')
-            status = resp.status
-            if resp.status == 400:
+            status = resp.status_code
+            if resp.status_code == 400:
                 return HttpResponse(
                     content="Something went wrong",
                     status=status)
@@ -1357,29 +1359,33 @@ def ajax_url_lookup(request):
     )
 
 
+@require_http_methods(["POST"])
 def map_thumbnail(request, mapid):
-    if request.method == 'POST':
-        map_obj = _resolve_map(request, mapid)
+    map_obj = _resolve_map(request, mapid)
+    try:
+        image = None
         try:
-            image = None
-            try:
-                image = _prepare_thumbnail_body_from_opts(request.body,
-                                                          request=request)
-            except BaseException:
-                image = _render_thumbnail(request.body)
-
-            if not image:
-                return
-            filename = "map-%s-thumb.png" % map_obj.uuid
-            map_obj.save_thumbnail(filename, image)
-
-            return HttpResponse('Thumbnail saved')
+            image = _prepare_thumbnail_body_from_opts(
+                request.body, request=request)
         except BaseException:
+            image = _render_thumbnail(request.body)
+
+        if not image:
             return HttpResponse(
-                content='error saving thumbnail',
+                content=_('couldn\'t generate thumbnail'),
                 status=500,
                 content_type='text/plain'
             )
+        filename = "map-%s-thumb.png" % map_obj.uuid
+        map_obj.save_thumbnail(filename, image)
+
+        return HttpResponse(_('Thumbnail saved'))
+    except BaseException:
+        return HttpResponse(
+            content=_('error saving thumbnail'),
+            status=500,
+            content_type='text/plain'
+        )
 
 
 def map_metadata_detail(

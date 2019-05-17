@@ -1,0 +1,11 @@
+{
+  "ShortResource":{
+    "id":1,
+    "name":"Test Map",
+    "description":"",
+    "canDelete":true,
+    "canEdit":true,
+    "creation":"2015-03-24T11:05:27.274+00:00",
+    "lastUpdate":"2016-08-08T09:57:25.235+00:00"
+  }
+}

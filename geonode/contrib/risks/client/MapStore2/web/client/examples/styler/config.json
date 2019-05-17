@@ -1,0 +1,169 @@
+{
+    "map": {
+       "center": {"x": 1250000.000000, "y": 5370000.000000, "crs": "EPSG:900913"},
+        "layers": [
+            {
+                "group": "background",
+                "name": "mapnik",
+                "source": "osm",
+                "title": "Open Street Map",
+                "type": "osm",
+                "visibility": true
+            },
+            {
+                "group": "background",
+                "name": "HYBRID",
+                "source": "google",
+                "title": "Google HYBRID",
+                "type": "google",
+                "visibility": false
+            },
+            {
+                "group": "background",
+                "name": "osm",
+                "source": "mapquest",
+                "title": "MapQuest OSM",
+                "type": "mapquest",
+                "visibility": false
+            },
+            {
+                "apiKey": "AqTGBsziZHIJYYxgivLBf0hVdrAk9mWO5cQcb8Yux8sW5M8c8opEC2lZqKR1ZZXf",
+                "group": "background",
+                "name": "Aerial",
+                "source": "bing",
+                "title": "Bing Aerial",
+                "type": "bing",
+                "visibility": false
+            },
+            {
+                "group": "background",
+                "name": "Night2012",
+                "provider": "NASAGIBS.ViirsEarthAtNight2012",
+                "source": "nasagibs",
+                "title": "NASAGIBS Night 2012",
+                "type": "tileprovider",
+                "visibility": false
+            },
+            {
+                "format": "image/jpeg",
+                "group": "background",
+                "name": "rv1",
+                "title": "e-Geos Ortofoto RealVista 1.0",
+                "type": "wms",
+                "url": "http://www.realvista.it/reflector/open/service",
+                "visibility": false
+            },
+            {
+                "format": "image/png",
+                "group": "background",
+                "name": "sde:NE2_HR_LC_SR_W_DR",
+                "title": "Natural Earth",
+                "type": "wms",
+                "url": "http://demo.geo-solutions.it/geoserver/wms",
+                "visibility": false
+            },
+            {
+                "format": "image/png",
+                "group": "background",
+                "name": "sde:HYP_HR_SR_OB_DR",
+                "title": "Hypsometric",
+                "type": "wms",
+                "url": "http://demo.geo-solutions.it/geoserver/wms",
+                "visibility": false
+            },
+            {
+                "format": "image/png",
+                "group": "background",
+                "name": "sde:GRAY_HR_SR_OB_DR",
+                "title": "Gray Earth",
+                "type": "wms",
+                "url": "http://demo.geo-solutions.it/geoserver/wms",
+                "visibility": false
+            },
+            {
+                "describeLayer": {
+                    "bands": [
+                        "1"
+                    ],
+                    "owsType": "WCS",
+                    "range": {
+                        "max": 10000.0,
+                        "min": -9999.0
+                    }
+                },
+                "format": "image/png",
+                "group": "Meteo",
+                "name": "nurc:Arc_Sample",
+                "opacity": 1,
+                "title": "Weather data",
+                "type": "wms",
+                "url": "http://demo.geo-solutions.it/geoserver/wms",
+                "visibility": true
+            },
+      {
+        "type": "wms",
+        "describeLayer": {
+                    "owsType": "WCS"
+                },
+        "url":"http://demo.geo-solutions.it/geoserver/wms",
+        "visibility": true,
+        "opacity": 1,
+        "title": "HYP_HR_SR_OB_DR",
+        "name": "sde:HYP_HR_SR_OB_DR",
+        "group": "Meteo",
+        "format": "image/png"
+      },
+            {
+                "describeLayer": {
+                    "owsType": "WFS",
+                    "geometryType": "Polygon"
+                },
+                "format": "image/png",
+                "group": "Vector",
+                "name": "geosolutions:regioni",
+                "opacity": 1,
+                "title": "Regioni",
+                "type": "wms",
+                "url": "http://demo.geo-solutions.it/geoserver/wms",
+                "visibility": true
+            },
+            {
+                "describeLayer": {
+                    "owsType": "WFS",
+                    "geometryType": "LineString"
+                },
+                "format": "image/png",
+                "group": "Vector",
+                "name": "tiger:tiger_roads",
+                "opacity": 1,
+                "title": "NY Roads",
+                "type": "wms",
+                "url": "http://demo.geo-solutions.it/geoserver/wms",
+                "visibility": true
+            },
+            {
+                "describeLayer": {
+                    "owsType": "WFS",
+                    "geometryType": "Point"
+                },
+                "format": "image/png",
+                "group": "Vector",
+                "name": "tiger:poi",
+                "opacity": 1,
+                "title": "NY PoI",
+                "type": "wms",
+                "url": "http://demo.geo-solutions.it/geoserver/wms",
+                "visibility": true
+            }
+        ],
+        "maxExtent": [
+            -20037508.34,
+            -20037508.34,
+            20037508.34,
+            20037508.34
+        ],
+        "projection": "EPSG:900913",
+        "units": "m",
+        "zoom": 3
+    }
+}

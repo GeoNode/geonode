@@ -1,0 +1,23 @@
+.option-icon {
+    margin-right: 15px;
+}
+#measure-result-panel button {
+    padding: 14px;
+}
+#measure-result-panel .glyphicon {
+    margin: 0 15px 0 0;
+}
+#measure-result-panel .option-text {
+    font-size: 14px;
+    text-transform: uppercase;
+    vertical-align: middle!important;
+    vertical-align: -webkit-baseline-middle!important;
+}
+#measure-result-panel .option-icon {
+    font-size: 32px;
+    text-transform: uppercase;
+    vertical-align: middle;
+    vertical-align: middle!important;
+    vertical-align: -webkit-baseline-middle!important;
+    vertical-align: -moz-middle-with-baseline !important;
+}

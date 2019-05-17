@@ -1,0 +1,21 @@
+
+#mapstore-settings .btn-group {
+    width: auto;
+    float: right;
+}
+
+#mapstore-settings .modal-body #mapstore-mousepositionsettings button {
+    float: none;
+    margin-left: 40%;
+}
+
+#mapstore-settings .modal-body #mapstore-mousepositionsettings select {
+    float: none;
+    margin-left: 40%;
+}
+
+#mapstore-settings .modal-body .form-group {
+    margin-top: 15px;
+    border-top: solid 1px #EEE;
+    padding-top: 10px;
+}

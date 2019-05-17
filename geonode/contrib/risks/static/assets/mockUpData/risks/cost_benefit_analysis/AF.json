@@ -1,0 +1,47 @@
+{
+ "furtherResources": {},
+ "navItems": [{
+  "parent_geom": null,
+  "href": "/risks/cost_benefit_analysis/loc/AF/",
+  "geom": "/risks/cost_benefit_analysis/geom/AF/",
+  "label": "Afghanistan"
+ }],
+ "context": null,
+ "overview": [{
+  "mnemonic": "EQ",
+  "defaultAnalysisType": {
+   "href": "/risks/cost_benefit_analysis/loc/AF/ht/EQ/at/schools/"
+  },
+  "riskAnalysis": 1,
+  "href": "/risks/cost_benefit_analysis/loc/AF/ht/EQ/",
+  "title": "Earthquake"
+ }, {
+  "mnemonic": "FL",
+  "defaultAnalysisType": {},
+  "riskAnalysis": 0,
+  "href": "/risks/cost_benefit_analysis/loc/AF/ht/FL/",
+  "title": "River flood"
+ }, {
+  "mnemonic": "DG",
+  "defaultAnalysisType": {
+   "href": "/risks/cost_benefit_analysis/loc/AF/ht/DG/"
+  },
+  "riskAnalysis": 0,
+  "href": "/risks/cost_benefit_analysis/loc/AF/ht/DG/",
+  "title": "Water scarcity"
+ }, {
+  "mnemonic": "AH",
+  "defaultAnalysisType": {},
+  "riskAnalysis": 0,
+  "href": "/risks/data_extraction/loc/AF/ht/AH/",
+  "title": "Avalanche"
+ }, {
+  "mnemonic": "LS",
+  "defaultAnalysisType": {
+   "href": "/risks/cost_benefit_analysis/loc/AF/hs/LS/"
+  },
+  "riskAnalysis": 0,
+  "href": "/risks/cost_benefit_analysis/loc/AF/ht/LS/",
+  "title": "Landslide"
+ }]
+}

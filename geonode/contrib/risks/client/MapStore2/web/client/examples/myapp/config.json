@@ -1,0 +1,27 @@
+{
+  "map": {
+    "projection": "EPSG:900913",
+		"units": "m",
+		"center": {"x": 1250000.000000, "y": 5370000.000000, "crs": "EPSG:900913"},
+    "zoom":5,
+    "layers": [
+      {
+        "type": "osm",
+        "title": "Open Street Map",
+        "name": "mapnik",
+        "group": "background",
+        "visibility": true
+      },
+      {
+        "type": "wms",
+        "url":"http://demo.geo-solutions.it/geoserver/wms",
+        "visibility": true,
+        "opacity": 0.5,
+        "title": "Weather data",
+        "name": "nurc:Arc_Sample",
+        "group": "Meteo",
+        "format": "image/png"
+      }
+    ]
+  }
+}

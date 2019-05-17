@@ -1,0 +1,267 @@
+/**
+ * Copyright 2016, GeoSolutions Sas.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/*****************************/
+/* TOC ***********************/
+/*****************************/
+
+#mapstore-drawermenu #toc-query-close-button {
+    float: left;
+}
+
+/*****************************/
+/* END - TOC *****************/
+/*****************************/
+
+/*****************************/
+/* GENERAL SETTINGS **********/
+/*****************************/
+
+#query-form-panel .panel {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    margin: 0;
+}
+
+#query-form-panel .panel-body {
+    padding: 0;
+    border: none;
+}
+
+#query-form-panel .btn-default {
+    background-color: transparent;
+    border-radius: 0;
+}
+
+#query-form-panel input.form-control {
+    height: 32px;
+}
+
+#query-form-panel button:disabled {
+    border-color: transparent;
+}
+
+#query-form-panel button span {
+    line-height: 22px;
+    padding: 0 2px 0 2px;
+}
+
+#query-form-panel button .glyphicon {
+    padding: 0;
+}
+
+#query-form-panel .query-buttons {
+    float: right;
+    margin: 4px;
+}
+
+#query-form-panel .filter-buttons {
+    border: none;
+    margin-left: 4px;
+}
+
+#query-form-panel .remove-filter-button {
+    padding: 0;
+    margin: 2px;
+    border: none;
+    float: right;
+}
+
+#query-form-panel .close {
+    display: none;
+}
+
+#query-form-panel .form-group {
+    margin-bottom: 0;
+}
+
+#query-form-panel input {
+    border-radius: 4px;
+    padding: 0 4px 0 8px;
+}
+
+/*****************************/
+/* END - GENERAL SETTINGS ****/
+/*****************************/
+
+
+/*****************************/
+/* HEAD QUERY ****************/
+/*****************************/
+
+#query-form-panel {
+    overflow: hidden;
+}
+
+#query-form-panel .query-toolbar {
+    padding: 0;
+    overflow: hidden;
+}
+
+#query-form-panel #query-toolbar-title {
+    float: left;
+    font-size: 20px;
+    margin: 11px 11px 11px 20px;
+}
+
+#query-form-panel .queryFormToolbar {
+    margin: 8px;
+}
+
+
+/*****************************/
+/* END - HEAD QUERY **********/
+/*****************************/
+
+
+/*****************************/
+/* BODY QUERY ****************/
+/*****************************/
+
+#query-form-panel .querypanel .panel-heading {
+    border: none;
+    text-decoration: underline;
+    padding-left: 11px;
+    background-color: transparent;
+    font-weight: bold;
+}
+
+#query-form-panel .query-content > .container-fluid {
+    margin: 4px 0 4px 0;
+}
+
+#query-form-panel .filter-field-row > div {
+    margin: 0;
+    padding: 4px;
+}
+
+#query-form-panel .filter-field-row .filter-field-row div {
+    margin: 0;
+}
+
+#query-form-panel .filter-logig-header-text {
+    float: left;
+}
+
+#query-form-panel .filter-logig-header-text > span {
+    float: left;
+    margin-top: 7px;
+}
+
+#query-form-panel #spatialFilterPanel .panel {
+    margin: 0;
+}
+
+#query-form-panel #spatialFilterPanel .filter-field-row div > span{
+    line-height: 32px;
+}
+
+#query-form-panel .querypanel > .query-filter-container {
+    margin: 0 30px 20px 20px;
+    background-color: transparent;
+    padding-bottom: 10px;
+}
+
+#query-form-panel .panel .panel .panel {
+    margin-left: 10px;
+}
+
+#query-form-panel .panel  .panel .filter-group-panel {
+    -webkit-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    -moz-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    margin-bottom: 20px;
+}
+
+#query-form-panel h5 {
+    font-family: Georgia, serif;
+    font-style: italic;
+    text-align: center;
+}
+
+#query-form-panel .filter-text-desc {
+    text-align: center;
+}
+
+.querypanel {
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: none;
+    padding-bottom: 150px;
+}
+
+/*****************************/
+/* END - BODY QUERY ********/
+/*****************************/
+
+/*****************************/
+/** DETAIL PANEL *************/
+/*****************************/
+
+#query-form-panel div.details-panel {
+    -webkit-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    -moz-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    min-width: 565px;
+}
+
+#query-form-panel .details-panel .detail-header {
+    overflow: hidden;
+    background-color: transparent;
+    text-decoration: none;
+    padding: 4px 4px 8px 8px;
+}
+
+#query-form-panel .details-panel .detail-title span {
+    text-decoration: none;
+    font-weight: normal;
+}
+
+#query-form-panel .details-panel button {
+    float: right;
+    border: none;
+    margin-top: 8px;
+}
+
+#query-form-panel .details-panel button.remove-filter-button {
+    margin-top: 0;
+}
+
+#query-form-panel .details-panel button.remove-filter-button span {
+    cursor: pointer;
+}
+
+#query-form-panel .details-panel .container-fluid > .row {
+    margin: 4px 0 4px 0;
+}
+
+#query-form-panel .details-panel .details-circle-attribute-name {
+    padding-top: 6px;
+    float: right;
+    text-transform: lowercase;
+}
+
+#query-form-panel .details-panel .detail-field > div {
+    width: 105px;
+    margin: auto;
+    text-align: center;
+}
+
+#query-form-panel .details-panel .detail-field-title {
+    min-width: 105px;
+    margin: auto;
+    text-align: center;
+}
+
+/*****************************/
+/** END -DETAIL PANEL ********/
+/*****************************/

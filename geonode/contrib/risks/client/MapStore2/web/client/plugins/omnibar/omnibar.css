@@ -1,0 +1,61 @@
+/*viewer navbar */
+.navbar-dx{
+	position:absolute;
+	right:0;
+	top:0;
+}
+
+.navbar-dx > ul{
+	padding:0;
+}
+
+.navbar-dx > ul > li{
+	float: left;
+	list-style:none;
+}
+
+.navbar-dx .search-wrap .MapSearchBar{
+    right: 0;
+    top: 0;
+    left: 0;
+}
+
+.navbar-dx .search-wrap .form-control,.navbar-dx .search-wrap .form-control:focus{
+    border-color: #fff;
+    border-right: 0;
+    webkit-box-shadow: none;
+    box-shadow: none;
+}
+.navbar-dx .search-wrap .MapSearchBar .input-group-addon{
+    border: 0;
+}
+.navbar-dx .search-result-list{
+    left: 0;
+    max-height: none;
+}
+
+.navbar-dx .dropdown-menu {
+	margin:0;
+	padding-top: 0;
+}
+
+@media (min-width: 1200px) {
+    .navbar-dx .search-wrap {
+       width: 500px;
+       height: 50px;
+    }
+}
+
+.navbar-dx > * {
+	display: inline-block;
+}
+/* Page Navbar */
+.navbar-home .dropdown {
+	float: right;
+}
+.navbar-home .navbar-header {
+	margin-top: 7px;
+	margin-left: 10px;
+	margin-right: 10px;
+	display: inline-block;
+}

@@ -85,7 +85,7 @@ class Command(BaseCommand):
 
     def create_geoserver_backup(self, settings, target_folder):
         # Create GeoServer Backup
-        url = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+        url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
         passwd = settings.OGC_SERVER['default']['PASSWORD']
         geoserver_bk_file = os.path.join(target_folder, 'geoserver_catalog.zip')
@@ -108,7 +108,8 @@ class Command(BaseCommand):
 
             gs_bk_exec_id = gs_backup['backup']['execution']['id']
             r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
-                             auth=HTTPBasicAuth(user, passwd))
+                             auth=HTTPBasicAuth(user, passwd),
+                             timeout=10)
             if (r.status_code == 200):
 
                 try:
@@ -130,7 +131,8 @@ class Command(BaseCommand):
 
             gs_bk_exec_id = gs_backup['backup']['execution']['id']
             r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
-                             auth=HTTPBasicAuth(user, passwd))
+                             auth=HTTPBasicAuth(user, passwd),
+                             timeout=10)
             if (r.status_code == 200):
                 gs_bk_exec_status = gs_backup['backup']['execution']['status']
                 gs_bk_exec_progress = gs_backup['backup']['execution']['progress']
@@ -139,7 +141,8 @@ class Command(BaseCommand):
                     if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
                         gs_bk_exec_progress_updated = gs_bk_exec_progress
                     r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
-                                     auth=HTTPBasicAuth(user, passwd))
+                                     auth=HTTPBasicAuth(user, passwd),
+                                     timeout=10)
                     if (r.status_code == 200):
 
                         try:

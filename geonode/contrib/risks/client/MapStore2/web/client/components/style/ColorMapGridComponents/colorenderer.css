@@ -1,0 +1,28 @@
+.cpr-color
+ {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 28px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  padding: 2px;
+
+}
+.cpe-popover
+{
+  white-space: normal;
+  position: fixed;
+  z-index: 1000;
+}
+.cpe-cover
+{
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.cpe-popover > div > div {
+    position: relative;
+}

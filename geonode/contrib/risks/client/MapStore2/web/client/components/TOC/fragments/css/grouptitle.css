@@ -1,0 +1,8 @@
+.toc-group-title {
+    background: rgb(240,240,240);
+    padding: 4px;
+    borderRadius: 4px;
+}
+.toc-default-group .visibility-check{
+    float: left;
+}

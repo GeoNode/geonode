@@ -1,0 +1,30 @@
+{
+  "task": {
+    "id": 1,
+    "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1",
+    "state": "READY",
+    "updateMode": "CREATE",
+    "data": {
+      "type": "file",
+      "format": "Shapefile",
+      "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/data",
+      "file": "bugsites.shp"
+    },
+    "target": {
+      "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/target",
+      "dataStore": {
+        "name": "shapes",
+        "type": "PostGIS"
+      }
+    },
+    "progress": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/progress",
+    "layer": {
+      "name": "bugsites",
+      "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/layer"
+    },
+    "transformChain": {
+      "type": "vector",
+      "transforms": []
+    }
+  }
+}

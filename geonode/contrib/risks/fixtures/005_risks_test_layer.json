@@ -1,0 +1,39 @@
+[{
+	"fields": {
+		"name": "polygon",
+		"sld_url": "http://localhost:8080/geoserver/rest/styles/polygon.sld",
+		"sld_version": "",
+		"sld_title": "Default Polygon",
+		"sld_body": "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<StyledLayerDescriptor version=\"1.0.0\" \n xsi:schemaLocation=\"http://www.opengis.net/sld StyledLayerDescriptor.xsd\" \n xmlns=\"http://www.opengis.net/sld\" \n xmlns:ogc=\"http://www.opengis.net/ogc\" \n xmlns:xlink=\"http://www.w3.org/1999/xlink\" \n xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <!-- a Named Layer is the basic building block of an SLD document -->\n  <NamedLayer>\n    <Name>default_polygon</Name>\n    <UserStyle>\n    <!-- Styles can have names, titles and abstracts -->\n      <Title>Default Polygon</Title>\n      <Abstract>A sample style that draws a polygon</Abstract>\n      <!-- FeatureTypeStyles describe how to render different features -->\n      <!-- A FeatureTypeStyle for rendering polygons -->\n      <FeatureTypeStyle>\n        <Rule>\n          <Name>rule1</Name>\n          <Title>Gray Polygon with Black Outline</Title>\n          <Abstract>A polygon with a gray fill and a 1 pixel black outline</Abstract>\n          <PolygonSymbolizer>\n            <Fill>\n              <CssParameter name=\"fill\">#AAAAAA</CssParameter>\n            </Fill>\n            <Stroke>\n              <CssParameter name=\"stroke\">#000000</CssParameter>\n              <CssParameter name=\"stroke-width\">1</CssParameter>\n            </Stroke>\n          </PolygonSymbolizer>\n        </Rule>\n      </FeatureTypeStyle>\n    </UserStyle>\n  </NamedLayer>\n</StyledLayerDescriptor>\n",
+		"workspace": ""
+	},
+	"model": "layers.style",
+	"pk": 1
+}, {
+	"fields": {
+		"has_time": false,
+		"abstract_en": "No abstract provided",
+		"supplemental_information_en": "No information provided",
+		"typename": "geonode:test",
+		"charset": "UTF-8",
+		"regions": [1],
+		"default_style": 1,
+		"storeType": "Datastore",
+		"store": "geonode",
+		"styles": [1],
+		"title_en": "test",
+		"upload_session": null,
+		"is_mosaic": false,
+		"time_regex": null,
+		"name": "test",
+		"data_quality_statement_en": "",
+		"has_elevation": false,
+		"elevation_regex": "",
+		"workspace": "",
+		"tkeywords": [],
+		"purpose_en": "",
+		"constraints_other_en": ""
+	},
+	"model": "layers.layer",
+	"pk": 1
+}]

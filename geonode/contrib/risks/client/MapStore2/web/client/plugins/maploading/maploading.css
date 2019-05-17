@@ -1,0 +1,36 @@
+#mapstore-globalspinner  {
+    width: 28px;
+    height: 28px;
+    box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.2);
+    background-color: white;
+    background-size: 80px 80px;
+    background-repeat: no-repeat;
+    border-radius: 4px;
+    border: 1px solid #999;
+    z-index: 10;
+    top: 90px;
+    left: 2px;
+    position: absolute;
+    margin: 8px;
+}
+
+#mapstore-globalspinner .circle-wrapper {
+    margin-left: 2px;
+    margin-top: 1px;
+}
+
+#mapstore-toolbar #mapstore-globalspinner {
+    position: static;
+    width: 42px;
+    margin: 0;
+    margin-top: 0;
+    height: 35px;
+    box-shadow: none;
+}
+
+.ms2-loading .sk-circle-wrapper {
+     width: 30px;
+     height: 30px;
+     margin-left: 10px !important;
+     margin-top: 10px !important;
+ }

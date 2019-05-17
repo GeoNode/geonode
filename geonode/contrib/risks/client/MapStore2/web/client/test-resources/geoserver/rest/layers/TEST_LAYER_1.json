@@ -1,0 +1,19 @@
+{
+   "layer":{
+      "name":"TEST_LAYER_1",
+      "type":"RASTER",
+      "defaultStyle":{
+         "name":"test_TEST_LAYER_1",
+         "href":"http:\/\/localhost:8080\/geoserver\/rest\/styles\/test_TEST_LAYER_1.json"
+      },
+      "resource":{
+         "@class":"coverage",
+         "name":"TEST_LAYER_1",
+         "href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/test\/coveragestores\/TEST_LAYER_1\/coverages\/TEST_LAYER_1.json"
+      },
+      "attribution":{
+         "logoWidth":0,
+         "logoHeight":0
+      }
+   }
+}

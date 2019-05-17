@@ -1,0 +1,39 @@
+{
+	"map": {
+		"projection": "EPSG:900913",
+		"units": "m",
+		"center": {"x": 1250000.000000, "y": 5370000.000000, "crs": "EPSG:900913"},
+		"zoom":5,
+		"maxExtent": [
+			-20037508.34, -20037508.34,
+			20037508.34, 20037508.34
+		],
+		"layers": [
+			{
+				"type": "osm",
+				"title": "Open Street Map",
+				"name": "mapnik",
+				"group": "background",
+        "visibility": true
+			},{
+				"type": "wms",
+        "url":"http://213.215.135.196/reflector/open/service",
+        "visibility": false,
+				"title": "e-Geos Ortofoto RealVista 1.0",
+				"name": "rv1",
+				"group": "background",
+				"format": "image/png"
+			},
+      {
+				"type": "wms",
+        "url":"http://demo.geo-solutions.it/geoserver/wms",
+        "visibility": true,
+        "opacity": 0.5,
+				"title": "Weather data",
+				"name": "nurc:Arc_Sample",
+				"group": "Meteo",
+				"format": "image/png"
+			}
+		]
+	}
+}

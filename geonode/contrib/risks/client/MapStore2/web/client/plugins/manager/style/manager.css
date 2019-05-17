@@ -1,0 +1,26 @@
+.Manager-Container {
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
+    height: 100%;
+}
+
+.Manager-Container .Manager-Tools-Nav .glyphicon {
+    vertical-align: middle;
+}
+
+.Manager-Container .Manager-Tools-Nav  .nav-msg {
+    display: none;
+}
+@media (min-width: 1200px) {
+    .Manager-Container .Manager-Tools-Nav  .nav-msg {
+        display: inline-block;
+    }
+}
+.Manager-Container .Manager-Tools-Nav {
+    order: -1;
+    max-width: 20%;
+}
+.Manager-Container .usermanager-title {
+    margin-top: 0;
+}

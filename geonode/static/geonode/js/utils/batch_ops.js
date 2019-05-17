@@ -1,7 +1,27 @@
 /*globals define: true, requirejs: true */
 
+'use strict';
+
 requirejs.config({
-    baseUrl: '/static/libs/js'
+  config: {
+     text: {
+       useXhr: function (url, protocol, hostname, port) {
+          // allow cross-domain requests
+          // remote server allows CORS
+          return true;
+       }
+     },
+     waitSeconds: 5
+  },
+  baseUrl: siteUrl + 'static/lib/js',
+  shim: {
+    'underscore': { exports: '_'}
+  },
+  paths: {
+    'upload': '../../geonode/js/upload',
+    'templates': '../../geonode/js/templates',
+    'progress': 'jquery.ajax-progress'
+  }
 });
 
 define(['jquery'],function($){
@@ -46,7 +66,6 @@ define(['jquery'],function($){
             batch_perms_submit: function() {
                 var form = $(this);
                 var action = form.attr("action");
-
                 var postdata = {
                 layers: [],
                 maps: [],

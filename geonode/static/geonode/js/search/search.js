@@ -328,7 +328,6 @@
     };
     query_api($scope.query);
 
-
     /*
     * Pagination
     */
@@ -370,7 +369,6 @@
     * End pagination
     */
 
-
     if (!Configs.hasOwnProperty("disableQuerySync")) {
         // Keep in sync the page location with the query object
         $scope.$watch('query', function(){
@@ -378,7 +376,7 @@
         }, true);
     }
 
-    // Hyerarchical keywords listeners
+    // Hierarchical keyword listeners
     $scope.$on('select_h_keyword', function($event, element){
       var data_filter = 'keywords__slug__in';
       var query_entry = [];
@@ -485,7 +483,7 @@
     }
 
     $scope.single_choice_listener = function($event){
-      var element = $(event.currentTarget);
+      var element = $($event.currentTarget);
       var query_entry = [];
       var data_filter = element.attr('data-filter');
       var value = element.attr('data-value');

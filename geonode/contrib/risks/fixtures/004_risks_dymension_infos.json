@@ -1,0 +1,17 @@
+[{
+	"fields": {
+		"abstract": "Scenario",
+		"name": "Scenario",
+		"unit": "NA"
+	},
+	"model": "risks.dymensioninfo",
+	"pk": 1
+}, {
+	"fields": {
+		"abstract": "Round Period",
+		"name": "Round Period",
+		"unit": "Years"
+	},
+	"model": "risks.dymensioninfo",
+	"pk": 2
+}]

@@ -33,9 +33,9 @@ from geonode.layers.models import Layer
 from geonode.geoserver.helpers import gs_slurp
 
 from queues import queue_email_events, queue_geoserver_events,\
-                   queue_notifications_events, queue_all_events,\
-                   queue_geoserver_catalog, queue_geoserver_data,\
-                   queue_geoserver, queue_layer_viewers
+    queue_notifications_events, queue_all_events,\
+    queue_geoserver_catalog, queue_geoserver_data,\
+    queue_geoserver, queue_layer_viewers
 
 logger = logging.getLogger(__package__)
 
@@ -100,10 +100,9 @@ class Consumer(ConsumerMixin):
         except Layer.DoesNotExist as err:
             logger.debug(err)
             return
-        # try:
+
         geoserver_post_save_local(layer)
-        # except Exception, err:
-        #     logger.error("Cannot handle geoserver message: %s", err, exc_info=err)
+
         # Not sure if we need to send ack on this fanout version.
         message.ack()
         logger.debug("on_geoserver_messages: finished")
@@ -210,7 +209,7 @@ def _wait_for_layer(layer_id, num_attempts=5, wait_seconds=1):
 
     """
 
-    for current in range(1, num_attempts+1):
+    for current in range(1, num_attempts + 1):
         try:
             instance = Layer.objects.get(id=layer_id)
             logger.debug("Attempt {}/{} - Found layer in the "

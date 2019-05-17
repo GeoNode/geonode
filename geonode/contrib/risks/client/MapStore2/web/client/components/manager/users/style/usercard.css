@@ -1,0 +1,56 @@
+.user-thumb, .group-thumb {
+    max-width: 100%;
+    overflow: hidden;
+    height: 180px;
+    font-size: 12px;
+    cursor: auto;
+}
+.user-thumb .gridcard-title, .group-thumb .gridcard-title {
+    min-height: 25px;
+}
+
+.user-thumb .gridcard-tools,.group-thumb .gridcard-tools {
+    right: 0
+}
+.user-data-container {
+    display: flex;
+    width: 100%;
+}
+.user-thumb .role-containter{
+    width: 50px;
+}
+.user-thumb .avatar-containter{
+    width: 50px;
+}
+.user-thumb  .groups-container {
+    white-space: nowrap;
+    overflow: hidden;
+}
+.user-thumb  .groups-container .groups-list{
+    width: 100%;
+    max-height: 100px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.user-thumb .groups-container .groups-list .group-item {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+}
+.group-thumb .group-thumb-description {
+    /* ellipsis for description */
+    margin: 10px;
+    display: block; /* Fallback for non-webkit */
+    display: -webkit-box;
+    padding: 5px;
+    magin: 0 auto;
+    height: 75px; /* font-size * webkit-line-clamp + padding */
+    font-size: 12px;
+    line-height: 1;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: justify;
+    /* end ellipsis for description */
+    }

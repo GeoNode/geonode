@@ -98,9 +98,9 @@ class ProfileAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         return [  # '',
-                url(r'^(\d+)/password/$',
-                    self.admin_site.admin_view(self.user_change_password))
-               ] + super(ProfileAdmin, self).get_urls()
+            url(r'^(\d+)/password/$',
+                self.admin_site.admin_view(self.user_change_password))
+        ] + super(ProfileAdmin, self).get_urls()
 
     def lookup_allowed(self, lookup, value):
         # See #20078: we don't want to allow any lookups involving passwords.
@@ -196,7 +196,10 @@ class ProfileAdmin(admin.ModelAdmin):
         # * The user has pressed the 'Save and add another' button
         # * We are adding a user in a popup
         if '_addanother' not in request.POST and IS_POPUP_VAR not in request.POST:
+            mutable = request.POST._mutable
+            request.POST._mutable = True
             request.POST['_continue'] = 1
+            request.POST._mutable = mutable
         return super(ProfileAdmin, self).response_add(request, obj,
                                                       post_url_continue)
 

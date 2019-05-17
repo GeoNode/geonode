@@ -22,8 +22,14 @@
         for(var i=0; i<items.length; i++){
           params += 'layer=' + items[i].detail_url.split('/')[2] +'&';
         }
-        window.location = '/maps/new?' + params;
+        window.location = siteUrl + 'maps/new?' + params;
       }
+
+      $scope.securityRefreshButton = function($event) {
+          $event.preventDefault();
+          sessionStorage.setItem("security_refresh_trigger", true);
+          window.location.href = $event.target.href;
+      };
 
       $scope.bulk_perms_submit = function(){
         var items = cart.getCart().items;
@@ -38,7 +44,7 @@
         $.ajax(
          {
            type: "POST",
-           url: "/security/bulk-permissions",
+           url: siteUrl + "security/bulk-permissions",
            data: {
              permissions: JSON.stringify(permissions),
              resources: selected_ids
@@ -67,16 +73,14 @@
     .directive('resourceCart', [function(){
       return {
         restrict: 'EA',
-        templateUrl: "/static/geonode/js/templates/cart.html",
+        templateUrl: siteUrl + "static/geonode/js/templates/cart.html",
         link: function($scope, $element){
           // Don't use isolateScope, but add to parent scope
           $scope.facetType = $element.attr("data-facet-type");
         }
       };
     }])
-
     .service('cart', function($cookies){
-
       this.init = function(){
         this.$cart = {
           items: this.fillCart()
@@ -98,7 +102,9 @@
                 try {
                   var obj = JSON.parse(geonodeCart[key]);
                   obj['$$hashKey'] = "object:" + index;
-                  cartSession.push(obj);
+                  if('alternate' in obj) {
+                      cartSession.push(obj);
+                  }
                 } catch(err) {
                   console.log("Cart Session Issue: " + err.message);
                 }
@@ -106,7 +112,6 @@
             });
           }
         }
-
         return cartSession;
       };
 
@@ -115,7 +120,6 @@
       }
 
       this.addItem = function(item){
-
         if(!item.id && item.layer_identifier){
           item.id = item.layer_identifier;
         }

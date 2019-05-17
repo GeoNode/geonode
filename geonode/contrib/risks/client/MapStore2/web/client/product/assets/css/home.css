@@ -1,0 +1,99 @@
+html, body, #container, .home {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#langSelContainer {
+    margin: 8px;
+}
+
+@media (min-width: 992px) {
+    .mapmanager .panel-collapse.in {
+        margin: 8px;
+        overflow-y: auto;
+        max-height: 640px;
+    }
+    #langSelContainer {
+        right:0px;
+        margin-right: 150px;
+        position: absolute;
+    }
+
+}
+
+
+.home {
+    padding: 20px;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-clip: border-box;
+    background-color: rgb(249, 249, 249);
+    background-repeat: no-repeat;
+    background-image: url(../img/bg.jpg) ;
+    background-position: 0 -30px;
+    background-origin: padding-box;
+    background-size: cover;
+}
+
+img.mapstore-logo {
+    max-width: 100%;
+    max-height: 200px;
+}
+
+
+.carousel-caption {
+    text-shadow: black 0px 0px 6px,black 0px 0px 3px;
+}
+
+@keyframes spin {
+    to { transform: rotate(1turn); }
+}
+
+.spinner-loader {
+    position: relative;
+    display: inline-block;
+    width: 5em;
+    height: 5em;
+    margin: 0 .5em;
+    font-size: 12px;
+    text-indent: 999em;
+    overflow: hidden;
+    animation: spin 1s infinite steps(8);
+    font-size: 24px;
+}
+
+.spinner-loader:before,
+.spinner-loader:after,
+.spinner-loader > div:before,
+.spinner-loader > div:after {
+    position: absolute;
+    top: 0;
+    left: 2.25em; /* (container width - part width)/2  */
+    width: .5em;
+    height: 1.5em;
+    border-radius: .2em;
+    background: #eee;
+    box-shadow: 0 3.5em #eee; /* container height - part height */
+    transform-origin: 50% 2.5em; /* container height / 2 */
+}
+
+.spinner-loader:before {
+    background: #555;
+}
+
+.spinner-loader:after {
+    transform: rotate(-45deg);
+    background: #777;
+}
+
+.spinner-loader > div:before {
+    transform: rotate(-90deg);
+    background: #999;
+}
+
+.spinner-loader > div:after {
+    transform: rotate(-135deg);
+    background: #bbb;
+}
