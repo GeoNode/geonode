@@ -204,7 +204,13 @@ def _geonode_public_port():
 def _geonode_public_protocol():
     gn_pub_protocol = os.getenv('GEONODE_LB_PROTOCOL', '')
     if not gn_pub_protocol:
-        gn_pub_protocol = 'http'
+        gn_pub_port = _geonode_public_port()
+        if gn_pub_port == 80:
+            gn_pub_protocol = 'http'
+        elif gn_pub_port == 443:
+            gn_pub_protocol = 'https'
+        else:
+            gn_pub_protocol = 'http'
     return gn_pub_protocol
 
 
