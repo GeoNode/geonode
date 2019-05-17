@@ -18,10 +18,13 @@
 #
 #########################################################################
 from __future__ import print_function
+
+import pytz
+import types
 import logging
 import argparse
-import types
-import pytz
+import timeout_decorator
+
 from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand, CommandError
@@ -33,9 +36,12 @@ from geonode.contrib.monitoring.service_handlers import get_for_service
 from geonode.contrib.monitoring.collector import CollectorAPI
 from geonode.contrib.monitoring.utils import TypeChecks
 
-log = logging.getLogger(__name__)
+LOCAL_TIMEOUT = 300
 
 TIMESTAMP_OUTPUT = '%Y-%m-%d %H:%M:%S'
+
+log = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
     """
@@ -70,6 +76,7 @@ class Command(BaseCommand):
                             help=_("Show data for specific label"))
 
 
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def handle(self, *args, **options):
         self.collector = CollectorAPI()
         if options['list_metrics']:
@@ -94,18 +101,21 @@ class Command(BaseCommand):
             else:
                 self.show_metrics(m, options['since'], options['until'], interval, resource=resource, label=label)
 
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def list_labels(self, metric, resource=None):
         labels = self.collector.get_labels_for_metric(metric, resource=resource)
         print('Labels for metric {}'.format(metric))
         for label in labels:
             print(' ', *label)
 
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def list_resources(self, metric):
         resources = self.collector.get_resources_for_metric(metric)
         print('Resources for metric {}'.format(metric))
         for res in resources:
             print(' ', '='.join(res))
 
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def show_metrics(self, metric, since, until, interval, resource=None, label=None, service=None):
         print('Monitoring Metric values for {}'.format(metric))
         if service:
@@ -137,6 +147,7 @@ class Command(BaseCommand):
             print(' ', row['valid_to'].strftime(TIMESTAMP_OUTPUT), '->', '' if not val else val)
 
 
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def list_metrics(self):
         _metrics = self.collector.get_metric_names()
         for stype, metrics in _metrics:
