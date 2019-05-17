@@ -76,7 +76,7 @@ def geoserver_pre_save(*args, **kwargs):
 
 
 @on_ogc_backend(BACKEND_PACKAGE)
-def geoserver_post_save(instance, sender, **kwargs):
+def geoserver_post_save(instance, sender, created, **kwargs):
     from geonode.messaging import producer
     # this is attached to various models, (ResourceBase, Document)
     # so we should select what will be handled here
@@ -88,7 +88,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
             instance.set_dirty_state()
 
-        if instance.storeType != 'remoteStore' and kwargs['created']:
+        if instance.storeType != 'remoteStore' and created:
             logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
             try:
                 create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
