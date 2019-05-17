@@ -76,7 +76,7 @@ def geoserver_pre_save(*args, **kwargs):
 
 
 @on_ogc_backend(BACKEND_PACKAGE)
-def geoserver_post_save(instance, sender, **kwargs):
+def geoserver_post_save(instance, sender, created, **kwargs):
     from geonode.messaging import producer
     # this is attached to various models, (ResourceBase, Document)
     # so we should select what will be handled here
@@ -88,10 +88,10 @@ def geoserver_post_save(instance, sender, **kwargs):
         if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
             instance.set_dirty_state()
 
-        if instance.storeType != 'remoteStore':
+        if instance.storeType != 'remoteStore' and created:
             logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
             try:
-                create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
+                create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
             except BaseException:
                 logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance.alternate))
 
@@ -376,7 +376,8 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
             raise e
 
 
-def geoserver_post_save_map(instance, sender, **kwargs):
+def geoserver_post_save_map(instance, sender, created, **kwargs):
     instance.set_missing_info()
-    logger.info("... Creating Thumbnail for Map [%s]" % (instance.title))
-    create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
+    if created:
+        logger.info("... Creating Thumbnail for Map [%s]" % (instance.title))
+        create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
