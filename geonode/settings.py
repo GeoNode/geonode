@@ -24,7 +24,6 @@ import os
 import re
 import sys
 from datetime import timedelta
-from distutils.util import strtobool
 from urlparse import urlparse, urlunparse, urljoin
 
 import django
@@ -48,17 +47,17 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # Setting debug to true makes Django serve static media and
 # present pretty error pages.
-DEBUG = strtobool(os.getenv('DEBUG', 'True'))
+DEBUG = ast.literal_eval(os.getenv('DEBUG', 'True'))
 
 # Set to True to load non-minified versions of (static) client dependencies
 # Requires to set-up Node and tools that are required for static development
 # otherwise it will raise errors for the missing non-minified dependencies
-DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
+DEBUG_STATIC = ast.literal_eval(os.getenv('DEBUG_STATIC', 'False'))
 
 FORCE_SCRIPT_NAME = os.getenv('FORCE_SCRIPT_NAME', '')
 
 # Define email service on GeoNode
-EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'False'))
+EMAIL_ENABLE = ast.literal_eval(os.getenv('EMAIL_ENABLE', 'False'))
 
 if EMAIL_ENABLE:
     EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
@@ -67,7 +66,7 @@ if EMAIL_ENABLE:
     EMAIL_PORT = os.getenv('DJANGO_EMAIL_PORT', 25)
     EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_HOST_USER', '')
     EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_HOST_PASSWORD', '')
-    EMAIL_USE_TLS = strtobool(os.getenv('DJANGO_EMAIL_USE_TLS', 'False'))
+    EMAIL_USE_TLS = ast.literal_eval(os.getenv('DJANGO_EMAIL_USE_TLS', 'False'))
     DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'GeoNode <no-reply@geonode.org>')
 else:
     EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
@@ -125,8 +124,8 @@ TIME_ZONE = os.getenv('TIME_ZONE', "UTC")
 SITE_ID = int(os.getenv('SITE_ID', '1'))
 
 USE_TZ = True
-USE_I18N = strtobool(os.getenv('USE_I18N', 'True'))
-USE_L10N = strtobool(os.getenv('USE_I18N', 'True'))
+USE_I18N = ast.literal_eval(os.getenv('USE_I18N', 'True'))
+USE_L10N = ast.literal_eval(os.getenv('USE_I18N', 'True'))
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -393,7 +392,7 @@ MAX_DOCUMENT_SIZE = int(os.getenv('MAX_DOCUMENT_SIZE ', '2'))  # MB
 # DOCUMENT_TYPE_MAP = {}
 # DOCUMENT_MIMETYPE_MAP = {}
 
-UNOCONV_ENABLE = strtobool(os.getenv('UNOCONV_ENABLE', 'False'))
+UNOCONV_ENABLE = ast.literal_eval(os.getenv('UNOCONV_ENABLE', 'False'))
 
 if UNOCONV_ENABLE:
     UNOCONV_EXECUTABLE = os.getenv('UNOCONV_EXECUTABLE', '/usr/bin/unoconv')
@@ -559,15 +558,15 @@ if SESSION_EXPIRED_CONTROL_ENABLED:
     MIDDLEWARE_CLASSES += \
             ('geonode.security.middleware.SessionControlMiddleware',)
 
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_HTTPONLY = False
-X_FRAME_OPTIONS = 'DENY'
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_SSL_REDIRECT = False
-SECURE_HSTS_SECONDS = 3600
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SESSION_COOKIE_SECURE = ast.literal_eval(os.environ.get('SESSION_COOKIE_SECURE', 'False'))
+CSRF_COOKIE_SECURE = ast.literal_eval(os.environ.get('CSRF_COOKIE_SECURE', 'False'))
+CSRF_COOKIE_HTTPONLY = ast.literal_eval(os.environ.get('CSRF_COOKIE_HTTPONLY', 'False'))
+X_FRAME_OPTIONS = os.environ.get('X_FRAME_OPTIONS', 'DENY')
+SECURE_CONTENT_TYPE_NOSNIFF = ast.literal_eval(os.environ.get('SECURE_CONTENT_TYPE_NOSNIFF', 'True'))
+SECURE_BROWSER_XSS_FILTER = ast.literal_eval(os.environ.get('SECURE_BROWSER_XSS_FILTER', 'True'))
+SECURE_SSL_REDIRECT = ast.literal_eval(os.environ.get('SECURE_SSL_REDIRECT', 'False'))
+SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '3600'))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = ast.literal_eval(os.environ.get('SECURE_HSTS_INCLUDE_SUBDOMAINS', 'True'))
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
@@ -612,7 +611,7 @@ g+gp5fQ4nmDrSNHjakzQCX2mKMsx/GLWZzoIDd7ECV9f
 ACCESS_TOKEN_EXPIRE_SECONDS = int(os.getenv('ACCESS_TOKEN_EXPIRE_SECONDS', '86400'))
 
 # Require users to authenticate before using Geonode
-LOCKDOWN_GEONODE = strtobool(os.getenv('LOCKDOWN_GEONODE', 'False'))
+LOCKDOWN_GEONODE = ast.literal_eval(os.getenv('LOCKDOWN_GEONODE', 'False'))
 
 # Add additional paths (as regular expressions) that don't require
 # authentication.
@@ -640,10 +639,10 @@ GUARDIAN_GET_INIT_ANONYMOUS_USER = os.getenv(
 
 # Whether the uplaoded resources should be public and downloadable by default
 # or not
-DEFAULT_ANONYMOUS_VIEW_PERMISSION = strtobool(
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = ast.literal_eval(
     os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True')
 )
-DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = strtobool(
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = ast.literal_eval(
     os.getenv('DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', 'True')
 )
 
@@ -688,10 +687,12 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 # GeoNode specific settings
 #
 # per-deployment settings should go here
+SITE_HOST_SCHEMA = os.getenv('SITE_HOST_SCHEMA', 'http')
 SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'localhost')
 SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', 8000)
-_default_siteurl = "http://%s:%s/" % (SITE_HOST_NAME,
-                                      SITE_HOST_PORT) if SITE_HOST_PORT else "http://%s/" % SITE_HOST_NAME
+_default_siteurl = "%s://%s:%s/" % (SITE_HOST_SCHEMA,
+                                    SITE_HOST_NAME,
+                                    SITE_HOST_PORT) if SITE_HOST_PORT else "%s://%s/" % (SITE_HOST_SCHEMA, SITE_HOST_NAME)
 SITEURL = os.getenv('SITEURL', _default_siteurl)
 
 # we need hostname for deployed
@@ -717,7 +718,7 @@ OGP_URL = os.getenv('OGP_URL', "http://geodata.tufts.edu/solr/select")
 
 # Topic Categories list should not be modified (they are ISO). In case you
 # absolutely need it set to True this variable
-MODIFY_TOPICCATEGORY = strtobool(os.getenv('MODIFY_TOPICCATEGORY', 'False'))
+MODIFY_TOPICCATEGORY = ast.literal_eval(os.getenv('MODIFY_TOPICCATEGORY', 'False'))
 
 MISSING_THUMBNAIL = os.getenv(
     'MISSING_THUMBNAIL', 'geonode/img/missing_thumb.png'
@@ -730,6 +731,10 @@ GEOSERVER_LOCATION = os.getenv(
     'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
 )
 
+GEOSERVER_PUBLIC_SCHEMA = os.getenv(
+    'GEOSERVER_PUBLIC_SCHEMA', SITE_HOST_SCHEMA
+)
+
 GEOSERVER_PUBLIC_HOST = os.getenv(
     'GEOSERVER_PUBLIC_HOST', SITE_HOST_NAME
 )
@@ -738,9 +743,10 @@ GEOSERVER_PUBLIC_PORT = os.getenv(
     'GEOSERVER_PUBLIC_PORT', 8000
 )
 
-_default_public_location = 'http://{}:{}/gs/'.format(
+_default_public_location = '{}://{}:{}/gs/'.format(
+    GEOSERVER_PUBLIC_SCHEMA,
     GEOSERVER_PUBLIC_HOST,
-    GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/gs/'.format(GEOSERVER_PUBLIC_HOST)
+    GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else '{}://{}/gs/'.format(GEOSERVER_PUBLIC_SCHEMA, GEOSERVER_PUBLIC_HOST)
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
     'GEOSERVER_PUBLIC_LOCATION', _default_public_location
@@ -758,7 +764,7 @@ OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
     'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
 )
 
-GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION else True
+GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION else ast.literal_eval(os.getenv('GEOFENCE_SECURITY_ENABLED', 'True'))
 
 # OGC (WMS/WFS/WCS) Server Settings
 # OGC (WMS/WFS/WCS) Server Settings
@@ -775,14 +781,14 @@ OGC_SERVER = {
         'PUBLIC_LOCATION': GEOSERVER_PUBLIC_LOCATION,
         'USER': OGC_SERVER_DEFAULT_USER,
         'PASSWORD': OGC_SERVER_DEFAULT_PASSWORD,
-        'MAPFISH_PRINT_ENABLED': True,
-        'PRINT_NG_ENABLED': True,
-        'GEONODE_SECURITY_ENABLED': True,
+        'MAPFISH_PRINT_ENABLED': ast.literal_eval(os.getenv('MAPFISH_PRINT_ENABLED', 'True')),
+        'PRINT_NG_ENABLED': ast.literal_eval(os.getenv('PRINT_NG_ENABLED', 'True')),
+        'GEONODE_SECURITY_ENABLED': ast.literal_eval(os.getenv('GEONODE_SECURITY_ENABLED', 'True')),
         'GEOFENCE_SECURITY_ENABLED': GEOFENCE_SECURITY_ENABLED,
         'GEOFENCE_URL': os.getenv('GEOFENCE_URL', 'internal:/'),
-        'WMST_ENABLED': False,
-        'BACKEND_WRITE_ENABLED': True,
-        'WPS_ENABLED': True,
+        'WMST_ENABLED': ast.literal_eval(os.getenv('WMST_ENABLED', 'False')),
+        'BACKEND_WRITE_ENABLED': ast.literal_eval(os.getenv('BACKEND_WRITE_ENABLED', 'True')),
+        'WPS_ENABLED': ast.literal_eval(os.getenv('WPS_ENABLED', 'True')),
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log'
         % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
@@ -804,8 +810,8 @@ UPLOADER = {
     'BACKEND': os.getenv('DEFAULT_BACKEND_UPLOADER', 'geonode.rest'),
     # 'BACKEND': 'geonode.importer',
     'OPTIONS': {
-        'TIME_ENABLED': strtobool(os.getenv('TIME_ENABLED', 'False')),
-        'MOSAIC_ENABLED': strtobool(os.getenv('MOSAIC_ENABLED', 'False')),
+        'TIME_ENABLED': ast.literal_eval(os.getenv('TIME_ENABLED', 'False')),
+        'MOSAIC_ENABLED': ast.literal_eval(os.getenv('MOSAIC_ENABLED', 'False')),
     },
     'SUPPORTED_CRS': [
         'EPSG:4326',
@@ -928,17 +934,17 @@ PYCSW = {
 
 # default map projection
 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
-DEFAULT_MAP_CRS = "EPSG:3857"
+DEFAULT_MAP_CRS = os.environ.get('DEFAULT_MAP_CRS', "EPSG:3857")
 
-DEFAULT_LAYER_FORMAT = "image/png"
+DEFAULT_LAYER_FORMAT = os.environ.get('DEFAULT_LAYER_FORMAT', "image/png")
 
 # Where should newly created maps be focused?
-DEFAULT_MAP_CENTER = (0, 0)
+DEFAULT_MAP_CENTER = (os.environ.get('DEFAULT_MAP_CENTER_X', 0), os.environ.get('DEFAULT_MAP_CENTER_Y', 0))
 
 # How tightly zoomed should newly created maps be?
 # 0 = entire world;
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
-DEFAULT_MAP_ZOOM = 0
+DEFAULT_MAP_ZOOM = int(os.environ.get('DEFAULT_MAP_ZOOM', 0))
 
 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
 BING_API_KEY = os.environ.get('BING_API_KEY', None)
@@ -980,10 +986,10 @@ MAP_BASELAYERS = [{
     "group": "background"
 }]
 
-DISPLAY_SOCIAL = strtobool(os.getenv('DISPLAY_SOCIAL', 'True'))
-DISPLAY_COMMENTS = strtobool(os.getenv('DISPLAY_COMMENTS', 'True'))
-DISPLAY_RATINGS = strtobool(os.getenv('DISPLAY_RATINGS', 'True'))
-DISPLAY_WMS_LINKS = strtobool(os.getenv('DISPLAY_WMS_LINKS', 'True'))
+DISPLAY_SOCIAL = ast.literal_eval(os.getenv('DISPLAY_SOCIAL', 'True'))
+DISPLAY_COMMENTS = ast.literal_eval(os.getenv('DISPLAY_COMMENTS', 'True'))
+DISPLAY_RATINGS = ast.literal_eval(os.getenv('DISPLAY_RATINGS', 'True'))
+DISPLAY_WMS_LINKS = ast.literal_eval(os.getenv('DISPLAY_WMS_LINKS', 'True'))
 
 SOCIAL_ORIGINS = [{
     "label": "Email",
@@ -1016,11 +1022,11 @@ CKAN_ORIGINS = [{
 # Setting TWITTER_CARD to True will enable Twitter Cards
 # https://dev.twitter.com/cards/getting-started
 # Be sure to replace @GeoNode with your organization or site's twitter handle.
-TWITTER_CARD = strtobool(os.getenv('TWITTER_CARD', 'True'))
+TWITTER_CARD = ast.literal_eval(os.getenv('TWITTER_CARD', 'True'))
 TWITTER_SITE = '@GeoNode'
 TWITTER_HASHTAGS = ['geonode']
 
-OPENGRAPH_ENABLED = strtobool(os.getenv('OPENGRAPH_ENABLED', 'True'))
+OPENGRAPH_ENABLED = ast.literal_eval(os.getenv('OPENGRAPH_ENABLED', 'True'))
 
 # Enable Licenses User Interface
 # Regardless of selection, license field stil exists as a field in the
@@ -1069,7 +1075,7 @@ except ValueError:
         else re.split(r' *[,|:|;] *', os.getenv('PROXY_ALLOWED_HOSTS'))
 
 # The proxy to use when making cross origin requests.
-PROXY_URL = '/proxy/?url=' if DEBUG else None
+PROXY_URL = '/proxy/?url=' if DEBUG else os.environ.get('PROXY_URL', None)
 
 # Haystack Search Backend Configuration. To enable,
 # first install the following:
@@ -1077,11 +1083,11 @@ PROXY_URL = '/proxy/?url=' if DEBUG else None
 # - pip install pyelasticsearch
 # Set HAYSTACK_SEARCH to True
 # Run "python manage.py rebuild_index"
-HAYSTACK_SEARCH = strtobool(os.getenv('HAYSTACK_SEARCH', 'False'))
+HAYSTACK_SEARCH = ast.literal_eval(os.getenv('HAYSTACK_SEARCH', 'False'))
 # Avoid permissions prefiltering
-SKIP_PERMS_FILTER = strtobool(os.getenv('SKIP_PERMS_FILTER', 'False'))
+SKIP_PERMS_FILTER = ast.literal_eval(os.getenv('SKIP_PERMS_FILTER', 'False'))
 # Update facet counts from Haystack
-HAYSTACK_FACET_COUNTS = strtobool(os.getenv('HAYSTACK_FACET_COUNTS', 'True'))
+HAYSTACK_FACET_COUNTS = ast.literal_eval(os.getenv('HAYSTACK_FACET_COUNTS', 'True'))
 if HAYSTACK_SEARCH:
     if 'haystack' not in INSTALLED_APPS:
         INSTALLED_APPS += ('haystack', )
@@ -1123,7 +1129,7 @@ DOWNLOAD_FORMATS_RASTER = [
     'Zipped All Files'
 ]
 
-ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = strtobool(
+ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = ast.literal_eval(
     os.getenv('ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE', 'False'))
 
 TASTYPIE_DEFAULT_FORMATS = ['json']
@@ -1138,7 +1144,7 @@ CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '20'))
 
 # Number of items returned by the apis 0 equals no limit
 API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '200'))
-API_INCLUDE_REGIONS_COUNT = strtobool(
+API_INCLUDE_REGIONS_COUNT = ast.literal_eval(
     os.getenv('API_INCLUDE_REGIONS_COUNT', 'False'))
 
 LEAFLET_CONFIG = {
@@ -1205,10 +1211,10 @@ if not DEBUG_STATIC:
     }
 
 # option to enable/disable resource unpublishing for administrators
-RESOURCE_PUBLISHING = False
+RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
 
 # Settings for EXIF contrib app
-EXIF_ENABLED = False
+EXIF_ENABLED = ast.literal_eval(os.getenv('EXIF_ENABLED', 'False'))
 
 # Settings for NLP contrib app
 NLP_ENABLED = False
@@ -1502,7 +1508,7 @@ if os.name == 'nt':
             # maybe it will be found regardless if not it will throw 500 error
             from django.contrib.gis.geos import GEOSGeometry  # flake8: noqa
 
-USE_WORLDMAP = strtobool(os.getenv('USE_WORLDMAP', 'False'))
+USE_WORLDMAP = ast.literal_eval(os.getenv('USE_WORLDMAP', 'False'))
 
 # define the urls after the settings are overridden
 if USE_GEOSERVER:
@@ -1538,12 +1544,6 @@ if USE_GEOSERVER:
 # Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
 # THESAURI = [{'name':'inspire_themes', 'required':False, 'filter':True}]
 THESAURI = []
-
-# use when geonode.contrib.risks is in installed apps.
-RISKS = {'DEFAULT_LOCATION': None,
-         'PDF_GENERATOR': {'NAME': 'wkhtml2pdf',
-                           'BIN': '/usr/bin/wkhtml2pdf',
-                           'ARGS': []}}
 
 # Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
@@ -1583,13 +1583,13 @@ GROUP_MANDATORY_RESOURCES = ast.literal_eval(os.environ.get('GROUP_MANDATORY_RES
 SHOW_PROFILE_EMAIL = ast.literal_eval(os.environ.get('SHOW_PROFILE_EMAIL', 'False'))
 
 # Enables cross origin requests for geonode-client
-MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = strtobool(os.getenv(
+MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = ast.literal_eval(os.getenv(
     'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS',
     'False'
 ))
 
 ACCOUNT_OPEN_SIGNUP = ast.literal_eval(os.environ.get('ACCOUNT_OPEN_SIGNUP', 'True'))
-ACCOUNT_APPROVAL_REQUIRED = strtobool(
+ACCOUNT_APPROVAL_REQUIRED = ast.literal_eval(
     os.getenv('ACCOUNT_APPROVAL_REQUIRED', 'False')
 )
 ACCOUNT_ADAPTER = 'geonode.people.adapters.LocalAccountAdapter'
@@ -1659,7 +1659,7 @@ INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 THUMBNAIL_GENERATOR = "geonode.layers.utils.create_gs_thumbnail_geonode"
 THUMBNAIL_GENERATOR_DEFAULT_BG = r"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
-GEOTIFF_IO_ENABLED = strtobool(
+GEOTIFF_IO_ENABLED = ast.literal_eval(
     os.getenv('GEOTIFF_IO_ENABLED', 'False')
 )
 
@@ -1700,9 +1700,9 @@ if USE_WORLDMAP:
         organized spatially and temporally.</p>
     """
     # these are optionals
-    USE_GOOGLE_STREET_VIEW = strtobool(os.getenv('USE_GOOGLE_STREET_VIEW', 'False'))
+    USE_GOOGLE_STREET_VIEW = ast.literal_eval(os.getenv('USE_GOOGLE_STREET_VIEW', 'False'))
     GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', 'your-key-here')
-    USE_HYPERMAP = strtobool(os.getenv('USE_HYPERMAP', 'False'))
+    USE_HYPERMAP = ast.literal_eval(os.getenv('USE_HYPERMAP', 'False'))
     HYPERMAP_REGISTRY_URL = os.getenv('HYPERMAP_REGISTRY_URL', 'http://localhost:8001')
     SOLR_URL = os.getenv('SOLR_URL', 'http://localhost:8983/solr/hypermap/select/')
     MAPPROXY_URL = os.getenv('MAPPROXY_URL', 'http://localhost:8001')
