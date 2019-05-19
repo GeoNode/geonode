@@ -161,47 +161,49 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     else:
         msg = "There isn't a geoserver resource for this layer: %s" % instance.name
         logger.exception(msg)
-        raise Exception(msg)
+        # raise Exception(msg)
+        gs_resource = None
 
     # Get metadata links
     metadata_links = []
     for link in instance.link_set.metadata():
         metadata_links.append((link.mime, link.name, link.url))
 
-    gs_resource.metadata_links = metadata_links
-    # gs_resource should only be called if
-    # ogc_server_settings.BACKEND_WRITE_ENABLED == True
-    if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        try:
-            gs_catalog.save(gs_resource)
-        except geoserver.catalog.FailedRequestError as e:
-            msg = ('Error while trying to save resource named %s in GeoServer, '
-                   'try to use: "%s"' % (gs_resource, str(e)))
-            e.args = (msg,)
-            logger.exception(e)
-
-    # Update Attribution link
-    if instance.poc:
-        # gsconfig now utilizes an attribution dictionary
-        gs_resource.attribution = {'title': str(instance.poc),
-                                   'width': None,
-                                   'height': None,
-                                   'href': None,
-                                   'url': None,
-                                   'type': None}
-        profile = Profile.objects.get(username=instance.poc.username)
-        site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-        gs_resource.attribution_link = site_url + profile.get_absolute_url()
+    if gs_resource:
+        gs_resource.metadata_links = metadata_links
         # gs_resource should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
             try:
                 gs_catalog.save(gs_resource)
             except geoserver.catalog.FailedRequestError as e:
-                msg = ('Error while trying to save layer named %s in GeoServer, '
+                msg = ('Error while trying to save resource named %s in GeoServer, '
                        'try to use: "%s"' % (gs_resource, str(e)))
                 e.args = (msg,)
                 logger.exception(e)
+
+        # Update Attribution link
+        if instance.poc:
+            # gsconfig now utilizes an attribution dictionary
+            gs_resource.attribution = {'title': str(instance.poc),
+                                       'width': None,
+                                       'height': None,
+                                       'href': None,
+                                       'url': None,
+                                       'type': None}
+            profile = Profile.objects.get(username=instance.poc.username)
+            site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+            gs_resource.attribution_link = site_url + profile.get_absolute_url()
+            # gs_resource should only be called if
+            # ogc_server_settings.BACKEND_WRITE_ENABLED == True
+            if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
+                try:
+                    gs_catalog.save(gs_resource)
+                except geoserver.catalog.FailedRequestError as e:
+                    msg = ('Error while trying to save layer named %s in GeoServer, '
+                           'try to use: "%s"' % (gs_resource, str(e)))
+                    e.args = (msg,)
+                    logger.exception(e)
 
     if isinstance(instance, ResourceBase):
         if hasattr(instance, 'layer'):
@@ -232,34 +234,35 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         set_attributes_from_geoserver(instance)
         return
 
-    """Get information from geoserver.
+    if gs_resource:
+        """Get information from geoserver.
 
-       The attributes retrieved include:
+           The attributes retrieved include:
 
-       * Bounding Box
-       * SRID
-       * Download links (WMS, WCS or WFS and KML)
-       * Styles (SLD)
-    """
-    # instance.name = instance.name or gs_resource.name
-    # instance.title = instance.title or gs_resource.title
-    instance.abstract = gs_resource.abstract or ''
-    instance.workspace = gs_resource.store.workspace.name
-    instance.store = gs_resource.store.name
+           * Bounding Box
+           * SRID
+           * Download links (WMS, WCS or WFS and KML)
+           * Styles (SLD)
+        """
+        # instance.name = instance.name or gs_resource.name
+        # instance.title = instance.title or gs_resource.title
+        instance.abstract = gs_resource.abstract or ''
+        instance.workspace = gs_resource.store.workspace.name
+        instance.store = gs_resource.store.name
 
-    try:
-        logger.debug(" -------------------------------------------------- ")
-        bbox = gs_resource.native_bbox
-        logger.debug(bbox)
-        logger.debug(" -------------------------------------------------- ")
-        # Set bounding box values
-        instance.bbox_x0 = bbox[0]
-        instance.bbox_x1 = bbox[1]
-        instance.bbox_y0 = bbox[2]
-        instance.bbox_y1 = bbox[3]
-        instance.srid = bbox[4]
-    except BaseException:
-        pass
+        try:
+            logger.debug(" -------------------------------------------------- ")
+            bbox = gs_resource.native_bbox
+            logger.debug(bbox)
+            logger.debug(" -------------------------------------------------- ")
+            # Set bounding box values
+            instance.bbox_x0 = bbox[0]
+            instance.bbox_x1 = bbox[1]
+            instance.bbox_y0 = bbox[2]
+            instance.bbox_y1 = bbox[3]
+            instance.srid = bbox[4]
+        except BaseException:
+            pass
 
     if instance.srid:
         instance.srid_url = "http://www.spatialreference.org/ref/" + \
@@ -271,40 +274,42 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         raise GeoNodeException("Invalid Projection. Layer is missing CRS!")
 
     # Iterate over values from geoserver.
-    for key in ['alternate', 'store', 'storeType']:
-        # attr_name = key if 'typename' not in key else 'alternate'
-        # print attr_name
-        setattr(instance, key, values[key])
+    if gs_resource:
+        for key in ['alternate', 'store', 'storeType']:
+            # attr_name = key if 'typename' not in key else 'alternate'
+            # print attr_name
+            setattr(instance, key, values[key])
 
-    if settings.RESOURCE_PUBLISHING:
-        if instance.is_published != gs_resource.advertised:
-            if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-                gs_resource.advertised = 'true'
-                gs_catalog.save(gs_resource)
+    if gs_resource:
+        if settings.RESOURCE_PUBLISHING:
+            if instance.is_published != gs_resource.advertised:
+                if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
+                    gs_resource.advertised = 'true'
+                    gs_catalog.save(gs_resource)
 
-    if not settings.FREETEXT_KEYWORDS_READONLY:
-        try:
-            if len(instance.keyword_list()) == 0 and gs_resource.keywords:
-                for keyword in gs_resource.keywords:
-                    if keyword not in instance.keyword_list():
-                        instance.keywords.add(keyword)
-        except BaseException:
-            pass
-
-    if any(instance.keyword_list()):
-        keywords = instance.keyword_list()
-        gs_resource.keywords = [kw for kw in list(set(keywords))]
-
-        # gs_resource should only be called if
-        # ogc_server_settings.BACKEND_WRITE_ENABLED == True
-        if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
+        if not settings.FREETEXT_KEYWORDS_READONLY:
             try:
-                gs_catalog.save(gs_resource)
-            except geoserver.catalog.FailedRequestError as e:
-                msg = ('Error while trying to save resource named %s in GeoServer, '
-                       'try to use: "%s"' % (gs_resource, str(e)))
-                e.args = (msg,)
-                logger.exception(e)
+                if len(instance.keyword_list()) == 0 and gs_resource.keywords:
+                    for keyword in gs_resource.keywords:
+                        if keyword not in instance.keyword_list():
+                            instance.keywords.add(keyword)
+            except BaseException:
+                pass
+
+        if any(instance.keyword_list()):
+            keywords = instance.keyword_list()
+            gs_resource.keywords = [kw for kw in list(set(keywords))]
+
+            # gs_resource should only be called if
+            # ogc_server_settings.BACKEND_WRITE_ENABLED == True
+            if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
+                try:
+                    gs_catalog.save(gs_resource)
+                except geoserver.catalog.FailedRequestError as e:
+                    msg = ('Error while trying to save resource named %s in GeoServer, '
+                           'try to use: "%s"' % (gs_resource, str(e)))
+                    e.args = (msg,)
+                    logger.exception(e)
 
     to_update = {
         'title': instance.title or instance.name,
@@ -334,7 +339,8 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     instance.refresh_from_db()
 
     # store the resource to avoid another geoserver call in the post_save
-    instance.gs_resource = gs_resource
+    if gs_resource:
+        instance.gs_resource = gs_resource
 
     # Refresh and create the instance default links
     layer = Layer.objects.get(id=instance.id)
@@ -342,10 +348,11 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
     # some thumbnail generators will update thumbnail_url.  If so, don't
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
-    if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
-            'thumbnail_url' in kwargs['update_fields']:
-        logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
-        create_gs_thumbnail(instance, overwrite=True)
+    if gs_resource:
+        if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
+                'thumbnail_url' in kwargs['update_fields']:
+            logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
+            create_gs_thumbnail(instance, overwrite=True)
 
     # NOTTODO by simod: we should not do this!
     # need to be removed when fixing #2015
