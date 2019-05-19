@@ -321,8 +321,7 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
             etree.parse(base_file)
     except Exception:
         logger.exception("The uploaded SLD file is not valid XML")
-        raise Exception(
-            "The uploaded SLD file is not valid XML")
+        # raise Exception("The uploaded SLD file is not valid XML")
 
     # Check Layer's available styles
     match = None
