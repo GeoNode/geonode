@@ -24,6 +24,7 @@ import os
 import re
 import sys
 from datetime import timedelta
+from distutils.util import strtobool  # noqa
 from urlparse import urlparse, urlunparse, urljoin
 
 import django
