@@ -1245,7 +1245,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                                                    geoserver_post_save,
                                                    geoserver_post_save_local)
             # Handle Layer Save and Upload Signals
-            geoserver_post_save(test_perm_layer, sender=Layer)
+            geoserver_post_save(test_perm_layer, sender=Layer, created=True)
             geoserver_post_save_local(test_perm_layer)
 
             # Check instance bbox and links
