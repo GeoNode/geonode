@@ -334,18 +334,20 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
             break
     cat = gs_catalog
     layer = cat.get_layer(title)
+    style = None
     if match is None:
         try:
-            cat.create_style(saved_layer.name, sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
-            style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
-                cat.get_style(saved_layer.name)
-            if layer and style:
-                layer.default_style = style
-                cat.save(layer)
-                saved_layer.default_style = save_style(style)
-                set_geowebcache_invalidate_cache(saved_layer.alternate)
+            cat.create_style(
+                saved_layer.name, sld, overwrite=False, raw=True, workspace=settings.DEFAULT_WORKSPACE)
         except Exception as e:
             logger.exception(e)
+        style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
+            cat.get_style(saved_layer.name)
+        if layer and style:
+            layer.default_style = style
+            cat.save(layer)
+            saved_layer.default_style = save_style(style)
+            set_geowebcache_invalidate_cache(saved_layer.alternate)
     else:
         style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
             cat.get_style(saved_layer.name)

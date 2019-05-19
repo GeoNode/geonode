@@ -1251,7 +1251,7 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
 
             thumbnail_url = map_obj.get_thumbnail_url()
 
-            self.assertNotEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+            self.assertEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
         finally:
             # Cleanup
             saved_layer.delete()
