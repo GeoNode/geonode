@@ -1026,7 +1026,6 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
             if not response_dict['success'] and 'unknown encoding' in \
                     response_dict['errors']:
-                # print(response_dict['errors'])
                 pass
             else:
                 self.assertEquals(response.status_code, 200)
