@@ -938,7 +938,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(wcs)
 
         try:
-            wcs_url = urljoin(settings.SITEURL, reverse('wcs_endpoint'))
+            wcs_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
         except BaseException:
             wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
         self.assertEquals(wcs,
@@ -949,7 +949,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(wfs)
 
         try:
-            wfs_url = urljoin(settings.SITEURL, reverse('wfs_endpoint'))
+            wfs_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
         except BaseException:
             wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
         self.assertEquals(wfs,
@@ -960,11 +960,11 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(wms)
 
         try:
-            wms_url = urljoin(settings.SITEURL, reverse('wms_endpoint'))
+            wms_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
         except BaseException:
             wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
         self.assertEquals(wms,
-                          '%s?version=1.1.1&request=GetCapabilities&service=WMS' % wms_url)
+                          '%s?version=1.3.0&request=GetCapabilities&service=WMS' % wms_url)
 
         # Test OWS Download Links
         import urllib

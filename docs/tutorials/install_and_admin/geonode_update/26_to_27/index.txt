@@ -862,8 +862,6 @@ Upgrade Development Environment
                 301     # 'geonode.contrib.datastore_shards',
                 ------------------------------------------------------------------------
                 302     'geonode.contrib.metadataxsl',                    <> 287     'geonode.contrib.metadataxsl'
-                303     'geonode.contrib.api_basemaps',
-                304     'geonode.contrib.ows_api',
                 ------------------------------------------------------------------------
                 305 )                                                     =  288 )
                 306                                                          289

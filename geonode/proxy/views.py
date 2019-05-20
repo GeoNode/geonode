@@ -28,28 +28,36 @@ import traceback
 
 from slugify import slugify
 from urlparse import urlparse, urlsplit, urljoin
+
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils.http import is_safe_url
 from django.http.request import validate_host
+from django.views.generic import View
 from django.views.decorators.csrf import requires_csrf_token
 from django.middleware.csrf import get_token
 from distutils.version import StrictVersion
 from django.utils.translation import ugettext as _
 from django.core.files.storage import default_storage as storage
+
 from geonode.base.models import Link
 from geonode.layers.models import Layer, LayerFile
 from geonode.utils import (resolve_object,
                            check_ogc_backend,
                            get_dir_time_suffix,
                            zip_dir,
-                           http_client)
+                           http_client,
+                           json_response)
 from geonode.base.auth import (extend_token,
                                get_token_from_auth_header,
                                get_token_object_from_session)
+from geonode.base.enumerations import LINK_TYPES as _LT
+
 from geonode import geoserver, qgis_server  # noqa
 
 TIMEOUT = 300
+
+LINK_TYPES = [L for L in _LT if L.startswith("OGC:")]
 
 logger = logging.getLogger(__name__)
 
@@ -393,3 +401,25 @@ def download(request, resourceid, sender=Layer):
         status=403,
         content_type="application/json"
     )
+
+
+class OWSListView(View):
+
+    def get(self, request):
+        from geonode.geoserver import ows
+        out = {'success': True}
+        data = []
+        out['data'] = data
+        # per-layer links
+        # for link in Link.objects.filter(link_type__in=LINK_TYPES):  # .distinct('url'):
+        #     data.append({'url': link.url, 'type': link.link_type})
+        data.append({'url': ows._wcs_get_capabilities(), 'type': 'OGC:WCS'})
+        data.append({'url': ows._wfs_get_capabilities(), 'type': 'OGC:WFS'})
+        data.append({'url': ows._wms_get_capabilities(), 'type': 'OGC:WMS'})
+
+        # catalogue from configuration
+        for catname, catconf in settings.CATALOGUE.items():
+            data.append({'url': catconf['URL'], 'type': 'OGC:CSW'})
+        # main site url
+        data.append({'url': settings.SITEURL, 'type': 'WWW:LINK'})
+        return json_response(out)
