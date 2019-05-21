@@ -1,4 +1,3 @@
 {% load i18n %}
-
-{% trans "The following document was deleted" %}:
-{{ resource.title }}, {% trans "owned by" %} {{ resource.owner.username }}
+{% trans "The following document was deleted" %}:<br/>
+<strong>{{ resource.title }}</strong>, {% trans "owned by" %} <i><a href="{{ default_http_protocol }}://{{ current_site }}/people/profile/{{ resource.owner.username }}">{{ resource.owner.username }}</a></i>

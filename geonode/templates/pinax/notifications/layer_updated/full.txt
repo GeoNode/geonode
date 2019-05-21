@@ -1,6 +1,4 @@
 {% load i18n %}
-
-{% trans "The following layer was updated" %}:
-{{ resource.title }}, {% trans "owned by" %} {{ resource.owner.username }}
-
+{% trans "The following layer was updated" %}:<br/>
+<strong>{{ resource.title }}</strong>, {% trans "owned by" %} <i><a href="{{ default_http_protocol }}://{{ current_site }}/people/profile/{{ resource.owner.username }}">{{ resource.owner.username }}</a></i><br/>
 {% trans "You can visit the layer's detail page here" %}: http://{{ current_site }}{% url "layer_detail" resource.service_typename %}
