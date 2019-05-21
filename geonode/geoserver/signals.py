@@ -33,7 +33,6 @@ from geonode.geoserver.upload import geoserver_upload
 from geonode.geoserver.helpers import (cascading_delete,
                                        set_attributes_from_geoserver,
                                        set_styles,
-                                       set_layer_style,
                                        gs_catalog,
                                        ogc_server_settings,
                                        create_gs_thumbnail,
@@ -43,7 +42,6 @@ from geonode.base.models import ResourceBase
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
 from geonode.social.signals import json_serializer_producer
-from geonode.catalogue.models import catalogue_post_save
 from geonode.services.enumerations import CASCADED
 
 import geoserver
@@ -89,6 +87,8 @@ def geoserver_post_save(instance, sender, created, **kwargs):
             instance.set_dirty_state()
 
         if instance.storeType != 'remoteStore' and created:
+            logger.info("... Creating Default Resource Linkks for Layer [%s]" % (instance.alternate))
+            set_resource_default_links(instance, sender, prune=True)
             logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
             try:
                 create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
@@ -217,11 +217,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # Save layer styles
     set_styles(instance, gs_catalog)
 
-    # set SLD
-    sld = instance.default_style.sld_body if instance.default_style else None
-    if sld:
-        set_layer_style(instance, instance.alternate, sld)
-
     # Invalidate GeoWebCache for the updated resource
     try:
         _stylefilterparams_geowebcache_layer(instance.alternate)
@@ -230,8 +225,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         pass
 
     if instance.storeType == "remoteStore":
-        # Save layer attributes
-        set_attributes_from_geoserver(instance)
         return
 
     if gs_resource:
@@ -251,10 +244,8 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         instance.store = gs_resource.store.name
 
         try:
-            logger.debug(" -------------------------------------------------- ")
             bbox = gs_resource.native_bbox
-            logger.debug(bbox)
-            logger.debug(" -------------------------------------------------- ")
+
             # Set bounding box values
             instance.bbox_x0 = bbox[0]
             instance.bbox_x1 = bbox[1]
@@ -342,10 +333,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if gs_resource:
         instance.gs_resource = gs_resource
 
-    # Refresh and create the instance default links
-    layer = Layer.objects.get(id=instance.id)
-    set_resource_default_links(instance, layer, prune=True)
-
     # some thumbnail generators will update thumbnail_url.  If so, don't
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
     if gs_resource:
@@ -353,10 +340,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                 'thumbnail_url' in kwargs['update_fields']:
             logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
             create_gs_thumbnail(instance, overwrite=True)
-
-    # NOTTODO by simod: we should not do this!
-    # need to be removed when fixing #2015
-    catalogue_post_save(instance, Layer)
 
     # Updating HAYSTACK Indexes if needed
     if settings.HAYSTACK_SEARCH:

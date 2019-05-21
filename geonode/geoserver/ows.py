@@ -37,7 +37,7 @@ DEFAULT_EXCLUDE_FORMATS = ['PNG', 'JPEG', 'GIF', 'TIFF']
 
 def _wcs_get_capabilities():
     try:
-        wcs_url = urljoin(settings.SITEURL, reverse('wcs_endpoint'))
+        wcs_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
     except BaseException:
         wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
     wcs_url += '&' if '?' in wcs_url else '?'
@@ -78,7 +78,7 @@ def wcs_links(wcs_url, identifier, bbox=None, srid=None):
 
 def _wfs_get_capabilities():
     try:
-        wfs_url = urljoin(settings.SITEURL, reverse('wfs_endpoint'))
+        wfs_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
     except BaseException:
         wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
     wfs_url += '&' if '?' in wfs_url else '?'
@@ -124,7 +124,7 @@ def wfs_links(wfs_url, identifier, bbox=None, srid=None):
 
 def _wms_get_capabilities():
     try:
-        wms_url = urljoin(settings.SITEURL, reverse('wms_endpoint'))
+        wms_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
     except BaseException:
         wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
     wms_url += '&' if '?' in wms_url else '?'
@@ -132,7 +132,7 @@ def _wms_get_capabilities():
     return wms_url + urllib.urlencode({
         'service': 'WMS',
         'request': 'GetCapabilities',
-        'version': '1.1.1',
+        'version': '1.3.0',
     })
 
 

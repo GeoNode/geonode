@@ -236,11 +236,6 @@ if "djmp" in settings.INSTALLED_APPS:
         url(r'^djmp/', include('djmp.urls')),
     ]
 
-if 'geonode.contrib.ows_api' in settings.INSTALLED_APPS:
-    urlpatterns += [  # '',
-        url('^', include('geonode.contrib.ows_api.urls')),
-    ]
-
 # Set up proxy
 urlpatterns += geonode.proxy.urls.urlpatterns
 

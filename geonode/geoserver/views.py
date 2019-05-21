@@ -53,12 +53,13 @@ from geonode.proxy.views import proxy
 from geonode.geoserver.signals import gs_catalog
 from .tasks import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info
-from geoserver.catalog import FailedRequestError, ConflictingDataError
+from geoserver.catalog import FailedRequestError
 from .helpers import (get_stores,
                       ogc_server_settings,
                       extract_name_from_sld,
                       set_styles,
                       style_update,
+                      set_layer_style,
                       _stylefilterparams_geowebcache_layer,
                       _invalidate_geowebcache_layer)
 
@@ -175,42 +176,13 @@ def layer_style_upload(request, layername):
         respond(errors="The uploaded SLD file is not valid XML: {}".format(e))
 
     name = data.get('name') or sld_name
-    if data['update']:
-        match = None
-        styles = list(layer.styles) + [layer.default_style]
-        for style in styles:
-            if style.sld_name == name:
-                match = style
-                break
-        if match is None:
-            return respond(errors="Cannot locate style : " + name)
-        match.update_body(sld)
-    else:
-        try:
-            cat = gs_catalog
-            cat.create_style(
-                name,
-                sld,
-                raw=True,
-                workspace=settings.DEFAULT_WORKSPACE)
-            layer.styles = layer.styles + \
-                [type('style', (object,), {'name': name})]
-            cat.save(layer.publishing)
-        except ConflictingDataError:
-            return respond(errors="""A layer with this name exists. Select
-                                     the update option if you want to update.""")
 
-    # Invalidate GeoWebCache for the updated resource
-    try:
-        _stylefilterparams_geowebcache_layer(layer.alternate)
-        _invalidate_geowebcache_layer(layer.alternate)
-    except BaseException:
-        pass
+    set_layer_style(layer, data.get('title') or name, sld)
 
     return respond(
         body={
             'success': True,
-            'style': name,
+            'style': data.get('title') or name,
             'updated': data['update']})
 
 
@@ -241,8 +213,9 @@ def layer_style_manage(request, layername):
                     sld_title = style.sld_title
                 try:
                     gs_sld = cat.get_style(style.name,
-                                           workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(style.name)
+                                           workspace=layer.workspace) or cat.get_style(style.name)
                     if gs_sld:
+                        sld_title = gs_sld.sld_title
                         gs_styles.append((style.name, sld_title))
                     else:
                         style.delete()
@@ -305,7 +278,7 @@ def layer_style_manage(request, layername):
                     "error": msg
                 }
             )
-    elif request.method == 'POST':
+    elif request.method in ('POST', 'PUT', 'DELETE'):
         try:
             selected_styles = request.POST.getlist('style-select')
 
@@ -553,7 +526,7 @@ def geoserver_proxy(request,
                     url.geturl())
                 affected_layers = style_update(request, raw_url)
             elif downstream_path == 'rest/layers':
-                logger.info(
+                logger.debug(
                     "[geoserver_proxy] Updating Layer ---> url %s" %
                     url.geturl())
                 try:
