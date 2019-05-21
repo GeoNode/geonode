@@ -253,12 +253,19 @@ def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.n
     layer = Layer.objects.get(id=layer_id)
     # check if those values are empty
     if owner_email and geonode_email:
-        from django.core.mail import send_mail
+        from django.core.mail import EmailMessage
         # TODO: Copy edit message.
         subject_email = "Your Layer has been seen."
         msg = ("Your layer called {0} with uuid={1}"
                " was seen by {2}").format(layer.name, layer.uuid, viewer)
         try:
-            send_mail(subject_email, msg, geonode_email, [owner_email, ])
+            email = EmailMessage(
+                subject=subject_email,
+                body=msg,
+                from_email=geonode_email,
+                to=[owner_email, ],
+                reply_to=[geonode_email, ])
+            email.content_subtype = "html"
+            email.send()
         except BaseException:
             pass
