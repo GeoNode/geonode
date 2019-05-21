@@ -24,8 +24,11 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
+import json
 
+from geonode.base.models import Link
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.base.populate_test_data import create_models
 
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
@@ -72,3 +75,24 @@ class ProxyTest(GeoNodeBaseTestSupport):
         # 404 - NOT FOUND
         if response.status_code != 404:
             self.assertTrue(response.status_code in (200, 301))
+
+
+class OWSApiTestCase(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super(OWSApiTestCase, self).setUp()
+        create_models(type='layer')
+        # prepare some WMS endpoints
+        q = Link.objects.all()
+        for l in q[:3]:
+            l.link_type = 'OGC:WMS'
+            l.save()
+
+    def test_ows_api(self):
+        url = '/api/ows_endpoints/'
+        q = Link.objects.filter(link_type__startswith="OGC:")
+        self.assertEqual(q.count(), 3)
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.content)
+        self.assertTrue(len(data['data']), q.count())

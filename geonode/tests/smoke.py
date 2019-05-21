@@ -51,30 +51,6 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
     def tearDown(self):
         pass
 
-    # Contrib Apps #
-
-    def test_default_contrib_apps_loaded(self):
-        if 'geonode.contrib.metadataxsl' in settings.INSTALLED_APPS:
-            try:
-                import geonode.contrib.metadataxsl  # noqa
-                self.assertTrue(True)
-            except BaseException:
-                self.assertTrue(False)
-
-        if 'geonode.contrib.ows_api' in settings.INSTALLED_APPS:
-            try:
-                import geonode.contrib.ows_api  # noqa
-                self.assertTrue(True)
-            except BaseException:
-                self.assertTrue(False)
-
-        if 'geonode.contrib.geosites' in settings.INSTALLED_APPS:
-            try:
-                import geonode.contrib.geosites  # noqa
-                self.assertTrue(True)
-            except BaseException:
-                self.assertTrue(False)
-
     # Basic Pages #
 
     def test_home_page(self):

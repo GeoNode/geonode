@@ -295,7 +295,6 @@ GEONODE_INTERNAL_APPS = (
 GEONODE_CONTRIB_APPS = (
     # GeoNode Contrib Apps
     'geonode.contrib.metadataxsl',
-    'geonode.contrib.ows_api',
 )
 
 # Uncomment the following line to enable contrib apps
