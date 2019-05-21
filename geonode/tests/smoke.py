@@ -51,7 +51,6 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
     def tearDown(self):
         pass
 
-
     # Basic Pages #
 
     def test_home_page(self):

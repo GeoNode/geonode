@@ -24,8 +24,11 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
+import json
+
 from geonode.base.models import Link
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.base.populate_test_data import create_models
 
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
