@@ -1297,7 +1297,7 @@ NOTIFICATION_ENABLED = ast.literal_eval(os.environ.get('NOTIFICATION_ENABLED', '
 # notifications backends
 _EMAIL_BACKEND = "geonode.notifications_backend.EmailBackend"
 PINAX_NOTIFICATIONS_BACKENDS = [
-    ("email", _EMAIL_BACKEND),
+    ("email", _EMAIL_BACKEND, 0),
 ]
 PINAX_NOTIFICATIONS_HOOKSET = "pinax.notifications.hooks.DefaultHookSet"
 
