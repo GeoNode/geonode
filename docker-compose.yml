@@ -60,7 +60,7 @@ services:
       - ./scripts/docker/env/production/celery.env
 
   geoserver:
-    image: geonode/geoserver:2.15.x
+    image: geonode/geoserver:2.14.x
     restart: unless-stopped
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     stdin_open: true
@@ -121,7 +121,7 @@ services:
       - statics:/mnt/volumes/statics
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.15.x
+    image: geonode/geoserver_data:2.14.x
     restart: on-failure
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     labels:
