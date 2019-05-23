@@ -384,6 +384,11 @@ CLIENT_RESULTS_LIMIT
 
     Number of results per page listed in the GeoNode search pages. Different from ``API_LIMIT_PER_PAGE``, affecting the number of items returned by the APIs.
 
+CREATE_LAYER
+------------
+
+    TBD
+
 CKAN_ORIGINS
 ------------
 

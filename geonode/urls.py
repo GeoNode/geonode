@@ -188,19 +188,17 @@ if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
             'geonode.contrib.dynamic.urls')),
     ]
 
-if "geonode.contrib.metadataxsl" in settings.INSTALLED_APPS:
-    urlpatterns += [  # '',
-        url(r'^showmetadata/',
-            include('geonode.contrib.metadataxsl.urls')),
-    ]
-
-if "geonode.contrib.createlayer" in settings.INSTALLED_APPS:
-    urlpatterns += [  # '',
-        url(r'^createlayer/',
-            include('geonode.contrib.createlayer.urls')),
-    ]
+urlpatterns += [  # '',
+    url(r'^showmetadata/',
+        include('geonode.catalogue.metadataxsl.urls')),
+]
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    urlpatterns += [  # '',
+        url(r'^createlayer/',
+            include('geonode.geoserver.createlayer.urls')),
+    ]
+
     from geonode.geoserver.views import get_capabilities
     # GeoServer Helper Views
     urlpatterns += [  # '',
@@ -234,11 +232,6 @@ if settings.NOTIFICATIONS_MODULE in settings.INSTALLED_APPS:
 if "djmp" in settings.INSTALLED_APPS:
     urlpatterns += [  # '',
         url(r'^djmp/', include('djmp.urls')),
-    ]
-
-if 'geonode.contrib.ows_api' in settings.INSTALLED_APPS:
-    urlpatterns += [  # '',
-        url('^', include('geonode.contrib.ows_api.urls')),
     ]
 
 # Set up proxy

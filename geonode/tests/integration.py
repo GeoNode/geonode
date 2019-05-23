@@ -1026,7 +1026,6 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
             if not response_dict['success'] and 'unknown encoding' in \
                     response_dict['errors']:
-                # print(response_dict['errors'])
                 pass
             else:
                 self.assertEquals(response.status_code, 200)
@@ -1251,7 +1250,7 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
 
             thumbnail_url = map_obj.get_thumbnail_url()
 
-            self.assertNotEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+            self.assertEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
         finally:
             # Cleanup
             saved_layer.delete()

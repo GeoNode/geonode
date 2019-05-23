@@ -1245,14 +1245,14 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                                                    geoserver_post_save,
                                                    geoserver_post_save_local)
             # Handle Layer Save and Upload Signals
-            geoserver_post_save(test_perm_layer, sender=Layer)
+            geoserver_post_save(test_perm_layer, sender=Layer, created=True)
             geoserver_post_save_local(test_perm_layer)
 
             # Check instance bbox and links
             self.assertIsNotNone(test_perm_layer.bbox)
             self.assertIsNotNone(test_perm_layer.srid)
             self.assertIsNotNone(test_perm_layer.link_set)
-            self.assertEquals(len(test_perm_layer.link_set.all()), 9)
+            self.assertEquals(len(test_perm_layer.link_set.all()), 17)
 
             # Layer Manipulation
             from geonode.geoserver.upload import geoserver_upload

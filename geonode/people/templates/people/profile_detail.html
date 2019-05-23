@@ -140,7 +140,7 @@
     </ul>
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new layers" %}</a></li>
-      {% if 'geonode.contrib.createlayer' in INSTALLED_APPS %}
+      {% if USE_GEOSERVER and CREATE_LAYER %}
         <li class="list-group-item"><a href="{% url "layer_create" %}"><i class="fa fa-map-o"></i> {% trans "Create a new layer" %}</a></li>
       {% endif %}
       <li class="list-group-item"><a href="{% url "new_map" %}"><i class="fa fa-map-marker"></i> {% trans "Create a new map" %}</a></li>

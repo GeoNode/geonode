@@ -209,6 +209,7 @@ This file inherits `my_geonode` ``local_settings`` and set some GeoNode default 
         MODIFY_TOPICCATEGORY = True
         USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = True
         DISPLAY_WMS_LINKS = True
+        CREATE_LAYER = False
 
         # prevent signing up by default
         ACCOUNT_OPEN_SIGNUP = True

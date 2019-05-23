@@ -24,4 +24,5 @@ from . import views
 
 urlpatterns = [  # 'geonode.proxy.views',
     url(r'^proxy/', views.proxy, name='proxy'),
-    url(r'^download/(?P<resourceid>[^/]*)$', views.download, name='download'), ]
+    url(r'^download/(?P<resourceid>[^/]*)$', views.download, name='download'),
+    url(r'^api/ows_endpoints/', views.OWSListView.as_view(), name="ows_endpoints"), ]

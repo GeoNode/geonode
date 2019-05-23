@@ -1169,10 +1169,6 @@ def layer_metadata(
     viewer = json.dumps(map_obj.viewer_json(
         request, * (NON_WMS_BASE_LAYERS + [maplayer])))
 
-    metadataxsl = False
-    if "geonode.contrib.metadataxsl" in settings.INSTALLED_APPS:
-        metadataxsl = True
-
     metadata_author_groups = []
     if request.user.is_superuser or request.user.is_staff:
         metadata_author_groups = GroupProfile.objects.all()
@@ -1200,7 +1196,7 @@ def layer_metadata(
         "viewer": viewer,
         "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'geoext'),
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
-        "metadataxsl": metadataxsl,
+        "metadataxsl": getattr(settings, 'GEONODE_CATALOGUE_METADATA_XSL', True),
         "freetext_readonly": getattr(
             settings,
             'FREETEXT_KEYWORDS_READONLY',

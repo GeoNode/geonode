@@ -18,30 +18,16 @@
 #
 #########################################################################
 
-import json
-
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-from geonode.base.populate_test_data import create_models
-from geonode.base.models import Link
 
+class MetadataXSLTest(GeoNodeBaseTestSupport):
 
-class OWSApiTestCase(GeoNodeBaseTestSupport):
+    """
+    Tests geonode.catalogue.metadataxsl app/module
+    """
 
     def setUp(self):
-        super(OWSApiTestCase, self).setUp()
-        create_models(type='layer')
-        # prepare some WMS endpoints
-        q = Link.objects.all()
-        for l in q[:3]:
-            l.link_type = 'OGC:WMS'
-            l.save()
-
-    def test_ows_api(self):
-        url = '/api/ows_endpoints/'
-        q = Link.objects.filter(link_type__startswith="OGC:")
-        self.assertEqual(q.count(), 3)
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-        data = json.loads(resp.content)
-        self.assertTrue(len(data['data']), q.count())
+        super(MetadataXSLTest, self).setUp()
+        self.adm_un = "admin"
+        self.adm_pw = "admin"

@@ -97,10 +97,10 @@ def post_delete_site(instance, sender, **kwargs):
     SitePeople.objects.filter(site=instance).delete()
 
 
-def post_save_profile(instance, sender, **kwargs):
+def post_save_profile(instance, sender, created, **kwargs):
     """Signal to ensure that every created user is
     assigned to the current site only"""
-    if not instance.is_superuser and kwargs['created'] and not kwargs['raw'] and instance.username != 'AnonymousUser':
+    if not instance.is_superuser and created and not kwargs['raw'] and instance.username != 'AnonymousUser':
         current_site = Site.objects.get_current()
         SitePeople.objects.get(site=current_site).people.add(instance)
 
