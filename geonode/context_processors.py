@@ -64,7 +64,11 @@ def resource_urls(request):
         DISPLAY_WMS_LINKS=getattr(
             settings,
             'DISPLAY_WMS_LINKS',
-            False),
+            True),
+        CREATE_LAYER=getattr(
+            settings,
+            'CREATE_LAYER',
+            True),
         TWITTER_CARD=getattr(
             settings,
             'TWITTER_CARD',

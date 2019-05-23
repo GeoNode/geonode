@@ -470,6 +470,7 @@ GROUP_MANDATORY_RESOURCES = False
 MODIFY_TOPICCATEGORY = True
 USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = True
 DISPLAY_WMS_LINKS = True
+CREATE_LAYER = True
 
 # For more information on available settings please consult the Django docs at
 # https://docs.djangoproject.com/en/dev/ref/settings
