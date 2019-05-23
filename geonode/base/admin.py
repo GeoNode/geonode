@@ -112,8 +112,7 @@ def run(self, request, queryset):
             return TemplateResponse(
                 request,
                 'admin/backups/confirm_cancel.html',
-                context,
-                current_app=self.admin_site.name)
+                context)
 
 
 def restore(self, request, queryset):
@@ -145,8 +144,7 @@ def restore(self, request, queryset):
             return TemplateResponse(
                 request,
                 'admin/backups/confirm_cancel.html',
-                context,
-                current_app=self.admin_site.name)
+                context)
 
 
 run.short_description = "Run the Backup"
