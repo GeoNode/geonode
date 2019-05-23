@@ -1752,7 +1752,6 @@ def style_update(request, url):
                     style.sld_title = elm_user_style_title
                 style.save()
                 for layer in style.layer_styles.all():
-                    layer.save()
                     affected_layers.append(layer)
 
         # Invalidate GeoWebCache so it doesn't retain old style in tiles
