@@ -267,6 +267,7 @@ GEONODE_CORE_APPS = (
     'geonode.documents',
     'geonode.security',
     'geonode.catalogue',
+    'geonode.catalogue.metadataxsl',
 )
 
 GEONODE_INTERNAL_APPS = (
@@ -294,7 +295,6 @@ GEONODE_INTERNAL_APPS = (
 
 GEONODE_CONTRIB_APPS = (
     # GeoNode Contrib Apps
-    'geonode.contrib.metadataxsl',
 )
 
 # Uncomment the following line to enable contrib apps
@@ -1245,6 +1245,8 @@ CACHES = {
     #     'LOCATION': '/tmp/django_cache',
     #     }
 }
+
+GEONODE_CATALOGUE_METADATA_XSL = ast.literal_eval(os.getenv('GEONODE_CATALOGUE_METADATA_XSL', 'True'))
 
 GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'  # DEPRECATED use HOOKSET instead
 GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"

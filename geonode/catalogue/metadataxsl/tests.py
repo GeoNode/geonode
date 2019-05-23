@@ -24,7 +24,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 class MetadataXSLTest(GeoNodeBaseTestSupport):
 
     """
-    Tests geonode.contrib.metadataxsl app/module
+    Tests geonode.catalogue.metadataxsl app/module
     """
 
     def setUp(self):

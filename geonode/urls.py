@@ -188,11 +188,10 @@ if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
             'geonode.contrib.dynamic.urls')),
     ]
 
-if "geonode.contrib.metadataxsl" in settings.INSTALLED_APPS:
-    urlpatterns += [  # '',
-        url(r'^showmetadata/',
-            include('geonode.contrib.metadataxsl.urls')),
-    ]
+urlpatterns += [  # '',
+    url(r'^showmetadata/',
+        include('geonode.catalogue.metadataxsl.urls')),
+]
 
 if "geonode.contrib.createlayer" in settings.INSTALLED_APPS:
     urlpatterns += [  # '',

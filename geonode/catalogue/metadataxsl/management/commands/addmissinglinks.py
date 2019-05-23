@@ -21,7 +21,7 @@
 from django.core.management.base import BaseCommand
 
 from geonode.base.models import Link, ResourceBase
-from geonode.contrib.metadataxsl.models import add_xsl_link
+from geonode.catalogue.metadataxsl.models import add_xsl_link
 
 
 class Command(BaseCommand):
