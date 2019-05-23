@@ -1,9 +1,9 @@
 # Metadata XSL output App
 
-The ``metadataxsl`` contrib app provides a downloadable metadata having the same format as the ISO 
-metadata, but having a header like 
+The ``metadataxsl`` contrib app provides a downloadable metadata having the same format as the ISO
+metadata, but having a header like
 ```XML
-      <?xml-stylesheet type="text/xsl" 
+      <?xml-stylesheet type="text/xsl"
                        href="http://url.to.transfromation.xsl/this.is.the.xsl"?>
 ```
 in order to have the metadata properly formatted on the browser.
@@ -15,21 +15,11 @@ In order to have a different output, you will only need to customize the XSL fil
 
 # Settings
 
-## Activation
-
-In the ``settings.py``(or local-settings) file, enable the ``geonode.contrib.metadataxsl`` app.  
-e.g.::
-```Python
-    GEONODE_CONTRIB_APPS = (
-        'geonode.contrib.metadataxsl'
-    )
-```
-
 ## Update the existing resources
 
-In order to make it possibile for a resource to have its metadata exported as ISO+XSL, it needs to 
+In order to make it possibile for a resource to have its metadata exported as ISO+XSL, it needs to
 have a new entry in the ``base_link`` table.
-The implementation will create the needed links every time a new resource is added, but we need to 
+The implementation will create the needed links every time a new resource is added, but we need to
 post-process the existing resources and add the missing links.
 
 In order to add the missing links, you need to enter the geonode directory and issue the command:

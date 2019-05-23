@@ -861,8 +861,6 @@ Upgrade Development Environment
                 300     # 'geonode.contrib.createlayer',                  =
                 301     # 'geonode.contrib.datastore_shards',
                 ------------------------------------------------------------------------
-                302     'geonode.contrib.metadataxsl',                    <> 287     'geonode.contrib.metadataxsl'
-                ------------------------------------------------------------------------
                 305 )                                                     =  288 )
                 306                                                          289
                 307 # Uncomment the following line to enable contrib apps    290 # Uncomment the following line to enable contrib apps

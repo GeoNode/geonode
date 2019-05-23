@@ -31,7 +31,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from geonode.base.models import ResourceBase
 from geonode.catalogue import get_catalogue
 
-logger = logging.getLogger("geonode.contrib.metadataxsl")
+logger = logging.getLogger(__name__)
 
 
 @xframe_options_exempt
