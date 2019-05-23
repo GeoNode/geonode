@@ -20,14 +20,17 @@
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
+import os
 import dj_database_url
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from geonode.geoserver.signals import gs_catalog
+from geonode import geoserver
 from geonode import GeoNodeException
 from geonode.layers.models import Layer
+from geonode.decorators import on_ogc_backend
+from geonode.geoserver.signals import gs_catalog
 
 from .utils import create_layer
 
@@ -81,42 +84,47 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
         # TODO implement this: must raise an error message
         pass
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_creation(self):
         """
         Try creating a layer.
         """
+        internal_apps_tests = os.environ.get('TEST_RUN_INTERNAL_APPS', None)
+        if not internal_apps_tests:
+            internal_apps_tests = settings.internal_apps_tests
 
-        layer_name = 'point_layer'
-        layer_title = 'A layer for points'
+        if internal_apps_tests and internal_apps_tests == False:
+            layer_name = 'point_layer'
+            layer_title = 'A layer for points'
 
-        create_layer(
-            layer_name,
-            layer_title,
-            'bobby',
-            'Point'
-        )
+            create_layer(
+                layer_name,
+                layer_title,
+                'bobby',
+                'Point'
+            )
 
-        cat = gs_catalog
+            cat = gs_catalog
 
-        # Check the layer is in the Django database
-        layer = Layer.objects.get(name=layer_name)
+            # Check the layer is in the Django database
+            layer = Layer.objects.get(name=layer_name)
 
-        # check if it is in geoserver
-        gs_layer = cat.get_layer(layer_name)
-        self.assertIsNotNone(gs_layer)
-        self.assertEqual(gs_layer.name, layer_name)
+            # check if it is in geoserver
+            gs_layer = cat.get_layer(layer_name)
+            self.assertIsNotNone(gs_layer)
+            self.assertEqual(gs_layer.name, layer_name)
 
-        resource = gs_layer.resource
-        # we must have only one attibute ('the_geom')
-        self.assertEqual(len(resource.attributes), 1)
+            resource = gs_layer.resource
+            # we must have only one attibute ('the_geom')
+            self.assertEqual(len(resource.attributes), 1)
 
-        # check layer corrispondence between django and geoserver
-        self.assertEqual(resource.title, layer_title)
-        self.assertEqual(resource.projection, layer.srid)
+            # check layer corrispondence between django and geoserver
+            self.assertEqual(resource.title, layer_title)
+            self.assertEqual(resource.projection, layer.srid)
 
-        # check if layer detail page is accessible with client
-        response = self.client.get(reverse('layer_detail', args=('geonode:%s' % layer_name,)))
-        self.assertEqual(response.status_code, 200)
+            # check if layer detail page is accessible with client
+            response = self.client.get(reverse('layer_detail', args=('geonode:%s' % layer_name,)))
+            self.assertEqual(response.status_code, 200)
 
     def test_layer_creation_with_wrong_geometry_type(self):
         """
@@ -129,37 +137,42 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
                 'bobby',
                 'wrong_geometry')
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_creation_with_attributes(self):
         """
         Try creating a layer with attributes.
         """
+        internal_apps_tests = os.environ.get('TEST_RUN_INTERNAL_APPS', None)
+        if not internal_apps_tests:
+            internal_apps_tests = settings.internal_apps_tests
 
-        attributes = """
-        {
-          "field_str": "string",
-          "field_int": "integer",
-          "field_date": "date",
-          "field_float": "float"
-        }
-        """
+        if internal_apps_tests and internal_apps_tests == False:
+            attributes = """
+            {
+              "field_str": "string",
+              "field_int": "integer",
+              "field_date": "date",
+              "field_float": "float"
+            }
+            """
 
-        layer_name = 'attributes_layer'
-        layer_title = 'A layer with attributes'
+            layer_name = 'attributes_layer'
+            layer_title = 'A layer with attributes'
 
-        create_layer(
-            layer_name,
-            layer_title,
-            'bobby',
-            'Point',
-            attributes
-        )
+            create_layer(
+                layer_name,
+                layer_title,
+                'bobby',
+                'Point',
+                attributes
+            )
 
-        cat = gs_catalog
-        gs_layer = cat.get_layer(layer_name)
-        resource = gs_layer.resource
+            cat = gs_catalog
+            gs_layer = cat.get_layer(layer_name)
+            resource = gs_layer.resource
 
-        # we must have one attibute for the geometry, and 4 other ones
-        self.assertEqual(len(resource.attributes), 5)
+            # we must have one attibute for the geometry, and 4 other ones
+            self.assertEqual(len(resource.attributes), 5)
 
     def test_layer_creation_with_permissions(self):
         """
