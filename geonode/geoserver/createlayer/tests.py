@@ -93,7 +93,7 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
         if not internal_apps_tests:
             internal_apps_tests = settings.internal_apps_tests
 
-        if internal_apps_tests and internal_apps_tests == False:
+        if internal_apps_tests and not internal_apps_tests:
             layer_name = 'point_layer'
             layer_title = 'A layer for points'
 
@@ -146,7 +146,7 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
         if not internal_apps_tests:
             internal_apps_tests = settings.internal_apps_tests
 
-        if internal_apps_tests and internal_apps_tests == False:
+        if internal_apps_tests and not internal_apps_tests:
             attributes = """
             {
               "field_str": "string",
