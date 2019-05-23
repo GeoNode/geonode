@@ -991,7 +991,7 @@ DISPLAY_SOCIAL = ast.literal_eval(os.getenv('DISPLAY_SOCIAL', 'True'))
 DISPLAY_COMMENTS = ast.literal_eval(os.getenv('DISPLAY_COMMENTS', 'True'))
 DISPLAY_RATINGS = ast.literal_eval(os.getenv('DISPLAY_RATINGS', 'True'))
 DISPLAY_WMS_LINKS = ast.literal_eval(os.getenv('DISPLAY_WMS_LINKS', 'True'))
-CREATE_LAYER = ast.literal_eval(os.getenv('CREATE_LAYER', 'False'))
+CREATE_LAYER = ast.literal_eval(os.getenv('CREATE_LAYER', 'True'))
 
 SOCIAL_ORIGINS = [{
     "label": "Email",
