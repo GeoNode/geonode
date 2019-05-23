@@ -193,13 +193,12 @@ urlpatterns += [  # '',
         include('geonode.catalogue.metadataxsl.urls')),
 ]
 
-if "geonode.contrib.createlayer" in settings.INSTALLED_APPS:
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     urlpatterns += [  # '',
         url(r'^createlayer/',
-            include('geonode.contrib.createlayer.urls')),
+            include('geonode.geoserver.createlayer.urls')),
     ]
 
-if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.views import get_capabilities
     # GeoServer Helper Views
     urlpatterns += [  # '',

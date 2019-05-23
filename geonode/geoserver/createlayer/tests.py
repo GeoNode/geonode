@@ -47,7 +47,7 @@ Create a user and database for the datastore:
     postgres=# \c datastore
     datastore=# CREATE EXTENSION postgis;
 
-Add 'geonode.contrib.createlayer' in GEONODE_CONTRIB_APPS
+Add 'geonode.geoserver.createlayer' in GEONODE_INTERNAL_APPS
 
 Then, as usual, run "paver run_tests"
 

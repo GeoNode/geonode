@@ -21,7 +21,7 @@
 from django.core.management.base import BaseCommand
 
 from geonode.people.utils import get_valid_user
-from geonode.contrib.createlayer.utils import create_layer
+from geonode.geoserver.createlayer.utils import create_layer
 
 
 class Command(BaseCommand):

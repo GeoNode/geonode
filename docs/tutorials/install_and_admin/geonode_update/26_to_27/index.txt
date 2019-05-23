@@ -858,7 +858,6 @@ Upgrade Development Environment
                 298     # 'geonode.contrib.nlp',                             285     'geonode.contrib.nlp',
                 299     # 'geonode.contrib.slack',                           286     'geonode.contrib.slack',
                 ------------------------------------------------------------------------
-                300     # 'geonode.contrib.createlayer',                  =
                 301     # 'geonode.contrib.datastore_shards',
                 ------------------------------------------------------------------------
                 305 )                                                     =  288 )
@@ -1227,6 +1226,7 @@ Upgrade Development Environment
                 DISPLAY_COMMENTS = strtobool(os.getenv('DISPLAY_COMMENTS', 'True'))
                 DISPLAY_RATINGS = strtobool(os.getenv('DISPLAY_RATINGS', 'True'))
                 DISPLAY_WMS_LINKS = strtobool(os.getenv('DISPLAY_WMS_LINKS', 'True'))
+                CREATE_LAYER = strtobool(os.getenv('CREATE_LAYER', 'True'))
 
                 # Number of results per page listed in the GeoNode search pages
                 CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '20'))

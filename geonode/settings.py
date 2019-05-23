@@ -288,6 +288,7 @@ GEONODE_INTERNAL_APPS = (
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
     'geonode.geoserver',
+    'geonode.geoserver.createlayer',
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
@@ -990,6 +991,7 @@ DISPLAY_SOCIAL = ast.literal_eval(os.getenv('DISPLAY_SOCIAL', 'True'))
 DISPLAY_COMMENTS = ast.literal_eval(os.getenv('DISPLAY_COMMENTS', 'True'))
 DISPLAY_RATINGS = ast.literal_eval(os.getenv('DISPLAY_RATINGS', 'True'))
 DISPLAY_WMS_LINKS = ast.literal_eval(os.getenv('DISPLAY_WMS_LINKS', 'True'))
+CREATE_LAYER = ast.literal_eval(os.getenv('CREATE_LAYER', 'True'))
 
 SOCIAL_ORIGINS = [{
     "label": "Email",
@@ -1680,7 +1682,6 @@ if USE_WORLDMAP:
         'geonode.contrib.worldmap.gazetteer',
         'geonode.contrib.worldmap.wm_extra',
         'geonode.contrib.worldmap.mapnotes',
-        'geonode.contrib.createlayer',
     )
     # WorldMap Gazetter settings
     USE_GAZETTEER = True
