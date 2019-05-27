@@ -145,6 +145,9 @@
       {% endif %}
       <li class="list-group-item"><a href="{% url "new_map" %}"><i class="fa fa-map-marker"></i> {% trans "Create a new map" %}</a></li>
       <li class="list-group-item"><a href="{% url "user-activity" profile.username %}"><i class="fa fa-fire"></i> {% trans "My Activities" %}</a></li>
+      {% if FAVORITE_ENABLED %}
+      <li class="list-group-item"><a href="{% url "favorite_list" %}"><i class="fa fa-star"></i> {% trans "Favorites" %}</a></li>
+      {% endif %}
     </ul>
     <ul class="list-group">
       {% if USE_NOTIFICATIONS %}

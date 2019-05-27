@@ -518,8 +518,8 @@ Upgrade Development Environment
             408 MONITORING_ENABLED = True                                                                                            +-
             409 # add following lines to your local settings to enable monitoring
             410 if MONITORING_ENABLED:
-            411     INSTALLED_APPS += ('geonode.contrib.monitoring',)
-            412     MIDDLEWARE_CLASSES += ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+            411     INSTALLED_APPS += ('geonode.monitoring',)
+            412     MIDDLEWARE_CLASSES += ('geonode.monitoring.middleware.MonitoringMiddleware',)
             413     MONITORING_CONFIG = None
             414     MONITORING_SERVICE_NAME = 'local-geonode'
             ------------------------------------------------------------------------
@@ -1244,11 +1244,11 @@ Upgrade Development Environment
 
                 # add following lines to your local settings to enable monitoring
                 if MONITORING_ENABLED:
-                    if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
-                        INSTALLED_APPS += ('geonode.contrib.monitoring',)
-                    if 'geonode.contrib.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
+                    if 'geonode.monitoring' not in INSTALLED_APPS:
+                        INSTALLED_APPS += ('geonode.monitoring',)
+                    if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
                         MIDDLEWARE_CLASSES += \
-                            ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+                            ('geonode.monitoring.middleware.MonitoringMiddleware',)
 
                 GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIPCities.dat')
                 # If this option is enabled, Resources belonging to a Group won't be

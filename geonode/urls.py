@@ -182,22 +182,23 @@ urlpatterns += [
     url(r'^i18n/', include(django.conf.urls.i18n))
 ]
 
-if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
-    urlpatterns += [  # '',
-        url(r'^dynamic/', include(
-            'geonode.contrib.dynamic.urls')),
-    ]
-
 urlpatterns += [  # '',
     url(r'^showmetadata/',
         include('geonode.catalogue.metadataxsl.urls')),
 ]
 
-if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+if settings.FAVORITE_ENABLED:
     urlpatterns += [  # '',
-        url(r'^createlayer/',
-            include('geonode.geoserver.createlayer.urls')),
+        url(r'^favorite/',
+            include('geonode.favorite.urls')),
     ]
+
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    if settings.CREATE_LAYER:
+        urlpatterns += [  # '',
+            url(r'^createlayer/',
+                include('geonode.geoserver.createlayer.urls')),
+        ]
 
     from geonode.geoserver.views import get_capabilities
     # GeoServer Helper Views
@@ -254,5 +255,5 @@ urlpatterns += [  # '',
 
 if settings.MONITORING_ENABLED:
     urlpatterns += [url(r'^monitoring/',
-                        include('geonode.contrib.monitoring.urls',
+                        include('geonode.monitoring.urls',
                                 namespace='monitoring'))]

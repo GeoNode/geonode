@@ -749,13 +749,18 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         logger.error(
             "Possible error with OWSLib. Turning all available properties to string")
 
-    if settings.GEOTIFF_IO_ENABLED:
-        from geonode.contrib.geotiffio import create_geotiff_io_url
-        context_dict["link_geotiff_io"] = create_geotiff_io_url(layer, access_token)
-
     # maps owned by user needed to fill the "add to existing map section" in template
     if request.user.is_authenticated():
         context_dict["maps"] = Map.objects.filter(owner=request.user)
+
+        if getattr(settings, 'FAVORITE_ENABLED', False):
+            from geonode.favorite.utils import get_favorite_info
+            context_dict["favorite_info"] = get_favorite_info(request.user, layer)
+
+        if settings.GEOTIFF_IO_ENABLED:
+            from geonode.contrib.geotiffio import create_geotiff_io_url
+            context_dict["link_geotiff_io"] = create_geotiff_io_url(layer, access_token)
+
     return TemplateResponse(
         request, template, context=context_dict)
 
@@ -1079,15 +1084,6 @@ def layer_metadata(
             Layer.objects.filter(id=the_layer.id).update(
                 category=new_category
             )
-
-        if getattr(settings, 'SLACK_ENABLED', False):
-            try:
-                from geonode.contrib.slack.utils import build_slack_message_layer, send_slack_messages
-                send_slack_messages(
-                    build_slack_message_layer(
-                        "layer_edit", the_layer))
-            except BaseException:
-                logger.error("Could not send slack message.")
 
         if not ajax:
             return HttpResponseRedirect(
