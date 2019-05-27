@@ -72,7 +72,7 @@
             <form method="GET" action="{% url "layer_detail" resource.layer.service_typename %}">
                 {% csrf_token %}
                 <input type="text" id="filter" name="filter" style="witdh:400px"/>&nbsp;<input type="submit" value='{% trans "Filter Granules" %}'/>
-                </br>
+                <br/>
                 {% if filter %}
                 <strong>{% trans "Active Filter:" %}</strong> <em>{{ filter }}</em>
                 {% endif %}
@@ -238,6 +238,11 @@
       </article>
       {% endif %}
 
+      {% if FAVORITE_ENABLED %}
+      <article class="tab-pane" id="favorite">
+        {% include "favorite/_favorite.html" %}
+      </article>
+      {% endif %}
     </div>
 
   </div>
@@ -1017,4 +1022,7 @@
     </script>
     {% endif %}
 
+    {% if FAVORITE_ENABLED %}
+    {% include "favorite/_favorite_js.html" %}
+    {% endif %}
 {% endblock extra_script %}

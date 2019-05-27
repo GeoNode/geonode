@@ -147,7 +147,7 @@ def resource_urls(request):
             'never'),
         USE_GEOSERVER=getattr(settings, 'USE_GEOSERVER', False),
         USE_NOTIFICATIONS=has_notifications,
-        USE_MONITORING='geonode.contrib.monitoring' in settings.INSTALLED_APPS and settings.MONITORING_ENABLED,
+        USE_MONITORING='geonode.monitoring' in settings.INSTALLED_APPS and settings.MONITORING_ENABLED,
         USE_WORLDMAP=settings.USE_WORLDMAP,
         DEFAULT_ANONYMOUS_VIEW_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_VIEW_PERMISSION', False),
         DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', False),
@@ -155,9 +155,9 @@ def resource_urls(request):
             settings,
             "EXIF_ENABLED",
             False),
-        NLP_ENABLED=getattr(
+        FAVORITE_ENABLED=getattr(
             settings,
-            "NLP_ENABLED",
+            "FAVORITE_ENABLED",
             False),
         SEARCH_FILTERS=getattr(
             settings,
