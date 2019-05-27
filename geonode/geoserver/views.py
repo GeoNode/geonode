@@ -568,60 +568,6 @@ def _response_callback(**kwargs):
         content_type=content_type)
 
 
-def layer_batch_download(request):
-    """
-    batch download a set of layers
-
-    POST - begin download
-    GET?id=<download_id> monitor status
-    """
-
-    from geonode.utils import http_client
-    # currently this just piggy-backs on the map download backend
-    # by specifying an ad hoc map that contains all layers requested
-    # for download. assumes all layers are hosted locally.
-    # status monitoring is handled slightly differently.
-
-    if request.method == 'POST':
-        layers = request.POST.getlist("layer")
-        layers = Layer.objects.filter(alternate__in=list(layers))
-
-        def layer_son(layer):
-            return {
-                "name": layer.alternate,
-                "service": layer.service_type,
-                "metadataURL": "",
-                "serviceURL": ""
-            }
-
-        readme = """This data is provided by GeoNode.\n\nContents:"""
-
-        def list_item(lyr):
-            return "%s - %s.*" % (lyr.title, lyr.name)
-
-        readme = "\n".join([readme] + [list_item(l) for l in layers])
-
-        fake_map = {
-            "map": {"readme": readme},
-            "layers": [layer_son(lyr) for lyr in layers]
-        }
-
-        url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        req, content = http_client.post(url, data=json.dumps(fake_map))
-        return HttpResponse(content, status=req.status_code)
-
-    if request.method == 'GET':
-        # essentially, this just proxies back to geoserver
-        download_id = request.GET.get('id', None)
-        if download_id is None:
-            return HttpResponse(status=404)
-
-        url = "%srest/process/batchDownload/status/%s" % (
-            ogc_server_settings.LOCATION, download_id)
-        req, content = http_client.get(url)
-        return HttpResponse(content, status=req.status_code)
-
-
 def resolve_user(request):
     user = None
     geoserver = False

@@ -1042,10 +1042,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
 
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            # TODO the url needs to be verified on geoserver
-            url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
             url = urljoin(settings.SITEURL,
                           reverse("qgis_server:download-map", kwargs={'mapid': mapid}))
             # qgis-server backend stop here, continue on qgis_server/views.py
@@ -1093,31 +1090,6 @@ def map_download(request, mapid, template='maps/map_download.html'):
         "downloadable_layers": downloadable_layers,
         "site": site_url
     })
-
-
-def map_download_check(request):
-    """
-    this is an endpoint for monitoring map downloads
-    """
-    try:
-        layer = request.session["map_status"]
-        if isinstance(layer, dict):
-            url = "%srest/process/batchDownload/status/%s" % (
-                ogc_server_settings.LOCATION, layer["id"])
-            resp, content = http_client.request(url, 'GET')
-            status = resp.status_code
-            if resp.status_code == 400:
-                return HttpResponse(
-                    content="Something went wrong",
-                    status=status)
-        else:
-            content = "Something Went wrong"
-            status = 400
-    except ValueError:
-        # TODO: Is there any useful context we could include in this log?
-        logger.warning(
-            "User tried to check status, but has no download in progress.")
-    return HttpResponse(content=content, status=status)
 
 
 def map_wmc(request, mapid, template="maps/wmc.xml"):
