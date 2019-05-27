@@ -30,13 +30,22 @@ from geonode.maps.models import Map
 
 
 class FavoriteManager(models.Manager):
+
     def favorites_for_user(self, user):
-        return self.filter(user=user)
+        result = self.filter(user=user)
+        cleaned_data = []
+        for r in result:
+            if r.content_object:
+                cleaned_data.append(r)
+            else:
+                r.delete()
+        return cleaned_data
 
     def _favorite_ct_for_user(self, user, model):
         content_type = ContentType.objects.get_for_model(model)
-        return self.favorites_for_user(user).filter(
+        result = self.favorites_for_user(user).filter(
             content_type=content_type).prefetch_related('content_object')
+        return result
 
     def favorite_documents_for_user(self, user):
         return self._favorite_ct_for_user(user, Document)
@@ -62,7 +71,7 @@ class FavoriteManager(models.Manager):
             content_type=content_type,
             object_id=content_object.pk)
 
-        if len(result) > 0:
+        if result and len(result) > 0:
             return result[0]
         else:
             return None

@@ -368,6 +368,7 @@ def cascading_delete(cat, layer_name):
         if layer_name.find(':') != -1 and len(layer_name.split(':')) == 2:
             workspace, name = layer_name.split(':')
             ws = cat.get_workspace(workspace)
+            store = None
             try:
                 store = get_store(cat, name, workspace=ws)
             except FailedRequestError:
@@ -384,7 +385,7 @@ def cascading_delete(cat, layer_name):
                     logger.debug(
                         'the store was not found in geoserver')
                     return
-            if ws is None:
+            if ws is None or store is None:
                 logger.debug(
                     'cascading delete was called on a layer where the workspace was not found')
                 return
