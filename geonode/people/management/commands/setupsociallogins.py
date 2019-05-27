@@ -8,7 +8,12 @@ from allauth.socialaccount.models import SocialApp
 
 
 class Command(BaseCommand):
-    help = "Setup login via social providers"
+    help = (
+        "Setup login via social providers - You need to add the relevant apps "
+        "to ``INSTALLED_APPS`` in order to be able to use this command (e.g. "
+        "add ``allauth.socialaccount.providers.facebook`` in order to "
+        "configure logins with facebook credentials)"
+    )
 
     @staticmethod
     def _get_client_id_arg(provider):
