@@ -481,6 +481,7 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             _d = Document.objects.get(title=dname)
 
             self.assertTrue(_d.is_published)
+            uuid = _d.uuid
             _d.delete()
 
             from geonode.documents.utils import delete_orphaned_document_files
@@ -489,7 +490,18 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             from geonode.base.utils import delete_orphaned_thumbs
             delete_orphaned_thumbs()
 
-            self.assertFalse(os.path.isfile(input_path))
+            from django.conf import settings
+            documents_path = os.path.join(settings.MEDIA_ROOT, 'documents')
+            fn = os.path.join(documents_path, os.path.basename(input_path))
+            self.assertFalse(os.path.isfile(fn))
+
+            thumbs_path = os.path.join(settings.MEDIA_ROOT, 'thumbs')
+            _cnt = 0
+            for filename in os.listdir(thumbs_path):
+                fn = os.path.join(thumbs_path, filename)
+                if uuid in filename:
+                    _cnt += 1
+            self.assertTrue(_cnt == 0)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             document_upload_url = reverse('document_upload')
