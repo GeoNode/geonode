@@ -264,17 +264,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             follow=True)
         self.assertEquals(response.status_code, 200)
 
-        _d = Document.objects.get(title='uploaded_document')
-        _d.delete()
-
-        from geonode.documents.utils import delete_orphaned_document_files
-        delete_orphaned_document_files()
-
-        from geonode.base.utils import delete_orphaned_thumbs
-        delete_orphaned_thumbs()
-
-        self.assertFalse(os.path.isfile(f))
-
     # Permissions Tests
 
     def test_set_document_permissions(self):
@@ -493,6 +482,14 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
 
             self.assertTrue(_d.is_published)
             _d.delete()
+
+            from geonode.documents.utils import delete_orphaned_document_files
+            delete_orphaned_document_files()
+
+            from geonode.base.utils import delete_orphaned_thumbs
+            delete_orphaned_thumbs()
+
+            self.assertFalse(os.path.isfile(input_path))
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             document_upload_url = reverse('document_upload')
