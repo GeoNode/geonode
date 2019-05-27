@@ -288,7 +288,6 @@ GEONODE_INTERNAL_APPS = (
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
     'geonode.geoserver',
-    'geonode.geoserver.createlayer',
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
@@ -991,7 +990,6 @@ DISPLAY_SOCIAL = ast.literal_eval(os.getenv('DISPLAY_SOCIAL', 'True'))
 DISPLAY_COMMENTS = ast.literal_eval(os.getenv('DISPLAY_COMMENTS', 'True'))
 DISPLAY_RATINGS = ast.literal_eval(os.getenv('DISPLAY_RATINGS', 'True'))
 DISPLAY_WMS_LINKS = ast.literal_eval(os.getenv('DISPLAY_WMS_LINKS', 'True'))
-CREATE_LAYER = ast.literal_eval(os.getenv('CREATE_LAYER', 'False'))
 
 SOCIAL_ORIGINS = [{
     "label": "Email",
@@ -1215,21 +1213,49 @@ if not DEBUG_STATIC:
 # option to enable/disable resource unpublishing for administrators
 RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
 
-# Settings for EXIF contrib app
-EXIF_ENABLED = ast.literal_eval(os.getenv('EXIF_ENABLED', 'False'))
+# Settings for EXIF plugin
+EXIF_ENABLED = ast.literal_eval(os.getenv('EXIF_ENABLED', 'True'))
 
-# Settings for NLP contrib app
-NLP_ENABLED = False
-NLP_LOCATION_THRESHOLD = 1.0
-NLP_LIBRARY_PATH = os.getenv('NLP_LIBRARY_PATH', "/opt/MITIE/mitielib")
-NLP_MODEL_PATH = os.getenv(
-    'NLP_MODEL_PATH', "/opt/MITIE/MITIE-models/english/ner_model.dat")
+if EXIF_ENABLED:
+    if 'geonode.documents.exif' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode.documents.exif',)
 
-# Settings for Slack contrib app
-SLACK_ENABLED = False
-SLACK_WEBHOOK_URLS = [
-    "https://hooks.slack.com/services/T000/B000/XX"
-]
+# Settings for CREATE_LAYER plugin
+CREATE_LAYER = ast.literal_eval(os.getenv('CREATE_LAYER', 'False'))
+
+if CREATE_LAYER:
+    if 'geonode.geoserver.createlayer' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode.geoserver.createlayer',)
+
+# Settings for FAVORITE plugin
+FAVORITE_ENABLED = ast.literal_eval(os.getenv('FAVORITE_ENABLED', 'True'))
+
+if FAVORITE_ENABLED:
+    if 'geonode.favorite' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode.favorite',)
+
+# Settings for MONITORING plugin
+MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'True'))
+
+if MONITORING_ENABLED:
+    if 'geonode.monitoring' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode.monitoring',)
+    if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
+        MIDDLEWARE_CLASSES += \
+            ('geonode.monitoring.middleware.MonitoringMiddleware',)
+
+    # add following lines to your local settings to enable monitoring
+    MONITORING_CONFIG = None
+    MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
+    MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'local-geonode')
+
+    # how long monitoring data should be stored
+    MONITORING_DATA_TTL = timedelta(days=7)
+
+    # this will disable csrf check for notification config views,
+    # use with caution - for dev purpose only
+    CORS_ORIGIN_ALLOW_ALL = ast.literal_eval(os.environ.get('CORS_ORIGIN_ALLOW_ALL', 'True'))
+    MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get('MONITORING_DISABLE_CSRF', 'False'))
 
 CACHES = {
     # DUMMY CACHE FOR DEVELOPMENT
@@ -1265,14 +1291,6 @@ GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.ReactHookSet"
 """
 GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'  # DEPRECATED use HOOKSET instead
 GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
-"""
-
-# To enable the WorldMap based Client enable those
-"""
-GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.WorldMapHookSet"
-CORS_ORIGIN_WHITELIST = (
-    HOSTNAME
-)
 """
 
 SERVICE_UPDATE_INTERVAL = 0
@@ -1431,6 +1449,7 @@ if USE_GEOSERVER:
 #          'schedule': crontab(hour=16, day_of_week=5),
 #     },
 # }
+
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
 DELAYED_SECURITY_INTERVAL = int(os.getenv('DELAYED_SECURITY_INTERVAL', 60))
 CELERY_ENABLE_UTC = True
@@ -1466,7 +1485,7 @@ CELERY_TRACK_STARTED = True
 CELERY_SEND_TASK_SENT_EVENT = True
 
 # Disabled by default and I like it, because we use Sentry for this.
-#CELERY_SEND_TASK_ERROR_EMAILS = False
+# CELERY_SEND_TASK_ERROR_EMAILS = False
 
 # AWS S3 Settings
 
@@ -1512,36 +1531,6 @@ if os.name == 'nt':
             # maybe it will be found regardless if not it will throw 500 error
             from django.contrib.gis.geos import GEOSGeometry  # flake8: noqa
 
-USE_WORLDMAP = ast.literal_eval(os.getenv('USE_WORLDMAP', 'False'))
-
-# define the urls after the settings are overridden
-if USE_GEOSERVER:
-    if USE_WORLDMAP:
-        LOCAL_GXP_PTYPE = 'gxp_gnsource'
-    else:
-        LOCAL_GXP_PTYPE = 'gxp_wmscsource'
-    PUBLIC_GEOSERVER = {
-        "source": {
-            "title": "GeoServer - Public Layers",
-            "attribution": "&copy; %s" % SITEURL,
-            "ptype": LOCAL_GXP_PTYPE,
-            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows",
-            "restUrl": "/gs/rest"
-        }
-    }
-    LOCAL_GEOSERVER = {
-        "source": {
-            "title": "GeoServer - Private Layers",
-            "attribution": "&copy; %s" % SITEURL,
-            "ptype": LOCAL_GXP_PTYPE,
-            "url": "/gs/ows",
-            "restUrl": "/gs/rest"
-        }
-    }
-    baselayers = MAP_BASELAYERS
-    MAP_BASELAYERS = [PUBLIC_GEOSERVER]
-    MAP_BASELAYERS.extend(baselayers)
-
 # Keywords thesauri
 # e.g. THESAURI = [{'name':'inspire_themes', 'required':True, 'filter':True}, {'name':'inspire_concepts', 'filter':True}, ]
 # Required: (boolean, optional, default false) mandatory while editing metadata (not implemented yet)
@@ -1551,27 +1540,6 @@ THESAURI = []
 
 # Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
-
-# add following lines to your local settings to enable monitoring
-MONITORING_CONFIG = None
-MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'False'))
-MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
-MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'local-geonode')
-
-# how long monitoring data should be stored
-MONITORING_DATA_TTL = timedelta(days=7)
-
-# this will disable csrf check for notification config views,
-# use with caution - for dev purpose only
-CORS_ORIGIN_ALLOW_ALL = ast.literal_eval(os.environ.get('CORS_ORIGIN_ALLOW_ALL', 'True'))
-MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get('MONITORING_DISABLE_CSRF', 'False'))
-
-if MONITORING_ENABLED:
-    if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
-        INSTALLED_APPS += ('geonode.contrib.monitoring',)
-    if 'geonode.contrib.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
-        MIDDLEWARE_CLASSES += \
-            ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
 
 GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
 
@@ -1654,49 +1622,27 @@ INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 THUMBNAIL_GENERATOR = "geonode.layers.utils.create_gs_thumbnail_geonode"
 THUMBNAIL_GENERATOR_DEFAULT_BG = r"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
-GEOTIFF_IO_ENABLED = ast.literal_eval(
-    os.getenv('GEOTIFF_IO_ENABLED', 'False')
-)
-
-# if your public geoserver location does not use HTTPS,
-# you must set GEOTIFF_IO_BASE_URL to use http://
-# for example, http://app.geotiff.io
-GEOTIFF_IO_BASE_URL = os.getenv(
-    'GEOTIFF_IO_BASE_URL', 'https://app.geotiff.io'
-)
-
-# WorldMap settings
-if USE_WORLDMAP:
-    GEONODE_CLIENT_LOCATION = '/static/worldmap_client/'
-    INSTALLED_APPS += (
-        'geoexplorer-worldmap',
-        'geonode.contrib.worldmap.gazetteer',
-        'geonode.contrib.worldmap.wm_extra',
-        'geonode.contrib.worldmap.mapnotes',
-    )
-    # WorldMap Gazetter settings
-    USE_GAZETTEER = True
-    GAZETTEER_DB_ALIAS = 'default'
-    GAZETTEER_FULLTEXTSEARCH = False
-    # external services to be used by the gazetteer
-    GAZETTEER_SERVICES = 'worldmap,geonames,nominatim'
-    # this is the GeoNames key which is needed by the WorldMap Gazetteer
-    GAZETTEER_GEONAMES_USER = os.getenv('GEONAMES_USER', 'your-key-here')
-    WM_COPYRIGHT_URL = "http://gis.harvard.edu/"
-    WM_COPYRIGHT_TEXT = "Center for Geographic Analysis"
-    DEFAULT_MAP_ABSTRACT = """
-        <h3>The Harvard WorldMap Project</h3>
-        <p>WorldMap is an open source web mapping system that is currently
-        under construction. It is built to assist academic research and
-        teaching as well as the general public and supports discovery,
-        investigation, analysis, visualization, communication and archiving
-        of multi-disciplinary, multi-source and multi-format data,
-        organized spatially and temporally.</p>
-    """
-    # these are optionals
-    USE_GOOGLE_STREET_VIEW = ast.literal_eval(os.getenv('USE_GOOGLE_STREET_VIEW', 'False'))
-    GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', 'your-key-here')
-    USE_HYPERMAP = ast.literal_eval(os.getenv('USE_HYPERMAP', 'False'))
-    HYPERMAP_REGISTRY_URL = os.getenv('HYPERMAP_REGISTRY_URL', 'http://localhost:8001')
-    SOLR_URL = os.getenv('SOLR_URL', 'http://localhost:8983/solr/hypermap/select/')
-    MAPPROXY_URL = os.getenv('MAPPROXY_URL', 'http://localhost:8001')
+# define the urls after the settings are overridden
+if USE_GEOSERVER:
+    LOCAL_GXP_PTYPE = 'gxp_wmscsource'
+    PUBLIC_GEOSERVER = {
+        "source": {
+            "title": "GeoServer - Public Layers",
+            "attribution": "&copy; %s" % SITEURL,
+            "ptype": LOCAL_GXP_PTYPE,
+            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows",
+            "restUrl": "/gs/rest"
+        }
+    }
+    LOCAL_GEOSERVER = {
+        "source": {
+            "title": "GeoServer - Private Layers",
+            "attribution": "&copy; %s" % SITEURL,
+            "ptype": LOCAL_GXP_PTYPE,
+            "url": "/gs/ows",
+            "restUrl": "/gs/rest"
+        }
+    }
+    baselayers = MAP_BASELAYERS
+    MAP_BASELAYERS = [PUBLIC_GEOSERVER]
+    MAP_BASELAYERS.extend(baselayers)

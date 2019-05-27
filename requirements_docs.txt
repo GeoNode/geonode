@@ -25,7 +25,6 @@ django-filter==1.1.0
 django-floppyforms==1.7.0
 django-forms-bootstrap==3.1.0
 django-geoexplorer==4.0.42
-django-geoexplorer-worldmap==4.0.65
 django-geonode-client==1.0.9
 django-guardian==1.4.9
 django-haystack==2.8.1

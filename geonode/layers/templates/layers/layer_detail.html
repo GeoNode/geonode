@@ -72,7 +72,7 @@
             <form method="GET" action="{% url "layer_detail" resource.layer.service_typename %}">
                 {% csrf_token %}
                 <input type="text" id="filter" name="filter" style="witdh:400px"/>&nbsp;<input type="submit" value='{% trans "Filter Granules" %}'/>
-                </br>
+                <br/>
                 {% if filter %}
                 <strong>{% trans "Active Filter:" %}</strong> <em>{{ filter }}</em>
                 {% endif %}
@@ -238,6 +238,11 @@
       </article>
       {% endif %}
 
+      {% if FAVORITE_ENABLED %}
+      <article class="tab-pane" id="favorite">
+        {% include "favorite/_favorite.html" %}
+      </article>
+      {% endif %}
     </div>
 
   </div>
@@ -439,10 +444,6 @@
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_metadata" resource.service_typename %}">{% trans "Wizard" %}</a>
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_metadata_advanced" resource.service_typename %}">{% trans "Advanced Edit" %}</a>
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_metadata_upload" resource.service_typename %}">{% trans "Upload Metadata" %}</a>
-                {% if USE_WORLDMAP %}
-                  <a class="btn btn-default btn-block btn-xs" href="/layers/{{ resource.service_typename }}/searchable-fields">{% trans "Search" %}</a>
-                  <a class="btn btn-default btn-block btn-xs" href="/gazetteer/edit/{{ resource.service_typename }}">{% trans "Gazetteer" %}</a>
-                {% endif %}
               </div>
               {% endif %}
               {% if GEOSERVER_BASE_URL and not resource.service %}
@@ -1017,4 +1018,7 @@
     </script>
     {% endif %}
 
+    {% if FAVORITE_ENABLED %}
+    {% include "favorite/_favorite_js.html" %}
+    {% endif %}
 {% endblock extra_script %}

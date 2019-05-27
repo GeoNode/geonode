@@ -147,17 +147,16 @@ def resource_urls(request):
             'never'),
         USE_GEOSERVER=getattr(settings, 'USE_GEOSERVER', False),
         USE_NOTIFICATIONS=has_notifications,
-        USE_MONITORING='geonode.contrib.monitoring' in settings.INSTALLED_APPS and settings.MONITORING_ENABLED,
-        USE_WORLDMAP=settings.USE_WORLDMAP,
+        USE_MONITORING='geonode.monitoring' in settings.INSTALLED_APPS and settings.MONITORING_ENABLED,
         DEFAULT_ANONYMOUS_VIEW_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_VIEW_PERMISSION', False),
         DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', False),
         EXIF_ENABLED=getattr(
             settings,
             "EXIF_ENABLED",
             False),
-        NLP_ENABLED=getattr(
+        FAVORITE_ENABLED=getattr(
             settings,
-            "NLP_ENABLED",
+            "FAVORITE_ENABLED",
             False),
         SEARCH_FILTERS=getattr(
             settings,
@@ -176,54 +175,5 @@ def resource_urls(request):
         OGC_SERVER=getattr(settings, 'OGC_SERVER', None),
         DELAYED_SECURITY_SIGNALS=getattr(settings, 'DELAYED_SECURITY_SIGNALS', False),
     )
-    if settings.USE_WORLDMAP:
-        defaults['GEONODE_CLIENT_LOCATION'] = getattr(
-            settings,
-            'GEONODE_CLIENT_LOCATION',
-            '/static/worldmap/worldmap_client/'
-        )
-
-        defaults['USE_HYPERMAP'] = getattr(
-            settings,
-            'USE_HYPERMAP',
-            False
-        )
-
-        # TODO disable DB_DATASTORE setting
-        defaults['DB_DATASTORE'] = True
-
-        defaults['HYPERMAP_REGISTRY_URL'] = settings.HYPERMAP_REGISTRY_URL
-
-        defaults['MAPPROXY_URL'] = settings.HYPERMAP_REGISTRY_URL
-
-        defaults['SOLR_URL'] = settings.SOLR_URL
-
-        defaults['USE_GAZETTEER'] = settings.USE_GAZETTEER
-
-        defaults['GAZETTEER_SERVICES'] = getattr(
-            settings,
-            'GAZETTEER_SERVICES',
-            'worldmap,geonames,nominatim'
-        )
-
-        defaults['USE_GOOGLE_STREET_VIEW'] = settings.USE_GOOGLE_STREET_VIEW
-
-        defaults['GOOGLE_API_KEY'] = settings.GOOGLE_API_KEY
-
-        defaults['GOOGLE_MAPS_API_KEY'] = settings.GOOGLE_MAPS_API_KEY
-
-        defaults['WM_COPYRIGHT_URL'] = getattr(
-            settings,
-            'WM_COPYRIGHT_URL',
-            'http://gis.harvard.edu/'
-        )
-
-        defaults['WM_COPYRIGHT_TEXT'] = getattr(
-            settings,
-            'WM_COPYRIGHT_TEXT',
-            'Center for Geographic Analysis'
-        )
-
-        defaults['HYPERMAP_REGISTRY_URL'] = settings.HYPERMAP_REGISTRY_URL
 
     return defaults
