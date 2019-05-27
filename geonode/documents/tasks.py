@@ -95,5 +95,5 @@ def delete_orphaned_document_files(self):
 
 @shared_task(bind=True, queue='cleanup')
 def delete_orphaned_thumbnails(self):
-    from geonode.documents.utils import delete_orphaned_thumbs
+    from geonode.base.utils import delete_orphaned_thumbs
     delete_orphaned_thumbs()

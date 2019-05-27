@@ -66,20 +66,14 @@ urlpatterns = [
         views.layer_feature_catalogue, name='layer_feature_catalogue'),
     url(r'^metadata/batch/(?P<ids>[^/]*)/$',
         views.layer_batch_metadata, name='layer_batch_metadata'),
-
-    # url(r'^api/batch_permissions/?$', 'batch_permissions',
-    #    name='batch_permssions'),
-    # url(r'^api/batch_delete/?$', 'batch_delete', name='batch_delete'),
 ]
 
 # -- Deprecated url routes for Geoserver authentication -- remove after GeoNode 2.1
 # -- Use /gs/acls, gs/resolve_user/, gs/download instead
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    from geonode.geoserver.views import layer_acls, resolve_user, layer_batch_download
+    from geonode.geoserver.views import layer_acls, resolve_user
     urlpatterns = [  # 'geonode.geoserver.views',
         url(r'^acls/?$', layer_acls, name='layer_acls_dep'),
         url(r'^resolve_user/?$', resolve_user,
             name='layer_resolve_user_dep'),
-        url(r'^download$', layer_batch_download,
-            name='layer_batch_download_dep'),
     ] + urlpatterns
