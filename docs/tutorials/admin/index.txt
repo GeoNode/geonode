@@ -86,9 +86,6 @@ You will know how to:
 :ref:`geonode_monitoring`
     How to set up and use internal monitoring application.
 
-:ref:`datastore_shards`
-    How to use the PostGIS datastore shards contrib application in order to have GeoServer stores containing a fewer number of layers. Useful for organizations with hundreds of layers.
-
 :ref:`async_signals`
     How to set up asynchronous signals handling.
 
