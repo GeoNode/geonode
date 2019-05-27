@@ -1582,21 +1582,12 @@ SOCIALACCOUNT_PROVIDERS = {
     'linkedin_oauth2': {
         'SCOPE': [
             'r_emailaddress',
-            'r_basicprofile',
+            'r_liteprofile',
         ],
         'PROFILE_FIELDS': [
             'emailAddress',
             'firstName',
-            'headline',
-            'id',
-            'industry',
             'lastName',
-            'pictureUrl',
-            'positions',
-            'publicProfileUrl',
-            'location',
-            'specialties',
-            'summary',
         ]
     },
     'facebook': {
