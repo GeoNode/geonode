@@ -1417,10 +1417,6 @@ class OGC_Server(object):
         """
         if self.DATASTORE and settings.DATABASES.get(self.DATASTORE, None):
             datastore_dict = settings.DATABASES.get(self.DATASTORE, dict())
-            if hasattr(settings, 'SHARD_STRATEGY'):
-                if settings.SHARD_STRATEGY:
-                    from geonode.contrib.datastore_shards.utils import get_shard_database_name
-                    datastore_dict['NAME'] = get_shard_database_name()
             return datastore_dict
         else:
             return dict()

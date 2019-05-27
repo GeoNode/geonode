@@ -757,10 +757,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             from geonode.favorite.utils import get_favorite_info
             context_dict["favorite_info"] = get_favorite_info(request.user, layer)
 
-        if settings.GEOTIFF_IO_ENABLED:
-            from geonode.contrib.geotiffio import create_geotiff_io_url
-            context_dict["link_geotiff_io"] = create_geotiff_io_url(layer, access_token)
-
     return TemplateResponse(
         request, template, context=context_dict)
 
