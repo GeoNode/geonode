@@ -6,7 +6,7 @@ GeoNode Monitoring
 .. contents::
    :depth: 4
 
-Internal Monitoring Application (geonode.contrib.monitoring)
+Internal Monitoring Application (geonode.monitoring)
 ------------------------------------------------------------
 
 .. note:: This application requires MaxMind's GeoIP database file.
@@ -59,8 +59,8 @@ Installation
     MONITORING_ENABLED = True
     # add following lines to your local settings to enable monitoring
     if MONITORING_ENABLED:
-        INSTALLED_APPS += ('geonode.contrib.monitoring',)
-        MIDDLEWARE_CLASSES += ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+        INSTALLED_APPS += ('geonode.monitoring',)
+        MIDDLEWARE_CLASSES += ('geonode.monitoring.middleware.MonitoringMiddleware',)
         MONITORING_CONFIG = None
         MONITORING_HOST_NAME = 'localhost'
         MONITORING_SERVICE_NAME = 'local-geonode'

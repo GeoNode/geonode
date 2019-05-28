@@ -23,12 +23,15 @@
 
 # Standard Modules
 import os
+import logging
 
 # Django functionality
 from django.conf import settings
 
 # Geonode functionality
 from geonode.documents.models import Document
+
+logger = logging.getLogger(__name__)
 
 
 def delete_orphaned_document_files():
@@ -40,7 +43,9 @@ def delete_orphaned_document_files():
         fn = os.path.join(documents_path, filename)
         if Document.objects.filter(doc_file__contains=filename).count() == 0:
             print 'Removing orphan document %s' % fn
+            logger.debug('Removing orphan document %s' % fn)
             try:
                 os.remove(fn)
             except OSError:
                 print 'Could not delete file %s' % fn
+                logger.error('Could not delete file %s' % fn)

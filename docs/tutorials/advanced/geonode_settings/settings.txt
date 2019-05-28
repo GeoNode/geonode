@@ -688,11 +688,6 @@ GEOSERVER_WEB_UI_LOCATION
 
     TBD
 
-GEOTIFF_IO_ENABLED
-------------------
-
-    TBD
-
 GOOGLE_API_KEY
 --------------
 
@@ -875,15 +870,15 @@ MONITORING_ENABLED
 
     Default: ``False``
 
-    Enable internal monitoring application (`geonode.contrib.monitoring`). If set to `True`, add following code to your local settings:
+    Enable internal monitoring application (`geonode.monitoring`). If set to `True`, add following code to your local settings:
 
     .. code::
 
         MONITORING_ENABLED = True
         # add following lines to your local settings to enable monitoring
         if MONITORING_ENABLED:
-            INSTALLED_APPS + ('geonode.contrib.monitoring',)
-            MIDDLEWARE_CLASSES + ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+            INSTALLED_APPS + ('geonode.monitoring',)
+            MIDDLEWARE_CLASSES + ('geonode.monitoring.middleware.MonitoringMiddleware',)
 
     See :ref:`geonode_monitoring` for details.
 
@@ -1471,16 +1466,6 @@ USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS
 
 USE_GOOGLE_STREET_VIEW
 ----------------------
-
-    TBD
-
-USE_HYPERMAP
-------------
-
-    TBD
-
-USE_WORLDMAP
-------------
 
     TBD
 
