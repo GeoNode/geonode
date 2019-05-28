@@ -546,7 +546,7 @@ def geoserver_proxy(request,
 
 
 def _response_callback(**kwargs):
-    affected_layers = kwargs['affected_layers']
+    # affected_layers = kwargs['affected_layers']
     # response = kwargs['response']
     content = kwargs['content']
     status = kwargs['status']
