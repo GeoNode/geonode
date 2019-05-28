@@ -837,19 +837,6 @@ def final_step(upload_session, user):
         regions_resolved, regions_unresolved = resolve_regions(regions)
         keywords.extend(regions_unresolved)
 
-        if getattr(settings, 'NLP_ENABLED', False):
-            try:
-                from geonode.contrib.nlp.utils import nlp_extract_metadata_dict
-                nlp_metadata = nlp_extract_metadata_dict({
-                    'title': defaults.get('title', None),
-                    'abstract': defaults.get('abstract', None),
-                    'purpose': defaults.get('purpose', None)})
-                if nlp_metadata:
-                    regions_resolved.extend(nlp_metadata.get('regions', []))
-                    keywords.extend(nlp_metadata.get('keywords', []))
-            except BaseException:
-                print "NLP extraction failed."
-
         # Assign the regions (needs to be done after saving)
         regions_resolved = list(set(regions_resolved))
         if regions_resolved:

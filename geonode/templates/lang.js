@@ -122,7 +122,6 @@ if (window.GeoExplorer) {
         createLayerText: gettext("Create Layer"),
         rectifyLayerText: gettext("Rectify Layer"),
         submitendpointText: gettext("Submit a Map Service"),
-        worldmapDataText: gettext("Search"),
         externalDataText: gettext("External Data"),
         leavePageWarningText: gettext("If you leave this page, unsaved changes will be lost."),
         cgaharvardText: gettext("Center for Geographic Analysis"),
