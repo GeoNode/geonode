@@ -121,6 +121,7 @@ class GeoServerMonitorClient(object):
         base_url = urlsplit(self.base_url)
         if href and href.netloc != base_url.netloc:
             href = href._replace(netloc=base_url.netloc)
+            href = href._replace(scheme=base_url.scheme)
         if format is None:
             return href.geturl()
         if format in self.REPORT_FORMATS:
@@ -143,14 +144,14 @@ class GeoServerMonitorClient(object):
         if qargs:
             rest_url = '{}?{}'.format(rest_url, urlencode(qargs))
 
-        print('checking', rest_url)
+        log.debug('checking', rest_url)
         username = settings.OGC_SERVER['default']['USER']
         password = settings.OGC_SERVER['default']['PASSWORD']
         resp = requests.get(
             rest_url,
             auth=HTTPBasicAuth(username, password),
             timeout=30)
-        doc = bs(resp.content)
+        doc = bs(resp.content, features="lxml")
         links = doc.find_all('a')
         for l in links:
             href = self.get_href(l, format)
@@ -158,11 +159,12 @@ class GeoServerMonitorClient(object):
             if data:
                 yield data
             else:
-                print("Skipping payload for {}".format(href))
+                log.href("Skipping payload for {}".format(href))
 
     def get_request(self, href, format=format):
         username = settings.OGC_SERVER['default']['USER']
         password = settings.OGC_SERVER['default']['PASSWORD']
+        log.debug(" href: %s " % href)
         r = requests.get(
             href,
             auth=HTTPBasicAuth(username, password),

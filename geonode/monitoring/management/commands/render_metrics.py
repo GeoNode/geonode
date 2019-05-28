@@ -36,7 +36,7 @@ from geonode.monitoring.service_handlers import get_for_service
 from geonode.monitoring.collector import CollectorAPI
 from geonode.monitoring.utils import TypeChecks
 
-LOCAL_TIMEOUT = 300
+LOCAL_TIMEOUT = 8600
 
 TIMESTAMP_OUTPUT = '%Y-%m-%d %H:%M:%S'
 

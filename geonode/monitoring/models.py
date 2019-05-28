@@ -64,7 +64,10 @@ def get_geoip():
     # otherwise, some cli commands may fail (like updating geouip)
     global GEOIP_DB
     if GEOIP_DB is None:
-        GEOIP_DB = GeoIP()
+        try:
+            GEOIP_DB = GeoIP()
+        except BaseException as e:
+            log.exception(e)
     return GEOIP_DB
 
 
