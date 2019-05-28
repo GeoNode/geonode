@@ -855,13 +855,6 @@ MISSING_THUMBNAIL
 
     TBD
 
-UPDATE_THUMBS_ON_STYLE_CHANGE
------------------------------
-
-    Default: ``True``
-
-    Layer's thumbnail is updated for each style changes if this option is True.
-
 MODIFY_TOPICCATEGORY
 --------------------
 

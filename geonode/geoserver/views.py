@@ -550,12 +550,6 @@ def _response_callback(**kwargs):
     status = kwargs['status']
     content_type = kwargs['content_type']
 
-    # update thumbnails
-    if settings.UPDATE_THUMBS_ON_STYLE_CHANGES:
-        if status == 200 and affected_layers:
-            for layer in affected_layers:
-                layer.save()
-
     # Replace Proxy URL
     if content_type in ('application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json'):
         _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
