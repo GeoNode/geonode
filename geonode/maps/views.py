@@ -167,6 +167,11 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, map_obj)
 
+    if request.user.is_authenticated():
+        if getattr(settings, 'FAVORITE_ENABLED', False):
+            from geonode.favorite.utils import get_favorite_info
+            context_dict["favorite_info"] = get_favorite_info(request.user, map_obj)
+
     return render(request, template, context=context_dict)
 
 
@@ -243,15 +248,6 @@ def map_metadata(
             the_map.regions.add(*new_regions)
         the_map.category = new_category
         the_map.save()
-
-        if getattr(settings, 'SLACK_ENABLED', False):
-            try:
-                from geonode.contrib.slack.utils import build_slack_message_map, send_slack_messages
-                send_slack_messages(
-                    build_slack_message_map(
-                        "map_edit", the_map))
-            except BaseException:
-                logger.error("Could not send slack message for modified map.")
 
         if not ajax:
             return HttpResponseRedirect(
@@ -362,25 +358,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
             "map": map_obj
         })
     elif request.method == 'POST':
-        if getattr(settings, 'SLACK_ENABLED', False):
-            slack_message = None
-            try:
-                from geonode.contrib.slack.utils import build_slack_message_map
-                slack_message = build_slack_message_map("map_delete", map_obj)
-            except BaseException:
-                logger.error("Could not build slack message for delete map.")
-
-            delete_map.delay(object_id=map_obj.id)
-
-            try:
-                from geonode.contrib.slack.utils import send_slack_messages
-                send_slack_messages(slack_message)
-            except BaseException:
-                logger.error("Could not send slack message for delete map.")
-
-        else:
-            delete_map.delay(object_id=map_obj.id)
-
+        delete_map.delay(object_id=map_obj.id)
         return HttpResponseRedirect(reverse("maps_browse"))
 
 
@@ -1064,10 +1042,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
 
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            # TODO the url needs to be verified on geoserver
-            url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
             url = urljoin(settings.SITEURL,
                           reverse("qgis_server:download-map", kwargs={'mapid': mapid}))
             # qgis-server backend stop here, continue on qgis_server/views.py
@@ -1115,31 +1090,6 @@ def map_download(request, mapid, template='maps/map_download.html'):
         "downloadable_layers": downloadable_layers,
         "site": site_url
     })
-
-
-def map_download_check(request):
-    """
-    this is an endpoint for monitoring map downloads
-    """
-    try:
-        layer = request.session["map_status"]
-        if isinstance(layer, dict):
-            url = "%srest/process/batchDownload/status/%s" % (
-                ogc_server_settings.LOCATION, layer["id"])
-            resp, content = http_client.request(url, 'GET')
-            status = resp.status_code
-            if resp.status_code == 400:
-                return HttpResponse(
-                    content="Something went wrong",
-                    status=status)
-        else:
-            content = "Something Went wrong"
-            status = 400
-    except ValueError:
-        # TODO: Is there any useful context we could include in this log?
-        logger.warning(
-            "User tried to check status, but has no download in progress.")
-    return HttpResponse(content=content, status=status)
 
 
 def map_wmc(request, mapid, template="maps/wmc.xml"):

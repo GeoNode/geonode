@@ -510,11 +510,11 @@ GEOIP_PATH = "/usr/local/share/GeoIP"
 MONITORING_ENABLED = True
 
 if MONITORING_ENABLED:
-    if 'geonode.contrib.monitoring' not in INSTALLED_APPS:
-        INSTALLED_APPS += ('geonode.contrib.monitoring',)
-    if 'geonode.contrib.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
+    if 'geonode.monitoring' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode.monitoring',)
+    if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
         MIDDLEWARE_CLASSES += \
-            ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+            ('geonode.monitoring.middleware.MonitoringMiddleware',)
     MONITORING_CONFIG = None
     MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
     MONITORING_SERVICE_NAME = 'geonode'

@@ -572,19 +572,6 @@ def file_upload(filename,
     regions_resolved, regions_unresolved = resolve_regions(regions)
     keywords.extend(regions_unresolved)
 
-    if getattr(settings, 'NLP_ENABLED', False):
-        try:
-            from geonode.contrib.nlp.utils import nlp_extract_metadata_dict
-            nlp_metadata = nlp_extract_metadata_dict({
-                'title': defaults.get('title', None),
-                'abstract': defaults.get('abstract', None),
-                'purpose': defaults.get('purpose', None)})
-            if nlp_metadata:
-                regions_resolved.extend(nlp_metadata.get('regions', []))
-                keywords.extend(nlp_metadata.get('keywords', []))
-        except BaseException:
-            logger.error("NLP extraction failed.")
-
     # If it is a vector file, create the layer in postgis.
     if is_vector(filename):
         defaults['storeType'] = 'dataStore'
@@ -858,16 +845,6 @@ def upload(incoming, user=None, overwrite=False,
                                 "publish_resourcebase"]},
                         "groups": {}}
                     layer.set_permissions(perm_spec)
-
-                if getattr(settings, 'SLACK_ENABLED', False):
-                    try:
-                        from geonode.contrib.slack.utils import build_slack_message_layer, send_slack_messages
-                        send_slack_messages(
-                            build_slack_message_layer(
-                                ("layer_new" if status == "created" else "layer_edit"), layer))
-                    except BaseException:
-                        logger.error("Could not send slack message.")
-
             except Exception as e:
                 if ignore_errors:
                     status = 'failed'

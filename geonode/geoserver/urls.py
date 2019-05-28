@@ -83,7 +83,5 @@ urlpatterns = [  # 'geonode.geoserver.views',
     url(r'^acls/?$', views.layer_acls, name='layer_acls'),
     url(r'^resolve_user/?$', views.resolve_user,
         name='layer_resolve_user'),
-    url(r'^download$', views.layer_batch_download,
-        name='layer_batch_download'),
     url(r'^online/?$', views.server_online, name='server_online'),
 ]
