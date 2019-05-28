@@ -372,13 +372,13 @@ class RequestEvent(models.Model):
         max_length=255, null=True, default=None, blank=True)
     client_ip = models.GenericIPAddressField(null=False)
     client_lat = models.DecimalField(
-        max_digits=8,
+        max_digits=11,
         decimal_places=5,
         null=True,
         default=None,
         blank=True)
     client_lon = models.DecimalField(
-        max_digits=8,
+        max_digits=11,
         decimal_places=5,
         null=True,
         default=None,
@@ -697,7 +697,7 @@ class MetricValue(models.Model):
     label = models.ForeignKey(MetricLabel, related_name='metric_values')
     value = models.CharField(max_length=255, null=False, blank=False)
     value_num = models.DecimalField(
-        max_digits=16,
+        max_digits=20,
         decimal_places=4,
         null=True,
         default=None,
@@ -1175,13 +1175,13 @@ class NotificationMetricDefinition(models.Model):
                                     default=FIELD_OPTION_MIN_VALUE)
     description = models.TextField(null=True)
     min_value = models.DecimalField(
-        max_digits=16,
+        max_digits=20,
         decimal_places=4,
         null=True,
         default=None,
         blank=True)
     max_value = models.DecimalField(
-        max_digits=16,
+        max_digits=20,
         decimal_places=4,
         null=True,
         default=None,
@@ -1247,8 +1247,8 @@ class NotificationMetricDefinition(models.Model):
                 fargs['max_value'] = max_
             if min_ is not None:
                 fargs['min_value'] = min_
-            field = forms.DecimalField(max_digits=12,
-                                       decimal_places=2,
+            field = forms.DecimalField(max_digits=20,
+                                       decimal_places=4,
                                        required=False,
                                        **fargs)
         field.name = fid_base
@@ -1296,13 +1296,13 @@ class MetricNotificationCheck(models.Model):
     label = models.ForeignKey(MetricLabel, null=True, blank=True)
     ows_service = models.ForeignKey(OWSService, null=True, blank=True)
     min_value = models.DecimalField(
-        max_digits=16,
+        max_digits=20,
         decimal_places=4,
         null=True,
         default=None,
         blank=True)
     max_value = models.DecimalField(
-        max_digits=16,
+        max_digits=20,
         decimal_places=4,
         null=True,
         default=None,
