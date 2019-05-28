@@ -105,12 +105,18 @@ class CollectorAPI(object):
                              metric_name, valid_to):
             iface_label = get_iface_name(row)
             if not iface_label:
-                print('no label', metric_name, row.get('description'))
+                try:
+                    log.debug('no label', metric_name, row.get('description'))
+                except BaseException:
+                    pass
                 return
             rate = self._calculate_rate(
                 metric_name, iface_label, value, valid_to)
             if rate is None:
-                print('no rate for', metric_name)
+                try:
+                    log.debug('no rate for', metric_name)
+                except BaseException:
+                    pass
                 return
             mdata = {'value': rate,
                      'value_raw': rate,
@@ -118,7 +124,7 @@ class CollectorAPI(object):
                      'label': iface_label,
                      'metric': '{}.rate'.format(metric_name)}
             mdata.update(metric_defaults)
-            print MetricValue.add(**mdata)
+            log.debug(MetricValue.add(**mdata))
 
         def get_mem_label(*args):
             return 'B'
@@ -179,7 +185,7 @@ class CollectorAPI(object):
                      'label': label_function(metric_data) if callable(label_function) else None,
                      'metric': metric_name}
             mdata.update(mdefaults)
-            print MetricValue.add(**mdata)
+            log.debug(MetricValue.add(**mdata))
 
             if callable(processing_function):
                 processing_function(
@@ -222,13 +228,13 @@ class CollectorAPI(object):
                 mdata.update(mdefaults)
                 rate = self._calculate_rate(
                     mdata['metric'], ifname, tx_value, valid_to)
-                print MetricValue.add(**mdata)
+                log.debug(MetricValue.add(**mdata))
                 if rate:
                     mdata['metric'] = '{}.rate'.format(mdata['metric'])
                     mdata['value'] = rate
                     mdata['value_num'] = rate
                     mdata['value_raw'] = rate
-                    print MetricValue.add(**mdata)
+                    log.debug(MetricValue.add(**mdata))
 
         ldata = data['data']['load']
         llabel = ['1', '5', '15']
@@ -253,7 +259,7 @@ class CollectorAPI(object):
                                        label__name='MB',
                                        service=service)\
                 .delete()
-            print MetricValue.add(**mdata)
+            log.debug(MetricValue.add(**mdata))
 
         MetricValue.objects.filter(service_metric__metric__name__in=('storage.total', 'storage.used', 'storage.free',),
                                    valid_from=valid_from,
@@ -279,7 +285,7 @@ class CollectorAPI(object):
                          'label': mount,
                          }
                 mdata.update(mdefaults)
-                print MetricValue.add(**mdata)
+                log.debug(MetricValue.add(**mdata))
 
         if ldata:
             for lidx, l in enumerate(ldata):
@@ -297,7 +303,7 @@ class CollectorAPI(object):
                                            label__name='Value',
                                            service=service)\
                     .delete()
-                print MetricValue.add(**mdata)
+                log.debug(MetricValue.add(**mdata))
 
         uptime = data['data'].get('uptime')
         if uptime is not None:
@@ -313,7 +319,7 @@ class CollectorAPI(object):
                                        label__name=mdata['label'],
                                        service=service)\
                 .delete()
-            print MetricValue.add(**mdata)
+            log.debug(MetricValue.add(**mdata))
 
         if data['data'].get('cpu'):
             _l = data['data']['cpu']['usage']
@@ -332,7 +338,7 @@ class CollectorAPI(object):
                                        label__name=mdata['label'],
                                        service=service)\
                 .delete()
-            print MetricValue.add(**mdata)
+            log.debug(MetricValue.add(**mdata))
             rate = self._calculate_rate(
                 mdata['metric'],
                 mdata['label'],
@@ -344,7 +350,7 @@ class CollectorAPI(object):
                 rate_data['value'] = rate
                 rate_data['value_num'] = rate
                 rate_data['value_raw'] = rate
-                print MetricValue.add(**rate_data)
+                log.debug(MetricValue.add(**rate_data))
 
             percent = self._calculate_percent(
                 mdata['metric'],
@@ -358,10 +364,10 @@ class CollectorAPI(object):
                 percent_data['value_num'] = percent
                 percent_data['value_raw'] = percent
                 percent_data['label'] = 'Value'
-                print MetricValue.add(**percent_data)
+                log.debug(MetricValue.add(**percent_data))
 
             mdata.update(mdefaults)
-            print MetricValue.add(**mdata)
+            log.debug(MetricValue.add(**mdata))
 
     def get_labels_for_metric(self, metric_name, resource=None):
         mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
@@ -492,7 +498,7 @@ class CollectorAPI(object):
                                   'samples_count': samples,
                                   'value_raw': value or 0,
                                   'value_num': value if isinstance(value, (int, float, long, Decimal,)) else None})
-            print MetricValue.add(**metric_values)
+            log.debug(MetricValue.add(**metric_values))
 
     def process(self, service, data, valid_from, valid_to, *args, **kwargs):
         if service.is_hostgeonode:
@@ -535,7 +541,7 @@ class CollectorAPI(object):
                     'label': 'count',
                     'service': service}
         cnt = with_errors.count()
-        print MetricValue.add(value=cnt, value_num=cnt, value_raw=cnt, **defaults)
+        log.debug(MetricValue.add(value=cnt, value_num=cnt, value_raw=cnt, **defaults))
 
         defaults['metric'] = 'response.error.types'
         for label in labels:
@@ -544,16 +550,16 @@ class CollectorAPI(object):
             defaults['label'] = label
 
             defaults['samples_count'] = cnt
-            print MetricValue.add(value=cnt, value_num=cnt, value_raw=cnt, **defaults)
+            log.debug(MetricValue.add(value=cnt, value_num=cnt, value_raw=cnt, **defaults))
 
     def process_requests_batch(self, service, requests, valid_from, valid_to):
         """
         Processes requests information into metric values
         """
-        if not requests.count():
-            return
         log.info("Processing batch of %s requests from %s to %s",
                  requests.count(), valid_from, valid_to)
+        if not requests.count():
+            return
         metric_defaults = {'valid_from': valid_from,
                            'valid_to': valid_to,
                            'requests': requests,
@@ -567,20 +573,20 @@ class CollectorAPI(object):
         count = requests.count()
         paths = requests.distinct('request_path').values_list(
             'request_path', flat=True)
-        print MetricValue.add('request.count', valid_from, valid_to, service, 'Count',
-                              value=count,
-                              value_num=count,
-                              value_raw=count,
-                              samples_count=count,
-                              resource=None)
-        for path in paths:
-            count = requests.filter(request_path=path).count()
-            print MetricValue.add('request.path', valid_from, valid_to, service, path,
+        log.debug(MetricValue.add('request.count', valid_from, valid_to, service, 'Count',
                                   value=count,
                                   value_num=count,
                                   value_raw=count,
                                   samples_count=count,
-                                  resource=None)
+                                  resource=None))
+        for path in paths:
+            count = requests.filter(request_path=path).count()
+            log.debug(MetricValue.add('request.path', valid_from, valid_to, service, path,
+                                      value=count,
+                                      value_num=count,
+                                      value_raw=count,
+                                      samples_count=count,
+                                      resource=None))
 
         # calculate overall stats
         self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
@@ -686,13 +692,13 @@ class CollectorAPI(object):
                 metric_defaults['requests'] = ows_requests
                 metric_defaults['ows_service'] = ows_all
 
-                print(MetricValue.add('request.count', valid_from,
-                                      valid_to, service, 'Count',
-                                      value=count, value_num=count,
-                                      samples_count=count,
-                                      value_raw=count,
-                                      resource=resource,
-                                      ows_service=ows_all))
+                log.debug(MetricValue.add('request.count', valid_from,
+                                          valid_to, service, 'Count',
+                                          value=count, value_num=count,
+                                          samples_count=count,
+                                          value_raw=count,
+                                          resource=resource,
+                                          ows_service=ows_all))
                 self.set_metric_values(
                     'request.ip', 'client_ip', **metric_defaults)
                 self.set_metric_values(
@@ -730,23 +736,23 @@ class CollectorAPI(object):
                         'request_path').values_list('request_path', flat=True)
                     for path in paths:
                         count = ows_requests.filter(request_path=path).count()
-                        print MetricValue.add('request.path', valid_from, valid_to, service, path,
-                                              value=count,
-                                              value_num=count,
-                                              value_raw=count,
-                                              samples_count=count,
-                                              resource=resource)
+                        log.debug(MetricValue.add('request.path', valid_from, valid_to, service, path,
+                                                  value=count,
+                                                  value_num=count,
+                                                  value_raw=count,
+                                                  samples_count=count,
+                                                  resource=resource))
 
                     count = ows_requests.count()
                     metric_defaults['ows_service'] = ows_service
                     metric_defaults['requests'] = ows_requests
-                    print(MetricValue.add('request.count', valid_from, valid_to, service, 'Count',
-                                          value=count,
-                                          value_num=count,
-                                          samples_count=count,
-                                          value_raw=count,
-                                          resource=resource,
-                                          ows_service=ows_service))
+                    log.debug(MetricValue.add('request.count', valid_from, valid_to, service, 'Count',
+                                              value=count,
+                                              value_num=count,
+                                              samples_count=count,
+                                              value_raw=count,
+                                              resource=resource,
+                                              ows_service=ows_service))
                     self.set_metric_values(
                         'request.ip', 'client_ip', **metric_defaults)
                     self.set_metric_values(

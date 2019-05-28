@@ -74,12 +74,12 @@ class MonitoringMiddleware(object):
 
     def register_request(self, request, response):
         if self.service:
-            self.log.info('request', extra={'request': request, 'response': response})
+            self.log.debug('request', extra={'request': request, 'response': response})
 
     def register_exception(self, request, exception):
         if self.service:
             response = HttpResponse('')
-            self.log.info('request', exc_info=exception, extra={'request': request, 'response': response})
+            self.log.debug('request', exc_info=exception, extra={'request': request, 'response': response})
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         m = request.resolver_match
