@@ -546,16 +546,11 @@ def geoserver_proxy(request,
 
 
 def _response_callback(**kwargs):
-    affected_layers = kwargs['affected_layers']
+    # affected_layers = kwargs['affected_layers']
     # response = kwargs['response']
     content = kwargs['content']
     status = kwargs['status']
     content_type = kwargs['content_type']
-
-    # update thumbnails
-    if status == 200 and affected_layers:
-        for layer in affected_layers:
-            layer.save()
 
     # Replace Proxy URL
     if content_type in ('application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json'):
