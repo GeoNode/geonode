@@ -23,7 +23,7 @@ import pytz
 import logging
 import timeout_decorator
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.tz import tzlocal
 
 from django.conf import settings
@@ -36,7 +36,7 @@ from geonode.monitoring.service_handlers import get_for_service
 from geonode.monitoring.collector import CollectorAPI
 from geonode.monitoring.utils import TypeChecks
 
-LOCAL_TIMEOUT = 300
+LOCAL_TIMEOUT = 8600
 
 log = logging.getLogger(__name__)
 
@@ -125,15 +125,16 @@ class Command(BaseCommand):
             service.last_check = service.last_check.astimezone(utc)
         except:
             service.last_check = service.last_check.replace(tzinfo=utc) if service.last_check else now
-        last_check = local_tz.localize(since).astimezone(utc).replace(tzinfo=utc) if since else service.last_check
-        if not last_check or last_check > now:
-            last_check = (now - service.check_interval)
-            service.last_check = last_check
 
         if not until:
             until = now
         else:
             until = local_tz.localize(until).astimezone(utc).replace(tzinfo=utc)
+
+        last_check = local_tz.localize(since).astimezone(utc).replace(tzinfo=utc) if since else service.last_check
+        if not last_check or last_check > until or (until - last_check) > settings.MONITORING_DATA_TTL:
+            last_check = (until - settings.MONITORING_DATA_TTL)
+            service.last_check = last_check
 
         print('[',now ,'] checking', service.name, 'since', last_check, 'until', until)
         data_in = None

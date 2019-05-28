@@ -54,7 +54,8 @@ from geonode.settings import (on_travis,
                               GEONODE_INTERNAL_APPS,
                               GEONODE_APPS,
                               OGC_SERVER,
-                              ASYNC_SIGNALS)
+                              ASYNC_SIGNALS,
+                              MONITORING_ENABLED)
 
 _django_11 = django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2
 
@@ -804,6 +805,9 @@ def test(options):
     for _app in _apps:
         if _app and len(_app) > 0 and 'geonode' in _app:
             _apps_to_test.append(_app)
+    if MONITORING_ENABLED and 'geonode.monitoring' in INSTALLED_APPS and \
+        'geonode.monitoring' not in _apps_to_test:
+        _apps_to_test.append('geonode.monitoring')
     sh("%s manage.py test geonode.tests.smoke %s.tests --noinput %s %s" % (options.get('prefix'),
                                                                            '.tests '.join(_apps_to_test),
                                                                            _keepdb,
@@ -935,7 +939,7 @@ def run_tests(options):
     if options.get('coverage'):
         prefix = 'coverage run --branch --source=geonode \
             --omit="*/management/*,*/__init__*,*/views*,*/signals*,*/tasks*,*/test*,*/wsgi*,*/middleware*,*/search_indexes*,\
-                */migrations*,*/context_processors*,geonode/qgis_server/*,geonode/monitoring/*,geonode/upload/*"'
+                */migrations*,*/context_processors*,geonode/qgis_server/*,geonode/upload/*"'
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
