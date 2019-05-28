@@ -217,8 +217,8 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
         for table in pg_tables:
             print "Dumping GeoServer Vectorial Data : " + table[0]
             os.system('PGPASSWORD="' + db_passwd + '" ' + config.pg_dump_cmd + ' -h ' + db_host +
-                      ' -p ' + db_port + ' -U ' + db_user + ' -F c -b' +
-                      ' -t ' + table[0] + ' -f ' +
+                      ' -p ' + str(db_port) + ' -U ' + db_user + ' -F c -b' +
+                      ' -t ' + str(table[0]) + ' -f ' +
                       os.path.join(target_folder, table[0] + '.dump ' + db_name))
 
     except Exception:
