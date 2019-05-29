@@ -1038,7 +1038,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
         response = self.client.get(reverse('layer_detail', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 401)
+        self.assertTrue(response.status_code in (401, 403))
 
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that bobby cannot access the
@@ -1149,25 +1149,25 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
         response = self.client.get(reverse('layer_detail', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 302)
+        self.assertTrue(response.status_code in (302, 403))
 
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that anonymous user cannot
         # access the layer replace page but redirected to login
         response = self.client.get(reverse('layer_replace', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 302)
+        self.assertTrue(response.status_code in (302, 403))
 
         # 3. delete_resourcebase
         # 3.1 has not delete_resourcebase: verify that anonymous user cannot
         # access the layer delete page but redirected to login
         response = self.client.get(reverse('layer_remove', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 302)
+        self.assertTrue(response.status_code in (302, 403))
 
         # 4. change_resourcebase_metadata
         # 4.1 has not change_resourcebase_metadata: verify that anonymous user
         # cannot access the layer metadata page but redirected to login
         response = self.client.get(reverse('layer_metadata', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 302)
+        self.assertTrue(response.status_code in (302, 403))
 
         # 5 N\A? 6 is an integration test...
 
@@ -1177,7 +1177,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # Only for geoserver backend
             response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
-            self.assertEquals(response.status_code, 302)
+            self.assertTrue(response.status_code in (302, 403))
 
 
 class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):

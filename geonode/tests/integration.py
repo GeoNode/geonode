@@ -1055,7 +1055,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                      'prj_file': layer_prj,
                      'permissions': json.dumps(post_permissions)
                      })
-                self.assertEquals(response.status_code, 401)
+                self.assertTrue(response.status_code in (401, 403))
         finally:
             # Clean up and completely delete the layer
             try:
