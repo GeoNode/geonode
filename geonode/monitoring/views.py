@@ -126,7 +126,7 @@ class CheckTypeForm(_ValidFromToLastForm):
         """
         Returns tname-specific object instance from db.
 
-        Internally it uses geonode.contrib.monotoring.utils.TypeChecks
+        Internally it uses geonode.monotoring.utils.TypeChecks
         to resolve field's value to object.
 
         """

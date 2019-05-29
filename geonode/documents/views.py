@@ -229,7 +229,7 @@ class DocumentUploadView(CreateView):
 
         if getattr(settings, 'EXIF_ENABLED', False):
             try:
-                from geonode.contrib.exif.utils import exif_extract_metadata_doc
+                from geonode.documents.exif.utils import exif_extract_metadata_doc
                 exif_metadata = exif_extract_metadata_doc(self.object)
                 if exif_metadata:
                     date = exif_metadata.get('date', None)
