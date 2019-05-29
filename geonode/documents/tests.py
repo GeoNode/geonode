@@ -361,7 +361,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test non-admin access
         self.client.login(username="bobby", password="bob")
         response = self.client.get(reverse(view, args=(ids,)))
-        self.assertEquals(response.status_code, 401)
+        self.assertTrue(response.status_code in (401, 403))
         # test group change
         group = Group.objects.first()
         self.client.login(username='admin', password='admin')

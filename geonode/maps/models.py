@@ -172,8 +172,8 @@ class Map(ResourceBase, GXPMapBase):
         template_name = hookset.update_from_viewer(conf, context=context)
         conf = context['config']
 
-        self.title = conf['about']['title']
-        self.abstract = conf['about']['abstract']
+        self.title = conf['title'] if 'title' in conf else conf['about']['title']
+        self.abstract = conf['abstract'] if 'abstract' in conf else conf['about']['abstract']
 
         center = conf['map']['center'] if 'center' in conf['map'] else settings.DEFAULT_MAP_CENTER
         self.zoom = conf['map']['zoom'] if 'zoom' in conf['map'] else settings.DEFAULT_MAP_ZOOM
