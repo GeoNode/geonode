@@ -100,7 +100,8 @@ DATABASE_URL = os.getenv(
 # see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
 # detailed list of supported backends and notes.
 _db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
-_db_conf.update({'TIMEOUT': 60})
+if 'spatialite' in DATABASE_URL:
+    SPATIALITE_LIBRARY_PATH = 'mod_spatialite.so'
 DATABASES = {
     'default': _db_conf
 }
@@ -549,7 +550,7 @@ MIDDLEWARE_CLASSES = (
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 # Security stuff
-SESSION_EXPIRED_CONTROL_ENABLED = ast.literal_eval(os.environ.get('SESSION_EXPIRED_CONTROL_ENABLED', 'False'))
+SESSION_EXPIRED_CONTROL_ENABLED = ast.literal_eval(os.environ.get('SESSION_EXPIRED_CONTROL_ENABLED', 'True'))
 
 if SESSION_EXPIRED_CONTROL_ENABLED:
     # This middleware checks for ACCESS_TOKEN validity and if expired forces
@@ -740,13 +741,13 @@ GEOSERVER_PUBLIC_HOST = os.getenv(
 )
 
 GEOSERVER_PUBLIC_PORT = os.getenv(
-    'GEOSERVER_PUBLIC_PORT', 8000
+    'GEOSERVER_PUBLIC_PORT', 8080
 )
 
-_default_public_location = '{}://{}:{}/gs/'.format(
+_default_public_location = '{}://{}:{}/geoserver/'.format(
     GEOSERVER_PUBLIC_SCHEMA,
     GEOSERVER_PUBLIC_HOST,
-    GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else '{}://{}/gs/'.format(GEOSERVER_PUBLIC_SCHEMA, GEOSERVER_PUBLIC_HOST)
+    GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else '{}://{}/geoserver/'.format(GEOSERVER_PUBLIC_SCHEMA, GEOSERVER_PUBLIC_HOST)
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
     'GEOSERVER_PUBLIC_LOCATION', _default_public_location
@@ -807,8 +808,7 @@ USE_GEOSERVER = 'geonode.geoserver' in INSTALLED_APPS and OGC_SERVER['default'][
 # Uploader Settings
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 UPLOADER = {
-    'BACKEND': os.getenv('DEFAULT_BACKEND_UPLOADER', 'geonode.rest'),
-    # 'BACKEND': 'geonode.importer',
+    'BACKEND': os.getenv('DEFAULT_BACKEND_UPLOADER', 'geonode.importer'),
     'OPTIONS': {
         'TIME_ENABLED': ast.literal_eval(os.getenv('TIME_ENABLED', 'False')),
         'MOSAIC_ENABLED': ast.literal_eval(os.getenv('MOSAIC_ENABLED', 'False')),
