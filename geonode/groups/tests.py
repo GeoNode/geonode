@@ -674,7 +674,7 @@ class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
         # Test that the view is protected to non-admin users
         self.client.login(username='test', password='test')
         r = self.client.post(view_url)
-        self.assertTrue(r.status_code in (302, 403))
+        self.assertEqual(r.status_code, 403)
 
         # Test that the view is accessible to administrators
         self.client.login(username='admin', password='admin')
