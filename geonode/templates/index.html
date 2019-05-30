@@ -5,7 +5,7 @@
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
-{% block body_class %}{% trans "home" %}{% endblock %}
+{% block body_class %}home{% endblock %}
 
 {% block middle %}
   {{ block.super }}
@@ -40,9 +40,9 @@
       			<form id="search" action="{% url "search" %}" >
       				<span class="fa fa-search fa-3x"></span>
       				{% if HAYSTACK_SEARCH %}
-      				<input id="search_input" type="text" placeholder="Search" class="form-control" name="q">
+      				<input id="search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" name="q">
       				{% else %}
-      				<input id="search_input" type="text" placeholder="Search" class="form-control" name="title__icontains">
+      				<input id="search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" name="title__icontains">
       				{% endif %}
       			</form>
       		</div>
