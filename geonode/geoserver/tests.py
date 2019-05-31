@@ -1039,7 +1039,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
             # Test the importer backend without specifying a datastore or
             # corresponding database.
-            with self.assertRaises(ImproperlyConfigured):
+            with self.assertNotRaises(ImproperlyConfigured):
                 OGC_Servers_Handler(ogc_server_settings)['default']
 
         ogc_server_settings['default']['DATASTORE'] = 'geonode_imports'
