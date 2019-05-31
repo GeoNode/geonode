@@ -351,7 +351,7 @@ Let's externalize the ``GEOSERVER_DATA_DIR`` and ``logs``
 
   # Create the target folders
   sudo mkdir -p /opt/data
-  sudo chown -Rf geondoe:www-data /opt/data
+  sudo chown -Rf geonode:www-data /opt/data
   sudo chmod -Rf 775 /opt/data
   sudo mkdir -p /opt/data/logs
   sudo chown -Rf geonode:www-data /opt/data/logs
