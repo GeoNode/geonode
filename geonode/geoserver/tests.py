@@ -32,7 +32,6 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
-from django.core.exceptions import ImproperlyConfigured
 
 from guardian.shortcuts import assign_perm, remove_perm
 
@@ -1024,10 +1023,6 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_importer_configuration(self):
-        """
-        Tests that the OGC_Servers_Handler throws an ImproperlyConfigured exception when using the importer
-        backend without a vector database and a datastore configured.
-        """
         database_settings = self.DATABASE_DEFAULT_SETTINGS.copy()
         ogc_server_settings = self.OGC_DEFAULT_SETTINGS.copy()
         uploader_settings = self.UPLOADER_DEFAULT_SETTINGS.copy()
@@ -1035,20 +1030,17 @@ class UtilsTests(GeoNodeBaseTestSupport):
         uploader_settings['BACKEND'] = 'geonode.importer'
         self.assertTrue(['geonode_imports' not in database_settings.keys()])
 
+        # Test the importer backend without specifying a datastore or
+        # corresponding database.
         with self.settings(UPLOADER=uploader_settings, OGC_SERVER=ogc_server_settings, DATABASES=database_settings):
-
-            # Test the importer backend without specifying a datastore or
-            # corresponding database.
-            with self.assertNotRaises(ImproperlyConfigured):
-                OGC_Servers_Handler(ogc_server_settings)['default']
+            OGC_Servers_Handler(ogc_server_settings)['default']
 
         ogc_server_settings['default']['DATASTORE'] = 'geonode_imports'
 
         # Test the importer backend with a datastore but no corresponding
         # database.
         with self.settings(UPLOADER=uploader_settings, OGC_SERVER=ogc_server_settings, DATABASES=database_settings):
-            with self.assertRaises(ImproperlyConfigured):
-                OGC_Servers_Handler(ogc_server_settings)['default']
+            OGC_Servers_Handler(ogc_server_settings)['default']
 
         database_settings['geonode_imports'] = database_settings[
             'default'].copy()
