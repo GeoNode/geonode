@@ -1279,7 +1279,8 @@ class HttpClient(object):
             valid_uname_pw = base64.b64encode(
                 b"%s:%s" % (self.username, self.password)).decode("ascii")
             headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
-            if not connection.cursor().db.vendor in ('sqlite', 'sqlite3', 'spatialite',):
+            if self.username != 'admin' and \
+            connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
                 try:
                     _u = user or get_user_model().objects.get(username=self.username)
                     access_token = get_or_create_token(_u)
