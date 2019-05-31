@@ -1492,24 +1492,6 @@ class OGC_Servers_Handler(object):
         except KeyError:
             raise ServerDoesNotExist("The server %s doesn't exist" % alias)
 
-        datastore = server.get('DATASTORE')
-        uploader_backend = getattr(
-            settings,
-            'UPLOADER',
-            dict()).get(
-            'BACKEND',
-            'geonode.rest')
-
-        if uploader_backend == 'geonode.importer' and datastore and not settings.DATABASES.get(
-                datastore):
-            raise ImproperlyConfigured(
-                'The OGC_SERVER setting specifies a datastore '
-                'but no connection parameters are present.')
-
-        if uploader_backend == 'geonode.importer' and not datastore:
-            raise ImproperlyConfigured(
-                'The UPLOADER BACKEND is set to geonode.importer but no DATASTORE is specified.')
-
         if 'PRINTNG_ENABLED' in server:
             raise ImproperlyConfigured("The PRINTNG_ENABLED setting has been removed, use 'PRINT_NG_ENABLED' instead.")
 
