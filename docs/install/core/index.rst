@@ -26,7 +26,7 @@ Create User ``geonode`` **if not present**:
 
   ssh root@example.com
 
-  # Follow the prompts to set the new user'''s information.
+  # Follow the prompts to set the new user's information.
   # It is fine to accept the defaults to leave all of this information blank.
   sudo adduser geonode
   sudo usermod -aG sudo geonode
