@@ -1,9 +1,9 @@
 Creating a New Account
 ======================
 
-To take full advantage of all the GeoNode features you need an user account. Follow these step to create a new one.
+To take full advantage of all the GeoNode features you need a user account. Follow these step to create a new one.
 
-#. From any page in the web interface, you will see a :guilabel:`Register` link. Click that link, and the register form will appear
+#. From any page in the web interface, you will see a :guilabel:`Register` link. Click that link, and the registration form will appear
 
     .. note:: The registrations in GeoNode must be open, in case you don't see the register link then it's not possible to register unless the administrator of the site does that for you.
 
