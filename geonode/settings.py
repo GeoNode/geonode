@@ -325,7 +325,6 @@ INSTALLED_APPS = (
     'dj_pagination',
     'taggit',
     'treebeard',
-    'geoexplorer',
     'leaflet',
     'bootstrap3_datetime',
     'django_filters',
@@ -1278,22 +1277,131 @@ CACHES = {
 
 GEONODE_CATALOGUE_METADATA_XSL = ast.literal_eval(os.getenv('GEONODE_CATALOGUE_METADATA_XSL', 'True'))
 
-GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'  # DEPRECATED use HOOKSET instead
-GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
+# -- START Client Hooksets Setup
 
-# To enable the REACT based Client enable those
 """
-if 'geonode-client' not in INSTALLED_APPS:
-    INSTALLED_APPS += ('geonode-client', )
-GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'react'  # DEPRECATED use HOOKSET instead
-GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.ReactHookSet"
+To enable the GeoExt based Client:
+1. pip install django-geoexplorer==4.0.42
+2. add 'geoexplorer' to INSTALLED_APPS
+3. enable those:
 """
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
 
-# To enable the Leaflet based Client enable those
 """
-GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'  # DEPRECATED use HOOKSET instead
-GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
+To enable the REACT based Client:
+1. pip install pip install django-geonode-client==1.0.9
+2. enable those:
 """
+# INSTALLED_APPS += ('geonode-client', )
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'react'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.ReactHookSet"
+
+"""
+To enable the Leaflet based Client:
+1. enable those:
+"""
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'  # DEPRECATED use HOOKSET instead
+# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
+# CORS_ORIGIN_WHITELIST = (
+#     HOSTNAME
+# )
+
+"""
+To enable the MapStore2 REACT based Client:
+1. pip install pip install django-geonode-mapstore-client==1.0
+2. enable those:
+"""
+GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'mapstore'  # DEPRECATED use HOOKSET instead
+GEONODE_CLIENT_HOOKSET = "geonode_mapstore_client.hooksets.MapStoreHookSet"
+
+if 'geonode_mapstore_client' not in INSTALLED_APPS:
+    INSTALLED_APPS += (
+        'mapstore2_adapter',
+        'geonode_mapstore_client',)
+
+# This must be set to True in case you run the client in DEBUG mode with `npm run start`
+MAPSTORE_DEBUG = False
+
+def get_geonode_catalogue_service():
+    if PYCSW:
+        pycsw_config = PYCSW["CONFIGURATION"]
+        if pycsw_config:
+                pycsw_catalogue = {
+                    ("%s" % pycsw_config['metadata:main']['identification_title']): {
+                        "url": CATALOGUE['default']['URL'],
+                        "type": "csw",
+                        "title": pycsw_config['metadata:main']['identification_title'],
+                        "autoload": True
+                     }
+                }
+                return pycsw_catalogue
+    return None
+
+GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
+
+MAPSTORE_CATALOGUE_SERVICES = {
+    "Demo WMS Service": {
+        "url": "https://demo.geo-solutions.it/geoserver/wms",
+        "type": "wms",
+        "title": "Demo WMS Service",
+        "autoload": False
+     },
+    "Demo WMTS Service": {
+        "url": "https://demo.geo-solutions.it/geoserver/gwc/service/wmts",
+        "type": "wmts",
+        "title": "Demo WMTS Service",
+        "autoload": False
+    }
+}
+
+MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
+
+if GEONODE_CATALOGUE_SERVICE:
+    MAPSTORE_CATALOGUE_SERVICES[GEONODE_CATALOGUE_SERVICE.keys()[0]] = GEONODE_CATALOGUE_SERVICE[GEONODE_CATALOGUE_SERVICE.keys()[0]]
+    MAPSTORE_CATALOGUE_SELECTED_SERVICE = GEONODE_CATALOGUE_SERVICE.keys()[0]
+
+    DEFAULT_MS2_BACKGROUNDS = [
+        {
+            "type": "osm",
+            "title": "Open Street Map",
+            "name": "mapnik",
+            "source": "osm",
+            "group": "background",
+            "visibility": True
+        }, {
+            "type": "tileprovider",
+            "title": "OpenTopoMap",
+            "provider": "OpenTopoMap",
+            "name": "OpenTopoMap",
+            "source": "OpenTopoMap",
+            "group": "background",
+            "visibility": False
+        }, {
+            "type": "wms",
+            "title": "Sentinel-2 cloudless - https://s2maps.eu",
+            "format": "image/png8",
+            "id": "s2cloudless",
+            "name": "s2cloudless:s2cloudless",
+            "url": "https://maps.geo-solutions.it/geoserver/wms",
+            "group": "background",
+            "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
+            "visibility": False
+       }, {
+            "source": "ol",
+            "group": "background",
+            "id": "none",
+            "name": "empty",
+            "title": "Empty Background",
+            "type": "empty",
+            "visibility": False,
+            "args": ["Empty Background", {"visibility": False}]
+        }
+    ]
+
+MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
+
+# -- END Client Hooksets Setup
 
 SERVICE_UPDATE_INTERVAL = 0
 
