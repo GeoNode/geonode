@@ -3,7 +3,7 @@ Overview
 
 The following steps will guide you to a fresh setup of GeoNode. All guides will first install and configure the system to run it in ``DEBUG`` mode (also known as ``DEVELOPMENT`` mode) and then by configuring an HTTPD server to serve GeoNode through the standard ``HTTP`` (``80``) port.
 
-Those guides **are not** meant to be used on a production system. There will be dedicated chapters that will show you some *hints* to optimize GeoNode for a production-ready machine. In any case we strongly suggest to task an experienced *DevOp* or *System Administrator* before exposing your server to the ``WEB``.
+Those guides **are not** meant to be used on a production system. There will be dedicated chapters that will show you some *hints* to optimize GeoNode for a production-ready machine. In any case, we strongly suggest to task an experienced *DevOp* or *System Administrator* before exposing your server to the ``WEB``.
 
 Ubuntu 18.04
 ============
@@ -13,7 +13,7 @@ This part of the documentation describes the complete setup process for GeoNode 
 Install the dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-In this section, we are going to install all the basic packages and tools needed for a complete GeoNode installation. To follow this guide a basic knowledge about Ubuntu Server configuration and working with a shell is needed. This guide uses ``vim`` as the editor; fill free to use ``nano``, ``gedit`` or others.
+In this section, we are going to install all the basic packages and tools needed for a complete GeoNode installation. To follow this guide, a basic knowledge about Ubuntu Server configuration and working with a shell is required. This guide uses ``vim`` as the editor; fill free to use ``nano``, ``gedit`` or others.
 
 Create a Dedicated User
 .......................
@@ -32,7 +32,7 @@ Create User ``geonode`` **if not present**:
   sudo usermod -aG sudo geonode
 
   # make sure the newly created user is allowed to login by ssh
-  # (out of scope of this documentation) and switch to User geonode
+  # (out of the scope of this documentation) and switch to User geonode
   su geonode
 
 Packages Installation
@@ -121,11 +121,11 @@ This command will run both GeoNode and GeoServer locally after having prepared t
 #. GeoNode on ``http://localhost:8000/``
 #. GeoServer on ``http://localhost:8080/geoserver/``
 
-This modality is very useful to debug issues and/or develop new features, but it cannot be used on a production system.
+This modality is beneficial to debug issues and/or develop new features, but it cannot be used on a production system.
 
 .. code-block:: shell
 
-  # Prepare the GeoNode SQLite databse (the first time only)
+  # Prepare the GeoNode SQLite database (the first time only)
   paver setup
   paver sync
 
@@ -137,7 +137,7 @@ This modality is very useful to debug issues and/or develop new features, but it
   
     paver reset_hard
   
-.. warning:: This will blown up completely your ``local_settings``, delete the SQLlite database and remove the GeoServer data dir.
+.. warning:: This will blow up completely your ``local_settings``, delete the SQLlite database and remove the GeoServer data dir.
 
 .. code-block:: shell
 
@@ -160,7 +160,7 @@ Database Setup
 
   Be sure you have successfully completed all the steps of the section ``Install the dependencies``.
 
-In this section we are going to setup users and databases for GeoNode in PostgreSQL.
+In this section, we are going to setup users and databases for GeoNode in PostgreSQL.
 
 Install and Configure the PostgreSQL Database System
 ....................................................
@@ -182,7 +182,7 @@ We now must create two databases, ``geonode`` and ``geonode_data``, belonging to
 Databases and Permissions
 .........................
 
-First create the geonode user. GeoNode is going to use this user to access the database
+First, create the geonode user. GeoNode is going to use this user to access the database
 
 .. code-block:: shell
 
@@ -235,7 +235,7 @@ Restart PostgreSQL to make the change effective.
   
   sudo service postgresql restart
   
-PostgreSQL is now ready. To test the configuration try to connect to the ``geonode`` database as ``geonode`` role.
+PostgreSQL is now ready. To test the configuration, try to connect to the ``geonode`` database as ``geonode`` role.
 
 .. code-block:: shell
 
@@ -256,16 +256,16 @@ When running the command ``paver start``, as we have seen before, the script run
     cd /opt/geonode/
     paver stop
 
-This is not the optimal way to run ``GeoServer``. This is a foundamental component of ``GeoNode`` and we must be sure it is running on a stable and reliable manner.
+This is not the optimal way to run ``GeoServer``. This is a fundamental component of ``GeoNode`` and we must be sure it is running on a stable and reliable manner.
 
-In this section we are going to install the ``Apache Tomcat 8`` Servlet Java container, which will be started by default on the internal port ``8080``.
+In this section, we are going to install the ``Apache Tomcat 8`` Servlet Java container, which will be started by default on the internal port ``8080``.
 
-We will also perform several optimizations in order to:
+We will also perform several optimizations to:
 
 1. Correctly setup the Java VM Options, like the available heap memory and the garbage collector options.
 2. Externalize the ``GeoServer`` and ``GeoWebcache`` catalogs in order to allow further updates without the risk of deleting our datasets.
 
-.. note:: This is still a basic setup of those components. More details will be provided on sections of the documentation concerning the hardening of the system in a prodcution environment. Nevertheless you will need to tweak a bit those settings accordingly with your current system. As an instance, if your machine does not have enough memory, you will need to lower down the initial amount of available heap memory. **Warnings** and **notes** will be placed below the statements that will require your attention.
+.. note:: This is still a basic setup of those components. More details will be provided on sections of the documentation concerning the hardening of the system in a production environment. Nevertheless, you will need to tweak a bit those settings accordingly with your current system. As an instance, if your machine does not have enough memory, you will need to lower down the initial amount of available heap memory. **Warnings** and **notes** will be placed below the statements that will require your attention.
 
 .. code-block:: shell
 
@@ -410,9 +410,9 @@ Let's now configure the ``JAVA_OPTS``, i.e. the parameters to run the Servlet Co
 
   Those options could be updated or changed manually at any time, accordingly to your needs.
   
-.. warning:: The default options we are going to add to the Servlet Container, assume you are able to reserve at least ``4GB`` of ``RAM`` to ``GeoServer`` (see the option ``-Xmx4096m``). You must be sure your machine has enough memory to run both ``GeoServer`` and ``GeoNode``, which in this case means at least ``4GB`` for ``GeoServer`` plus at least ``2GB`` for ``GeoNode``. A total of at least ``6GB`` of ``RAM`` available on your machine. If you don't have enough ``RAM`` available, you can lower down the values ``-Xms512m -Xmx4096m``. Consider that with less ``RAM`` available, the performances of your services will be highly impacted.
+.. warning:: The default options we are going to add to the Servlet Container, assume you can reserve at least ``4GB`` of ``RAM`` to ``GeoServer`` (see the option ``-Xmx4096m``). You must be sure your machine has enough memory to run both ``GeoServer`` and ``GeoNode``, which in this case means at least ``4GB`` for ``GeoServer`` plus at least ``2GB`` for ``GeoNode``. A total of at least ``6GB`` of ``RAM`` available on your machine. If you don't have enough ``RAM`` available, you can lower down the values ``-Xms512m -Xmx4096m``. Consider that with less ``RAM`` available, the performances of your services will be highly impacted.
 
-In order to make the changes effective, you'll need to restart the Servler Container.
+In order to make the changes effective, you'll need to restart the Servlet Container.
 
 .. code-block:: shell
 
@@ -459,13 +459,13 @@ Your ``GeoServer`` should be up and running at
 
   http://localhost:8080/geoserver/
 
-.. warning:: In case of errors or the file ``geoserver.log`` is not created, check the Catalina logs in order to try to understand what's happened
+.. warning:: In case of errors or the file ``geoserver.log`` is not created, check the Catalina logs in order to try to understand what's happened.
 
   .. code-block:: shell
   
     sudo less /usr/local/apache-tomcat8/logs/catalina.out
 
-It is possible to test the new running ``GeoServer`` with the ``GeoNode`` paver service (``DEBUG`` mode). In order to do that
+It is possible to test the new running ``GeoServer`` with the ``GeoNode`` paver service (``DEBUG`` mode). To do that
 
 .. code-block:: shell
 
@@ -473,12 +473,12 @@ It is possible to test the new running ``GeoServer`` with the ``GeoNode`` paver 
   cd /opt/geonode/
   paver start_django
 
-.. warning:: The ``paver reset`` command from now on **won't** clean up ``GeoServer`` and the its catalog anymore. Therefore, every data uploaded during those tests will remain on ``GeoServer`` even if ``GeoNode`` will be resetted.
+.. warning:: The ``paver reset`` command from now on **won't** clean up ``GeoServer`` and its catalog anymore. Therefore, every data uploaded during those tests will remain on ``GeoServer`` even if ``GeoNode`` will be reset.
 
 Web Server
 ^^^^^^^^^^
 
-Until now we have seen how to start ``GeoNode`` in ``DEBUG`` mode from the command line, through the ``paver`` utilities. This is not of course the best way to start it. Moreover you will need a dedicated ``HTTPD`` server running on port ``80`` if you would like to expose your server to the world.
+Until now we have seen how to start ``GeoNode`` in ``DEBUG`` mode from the command line, through the ``paver`` utilities. This is of course not the best way to start it. Moreover you will need a dedicated ``HTTPD`` server running on port ``80`` if you would like to expose your server to the world.
 
 In this section we will see:
 
@@ -490,7 +490,7 @@ In this section we will see:
 Install and configure ``NGINX``
 ...............................
 
-.. warning:: Before executing the next steps, be sure ``GeoNode`` paver services have been stopped. In order to do that
+.. warning:: Before executing the next steps, be sure ``GeoNode`` paver services have been stopped. To do that
 
   .. code-block:: shell
   
@@ -817,7 +817,7 @@ Update the ``settings`` in order to update ``GeoNode`` and ``GeoServer`` service
 
 .. warning:: Before exposing your services to the Internet, **make sure** your system is **hardened** and **secure enough**. See the specific documentation section for more details.
 
-Let's say you want to run your services on a public IP or domain, e.g. ``www.example.org``. You will need to sligthly update your services in order to reflect the new server name.
+Let's say you want to run your services on a public IP or domain, e.g. ``www.example.org``. You will need to slightly update your services in order to reflect the new server name.
 
 In particular the steps to do are:
 
@@ -874,7 +874,7 @@ Install and enable HTTPS secured connection through the Let's Encrypt provider
   sudo add-apt-repository ppa:certbot/certbot
   sudo apt update -y; sudo apt install python-certbot-nginx -y
 
-  # Reload NGINX config and make sure the firewall deny access to HTTP
+  # Reload NGINX config and make sure the firewall denies access to HTTP
   sudo systemctl reload nginx
   sudo ufw allow 'Nginx Full'
   sudo ufw delete allow 'Nginx HTTP'
