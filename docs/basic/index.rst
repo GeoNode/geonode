@@ -1,6 +1,14 @@
 GeoNode Settings
 ================
 
+	:ref:`settings`
+
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+    developers/settings
+
 Customise the Look and Feel
 ===========================
 
