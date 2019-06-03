@@ -291,9 +291,9 @@
                 <form id="search" action="{% url "search" %}" >
                   <span class="fa fa-search"></span>
                   {% if HAYSTACK_SEARCH %}
-                  <input id="search_input" type="text" placeholder="Search" name="q">
+                  <input id="search_input" type="text" placeholder="{% trans 'Search' %}" name="q">
                   {% else %}
-                  <input id="search_input" type="text" placeholder="Search" name="title__icontains">
+                  <input id="search_input" type="text" placeholder="{% trans 'Search' %}" name="title__icontains">
                   {% endif %}
                 </form>
               </div>

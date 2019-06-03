@@ -717,7 +717,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # would work only on PostGIS layers
 
             # test change_layer_style
-            url = 'http://localhost:8000/gs/rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
+            url = 'http://localhost:8080/geoserver/rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
             sld = """<?xml version="1.0" encoding="UTF-8"?>
         <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld"
         xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
