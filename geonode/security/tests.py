@@ -766,6 +766,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 }
             }
             layer.set_permissions(perm_spec)
+            layer.save()
             response = self.client.get(url)
             self.assertEquals(response.status_code, 200)
             response = self.client.put(url, sld, content_type='application/vnd.ogc.sld+xml')
