@@ -949,10 +949,9 @@ In this section we are going to list the passages needed to:
 1. Install the Docker and ``docker-compose`` packages on a Ubuntu host
 2. Deploy a vanilla ``GeoNode 2.10`` with ``Docker``
 
-  a. Override the ENV variables to deploy on ``localhost``
-  b. Override the ENV variables to deploy on a public IP or Domain
-  c. Access the ``django4geonode`` Docker image to update the code-base and/or change internal settings
-  d. Access the ``geoserver4geonode`` Docker image to update the GeoServer version
+  a. Override the ``ENV`` variables to deploy on a ``public IP`` or ``domain``
+  b. Access the ``django4geonode`` Docker image to update the code-base and/or change internal settings
+  c. Access the ``geoserver4geonode`` Docker image to update the GeoServer version
 
 3. Passages to completely get rid of old ``Docker`` images and volumes (prune completely the environment)
 
@@ -990,7 +989,7 @@ Logout and login again on shell and then execute:
   sudo docker run -it hello-world
 
 Deploy a vanilla GeoNode 2.10 with Docker
-.........................................
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Clone the Project
 
@@ -1070,8 +1069,187 @@ With Docker it is also possible to enter the images shell and follow the logs ex
 
 To exit just hit ``CTRL+C`` and ``exit`` to return to the host.
 
-Getting the list of running images and purging the system
-.........................................................
+Override the ``ENV`` variables to deploy on a ``public IP`` or ``domain``
+.........................................................................
+
+If you would like to start the containers on a ``public IP`` or ``domain``, let's say ``www.example.org``, you can
+
+.. code-block:: shell
+
+  cd /opt/geonode
+  
+  # Stop the Containers (if running)
+  sudo docker-compose stop
+
+Edit the ``ENV`` override file in order to deploy on ``www.example.org``
+
+.. code-block:: shell
+
+  # Make a copy of docker-compose.override.localhost.yml
+  cp docker-compose.override.localhost.yml docker-compose.override.example-org.yml
+    
+Replace everywhere ``localhost`` with ``www.example.org``
+
+.. code-block:: shell
+
+  vim docker-compose.override.example-org.yml
+  
+.. code-block:: shell
+
+  # e.g.: :%s/localhost/www.example.org/g
+  
+  version: '2.2'
+  services:
+
+    django:
+      build: .
+      # Loading the app is defined here to allow for
+      # autoreload on changes it is mounted on top of the
+      # old copy that docker added when creating the image
+      volumes:
+        - '.:/usr/src/app'
+      environment:
+        - DEBUG=False
+        - GEONODE_LB_HOST_IP=www.example.org
+        - GEONODE_LB_PORT=80
+        - SITEURL=http://www.example.org/
+        - ALLOWED_HOSTS=['www.example.org', ]
+        - GEOSERVER_PUBLIC_LOCATION=http://www.example.org/geoserver/
+        - GEOSERVER_WEB_UI_LOCATION=http://www.example.org/geoserver/
+
+    celery:
+      build: .
+      volumes:
+        - '.:/usr/src/app'
+      environment:
+        - DEBUG=False
+        - GEONODE_LB_HOST_IP=www.example.org
+        - GEONODE_LB_PORT=80
+        - SITEURL=http://www.example.org/
+        - ALLOWED_HOSTS=['www.example.org', ]
+        - GEOSERVER_PUBLIC_LOCATION=http://www.example.org/geoserver/
+        - GEOSERVER_WEB_UI_LOCATION=http://www.example.org/geoserver/
+
+    geoserver:
+      environment:
+        - GEONODE_LB_HOST_IP=www.example.org
+        - GEONODE_LB_PORT=80
+    #    - NGINX_BASE_URL=
+
+.. note:: It is possible to override here even more variables to customize the GeoNode instance. See the ``GeoNode Settings`` section in order to get a list of the available options.
+
+Run the containers in daemon mode
+
+.. code-block:: shell
+
+  sudo docker-compose -f docker-compose.yml -f docker-compose.override.example-org.yml up -d
+
+Access the ``django4geonode`` Docker image to update the code-base and/or change internal settings
+..................................................................................................
+
+Access the container ``bash``
+
+.. code-block:: shell
+
+  sudo docker exec -i -t django4geonode bash
+
+You will be logged into the GeoNode instance as ``root``. The folder is ``/usr/src/app/`` where the GeoNode project is cloned. Here you will find the GeoNode source code as in the GitHub repository.
+
+.. note:: The machine is empty by default, no ``Ubuntu`` packages installed. If you need to install text editors or something you have to run the following commands:
+
+  .. code-block:: shell
+  
+    apt update
+    apt install <package name>
+
+    e.g.:
+       apt install vim
+
+Update the templates or the ``Django models``. Once in the ``bash`` you can edit the templates or the Django models / classes. From here you can run any normal ``Django management command``.
+
+Whenever you change a ``template/CSS/Javascript`` remember to run later:
+
+.. code-block:: shell
+
+  python manage.py collectstatic
+
+in order to update the files into the ``statics`` Docker volume.
+
+.. warning:: This is an external volume and it won't be updated by a simple restart. You have to be careful and keep it aligned with your changes.
+
+Whenever you need to change some settings or environment variable, the easiest thing to do is to:
+
+.. code-block:: shell
+
+  # Stop the container
+  sudo docker-compose stop
+  
+  # Restart the container in Daemon mode
+  sudo docker-compose -f docker-compose.yml -f docker-compose.override.<whatever>.yml up -d
+ 
+Whenever you change the model remember to run later from the image ``bash``:
+
+.. code-block:: shell
+
+  python manage.py makemigrations
+  python manage.py migrate
+
+Access the ``geoserver4geonode`` Docker image to update the GeoServer version
+.............................................................................
+
+This procedure allows you to access the GeoServer container.
+
+The concept is exactly the same as above, log into the container ``bash``.
+
+.. code-block:: shell
+
+  # Access the container bash
+  sudo docker exec -it geoserver4geonode bash
+
+You will be logged into the GeoServer instance as ``root``.
+
+GeoServer is deployed on a Apache Tomcat instance which can be found here
+
+.. code-block:: shell
+        
+  cd /usr/local/tomcat/webapps/geoserver
+
+.. warning:: The GeoServer ``DATA_DIR`` is deployed on an external Docker Volume ``geonode_gsdatadir``. This data dir won’t be affected by changes to the GeoServer application, since it is ``external``.
+
+Update the GeoServer instance inside the GeoServer Container
+
+..warning :: The old configuration will be kept since it is ``external``
+
+.. code-block:: shell
+
+	sudo docker exec -i -t geoserver4geonode bash
+
+.. code-block:: shell
+	
+  cd /usr/local/tomcat/
+  wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-2.14.x.war
+  mkdir tmp/geoserver
+  cd tmp/geoserver/
+  unzip /usr/local/tomcat/geoserver-2.14.x.war
+  rm -Rf data
+  cp -Rf /usr/local/tomcat/webapps/geoserver/data/ .
+  cd /usr/local/tomcat/
+  mv webapps/geoserver/ .
+  mv tmp/geoserver/ webapps/
+  exit
+
+.. code-block:: shell
+
+  sudo docker restart geoserver4geonode
+
+.. warning::
+
+  GeoNode 2.8.1 is **NOT** compatible with GeoServer > 2.13.x
+  
+  GeoNode 2.8.2 / 2.10.x are **NOT** compatible with GeoServer < 2.14.x
+
+Passages to completely get rid of old ``Docker`` images and volumes (prune completely the environment)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note:: For more details on Docker commands, please refers to the official Docker documentation.
 
@@ -1127,3 +1305,4 @@ If you want to remove a ``volume`` also
 
   # Remove all docker volumes
   sudo docker volume ls -qf dangling=true | xargs -r sudo docker volume rm
+  
