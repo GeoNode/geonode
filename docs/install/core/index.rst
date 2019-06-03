@@ -1057,7 +1057,7 @@ You should be able to see several initialization messages. Once the image is up 
   
 To exit just hit ``CTRL+C``.
 
-This message means that the GeoNode images have bee started. Browsing to ``http://localhost/`` will show the GeoNode home page. You should be able to successfully log with the default admin user (``admin``\``admin``) and start using it right away.
+This message means that the GeoNode images have bee started. Browsing to ``http://localhost/`` will show the GeoNode home page. You should be able to successfully log with the default admin user (``admin`` / ``admin``) and start using it right away.
 
 With Docker it is also possible to enter the images shell and follow the logs exactly the same as you deployed it on a physical host. To achieve this run
 
