@@ -1142,7 +1142,7 @@ Run the containers in daemon mode
 
 .. code-block:: shell
 
-  sudo docker-compose -f docker-compose.yml -f docker-compose.override.example-org.yml up -d
+  sudo docker-compose -f docker-compose.yml -f docker-compose.override.example-org.yml up --build -d
 
 Access the ``django4geonode`` Docker image to update the code-base and/or change internal settings
 ..................................................................................................
@@ -1305,4 +1305,3 @@ If you want to remove a ``volume`` also
 
   # Remove all docker volumes
   sudo docker volume ls -qf dangling=true | xargs -r sudo docker volume rm
-  
