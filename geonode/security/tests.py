@@ -755,7 +755,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # user without change_layer_style cannot edit it
             self.assertTrue(self.client.login(username='bobby', password='bob'))
             response = self.client.put(url, sld, content_type='application/vnd.ogc.sld+xml')
-            self.assertEquals(response.status_code, 401)
+            self.assertEquals(response.status_code, 404)
 
             # user with change_layer_style can edit it
             assign_perm('change_layer_style', bobby, layer)
@@ -766,8 +766,6 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 }
             }
             layer.set_permissions(perm_spec)
-            response = self.client.get(url)
-            self.assertEquals(response.status_code, 200)
             response = self.client.put(url, sld, content_type='application/vnd.ogc.sld+xml')
         finally:
             try:
