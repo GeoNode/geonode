@@ -46,10 +46,9 @@ First, we are going to install all the **system packages** needed for the GeoNod
   sudo apt install -y python-gdal gdal-bin
   sudo apt install -y python-pip python-dev python-virtualenv
   sudo apt install -y libxml2 libxml2-dev gettext
-  sudo apt install -y libxslt1-dev libjpeg-dev libpng-dev libpq-dev libgdal-dev
+  sudo apt install -y libxslt1-dev libjpeg-dev libpng-dev libpq-dev libgdal-dev libgdal20 
   sudo apt install -y software-properties-common build-essential
-  sudo apt install -y git gcc zlib1g-dev libgeos-dev libjpeg-dev libproj-dev
-  sudo apt install -y gdal-bin libgdal20 libgdal-dev
+  sudo apt install -y git unzip gcc zlib1g-dev libgeos-dev libproj-dev
   sudo apt install -y sqlite3 spatialite-bin libsqlite3-mod-spatialite
 
   sudo apt update -y
@@ -203,11 +202,6 @@ Next let's create PostGIS extensions
 
 .. code-block:: shell
 
-  sudo -u postgres psql -d geonode -c 'CREATE EXTENSION postgis;'
-  sudo -u postgres psql -d geonode -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
-  sudo -u postgres psql -d geonode -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
-  sudo -u postgres psql -d geonode -c 'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO geonode;'
-
   sudo -u postgres psql -d geonode_data -c 'CREATE EXTENSION postgis;'
   sudo -u postgres psql -d geonode_data -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
   sudo -u postgres psql -d geonode_data -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
@@ -272,7 +266,7 @@ We will also perform several optimizations to:
   # Install Openjdk
   sudo -i apt update
   sudo apt install openjdk-8-jdk-headless default-jdk-headless -y
-  sudo update-java-alternatives --set /usr/lib/jvm/java-1.8.0-openjdk-amd64
+  sudo update-java-alternatives --jre-headless --jre --set java-1.8.0-openjdk-amd64
 
   # Check Java version
   java -version
