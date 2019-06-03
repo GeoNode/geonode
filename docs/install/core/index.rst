@@ -1024,7 +1024,7 @@ Start the Docker instances on ``localhost``
 
   In this case you can of course skip the ``pull`` step to download the ``pre-built`` images.
 
-.. note:: To startup the ``daemonized images``, which means they will keep running even if you ``logout`` from the server or close the ``shell``, just add the ``-d`` option to the ``up`` command, e.g.:
+.. note:: To startup the ``daemonized images``, which means they will keep running even if you ``log out`` from the server or close the ``shell``, just add the ``-d`` option to the ``up`` command, e.g.:
 
   .. code-block:: shell
     
@@ -1075,7 +1075,7 @@ Getting the list of running images and purging the system
 
 .. note:: For more details on Docker commands, please refers to the official Docker documentation.
 
-It is possible to ask to Docker which images are currently running
+It is possible to ask Docker which images are currently running
 
 .. code-block:: shell
 
@@ -1102,7 +1102,7 @@ Force kill all containers by running
         
   sudo docker kill $(docker ps -q)
 
-To cleanup all the images, without deleting the static volumes (i.e. the ``DB`` and the ``GeoServer catalog``)
+To clean up all the images, without deleting the static volumes (i.e. the ``DB`` and the ``GeoServer catalog``)
 
 .. code-block:: shell
 
