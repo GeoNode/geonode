@@ -953,7 +953,7 @@ In this section we are going to list the passages needed to:
   b. Access the ``django4geonode`` Docker image to update the code-base and/or change internal settings
   c. Access the ``geoserver4geonode`` Docker image to update the GeoServer version
 
-3. Passages to completely get rid of old ``Docker`` images and volumes (prune completely the environment)
+3. Passages to completely get rid of old ``Docker`` images and volumes (prune the environment completely)
 
 Install the Docker and ``docker-compose`` packages on a Ubuntu host
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1165,7 +1165,7 @@ You will be logged into the GeoNode instance as ``root``. The folder is ``/usr/s
     e.g.:
        apt install vim
 
-Update the templates or the ``Django models``. Once in the ``bash`` you can edit the templates or the Django models / classes. From here you can run any normal ``Django management command``.
+Update the templates or the ``Django models``. Once in the ``bash`` you can edit the templates or the Django models/classes. From here you can run any standard ``Django management command``.
 
 Whenever you change a ``template/CSS/Javascript`` remember to run later:
 
@@ -1175,7 +1175,7 @@ Whenever you change a ``template/CSS/Javascript`` remember to run later:
 
 in order to update the files into the ``statics`` Docker volume.
 
-.. warning:: This is an external volume and it won't be updated by a simple restart. You have to be careful and keep it aligned with your changes.
+.. warning:: This is an external volume, and a simple restart won't update it. You have to be careful and keep it aligned with your changes.
 
 Whenever you need to change some settings or environment variable, the easiest thing to do is to:
 
@@ -1187,7 +1187,7 @@ Whenever you need to change some settings or environment variable, the easiest t
   # Restart the container in Daemon mode
   sudo docker-compose -f docker-compose.yml -f docker-compose.override.<whatever>.yml up -d
  
-Whenever you change the model remember to run later from the image ``bash``:
+Whenever you change the model, remember to run later from the image ``bash``:
 
 .. code-block:: shell
 
@@ -1208,13 +1208,13 @@ The concept is exactly the same as above, log into the container ``bash``.
 
 You will be logged into the GeoServer instance as ``root``.
 
-GeoServer is deployed on a Apache Tomcat instance which can be found here
+GeoServer is deployed on an Apache Tomcat instance which can be found here
 
 .. code-block:: shell
         
   cd /usr/local/tomcat/webapps/geoserver
 
-.. warning:: The GeoServer ``DATA_DIR`` is deployed on an external Docker Volume ``geonode_gsdatadir``. This data dir won’t be affected by changes to the GeoServer application, since it is ``external``.
+.. warning:: The GeoServer ``DATA_DIR`` is deployed on an external Docker Volume ``geonode_gsdatadir``. This data dir won’t be affected by changes to the GeoServer application since it is ``external``.
 
 Update the GeoServer instance inside the GeoServer Container
 
@@ -1248,8 +1248,8 @@ Update the GeoServer instance inside the GeoServer Container
   
   GeoNode 2.8.2 / 2.10.x are **NOT** compatible with GeoServer < 2.14.x
 
-Passages to completely get rid of old ``Docker`` images and volumes (prune completely the environment)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Passages to completely get rid of old ``Docker`` images and volumes (the environment completely)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note:: For more details on Docker commands, please refers to the official Docker documentation.
 
