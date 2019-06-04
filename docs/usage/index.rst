@@ -1,7 +1,7 @@
 .. toctree::
     :maxdepth: 2
 
-    user_profile/index
+    accounts_user_profile/index
     users_groups/index
     data/index
     managing_documents/index
