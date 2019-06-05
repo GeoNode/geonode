@@ -30,6 +30,13 @@ Try to set some filter and see how the resulting data list changes accordingly. 
 
      *Search filter by EXTENT*
 
+Data can be ordered by date, name and popularity.
+
+.. figure:: img/ordering_data.png
+     :align: center
+
+     *Ordering Data*
+
 The GeoNode welcome page offers you many other options to find resources.
 
 * The *Search for data* tool allows you to search data by name.
