@@ -1145,14 +1145,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
             storage.save(upload_path, ContentFile(image))
 
-            url_path = os.path.join(
-                settings.MEDIA_URL,
-                upload_to,
-                filename).replace(
-                '\\',
-                '/')
-            site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-            url = urljoin(site_url, url_path)
+            url = storage.url(upload_path)
 
             # should only have one 'Thumbnail' link
             obj, created = Link.objects.get_or_create(resource=self,
