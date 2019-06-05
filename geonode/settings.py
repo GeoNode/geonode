@@ -628,8 +628,6 @@ AUTH_EXEMPT_URLS = (
     '%s/api/adminRole' % FORCE_SCRIPT_NAME,
     '%s/api/users' % FORCE_SCRIPT_NAME,
     '%s/api/layers' % FORCE_SCRIPT_NAME,
-    '%s/mps_index' % FORCE_SCRIPT_NAME,
-    '%s/mps-hub' % FORCE_SCRIPT_NAME,
 )
 
 ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID', '-1')
