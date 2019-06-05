@@ -21,7 +21,7 @@ When you trigger a search you are brought to the *Search* page which shows you t
      *The Search page*
 
 | This page contains a wealth of options for customizing a search for various information on GeoNode. This search form allows for much more fine-tuned searches than the simple search box is available at the top of every page.
-| It is possible to search data by Text, Categories, Type, Keywords, Owners, Date, Regions or Extent.
+| It is possible to search for data by Text, Categories, Type, Keywords, Owners, Date, Regions or Extent.
 
 Try to set some filter and see how the resulting data list changes accordingly. An interesting type of filter is *EXTENT*: you can apply a spatial filter by moving or zooming a map within a box as shown the picture below.
 
@@ -39,7 +39,7 @@ Data can be ordered by date, name and popularity.
 
 The GeoNode welcome page offers you many other options to find resources.
 
-* The *Search for data* tool allows you to search data by name.
+* The *Search for data* tool allows you to search for data by name.
 
   .. figure:: img/welcome_search_data.png
       :align: center
@@ -47,14 +47,14 @@ The GeoNode welcome page offers you many other options to find resources.
       *Searching for data*
 
   The *Search* page, which you will be redirected to, will have the TEXT filter already set with the name you have typed in the search box (see the picture below).
-  If you want to reach directly the *Search* page, without any input text, you can click the :guilabel:`Advanced Search` link.
+  If you want to reach the *Search page* directly, without any input text, you can click the :guilabel:`Advanced Search` link.
 
   .. figure:: img/search_for_data_result.png
      :align: center
 
      *Results of a searching made by name*
 
-* In the *Home* page section shown below are listed all the categories available in the GeoNode instance you are using. You can search data by category by clicking on it.
+* In the *Home* page section shown below are listed all the categories available in the GeoNode instance you are using. You can search for data by category by clicking on it.
 
   .. figure:: img/search_datasets_by_category.png
      :align: center
@@ -76,7 +76,7 @@ The GeoNode welcome page offers you many other options to find resources.
 
     *Featured Datasets*
 
-  For each data type GeoNode makes available a special *Search* page, the next paragraphs will explain that in depth.
+  For each data type GeoNode makes available an individual *Search* page, the next paragraphs will explain that in depth.
   For *Users* see :ref:`user-info`.
 
 Documents
