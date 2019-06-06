@@ -79,6 +79,8 @@ The GeoNode welcome page offers you many other options to find resources.
   For each data type GeoNode makes available an individual *Search* page, the next paragraphs will explain that in depth.
   For *Users* see :ref:`user-info`.
 
+.. _finding-documents:
+
 Documents
 ---------
 

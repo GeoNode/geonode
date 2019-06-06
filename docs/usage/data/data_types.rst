@@ -25,6 +25,8 @@ The :guilabel:`Maps` menu let you to manage maps.
 
     *Maps menu*
 
+.. _document-data-type:
+
 Documents
 ---------
 
