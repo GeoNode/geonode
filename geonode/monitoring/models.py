@@ -78,7 +78,7 @@ class Host(models.Model):
     """
     name = models.CharField(
         max_length=255,
-        unique=True,
+        unique=False,
         blank=False,
         null=False)
     ip = models.GenericIPAddressField(null=False, blank=False)

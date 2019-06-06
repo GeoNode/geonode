@@ -1253,6 +1253,7 @@ def check_ogc_backend(backend_package):
 
 
 class HttpClient(object):
+
     def __init__(self):
         self.timeout = 5
         self.retries = 5
@@ -1275,12 +1276,9 @@ class HttpClient(object):
             self.password = ogc_server_settings['PASSWORD'] if 'PASSWORD' in ogc_server_settings else 'geoserver'
 
     def request(self, url, method='GET', data=None, headers={}, stream=False, timeout=None, user=None):
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
-            valid_uname_pw = base64.b64encode(
-                b"%s:%s" % (self.username, self.password)).decode("ascii")
-            headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
-            if self.username != 'admin' and \
-            connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
+        if (user or self.username != 'admin') and \
+        check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
+            if connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
                 try:
                     _u = user or get_user_model().objects.get(username=self.username)
                     access_token = get_or_create_token(_u)
@@ -1290,6 +1288,10 @@ class HttpClient(object):
                     tb = traceback.format_exc()
                     logger.debug(tb)
                     pass
+            else:
+                valid_uname_pw = base64.b64encode(
+                    b"%s:%s" % (self.username, self.password)).decode("ascii")
+                headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
 
         response = None
         content = None
@@ -1508,6 +1510,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                           width)
 
         for ext, name, mime, wms_url in links:
+            Link.objects.filter(resource=instance.resourcebase_ptr, name=ugettext(name)).delete()
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        name=ugettext(name),
                                        defaults=dict(
@@ -1526,6 +1529,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             for ext, name, mime, wfs_url in links:
                 if mime == 'SHAPE-ZIP':
                     name = 'Zipped Shapefile'
+                Link.objects.filter(resource=instance.resourcebase_ptr, url=wfs_url).delete()
                 Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                            url=wfs_url,
                                            defaults=dict(
@@ -1543,6 +1547,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                               srid)
 
         for ext, name, mime, wcs_url in links:
+            Link.objects.filter(resource=instance.resourcebase_ptr, url=wcs_url).delete()
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        url=wcs_url,
                                        defaults=dict(
@@ -1584,6 +1589,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         html_link_url = '%s%s' % (
             site_url, instance.get_absolute_url())
 
+        Link.objects.filter(resource=instance.resourcebase_ptr, url=html_link_url).delete()
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=html_link_url,
                                    defaults=dict(
@@ -1605,6 +1611,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 instance.alternate + '&STYLE=' + style.name + \
                 '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
+            Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).delete()
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        url=legend_url,
                                        defaults=dict(
@@ -1620,6 +1627,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         ogc_wms_path = 'ows'
         ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
         ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
+        Link.objects.filter(resource=instance.resourcebase_ptr, url=ogc_wms_url).delete()
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=ogc_wms_url,
                                    defaults=dict(
@@ -1636,6 +1644,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             ogc_wfs_path = 'ows'
             ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
             ogc_wfs_name = 'OGC WFS: %s Service' % instance.workspace
+            Link.objects.filter(resource=instance.resourcebase_ptr, url=ogc_wfs_url).delete()
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        url=ogc_wfs_url,
                                        defaults=dict(
@@ -1652,6 +1661,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             ogc_wcs_path = 'ows'
             ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)
             ogc_wcs_name = 'OGC WCS: %s Service' % instance.workspace
+            Link.objects.filter(resource=instance.resourcebase_ptr, url=ogc_wcs_url).delete()
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        url=ogc_wcs_url,
                                        defaults=dict(
