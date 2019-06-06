@@ -157,7 +157,7 @@ API_LIMIT_PER_PAGE
 ASYNC_SIGNALS
 -------------
 
-    Default: ``True``
+    Default: ``False``
 
     Env: ``ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE``
 
