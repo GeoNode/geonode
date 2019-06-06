@@ -1510,8 +1510,6 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                           width)
 
         for ext, name, mime, wms_url in links:
-            if Link.objects.filter(resource=instance.resourcebase_ptr, name=ugettext(name)).count() > 1:
-                Link.objects.filter(resource=instance.resourcebase_ptr, name=ugettext(name)).delete()
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        name=ugettext(name),
                                        defaults=dict(
@@ -1530,8 +1528,6 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             for ext, name, mime, wfs_url in links:
                 if mime == 'SHAPE-ZIP':
                     name = 'Zipped Shapefile'
-                if Link.objects.filter(resource=instance.resourcebase_ptr, url=wfs_url).count() > 1:
-                    Link.objects.filter(resource=instance.resourcebase_ptr, url=wfs_url).delete()
                 Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                            url=wfs_url,
                                            defaults=dict(
@@ -1549,8 +1545,6 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                               srid)
 
         for ext, name, mime, wcs_url in links:
-            if Link.objects.filter(resource=instance.resourcebase_ptr, url=wcs_url).count() > 1:
-                Link.objects.filter(resource=instance.resourcebase_ptr, url=wcs_url).delete()
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        url=wcs_url,
                                        defaults=dict(
@@ -1632,13 +1626,13 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         ogc_wms_path = 'ows'
         ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
         ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
-        if Link.objects.filter(resource=instance.resourcebase_ptr, url=ogc_wms_url).count() > 1:
-            Link.objects.filter(resource=instance.resourcebase_ptr, url=ogc_wms_url).delete()
+        if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).count() > 1:
+            Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).delete()
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=ogc_wms_url,
+                                   name=ogc_wms_name,
                                    defaults=dict(
                                        extension='html',
-                                       name=ogc_wms_name,
                                        url=ogc_wms_url,
                                        mime='text/html',
                                        link_type='OGC:WMS',
@@ -1650,13 +1644,13 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             ogc_wfs_path = 'ows'
             ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
             ogc_wfs_name = 'OGC WFS: %s Service' % instance.workspace
-            if Link.objects.filter(resource=instance.resourcebase_ptr, url=ogc_wfs_url).count() > 1:
-                Link.objects.filter(resource=instance.resourcebase_ptr, url=ogc_wfs_url).delete()
+            if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url).count() > 1:
+                Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url).delete()
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        url=ogc_wfs_url,
+                                       name=ogc_wfs_name,
                                        defaults=dict(
                                            extension='html',
-                                           name=ogc_wfs_name,
                                            url=ogc_wfs_url,
                                            mime='text/html',
                                            link_type='OGC:WFS',
@@ -1668,13 +1662,13 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             ogc_wcs_path = 'ows'
             ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)
             ogc_wcs_name = 'OGC WCS: %s Service' % instance.workspace
-            if Link.objects.filter(resource=instance.resourcebase_ptr, url=ogc_wcs_url).count() > 1:
-                Link.objects.filter(resource=instance.resourcebase_ptr, url=ogc_wcs_url).delete()
+            if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url).count() > 1:
+                Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url).delete()
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        url=ogc_wcs_url,
+                                       name=ogc_wcs_name,
                                        defaults=dict(
                                            extension='html',
-                                           name=ogc_wcs_name,
                                            url=ogc_wcs_url,
                                            mime='text/html',
                                            link_type='OGC:WCS',
