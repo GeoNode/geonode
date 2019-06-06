@@ -1099,16 +1099,6 @@ API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '200'))
 API_INCLUDE_REGIONS_COUNT = ast.literal_eval(
     os.getenv('API_INCLUDE_REGIONS_COUNT', 'False'))
 
-if not DEBUG_STATIC:
-    # if not DEBUG_STATIC, use minified css and js
-    LEAFLET_CONFIG['PLUGINS'] = {
-        'leaflet-plugins': {
-            'js': 'lib/js/leaflet-plugins.min.js',
-            'css': 'lib/css/leaflet-plugins.min.css',
-            'auto-include': True,
-        }
-    }
-
 # option to enable/disable resource unpublishing for administrators
 RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
 
@@ -1350,6 +1340,16 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'leaflet':
         'SRID': 3857,
         'RESET_VIEW': False
     }
+
+    if not DEBUG_STATIC:
+        # if not DEBUG_STATIC, use minified css and js
+        LEAFLET_CONFIG['PLUGINS'] = {
+            'leaflet-plugins': {
+                'js': 'lib/js/leaflet-plugins.min.js',
+                'css': 'lib/css/leaflet-plugins.min.css',
+                'auto-include': True,
+            }
+        }
 
     CORS_ORIGIN_WHITELIST = (
         HOSTNAME
