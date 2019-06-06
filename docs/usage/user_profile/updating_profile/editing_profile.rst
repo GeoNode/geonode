@@ -1,2 +1,0 @@
-Editing Profile Information
-===========================
