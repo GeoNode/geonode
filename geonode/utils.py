@@ -1468,24 +1468,33 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
-        from geonode.geoserver.helpers import ogc_server_settings
+        from geonode.geoserver.helpers import ogc_server_settings, gs_catalog
 
         # Compute parameters for the new links
-        try:
-            bbox = instance.gs_resource.native_bbox
-        except BaseException:
-            bbox = instance.bbox
-        dx = float(bbox[1]) - float(bbox[0])
-        dy = float(bbox[3]) - float(bbox[2])
-
-        dataAspect = 1 if dy == 0 else dx / dy
-
         height = 550
-        width = int(height * dataAspect)
+        width = 550
+        bbox = None
+        srid = instance.srid if instance.srid else getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:4326')
+        try:
+            gs_resource = gs_catalog.get_resource(
+                instance.name,
+                workspace=instance.workspace)
+            if not gs_resource:
+                gs_resource = gs_catalog.get_resource(instance.name)
+            bbox = gs_resource.native_bbox
+
+            dx = float(bbox[1]) - float(bbox[0])
+            dy = float(bbox[3]) - float(bbox[2])
+            dataAspect = 1 if dy == 0 else dx / dy
+            width = int(height * dataAspect)
+
+            srid = bbox[4]
+            bbox = ','.join(str(x) for x in [bbox[0], bbox[2], bbox[1], bbox[3]])
+        except BaseException as e:
+            logger.exception(e)
 
         # Parse Layer BBOX and SRID
-        srid = instance.srid if instance.srid else getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:4326')
-        if srid and instance.bbox_x0:
+        if not bbox and srid and instance.bbox_x0:
             bbox = ','.join(str(x) for x in [instance.bbox_x0, instance.bbox_y0,
                                              instance.bbox_x1, instance.bbox_y1])
 
