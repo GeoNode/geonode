@@ -931,61 +931,12 @@ PYCSW = {
     }
 }
 
-# GeoNode javascript client configuration
-
-# default map projection
-# Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
-DEFAULT_MAP_CRS = os.environ.get('DEFAULT_MAP_CRS', "EPSG:3857")
-
-DEFAULT_LAYER_FORMAT = os.environ.get('DEFAULT_LAYER_FORMAT', "image/png")
-
-# Where should newly created maps be focused?
-DEFAULT_MAP_CENTER = (os.environ.get('DEFAULT_MAP_CENTER_X', 0), os.environ.get('DEFAULT_MAP_CENTER_Y', 0))
-
-# How tightly zoomed should newly created maps be?
-# 0 = entire world;
-# maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
-DEFAULT_MAP_ZOOM = int(os.environ.get('DEFAULT_MAP_ZOOM', 0))
-
-MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
-BING_API_KEY = os.environ.get('BING_API_KEY', None)
-GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
-
 # handle timestamps like 2017-05-30 16:04:00.719 UTC
 if django.VERSION[0] == 1 and django.VERSION[1] >= 9:
     _DATETIME_INPUT_FORMATS = ['%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z']
 else:
     _DATETIME_INPUT_FORMATS = ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
 DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS + _DATETIME_INPUT_FORMATS
-
-MAP_BASELAYERS = [{
-    "source": {"ptype": "gxp_olsource"},
-    "type": "OpenLayers.Layer",
-    "args": ["No background"],
-    "name": "background",
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
-},
-    # {
-    #     "source": {"ptype": "gxp_olsource"},
-    #     "type": "OpenLayers.Layer.XYZ",
-    #     "title": "TEST TILE",
-    #     "args": ["TEST_TILE", "http://test_tiles/tiles/${z}/${x}/${y}.png"],
-    #     "name": "background",
-    #     "attribution": "&copy; TEST TILE",
-    #     "visibility": False,
-    #     "fixed": True,
-    #     "group":"background"
-    # },
-    {
-    "source": {"ptype": "gxp_osmsource"},
-    "type": "OpenLayers.Layer.OSM",
-    "name": "mapnik",
-    "visibility": True,
-    "fixed": True,
-    "group": "background"
-}]
 
 DISPLAY_SOCIAL = ast.literal_eval(os.getenv('DISPLAY_SOCIAL', 'True'))
 DISPLAY_COMMENTS = ast.literal_eval(os.getenv('DISPLAY_COMMENTS', 'True'))
@@ -1148,59 +1099,6 @@ API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '200'))
 API_INCLUDE_REGIONS_COUNT = ast.literal_eval(
     os.getenv('API_INCLUDE_REGIONS_COUNT', 'False'))
 
-LEAFLET_CONFIG = {
-    'TILES': [
-        # Find tiles at:
-        # http://leaflet-extras.github.io/leaflet-providers/preview/
-
-        # Stamen toner lite.
-        ('Watercolor',
-         'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
-         'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
-         &mdash; Map data &copy; \
-         <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-         <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
-         CC-BY-SA</a>'),
-        ('Toner Lite',
-         'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
-         'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
-         &mdash; Map data &copy; \
-         <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-         <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
-         CC-BY-SA</a>'),
-    ],
-    'PLUGINS': {
-        'esri-leaflet': {
-            'js': 'lib/js/esri-leaflet.js',
-            'auto-include': True,
-        },
-        'leaflet-fullscreen': {
-            'css': 'lib/css/leaflet.fullscreen.css',
-            'js': 'lib/js/Leaflet.fullscreen.min.js',
-            'auto-include': True,
-        },
-        'leaflet-opacity': {
-            'css': 'lib/css/Control.Opacity.css',
-            'js': 'lib/js/Control.Opacity.js',
-            'auto-include': True,
-        },
-        'leaflet-navbar': {
-            'css': 'lib/css/Leaflet.NavBar.css',
-            'js': 'lib/js/Leaflet.NavBar.js',
-            'auto-include': True,
-        },
-        'leaflet-measure': {
-            'css': 'lib/css/leaflet-measure.css',
-            'js': 'lib/js/leaflet-measure.js',
-            'auto-include': True,
-        },
-    },
-    'SRID': 3857,
-    'RESET_VIEW': False
-}
-
 if not DEBUG_STATIC:
     # if not DEBUG_STATIC, use minified css and js
     LEAFLET_CONFIG['PLUGINS'] = {
@@ -1275,7 +1173,31 @@ CACHES = {
 
 GEONODE_CATALOGUE_METADATA_XSL = ast.literal_eval(os.getenv('GEONODE_CATALOGUE_METADATA_XSL', 'True'))
 
+
+
 # -- START Client Hooksets Setup
+
+# GeoNode javascript client configuration
+
+# default map projection
+# Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
+DEFAULT_MAP_CRS = os.environ.get('DEFAULT_MAP_CRS', "EPSG:3857")
+
+DEFAULT_LAYER_FORMAT = os.environ.get('DEFAULT_LAYER_FORMAT', "image/png")
+
+# Where should newly created maps be focused?
+DEFAULT_MAP_CENTER = (os.environ.get('DEFAULT_MAP_CENTER_X', 0), os.environ.get('DEFAULT_MAP_CENTER_Y', 0))
+
+# How tightly zoomed should newly created maps be?
+# 0 = entire world;
+# maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
+DEFAULT_MAP_ZOOM = int(os.environ.get('DEFAULT_MAP_ZOOM', 0))
+
+MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
+BING_API_KEY = os.environ.get('BING_API_KEY', None)
+GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
+
+GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv('GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore')
 
 """
 To enable the GeoExt based Client:
@@ -1284,120 +1206,248 @@ To enable the GeoExt based Client:
 3. enable those:
 """
 # GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
+if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'geoext':
+    GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode.client.hooksets.GeoExtHookSet')
+
+    if 'geoexplorer' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geoexplorer', )
+
+    MAP_BASELAYERS = [{
+        "source": {"ptype": "gxp_olsource"},
+        "type": "OpenLayers.Layer",
+        "args": ["No background"],
+        "name": "background",
+        "visibility": False,
+        "fixed": True,
+        "group":"background"
+    },
+    # {
+    #     "source": {"ptype": "gxp_olsource"},
+    #     "type": "OpenLayers.Layer.XYZ",
+    #     "title": "TEST TILE",
+    #     "args": ["TEST_TILE", "http://test_tiles/tiles/${z}/${x}/${y}.png"],
+    #     "name": "background",
+    #     "attribution": "&copy; TEST TILE",
+    #     "visibility": False,
+    #     "fixed": True,
+    #     "group":"background"
+    # },
+    {
+        "source": {"ptype": "gxp_osmsource"},
+        "type": "OpenLayers.Layer.OSM",
+        "name": "mapnik",
+        "visibility": True,
+        "fixed": True,
+        "group": "background"
+    }]
+
+    if BING_API_KEY:
+        BASEMAP = {
+            'source': {
+                'ptype': 'gxp_bingsource',
+                'apiKey': BING_API_KEY
+            },
+            'name': 'AerialWithLabels',
+            'fixed': True,
+            'visibility': True,
+            'group': 'background'
+        }
+        MAP_BASELAYERS.append(BASEMAP)
+
+
+    if GOOGLE_API_KEY:
+        BASEMAP = {
+            'source': {
+                 'ptype': 'gxp_googlesource',
+                 'apiKey': GOOGLE_API_KEY
+            },
+            'name': 'SATELLITE',
+            'fixed': True,
+            'visibility': False,
+            'group': 'background'
+        }
+        MAP_BASELAYERS.append(BASEMAP)
+
+    if 'geonode.geoserver' in INSTALLED_APPS:
+        LOCAL_GEOSERVER = {
+            "source": {
+                "ptype": "gxp_wmscsource",
+                "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+                "restUrl": "/gs/rest"
+            }
+        }
+        baselayers = MAP_BASELAYERS
+        MAP_BASELAYERS = [LOCAL_GEOSERVER]
+        MAP_BASELAYERS.extend(baselayers)
 
 """
 To enable the REACT based Client:
 1. pip install pip install django-geonode-client==1.0.9
 2. enable those:
 """
-# INSTALLED_APPS += ('geonode-client', )
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'react'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.ReactHookSet"
+
+if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'react':
+    GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode.client.hooksets.ReactHookSet')
+    if 'geonode-client' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode-client', )
 
 """
 To enable the Leaflet based Client:
 1. enable those:
 """
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
-# CORS_ORIGIN_WHITELIST = (
-#     HOSTNAME
-# )
+if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'leaflet':
+    GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode.client.hooksets.LeafletHookSet')
+
+    LEAFLET_CONFIG = {
+        'TILES': [
+            # Find tiles at:
+            # http://leaflet-extras.github.io/leaflet-providers/preview/
+
+            # Stamen toner lite.
+            ('Watercolor',
+             'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
+             'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+             <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+             &mdash; Map data &copy; \
+             <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+             <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+             CC-BY-SA</a>'),
+            ('Toner Lite',
+             'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
+             'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+             <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+             &mdash; Map data &copy; \
+             <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+             <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+             CC-BY-SA</a>'),
+        ],
+        'PLUGINS': {
+            'esri-leaflet': {
+                'js': 'lib/js/esri-leaflet.js',
+                'auto-include': True,
+            },
+            'leaflet-fullscreen': {
+                'css': 'lib/css/leaflet.fullscreen.css',
+                'js': 'lib/js/Leaflet.fullscreen.min.js',
+                'auto-include': True,
+            },
+            'leaflet-opacity': {
+                'css': 'lib/css/Control.Opacity.css',
+                'js': 'lib/js/Control.Opacity.js',
+                'auto-include': True,
+            },
+            'leaflet-navbar': {
+                'css': 'lib/css/Leaflet.NavBar.css',
+                'js': 'lib/js/Leaflet.NavBar.js',
+                'auto-include': True,
+            },
+            'leaflet-measure': {
+                'css': 'lib/css/leaflet-measure.css',
+                'js': 'lib/js/leaflet-measure.js',
+                'auto-include': True,
+            },
+        },
+        'SRID': 3857,
+        'RESET_VIEW': False
+    }
+
+    CORS_ORIGIN_WHITELIST = (
+        HOSTNAME
+    )
 
 """
 To enable the MapStore2 REACT based Client:
 1. pip install pip install django-geonode-mapstore-client==1.0
 2. enable those:
 """
-GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'mapstore'  # DEPRECATED use HOOKSET instead
-GEONODE_CLIENT_HOOKSET = "geonode_mapstore_client.hooksets.MapStoreHookSet"
+if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
+    GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode_mapstore_client.hooksets.MapStoreHookSet')
 
-if 'geonode_mapstore_client' not in INSTALLED_APPS:
-    INSTALLED_APPS += (
-        'mapstore2_adapter',
-        'geonode_mapstore_client',)
+    if 'geonode_mapstore_client' not in INSTALLED_APPS:
+        INSTALLED_APPS += (
+            'mapstore2_adapter',
+            'geonode_mapstore_client',)
 
-# This must be set to True in case you run the client in DEBUG mode with `npm run start`
-MAPSTORE_DEBUG = False
+    # This must be set to True in case you run the client in DEBUG mode with `npm run start`
+    MAPSTORE_DEBUG = False
 
-def get_geonode_catalogue_service():
-    if PYCSW:
-        pycsw_config = PYCSW["CONFIGURATION"]
-        if pycsw_config:
-                pycsw_catalogue = {
-                    ("%s" % pycsw_config['metadata:main']['identification_title']): {
-                        "url": CATALOGUE['default']['URL'],
-                        "type": "csw",
-                        "title": pycsw_config['metadata:main']['identification_title'],
-                        "autoload": True
-                     }
-                }
-                return pycsw_catalogue
-    return None
+    def get_geonode_catalogue_service():
+        if PYCSW:
+            pycsw_config = PYCSW["CONFIGURATION"]
+            if pycsw_config:
+                    pycsw_catalogue = {
+                        ("%s" % pycsw_config['metadata:main']['identification_title']): {
+                            "url": CATALOGUE['default']['URL'],
+                            "type": "csw",
+                            "title": pycsw_config['metadata:main']['identification_title'],
+                            "autoload": True
+                         }
+                    }
+                    return pycsw_catalogue
+        return None
 
-GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
+    GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
 
-MAPSTORE_CATALOGUE_SERVICES = {
-    "Demo WMS Service": {
-        "url": "https://demo.geo-solutions.it/geoserver/wms",
-        "type": "wms",
-        "title": "Demo WMS Service",
-        "autoload": False
-     },
-    "Demo WMTS Service": {
-        "url": "https://demo.geo-solutions.it/geoserver/gwc/service/wmts",
-        "type": "wmts",
-        "title": "Demo WMTS Service",
-        "autoload": False
-    }
-}
-
-MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
-
-if GEONODE_CATALOGUE_SERVICE:
-    MAPSTORE_CATALOGUE_SERVICES[GEONODE_CATALOGUE_SERVICE.keys()[0]] = GEONODE_CATALOGUE_SERVICE[GEONODE_CATALOGUE_SERVICE.keys()[0]]
-    MAPSTORE_CATALOGUE_SELECTED_SERVICE = GEONODE_CATALOGUE_SERVICE.keys()[0]
-
-    DEFAULT_MS2_BACKGROUNDS = [
-        {
-            "type": "osm",
-            "title": "Open Street Map",
-            "name": "mapnik",
-            "source": "osm",
-            "group": "background",
-            "visibility": True
-        }, {
-            "type": "tileprovider",
-            "title": "OpenTopoMap",
-            "provider": "OpenTopoMap",
-            "name": "OpenTopoMap",
-            "source": "OpenTopoMap",
-            "group": "background",
-            "visibility": False
-        }, {
+    MAPSTORE_CATALOGUE_SERVICES = {
+        "Demo WMS Service": {
+            "url": "https://demo.geo-solutions.it/geoserver/wms",
             "type": "wms",
-            "title": "Sentinel-2 cloudless - https://s2maps.eu",
-            "format": "image/png8",
-            "id": "s2cloudless",
-            "name": "s2cloudless:s2cloudless",
-            "url": "https://maps.geo-solutions.it/geoserver/wms",
-            "group": "background",
-            "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
-            "visibility": False
-       }, {
-            "source": "ol",
-            "group": "background",
-            "id": "none",
-            "name": "empty",
-            "title": "Empty Background",
-            "type": "empty",
-            "visibility": False,
-            "args": ["Empty Background", {"visibility": False}]
+            "title": "Demo WMS Service",
+            "autoload": False
+         },
+        "Demo WMTS Service": {
+            "url": "https://demo.geo-solutions.it/geoserver/gwc/service/wmts",
+            "type": "wmts",
+            "title": "Demo WMTS Service",
+            "autoload": False
         }
-    ]
+    }
 
-MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
+    MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
+
+    if GEONODE_CATALOGUE_SERVICE:
+        MAPSTORE_CATALOGUE_SERVICES[GEONODE_CATALOGUE_SERVICE.keys()[0]] = GEONODE_CATALOGUE_SERVICE[GEONODE_CATALOGUE_SERVICE.keys()[0]]
+        MAPSTORE_CATALOGUE_SELECTED_SERVICE = GEONODE_CATALOGUE_SERVICE.keys()[0]
+
+        DEFAULT_MS2_BACKGROUNDS = [
+            {
+                "type": "osm",
+                "title": "Open Street Map",
+                "name": "mapnik",
+                "source": "osm",
+                "group": "background",
+                "visibility": True
+            }, {
+                "type": "tileprovider",
+                "title": "OpenTopoMap",
+                "provider": "OpenTopoMap",
+                "name": "OpenTopoMap",
+                "source": "OpenTopoMap",
+                "group": "background",
+                "visibility": False
+            }, {
+                "type": "wms",
+                "title": "Sentinel-2 cloudless - https://s2maps.eu",
+                "format": "image/png8",
+                "id": "s2cloudless",
+                "name": "s2cloudless:s2cloudless",
+                "url": "https://maps.geo-solutions.it/geoserver/wms",
+                "group": "background",
+                "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
+                "visibility": False
+           }, {
+                "source": "ol",
+                "group": "background",
+                "id": "none",
+                "name": "empty",
+                "title": "Empty Background",
+                "type": "empty",
+                "visibility": False,
+                "args": ["Empty Background", {"visibility": False}]
+            }
+        ]
+
+    MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
 
 # -- END Client Hooksets Setup
 
