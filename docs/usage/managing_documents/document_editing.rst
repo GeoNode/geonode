@@ -3,7 +3,7 @@
 Document Editing
 ================
 
-The :ref:`document-info` page makes available useful tools for the document editing. Click on the :guilabel:`Edit Document` button to see what you can do to make changes. The picture below shows you the *Editing Panel* that will appear on the screen.
+The :ref:`document-info` page makes available useful tools for document editing. Click on the :guilabel:`Edit Document` button to see what you can do to make changes. The picture below shows you the *Editing Panel* that will appear on the screen.
 
 .. figure:: img/document_editing_panel.png
     :align: center
@@ -24,7 +24,7 @@ The *Editing Panel* shows you also some links for editing the metadata and the t
 Setting the Document Thumbnail
 ------------------------------
 
-From the *Editing Panel* it is also possible to *Set the Thumbnail* of the document. Click on :guilabel:`Set` to open the *Thumbnail Uploading* page and chose the image that will illustrate your document. You can either drag and drop it in the *Drop files here* box or selecting from your folders by clicking on *Choose Files*. Once this done, click on the red button :guilabel:`Upload files`. If the thumbnail has been successfully uploaded you can see it by coming back to the document list. Click on the :guilabel:`Explore Documents` button to check that.
+From the *Editing Panel*, it is also possible to *Set the Thumbnail* of the document. Click on :guilabel:`Set` to open the *Thumbnail Uploading* page and chose the image that will illustrate your document. You can either drag and drop it in the *Drop files here* box or selecting from your folders by clicking on *Choose Files*. Once this is done, click on the red button :guilabel:`Upload files`. If the thumbnail has been successfully uploaded you can see it by coming back to the document list. Click on the :guilabel:`Explore Documents` button to check that.
 
 .. figure:: img/document_uploading_thumbnail.png
     :align: center
@@ -41,7 +41,7 @@ If no errors occur the following message will be shown.
 Editing the Document Metadata
 -----------------------------
 
-You can edit the metadata of your document through the buttons shown in the red rectangle in picture below.
+You can edit the metadata of your document through the buttons shown in the red rectangle in below picture.
 
 .. figure:: img/document_metadata_editing_buttons.png
     :align: center
