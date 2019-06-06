@@ -25,7 +25,7 @@ import logging
 import traceback
 
 from pyproj import transform, Proj
-from urlparse import urljoin, urlsplit
+from urlparse import urlsplit
 
 from django.db import models
 from django.core import serializers
@@ -1133,7 +1133,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
-        upload_to = 'thumbs/'
         upload_path = os.path.join('thumbs/', filename)
 
         try:
@@ -1143,9 +1142,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 # will create a new file with a unique name
                 storage.delete(os.path.join(upload_path))
 
-            storage.save(upload_path, ContentFile(image))
-
-            url = storage.url(upload_path)
+            actual_name = storage.save(upload_path, ContentFile(image))
+            url = storage.url(actual_name)
 
             # should only have one 'Thumbnail' link
             obj, created = Link.objects.get_or_create(resource=self,
