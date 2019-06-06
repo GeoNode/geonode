@@ -1,7 +1,7 @@
 .. _document-editing:
 
-Editing a Document
-==================
+Document Editing
+================
 
 The :ref:`document-info` page makes available useful tools for the document editing. Click on the :guilabel:`Edit Document` button to see what you can do to make changes. The picture below shows you the *Editing Panel* that will appear on the screen.
 
