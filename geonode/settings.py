@@ -1189,7 +1189,23 @@ GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv('GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore')
 
-MAP_BASELAYERS = []
+MAP_BASELAYERS = [{
+        "source": {"ptype": "gxp_olsource"},
+        "type": "OpenLayers.Layer",
+        "args": ["No background"],
+        "name": "background",
+        "visibility": False,
+        "fixed": True,
+        "group":"background"
+    },
+    {
+        "source": {"ptype": "gxp_osmsource"},
+        "type": "OpenLayers.Layer.OSM",
+        "name": "mapnik",
+        "visibility": True,
+        "fixed": True,
+        "group": "background"
+    }]
 
 """
 To enable the GeoExt based Client:
@@ -1204,15 +1220,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'geoext':
     if 'geoexplorer' not in INSTALLED_APPS:
         INSTALLED_APPS += ('geoexplorer', )
 
-    MAP_BASELAYERS = [{
-        "source": {"ptype": "gxp_olsource"},
-        "type": "OpenLayers.Layer",
-        "args": ["No background"],
-        "name": "background",
-        "visibility": False,
-        "fixed": True,
-        "group":"background"
-    },
+    # MAP_BASELAYERS += [
     # {
     #     "source": {"ptype": "gxp_olsource"},
     #     "type": "OpenLayers.Layer.XYZ",
@@ -1223,15 +1231,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'geoext':
     #     "visibility": False,
     #     "fixed": True,
     #     "group":"background"
-    # },
-    {
-        "source": {"ptype": "gxp_osmsource"},
-        "type": "OpenLayers.Layer.OSM",
-        "name": "mapnik",
-        "visibility": True,
-        "fixed": True,
-        "group": "background"
-    }]
+    # }]
 
     if BING_API_KEY:
         BASEMAP = {
@@ -1255,7 +1255,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'geoext':
             },
             'name': 'SATELLITE',
             'fixed': True,
-            'visibility': False,
+            'visibility': True,
             'group': 'background'
         }
         MAP_BASELAYERS.append(BASEMAP)
