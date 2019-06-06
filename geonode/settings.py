@@ -1189,6 +1189,8 @@ GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv('GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore')
 
+MAP_BASELAYERS = []
+
 """
 To enable the GeoExt based Client:
 1. pip install django-geoexplorer==4.0.42
@@ -1258,7 +1260,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'geoext':
         }
         MAP_BASELAYERS.append(BASEMAP)
 
-    if 'geonode.geoserver' in INSTALLED_APPS:
+    if USE_GEOSERVER:
         LOCAL_GEOSERVER = {
             "source": {
                 "ptype": "gxp_wmscsource",
