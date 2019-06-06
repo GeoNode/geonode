@@ -1,7 +1,0 @@
-.. _centos_basic_tutorial:
-
-=====================
-CentOS Basic Tutorial
-=====================
-
-This section is still under construction... please be patient!
