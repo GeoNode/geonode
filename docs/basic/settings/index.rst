@@ -52,7 +52,7 @@ ACCOUNT_EMAIL_REQUIRED
     Default: ``True``
 
     This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_
-    which ontrols whether the user is required to provide an e-mail address upon registration.
+    which controls whether the user is required to provide an e-mail address upon registration.
 
 ACCOUNT_EMAIL_VERIFICATION
 --------------------------
@@ -112,7 +112,7 @@ ADMIN_MODERATE_UPLOADS
 
     Until a resource is in ``PENDING APPROVAL`` state, only the superusers, owner and group members can access it, unless specific edit permissions have been set for other users or groups.
 
-    A ``Group Manager`` **can* approve the resource, but he cannot publish it whenever the setting ``RESOURCE_PUBLISHING`` is set to ``True``.
+    A ``Group Manager`` *can* approve the resource, but he cannot publish it whenever the setting ``RESOURCE_PUBLISHING`` is set to ``True``.
     Otherwise, if ``RESOURCE_PUBLISHING`` is set to ``False``, the resource becomes accessible as soon as it is approved.
 
 AGON_RATINGS_CATEGORY_CHOICES
@@ -184,22 +184,38 @@ AUTH_EXEMPT_URLS
 AUTO_GENERATE_AVATAR_SIZES
 --------------------------
 
-    TBD
+    Default: ``20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240``
+
+    An iterable of integers representing the sizes of avatars to generate on upload. This can save rendering time later on if you pre-generate the
+resized versions.
 
 AWS_ACCESS_KEY_ID
 -----------------
 
-    TBD
+    Default: ``''``
+
+    Env: ``AWS_ACCESS_KEY_ID``
+
+    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`_.
+    Your Amazon Web Services access key, as a string.
 
 AWS_BUCKET_NAME
 ---------------
 
-    TBD
+    Default: ``''``
+
+    Env: ``S3_BUCKET_NAME``
+
+    The name of the S3 bucket GeoNode will pull static and/or media files from. Set through the environment variable S3_BUCKET_NAME.
+    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`_.
 
 AWS_QUERYSTRING_AUTH
 --------------------
 
-    TBD
+    Default: ``False``
+
+    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`_.
+    Setting AWS_QUERYSTRING_AUTH to False to remove query parameter authentication from generated URLs. This can be useful if your S3 buckets are public.
 
 AWS_S3_BUCKET_DOMAIN
 --------------------
@@ -209,12 +225,18 @@ AWS_S3_BUCKET_DOMAIN
 AWS_SECRET_ACCESS_KEY
 ---------------------
 
-    TBD
+    Default: ``''``
+
+    Env: ``AWS_SECRET_ACCESS_KEY``
+
+    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`_.
+    Your Amazon Web Services secret access key, as a string.
 
 AWS_STORAGE_BUCKET_NAME
 -----------------------
 
-    TBD
+    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`_.
+    Your Amazon Web Services storage bucket name, as a string.
 
 B
 =
@@ -222,17 +244,19 @@ B
 BING_API_KEY
 ------------
 
-    TBD
+    Specific settings for Bing map API provider. Set this variable to your BING Map Key value
 
 BROKER_HEARTBEAT
 ----------------
 
-    TBD
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    
 
 BROKER_TRANSPORT_OPTIONS
 ------------------------
 
-    TBD
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+
 
 C
 =
@@ -268,17 +292,23 @@ CATALOGUE
 CELERYD_POOL_RESTARTS
 ---------------------
 
-    TBD
+    Default: ``True``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_ACCEPT_CONTENT
 ---------------------
 
-    TBD
+    Defaul: ``['json']``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_ACKS_LATE
 ----------------
 
-    TBD
+    Default: ``True``
+
+    This is a `celery setting <http://docs.celeryproject.org/en/3.1/configuration.html#celery-acks-late>`_.
 
 CELERY_BEAT_SCHEDULE
 --------------------
@@ -288,32 +318,44 @@ CELERY_BEAT_SCHEDULE
 CELERY_DISABLE_RATE_LIMITS
 --------------------------
 
-    TBD
+    Default: ``False``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_ENABLE_UTC
 -----------------
 
-    TBD
+    Default: ``True``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_MAX_CACHED_RESULTS
 -------------------------
 
-    TBD
+    Default: ``32768``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_MESSAGE_COMPRESSION
 --------------------------
 
-    TBD
+    Default: ``gzip``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_RESULT_PERSISTENT
 ------------------------
 
-    TBD
+    Default: ``False``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_RESULT_SERIALIZER
 ------------------------
 
-    TBD
+    Default: ``json``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_SEND_TASK_EVENTS
 -----------------------
@@ -328,17 +370,23 @@ CELERY_SEND_TASK_SENT_EVENT
 CELERY_TASK_ALWAYS_EAGER
 ------------------------
 
-    TBD
+    Default: ``False if ASYNC_SIGNALS else True``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_TASK_CREATE_MISSING_QUEUES
 ---------------------------------
 
-    TBD
+    Default: ``True``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_TASK_IGNORE_RESULT
 -------------------------
 
-    TBD
+    Default: ``True``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_TASK_QUEUES
 ------------------
@@ -348,22 +396,32 @@ CELERY_TASK_QUEUES
 CELERY_TASK_RESULT_EXPIRES
 --------------------------
 
-    TBD
+    Default: ``43200``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_TASK_SERIALIZER
 ----------------------
 
-    TBD
+    Default: ``json``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_TIMEZONE
 ---------------
 
-    TBD
+    Default: ``UTC``
+
+    Env: `TIME_ZONE``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_TRACK_STARTED
 --------------------
 
-    TBD
+    Default: ``True``
+
+    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
 
 CELERY_WORKER_DISABLE_RATE_LIMITS
 ---------------------------------
@@ -387,7 +445,9 @@ CLIENT_RESULTS_LIMIT
 CREATE_LAYER
 ------------
 
-    TBD
+    Default: ``False``
+
+    Enable the create layer plugin.
 
 CKAN_ORIGINS
 ------------
@@ -433,27 +493,29 @@ DEBUG_STATIC
 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
 -------------------------------------
 
-    TBD
+    Default: ``True``
+
+    Whether the uplaoded resources should downloadable by default.
 
 DEFAULT_ANONYMOUS_VIEW_PERMISSION
 ---------------------------------
 
-    TBD
+    Default: ``True``
+
+    Whether the uplaoded resources should be public by default.
 
 DEFAULT_LAYER_FORMAT
 --------------------
 
     TBD
 
-DEFAULT_MAP_BASE_LAYER
-----------------------
-
-    The name of the background layer to include in newly created maps.
 
 DEFAULT_MAP_CENTER
 ------------------
 
     Default: ``(0, 0)``
+
+    Env: ``DEFAULT_MAP_CENTER_X`` ``DEFAULT_MAP_CENTER_Y``
 
     A 2-tuple with the latitude/longitude coordinates of the center-point to use
     in newly created maps.
@@ -461,12 +523,18 @@ DEFAULT_MAP_CENTER
 DEFAULT_MAP_CRS
 ---------------
 
-    TBD
+    Default: ``EPSG:3857``
+
+    Env: ``DEFAULT_MAP_CRS``
+
+    The default map projection. Default: EPSG:3857
 
 DEFAULT_MAP_ZOOM
 ----------------
 
     Default: ``0``
+
+    Env: ``DEFAULT_MAP_ZOOM``
 
     The zoom-level to use in newly created maps.  This works like the OpenLayers
     zoom level setting; 0 is at the world extent and each additional level cuts
@@ -476,6 +544,8 @@ DEFAULT_SEARCH_SIZE
 -------------------
 
     Default: ``10``
+
+    Env: ``DEFAULT_SEARCH_SIZE``
 
     An integer that specifies the default search size when using ``geonode.search`` for querying data.
 
@@ -610,13 +680,6 @@ EMAIL_ENABLE
 
             Default: ``GeoNode <no-reply@geonode.org>``
 
-EXIF_ENABED
------------
-
-    Default: ``False``
-
-    A boolean that specifies whether the Exif contrib app is enabled.  If enabled, metadata is generated from Exif tags when documents are uploaded.
-
 F
 =
 
@@ -646,7 +709,7 @@ GEONODE_APPS
 GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY
 ------------------------------------
 
-    Default:  ``"geoext"``
+    Default:  ``"mapstore"``
 
     The library to use for display preview images of layers.  The library choices are:
 
@@ -743,6 +806,8 @@ LOCKDOWN_GEONODE
 ----------------
 
     Default: ``False``
+
+    Env: ``LOCKDOWN_GEONODE``
 
     By default, the GeoNode application allows visitors to view most pages without being authenticated. If this is set to ``True``
     users must be authenticated before accessing URL routes not included in ``AUTH_EXEMPT_URLS``.
