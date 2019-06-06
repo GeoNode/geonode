@@ -7,12 +7,12 @@ Metadata contains all the information related to the document: they are its ID c
 
 Editing a document's metadata is done in three steps (*Basic Metadata*, *Location and Licenses*, *Optional Metadata*). The first two steps are mandatory (no documents will be published if the required information are not provided) whereas the last one is optional.
 
-1. On the **Basic Metadata** page, the essential information have to be filled are:
+1. On the **Basic Metadata** page, the essential information that has to be filled is:
 
   * The *Title* of the document, which should be clear and understandable;
   * The *Resources* the document should be linked to;
   * An *Abstract* on the document;
-  * The *Creation/Publication/Revision* dates which defines the time period that is covered by the document;
+  * The *Creation/Publication/Revision* dates which define the time period that is covered by the document;
   * The *Keywords*, which should be chosen within the available list. The contributor search for available keywords by clicking on the searching bar, or on the folder logo representing, or by entering the first letters of the desired word. Key-words should be relevant to the imported document;
   * The *Category* in which the document belongs;
   * The *Group* to which the document is linked.
@@ -53,5 +53,5 @@ Editing a document's metadata is done in three steps (*Basic Metadata*, *Locatio
 
       *Document Optional Metadata*
 
-  | If all the mandatory information are filled out the document can be published, if not the ``Completeness`` progress bar warns you that something is missing.
+  | If all the mandatory information is filled out the document can be published, if not the ``Completeness`` progress bar warns you that something is missing.
   | Click on the blue button :guilabel:`Update` to save information on the system.
