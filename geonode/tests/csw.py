@@ -125,15 +125,11 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         for link in record.references:
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                 if link['scheme'] == 'OGC:WMS':
-                    self.assertEqual(
-                        link['url'],
-                        '{}ows'.format(settings.GEOSERVER_PUBLIC_LOCATION),
-                        'Expected a specific OGC:WMS URL')
+                    self.assertEquals(link['url'], '{}ows'.format(settings.GEOSERVER_PUBLIC_LOCATION))
                 elif link['scheme'] == 'OGC:WFS':
-                    self.assertEqual(
-                        link['url'],
-                        '{}wfs'.format(settings.GEOSERVER_PUBLIC_LOCATION),
-                        'Expected a specific OGC:WFS URL')
+                    self.assertEquals(link['url'], '{}wfs'.format(settings.GEOSERVER_PUBLIC_LOCATION))
+                elif link['scheme'] == 'OGC:WCS':
+                    self.assertEquals(link['url'], '{}wcs'.format(settings.GEOSERVER_PUBLIC_LOCATION))
             elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                 if link['scheme'] == 'OGC:WMS':
                     self.assertEqual(
