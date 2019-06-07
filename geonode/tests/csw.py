@@ -127,9 +127,9 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
                 if link['scheme'] == 'OGC:WMS':
                     self.assertEquals(link['url'], '{}ows'.format(settings.GEOSERVER_PUBLIC_LOCATION))
                 elif link['scheme'] == 'OGC:WFS':
-                    self.assertEquals(link['url'], '{}wfs'.format(settings.GEOSERVER_PUBLIC_LOCATION))
+                    self.assertEquals(link['url'], '{}ows'.format(settings.GEOSERVER_PUBLIC_LOCATION))
                 elif link['scheme'] == 'OGC:WCS':
-                    self.assertEquals(link['url'], '{}wcs'.format(settings.GEOSERVER_PUBLIC_LOCATION))
+                    self.assertEquals(link['url'], '{}ows'.format(settings.GEOSERVER_PUBLIC_LOCATION))
             elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                 if link['scheme'] == 'OGC:WMS':
                     self.assertEqual(
