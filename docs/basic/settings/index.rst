@@ -465,12 +465,16 @@ CKAN_ORIGINS
 CSRF_COOKIE_HTTPONLY
 --------------------
 
-    TBD
+    Default: ``False``
+
+    Whether to use HttpOnly flag on the CSRF cookie. If this is set to True, client-side JavaScript will not to be able to access the CSRF cookie. This is a  `Django setting <https://docs.djangoproject.com/en/2.1/ref/settings/#csrf-cookie-httponly>`_.
 
 CSRF_COOKIE_SECURE
 ------------------
 
-    TBD
+    Default: ``False``
+    
+    Whether to use a secure cookie for the CSRF cookie. If this is set to True, the cookie will be marked as “secure,” which means browsers may ensure that the cookie is only sent with an HTTPS connection. This is a  `Django setting <https://docs.djangoproject.com/en/2.1/ref/settings/#csrf-cookie-secure>`_.
 
 D
 =
