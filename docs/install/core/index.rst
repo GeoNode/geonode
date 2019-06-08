@@ -955,32 +955,12 @@ In this section we are going to list the passages needed to:
 
 3. Passages to completely get rid of old ``Docker`` images and volumes (prune the environment completely)
 
-Install the Docker and docker-compose packages on a Ubuntu host
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. include:: docker/ubuntu.rst
 
-Docker Compose Setup (First time only)
-......................................
-
-.. code-block:: shell
-
-  sudo add-apt-repository universe
-  sudo apt-get update -y
-  sudo apt-get install -y git-core git-buildpackage debhelper devscripts
-  sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-
-  sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-
-  sudo apt-get update -y
-  sudo apt-get install -y docker-ce docker-ce docker-ce-cli containerd.io docker-compose
-  sudo apt autoremove --purge
-
-  sudo usermod -aG docker geonode
-  su geonode
+.. include:: docker/centos.rst
 
 Test Docker Compose Instance
-............................
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Logout and login again on shell and then execute:
 
