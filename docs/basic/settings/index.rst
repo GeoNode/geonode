@@ -487,12 +487,16 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS
 DEBUG
 -----
 
-    TBD
+    Default: ``False``
+    
+    A boolean that turns on/off debug mode. This is a  `Django setting <https://docs.djangoproject.com/en/2.1/ref/settings/#debug>`_.
 
 DEBUG_STATIC
 ------------
 
-    TBD
+    Default: ``False``
+
+    # Set to True to load non-minified versions of (static) client dependencies. Requires to set-up Node and tools that are required for static development otherwise it will raise errors for the missing non-minified dependencies.
 
 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
 -------------------------------------
@@ -511,7 +515,11 @@ DEFAULT_ANONYMOUS_VIEW_PERMISSION
 DEFAULT_LAYER_FORMAT
 --------------------
 
-    TBD
+    Default: ``image/png8``
+
+    Env: ``DEFAULT_LAYER_FORMAT``
+    
+    The default format for requested tile images.
 
 
 DEFAULT_MAP_CENTER
@@ -556,7 +564,11 @@ DEFAULT_SEARCH_SIZE
 DEFAULT_WORKSPACE
 -----------------
 
-    TBD
+    Default: ``geonode``
+    
+    Env: ``DEFAULT_WORKSPACE``
+
+    Name of GeoServer default workspace.
 
 DELAYED_SECURITY_INTERVAL
 -------------------------
@@ -594,21 +606,38 @@ DELAYED_SECURITY_SIGNALS
 DISPLAY_COMMENTS
 ----------------
 
-    TBD
+    Default: ``True``
+
+    Env: ``DISPLAY_COMMENTS``
+
+    If set to false comments are hidden.
 
 DISPLAY_RATINGS
 ---------------
-    TBD
+
+    Default: ``True``
+
+    Env: ``DISPLAY_RATINGS``
+
+    If set to false ratings are hidden.
 
 DISPLAY_SOCIAL
 --------------
 
-    TBD
+    Default: ``True``
+
+    Env: ``DISPLAY_SOCIAL``
+
+    If set to false social media links are hidden.
 
 DISPLAY_WMS_LINKS
 -----------------
 
-    TBD
+    Default: ``True``
+
+    Env: ``DISPLAY_WMS_LINKS``
+
+    If set to false the direct WMS link to GeoServer is hidden.
 
 DOWNLOAD_FORMATS_METADATA
 -------------------------
