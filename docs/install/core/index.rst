@@ -51,6 +51,11 @@ First, we are going to install all the **system packages** needed for the GeoNod
   sudo apt install -y git unzip gcc zlib1g-dev libgeos-dev libproj-dev
   sudo apt install -y sqlite3 spatialite-bin libsqlite3-mod-spatialite
 
+  # Install Openjdk
+  sudo -i apt update
+  sudo apt install openjdk-8-jdk-headless default-jdk-headless -y
+  sudo update-java-alternatives --jre-headless --jre --set java-1.8.0-openjdk-amd64
+
   sudo apt update -y
   sudo apt upgrade -y
   sudo apt autoremove -y

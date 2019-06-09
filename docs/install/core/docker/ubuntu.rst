@@ -1,5 +1,3 @@
-:orphan:
-
 Install the Docker and docker-compose packages on a Ubuntu host
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

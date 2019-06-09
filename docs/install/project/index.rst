@@ -1,8 +1,14 @@
 Overview
 ========
 
+The following steps will guide you to a fresh setup of GeoNode Project. All guides will first install and configure the system to run it in ``DEBUG`` mode (also known as ``DEVELOPMENT`` mode) and then by configuring an HTTPD server to serve GeoNode through the standard ``HTTP`` (``80``) port.
+
+Those guides **are not** meant to be used on a production system. There will be dedicated chapters that will show you some *hints* to optimize GeoNode for a production-ready machine. In any case, we strongly suggest to task an experienced *DevOp* or *System Administrator* before exposing your server to the ``WEB``.
+
 Ubuntu 18.04
 ============
+
+TODO
 
 Docker
 ======
@@ -11,10 +17,10 @@ Docker
 
   .. code-block:: shell
   
-    ``django4my_geonode`` instead of ``django4geonode`` and so on...
+    'django4my_geonode' instead of 'django4geonode' and so on...
 
-Deploy an instance of a ``geonode-project`` Django template 2.10.x with Docker on ``localhost``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Deploy an instance of a geonode-project Django template 2.10.x with Docker on localhost
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Prepare the environment
 
@@ -47,16 +53,16 @@ Modify the code and the templates and rebuild the Docker Containers
 
 .. code-block:: shell
   
-  sudo docker-compose build --no-cache
+  docker-compose -f docker-compose.yml -f docker-compose.override.yml build --no-cache
 
 Finally run the containers
 
 .. code-block:: shell
   
-  sudo docker-compose up -d
+  docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
 
-Deploy an instance of a ``geonode-project`` Django template 2.10.x with Docker on a ``domain``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Deploy an instance of a geonode-project Django template 2.10.x with Docker on a domain
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note:: We will use ``www.example.org`` as an example. You can change the name at your convenience.
 
@@ -66,7 +72,7 @@ Stop the containers
 
   cd /opt/geonode_custom/my_geonode
   
-  sudo docker-compose stop
+  docker-compose -f docker-compose.yml -f docker-compose.override.yml stop
   
 Edit the ``ENV`` override file in order to deploy on ``www.example.org``
 
@@ -117,4 +123,4 @@ Run the containers in daemon mode
 
 .. code-block:: shell
 
-  sudo docker-compose -f docker-compose.yml -f docker-compose.override.example-org.yml up --build -d
+  docker-compose -f docker-compose.yml -f docker-compose.override.example-org.yml up --build -d
