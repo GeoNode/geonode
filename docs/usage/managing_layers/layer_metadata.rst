@@ -22,10 +22,10 @@ In that page you can see the whole set of available metadata about the layer.
 Metadata are grouped in order to show the following types of information:
 
     * *Identification* to uniquely identify the layer (Title, Abstract, Publication Date etc.);
-    * *Owner*, the user who own the layer;
+    * *Owner*, the user who owns the layer;
     * *Information*, the Identification Image, the Spatial Extent, Projection System and so on;
     * *Features*, Language, Supplemental and other Information;
-    * *Contact Points*, the user available to have a contact;
+    * *Contact Points*, the available user to get in contact;
     * *References*, various links to the resource information and data;
     * *Metadata Author*, information about the author of the metadata.
 
@@ -85,7 +85,7 @@ Metadata Wizard
   * The *License* of the dataset;
   * The *Regions*, which informs on the spatial extent covered by the layer. Proposed extents cover the following scales: global, continental, regional, national;
   * The *Data Quality statement* (general explanation of the data producer's knowledge about the lineage of a dataset);
-  * Potential *Restrictions* on the layer sharing.
+  * Potential *Restrictions* on layer sharing.
 
 * Optional Metadata
 
