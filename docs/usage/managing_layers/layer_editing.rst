@@ -23,7 +23,7 @@ The Thumbnail of a Layer
 ------------------------
 
 | The Thumbnail of the layer that will be displayed on the *Layers* list page can be changed by dragging and zooming on the layer preview to select which portion will be displayed, then by clicking on the :guilabel:`Set` button of the *Layer Editing* panel.
-| A message will confirm the thumbnail ahs been correctly changed.
+| A message will confirm the thumbnail has been correctly changed.
 
 .. figure:: img/set_thumbnail_confirmation_message.png
      :align: center
@@ -82,7 +82,7 @@ Now you can:
 
 * *Add new Features*
 
-  Through the *Add New Feature* button |add_new_feature_button| it is possible to set up a new feature for you layer.
+  Through the *Add New Feature* button |add_new_feature_button| it is possible to set up a new feature for your layer.
   Fill the attributes fields and click |save_changes_button| to save your change.
   Your new feature doesn't have a shape yet, click on |add_shape_to_geometry_button| to draw its shape directly on the *Map* then click on |save_changes_button| to save it.
 
