@@ -103,6 +103,8 @@ You can also use more than one filter at the same time.
 
    *Documents filtered by categories*
 
+.. _finding-layers:
+
 Layers
 ------
 

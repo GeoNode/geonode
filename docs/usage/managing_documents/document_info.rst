@@ -55,6 +55,9 @@ If you want this document in your *Favorites* (see :ref:`editing-profile`), open
 
     *Your Favorite Comment*
 
+The Tools Section
+-----------------
+
 On the right side of the *Document Page* you can see other useful information such as the links to the resources linked to the document, the document *Owner*, the *Point of Contact* and the *Metadata Author*.
 
 .. figure:: img/document_links_buttons.png

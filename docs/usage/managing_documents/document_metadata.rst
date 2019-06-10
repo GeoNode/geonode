@@ -38,7 +38,7 @@ Editing a document's metadata is done in three steps (*Basic Metadata*, *Locatio
 
   Click on the blue button :guilabel:`Next >>` to go ahead to the next step.
 
-3. One the **Optional Metadata** page, complementary information can be added:
+3. On the **Optional Metadata** page, complementary information can be added:
 
   * The *Edition* to indicate the reference or the source of the document;
   * The *Purpose* of the document and its objectives;
