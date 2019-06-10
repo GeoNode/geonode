@@ -11,7 +11,7 @@ Layer Information
 
     *Layer Information*
 
-As shown in the picture above, the *Layer Page* is divided in three main sections:
+As shown in the picture above, the *Layer Page* is divided into three main sections:
 
 1. the *Layer Preview* section, under the title
 2. the *Tabs* section, under the layer preview
@@ -61,7 +61,7 @@ The *Layer Page* shows you some tabs sections containing different information a
 
       *Layer Sharing*
 
-* You can *Rate* the layer through the *Ratings system*.
+* You can *Rate* the layer through the *Rating system*.
 
   .. figure:: img/layer_rating.png
       :align: center
@@ -97,7 +97,7 @@ In the right side of the *Layer Page* there are some buttons and information tha
 * the *Legend* shows what the symbols and styles on the map are referring to;
 * in the *Map using this layer* section all the map which uses the layer are listed;
 * in the *Create a map using this layer*, the :guilabel:`Create a Map` button allows you to create a map from scratch using the layer;
-* the section *Add the layer to an existing map* shows you a dropdown menu in which all the map the user can view are listed. The button :guilabel:`Add to Map` allows you to add the layer to the map you have selected in the previous menu;
+* the section *Add the layer to an existing map* shows you a dropdown menu in which all the maps the user can view are listed. The button :guilabel:`Add to Map` allows you to add the layer to the map you have selected in the previous menu;
 * the *Styles* section shows all the styles associated with the layer. Click on the checkbox corresponding to one of the styles listed to apply it the preview;
 
   .. figure:: img/layer_preview_change_style.png
