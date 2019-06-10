@@ -28,6 +28,6 @@ You can set the following types of permissions:
 * *Edit Style* allows to change the layer style;
 * *Manage* allows to update, delete, change permissions, publish and unpublish the layer.
 
-.. warning:: When assigning permissions to a group, all the group members will have that permissions. Be careful in case of editing permissions.
+.. warning:: When assigning permissions to a group, all the group members will have those permissions. Be careful in case of editing permissions.
 
 Click on :guilabel:`Apply Changes` to save these settings.
