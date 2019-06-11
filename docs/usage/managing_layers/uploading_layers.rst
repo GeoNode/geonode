@@ -1,3 +1,5 @@
+.. _uploading-layers:
+
 Layers Uploading
 ================
 

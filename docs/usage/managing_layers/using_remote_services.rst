@@ -39,7 +39,7 @@ Once the service has been configured, you can load the resources you are interes
 .. figure:: img/new_remote_service.gif
     :align: center
 
-    *A new Remote Servce*
+    *A new Remote Service*
 
 | From the page where the services are listed, it is possible to click on the *Title* of a service. It opens the *Service Details* page.
 | Each service has its own metadata such as the *Service Type*, the *URL*, an *Abstract*, some *Keywords* and the *Contact* user. You can edit those metadata through the form available from the :guilabel:`Edit Service Metadata` button of the *Service Details* page (see the picture below).
@@ -47,4 +47,4 @@ Once the service has been configured, you can load the resources you are interes
 .. figure:: img/remote_service_metadata.png
     :align: center
 
-    *Remote Servce metadata*
+    *Remote Service metadata*

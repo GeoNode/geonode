@@ -19,8 +19,8 @@ In that panel you can see many options grouped by four categories:
 
 In this section you will learn how to edit a *Layer*, how to replace and edit its data. See :ref:`layer-metadata` to learn how to explore the layer *Metadata*, how to upload and edit them. The *Styles* will be covered in a dedicated section, see :ref:`layer-style`.
 
-The Thumbnail of a Layer
-------------------------
+Setting the Layer Thumbnail
+---------------------------
 
 | The Thumbnail of the layer that will be displayed on the *Layers* list page can be changed by dragging and zooming on the layer preview to select which portion will be displayed, then by clicking on the :guilabel:`Set` button of the *Layer Editing* panel.
 | A message will confirm the thumbnail has been correctly changed.
@@ -30,8 +30,8 @@ The Thumbnail of a Layer
 
      *The Layer Editing panel*
 
-Replacing a Layer
------------------
+Replacing the Layer
+-------------------
 
 From the *Layer Editing* panel click on :guilabel:`Replace` to change the layer source dataset. You will be driven to the *Replace Layer* page in which :guilabel:`Choose Files` button allows you to select files from your disk.
 
