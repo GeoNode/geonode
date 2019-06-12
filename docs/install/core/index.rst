@@ -8,27 +8,42 @@ Those guides **are not** meant to be used on a production system. There will be 
 Ubuntu 18.04
 ============
 
-This part of the documentation describes the complete setup process for GeoNode on an Ubuntu 18.04 Desktop 64-bit clean environment.
+This part of the documentation describes the complete setup process for GeoNode on an Ubuntu 18.04 64-bit clean environment (Desktop or Server). All examples use shell commands that you must enter on a local terminal or a remote shell. 
+- If you have a graphical desktop environment you can open the terminal aplication after login;
+- if you are working on a remote server the provider or sysadmin should has gave you access through an ssh client.
+
+.. _install_dep:
 
 Install the dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 In this section, we are going to install all the basic packages and tools needed for a complete GeoNode installation. To follow this guide, a basic knowledge about Ubuntu Server configuration and working with a shell is required. This guide uses ``vim`` as the editor; fill free to use ``nano``, ``gedit`` or others.
 
+Upgrade system packages
+.......................
+
+Check that your system is already up-to-date with the repository running the following commands:
+
+.. code-block:: shell
+
+   sudo apt update
+   sudo apt upgrade
+
+
 Create a Dedicated User
 .......................
 
-We will use **example.com** as fictitious Domain Name. Further a (``sudo``) User ``geonode`` for running commands.
+In the following steps a User named ``geonode`` is used: to run installation commands the user must be in the ``sudo`` group.
 
 Create User ``geonode`` **if not present**:
 
 .. code-block:: shell
 
-  ssh root@example.com
-
   # Follow the prompts to set the new user's information.
   # It is fine to accept the defaults to leave all of this information blank.
   sudo adduser geonode
+  
+  # The following command adds the user geonode to group sudo
   sudo usermod -aG sudo geonode
 
   # make sure the newly created user is allowed to login by ssh
@@ -63,26 +78,42 @@ First, we are going to install all the **system packages** needed for the GeoNod
   sudo apt purge -y
   sudo apt clean -y
 
+  # Install Packages for Virtual environment management
+  sudo apt install -y virtualenv virtualenvwrapper
+  
+
 GeoNode Installation
-....................
+^^^^^^^^^^^^^^^^^^^^
 
 This is the most basic installation of GeoNode. It won't use any external server like ``Apache Tomcat``, ``PostgreSQL`` or ``HTTPD``.
 
 It will run locally against a file-system based ``SQLite`` database.
 
+
+First of all we need to prepare a new Python Virtual Environment
+
+Since geonode needs a large number of different python libraries and packages, it's recommended to use a python virtual environment to avoid conflicts on dependencies with system wide python packages and other installed softwares. See also documentation of `Virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/stable/>`_. package for mode information
+
+Check that the file ``virtualenvwrapper.sh`` exists in the ``$HOME/.local/bin/`` (``$HOME`` is the current user home directory and in our case should be ``/home/geonode``) and then add this line to your file ``~/.bashrc``
+
+.. code-block:: shell
+  
+  vim ~/.bashrc
+
 .. code-block:: shell
 
-  # Create the GeoNode Virtual Environment (first time only)
-  sudo python -m pip install pip==9.0.1
-  sudo pip install --upgrade pip
-  pip install --user virtualenv
-  pip install --user virtualenvwrapper
-  export WORKON_HOME=~/Envs
-  mkdir -p $WORKON_HOME
+  # virtualenv
   source $HOME/.local/bin/virtualenvwrapper.sh
-  printf '\n%s\n%s\n%s' '# virtualenv' 'export WORKON_HOME=~/Envs' 'source $HOME/.local/bin/virtualenvwrapper.sh' >> ~/.bashrc
+
+Then run the ``.bashrc`` from shell
+
+.. code-block:: shell
+
   source ~/.bashrc
+  #create a new virtualenv called geonode
   mkvirtualenv --no-site-packages geonode
+
+At this point your command prompt shows a ``(geonode)`` prefix, this indicates that your virtualenv is active.
 
 .. note:: The next time you need to access the Virtual Environment just run
 
@@ -118,7 +149,7 @@ Run GeoNode for the first time in DEBUG Mode
 
 .. warning::
 
-  Be sure you have successfully completed all the steps of the section ``Install the dependencies``.
+  Be sure you have successfully completed all the steps of the section :ref:`install_dep`.
 
 This command will run both GeoNode and GeoServer locally after having prepared the SQLite database. The server will start in ``DEBUG`` (or ``DEVELOPMENT``) mode, and it will start the following services:
 
@@ -157,12 +188,12 @@ Sign-in with::
   user: admin
   password: admin
 
-Database Setup
-^^^^^^^^^^^^^^
+Postgis database Setup
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. warning::
 
-  Be sure you have successfully completed all the steps of the section ``Install the dependencies``.
+  Be sure you have successfully completed all the steps of the section :ref:`install_dep`.
 
 In this section, we are going to setup users and databases for GeoNode in PostgreSQL.
 
