@@ -58,8 +58,6 @@ services:
       - elasticsearch
       - rabbitmq
     command: django-admin.py runserver 0.0.0.0:8000 --settings=geonode.settings
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - GEONODE_INSTANCE_NAME=geonode
       - GEONODE_LB_HOST_IP=<host-server-public-ip>
@@ -98,8 +96,6 @@ services:
       - elasticsearch
       - rabbitmq
     command: celery worker --app=geonode.celery_app:app -B -l INFO
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - GEONODE_INSTANCE_NAME=geonode
       - GEONODE_LB_HOST_IP=<host-server-public-ip>
@@ -136,7 +132,6 @@ services:
     depends_on:
       - db
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - geoserver-data-dir:/geoserver_data/data
     environment:
       - GEONODE_LB_HOST_IP=<host-server-public-ip>
