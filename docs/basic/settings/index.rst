@@ -41,7 +41,7 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET
 
     | Default: ``True``
 
-    This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+    This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`__
     It allows specifying the HTTP method used when confirming e-mail addresses.
 
 ACCOUNT_EMAIL_REQUIRED
@@ -49,7 +49,7 @@ ACCOUNT_EMAIL_REQUIRED
 
     | Default: ``True``
 
-    This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_
+    This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`__
     which controls whether the user is required to provide an e-mail address upon registration.
 
 ACCOUNT_EMAIL_VERIFICATION
@@ -57,7 +57,7 @@ ACCOUNT_EMAIL_VERIFICATION
 
     | Default: ``optional``
 
-    This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+    This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`__
 
 ACCOUNT_LOGIN_REDIRECT_URL
 --------------------------
@@ -65,7 +65,7 @@ ACCOUNT_LOGIN_REDIRECT_URL
     | Default: ``SITEURL``
     | Env: ``LOGIN_REDIRECT_URL``
 
-    This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`_.
+    This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`__
     It allows specifying the default redirect URL after a successful login.
 
 ACCOUNT_LOGOUT_REDIRECT_URL
@@ -74,7 +74,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL
     | Default: ``SITEURL``
     | Env: ``LOGOUT_REDIRECT_URL``
 
-    This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`_.
+    This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`__
     It allows specifying the default redirect URL after a successful logout.
 
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE
@@ -83,20 +83,29 @@ ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE
     | Default: ``True``
     | Env: ``ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE``
 
-    This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`_.
+    This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`__
 
 ACCOUNT_OPEN_SIGNUP
 -------------------
 
     | Default: ``True``
 
-    This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`_.
+    This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`__
     Whether or not people are allowed to self-register to GeoNode or not.
 
 ACTSTREAM_SETTINGS
 ------------------
 
-    TBD
+    Default::
+
+        {
+        'FETCH_RELATIONS': True,
+        'USE_PREFETCH': False,
+        'USE_JSONFIELD': True,
+        'GFK_FETCH_DEPTH': 1,
+        }
+
+    Actstream Settings.
 
 ADMIN_MODERATE_UPLOADS
 ----------------------
@@ -192,10 +201,9 @@ AUTH_EXEMPT_URLS
 AUTO_GENERATE_AVATAR_SIZES
 --------------------------
 
-    | Default: ``20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240``
+    Default: ``20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240``
 
-    An iterable of integers representing the sizes of avatars to generate on upload. This can save rendering time later on if you pre-generate the
-resized versions.
+    An iterable of integers representing the sizes of avatars to generate on upload. This can save rendering time later on if you pre-generate the resized versions.
 
 AWS_ACCESS_KEY_ID
 -----------------
@@ -203,7 +211,7 @@ AWS_ACCESS_KEY_ID
     | Default: ``''``
     | Env: ``AWS_ACCESS_KEY_ID``
 
-    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`_.
+    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
     Your Amazon Web Services access key, as a string.
 
 AWS_BUCKET_NAME
@@ -213,14 +221,14 @@ AWS_BUCKET_NAME
     | Env: ``S3_BUCKET_NAME``
 
     The name of the S3 bucket GeoNode will pull static and/or media files from. Set through the environment variable S3_BUCKET_NAME.
-    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`_.
+    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
 
 AWS_QUERYSTRING_AUTH
 --------------------
 
     | Default: ``False``
 
-    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`_.
+    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
     Setting AWS_QUERYSTRING_AUTH to False to remove query parameter authentication from generated URLs. This can be useful if your S3 buckets are public.
 
 AWS_S3_BUCKET_DOMAIN
@@ -235,7 +243,7 @@ AWS_SECRET_ACCESS_KEY
     | Default: ``''``
     | Env: ``AWS_SECRET_ACCESS_KEY``
 
-    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`_.
+    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
     Your Amazon Web Services secret access key, as a string.
 
 AWS_STORAGE_BUCKET_NAME
@@ -244,7 +252,7 @@ AWS_STORAGE_BUCKET_NAME
     | Default: ``''``
     | Env: ``S3_BUCKET_NAME``
 
-    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`_.
+    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
     Your Amazon Web Services storage bucket name, as a string.
 
 B
@@ -264,7 +272,7 @@ BROKER_HEARTBEAT
     | Default: ``0``
 
     At intervals the worker will monitor that the broker hasn’t missed too many heartbeats. 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
     
 
 BROKER_TRANSPORT_OPTIONS
@@ -279,7 +287,7 @@ BROKER_TRANSPORT_OPTIONS
         'visibility_timeout': 86400
         }
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 
 C
@@ -289,7 +297,7 @@ CACHES
 ------
 
     A dictionary containing the settings for all caches to be used with Django.
-    This is a `Django setting <https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CACHES>`_.
+    This is a `Django setting <https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CACHES>`__
 
 CACHE_TIME
 ----------
@@ -322,21 +330,21 @@ CELERYD_POOL_RESTARTS
 
     Default: ``True``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_ACCEPT_CONTENT
 ---------------------
 
     Defaul: ``['json']``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_ACKS_LATE
 ----------------
 
     Default: ``True``
 
-    This is a `celery setting <http://docs.celeryproject.org/en/3.1/configuration.html#celery-acks-late>`_.
+    This is a `Celery setting <http://docs.celeryproject.org/en/3.1/configuration.html#celery-acks-late>`__
 
 CELERY_BEAT_SCHEDULE
 --------------------
@@ -348,42 +356,42 @@ CELERY_DISABLE_RATE_LIMITS
 
     Default: ``False``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_ENABLE_UTC
 -----------------
 
     Default: ``True``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_MAX_CACHED_RESULTS
 -------------------------
 
     Default: ``32768``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_MESSAGE_COMPRESSION
 --------------------------
 
     Default: ``gzip``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_RESULT_PERSISTENT
 ------------------------
 
     Default: ``False``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_RESULT_SERIALIZER
 ------------------------
 
     Default: ``json``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_SEND_TASK_EVENTS
 -----------------------
@@ -400,21 +408,21 @@ CELERY_TASK_ALWAYS_EAGER
 
     Default: ``False if ASYNC_SIGNALS else True``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_TASK_CREATE_MISSING_QUEUES
 ---------------------------------
 
     Default: ``True``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_TASK_IGNORE_RESULT
 -------------------------
 
     Default: ``True``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_TASK_QUEUES
 ------------------
@@ -426,14 +434,14 @@ CELERY_TASK_RESULT_EXPIRES
 
     Default: ``43200``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_TASK_SERIALIZER
 ----------------------
 
     Default: ``json``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_TIMEZONE
 ---------------
@@ -441,14 +449,14 @@ CELERY_TIMEZONE
     | Default: ``UTC``
     | Env: ``TIME_ZONE``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_TRACK_STARTED
 --------------------
 
     Default: ``True``
 
-    This is a `celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`_.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
 CELERY_WORKER_DISABLE_RATE_LIMITS
 ---------------------------------
@@ -491,12 +499,18 @@ CKAN_ORIGINS
 CSRF_COOKIE_HTTPONLY
 --------------------
 
-    TBD
+    | Default: `False`
+    | Env: `CSRF_COOKIE_HTTPONLY`
+
+    Whether to use HttpOnly flag on the CSRF cookie. If this is set to True, client-side JavaScript will not to be able to access the CSRF cookie. This is a `Django Setting <https://docs.djangoproject.com/en/2.1/ref/settings/#csrf-cookie-httponly>`__
 
 CSRF_COOKIE_SECURE
 ------------------
 
-    TBD
+    | Default: `False`
+    | Env: `CSRF_COOKIE_HTTPONLY`
+
+    Whether to use a secure cookie for the CSRF cookie. If this is set to True, the cookie will be marked as “secure,” which means browsers may ensure that the cookie is only sent with an HTTPS connection. This is a `Django Setting <https://docs.djangoproject.com/en/2.1/ref/settings/#csrf-cookie-secure>`__
 
 D
 =
@@ -504,36 +518,47 @@ D
 DATA_UPLOAD_MAX_NUMBER_FIELDS
 -----------------------------
 
-    TBD
+    Default: `100000`
+
+    Maximun value of parsed attributes.
 
 DEBUG
 -----
 
-    TBD
+    Default: `False`
+
+    One of the main features of debug mode is the display of detailed error pages. If your app raises an exception when DEBUG is True, Django will display a detailed traceback, including a lot of metadata about your environment, such as all the currently defined Django settings (from settings.py).
+    This is a `Django Setting <https://docs.djangoproject.com/en/2.1/ref/settings/#debug>`__
+    
 
 DEBUG_STATIC
 ------------
 
-    TBD
+    Default: `False`
+
+    Load non minified version of static files.
 
 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
 -------------------------------------
 
-    Default: ``True``
+    Default: `True`
 
     Whether the uplaoded resources should downloadable by default.
 
 DEFAULT_ANONYMOUS_VIEW_PERMISSION
 ---------------------------------
 
-    Default: ``True``
+    Default: `True`
 
     Whether the uplaoded resources should be public by default.
 
 DEFAULT_LAYER_FORMAT
 --------------------
 
-    TBD
+    | Default: `image/png`
+    | Env: `DEFAULT_LAYER_FORMAT`
+
+    The default format for requested tile images.
 
 
 DEFAULT_MAP_CENTER
@@ -574,7 +599,10 @@ DEFAULT_SEARCH_SIZE
 DEFAULT_WORKSPACE
 -----------------
 
-    TBD
+    | Default: ``geonode``
+    | Env: ``DEFAULT_WORKSPACE``
+
+    The standard GeoServer workspace.
 
 DELAYED_SECURITY_INTERVAL
 -------------------------
@@ -610,21 +638,35 @@ DELAYED_SECURITY_SIGNALS
 DISPLAY_COMMENTS
 ----------------
 
-    TBD
+    | Default: ``True``
+    | Env: ``DISPLAY_COMMENTS``
+
+    If set to False comments are hidden.
+
 
 DISPLAY_RATINGS
 ---------------
-    TBD
+
+    | Default: ``True``
+    | Env: ``DISPLAY_RATINGS``
+
+    If set to False ratings are hidden.
 
 DISPLAY_SOCIAL
 --------------
 
-    TBD
+    | Default: ``True``
+    | Env: ``DISPLAY_SOCIAL``
+
+    If set to False social sharing is hidden.
 
 DISPLAY_WMS_LINKS
 -----------------
 
-    TBD
+    | Default: ``True``
+    | Env: ``DISPLAY_WMS_LINKS``
+
+    If set to False direct WMS link to GeoServer is hidden.
 
 DOWNLOAD_FORMATS_METADATA
 -------------------------
@@ -706,7 +748,10 @@ F
 FREETEXT_KEYWORDS_READONLY
 --------------------------
 
-    TBD
+    | Default: ``False``
+    | Env: ``FREETEXT_KEYWORDS_READONLY``
+
+    Make Free-Text Kaywords writable from users. Or read-only when set to False.
 
 G
 =
@@ -714,17 +759,24 @@ G
 GEOFENCE_SECURITY_ENABLED
 -------------------------
 
-    TBD
+    | Default: ``True`` (False is Test is true)
+    | Env: ``GEOFENCE_SECURITY_ENABLED``
+
+    Wheather the geofence security system is used.
 
 GEOIP_PATH
 ----------
 
-    TBD
+    | Default: ``Path to project``
+    | Env: ``PROJECT_ROOT``
+
+    The local path where GeoIPCities.dat is written to. Make sure your user has write permissions.
+
 
 GEONODE_APPS
 ------------
 
-    TBD
+    If enabled contrib apps are used.
 
 GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY
 ------------------------------------
@@ -749,42 +801,60 @@ GEOSERVER_EXCHANGE
 GEOSERVER_LOCATION
 ------------------
 
-    TBD
+    | Default: ``http://localhost:8080/geoserver/``
+    | Env: ``GEOSERVER_LOCATION``
+
+    Url under which GeoServer is available.
 
 GEOSERVER_PUBLIC_HOST
 ---------------------
 
-    TBD
+    | Default: ``SITE_HOST_NAME`` (Variable)
+    | Env: ``GEOSERVER_PUBLIC_HOST``
+
+    Public hostname under which GeoServer is available.
 
 GEOSERVER_PUBLIC_LOCATION
 -------------------------
 
-    TBD
+    | Default: ``SITE_HOST_NAME`` (Variable)
+    | Env: ``GEOSERVER_PUBLIC_LOCATION``
+
+    Public location under which GeoServer is available.
 
 GEOSERVER_PUBLIC_PORT
 ---------------------
 
-    TBD
+    | Default: ``8080 (Variable)``
+    | Env: ``GEOSERVER_PUBLIC_PORT``
+
+
+    Public Port under which GeoServer is available.
 
 GEOSERVER_WEB_UI_LOCATION
 -------------------------
 
-    TBD
+    | Default: ``GEOSERVER_PUBLIC_LOCATION (Variable)``
+    | Env: ``GEOSERVER_WEB_UI_LOCATION``
+
+    Public location under which GeoServer is available.
 
 GOOGLE_API_KEY
 --------------
 
-    TBD
+    | Default: ``None``
+    | Env: ``GOOGLE_API_KEY``
 
-GOOGLE_MAPS_API_KEY
--------------------
+    Your Google Api key.
 
-    TBD
 
 GROUP_PRIVATE_RESOURCES
 -----------------------
 
-    TBD
+    | Default: ``False``
+    | Env: ``GROUP_PRIVATE_RESOURCES``
+
+    If this option is enabled, Resources belonging to a Group won't be visible by others
 
 H
 =
@@ -792,17 +862,19 @@ H
 HAYSTACK_FACET_COUNTS
 ---------------------
 
-    TBD
+    | Default: ``True``
+    | Env: ``HAYSTACK_FACET_COUNTS``
+
+    If set to True users will be presented with feedback about the number of resource which match terms they may be interested in.
 
 HAYSTACK_SEARCH
 ---------------
 
-    TBD
+    | Default: ``False``
+    | Env: ``HAYSTACK_SEARCH``
 
-HYPERMAP_REGISTRY_URL
----------------------
+    Enable/disable haystack Search Backend Configuration. 
 
-    TBD
 
 L
 =
@@ -810,17 +882,25 @@ L
 LEAFLET_CONFIG
 --------------
 
-    TBD
+    A dictionary used for Leaflet configuration.
 
 LICENSES
 --------
 
-    TBD
+    Default::
+
+        {
+            'ENABLED': True,
+            'DETAIL': 'above',
+            'METADATA': 'verbose',
+        }
+
+    Enable Licenses User Interface
 
 LOCAL_SIGNALS_BROKER_URL
 ------------------------
 
-    TBD
+    Default: ``memory://``
 
 LOCKDOWN_GEONODE
 ----------------
@@ -1025,7 +1105,7 @@ OAUTH2_PROVIDER
 ---------------
 
     Django OAuth Toolkit provide a support layer for Django REST Framework.
-    For settings visit: `OAuth Toolkit settings <https://django-oauth-toolkit.readthedocs.io/en/latest/rest-framework/getting_started.html>`_.
+    For settings visit: `OAuth Toolkit settings <https://django-oauth-toolkit.readthedocs.io/en/latest/rest-framework/getting_started.html>`__
 
 OGC_SERVER_DEFAULT_PASSWORD
 ---------------------------
@@ -1196,7 +1276,7 @@ PINAX_NOTIFICATIONS_BACKENDS
 
     Default: ``("email", _EMAIL_BACKEND, 0),``
 
-    Used notification backend. This is a `pinax notification setting: <https://django-notification.readthedocs.io/en/latest/settings.html#pinax-notifications-backends>`_.
+    Used notification backend. This is a `pinax notification setting: <https://django-notification.readthedocs.io/en/latest/settings.html#pinax-notifications-backends>`__
 
 PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT
 -------------------------------------
@@ -1205,7 +1285,7 @@ PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT
     | Env: ``NOTIFICATIONS_LOCK_WAIT_TIMEOUT``
 
     It defines how long to wait for the lock to become available. Default of -1 means to never wait for the lock to become available. 
-    This is a `pinax notification setting: <https://django-notification.readthedocs.io/en/latest/settings.html#pinax-notifications-lock-wait-timeout>`_.
+    This is a `pinax notification setting: <https://django-notification.readthedocs.io/en/latest/settings.html#pinax-notifications-lock-wait-timeout>`__
 
 PINAX_NOTIFICATIONS_QUEUE_ALL
 -----------------------------
@@ -1214,7 +1294,7 @@ PINAX_NOTIFICATIONS_QUEUE_ALL
     | Env: ``NOTIFICATIONS_LOCK_WAIT_TIMEOUT``
     
     By default, calling notification.send will send the notification immediately, however, if you set this setting to True, then the default behavior of the send method will be to queue messages in the database for sending via the emit_notices command.
-    This is a `pinax notification setting: <https://django-notification.readthedocs.io/en/latest/settings.html#pinax-notifications-queue-all>`_.
+    This is a `pinax notification setting: <https://django-notification.readthedocs.io/en/latest/settings.html#pinax-notifications-queue-all>`__
 
 PROXY_ALLOWED_HOSTS
 -------------------
@@ -1328,7 +1408,7 @@ SECURE_BROWSER_XSS_FILTER
     | Env: ``SECURE_BROWSER_XSS_FILTER``
 
     If True, the SecurityMiddleware sets the X-XSS-Protection: 1; mode=block header on all responses that do not already have it.
-    This is `<Django settings. https://docs.djangoproject.com/en/2.1/ref/settings/#secure-browser-xss-filter>`_.
+    This is `<Django settings. https://docs.djangoproject.com/en/2.1/ref/settings/#secure-browser-xss-filter>`__
 
 SECURE_CONTENT_TYPE_NOSNIFF
 ---------------------------
@@ -1337,7 +1417,7 @@ SECURE_CONTENT_TYPE_NOSNIFF
     | Env: ``SECURE_CONTENT_TYPE_NOSNIFF``
 
     If True, the SecurityMiddleware sets the X-Content-Type-Options: nosniff header on all responses that do not already have it.
-    This is `Django settings: <https://docs.djangoproject.com/en/2.1/ref/settings/#secure-content-type-nosniff>`_.
+    This is `Django settings: <https://docs.djangoproject.com/en/2.1/ref/settings/#secure-content-type-nosniff>`__
 
 
 SECURE_HSTS_INCLUDE_SUBDOMAINS
@@ -1354,24 +1434,29 @@ SECURE_HSTS_SECONDS
     | Default: ``3600``
     | Env: ``SECURE_HSTS_SECONDS``
 
-    This is `Django settings: <https://docs.djangoproject.com/en/2.1/ref/settings/#secure-hsts-seconds>`_.
+    This is `Django settings: <https://docs.djangoproject.com/en/2.1/ref/settings/#secure-hsts-seconds>`__
     If set to a non-zero integer value, the SecurityMiddleware sets the HTTP Strict Transport Security header on all responses that do not already have it.
 
 SECURE_SSL_REDIRECT
 -------------------
 
     If True, the SecurityMiddleware redirects all non-HTTPS requests to HTTPS (except for those URLs matching a regular expression listed in SECURE_REDIRECT_EXEMPT).
-    This is `Django settings: <https://docs.djangoproject.com/en/2.1/ref/settings/#secure-ssl-redirect>`_.
+    This is `Django settings: <https://docs.djangoproject.com/en/2.1/ref/settings/#secure-ssl-redirect>`__
 
 SERVICE_UPDATE_INTERVAL
 -----------------------
 
-    TBD
+    | Default: ``0``
+
+    The Interval services are updated.
 
 SESSION_COOKIE_SECURE
 ---------------------
 
-    TBD
+    | Default: ``False``
+    | Env: ``SESSION_COOKIE_SECURE``
+
+    This is a `Django setting: <https://docs.djangoproject.com/en/2.1/ref/settings/#session-cookie-secure>`__
 
 SESSION_EXPIRED_CONTROL_ENABLED
 -------------------------------
@@ -1408,7 +1493,7 @@ SITE_HOST_NAME
 SITE_HOST_PORT
 --------------
 
-    | Default: ``8000 ``
+    | Default: ``8000``
     | Env: ``SITE_HOST_PORT``
 
     The Site hostport.
@@ -1433,7 +1518,7 @@ SOCIALACCOUNT_ADAPTER
 
     Default: ``geonode.people.adapters.SocialAccountAdapter``
 
-    This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+    This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`__
     It allows specifying a custom class to handle authentication for social accounts.
 
 SOCIALACCOUNT_AUTO_SIGNUP
@@ -1442,7 +1527,7 @@ SOCIALACCOUNT_AUTO_SIGNUP
     Default: ``True``
 
     Attempt to bypass the signup form by using fields (e.g. username, email) retrieved from the social account provider.
-    This is a `Django-allauth setting: <https://django-allauth.readthedocs.io/en/latest/configuration.html>`_.
+    This is a `Django-allauth setting: <https://django-allauth.readthedocs.io/en/latest/configuration.html>`__
 
 
 SOCIALACCOUNT_PROVIDERS
@@ -1492,7 +1577,7 @@ SOCIALACCOUNT_PROVIDERS
           },
       }
 
-  This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+  This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`__
   It should be a dictionary with provider specific settings
 
 SOCIALACCOUNT_PROFILE_EXTRACTORS
@@ -1559,7 +1644,7 @@ TASTYPIE_DEFAULT_FORMATS
     Default: ``json``
 
     This setting allows you to globally configure the list of allowed serialization formats for your entire site.
-    This is a `tastypie setting: <https://django-tastypie.readthedocs.io/en/v0.9.14/settings.html#tastypie-default-formats>`_.
+    This is a `tastypie setting: <https://django-tastypie.readthedocs.io/en/v0.9.14/settings.html#tastypie-default-formats>`__
 
 THEME_ACCOUNT_CONTACT_EMAIL
 ---------------------------
@@ -1662,5 +1747,5 @@ X_FRAME_OPTIONS
 
 Default: ``'ALLOW-FROM %s' % SITEURL``
 
-This is a `Django setting <https://docs.djangoproject.com/en/2.2/ref/clickjacking/#setting-x-frame-options-for-all-responses>`_.
+This is a `Django setting <https://docs.djangoproject.com/en/2.2/ref/clickjacking/#setting-x-frame-options-for-all-responses>`__
 
