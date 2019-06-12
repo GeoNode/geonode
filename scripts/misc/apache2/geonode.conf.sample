@@ -1,4 +1,4 @@
-WSGIDaemonProcess geonode python-path=/home/geo/geonode:/home/geo/Envs/geonode/lib/python2.7/site-packages user=www-data threads=15 processes=2
+WSGIDaemonProcess geonode python-path=/home/geo/geonode:/home/geo/.virtualenvs/geonode/lib/python2.7/site-packages user=www-data threads=15 processes=2
 
 <VirtualHost *:80>
     ServerName http://localhost

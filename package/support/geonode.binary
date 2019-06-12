@@ -2,14 +2,12 @@
 
 DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-geonode.local_settings}
 
-if [ -n "$WORKON_HOME" ]; then
-    DJANGO_ADMIN_CMD=$WORKON_HOME/bin/django-admin >/dev/null 2>/dev/null
+if [ -n "$VIRTUAL_ENV" ]; then
+    DJANGO_ADMIN_CMD=$VIRTUAL_ENV/bin/django-admin
 elif hash django-admin 2>/dev/null; then
     DJANGO_ADMIN_CMD=django-admin
+else
+    DJANGO_ADMIN_CMD=django-admin.py
 fi
 
-if [ -n "$DJANGO_ADMIN_CMD" ]; then
-    DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE $DJANGO_ADMIN_CMD "$@"
-else
-    DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE django-admin.py "$@"
-fi
+DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE $DJANGO_ADMIN_CMD "$@"

@@ -77,11 +77,6 @@ It will run locally against a file-system based ``SQLite`` database.
   sudo pip install --upgrade pip
   pip install --user virtualenv
   pip install --user virtualenvwrapper
-  export WORKON_HOME=~/Envs
-  mkdir -p $WORKON_HOME
-  source $HOME/.local/bin/virtualenvwrapper.sh
-  printf '\n%s\n%s\n%s' '# virtualenv' 'export WORKON_HOME=~/Envs' 'source $HOME/.local/bin/virtualenvwrapper.sh' >> ~/.bashrc
-  source ~/.bashrc
   mkvirtualenv --no-site-packages geonode
 
 .. note:: The next time you need to access the Virtual Environment just run
@@ -518,7 +513,7 @@ Serving {“geonode”, “geoserver”} via NGINX
   gid = www-data
 
   plugins = python
-  virtualenv = /home/geonode/Envs/geonode
+  virtualenv = /home/geonode/.virtualenvs/geonode
   env = DEBUG=False
   env = DJANGO_SETTINGS_MODULE=geonode.settings
   env = SECRET_KEY='RanD0m%3cr3tK3y'
@@ -755,7 +750,7 @@ Refresh ``GeoNode`` and ``GeoServer`` **OAuth2** settings
   pip install -e git+https://github.com/justquick/django-activity-stream.git#egg=django-activity-stream
 
   # Update the GeoNode ip or hostname
-  sudo PYTHONWARNINGS=ignore WORKON_HOME=/home/geonode/Envs/geonode DJANGO_SETTINGS_MODULE=geonode.settings GEONODE_ETC=/opt/geonode GEOSERVER_DATA_DIR=/opt/data/geoserver_data TOMCAT_SERVICE="service tomcat" APACHE_SERVICE="service nginx" geonode_updateip -p localhost
+  sudo PYTHONWARNINGS=ignore VIRTUAL_ENV=$VIRTUAL_ENV DJANGO_SETTINGS_MODULE=geonode.settings GEONODE_ETC=/opt/geonode GEOSERVER_DATA_DIR=/opt/data/geoserver_data TOMCAT_SERVICE="service tomcat" APACHE_SERVICE="service nginx" geonode_updateip -p localhost
 
 The ``GeoNode`` service should now run on ``http://localhost/``
 
@@ -809,7 +804,7 @@ Restart ``UWSGI`` and update ``OAuth2`` by using the new ``geonode.local_setting
   sudo service uwsgi restart
 
   # Update the GeoNode ip or hostname
-  sudo PYTHONWARNINGS=ignore WORKON_HOME=/home/geonode/Envs/geonode DJANGO_SETTINGS_MODULE=geonode.local_settings GEONODE_ETC=/opt/geonode GEOSERVER_DATA_DIR=/opt/data/geoserver_data TOMCAT_SERVICE="service tomcat" APACHE_SERVICE="service nginx" geonode_updateip -p localhost
+  sudo PYTHONWARNINGS=ignore VIRTUAL_ENV=$VIRTUAL_ENV DJANGO_SETTINGS_MODULE=geonode.local_settings GEONODE_ETC=/opt/geonode GEOSERVER_DATA_DIR=/opt/data/geoserver_data TOMCAT_SERVICE="service tomcat" APACHE_SERVICE="service nginx" geonode_updateip -p localhost
 
 Update the settings in order to update GeoNode and GeoServer services running on a public IP or hostname
 ........................................................................................................
@@ -852,7 +847,7 @@ In particular the steps to do are:
     cd /opt/geonode
 
     # Update the GeoNode ip or hostname
-    sudo PYTHONWARNINGS=ignore WORKON_HOME=/home/geonode/Envs/geonode DJANGO_SETTINGS_MODULE=geonode.local_settings GEONODE_ETC=/opt/geonode GEOSERVER_DATA_DIR=/opt/data/geoserver_data TOMCAT_SERVICE="service tomcat" APACHE_SERVICE="service nginx" geonode_updateip -l localhost -p www.example.org
+    sudo PYTHONWARNINGS=ignore VIRTUAL_ENV=$VIRTUAL_ENV DJANGO_SETTINGS_MODULE=geonode.local_settings GEONODE_ETC=/opt/geonode GEOSERVER_DATA_DIR=/opt/data/geoserver_data TOMCAT_SERVICE="service tomcat" APACHE_SERVICE="service nginx" geonode_updateip -l localhost -p www.example.org
 
 4. Update the existing ``GeoNode`` links in order to hit the new hostname.
 
