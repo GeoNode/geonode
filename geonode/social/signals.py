@@ -90,33 +90,47 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
     except Exception as e:
         logger.exception(e)
 
-    action_settings['comment'].update(actor=getattr(instance, 'author', None),
-                                      created_verb=_("added a comment"),
-                                      target=getattr(instance, 'content_object', None),
-                                      updated_verb=_("updated a comment"),
-                                      )
-    action_settings['layer'].update(created_verb=_('uploaded'))
-    action_settings['document'].update(created_verb=_('uploaded'))
+    try:
+        action_settings['comment'].update(actor=getattr(instance, 'author', None),
+                                          created_verb=_("added a comment"),
+                                          target=getattr(instance, 'content_object', None),
+                                          updated_verb=_("updated a comment"),
+                                          )
+    except Exception as e:
+        logger.exception(e)
 
-    action = action_settings[obj_type]
-    if created:
-        # object was created
-        verb = action.get('created_verb')
-        raw_action = 'created'
+    try:
+        action_settings['layer'].update(created_verb=_('uploaded'))
+    except Exception as e:
+        logger.exception(e)
 
-    else:
-        if created is False:
-            # object was saved.
-            if not isinstance(instance, Layer) and not isinstance(instance, Map):
-                verb = action.get('updated_verb')
-                raw_action = 'updated'
+    try:
+        action_settings['document'].update(created_verb=_('uploaded'))
+    except Exception as e:
+        logger.exception(e)
 
-        if created is None:
-            # object was deleted.
-            verb = action.get('deleted_verb')
-            raw_action = 'deleted'
-            action.update(action_object=None,
-                          target=None)
+    try:
+        action = action_settings[obj_type]
+        if created:
+            # object was created
+            verb = action.get('created_verb')
+            raw_action = 'created'
+
+        else:
+            if created is False:
+                # object was saved.
+                if not isinstance(instance, Layer) and not isinstance(instance, Map):
+                    verb = action.get('updated_verb')
+                    raw_action = 'updated'
+
+            if created is None:
+                # object was deleted.
+                verb = action.get('deleted_verb')
+                raw_action = 'deleted'
+                action.update(action_object=None,
+                              target=None)
+    except Exception as e:
+        logger.exception(e)
 
     if verb:
         try:

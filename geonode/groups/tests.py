@@ -377,20 +377,20 @@ class SmokeTest(GeoNodeBaseTestSupport):
         """
 
         response = self.client.get("/groups/")
-        self.assertEqual(200, response.status_code)
+        self.assertEqual(response.status_code, 200)
 
         response = self.client.get("/groups/group/bar/")
-        self.assertEqual(200, response.status_code)
+        self.assertEqual(response.status_code, 200)
 
         response = self.client.get("/groups/group/bar/members/")
-        self.assertEqual(200, response.status_code)
+        self.assertEqual(response.status_code, 200)
 
         # 302 for auth failure since we redirect to login page
         response = self.client.get("/groups/create/")
-        self.assertEqual(302, response.status_code)
+        self.assertTrue(response.status_code in (302, 403))
 
         response = self.client.get("/groups/group/bar/update/")
-        self.assertEqual(302, response.status_code)
+        self.assertEqual(response.status_code, 302)
 
         # # 405 - json endpoint, doesn't support GET
         # response = self.client.get("/groups/group/bar/invite/")
@@ -669,12 +669,12 @@ class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
         view_url = reverse('group_category_create')
         # Test that the view is protected to anonymous users
         r = self.client.get(view_url)
-        self.assertEqual(r.status_code, 302)
+        self.assertTrue(r.status_code in (302, 403))
 
         # Test that the view is protected to non-admin users
         self.client.login(username='test', password='test')
         r = self.client.post(view_url)
-        self.assertEqual(r.status_code, 401)
+        self.assertTrue(r.status_code in (401, 403))
 
         # Test that the view is accessible to administrators
         self.client.login(username='admin', password='admin')

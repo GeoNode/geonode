@@ -38,6 +38,7 @@ from geonode.geoserver.helpers import (cascading_delete,
                                        create_gs_thumbnail,
                                        _stylefilterparams_geowebcache_layer,
                                        _invalidate_geowebcache_layer)
+from geonode.catalogue.models import catalogue_post_save
 from geonode.base.models import ResourceBase
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
@@ -93,7 +94,7 @@ def geoserver_post_save(instance, sender, created, **kwargs):
             try:
                 create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
             except BaseException:
-                logger.warn("!WARNING! - Failure while Creating Thumbnail for Layer [%s]" % (instance.alternate))
+                logger.warn("Failure Creating Thumbnail for Layer [%s]" % (instance.alternate))
 
 
 def geoserver_post_save_local(instance, *args, **kwargs):
@@ -328,6 +329,9 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
     # Refresh from DB
     instance.refresh_from_db()
+
+    # Updating the Catalogue
+    catalogue_post_save(instance=instance, sender=instance.__class__)
 
     # store the resource to avoid another geoserver call in the post_save
     if gs_resource:

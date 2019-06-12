@@ -941,7 +941,16 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                     for _p in params.keys():
                         if _p.lower() not in thumbnail_create_url.lower():
                             thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (_p, params[_p])
-                    resp, image = ogc_client.request(thumbnail_create_url)
+                    headers = {}
+                    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                        _ogc_server_settings = settings.OGC_SERVER['default']
+                        _user = _ogc_server_settings['USER'] if 'USER' in _ogc_server_settings else 'admin'
+                        _pwd = _ogc_server_settings['PASSWORD'] if 'PASSWORD' in _ogc_server_settings else 'geoserver'
+                        import base64
+                        valid_uname_pw = base64.b64encode(
+                            b"%s:%s" % (_user, _pwd)).decode("ascii")
+                        headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+                    resp, image = ogc_client.request(thumbnail_create_url, headers=headers)
                     if 'ServiceException' in image or \
                        resp.status_code < 200 or resp.status_code > 299:
                         msg = 'Unable to obtain thumbnail: %s' % image

@@ -1253,6 +1253,7 @@ def check_ogc_backend(backend_package):
 
 
 class HttpClient(object):
+
     def __init__(self):
         self.timeout = 5
         self.retries = 5
@@ -1275,19 +1276,22 @@ class HttpClient(object):
             self.password = ogc_server_settings['PASSWORD'] if 'PASSWORD' in ogc_server_settings else 'geoserver'
 
     def request(self, url, method='GET', data=None, headers={}, stream=False, timeout=None, user=None):
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
-            valid_uname_pw = base64.b64encode(
-                b"%s:%s" % (self.username, self.password)).decode("ascii")
-            headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
-            try:
-                _u = user or get_user_model().objects.get(username=self.username)
-                access_token = get_or_create_token(_u)
-                if access_token and not access_token.is_expired():
-                    headers['Authorization'] = 'Bearer %s' % access_token.token
-            except BaseException:
-                tb = traceback.format_exc()
-                logger.debug(tb)
-                pass
+        if (user or self.username != 'admin') and \
+        check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
+            if connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
+                try:
+                    _u = user or get_user_model().objects.get(username=self.username)
+                    access_token = get_or_create_token(_u)
+                    if access_token and not access_token.is_expired():
+                        headers['Authorization'] = 'Bearer %s' % access_token.token
+                except BaseException:
+                    tb = traceback.format_exc()
+                    logger.debug(tb)
+                    pass
+            else:
+                valid_uname_pw = base64.b64encode(
+                    b"%s:%s" % (self.username, self.password)).decode("ascii")
+                headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
 
         response = None
         content = None
@@ -1464,24 +1468,33 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
-        from geonode.geoserver.helpers import ogc_server_settings
+        from geonode.geoserver.helpers import ogc_server_settings, gs_catalog
 
         # Compute parameters for the new links
-        try:
-            bbox = instance.gs_resource.native_bbox
-        except BaseException:
-            bbox = instance.bbox
-        dx = float(bbox[1]) - float(bbox[0])
-        dy = float(bbox[3]) - float(bbox[2])
-
-        dataAspect = 1 if dy == 0 else dx / dy
-
         height = 550
-        width = int(height * dataAspect)
+        width = 550
+        bbox = None
+        srid = instance.srid if instance.srid else getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:4326')
+        try:
+            gs_resource = gs_catalog.get_resource(
+                instance.name,
+                workspace=instance.workspace)
+            if not gs_resource:
+                gs_resource = gs_catalog.get_resource(instance.name)
+            bbox = gs_resource.native_bbox
+
+            dx = float(bbox[1]) - float(bbox[0])
+            dy = float(bbox[3]) - float(bbox[2])
+            dataAspect = 1 if dy == 0 else dx / dy
+            width = int(height * dataAspect)
+
+            srid = bbox[4]
+            bbox = ','.join(str(x) for x in [bbox[0], bbox[2], bbox[1], bbox[3]])
+        except BaseException as e:
+            logger.exception(e)
 
         # Parse Layer BBOX and SRID
-        srid = instance.srid if instance.srid else getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:4326')
-        if srid and instance.bbox_x0:
+        if not bbox and srid and instance.bbox_x0:
             bbox = ','.join(str(x) for x in [instance.bbox_x0, instance.bbox_y0,
                                              instance.bbox_x1, instance.bbox_y1])
 
@@ -1582,6 +1595,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         html_link_url = '%s%s' % (
             site_url, instance.get_absolute_url())
 
+        if Link.objects.filter(resource=instance.resourcebase_ptr, url=html_link_url).count() > 1:
+            Link.objects.filter(resource=instance.resourcebase_ptr, url=html_link_url).delete()
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=html_link_url,
                                    defaults=dict(
@@ -1603,6 +1618,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 instance.alternate + '&STYLE=' + style.name + \
                 '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
+            if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() > 1:
+                Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).delete()
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        url=legend_url,
                                        defaults=dict(
@@ -1618,11 +1635,13 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         ogc_wms_path = 'ows'
         ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
         ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
+        if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).count() > 1:
+            Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).delete()
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=ogc_wms_url,
+                                   name=ogc_wms_name,
                                    defaults=dict(
                                        extension='html',
-                                       name=ogc_wms_name,
                                        url=ogc_wms_url,
                                        mime='text/html',
                                        link_type='OGC:WMS',
@@ -1634,11 +1653,13 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             ogc_wfs_path = 'ows'
             ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
             ogc_wfs_name = 'OGC WFS: %s Service' % instance.workspace
+            if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url).count() > 1:
+                Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url).delete()
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        url=ogc_wfs_url,
+                                       name=ogc_wfs_name,
                                        defaults=dict(
                                            extension='html',
-                                           name=ogc_wfs_name,
                                            url=ogc_wfs_url,
                                            mime='text/html',
                                            link_type='OGC:WFS',
@@ -1650,11 +1671,13 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             ogc_wcs_path = 'ows'
             ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)
             ogc_wcs_name = 'OGC WCS: %s Service' % instance.workspace
+            if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url).count() > 1:
+                Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url).delete()
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        url=ogc_wcs_url,
+                                       name=ogc_wcs_name,
                                        defaults=dict(
                                            extension='html',
-                                           name=ogc_wcs_name,
                                            url=ogc_wcs_url,
                                            mime='text/html',
                                            link_type='OGC:WCS',

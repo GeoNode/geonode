@@ -72,10 +72,10 @@ GEOSERVER_PUBLIC_HOST = os.getenv(
 )
 
 GEOSERVER_PUBLIC_PORT = os.getenv(
-    'GEOSERVER_PUBLIC_PORT', SITE_HOST_PORT
+    'GEOSERVER_PUBLIC_PORT', 8080
 )
 
-_default_public_location = 'http://{}:{}/gs/'.format(GEOSERVER_PUBLIC_HOST, GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/gs/'.format(GEOSERVER_PUBLIC_HOST)
+_default_public_location = 'http://{}:{}/geoserver/'.format(GEOSERVER_PUBLIC_HOST, GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/geoserver/'.format(GEOSERVER_PUBLIC_HOST)
 
 GEOSERVER_WEB_UI_LOCATION = os.getenv(
     'GEOSERVER_WEB_UI_LOCATION', GEOSERVER_LOCATION
@@ -302,106 +302,6 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
-
-# To enable the REACT based Client enable those
-# INSTALLED_APPS += ('geonode-client', )
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'react'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.ReactHookSet"
-
-# To enable the Leaflet based Client enable those
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
-
-# CORS_ORIGIN_WHITELIST = (
-#     HOSTNAME
-# )
-
-# To enable the MapStore2 based Client enable those
-# if 'geonode_mapstore_client' not in INSTALLED_APPS:
-#     INSTALLED_APPS += (
-#         'mapstore2_adapter',
-#         'geonode_mapstore_client',)
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'mapstore'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode_mapstore_client.hooksets.MapStoreHookSet"
-# MAPSTORE_DEBUG = False
-
-def get_geonode_catalogue_service():
-    if PYCSW:
-        pycsw_config = PYCSW["CONFIGURATION"]
-        if pycsw_config:
-                pycsw_catalogue = {
-                    ("%s" % pycsw_config['metadata:main']['identification_title']): {
-                        "url": CATALOGUE['default']['URL'],
-                        "type": "csw",
-                        "title": pycsw_config['metadata:main']['identification_title'],
-                        "autoload": True
-                     }
-                }
-                return pycsw_catalogue
-    return None
-
-GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
-
-MAPSTORE_CATALOGUE_SERVICES = {
-    "Demo WMS Service": {
-        "url": "https://demo.geo-solutions.it/geoserver/wms",
-        "type": "wms",
-        "title": "Demo WMS Service",
-        "autoload": False
-     },
-    "Demo WMTS Service": {
-        "url": "https://demo.geo-solutions.it/geoserver/gwc/service/wmts",
-        "type": "wmts",
-        "title": "Demo WMTS Service",
-        "autoload": False
-    }
-}
-
-MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
-
-if GEONODE_CATALOGUE_SERVICE:
-    MAPSTORE_CATALOGUE_SERVICES[GEONODE_CATALOGUE_SERVICE.keys()[0]] = GEONODE_CATALOGUE_SERVICE[GEONODE_CATALOGUE_SERVICE.keys()[0]]
-    MAPSTORE_CATALOGUE_SELECTED_SERVICE = GEONODE_CATALOGUE_SERVICE.keys()[0]
-
-    DEFAULT_MS2_BACKGROUNDS = [
-        {
-            "type": "osm",
-            "title": "Open Street Map",
-            "name": "mapnik",
-            "source": "osm",
-            "group": "background",
-            "visibility": True
-        }, {
-            "type": "tileprovider",
-            "title": "OpenTopoMap",
-            "provider": "OpenTopoMap",
-            "name": "OpenTopoMap",
-            "source": "OpenTopoMap",
-            "group": "background",
-            "visibility": False
-        }, {
-            "type": "wms",
-            "title": "Sentinel-2 cloudless - https://s2maps.eu",
-            "format": "image/png8",
-            "id": "s2cloudless",
-            "name": "s2cloudless:s2cloudless",
-            "url": "https://maps.geo-solutions.it/geoserver/wms",
-            "group": "background",
-            "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
-            "visibility": False
-       }, {
-            "source": "ol",
-            "group": "background",
-            "id": "none",
-            "name": "empty",
-            "title": "Empty Background",
-            "type": "empty",
-            "visibility": False,
-            "args": ["Empty Background", {"visibility": False}]
-        }
-    ]
-
-MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
 
 LOGGING = {
     'version': 1,

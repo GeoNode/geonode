@@ -3,8 +3,6 @@ import os
 import re
 import ast
 
-import docker
-
 from invoke import task
 
 BOOTSTRAP_IMAGE_CHEIP = 'codenvy/che-ip:nightly'
@@ -40,7 +38,7 @@ def update(ctx):
         'GEONODE_LB_PORT'
     ):
         ctx.run("echo export GEOSERVER_PUBLIC_LOCATION=\
-http://{public_fqdn}/gs/ >> {override_fn}".format(**envs), pty=True)
+http://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
         ctx.run("echo export GEOSERVER_WEB_UI_LOCATION=\
 http://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
         ctx.run("echo export SITEURL=\
@@ -117,41 +115,6 @@ def initialized(ctx):
     ctx.run('date > /mnt/volumes/statics/geonode_init.lock')
 
 
-def _docker_host_ip():
-    client = docker.from_env(version='1.24')
-    ip_list = client.containers.run(BOOTSTRAP_IMAGE_CHEIP,
-                                    network_mode='host'
-                                    ).split("\n")
-    if len(ip_list) > 1:
-        print("Docker daemon is running on more than one \
-address {0}".format(ip_list))
-        print("Only the first address:{0} will be returned!".format(
-            ip_list[0]
-        ))
-    else:
-        print("Docker daemon is running at the following \
-address {0}".format(ip_list[0]))
-    return ip_list[0]
-
-
-def _container_exposed_port(component, instname):
-    client = docker.from_env(version='1.24')
-    try:
-        ports_dict = json.dumps(
-            [c.attrs['Config']['ExposedPorts'] for c in client.containers.list(
-                filters={
-                    'label': 'org.geonode.component={0}'.format(component),
-                    'status': 'running'
-                }
-            ) if '{0}'.format(instname) in c.name][0]
-        )
-        for key in json.loads(ports_dict):
-            port = re.split('/tcp', key)[0]
-    except BaseException:
-        port = 80
-    return port
-
-
 def _update_db_connstring():
     user = os.getenv('GEONODE_DATABASE', 'geonode')
     pwd = os.getenv('GEONODE_DATABASE_PASSWORD', 'geonode')
@@ -182,19 +145,12 @@ def _localsettings():
 
 
 def _geonode_public_host_ip():
-    gn_pub_hostip = os.getenv('GEONODE_LB_HOST_IP', '')
-    if not gn_pub_hostip:
-        gn_pub_hostip = _docker_host_ip()
+    gn_pub_hostip = os.getenv('GEONODE_LB_HOST_IP', 'localhost')
     return gn_pub_hostip
 
 
 def _geonode_public_port():
-    gn_pub_port = os.getenv('GEONODE_LB_PORT', '')
-    if not gn_pub_port:
-        gn_pub_port = _container_exposed_port(
-            'nginx',
-            os.getenv('GEONODE_INSTANCE_NAME', 'geonode')
-        )
+    gn_pub_port = os.getenv('GEONODE_LB_PORT', '80')
     return gn_pub_port
 
 
