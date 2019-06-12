@@ -29,7 +29,6 @@ services:
       - db
       - data-dir-conf
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - geoserver-data-dir:/geoserver_data/data
     env_file:
       - ./scripts/docker/env/production/geoserver.env
@@ -49,7 +48,6 @@ services:
     # command: paver start_django -b 0.0.0.0:8000
     # command: uwsgi --ini uwsgi.ini
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - statics:/mnt/volumes/statics
       - geoserver-data-dir:/geoserver_data/data
     env_file:

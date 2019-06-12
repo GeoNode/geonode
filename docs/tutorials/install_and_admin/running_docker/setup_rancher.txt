@@ -68,7 +68,7 @@ Several options will be shown to decide what kind of machine driver is going to 
 
         sudo docker run -e CATTLE_AGENT_IP="<host-server-public-ip>"  -e CATTLE_HOST_LABELS='geonodehost=<host label value>'  --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.9 http://<rancher-server-ip>:8080/v1/scripts/<registrationToken>
         # sudo can be avoided if the user has been privileged
-    
+
     6. Click on the **Close** button.
 
 After some minutes the new host should be registered and available in the active status under the menu **Infrastructure** => **Hosts**.
