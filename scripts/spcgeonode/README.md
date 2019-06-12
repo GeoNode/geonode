@@ -21,6 +21,9 @@ All the following commands happen from this folder:
 cd /path/to/geonode/scripts/spcgeonode
 ```
 
+Copy the `template.env` file to `.env` and change it. This is the place to specify your settings, e.g. the instance name and passwords.
+
+
 ### Development
 
 To start only the main services (should be enough for development) :
