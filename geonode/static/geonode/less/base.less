@@ -7,8 +7,33 @@
 div#user_messages {
   position: absolute;
   width: 500px;
-  margin-top: 80px;
-  right: 300px;
+  bottom: 20px;
+  left: 40px;
+  z-index: 9999;
+  -moz-animation: msgDisappear 0s ease-in 5s forwards;
+  -webkit-animation: msgDisappear 0s ease-in 5s forwards;
+  -o-animation: msgDisappear 0s ease-in 5s forwards;
+  animation: msgDisappear 0s ease-in 5s forwards;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+@keyframes msgDisappear {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+@-webkit-keyframes msgDisappear {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 
 body {
@@ -728,10 +753,6 @@ article.tab-pane {
 .profile-details {
   background: white;
   color: @text-color;
-
-  small {
-    word-wrap: break-word;
-  }
 
   .group-logo {
     margin: 0.5em;
