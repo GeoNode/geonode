@@ -172,8 +172,8 @@ class Map(ResourceBase, GXPMapBase):
         template_name = hookset.update_from_viewer(conf, context=context)
         conf = context['config']
 
-        self.title = conf['about']['title']
-        self.abstract = conf['about']['abstract']
+        self.title = conf['title'] if 'title' in conf else conf['about']['title']
+        self.abstract = conf['abstract'] if 'abstract' in conf else conf['about']['abstract']
 
         center = conf['map']['center'] if 'center' in conf['map'] else settings.DEFAULT_MAP_CENTER
         self.zoom = conf['map']['zoom'] if 'zoom' in conf['map'] else settings.DEFAULT_MAP_ZOOM
@@ -426,15 +426,14 @@ class MapLayer(models.Model, GXPLayerBase):
     # The z-index of this layer in the map; layers with a higher stack_order will
     # be drawn on top of others.
 
-    format = models.CharField(
+    format = models.TextField(
         _('format'),
         null=True,
-        max_length=200,
         blank=True)
     # The content_type of the image format to use for tiles (image/png, image/jpeg,
     # image/gif...)
 
-    name = models.CharField(_('name'), null=True, max_length=200)
+    name = models.TextField(_('name'), null=True)
     # The name of the layer to load.
 
     # The interpretation of this name depends on the source of the layer (Google
@@ -444,10 +443,9 @@ class MapLayer(models.Model, GXPLayerBase):
     opacity = models.FloatField(_('opacity'), default=1.0)
     # The opacity with which to render this layer, on a scale from 0 to 1.
 
-    styles = models.CharField(
+    styles = models.TextField(
         _('styles'),
         null=True,
-        max_length=200,
         blank=True)
     # The name of the style to use for this layer (only useful for WMS layers.)
 
@@ -459,7 +457,7 @@ class MapLayer(models.Model, GXPLayerBase):
     # A boolean value, true if we should prevent the user from dragging and
     # dropping this layer in the layer chooser.
 
-    group = models.CharField(_('group'), null=True, max_length=200, blank=True)
+    group = models.TextField(_('group'), null=True, blank=True)
     # A group label to apply to this layer.  This affects the hierarchy displayed
     # in the map viewer's layer tree.
 

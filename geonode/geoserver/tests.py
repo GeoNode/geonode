@@ -25,16 +25,15 @@ import json
 import os
 import shutil
 import tempfile
+from django.core.management import call_command
 from os.path import basename, splitext
 
-from django.contrib.auth import get_user_model
-from django.http import HttpRequest
-from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
 
-from guardian.shortcuts import assign_perm, get_anonymous_user
+from guardian.shortcuts import assign_perm, remove_perm
 
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
@@ -639,8 +638,9 @@ class LayerTests(GeoNodeBaseTestSupport):
         """
 
         # Setup some layer names to work with
-        valid_layer_typename = Layer.objects.all()[0].alternate
-        Layer.objects.all()[0].set_default_permissions()
+        layer = Layer.objects.all()[0]
+        valid_layer_typename = layer.alternate
+        layer.set_default_permissions()
         invalid_layer_typename = "n0ch@nc3"
 
         # Test that an invalid layer.typename is handled for properly
@@ -664,12 +664,40 @@ class LayerTests(GeoNodeBaseTestSupport):
         response_json = json.loads(response.content)
         self.assertEquals(response_json['authorized'], False)
 
-        # Next Test with a user that does NOT have the proper perms
+        # Next Test with a user that has the proper perms (is owner)
         logged_in = self.client.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
         response = self.client.post(
             reverse(
                 'feature_edit_check',
+                args=(
+                    valid_layer_typename,
+                )))
+        response_json = json.loads(response.content)
+        self.assertEquals(response_json['authorized'], True)
+
+        # Let's change layer permissions and try again with non-owner
+        norman = get_user_model().objects.get(username='norman')
+        remove_perm('change_layer_data', norman, layer)
+        assign_perm('change_layer_style', norman, layer)
+        perms = layer.get_all_level_info()
+        self.assertIn('change_layer_style', perms['users'][norman])
+        self.assertNotIn('change_layer_data', perms['users'][norman])
+
+        logged_in = self.client.login(username='norman', password='norman')
+        self.assertEquals(logged_in, True)
+        response = self.client.post(
+            reverse(
+                'feature_edit_check',
+                args=(
+                    valid_layer_typename,
+                )))
+        response_json = json.loads(response.content)
+        self.assertEquals(response_json['authorized'], False)
+
+        response = self.client.post(
+            reverse(
+                'style_edit_check',
                 args=(
                     valid_layer_typename,
                 )))
@@ -834,12 +862,10 @@ class UtilsTests(GeoNodeBaseTestSupport):
                 'PRINT_NG_ENABLED': True,
                 'GEONODE_SECURITY_ENABLED': True,
                 'GEOFENCE_SECURITY_ENABLED': True,
-                'GEOGIG_ENABLED': False,
                 'WMST_ENABLED': False,
                 'BACKEND_WRITE_ENABLED': True,
                 'WPS_ENABLED': False,
                 'DATASTORE': str(),
-                'GEOGIG_DATASTORE_DIR': str(),
             }
         }
 
@@ -847,8 +873,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
             'BACKEND': 'geonode.rest',
             'OPTIONS': {
                 'TIME_ENABLED': False,
-                'MOSAIC_ENABLED': False,
-                'GEOGIG_ENABLED': False}}
+                'MOSAIC_ENABLED': False}}
 
         self.DATABASE_DEFAULT_SETTINGS = {
             'default': {
@@ -882,7 +907,6 @@ class UtilsTests(GeoNodeBaseTestSupport):
             self.assertTrue(ogc_settings.MAPFISH_PRINT_ENABLED)
             self.assertTrue(ogc_settings.PRINT_NG_ENABLED)
             self.assertTrue(ogc_settings.GEONODE_SECURITY_ENABLED)
-            self.assertFalse(ogc_settings.GEOGIG_ENABLED)
             self.assertFalse(ogc_settings.WMST_ENABLED)
             self.assertTrue(ogc_settings.BACKEND_WRITE_ENABLED)
             self.assertFalse(ogc_settings.WPS_ENABLED)
@@ -913,7 +937,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(wcs)
 
         try:
-            wcs_url = urljoin(settings.SITEURL, reverse('wcs_endpoint'))
+            wcs_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
         except BaseException:
             wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
         self.assertEquals(wcs,
@@ -924,7 +948,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(wfs)
 
         try:
-            wfs_url = urljoin(settings.SITEURL, reverse('wfs_endpoint'))
+            wfs_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
         except BaseException:
             wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
         self.assertEquals(wfs,
@@ -935,11 +959,11 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(wms)
 
         try:
-            wms_url = urljoin(settings.SITEURL, reverse('wms_endpoint'))
+            wms_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
         except BaseException:
             wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
         self.assertEquals(wms,
-                          '%s?version=1.1.1&request=GetCapabilities&service=WMS' % wms_url)
+                          '%s?version=1.3.0&request=GetCapabilities&service=WMS' % wms_url)
 
         # Test OWS Download Links
         import urllib
@@ -999,10 +1023,6 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_importer_configuration(self):
-        """
-        Tests that the OGC_Servers_Handler throws an ImproperlyConfigured exception when using the importer
-        backend without a vector database and a datastore configured.
-        """
         database_settings = self.DATABASE_DEFAULT_SETTINGS.copy()
         ogc_server_settings = self.OGC_DEFAULT_SETTINGS.copy()
         uploader_settings = self.UPLOADER_DEFAULT_SETTINGS.copy()
@@ -1010,20 +1030,17 @@ class UtilsTests(GeoNodeBaseTestSupport):
         uploader_settings['BACKEND'] = 'geonode.importer'
         self.assertTrue(['geonode_imports' not in database_settings.keys()])
 
+        # Test the importer backend without specifying a datastore or
+        # corresponding database.
         with self.settings(UPLOADER=uploader_settings, OGC_SERVER=ogc_server_settings, DATABASES=database_settings):
-
-            # Test the importer backend without specifying a datastore or
-            # corresponding database.
-            with self.assertRaises(ImproperlyConfigured):
-                OGC_Servers_Handler(ogc_server_settings)['default']
+            OGC_Servers_Handler(ogc_server_settings)['default']
 
         ogc_server_settings['default']['DATASTORE'] = 'geonode_imports'
 
         # Test the importer backend with a datastore but no corresponding
         # database.
         with self.settings(UPLOADER=uploader_settings, OGC_SERVER=ogc_server_settings, DATABASES=database_settings):
-            with self.assertRaises(ImproperlyConfigured):
-                OGC_Servers_Handler(ogc_server_settings)['default']
+            OGC_Servers_Handler(ogc_server_settings)['default']
 
         database_settings['geonode_imports'] = database_settings[
             'default'].copy()
@@ -1036,75 +1053,125 @@ class UtilsTests(GeoNodeBaseTestSupport):
             OGC_Servers_Handler(ogc_server_settings)['default']
 
 
-class SecurityTest(GeoNodeBaseTestSupport):
-
-    type = 'layer'
-
-    """
-    Tests for the Geonode security app.
-    """
-
-    def setUp(self):
-        super(SecurityTest, self).setUp()
+class SignalsTests(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_login_middleware(self):
-        """
-        Tests the Geonode login required authentication middleware.
-        """
-        from geonode.security.middleware import LoginRequiredMiddleware
-        middleware = LoginRequiredMiddleware()
+    def test_set_resources_links(self):
 
-        white_list = [
-            reverse('account_ajax_login'),
-            reverse('account_confirm_email', kwargs=dict(key='test')),
-            reverse('account_login'),
-            reverse('account_reset_password'),
-            reverse('forgot_username'),
-            reverse('layer_acls'),
-            reverse('layer_resolve_user'),
-        ]
+        from django.db.models import Q
+        from geonode.base.models import Link
+        from geonode.catalogue import get_catalogue
 
-        black_list = [
-            reverse('account_signup'),
-            reverse('document_browse'),
-            reverse('maps_browse'),
-            reverse('layer_browse'),
-            reverse('layer_detail', kwargs=dict(layername='geonode:Test')),
-            reverse('layer_remove', kwargs=dict(layername='geonode:Test')),
-            reverse('profile_browse'),
-        ]
-
-        request = HttpRequest()
-        request.user = get_anonymous_user()
-
-        # Requests should be redirected to the the `redirected_to` path when un-authenticated user attempts to visit
-        # a black-listed url.
-        for path in black_list:
-            request.path = path
-            response = middleware.process_request(request)
-            self.assertEqual(response.status_code, 302)
+        # Links
+        _def_link_types = ['original', 'metadata']
+        _links = Link.objects.filter(link_type__in=_def_link_types)
+        # Check 'original' and 'metadata' links exist
+        self.assertIsNotNone(
+            _links,
+            "No 'original' and 'metadata' links have been found"
+        )
+        self.assertTrue(
+            _links.count() > 0,
+            "No 'original' and 'metadata' links have been found"
+        )
+        # Delete all 'original' and 'metadata' links
+        _links.delete()
+        self.assertFalse(_links.count() > 0, "No links have been deleted")
+        # Delete resources metadata
+        _layers = Layer.objects.exclude(
+            Q(metadata_xml__isnull=True) |
+            Q(metadata_xml__exact='') |
+            Q(csw_anytext__isnull=True) |
+            Q(csw_anytext__exact='')
+        )
+        count = _layers.count()
+        self.assertTrue(count > 0, "No layers have got metadata")
+        if count:
+            _layers.update(metadata_xml=None)
+            _updated_layers = Layer.objects.exclude(
+                Q(metadata_xml__isnull=True) |
+                Q(metadata_xml__exact='') |
+                Q(csw_anytext__isnull=True) |
+                Q(csw_anytext__exact='')
+            )
+            updated_count = _updated_layers.count()
             self.assertTrue(
-                response.get('Location').startswith(
-                    middleware.redirect_to))
-
-        # The middleware should return None when an un-authenticated user
-        # attempts to visit a white-listed url.
-        for path in white_list:
-            request.path = path
-            response = middleware.process_request(request)
-            self.assertIsNone(
-                response,
-                msg="Middleware activated for white listed path: {0}".format(path))
-
-        self.client.login(username='admin', password='admin')
-        admin = get_user_model().objects.get(username='admin')
-        self.assertTrue(admin.is_authenticated())
-        request.user = admin
-
-        # The middleware should return None when an authenticated user attempts
-        # to visit a black-listed url.
-        for path in black_list:
-            request.path = path
-            response = middleware.process_request(request)
-            self.assertIsNone(response)
+                updated_count == 0,
+                "Metadata have not been updated (deleted) correctly"
+            )
+        # Call migrate
+        call_command("migrate", verbosity=0)
+        # Check links
+        _post_migrate_links = Link.objects.filter(link_type__in=_def_link_types)
+        self.assertTrue(
+            _post_migrate_links.count() > 0,
+            "No links have been restored"
+        )
+        # Check layers
+        _post_migrate_layers = Layer.objects.exclude(
+            Q(metadata_xml__isnull=True) |
+            Q(metadata_xml__exact='') |
+            Q(csw_anytext__isnull=True) |
+            Q(csw_anytext__exact='')
+        )
+        post_migrate_layers_count = _post_migrate_layers.count()
+        self.assertTrue(
+            post_migrate_layers_count > 0,
+            "After migrations, there are no layers with metadata"
+        )
+        self.assertTrue(
+            post_migrate_layers_count >= count,
+            "After migrations, some metadata have not been restored correctly"
+        )
+        for _lyr in _post_migrate_layers:
+            # Check original links in csw_anytext
+            _post_migrate_links_orig = Link.objects.filter(
+                resource=_lyr.resourcebase_ptr,
+                resource_id=_lyr.resourcebase_ptr.id,
+                link_type='original'
+            )
+            self.assertTrue(
+                _post_migrate_links_orig.count() > 0,
+                "No 'original' links has been found for the layer '{}'".format(
+                    _lyr.alternate
+                )
+            )
+            for _link_orig in _post_migrate_links_orig:
+                self.assertIn(
+                    _link_orig.url,
+                    _lyr.csw_anytext,
+                    "The link URL {0} is not present in the 'csw_anytext' attribute of the layer '{1}'".format(
+                        _link_orig.url,
+                        _lyr.alternate
+                    )
+                )
+            # Check catalogue
+            catalogue = get_catalogue()
+            record = catalogue.get_record(_lyr.uuid)
+            self.assertIsNotNone(record)
+            self.assertTrue(
+                hasattr(record, 'links'),
+                "No records have been found in the catalogue for the resource '{}'".format(
+                    _lyr.alternate
+                )
+            )
+            # Check 'metadata' links for each record
+            for mime, name, metadata_url in record.links['metadata']:
+                try:
+                    _post_migrate_link_meta = Link.objects.get(
+                        resource=_lyr.resourcebase_ptr,
+                        url=metadata_url,
+                        name=name,
+                        extension='xml',
+                        mime=mime,
+                        link_type='metadata'
+                    )
+                except Link.DoesNotExist:
+                    _post_migrate_link_meta = None
+                self.assertIsNotNone(
+                    _post_migrate_link_meta,
+                    "No '{}' links have been found in the catalogue for the resource '{}'".format(
+                        name,
+                        _lyr.alternate
+                    )
+                )

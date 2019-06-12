@@ -43,7 +43,7 @@
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-            <span class="sr-only">Toggle navigation</span>
+            <span class="sr-only">{% trans "Toggle navigation" %}</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -111,8 +111,8 @@
 
     <div class="alert alert-danger alert-dismissible" role="alert" id="ieflag" style="display:none">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h1>You are using an outdated browser that is not supported by GeoNode.</h1>
-      <p>Please use a <strong>modern browser</strong> like Mozilla Firefox, Google Chrome or Safari.</p>
+      <h1>{% trans "You are using an outdated browser that is not supported by GeoNode." %}</h1>
+      <p>{% trans "Please use a <strong>modern browser</strong> like Mozilla Firefox, Google Chrome or Safari." %}</p>
     </div>
 
   <div id="wrap">
@@ -149,17 +149,17 @@
       <div class="row">
         <div class="col-md-2">
           <ul class="list-unstyled">
-            <li>Data</li>
+            <li>{% trans "Data" %}</li>
             <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
             {% if user.is_authenticated %}
                 <li role="separator" class="divider"></li>
-                <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
-                {% if 'geonode.contrib.createlayer' in INSTALLED_APPS %}
-                    <li><a href="{% url "layer_create" %}">{% trans "Create Layer" %}</a></li>
+                <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
+                {% if USE_GEOSERVER and CREATE_LAYER %}
+                  <li><a href="{% url "layer_create" %}">{% trans "Create a new layer" %}</a></li>
                 {% endif %}
-                <li><a href="{% url "document_upload" %}">Upload Document</a></li>
+                <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
             {% endif %}
             {% if user.is_superuser or user.is_staff %}
                 <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
@@ -168,7 +168,7 @@
         </div>
         <div class="col-md-2">
           <ul class="list-unstyled">
-            <li>Maps</li>
+            <li>{% trans "Maps" %}</li>
             <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
             {% if user.is_authenticated %}
             <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
@@ -177,7 +177,7 @@
         </div>
       <div class="col-md-2">
           <ul class="list-unstyled">
-            <li>About</li>
+            <li>{% trans "About" %}</li>
             <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
             <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
             {% if perms.announcements.can_manage %}
@@ -225,8 +225,8 @@
       <div class="modal-dialog modal-sm">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="myModalLabel">Sign in</h4>
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>
+            <h4 class="modal-title" id="myModalLabel">{% trans "Sign in" %}</h4>
           </div>
           <form class="form-signin" role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
             <div class="modal-body">
@@ -280,7 +280,7 @@
               {% block extra_user_menu %}
               {% endblock %}
               <li class="modal-divider"></li>
-              <li><a title="Help" rel="tooltip" href="/help/"><i class="fa fa-question-circle"></i> {% trans "Help" %}</a></li>
+              <li><a title="{% trans "Help" %}" rel="tooltip" href="/help/"><i class="fa fa-question-circle"></i> {% trans "Help" %}</a></li>
             </ul>
           </div>
           <div class="modal-footer">

@@ -102,13 +102,13 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         m = Map.objects.all()[0]
         ctype = ContentType.objects.get_for_model(m)
-        _l = DocumentResourceLink.objects.create(
+        _d = DocumentResourceLink.objects.create(
             document_id=c.id,
             content_type=ctype,
             object_id=m.id)
 
         self.assertEquals(Document.objects.get(pk=c.id).title, 'theimg')
-        self.assertEquals(DocumentResourceLink.objects.get(pk=_l.id).object_id,
+        self.assertEquals(DocumentResourceLink.objects.get(pk=_d.id).object_id,
                           m.id)
 
     def test_create_document_url(self):
@@ -361,7 +361,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test non-admin access
         self.client.login(username="bobby", password="bob")
         response = self.client.get(reverse(view, args=(ids,)))
-        self.assertEquals(response.status_code, 401)
+        self.assertTrue(response.status_code in (401, 403))
         # test group change
         group = Group.objects.first()
         self.client.login(username='admin', password='admin')
@@ -478,10 +478,30 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
                 resp = self.client.post(document_upload_url, data=data)
             self.assertEqual(resp.status_code, 302)
             dname = 'document title'
-            _l = Document.objects.get(title=dname)
+            _d = Document.objects.get(title=dname)
 
-            self.assertTrue(_l.is_published)
-            _l.delete()
+            self.assertTrue(_d.is_published)
+            uuid = _d.uuid
+            _d.delete()
+
+            from geonode.documents.utils import delete_orphaned_document_files
+            delete_orphaned_document_files()
+
+            from geonode.base.utils import delete_orphaned_thumbs
+            delete_orphaned_thumbs()
+
+            from django.conf import settings
+            documents_path = os.path.join(settings.MEDIA_ROOT, 'documents')
+            fn = os.path.join(documents_path, os.path.basename(input_path))
+            self.assertFalse(os.path.isfile(fn))
+
+            thumbs_path = os.path.join(settings.MEDIA_ROOT, 'thumbs')
+            _cnt = 0
+            for filename in os.listdir(thumbs_path):
+                fn = os.path.join(thumbs_path, filename)
+                if uuid in filename:
+                    _cnt += 1
+            self.assertTrue(_cnt == 0)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             document_upload_url = reverse('document_upload')
@@ -499,9 +519,9 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
                 resp = self.client.post(document_upload_url, data=data)
             self.assertEqual(resp.status_code, 302)
             dname = 'document title'
-            _l = Document.objects.get(title=dname)
+            _d = Document.objects.get(title=dname)
 
-            self.assertFalse(_l.is_published)
+            self.assertFalse(_d.is_published)
 
 
 class DocumentNotificationsTestCase(NotificationsTestsHelper):
@@ -520,17 +540,17 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
     def testDocumentNotifications(self):
         with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
             self.clear_notifications_queue()
-            _l = Document.objects.create(title='test notifications', owner=self.u)
+            _d = Document.objects.create(title='test notifications', owner=self.u)
             self.assertTrue(self.check_notification_out('document_created', self.u))
-            _l.title = 'test notifications 2'
-            _l.save()
+            _d.title = 'test notifications 2'
+            _d.save()
             self.assertTrue(self.check_notification_out('document_updated', self.u))
 
             from dialogos.models import Comment
-            lct = ContentType.objects.get_for_model(_l)
+            lct = ContentType.objects.get_for_model(_d)
             comment = Comment(author=self.u, name=self.u.username,
-                              content_type=lct, object_id=_l.id,
-                              content_object=_l, comment='test comment')
+                              content_type=lct, object_id=_d.id,
+                              content_object=_d, comment='test comment')
             comment.save()
 
             self.assertTrue(self.check_notification_out('document_comment', self.u))
@@ -579,12 +599,12 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
         for resource in resources:
             ct = ContentType.objects.get_for_model(resource)
-            _l = DocumentResourceLink.objects.get(
+            _d = DocumentResourceLink.objects.get(
                 document_id=d.id,
                 content_type=ct.id,
                 object_id=resource.id
             )
-            self.assertEquals(_l.object_id, resource.id)
+            self.assertEquals(_d.object_id, resource.id)
 
         # update document links
 
@@ -597,12 +617,12 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
         for resource in layers:
             ct = ContentType.objects.get_for_model(resource)
-            _l = DocumentResourceLink.objects.get(
+            _d = DocumentResourceLink.objects.get(
                 document_id=d.id,
                 content_type=ct.id,
                 object_id=resource.id
             )
-            self.assertEquals(_l.object_id, resource.id)
+            self.assertEquals(_d.object_id, resource.id)
 
         for resource in maps:
             ct = ContentType.objects.get_for_model(resource)

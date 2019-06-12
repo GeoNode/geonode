@@ -57,26 +57,23 @@ sitemaps = {
 }
 
 urlpatterns = [
-                url(r'^$',
-                    TemplateView.as_view(template_name='index.html'),
-                    name='home'),
-                url(r'^help/$',
-                    TemplateView.as_view(template_name='help.html'),
-                    name='help'),
-                url(r'^developer/$',
-                    TemplateView.as_view(
-                    template_name='developer.html'),
-                    name='developer'),
-                url(r'^about/$',
-                    TemplateView.as_view(template_name='about.html'),
-                    name='about'),
-              ]
-
-# WorldMap
-if settings.USE_WORLDMAP:
-    urlpatterns += [url(r'', include('geonode.contrib.worldmap.wm_extra.urls', namespace='worldmap'))]
-    urlpatterns += [url(r'', include('geonode.contrib.worldmap.gazetteer.urls', namespace='gazetteer'))]
-    urlpatterns += [url(r'', include('geonode.contrib.worldmap.mapnotes.urls', namespace='mapnotes'))]
+    url(r'^$',
+        TemplateView.as_view(template_name='index.html'),
+        name='home'),
+    url(r'^help/$',
+        TemplateView.as_view(template_name='help.html'),
+        name='help'),
+    url(r'^developer/$',
+        TemplateView.as_view(
+            template_name='developer.html'),
+        name='developer'),
+    url(r'^about/$',
+        TemplateView.as_view(template_name='about.html'),
+        name='about'),
+    url(r'^privacy_cookies/$',
+        TemplateView.as_view(template_name='privacy-cookies.html'),
+        name='privacy-cookies'),
+]
 
 urlpatterns += [
 
@@ -107,7 +104,7 @@ urlpatterns += [
     # Search views
     url(r'^search/$',
         TemplateView.as_view(
-        template_name='search/search.html'),
+            template_name='search/search.html'),
         name='search'),
 
     # Social views
@@ -179,25 +176,24 @@ urlpatterns += [
     url(r'^i18n/', include(django.conf.urls.i18n))
 ]
 
-if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
-    urlpatterns += [  # '',
-        url(r'^dynamic/', include(
-            'geonode.contrib.dynamic.urls')),
-    ]
+urlpatterns += [  # '',
+    url(r'^showmetadata/',
+        include('geonode.catalogue.metadataxsl.urls')),
+]
 
-if "geonode.contrib.metadataxsl" in settings.INSTALLED_APPS:
+if settings.FAVORITE_ENABLED:
     urlpatterns += [  # '',
-        url(r'^showmetadata/',
-            include('geonode.contrib.metadataxsl.urls')),
-    ]
-
-if "geonode.contrib.createlayer" in settings.INSTALLED_APPS:
-    urlpatterns += [  # '',
-        url(r'^createlayer/',
-            include('geonode.contrib.createlayer.urls')),
+        url(r'^favorite/',
+            include('geonode.favorite.urls')),
     ]
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    if settings.CREATE_LAYER:
+        urlpatterns += [  # '',
+            url(r'^createlayer/',
+                include('geonode.geoserver.createlayer.urls')),
+        ]
+
     from geonode.geoserver.views import get_capabilities
     # GeoServer Helper Views
     urlpatterns += [  # '',
@@ -219,8 +215,8 @@ if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     urlpatterns += [  # '',
         url(r'^qgis-server/',
             include(
-            'geonode.qgis_server.urls',
-            namespace='qgis_server')),
+                'geonode.qgis_server.urls',
+                namespace='qgis_server')),
     ]
 
 if settings.NOTIFICATIONS_MODULE in settings.INSTALLED_APPS:
@@ -231,11 +227,6 @@ if settings.NOTIFICATIONS_MODULE in settings.INSTALLED_APPS:
 if "djmp" in settings.INSTALLED_APPS:
     urlpatterns += [  # '',
         url(r'^djmp/', include('djmp.urls')),
-    ]
-
-if 'geonode.contrib.ows_api' in settings.INSTALLED_APPS:
-    urlpatterns += [  # '',
-        url('^', include('geonode.contrib.ows_api.urls')),
     ]
 
 # Set up proxy
@@ -258,5 +249,5 @@ urlpatterns += [  # '',
 
 if settings.MONITORING_ENABLED:
     urlpatterns += [url(r'^monitoring/',
-                        include('geonode.contrib.monitoring.urls',
+                        include('geonode.monitoring.urls',
                                 namespace='monitoring'))]

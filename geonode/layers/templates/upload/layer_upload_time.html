@@ -43,7 +43,7 @@
                 <label for="notime">{% trans "No" %}</label>
             <!-- /div -->
             {% if time_form.time_attribute %}
-            <!-- div class="radio" title="Use an existing timestamp attribute in the data" -->
+            <!-- div class="radio" title="{% trans "Use an existing timestamp attribute in the data" %}" -->
                 <input type="radio" name="timetype" id="existing">
                 <label for="existing">{% trans "Yes: with an existing Time-Attribute" %}</label>
             <!-- /div -->
@@ -53,7 +53,7 @@
                 <label for="textattribute">{% trans "Yes: by converting data to a timestamp using standard date/time representation" %}</label>
             <!-- /div -->
             {% elif time_form.year_attribute %}
-            <!-- div class="radio" title="Convert a number field into a year" -->
+            <!-- div class="radio" title="{% trans "Convert a number field into a year" %}" -->
                 <input type="radio" name="timetype" id="convertnumber">
                 <label for="convertnumber">{% trans "Yes: by converting a number as Year" %}</label>
             <!-- /div -->
@@ -61,7 +61,7 @@
         </div>
             {% if time_form.time_attribute or time_form.text_attribute or time_form.year_attribute %}
             <div class="form-group" style="padding-left: 45px;">
-                <div class="radio" title="Convert data to a timestamp using standard date/time representation or a custom format">
+                <div class="radio" title="{% trans "Convert data to a timestamp using standard date/time representation or a custom format" %}">
                     <table id="bootstrap-text-att-table"
                            data-toggle="table"
                            data-toolbar="#toolbar"
@@ -139,8 +139,8 @@
                             <label for="format_select">{% trans "Text Attribute Date Format" %}  :</label>
                             {{ time_form.text_attribute_format }}
                             <select id="format_select">
-                                <option selected="true" value="0">Best Guess</option>
-                                <option value="1">Custom</option>
+                                <option selected="true" value="0">{% trans "Best Guess" %}</option>
+                                <option value="1">{% trans "Custom" %}</option>
                             </select>
                         </div>
                     </div>
@@ -156,7 +156,7 @@
                     <div class="panel-body formSection left">
                         {% if time_form.time_attribute %}
                         <div class="form-group" style="padding-left: 45px;">
-                            <div class="radio" title="Use an existing timestamp attribute in the data">
+                            <div class="radio" title="{% trans "Use an existing timestamp attribute in the data" %}">
                                 <input type="radio" name="end_timetype" id="end_existing">
                                 <label for="end_existing">{% trans "Existing Time Attribute" %}  :</label>{{ time_form.end_time_attribute }}
                             </div>
@@ -171,15 +171,15 @@
                                 <label for="end_format_select">{% trans "Date Format" %}  :</label>
                                 {{ time_form.end_text_attribute_format }}
                                 <select id="end_format_select">
-                                    <option selected="true" value="0">Best Guess</option>
-                                    <option value="1">Custom</option>
+                                    <option selected="true" value="0">{% trans "Best Guess" %}</option>
+                                    <option value="1">{% trans "Custom" %}</option>
                                 </select>
                             </div>
                         </div>
                         {% endif %}
                         {% if time_form.year_attribute %}
                         <div class="form-group" style="padding-left: 45px;">
-                            <div class="radio" title="Convert a number field into a year">
+                            <div class="radio" title="{% trans "Convert a number field into a year" %}">
                                 <input type="radio" name="end_timetype" id="end_convertnumber">
                                 <label for="end_convertnumber">{% trans "Convert Number (As Year)" %}  :</label>{{ time_form.end_year_attribute }}
                             </div>
@@ -273,13 +273,13 @@
     <div class="modal-content panel-warning">
       <div class="modal-header panel-heading">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Modal Header</h4>
+        <h4 class="modal-title">{% trans "Modal Header" %}</h4>
       </div>
       <div class="modal-body">
-        <p>Some text in the modal.</p>
+        <p>{% trans "Some text in the modal" %}.</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
       </div>
     </div>
 
@@ -293,13 +293,13 @@
     <div class="modal-content panel-success">
       <div class="modal-header panel-heading">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Modal Header</h4>
+        <h4 class="modal-title">{% trans "Modal Header" %}</h4>
       </div>
       <div class="modal-body">
-        <p>Some text in the modal.</p>
+        <p>{% trans "Some text in the modal" %}.</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
       </div>
     </div>
 

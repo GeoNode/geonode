@@ -43,7 +43,11 @@ from geonode.base.models import (
     Link,
     Backup,
     License,
-    HierarchicalKeyword)
+    HierarchicalKeyword,
+    MenuPlaceholder,
+    Menu,
+    MenuItem
+)
 from django.http import HttpResponseRedirect
 
 
@@ -108,8 +112,7 @@ def run(self, request, queryset):
             return TemplateResponse(
                 request,
                 'admin/backups/confirm_cancel.html',
-                context,
-                current_app=self.admin_site.name)
+                context)
 
 
 def restore(self, request, queryset):
@@ -141,8 +144,7 @@ def restore(self, request, queryset):
             return TemplateResponse(
                 request,
                 'admin/backups/confirm_cancel.html',
-                context,
-                current_app=self.admin_site.name)
+                context)
 
 
 run.short_description = "Run the Backup"
@@ -249,6 +251,21 @@ class HierarchicalKeywordAdmin(TreeAdmin):
     form = movenodeform_factory(HierarchicalKeyword)
 
 
+class MenuPlaceholderAdmin(admin.ModelAdmin):
+    model = MenuPlaceholder
+    list_display = ('name', )
+
+
+class MenuAdmin(admin.ModelAdmin):
+    model = Menu
+    list_display = ('title', 'placeholder', 'order')
+
+
+class MenuItemAdmin(admin.ModelAdmin):
+    model = MenuItem
+    list_display = ('title', 'menu', 'order', 'blank_target', 'url')
+
+
 admin.site.register(TopicCategory, TopicCategoryAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(SpatialRepresentationType, SpatialRepresentationTypeAdmin)
@@ -258,6 +275,9 @@ admin.site.register(Link, LinkAdmin)
 admin.site.register(Backup, BackupAdmin)
 admin.site.register(License, LicenseAdmin)
 admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
+admin.site.register(MenuPlaceholder, MenuPlaceholderAdmin)
+admin.site.register(Menu, MenuAdmin)
+admin.site.register(MenuItem, MenuItemAdmin)
 
 
 class ResourceBaseAdminForm(ModelForm):

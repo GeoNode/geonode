@@ -40,13 +40,13 @@
       			<form id="search" action="{% url "search" %}" >
       				<span class="fa fa-search fa-3x"></span>
       				{% if HAYSTACK_SEARCH %}
-      				<input id="search_input" type="text" placeholder="Search" class="form-control" name="q">
+      				<input id="search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" name="q">
       				{% else %}
-      				<input id="search_input" type="text" placeholder="Search" class="form-control" name="title__icontains">
+      				<input id="search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" name="title__icontains">
       				{% endif %}
       			</form>
       		</div>
-      		<p><a class="btn btn-default btn-lg" href="{% url "search" %}">Advanced Search</a></p>
+      		<p><a class="btn btn-default btn-lg" href="{% url "search" %}">{% trans "Advanced Search" %}</a></p>
       	</div>
       </div>
       {% endif %}
@@ -57,185 +57,185 @@
       	<div class="container">
       		<div class="row">
       			<div class="container text-center">
-      				<h1>Discover the available datasets.</h1>
+      				<h1>{% trans "Discover the available datasets." %}</h1>
                     <div class="row">
           				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=biota" data-toggle="tooltip" data-placement="auto"
-          						title="Flora and/or fauna in natural environment. Examples: wildlife, vegetation, biological sciences, ecology, wilderness, sealife, wetlands, habitat.">
+          						title="{% trans "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, biological sciences, ecology, wilderness, sealife, wetlands, habitat." %}">
           						<div class="category">
           							<i class="fa fa-leaf fa-3x"></i>
-          							<h4>Biota</h4>
+          							<h4>{% trans "Biota" %}</h4>
           						</div>
           					</a>
           				</div>
           				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=boundaries" data-toggle="tooltip" data-placement="auto"
-          						title="Legal land descriptions. Examples: political and administrative boundaries." >
+          						title="{% trans "Legal land descriptions. Examples: political and administrative boundaries." %}" >
           						<div class="category">
           							<i class="fa fa-ellipsis-h fa-3x"></i>
-          							<h4>Boundaries</h4>
+          							<h4>{% trans "Boundaries" %}</h4>
           						</div>
           					</a>
           				</div>
           				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=climatologyMeteorologyAtmosphere" data-toggle="tooltip" data-placement="auto"
-          						title="Processes and phenomena of the atmosphere. Examples: cloud cover, weather, climate, atmospheric conditions, climate change, precipitation." >
+          						title="{% trans "Processes and phenomena of the atmosphere. Examples: cloud cover, weather, climate, atmospheric conditions, climate change, precipitation." %}" >
           						<div class="category">
           							<i class="fa fa-cloud fa-3x"></i>
-          							<h4>Climate</h4>
+          							<h4>{% trans "Climate" %}</h4>
           						</div>
           					</a>
           				</div>
           				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=economy" data-toggle="tooltip" data-placement="auto"
-          						title="Economic activities, conditions and employment. Examples: production, labour, revenue, commerce, industry, tourism and ecotourism, forestry, fisheries, commercial or subsistence hunting, exploration and exploitation of resources such as minerals, oil and gas." >
+          						title="{% trans "Economic activities, conditions and employment. Examples: production, labour, revenue, commerce, industry, tourism and ecotourism, forestry, fisheries, commercial or subsistence hunting, exploration and exploitation of resources such as minerals, oil and gas." %}" >
           						<div class="category">
           							<i class="fa fa-shopping-cart fa-3x"></i>
-          							<h4>Economy</h4>
+          							<h4>{% trans "Economy" %}</h4>
           						</div>
           					</a>
           				</div>
           				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=elevation" data-toggle="tooltip" data-placement="auto"
-          						title="Height above or below sea level. Examples: altitude, bathymetry, digital elevation models, slope, derived products." >
+          						title="{% trans "Height above or below sea level. Examples: altitude, bathymetry, digital elevation models, slope, derived products." %}" >
           						<div class="category">
           							<i class="fa fa-flag fa-3x"></i>
-          							<h4>Elevation</h4>
+          							<h4>{% trans "Elevation" %}</h4>
           						</div>
           					</a>
           				</div>
           				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=environment" data-toggle="tooltip" data-placement="auto"
-          						title="Environmental resources, protection and conservation. Examples: environmental pollution, waste storage and treatment, environmental impact assessment, monitoring environmental risk, nature reserves, landscape." >
+          						title="{% trans "Environmental resources, protection and conservation. Examples: environmental pollution, waste storage and treatment, environmental impact assessment, monitoring environmental risk, nature reserves, landscape." %}" >
           						<div class="category">
           							<i class="fa fa-tree fa-3x"></i>
-          							<h4>Environment</h4>
+          							<h4>{% trans "Environment" %}</h4>
           						</div>
           					</a>
           				</div>
           				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=farming" data-toggle="tooltip" data-placement="auto"
-          						title="Rearing of animals and/or cultivation of plants. Examples: agriculture, irrigation, aquaculture, plantations, herding, pests and diseases affecting crops and livestock." >
+          						title="{% trans "Rearing of animals and/or cultivation of plants. Examples: agriculture, irrigation, aquaculture, plantations, herding, pests and diseases affecting crops and livestock." %}" >
           						<div class="category">
           							<i class="fa fa-lemon-o fa-3x"></i>
-          							<h4>Farming</h4>
+          							<h4>{% trans "Farming" %}</h4>
           						</div>
           					</a>
           				</div>
           				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=farming&category__identifier__in=geoscientificInformation" data-toggle="tooltip" data-placement="auto"
-          						title="Information pertaining to earth sciences. Examples: geophysical features and processes, geology, minerals, sciences dealing with the composition, structure and origin of the earth s rocks, risks of earthquakes, volcanic activity, landslides, gravity information, soils, permafrost, hydrogeology, erosion." >
+          						title="{% trans "Information pertaining to earth sciences. Examples: geophysical features and processes, geology, minerals, sciences dealing with the composition, structure and origin of the earth s rocks, risks of earthquakes, volcanic activity, landslides, gravity information, soils, permafrost, hydrogeology, erosion." %}" >
           						<div class="category">
           							<i class="fa fa-bullseye fa-3x"></i>
-          							<h4>Geoscience</h4>
+          							<h4>{% trans "Geoscience" %}</h4>
           						</div>
           					</a>
           				</div>
           				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=health" data-toggle="tooltip" data-placement="auto"
-          						title="Health, health services, human ecology, and safety. Examples: disease and illness, factors affecting health, hygiene, substance abuse, mental and physical health, health services." >
+          						title="{% trans "Health, health services, human ecology, and safety. Examples: disease and illness, factors affecting health, hygiene, substance abuse, mental and physical health, health services." %}" >
           						<div class="category">
           							<i class="fa fa-stethoscope fa-3x"></i>
-          							<h4>Health</h4>
+          							<h4>{% trans "Health" %}</h4>
           						</div>
           					</a>
           				</div>
           				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=imageryBaseMapsEarthCover" data-toggle="tooltip" data-placement="auto"
-          						title="Base maps. Examples: land cover, topographic maps, imagery, unclassified images, annotations." >
+          						title="{% trans "Base maps. Examples: land cover, topographic maps, imagery, unclassified images, annotations." %}" >
           						<div class="category">
           							<i class="fa fa-globe fa-3x"></i>
-          							<h4>Base Maps</h4>
+          							<h4>{% trans "Base Maps" %}</h4>
           						</div>
           					</a>
           				</div>
           				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=inlandWaters" data-toggle="tooltip" data-placement="auto"
-          						title="Inland water features, drainage systems and their characteristics. Examples: rivers and glaciers, salt lakes, water utilization plans, dams, currents, floods, water quality, hydrographic charts." >
+          						title="{% trans "Inland water features, drainage systems and their characteristics. Examples: rivers and glaciers, salt lakes, water utilization plans, dams, currents, floods, water quality, hydrographic charts." %}" >
           						<div class="category">
           							<i class="fa fa-tint fa-3x"></i>
-          							<h4>Inland Waters</h4>
+          							<h4>{% trans "Inland Waters" %}</h4>
           						</div>
           					</a>
           				</div>
           				<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=intelligenceMilitary" data-toggle="tooltip" data-placement="auto"
-          						title="Military bases, structures, activities. Examples: barracks, training grounds, military transportation, information collection." >
+          						title="{% trans "Military bases, structures, activities. Examples: barracks, training grounds, military transportation, information collection." %}" >
           						<div class="category">
           							<i class="fa fa-fighter-jet fa-3x"></i>
-          							<h4>Intelligence</h4>
+          							<h4>{% trans "Intelligence" %}</h4>
           						</div>
           					</a>
           				</div>
                         <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=location" data-toggle="tooltip" data-placement="auto"
-          						title="Positional information and services. Examples: addresses, geodetic networks, control points, postal zones and services, place names." >
+          						title="{% trans "Positional information and services. Examples: addresses, geodetic networks, control points, postal zones and services, place names." %}" >
           						<div class="category">
           							<i class="fa fa-map-marker fa-3x"></i>
-          							<h4>Location</h4>
+          							<h4>{% trans "Location" %}</h4>
           						</div>
           					</a>
           				</div>
                         <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=oceans" data-toggle="tooltip" data-placement="auto"
-          						title="Features and characteristics of salt water bodies (excluding inland waters). Examples: tides, tidal waves, coastal information, reefs." >
+          						title="{% trans "Features and characteristics of salt water bodies (excluding inland waters). Examples: tides, tidal waves, coastal information, reefs." %}" >
           						<div class="category">
           							<i class="fa fa-anchor fa-3x"></i>
-          							<h4>Oceans</h4>
+          							<h4>{% trans "Oceans" %}</h4>
           						</div>
           					</a>
           				</div>
                         <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=planningCadastre" data-toggle="tooltip" data-placement="auto"
-          						title="Information used for appropriate actions for future use of the land. Examples: land use maps, zoning maps, cadastral surveys, land ownership." >
+          						title="{% trans "Information used for appropriate actions for future use of the land. Examples: land use maps, zoning maps, cadastral surveys, land ownership." %}" >
           						<div class="category">
           							<i class="fa fa-home fa-3x"></i>
-          							<h4>Planning</h4>
+          							<h4>{% trans "Planning" %}</h4>
           						</div>
           					</a>
           				</div>
                         <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=population" data-toggle="tooltip" data-placement="auto"
-          						title="Settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information. Economic activities, conditions and employment." >
+          						title="{% trans "Settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information. Economic activities, conditions and employment." %}" >
           						<div class="category">
           							<i class="fa fa-male fa-3x"></i>
-          							<h4>Population</h4>
+          							<h4>{% trans "Population" %}</h4>
           						</div>
           					</a>
           				</div>
                         <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=society" data-toggle="tooltip" data-placement="auto"
-          						title="Characteristics of society and cultures. Examples: settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information." >
+          						title="{% trans "Characteristics of society and cultures. Examples: settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information." %}" >
           						<div class="category">
           							<i class="fa fa-comments fa-3x"></i>
-          							<h4>Society</h4>
+          							<h4>{% trans "Society" %}</h4>
           						</div>
           					</a>
           				</div>
                         <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=structure" data-toggle="tooltip" data-placement="auto"
-          						title="Man-made construction. Examples: buildings, museums, churches, factories, housing, monuments, shops, towers." >
+          						title="{% trans "Man-made construction. Examples: buildings, museums, churches, factories, housing, monuments, shops, towers." %}" >
           						<div class="category">
           							<i class="fa fa-building fa-3x"></i>
-          							<h4>Structure</h4>
+          							<h4>{% trans "Structure" %}</h4>
           						</div>
           					</a>
           				</div>
                         <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=transportation" data-toggle="tooltip" data-placement="auto"
-          						title="Means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways." >
+          						title="{% trans "Means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways." %}" >
           						<div class="category">
           							<i class="fa fa-truck fa-3x"></i>
-          							<h4>Transportation</h4>
+          							<h4>{% trans "Transportation" %}</h4>
           						</div>
           					</a>
           				</div>
                         <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1">
           					<a href="{% url "search" %}?limit=100&offset=0&category__identifier__in=utilitiesCommunication" data-toggle="tooltip" data-placement="auto"
-          						title="Energy, water and waste systems and communications infrastructure and services. Examples: hydroelectricity, geothermal, solar and nuclear sources of energy, water purification and distribution, sewage collection and disposal, electricity and gas distribution, data communication, telecommunication, radio, communication networks." >
+          						title="{% trans "Energy, water and waste systems and communications infrastructure and services. Examples: hydroelectricity, geothermal, solar and nuclear sources of energy, water purification and distribution, sewage collection and disposal, electricity and gas distribution, data communication, telecommunication, radio, communication networks." %}" >
           						<div class="category">
           							<i class="fa fa-phone fa-3x"></i>
-          							<h4>Utilities</h4>
+          							<h4>{% trans "Utilities" %}</h4>
           						</div>
           					</a>
           				</div>
@@ -250,7 +250,7 @@
       <section id="showcase">
         <div class="row">
           <div class="container text-center">
-            <h2>Featured Datasets</h2>
+            <h2>{% trans "Featured Datasets" %}</h2>
             <div class="row home-facets">
             {% with facet_type='home' %}
              {% facets as facets %}
@@ -306,7 +306,7 @@
                   </div>
                 </div>
           		{% endverbatim %}
-                <p><a href="/search/">Explore all datasets</a></p>
+                <p><a href="/search/">{% trans "Explore all datasets" %}</a></p>
             </div>
         </div>
       </section>
@@ -318,9 +318,15 @@
           <h2>{{ custom_theme.partners_title|default:_("Our partners") }}</h2>
           <div class="row">
               {% for partner in custom_theme.partners.all %}
-              <div class="col-md-6">
-                  <div class="partner_logo" style="background-image: url({% if partner.logo %}{{partner.logo.url}}{% else %}{% static 'geonode/img/missing_thumb.png' %}{% endif %})"></div>
-                  <div><a href="{{ partner.partner_link }}" target="_blank">{{ partner.title }}</a></div>
+              <div class="col-md-2">
+                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+                  {% if partner.logo %}
+                  <div class="partner_logo" style="background-image: url({{partner.logo.url}})">
+                  {% else %}
+                  {{ partner.title|safe }}
+                  {% endif %}
+                  </div>
+                </a>
               </div>
               {% endfor %}
           </div>
@@ -328,6 +334,29 @@
         </section>
         {% endif %}
       {% endblock partners %}
+
+      {% block cookielawinfo %}
+      {% if custom_theme.cookie_law_info_bar_enabled %}
+          <div id="cookie-law-info-bar">
+              <h5 class="cli_messagebar_head">{{ custom_theme.cookie_law_info_bar_head }}</h5>
+              <span>{{ custom_theme.cookie_law_info_bar_text|safe }}
+                  <a data-cli_action="accept" id="cookie_action_close_header" target="_blank"  class="medium cli-plugin-button cli-plugin-main-button cookie_action_close_header cli_action_button" style="display:inline-block; ">{% trans "Accept" %}</a>
+                  <a id="cookie_action_close_header_reject" class="medium cli-plugin-button cli-plugin-main-button cookie_action_close_header_reject cli_action_button"  data-cli_action="reject">{% trans "Reject" %}</a>
+                  <a id="CONSTANT_OPEN_URL" href='{{ custom_theme.cookie_law_info_leave_url }}' class="medium cli-plugin-button cli-plugin-main-button" style="display:inline-block;">{% trans "Leave" %}</a>
+              </span>
+          </div>
+          <div id="cookie-law-info-again" style="display:none;">
+              <span id="cookie_hdr_showagain">{{ custom_theme.cookie_law_info_showagain_head }}</span>
+          </div>
+          <div class="cli-modal-backdrop cli-fade cli-settings-overlay"></div>
+          <div class="cli-modal-backdrop cli-fade cli-popupbar-overlay"></div>
+          <script type="text/javascript">
+            /* <![CDATA[ */
+            cli_cookiebar_settings='{"animate_speed_hide":"{{custom_theme.cookie_law_info_animate_speed_hide}}","animate_speed_show":"{{custom_theme.cookie_law_info_animate_speed_show}}","background":"{{custom_theme.cookie_law_info_background}}","border":"{{custom_theme.cookie_law_info_border}}","border_on":{{custom_theme.cookie_law_info_border_on}},"button_1_button_colour":"{{custom_theme.cookie_law_info_button_1_button_colour}}","button_1_button_hover":"{{custom_theme.cookie_law_info_button_1_button_hover}}","button_1_link_colour":"{{custom_theme.cookie_law_info_button_1_link_colour}}","button_1_as_button":{{custom_theme.cookie_law_info_button_1_as_button}},"button_1_new_win":{{custom_theme.cookie_law_info_button_1_new_win}},"button_2_button_colour":"{{custom_theme.cookie_law_info_button_2_button_colour}}","button_2_button_hover":"{{custom_theme.cookie_law_info_button_2_button_hover}}","button_2_link_colour":"{{custom_theme.cookie_law_info_button_2_link_colour}}","button_2_as_button":{{custom_theme.cookie_law_info_button_2_as_button}},"button_2_hidebar":{{custom_theme.cookie_law_info_button_2_hidebar}},"button_3_button_colour":"{{custom_theme.cookie_law_info_button_3_button_colour}}","button_3_button_hover":"{{custom_theme.cookie_law_info_button_3_button_hover}}","button_3_link_colour":"{{custom_theme.cookie_law_info_button_3_link_colour}}","button_3_as_button":{{custom_theme.cookie_law_info_button_3_as_button}},"button_3_new_win":{{custom_theme.cookie_law_info_button_3_new_win}},"button_4_button_colour":"{{custom_theme.cookie_law_info_button_4_button_colour}}","button_4_button_hover":"{{custom_theme.cookie_law_info_button_4_button_hover}}","button_4_link_colour":"{{custom_theme.cookie_law_info_button_4_link_colour}}","button_4_as_button":{{custom_theme.cookie_law_info_button_4_as_button}},"font_family":"{{custom_theme.cookie_law_info_font_family}}","header_fix":{{custom_theme.cookie_law_info_header_fix}},"notify_animate_hide":{{custom_theme.cookie_law_info_notify_animate_hide}},"notify_animate_show":{{custom_theme.cookie_law_info_notify_animate_show}},"notify_div_id":"{{custom_theme.cookie_law_info_notify_div_id}}","notify_position_horizontal":"{{custom_theme.cookie_law_info_notify_position_horizontal}}","notify_position_vertical":"{{custom_theme.cookie_law_info_notify_position_vertical}}","scroll_close":{{custom_theme.cookie_law_info_scroll_close}},"scroll_close_reload":{{custom_theme.cookie_law_info_scroll_close_reload}},"accept_close_reload":{{custom_theme.cookie_law_info_accept_close_reload}},"reject_close_reload":{{custom_theme.cookie_law_info_reject_close_reload}},"showagain_tab":{{custom_theme.cookie_law_info_showagain_tab}},"showagain_background":"{{custom_theme.cookie_law_info_showagain_background}}","showagain_border":"{{custom_theme.cookie_law_info_showagain_border}}","showagain_div_id":"{{custom_theme.cookie_law_info_showagain_div_id}}","showagain_x_position":"{{custom_theme.cookie_law_info_showagain_x_position}}","text":"{{custom_theme.cookie_law_info_text}}","show_once_yn":{{custom_theme.cookie_law_info_show_once_yn}},"show_once":"{{custom_theme.cookie_law_info_show_once}}","logging_on":{{custom_theme.cookie_law_info_logging_on}},"as_popup":{{custom_theme.cookie_law_info_as_popup}},"popup_overlay":{{custom_theme.cookie_law_info_popup_overlay}},"bar_heading_text":"{{custom_theme.cookie_law_info_bar_heading_text}}","cookie_bar_as":"{{custom_theme.cookie_law_info_cookie_bar_as}}","popup_showagain_position":"{{custom_theme.cookie_law_info_popup_showagain_position}}","widget_position":"{{custom_theme.cookie_law_info_widget_position}}"}';
+            /* ]]> */
+          </script>
+      {% endif %}
+      {% endblock cookielawinfo %}
 
   {% endblock mainbody %}
 
@@ -353,4 +382,10 @@
 <script>
 	$('[data-toggle="tooltip"]').tooltip({container: 'body'});
 </script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var Cli_Data = {"nn_cookie_ids":[],"cookielist":[]};
+/* ]]> */
+</script>
+<script type="text/javascript" src="{% static "geonode/js/cookie-law-info/cookie-law-info-public.js" %}"></script>
 {% endblock extra_script %}

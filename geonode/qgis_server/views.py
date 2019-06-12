@@ -370,7 +370,7 @@ def layer_ogc_request(request, layername):
     raw = response.content
     if is_text:
         raw = raw.replace(
-           QGIS_SERVER_CONFIG['qgis_server_url'], public_url)
+            QGIS_SERVER_CONFIG['qgis_server_url'], public_url)
 
     return HttpResponse(raw, content_type=response.headers.get('content-type'))
 

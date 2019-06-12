@@ -16,10 +16,10 @@
   {% if DISPLAY_COMMENTS %}
   <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
   {% endif %}
-  {% if GEOGIG_ENABLED and resource.link_set.geogig %}
-  <li><a href="#geogig" data-toggle="tab"><i class="fa fa-code-fork"></i> {% trans "GeoGig" %}</a></li>
-  {% endif %}
   {% if EXIF_ENABLED and resource.polymorphic_ctype.name == 'document' and exif_data %}
   <li><a href="#exif" data-toggle="tab"><i class="fa fa-photo"></i> {% trans "Exif" %}</a></li>
+  {% endif %}
+  {% if FAVORITE_ENABLED %}
+  <li><a href="#favorite" data-toggle="tab"><i class="fa fa-star"></i>{% trans "Favorite" %}</a></li>
   {% endif %}
 </ul>

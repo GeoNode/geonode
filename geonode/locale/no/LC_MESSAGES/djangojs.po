@@ -180,10 +180,6 @@ msgstr "Utfører steg i GeoServer konfigurasjon"
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Kartlag filer har blitt lastet opp, konfigurer GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:532
-msgid "Select or create a Geogig repository."
-msgstr "Velg eller opprett en Geogig oppbevaringssted."
-
 #: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "Fjern"

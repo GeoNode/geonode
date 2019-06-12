@@ -3725,10 +3725,6 @@ msgstr "공유"
 msgid "Ratings"
 msgstr "평점"
 
-#: geonode/templates/_actions.html:20
-msgid "GeoGig"
-msgstr "GeoGig"
-
 #: geonode/templates/_actions.html:23
 msgid "Exif"
 msgstr "Exif"

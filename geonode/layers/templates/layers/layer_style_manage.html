@@ -3,7 +3,7 @@
 
 {% block title %}{{ layer.alternate }} — {{ block.super }}{% endblock %}
 
-{% block body_class %}layers{% endblock %}
+{% block body_class %}{% trans "layers" %}{% endblock %}
 
 {% block body_outer %}
 {% if error %}
@@ -25,10 +25,10 @@
       <div class="col-md-6">
         <select id='default_style' name='default_style' required='required'>
           {% for style in layer_styles %}
-            {% if style == layer.default_style %}
-            <option value="{{ style.0 }}" selected>{{ style.1 }}</option>
+            {% if style.0 == layer.default_style.name or style.0 == layer.default_style.name or style.1 == layer.default_style.sld_title %}
+            <option value="{{ style.0 }}" selected>{% if style.1 %}{{ style.1 }}{% else %}{{ style.0 }}{% endif %}</option>
             {% else %}
-            <option value="{{ style.0 }}">{{ style.1 }}</option>
+            <option value="{{ style.0 }}">{% if style.1 %}{{ style.1 }}{% else %}{{ style.0 }}{% endif %}</option>
             {% endif %}
           {% endfor %}
         </select>
@@ -51,9 +51,9 @@
         <select multiple="multiple" id="style-select" name="style-select">
           {% for style in gs_styles %}
             {% if style.0 in layer_style_names %}
-            <option value='{{ style.0 }}' selected>{{ style.1 }}</option>
+            <option value='{{ style.0 }}' selected>{% if style.1 %}{{ style.1 }}{% else %}{{ style.0 }}{% endif %}</option>
             {% else %}
-            <option value='{{ style.0 }}'>{{ style.1 }}</option>
+            <option value='{{ style.0 }}'>{% if style.1 %}{{ style.1 }}{% else %}{{ style.0 }}{% endif %}</option>
             {% endif %}
           {% endfor %}
         </select>

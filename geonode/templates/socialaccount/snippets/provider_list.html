@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load socialaccount %}
 {% load socialaccount_extra %}
 
@@ -15,11 +16,11 @@
             <a class="btn btn-default btn-block" title="{{provider.name}}" href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
                 <i class="fa fa-{{ provider.name|lower }}-square fa-2x" aria-hidden="true"></i>
                 {% if process == "login" %}
-                    Sign in with
+                    {% trans "Sign in with" %}
                 {% elif process == "connect" %}
-                    Connect with
+                    {% trans "Connect with" %}
                 {% else %}
-                    Sign up with
+                    {% trans "Sign up with" %}
                 {% endif %}
                 {{provider.name}}
             </a>

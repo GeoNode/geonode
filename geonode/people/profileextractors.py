@@ -20,6 +20,8 @@
 
 """Profile extractor utilities for social account providers"""
 
+from django.conf import settings
+
 
 class BaseExtractor(object):
     """Base class for social account data extractors.
@@ -98,31 +100,34 @@ class FacebookExtractor(BaseExtractor):
 class LinkedInExtractor(BaseExtractor):
 
     def extract_email(self, data):
-        return data.get("emailAddress", "")
+        try:
+            element = data.get("elements")[0]
+        except IndexError:
+            email = ""
+        else:
+            email = element.get("handle~", {}).get("emailAddress", "")
+        return email
 
     def extract_first_name(self, data):
-        return data.get("firstName", "")
+        return self._extract_field("firstName", data)
 
     def extract_last_name(self, data):
-        return data.get("lastName", "")
+        return self._extract_field("lastName", data)
 
-    def extract_position(self, data):
-        latest = _get_latest_position(data)
-        return latest.get("title", "") if latest is not None else ""
-
-    def extract_organization(self, data):
-        latest = _get_latest_position(data)
-        if latest is not None:
-            organization = latest.get("company", {}).get("name", "")
-        else:
-            organization = ""
-        return organization
-
-    def extract_profile(self, data):
-        headline = data.get("headline", "")
-        summary = data.get("summary", "")
-        profile = "\n".join((headline, summary))
-        return profile.strip()
+    def _extract_field(self, name, data):
+        current_language = settings.LANGUAGE_CODE
+        localized_field_values = data.get(name, {}).get("localized", {})
+        for locale, name in localized_field_values.items():
+            split_locale = locale.partition("_")[0]
+            if split_locale == current_language:
+                result = name
+                break
+        else:  # try to return first one, if it exists
+            try:
+                result = localized_field_values.items()[0][-1]
+            except IndexError:
+                result = ""
+        return result
 
 
 def _get_latest_position(data):

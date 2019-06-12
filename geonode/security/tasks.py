@@ -18,25 +18,15 @@
 #
 #########################################################################
 
-import logging
 from celery import shared_task
-
-from .utils import set_geofence_invalidate_cache
-
-logger = logging.getLogger(__name__)
-
-
-def _log(msg, *args):
-    logger.info(msg, *args)
+from django.conf import settings
+from .utils import sync_resources_with_guardian
 
 
 @shared_task
 def synch_guardian():
-    from geonode.base.models import ResourceBase
-    dirty_resources = ResourceBase.objects.filter(dirty_state=True)
-    if dirty_resources and dirty_resources.count() > 0:
-        _log(" --------------------------- synching with guardian!")
-        if set_geofence_invalidate_cache():
-            for r in dirty_resources:
-                _log(" --------------------------- clearing %s" % r)
-                r.clear_dirty_state()
+    """
+    Sync resources with Guardian and clear their dirty state
+    """
+    if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+        sync_resources_with_guardian()

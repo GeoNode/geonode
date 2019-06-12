@@ -18,25 +18,18 @@
 #
 #########################################################################
 
-import datetime
 import math
 import os
 import re
 import logging
 import traceback
-import uuid
-import urllib
-import urllib2
-import cookielib
 
-from geonode.decorators import on_ogc_backend
 from pyproj import transform, Proj
-from urlparse import urljoin, urlsplit
+from urlparse import urlsplit
 
 from django.db import models
 from django.core import serializers
 from django.db.models import Q, signals
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -44,7 +37,6 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
 from django.contrib.gis.geos import GEOSGeometry
@@ -56,7 +48,6 @@ from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 from agon_ratings.models import OverallRating
 
-from geonode import geoserver
 from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
@@ -68,9 +59,6 @@ from taggit.models import TagBase, ItemBase
 from treebeard.mp_tree import MP_Node
 
 from geonode.people.enumerations import ROLE_VALUES
-
-from oauthlib.common import generate_token
-from oauth2_provider.models import AccessToken, get_application_model
 
 logger = logging.getLogger(__name__)
 
@@ -322,38 +310,41 @@ class HierarchicalKeyword(TagBase, MP_Node):
         """Dumps a tree branch to a python data structure."""
         qset = cls._get_serializable_model().get_tree(parent)
         ret, lnk = [], {}
-        for pyobj in qset:
-            serobj = serializers.serialize('python', [pyobj])[0]
-            # django's serializer stores the attributes in 'fields'
-            fields = serobj['fields']
-            depth = fields['depth'] or 1
-            fields['text'] = fields['name']
-            fields['href'] = fields['slug']
-            del fields['name']
-            del fields['slug']
-            del fields['path']
-            del fields['numchild']
-            del fields['depth']
-            if 'id' in fields:
-                # this happens immediately after a load_bulk
-                del fields['id']
+        try:
+            for pyobj in qset:
+                serobj = serializers.serialize('python', [pyobj])[0]
+                # django's serializer stores the attributes in 'fields'
+                fields = serobj['fields']
+                depth = fields['depth'] or 1
+                fields['text'] = fields['name']
+                fields['href'] = fields['slug']
+                del fields['name']
+                del fields['slug']
+                del fields['path']
+                del fields['numchild']
+                del fields['depth']
+                if 'id' in fields:
+                    # this happens immediately after a load_bulk
+                    del fields['id']
 
-            newobj = {}
-            for field in fields:
-                newobj[field] = fields[field]
-            if keep_ids:
-                newobj['id'] = serobj['pk']
+                newobj = {}
+                for field in fields:
+                    newobj[field] = fields[field]
+                if keep_ids:
+                    newobj['id'] = serobj['pk']
 
-            if (not parent and depth == 1) or\
-               (parent and depth == parent.depth):
-                ret.append(newobj)
-            else:
-                parentobj = pyobj.get_parent()
-                parentser = lnk[parentobj.pk]
-                if 'nodes' not in parentser:
-                    parentser['nodes'] = []
-                parentser['nodes'].append(newobj)
-            lnk[pyobj.pk] = newobj
+                if (not parent and depth == 1) or\
+                   (parent and depth == parent.depth):
+                    ret.append(newobj)
+                else:
+                    parentobj = pyobj.get_parent()
+                    parentser = lnk[parentobj.pk]
+                    if 'nodes' not in parentser:
+                        parentser['nodes'] = []
+                    parentser['nodes'].append(newobj)
+                lnk[pyobj.pk] = newobj
+        except BaseException:
+            pass
         return ret
 
 
@@ -899,26 +890,26 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         for required_field in required_fields:
             field = getattr(self, required_field, None)
             if field:
-                if required_field is 'license':
-                    if field.name is 'Not Specified':
+                if required_field == 'license':
+                    if field.name == 'Not Specified':
                         continue
-                if required_field is 'regions':
+                if required_field == 'regions':
                     if not field.all():
                         continue
-                if required_field is 'category':
+                if required_field == 'category':
                     if not field.identifier:
                         continue
                 filled_fields.append(field)
         return '{}%'.format(len(filled_fields) * 100 / len(required_fields))
 
     def keyword_list(self):
-        return [kw.name.encode("utf-8", "replace") for kw in self.keywords.all()]
+        return [kw.name for kw in self.keywords.all()]
 
     def keyword_slug_list(self):
-        return [kw.slug.encode("utf-8", "replace") for kw in self.keywords.all()]
+        return [kw.slug for kw in self.keywords.all()]
 
     def region_name_list(self):
-        return [region.name.encode("utf-8", "replace") for region in self.regions.all()]
+        return [region.name for region in self.regions.all()]
 
     def spatial_representation_type_string(self):
         if hasattr(self.spatial_representation_type, 'identifier'):
@@ -1142,7 +1133,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
-        upload_to = 'thumbs/'
         upload_path = os.path.join('thumbs/', filename)
 
         try:
@@ -1152,16 +1142,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 # will create a new file with a unique name
                 storage.delete(os.path.join(upload_path))
 
-            storage.save(upload_path, ContentFile(image))
-
-            url_path = os.path.join(
-                settings.MEDIA_URL,
-                upload_to,
-                filename).replace(
-                '\\',
-                '/')
-            site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-            url = urljoin(site_url, url_path)
+            actual_name = storage.save(upload_path, ContentFile(image))
+            url = storage.url(actual_name)
 
             # should only have one 'Thumbnail' link
             obj, created = Link.objects.get_or_create(resource=self,
@@ -1306,9 +1288,6 @@ class LinkManager(models.Manager):
     def original(self):
         return self.get_queryset().filter(link_type='original')
 
-    def geogig(self):
-        return self.get_queryset().filter(name__icontains='geogig')
-
     def ows(self):
         return self.get_queryset().filter(
             link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
@@ -1346,6 +1325,79 @@ class Link(models.Model):
 
     def __unicode__(self):
         return u"{0} link".format(self.link_type)
+
+
+class MenuPlaceholder(models.Model):
+
+    name = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        unique=True
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Menu(models.Model):
+
+    title = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False
+    )
+    placeholder = models.ForeignKey(
+        to='MenuPlaceholder',
+        on_delete=models.CASCADE,
+        null=False
+    )
+    order = models.IntegerField(
+        null=False,
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        unique_together = (
+            ('placeholder', 'order'),
+            ('placeholder', 'title'),
+        )
+        ordering = ['order']
+
+
+class MenuItem(models.Model):
+
+    title = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False
+    )
+    menu = models.ForeignKey(
+        to='Menu',
+        on_delete=models.CASCADE,
+        null=False
+    )
+    order = models.IntegerField(
+        null=False
+    )
+    blank_target = models.BooleanField()
+    url = models.CharField(
+        max_length=2000,
+        null=False,
+        blank=False
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        unique_together = (
+            ('menu', 'order'),
+            ('menu', 'title'),
+        )
+        ordering = ['order']
 
 
 def resourcebase_post_save(instance, *args, **kwargs):
@@ -1447,134 +1499,3 @@ def rating_post_save(instance, *args, **kwargs):
 
 
 signals.post_save.connect(rating_post_save, sender=OverallRating)
-
-
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def do_login(sender, user, request, **kwargs):
-    """
-    Take action on user login. Generate a new user access_token to be shared
-    with GeoServer, and store it into the request.session
-    """
-    if user and user.is_authenticated():
-        token = None
-        try:
-            Application = get_application_model()
-            app = Application.objects.get(name="GeoServer")
-
-            # Lets create a new one
-            token = generate_token()
-
-            # 1 day expiration time by default
-            _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', 86400)
-
-            # Let's create the new AUTH TOKEN
-            AccessToken.objects.get_or_create(
-                user=user,
-                application=app,
-                expires=datetime.datetime.now(timezone.get_current_timezone()) +
-                datetime.timedelta(
-                    seconds=_expire_seconds),
-                token=token)
-        except BaseException:
-            u = uuid.uuid1()
-            token = u.hex
-
-        # Do GeoServer Login
-        url = "%s%s&access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                                        'ows?service=wms&version=1.3.0&request=GetCapabilities',
-                                        token)
-
-        cj = cookielib.CookieJar()
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-
-        jsessionid = None
-        try:
-            opener.open(url)
-            for c in cj:
-                if c.name == "JSESSIONID":
-                    jsessionid = c.value
-        except BaseException:
-            u = uuid.uuid1()
-            jsessionid = u.hex
-
-        request.session['access_token'] = token
-        request.session['JSESSIONID'] = jsessionid
-
-
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def do_logout(sender, user, request, **kwargs):
-    """
-    Take action on user logout. Cleanup user access_token and send logout
-    request to GeoServer
-    """
-    if 'access_token' in request.session:
-        try:
-            Application = get_application_model()
-            app = Application.objects.get(name="GeoServer")
-
-            # Lets delete the old one
-            try:
-                old = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
-            except BaseException:
-                pass
-            else:
-                old.delete()
-        except BaseException:
-            pass
-
-        # Do GeoServer Logout
-        if request and 'access_token' in request.session:
-            access_token = request.session['access_token']
-        else:
-            access_token = None
-
-        if access_token:
-            url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                                            settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'],
-                                            access_token)
-            header_params = {
-                "Authorization": ("Bearer %s" % access_token)
-            }
-        else:
-            url = "%s%s" % (settings.OGC_SERVER['default']['LOCATION'],
-                            settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'])
-
-        param = {}
-        data = urllib.urlencode(param)
-
-        cookies = None
-        for cook in request.COOKIES:
-            name = str(cook)
-            value = request.COOKIES.get(name)
-            if name == 'csrftoken':
-                header_params['X-CSRFToken'] = value
-
-            cook = "%s=%s" % (name, value)
-            if not cookies:
-                cookies = cook
-            else:
-                cookies = cookies + '; ' + cook
-
-        if cookies:
-            if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
-                cookies = cookies + '; JSESSIONID=' + \
-                    request.session['JSESSIONID']
-            header_params['Cookie'] = cookies
-
-        gs_request = urllib2.Request(url, data, header_params)
-
-        try:
-            urllib2.urlopen(gs_request)
-        except BaseException:
-            tb = traceback.format_exc()
-            if tb:
-                logger.debug(tb)
-
-        if 'access_token' in request.session:
-            del request.session['access_token']
-
-        request.session.modified = True
-
-
-user_logged_in.connect(do_login)
-user_logged_out.connect(do_logout)

@@ -21,7 +21,7 @@ these apps for your specific needs.
      django-apps/proxy
      django-apps/search
      django-apps/security
-  
+
   .. comment:
       geonode.base
         core application functionality.
@@ -34,7 +34,7 @@ these apps for your specific needs.
 
       geonode.maps
         For managing maps and styles.
-  
+
       geonode.proxy
         Supports JavaScript applications accessing GeoServer.
 
@@ -225,11 +225,6 @@ OGC_SERVER
 
     A boolean that represents whether GeoNode's security application is enabled.
 
-  GEOGIT_ENABLED
-    Default: ``False``
-
-    A boolean that represents whether the OGC server supports GeoGig datastores.
-
   WMST_ENABLED
     Default: ``False``
 
@@ -304,13 +299,13 @@ SITEURL
 
 DEFAULT_MAP_BASE_LAYER
   The name of the background layer to include in newly created maps.
- 
+
 DEFAULT_MAP_CENTER
   Default: ``(0, 0)``
 
   A 2-tuple with the latitude/longitude coordinates of the center-point to use
   in newly created maps.
- 
+
 DEFAULT_MAP_ZOOM
   Default: ``0``
 

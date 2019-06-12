@@ -1,4 +1,4 @@
-.. raw:: html
+.. code:: html
 
 	<div align="right">
 	<a href="http://travis-ci.org/GeoNode/geonode"><img src="https://secure.travis-ci.org/GeoNode/geonode.png"></a> <a href="https://codecov.io/gh/GeoNode/geonode"><img src="https://codecov.io/gh/GeoNode/geonode/branch/master/graph/badge.svg"></a> <a href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="docs/img/gpl.png" alt="GPL badge"></a></div><img src="docs/img/geonode-logo_for_readme.gif" alt="GeoNode Logo" width="450px"/><div style="text-align:center"><hr><b>A powerful yet easy to use web-based application and platform for deploying spatial data infrastructures (SDI).</b><hr></div>
@@ -6,7 +6,7 @@
 	
 
 Table of Contents
-----------------
+-----------------
 
 -  `What is GeoNode? <#what-is-geonode>`__
 -  `Try out GeoNode <#try-out-geonode>`__
@@ -53,11 +53,11 @@ Workshop <http://docs.geonode.org/en/master/tutorials/users/index.html>`__.
 Install
 -------
 
-    The latest official release is 2.8!
+    The latest official release is 2.8.2!
 
 GeoNode can be setup in different ways, flavors and plattforms. If
 you´re planning to do development or install for production please visit
-the offical GeoNode installation documentation: 
+the offical GeoNode installation documentation:
 
 - `Docker <http://docs.geonode.org/en/master/tutorials/install_and_admin/running_docker/index.html>`__
 - `VM Setup with VirtualBox <http://docs.geonode.org/en/master/tutorials/install_and_admin/vm_setup_virtualbox.html>`__
@@ -78,7 +78,7 @@ and configuration settings.
 Development
 -----------
 
-.. raw:: html
+.. code:: html
 
 	<img src="docs/img/opensource.png">
 

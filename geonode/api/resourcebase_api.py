@@ -55,7 +55,7 @@ from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
-
+from .authentication import OAuthAuthentication
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
 from .api import (TagResource,
@@ -222,6 +222,15 @@ class CommonModelApi(ModelResource):
         if keywords:
             filtered = self.filter_h_keywords(filtered, keywords)
 
+        # Hide Dirty State Resources
+        user = request.user if request else None
+        if not user or not user.is_superuser:
+            if user:
+                filtered = filtered.exclude(Q(dirty_state=True) & ~(
+                    Q(owner__username__iexact=str(user))))
+            else:
+                filtered = filtered.exclude(Q(dirty_state=True))
+
         return filtered
 
     def filter_published(self, queryset, request):
@@ -325,6 +334,9 @@ class CommonModelApi(ModelResource):
                 elif type in LAYER_SUBTYPES.keys():
                     subtypes.append(type)
 
+            if 'vector' in subtypes and 'vector_time' not in subtypes:
+                subtypes.append('vector_time')
+
             if len(subtypes) > 0:
                 types.append("layer")
                 sqs = SearchQuerySet().narrow("subtype:%s" %
@@ -349,7 +361,7 @@ class CommonModelApi(ModelResource):
             else:
                 words = [
                     w for w in re.split(
-                        '\W',
+                        r'\W',
                         query,
                         flags=re.UNICODE) if w]
                 for i, search_word in enumerate(words):
@@ -613,10 +625,13 @@ class CommonModelApi(ModelResource):
         # If an user does not have at least view permissions, he won't be able
         # to see the resource at all.
         filtered_objects_ids = None
-        if response_objects:
-            filtered_objects_ids = [
-                item.id for item in response_objects if request.user.has_perm(
-                    'view_resourcebase', item.get_self_resource())]
+        try:
+            if data['objects']:
+                filtered_objects_ids = [
+                    item.id for item in data['objects'] if request.user.has_perm(
+                        'view_resourcebase', item.get_self_resource())]
+        except BaseException:
+            pass
 
         if isinstance(
                 data,
@@ -664,7 +679,9 @@ class ResourceBaseResource(CommonModelApi):
             .distinct().order_by('-date')
         resource_name = 'base'
         excludes = ['csw_anytext', 'metadata_xml']
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())
 
 
 class FeaturedResourceBaseResource(CommonModelApi):
@@ -675,7 +692,9 @@ class FeaturedResourceBaseResource(CommonModelApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = ResourceBase.objects.filter(featured=True).order_by('-date')
         resource_name = 'featured'
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())
 
 
 class LayerResource(CommonModelApi):
@@ -684,7 +703,7 @@ class LayerResource(CommonModelApi):
     links = fields.ListField(
         attribute='links',
         null=True,
-        use_in='detail',
+        use_in='all',
         default=[])
     if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         default_style = fields.ForeignKey(
@@ -709,7 +728,7 @@ class LayerResource(CommonModelApi):
 
     def format_objects(self, objects):
         """
-        Formats the object then adds a geogig_link as necessary.
+        Formats the object.
         """
         formatted_objects = []
         for obj in objects:
@@ -736,19 +755,15 @@ class LayerResource(CommonModelApi):
             formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
             formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
 
-            # add the geogig link
-            formatted_obj['geogig_link'] = obj.geogig_link
-
             # provide style information
             bundle = self.build_bundle(obj=obj)
             formatted_obj['default_style'] = self.default_style.dehydrate(
                 bundle, for_list=True)
 
-            if self.links.use_in == 'all' or self.links.use_in == 'list':
-                formatted_obj['links'] = self.dehydrate_links(
-                    bundle)
             # Add resource uri
             formatted_obj['resource_uri'] = self.get_resource_uri(bundle)
+
+            formatted_obj['links'] = self.dehydrate_ogc_links(bundle)
 
             if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
                 formatted_obj['site_url'] = settings.SITEURL
@@ -770,7 +785,7 @@ class LayerResource(CommonModelApi):
             formatted_objects.append(formatted_obj)
         return formatted_objects
 
-    def dehydrate_links(self, bundle):
+    def _dehydrate_links(self, bundle, link_types=None):
         """Dehydrate links field."""
 
         dehydrated = []
@@ -782,11 +797,21 @@ class LayerResource(CommonModelApi):
             'mime',
             'url'
         ]
-        for l in obj.link_set.all():
+
+        links = obj.link_set.all()
+        if link_types:
+            links = links.filter(link_type__in=link_types)
+        for l in links:
             formatted_link = model_to_dict(l, fields=link_fields)
             dehydrated.append(formatted_link)
 
         return dehydrated
+
+    def dehydrate_links(self, bundle):
+        return self._dehydrate_links(bundle)
+
+    def dehydrate_ogc_links(self, bundle):
+        return self._dehydrate_links(bundle, ['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
 
     def dehydrate_gtype(self, bundle):
         return bundle.obj.gtype
@@ -885,7 +910,9 @@ class LayerResource(CommonModelApi):
         include_resource_uri = True
         allowed_methods = ['get', 'patch']
         excludes = ['csw_anytext', 'metadata_xml']
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())
         filtering = CommonMetaApi.filtering
         # Allow filtering using ID
         filtering.update({
@@ -952,7 +979,7 @@ class MapResource(CommonModelApi):
             ]
             for layer in map_layers:
                 formatted_map_layer = model_to_dict(
-                     layer, fields=map_layer_fields)
+                    layer, fields=map_layer_fields)
                 formatted_layers.append(formatted_map_layer)
             formatted_obj['layers'] = formatted_layers
             formatted_objects.append(formatted_obj)
@@ -962,7 +989,9 @@ class MapResource(CommonModelApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = Map.objects.distinct().order_by('-date')
         resource_name = 'maps'
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())
 
 
 class DocumentResource(CommonModelApi):
@@ -1012,4 +1041,6 @@ class DocumentResource(CommonModelApi):
         filtering.update({'doc_type': ALL})
         queryset = Document.objects.distinct().order_by('-date')
         resource_name = 'documents'
-        authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())

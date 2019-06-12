@@ -27,6 +27,8 @@ import logging
 
 from lxml import etree
 
+from django.conf import settings
+
 from geonode import geoserver, qgis_server
 from geonode.utils import check_ogc_backend
 from geonode.catalogue import get_catalogue
@@ -123,15 +125,11 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         for link in record.references:
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                 if link['scheme'] == 'OGC:WMS':
-                    self.assertEqual(
-                        link['url'],
-                        'http://localhost:8000/gs/ows',
-                        'Expected a specific OGC:WMS URL')
+                    self.assertEquals(link['url'], '{}ows'.format(settings.GEOSERVER_PUBLIC_LOCATION))
                 elif link['scheme'] == 'OGC:WFS':
-                    self.assertEqual(
-                        link['url'],
-                        'http://localhost:8000/gs/wfs',
-                        'Expected a specific OGC:WFS URL')
+                    self.assertEquals(link['url'], '{}ows'.format(settings.GEOSERVER_PUBLIC_LOCATION))
+                elif link['scheme'] == 'OGC:WCS':
+                    self.assertEquals(link['url'], '{}ows'.format(settings.GEOSERVER_PUBLIC_LOCATION))
             elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                 if link['scheme'] == 'OGC:WMS':
                     self.assertEqual(
@@ -197,12 +195,12 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
                 if link.protocol == 'OGC:WMS':
                     self.assertEqual(
                         link.url,
-                        'http://localhost:8000/gs/ows',
+                        '{}ows'.format(settings.GEOSERVER_PUBLIC_LOCATION),
                         'Expected a specific OGC:WMS URL')
                 elif link.protocol == 'OGC:WFS':
                     self.assertEqual(
                         link.url,
-                        'http://localhost:8000/gs/wfs',
+                        '{}wfs'.format(settings.GEOSERVER_PUBLIC_LOCATION),
                         'Expected a specific OGC:WFS URL')
             if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                 if link.protocol == 'OGC:WMS':
@@ -245,7 +243,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             # test BBOX properties in Dublin Core
             from decimal import Decimal
             logger.debug([Decimal(record.bbox.minx), Decimal(record.bbox.miny),
-                         Decimal(record.bbox.maxx), Decimal(record.bbox.maxy)])
+                          Decimal(record.bbox.maxx), Decimal(record.bbox.maxy)])
             self.assertEqual(
                 Decimal(record.bbox.minx),
                 Decimal('-81.8593555'),

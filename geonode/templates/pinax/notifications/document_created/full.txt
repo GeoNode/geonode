@@ -1,6 +1,4 @@
 {% load i18n %}
-
-{% trans "The user" %} {{ resource.owner.username }} {% trans "uploaded the following document" %}:
-{{ resource.title }}
-
+{% trans "The user" %} <i><a href="{{ default_http_protocol }}://{{ current_site }}/people/profile/{{ resource.owner.username }}">{{ resource.owner.username }}</a></i> {% trans "uploaded the following document" %}:<br/>
+<strong>{{ resource.title }}</strong><br/>
 {% trans "You can visit the document's detail page here" %}: http://{{ current_site }}{% url "document_detail" resource.id %}

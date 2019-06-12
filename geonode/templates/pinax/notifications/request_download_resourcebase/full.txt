@@ -1,13 +1,9 @@
 {% load i18n %}
-
-{% trans "The user" %} {{ from_user.username }} {% trans "requested you to download this resource" %}:
-{{ resource.title }}
-
+{% trans "The user" %} {{ from_user.username }} {% trans "requested you to download this resource" %}:<br/>
+<strong>{{ resource.title }}</strong><br/>
 {% if resource.polymorphic_ctype.name = 'layer' %}
-{% trans "Layer" %}: {{ current_site }}{% url "layer_detail" resource.layer.service_typename %}
+{% trans "Layer" %}: {{ current_site }}{% url "layer_detail" resource.layer.service_typename %}<br/>
 {% else %}
-{% trans "Document" %}: {{ current_site }}{% url "document_detail" resource.document.id %}
+{% trans "Document" %}: {{ current_site }}{% url "document_detail" resource.document.id %}<br/>
 {% endif %}
-
 {% trans "Please go to resource page and assign the download permissions if you wish" %}.
-

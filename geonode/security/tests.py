@@ -26,28 +26,26 @@ import base64
 import urllib2
 import logging
 import gisdata
+import contextlib
 
 from django.conf import settings
+from django.http import HttpRequest
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
 from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
-
 from geonode import geoserver
 from geonode.base.populate_test_data import all_public
-from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.people.models import Profile
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
-from geonode.maps.models import Map
-from geonode.layers.populate_layers_data import create_layer_data
 from geonode.groups.models import Group
 from geonode.utils import check_ogc_backend
 from geonode.tests.utils import check_layer
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.helpers import gs_slurp
 from geonode.geoserver.upload import geoserver_upload
-
+from geonode.layers.populate_layers_data import create_layer_data
 
 from .utils import (purge_geofence_all,
                     get_users_with_perms,
@@ -55,20 +53,22 @@ from .utils import (purge_geofence_all,
                     get_highest_priority,
                     set_geofence_all,
                     set_geowebcache_invalidate_cache,
-                    sync_geofence_with_guardian)
+                    sync_geofence_with_guardian,
+                    sync_resources_with_guardian)
 
 
 logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.debug(msg, *args)
+    logger.info(msg, *args)
 
 
 class StreamToLogger(object):
     """
     Fake file-like stream object that redirects writes to a logger instance.
     """
+
     def __init__(self, logger, log_level=logging.INFO):
         self.logger = logger
         self.log_level = log_level
@@ -77,6 +77,155 @@ class StreamToLogger(object):
     def write(self, buf):
         for line in buf.rstrip().splitlines():
             self.logger.log(self.log_level, line.rstrip())
+
+
+class SecurityTest(GeoNodeBaseTestSupport):
+
+    type = 'layer'
+
+    """
+    Tests for the Geonode security app.
+    """
+
+    def setUp(self):
+        super(SecurityTest, self).setUp()
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_login_middleware(self):
+        """
+        Tests the Geonode login required authentication middleware.
+        """
+        from geonode.security.middleware import LoginRequiredMiddleware
+        middleware = LoginRequiredMiddleware()
+
+        white_list = [
+            reverse('account_ajax_login'),
+            reverse('account_confirm_email', kwargs=dict(key='test')),
+            reverse('account_login'),
+            reverse('account_reset_password'),
+            reverse('forgot_username'),
+            reverse('layer_acls'),
+            reverse('layer_resolve_user'),
+        ]
+
+        black_list = [
+            reverse('account_signup'),
+            reverse('document_browse'),
+            reverse('maps_browse'),
+            reverse('layer_browse'),
+            reverse('layer_detail', kwargs=dict(layername='geonode:Test')),
+            reverse('layer_remove', kwargs=dict(layername='geonode:Test')),
+            reverse('profile_browse'),
+        ]
+
+        request = HttpRequest()
+        request.user = get_anonymous_user()
+
+        # Requests should be redirected to the the `redirected_to` path when un-authenticated user attempts to visit
+        # a black-listed url.
+        for path in black_list:
+            request.path = path
+            response = middleware.process_request(request)
+            if response:
+                self.assertEqual(response.status_code, 302)
+                self.assertTrue(
+                    response.get('Location').startswith(
+                        middleware.redirect_to))
+
+        # The middleware should return None when an un-authenticated user
+        # attempts to visit a white-listed url.
+        for path in white_list:
+            request.path = path
+            response = middleware.process_request(request)
+            self.assertIsNone(
+                response,
+                msg="Middleware activated for white listed path: {0}".format(path))
+
+        self.client.login(username='admin', password='admin')
+        admin = get_user_model().objects.get(username='admin')
+        self.assertTrue(admin.is_authenticated())
+        request.user = admin
+
+        # The middleware should return None when an authenticated user attempts
+        # to visit a black-listed url.
+        for path in black_list:
+            request.path = path
+            response = middleware.process_request(request)
+            self.assertIsNone(response)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_session_ctrl_middleware(self):
+        """
+        Tests the Geonode session control authentication middleware.
+        """
+        from geonode.security.middleware import SessionControlMiddleware
+        middleware = SessionControlMiddleware()
+
+        request = HttpRequest()
+
+        self.client.login(username='admin', password='admin')
+        admin = get_user_model().objects.get(username='admin')
+        self.assertTrue(admin.is_authenticated())
+        request.user = admin
+        request.path = reverse('layer_browse')
+        middleware.process_request(request)
+        response = self.client.get(request.path)
+        self.assertEqual(response.status_code, 200)
+        # Simulating Token expired (or not set)
+        request.session = {}
+        request.session['access_token'] = None
+        middleware.process_request(request)
+        response = self.client.get('/admin')
+        self.assertEqual(response.status_code, 302)
+
+
+class SecurityViewsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super(SecurityViewsTests, self).setUp()
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
+
+        self.user = 'admin'
+        self.passwd = 'admin'
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_attributes_sats_refresh(self):
+        layers = Layer.objects.all()[:2].values_list('id', flat=True)
+        test_layer = Layer.objects.get(id=layers[0])
+
+        self.client.login(username='admin', password='admin')
+        layer_attributes = test_layer.attributes
+        self.assertIsNotNone(layer_attributes)
+        test_layer.attribute_set.all().delete()
+        test_layer.save()
+
+        data = {
+            'uuid': test_layer.uuid
+        }
+        resp = self.client.post(reverse('attributes_sats_refresh'), data)
+        self.assertHttpOK(resp)
+        self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
+
+        from geonode.geoserver.helpers import set_attributes_from_geoserver
+        test_layer.attribute_set.all().delete()
+        test_layer.save()
+
+        set_attributes_from_geoserver(test_layer, overwrite=True)
+        self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_invalidate_tiledlayer_cache(self):
+        layers = Layer.objects.all()[:2].values_list('id', flat=True)
+        test_layer = Layer.objects.get(id=layers[0])
+
+        self.client.login(username='admin', password='admin')
+
+        data = {
+            'uuid': test_layer.uuid
+        }
+        resp = self.client.post(reverse('invalidate_tiledlayer_cache'), data)
+        self.assertHttpOK(resp)
 
 
 class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
@@ -568,7 +717,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # would work only on PostGIS layers
 
             # test change_layer_style
-            url = 'http://localhost:8000/gs/rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
+            url = 'http://localhost:8080/geoserver/rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
             sld = """<?xml version="1.0" encoding="UTF-8"?>
         <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld"
         xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
@@ -606,7 +755,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # user without change_layer_style cannot edit it
             self.assertTrue(self.client.login(username='bobby', password='bob'))
             response = self.client.put(url, sld, content_type='application/vnd.ogc.sld+xml')
-            self.assertEquals(response.status_code, 401)
+            self.assertEquals(response.status_code, 404)
 
             # user with change_layer_style can edit it
             assign_perm('change_layer_style', bobby, layer)
@@ -617,8 +766,6 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 }
             }
             layer.set_permissions(perm_spec)
-            response = self.client.get(url)
-            self.assertEquals(response.status_code, 200)
             response = self.client.put(url, sld, content_type='application/vnd.ogc.sld+xml')
         finally:
             try:
@@ -889,7 +1036,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
         response = self.client.get(reverse('layer_detail', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 401)
+        self.assertTrue(response.status_code in (401, 403))
 
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that bobby cannot access the
@@ -1000,25 +1147,25 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
         response = self.client.get(reverse('layer_detail', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 302)
+        self.assertTrue(response.status_code in (302, 403))
 
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that anonymous user cannot
         # access the layer replace page but redirected to login
         response = self.client.get(reverse('layer_replace', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 302)
+        self.assertTrue(response.status_code in (302, 403))
 
         # 3. delete_resourcebase
         # 3.1 has not delete_resourcebase: verify that anonymous user cannot
         # access the layer delete page but redirected to login
         response = self.client.get(reverse('layer_remove', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 302)
+        self.assertTrue(response.status_code in (302, 403))
 
         # 4. change_resourcebase_metadata
         # 4.1 has not change_resourcebase_metadata: verify that anonymous user
         # cannot access the layer metadata page but redirected to login
         response = self.client.get(reverse('layer_metadata', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 302)
+        self.assertTrue(response.status_code in (302, 403))
 
         # 5 N\A? 6 is an integration test...
 
@@ -1028,36 +1175,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # Only for geoserver backend
             response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
-            self.assertEquals(response.status_code, 302)
-
-    def test_map_download(self):
-        """Test the correct permissions on layers on map download"""
-        create_maplayers()
-        # Get a Map
-        the_map = Map.objects.get(title='GeoNode Default Map')
-
-        # Get a MapLayer and set the parameters as it is local and not a background
-        # and leave it alone in the map
-        map_layer = the_map.layer_set.get(name='geonode:CA')
-        map_layer.local = True
-        map_layer.group = 'overlay'
-        map_layer.save()
-        the_map.layer_set.all().delete()
-        the_map.layer_set.add(map_layer)
-
-        # Get the Layer and set the permissions for bobby to it and the map
-        bobby = Profile.objects.get(username='bobby')
-        the_layer = Layer.objects.get(alternate='geonode:CA')
-        remove_perm('download_resourcebase', bobby, the_layer.get_self_resource())
-        remove_perm('download_resourcebase', Group.objects.get(name='anonymous'),
-                    the_layer.get_self_resource())
-        assign_perm('view_resourcebase', bobby, the_layer.get_self_resource())
-        assign_perm('download_resourcebase', bobby, the_map.get_self_resource())
-
-        self.client.login(username='bobby', password='bob')
-
-        response = self.client.get(reverse('map_download', args=(the_map.id,)))
-        self.assertTrue('Could not find downloadable layers for this map' in response.content)
+            self.assertTrue(response.status_code in (302, 403))
 
 
 class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
@@ -1092,14 +1210,14 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                                                    geoserver_post_save,
                                                    geoserver_post_save_local)
             # Handle Layer Save and Upload Signals
-            geoserver_post_save(test_perm_layer, sender=Layer)
+            geoserver_post_save(test_perm_layer, sender=Layer, created=True)
             geoserver_post_save_local(test_perm_layer)
 
             # Check instance bbox and links
             self.assertIsNotNone(test_perm_layer.bbox)
             self.assertIsNotNone(test_perm_layer.srid)
             self.assertIsNotNone(test_perm_layer.link_set)
-            self.assertEquals(len(test_perm_layer.link_set.all()), 9)
+            self.assertEquals(len(test_perm_layer.link_set.all()), 18)
 
             # Layer Manipulation
             from geonode.geoserver.upload import geoserver_upload
@@ -1167,3 +1285,67 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Cleaning Up
             test_perm_layer.delete()
             cleanup(test_perm_layer.name, test_perm_layer.uuid)
+
+
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
+class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    """
+    Test resources synchronization with Guardian and dirty states cleaning
+    """
+
+    def setUp(self):
+        super(SecurityRulesTest, self).setUp()
+        # Layer upload
+        layer_upload_url = reverse('layer_upload')
+        self.client.login(username="admin", password="admin")
+        input_paths, suffixes = self._get_input_paths()
+        input_files = [open(fp, 'rb') for fp in input_paths]
+        files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
+        files['base_file'] = files.pop('shp_file')
+        with contextlib.nested(*input_files):
+            files['permissions'] = '{}'
+            files['charset'] = 'utf-8'
+            files['layer_title'] = 'test layer'
+            resp = self.client.post(layer_upload_url, data=files)
+        # Check the response is OK
+        self.assertEqual(resp.status_code, 200)
+        data = json.loads(resp.content)
+        lname = data['url'].split(':')[-1]
+        self._l = Layer.objects.get(name=lname)
+
+    def _get_input_paths(self):
+        base_name = 'single_point'
+        suffixes = 'shp shx dbf prj'.split(' ')
+        base_path = gisdata.GOOD_DATA
+        paths = [os.path.join(base_path, 'vector', '{}.{}'.format(base_name, suffix)) for suffix in suffixes]
+        return paths, suffixes,
+
+    def test_sync_resources_with_guardian_delay_false(self):
+
+        with self.settings(DELAYED_SECURITY_SIGNALS=False):
+            # Set geofence (and so the dirty state)
+            set_geofence_all(self._l)
+            # Retrieve the same layer
+            dirty_layer = Layer.objects.get(pk=self._l.id)
+            # Check dirty state (True)
+            self.assertFalse(dirty_layer.dirty_state)
+            # Call sync resources
+            sync_resources_with_guardian()
+            clean_layer = Layer.objects.get(pk=self._l.id)
+            # Check dirty state
+            self.assertFalse(clean_layer.dirty_state)
+
+    def test_sync_resources_with_guardian_delay_true(self):
+
+        with self.settings(DELAYED_SECURITY_SIGNALS=True):
+            # Set geofence (and so the dirty state)
+            set_geofence_all(self._l)
+            # Retrieve the same layer
+            dirty_layer = Layer.objects.get(pk=self._l.id)
+            # Check dirty state (True)
+            self.assertTrue(dirty_layer.dirty_state)
+            # Call sync resources
+            sync_resources_with_guardian()
+            clean_layer = Layer.objects.get(pk=self._l.id)
+            # Check dirty state
+            self.assertFalse(clean_layer.dirty_state)

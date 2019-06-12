@@ -56,7 +56,7 @@ def bbox2wktpolygon(bbox):
     maxx = float(bbox[2])
     maxy = float(bbox[3])
     return 'POLYGON((%.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f))' \
-        % (minx, miny, minx, maxy, maxx, maxy, maxx, miny, minx, miny)
+           % (minx, miny, minx, maxy, maxx, maxy, maxx, miny, minx, miny)
 
 
 def inverse_mercator(xy):
@@ -65,8 +65,7 @@ def inverse_mercator(xy):
     """
     lon = (xy[0] / 20037508.34) * 180
     lat = (xy[1] / 20037508.34) * 180
-    lat = 180 / math.pi * \
-        (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
+    lat = 180 / math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
     return (lon, lat)
 
 
@@ -100,18 +99,18 @@ def get_esri_extent(esriobj):
     try:
         if 'fullExtent' in esriobj._json_struct:
             extent = esriobj._json_struct['fullExtent']
-    except Exception, err:
+    except Exception as err:
         logger.error(err, exc_info=True)
 
     try:
         if 'extent' in esriobj._json_struct:
             extent = esriobj._json_struct['extent']
-    except Exception, err:
+    except Exception as err:
         logger.error(err, exc_info=True)
 
     try:
         srs = extent['spatialReference']['wkid']
-    except Exception, err:
+    except Exception as err:
         logger.error(err, exc_info=True)
 
     return [extent, srs]
@@ -124,3 +123,33 @@ def decimal_encode(bbox):
             o = (str(o) for o in [o])
         _bbox.append("{0:.15f}".format(round(o, 2)))
     return _bbox
+
+
+def test_resource_table_status(test_cls, table, is_row_filtered):
+    tbody = table.find_elements_by_tag_name('tbody')
+    rows = tbody[0].find_elements_by_tag_name('tr')
+    visible_rows_count = 0
+    filter_row_count = 0
+    hidden_row_count = 0
+    for row in rows:
+        attr_name = row.get_attribute('name')
+        val = row.value_of_css_property('display')
+
+        if attr_name == "filter_row":
+            filter_row_count = filter_row_count + 1
+        if val == "none":
+            hidden_row_count = hidden_row_count + 1
+        else:
+            visible_rows_count = visible_rows_count + 1
+    result = {"filter_row_count": filter_row_count,
+              "visible_rows_count": visible_rows_count,
+              "hidden_row_count": hidden_row_count}
+
+    if is_row_filtered:
+        test_cls.assertTrue(result["filter_row_count"] > 0)
+        test_cls.assertEqual(result["visible_rows_count"], result["filter_row_count"])
+        test_cls.assertEqual(result["hidden_row_count"], 20)
+    else:
+        test_cls.assertEqual(result["filter_row_count"], 0)
+        test_cls.assertEqual(result["visible_rows_count"], 20)
+        test_cls.assertEqual(result["hidden_row_count"], 0)

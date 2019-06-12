@@ -308,3 +308,122 @@ Usage::
 
   # remove layers which are broken
   python manage.py find_geoserver_broken_layers --remove
+
+
+set_layers_permissions
+======================
+
+Set/Unset permissions on layers for users and groups.
+
+Usage::
+
+    python manage.py set_layers_permissions [-h] [--version] [-v {0,1,2,3}]
+                                            [--settings SETTINGS]
+                                            [--pythonpath PYTHONPATH]
+                                            [--traceback] [--no-color]
+                                            [-r [RESOURCES [RESOURCES ...]]]
+                                            [-p PERMISSION]
+                                            [-u [USERS [USERS ...]]]
+                                            [-g [GROUPS [GROUPS ...]]]
+                                            [-d]
+
+    At least one user or one group is required.
+    If no resources are typed all the layers will be considered.
+    At least one permission must be typed.
+    Multiple inputs can be typed with white space separator.
+    To unset permissions use the '--delete (-d)' option.
+
+
+Arguments::
+
+    -h, --help            show this help message and exit
+    --version             show program's version number and exit
+    -v {0,1,2,3}, --verbosity {0,1,2,3}
+                        Verbosity level; 0=minimal output, 1=normal output, 2=verbose output, 3=very verbose output
+    --settings SETTINGS     The Python path to a settings module, e.g. "myproject.settings.main".
+                            If this isn't provided, the DJANGO_SETTINGS_MODULE environment variable will be used.
+    --pythonpath PYTHONPATH
+                        A directory to add to the Python path, e.g. "/home/djangoprojects/myproject".
+    --traceback           Raise on CommandError exceptions
+    --no-color            Don't colorize the command output.
+    -r [RESOURCES [RESOURCES ...]], --resources [RESOURCES [RESOURCES ...]]
+                        Resources names for which permissions will be assigned to.
+                        Default value: None (all the layers will be considered).
+                        Multiple choices can be typed with white space separator.
+                        A Note: names with white spaces must be typed inside quotation marks.
+    -p PERMISSION, --permission PERMISSION
+                        Permissions to be assigned. Allowed values are: read (r), write (w), download (d) and owner (o).
+    -u [USERS [USERS ...]], --users [USERS [USERS ...]]
+                        Users for which permissions will be assigned to.
+                        Multiple choices can be typed with white space separator.
+    -g [GROUPS [GROUPS ...]], --groups [GROUPS [GROUPS ...]]
+                        Groups for which permissions will be assigned to.
+                        Multiple choices can be typed with white space separator.
+    -d, --delete          Delete permission if it exists.
+
+
+setupsociallogins
+=================
+
+Setup login via social providers. This command can be used to automatically
+setup login with social accounts (facebook, linkedin).
+
+The usual way to configure these providers is to:
+
+# Enable the providers by adding their apps to the ``INSTALLED_APPS`` setting
+
+# Login to django's admin section and then manually add entries to
+the Social accounts -> Social applications section
+
+This command automates this manual setup by creating the necessary entries
+programmatically. It needs to know, for each provider:
+
+* client_id
+
+* secret_key
+
+As such, the command takes ``--{provider}-client-id`` and
+``--{provider}-secret-key`` arguments for each enabled provider. Alternatively,
+it may also get these parameters from the environment - it looks for variables
+named ``{PROVIDER}_OAUTH2_CLIENT_ID`` and ``{PROVIDER}_OAUTH2_SECRET_KEY``.
+
+This makes it possible to configure providers automatically by putting these
+sensitive fields in the environment and then running::
+
+    export FACEBOOK_OAUTH2_CLIENT_ID=123456
+    export FACEBOOK_OAUTH2_SECRET_KEY=abcdef
+    export LINKEDIN_OAUTH2_CLIENT_ID=123456
+    export LINKEDIN_OAUTH2_SECRET_KEY=abcdef
+
+    python manage.py setupsociallogins
+
+
+Usage::
+
+    manage.py setupsociallogins [-h] [--version] [-v {0,1,2,3}]
+                                   [--settings SETTINGS]
+                                   [--pythonpath PYTHONPATH] [--traceback]
+                                   [--no-color]
+
+    Setup login via social providers - You need to add the relevant apps to
+    `INSTALLED_APPS` in order to be able to use this command (e.g. add
+    `allauth.socialaccount.providers.facebook` in order to configure logins with
+    facebook credentials)
+
+
+Arguments::
+
+    -h, --help            show this help message and exit
+    --version             show program's version number and exit
+    -v {0,1,2,3}, --verbosity {0,1,2,3}
+                          Verbosity level; 0=minimal output, 1=normal output,
+                          2=verbose output, 3=very verbose output
+    --settings SETTINGS   The Python path to a settings module, e.g.
+                          "myproject.settings.main". If this isn't provided, the
+                          DJANGO_SETTINGS_MODULE environment variable will be
+                          used.
+    --pythonpath PYTHONPATH
+                          A directory to add to the Python path, e.g.
+                          "/home/djangoprojects/myproject".
+    --traceback           Raise on CommandError exceptions
+    --no-color            Don't colorize the command output.

@@ -26,7 +26,7 @@ from owslib.iso import MD_Metadata
 from pycsw import server
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
 from geonode.catalogue.backends.generic import METADATA_FORMATS
-from shapely.geometry.base import ReadingError
+from shapely.errors import WKBReadingError, WKTReadingError
 
 true_value = 'true'
 false_value = 'false'
@@ -94,7 +94,7 @@ class CatalogueBackend(GenericCatalogueBackend):
 
     def search_records(self, keywords, start, limit, bbox):
         with self.catalogue:
-            lresults = self._csw_local_dispatch(keywords, keywords, start+1, limit, bbox)
+            lresults = self._csw_local_dispatch(keywords, keywords, start + 1, limit, bbox)
             # serialize XML
             e = etree.fromstring(lresults)
 
@@ -172,7 +172,7 @@ class CatalogueBackend(GenericCatalogueBackend):
             # https://gist.github.com/ingenieroariel/717bb720a201030e9b3a
             try:
                 response = csw.dispatch()
-            except ReadingError:
+            except (WKBReadingError, WKTReadingError):
                 return []
 
         if isinstance(response, list):  # pycsw 2.0+

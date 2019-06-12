@@ -18,8 +18,9 @@
 #
 #########################################################################
 
-from geonode.tests.base import GeoNodeBaseTestSupport
-
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.test import Client
+from selenium import webdriver
 from unittest import TestCase as StandardTestCase
 
 from django.core.urlresolvers import reverse
@@ -28,6 +29,8 @@ from django.template.defaultfilters import slugify
 import mock
 from owslib.map.wms111 import ContentMetadata
 
+from geonode.services.utils import test_resource_table_status
+from geonode.tests.base import GeoNodeBaseTestSupport
 from . import enumerations, forms
 from .models import Service
 from .serviceprocessors import (base,
@@ -284,18 +287,10 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             password=mock_catalog.password
         )
 
-    # @mock.patch("geonode.services.serviceprocessors.handler.WmsServiceHandler",
-    #             autospec=True)
-    # def test_local_user_cant_delete_service(self, mock_wms_handler):
     def test_local_user_cant_delete_service(self):
         self.client.logout()
         response = self.client.get(reverse('register_service'))
         self.failUnlessEqual(response.status_code, 302)
-
-        # self.client.login(username='serviceowner', password='somepassword')
-        # response = self.client.get(reverse('register_service'))
-        # self.failUnlessEqual(response.status_code, 200)
-
         url = 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
         # url = "http://fake"
         service_type = enumerations.WMS
@@ -338,3 +333,79 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
                          list(s.keywords.all().values_list('name', flat=True)))
         response = self.client.post(reverse('remove_service', args=(s.id,)))
         self.failUnlessEqual(len(Service.objects.all()), 0)
+
+
+class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
+    selenium = None
+
+    @classmethod
+    def setUpClass(cls):
+        super(WmsServiceHarvestingTestCase, cls).setUpClass()
+
+        try:
+            cls.client = Client()
+            UserModel = get_user_model()
+            cls.user = UserModel.objects.create_user(username='test', password='test@123', first_name='ather',
+                                                     last_name='ashraf', is_staff=True,
+                                                     is_active=True, is_superuser=False)
+            cls.user.save()
+            cls.client.login(username='test', password='test@123')
+            cls.cookie = cls.client.cookies['sessionid']
+            cls.selenium = webdriver.Firefox()
+            cls.selenium.implicitly_wait(10)
+            cls.selenium.get(cls.live_server_url + '/')
+            cls.selenium.add_cookie({'name': 'sessionid', 'value': cls.cookie.value, 'secure': False, 'path': '/'})
+            cls.selenium.refresh()
+            reg_url = reverse('register_service')
+            cls.client.get(reg_url)
+
+            url = 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
+            service_type = enumerations.WMS
+            form_data = {
+                'url': url,
+                'type': service_type
+            }
+            forms.CreateServiceForm(form_data)
+
+            response = cls.client.post(reverse('register_service'), data=form_data)
+            cls.selenium.get(cls.live_server_url + response.url)
+            cls.selenium.refresh()
+        except Exception as e:
+            msg = str(e)
+            print msg
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.selenium:
+            cls.selenium.quit()
+            super(WmsServiceHarvestingTestCase, cls).tearDownClass()
+
+    def test_harvest_resources(self):
+        if self.selenium:
+            table = self.selenium.find_element_by_id('resource_table')
+            if table:
+                test_resource_table_status(self, table, False)
+
+                self.selenium.find_element_by_id('id-filter').send_keys('atlantis:roads')
+                self.selenium.find_element_by_id('btn-id-filter').click()
+                test_resource_table_status(self, table, True)
+
+                self.selenium.find_element_by_id('name-filter').send_keys('landmarks')
+                self.selenium.find_element_by_id('btn-name-filter').click()
+                test_resource_table_status(self, table, True)
+
+                self.selenium.find_element_by_id('desc-filter').send_keys('None')
+                self.selenium.find_element_by_id('btn-desc-filter').click()
+                test_resource_table_status(self, table, True)
+
+                self.selenium.find_element_by_id('desc-filter').send_keys('')
+                self.selenium.find_element_by_id('btn-desc-filter').click()
+                test_resource_table_status(self, table, True)
+
+                self.selenium.find_element_by_id('btnClearFilter').click()
+                test_resource_table_status(self, table, False)
+                self.selenium.find_element_by_id('id-filter').send_keys('atlantis:tiger_roads_tiger_roads')
+
+                self.selenium.find_element_by_id('btn-id-filter').click()
+                # self.selenium.find_element_by_id('option_atlantis:tiger_roads_tiger_roads').click()
+                # self.selenium.find_element_by_tag_name('form').submit()

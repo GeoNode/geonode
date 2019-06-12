@@ -23,7 +23,7 @@
   {{ block.super }}
 {% endblock %}
 
-{% block body_class %}maps{% endblock %}
+{% block body_class %}{% trans "maps" %}{% endblock %}
 
 {% block body_outer %}
   {% overall_rating resource "map" as map_rating %}
@@ -89,6 +89,13 @@
           <div class="overall_rating" style="float:left" data-score="{{ map_rating }}"></div> ({{num_votes}})
         </article>
         {% endif %}
+
+        {% if FAVORITE_ENABLED %}
+        <article class="tab-pane" id="favorite">
+          {% include "favorite/_favorite.html" %}
+        </article>
+        {% endif %}
+
       </div>
 
     </div>
@@ -236,15 +243,14 @@
               <div class="btn-group btn-block">
                   <button type="button" class="btn btn-default btn-block dropdown-toggle"
                           data-toggle="dropdown"
-                          aria-haspopup="true" aria-expanded="false">
-                      Embed Map <span class="caret"></span></button>
+                          aria-haspopup="true" aria-expanded="false">{% trans "Embed Map" %}<span class="caret"></span></button>
                   <ul class="dropdown-menu btn-block" id="embed-map-list">
                       <li id="embed-iframe-link">
-                          <a href="#">Embed Iframe Link</a></li>
+                          <a href="#">{% trans "Embed Iframe Link" %}</a></li>
                       <li id="embed-widget-link">
-                          <a href="#">Embed Widget Link</a></li>
+                          <a href="#">{% trans "Embed Widget Link" %}</a></li>
                       <li>
-                          <a href="{% url 'map_download_leaflet' resource.id %}">Download Leaflet page</a></li>
+                          <a href="{% url 'map_download_leaflet' resource.id %}">{% trans "Download Leaflet page" %}</a></li>
                   </ul>
               </div>
           </li>
@@ -283,8 +289,7 @@
                     <h4 class="modal-title" id="myModalLabel">{% trans "Embed Iframe" %}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>To embed this map, add the following code snippet and customize its properties (scrolling, width,
-                        height) based on your needs to your site:</p>
+                    <p>{% trans "To embed this map, add the following code snippet and customize its properties (scrolling, width, height) based on your needs to your site" %}:</p>
                     <p style="font-weight: bold">
                         &lt;iframe scrolling="yes" src="{{ SITEURL|slice:":-1" }}{% url "map_embed" resource.id %}"
                         width="480px" height="360px"&gt;&lt;/iframe&gt;
@@ -306,7 +311,7 @@
                     <h4 class="modal-title" id="myModalLabel">{% trans "Embed Widget" %}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>To embed this map, copy the following code snippet into your own page:</p>
+                    <p>{% trans "To embed this map, copy the following code snippet into your own page" %}:</p>
                     <pre id="embed-widget-body" style="font-size: 0.5em"></pre>
                 </div>
                 <div class="modal-footer">
@@ -427,5 +432,9 @@
 
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
+    {% endif %}
+
+    {% if FAVORITE_ENABLED %}
+    {% include "favorite/_favorite_js.html" %}
     {% endif %}
 {% endblock extra_script %}

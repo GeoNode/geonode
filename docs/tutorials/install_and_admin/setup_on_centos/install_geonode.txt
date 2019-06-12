@@ -119,7 +119,7 @@ Change the value of the `LOCATION` and `PUBLIC_LOCATION` variables as below::
         'GEOSERVER_LOCATION', 'http://localhost/geoserver/'
     )
     GEOSERVER_PUBLIC_LOCATION = os.getenv(
-        'GEOSERVER_PUBLIC_LOCATION', 'http://localhost/geoserver/'
+        'GEOSERVER_PUBLIC_LOCATION', 'http://localhost/gs/'
     )
 
 Finally configure GeoServer datastore:
@@ -167,7 +167,7 @@ The resulting configuration file should look like this:::
         'GEOSERVER_LOCATION', 'http://localhost/geoserver/'
     )
     GEOSERVER_PUBLIC_LOCATION = os.getenv(
-        'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8001/geoserver/'
+        'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8001/gs/'
     )
 
     # OGC (WMS/WFS/WCS) Server Settings
@@ -186,7 +186,6 @@ The resulting configuration file should look like this:::
             'MAPFISH_PRINT_ENABLED' : True,
             'PRINT_NG_ENABLED' : True,
             'GEONODE_SECURITY_ENABLED' : True,
-            'GEOGIG_ENABLED' : False,
             'WMST_ENABLED' : False,
             'BACKEND_WRITE_ENABLED': True,
             'WPS_ENABLED' : False,
@@ -203,7 +202,6 @@ The resulting configuration file should look like this:::
     #    'OPTIONS': {
     #        'TIME_ENABLED': True,
     #        'MOSAIC_ENABLED': True,
-    #        'GEOGIG_ENABLED': False,
     #    }
     #}
 

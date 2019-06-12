@@ -77,7 +77,7 @@ class GeoNodeSendInvite(SendInvite):
                 self.get_context_data(
                     error_message=_("Sorry, it was not possible to invite '%(email)s'"
                                     " due to the following isse: %(error)s (%(type)s)") % {
-                                    "email": emails, "error": str(e), "type": type(e)}))
+                        "email": emails, "error": str(e), "type": type(e)}))
         else:
             return self.render_to_response(
                 self.get_context_data(form=form))

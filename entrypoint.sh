@@ -11,26 +11,12 @@ echo GEODATABASE_URL=$GEODATABASE_URL
 echo SITEURL=$SITEURL
 echo ALLOWED_HOSTS=$ALLOWED_HOSTS
 echo GEOSERVER_PUBLIC_LOCATION=$GEOSERVER_PUBLIC_LOCATION
+echo GEOSERVER_WEB_UI_LOCATION=$GEOSERVER_WEB_UI_LOCATION
 
 /usr/local/bin/invoke waitfordbs >> /usr/src/app/invoke.log
-
 echo "waitfordbs task done"
-
 /usr/local/bin/invoke migrations >> /usr/src/app/invoke.log
 echo "migrations task done"
-
-if [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
-    /usr/local/bin/invoke prepare
-    echo "prepare task done"
-    /usr/local/bin/invoke fixtures
-    echo "fixture task done"
-fi
-/usr/local/bin/invoke initialized
-echo "initialized"
-
-echo "refresh static data"
-/usr/local/bin/invoke statics
-echo "static data refreshed"
 
 cmd="$@"
 
@@ -50,6 +36,19 @@ else
         echo "Executing Celery server $cmd for Production"
 
     else
+
+        if [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
+            /usr/local/bin/invoke prepare
+            echo "prepare task done"
+            /usr/local/bin/invoke fixtures
+            echo "fixture task done"
+        fi
+        /usr/local/bin/invoke initialized
+        echo "initialized"
+
+        echo "refresh static data"
+        /usr/local/bin/invoke statics
+        echo "static data refreshed"
 
         cmd=$UWSGI_CMD
         echo "Executing UWSGI server $cmd for Production"

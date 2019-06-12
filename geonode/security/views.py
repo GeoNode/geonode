@@ -114,16 +114,42 @@ def resource_permissions(request, resource_id):
 
 @require_POST
 def invalidate_permissions_cache(request):
-    from .utils import set_geofence_invalidate_cache
+    from .utils import sync_resources_with_guardian
     uuid = request.POST['uuid']
     resource = get_object_or_404(ResourceBase, uuid=uuid)
     can_change_permissions = request.user.has_perm(
         'change_resourcebase_permissions',
         resource)
     if can_change_permissions:
-        set_geofence_invalidate_cache()
+        # Push Security Rules
+        sync_resources_with_guardian(resource)
         return HttpResponse(
-            json.dumps({'success': 'ok', 'message': 'GeoFence Security Rules Cache Refreshed!'}),
+            json.dumps({'success': 'ok', 'message': 'Security Rules Cache Refreshed!'}),
+            status=200,
+            content_type='text/plain'
+        )
+    else:
+        return HttpResponse(
+            json.dumps({'success': 'false', 'message': 'You cannot modify this resource!'}),
+            status=200,
+            content_type='text/plain'
+        )
+
+
+@require_POST
+def attributes_sats_refresh(request):
+    from geonode.geoserver.helpers import set_attributes_from_geoserver
+    uuid = request.POST['uuid']
+    resource = get_object_or_404(ResourceBase, uuid=uuid)
+    can_change_data = request.user.has_perm(
+        'change_resourcebase',
+        resource)
+    layer = Layer.objects.get(id=resource.id)
+    if layer and can_change_data:
+        # recalculate the layer statistics
+        set_attributes_from_geoserver(layer, overwrite=True)
+        return HttpResponse(
+            json.dumps({'success': 'ok', 'message': 'Attributes/Stats Refreshed Successfully!'}),
             status=200,
             content_type='text/plain'
         )
@@ -227,12 +253,19 @@ def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.n
     layer = Layer.objects.get(id=layer_id)
     # check if those values are empty
     if owner_email and geonode_email:
-        from django.core.mail import send_mail
+        from django.core.mail import EmailMessage
         # TODO: Copy edit message.
         subject_email = "Your Layer has been seen."
         msg = ("Your layer called {0} with uuid={1}"
                " was seen by {2}").format(layer.name, layer.uuid, viewer)
         try:
-            send_mail(subject_email, msg, geonode_email, [owner_email, ])
+            email = EmailMessage(
+                subject=subject_email,
+                body=msg,
+                from_email=geonode_email,
+                to=[owner_email, ],
+                reply_to=[geonode_email, ])
+            email.content_subtype = "html"
+            email.send()
         except BaseException:
             pass

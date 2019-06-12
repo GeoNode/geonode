@@ -1,5 +1,3 @@
 {% load i18n %}
-
-{% trans "A comment has been posted for the layer" %} {{ instance.content_object.title }} {% trans "by the user" %} {{ instance.author.username }}
-
+{% trans "A comment has been posted for the layer" %} {{ instance.content_object.title }} {% trans "by the user" %} {{ instance.author.username }}<br/>
 {% trans "You can visit the layer's detail page here" %}: http://{{ current_site }}{% url "layer_detail" instance.content_object.service_typename %}

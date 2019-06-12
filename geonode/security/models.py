@@ -139,7 +139,10 @@ class PermissionLevelMixin(object):
         if self.__class__.__name__ == 'Layer':
             if anonymous_can_view and settings.OGC_SERVER['default'].get(
                     "GEOFENCE_SECURITY_ENABLED", False):
-                set_geofence_all(self)
+                if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+                    set_geofence_all(self)
+                else:
+                    self.get_self_resource().set_dirty_state()
             # only for layer owner
             assign_perm('change_layer_data', self.owner, self)
             assign_perm('change_layer_style', self.owner, self)
@@ -151,7 +154,6 @@ class PermissionLevelMixin(object):
     def set_permissions(self, perm_spec):
         """
         Sets an object's the permission levels based on the perm_spec JSON.
-
 
         the mapping looks like:
         {
@@ -171,7 +173,10 @@ class PermissionLevelMixin(object):
         remove_object_permissions(self)
         if self.__class__.__name__ == 'Layer':
             if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                purge_geofence_layer_rules(self.get_self_resource())
+                if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+                    purge_geofence_layer_rules(self.get_self_resource())
+                else:
+                    self.get_self_resource().set_dirty_state()
 
         # default permissions for resource owner
         set_owner_permissions(self)
@@ -203,6 +208,8 @@ class PermissionLevelMixin(object):
                     geofence_user = None
                 if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                     if self.polymorphic_ctype.name == 'layer':
+                        if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+                            self.layer.set_dirty_state()
                         sync_geofence_with_guardian(self.layer, perms, user=geofence_user)
 
         # All the other groups
@@ -219,4 +226,6 @@ class PermissionLevelMixin(object):
                 # Set the GeoFence Owner Rules
                 if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                     if self.polymorphic_ctype.name == 'layer':
+                        if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+                            self.layer.set_dirty_state()
                         sync_geofence_with_guardian(self.layer, perms, group=group)

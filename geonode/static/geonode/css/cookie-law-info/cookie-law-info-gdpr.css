@@ -1,0 +1,604 @@
+.gdpr-container-fluid {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+.gdpr-row {
+	display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+.gdpr-col-4 {
+    -ms-flex: 0 0 33.333333%;
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+}
+.gdpr-col-8 {
+    -ms-flex: 0 0 66.666667%;
+    flex: 0 0 66.666667%;
+    max-width: 66.666667%;
+}
+.gdpr-align-items-stretch {
+    -ms-flex-align: stretch!important;
+    align-items: stretch!important;
+}
+.gdpr-d-flex {
+    display: -ms-flexbox!important;
+    display: flex!important;
+}
+.gdpr-px-0 {
+	padding-left: 0;
+	padding-right: 0;
+}
+.modal-backdrop.show {
+	opacity: .8;
+}
+.modal-open {
+    overflow: hidden
+}
+
+.modal-open .gdpr-modal {
+    overflow-x: hidden;
+    overflow-y: auto
+}
+
+.gdpr-modal.fade .gdpr-modal-dialog {
+    transition: -webkit-transform .3s ease-out;
+    transition: transform .3s ease-out;
+    transition: transform .3s ease-out,-webkit-transform .3s ease-out;
+    -webkit-transform: translate(0,-25%);
+    transform: translate(0,-25%)
+}
+
+.gdpr-modal.show .gdpr-modal-dialog {
+    -webkit-transform: translate(0,0);
+    transform: translate(0,0)
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1039;
+    background-color: #000
+}
+
+.modal-backdrop.fade {
+    opacity: 0
+}
+
+.modal-backdrop.show {
+    opacity: .5
+}
+
+.gdpr-modal {
+	position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1050;
+    display: none;
+    overflow: hidden;
+    outline: 0
+}
+.gdpr-modal a {
+	text-decoration: none;
+}
+.gdpr-modal .gdpr-modal-dialog {
+	position: relative;
+    width: auto;
+    margin: .5rem;
+    pointer-events: none;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+	text-align: left;
+	display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    min-height: calc(100% - (.5rem * 2))
+}
+@media (min-width: 576px) {
+    .gdpr-modal .gdpr-modal-dialog {
+        max-width:500px;
+		margin: 1.75rem auto;
+        min-height: calc(100% - (1.75rem * 2));
+    }
+}
+@media (min-width: 992px) {
+	.gdpr-modal .gdpr-modal-dialog {
+		max-width: 900px;
+	}
+}
+.gdpr-modal-content {
+	position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 100%;
+    pointer-events: auto;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: .3rem;
+    outline: 0
+}
+.gdpr-modal .row {
+	margin: 0 -15px;
+}
+.gdpr-modal .modal-body {
+	padding: 0;
+	position: relative;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+.gdpr-modal .close {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	z-index: 1;
+	padding: 0;
+    background-color: transparent;
+    border: 0;
+	-webkit-appearance: none;
+	font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+}
+.gdpr-modal .close:focus {
+	outline: 0;
+}
+.gdpr-switch {
+	display: inline-block;
+	position: relative;
+	min-height: 1px;
+	padding-left: 70px;
+	font-size: 14px;
+}
+.gdpr-switch input[type="checkbox"] {
+	display:none;
+}
+.gdpr-switch .gdpr-slider {
+	background-color: #e3e1e8;
+	height: 24px;
+	width: 50px;
+	bottom: 0;
+	cursor: pointer;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+	transition: .4s;
+}
+.gdpr-switch .gdpr-slider:before {
+	background-color: #fff;
+	bottom: 2px;
+	content: "";
+	height: 20px;
+	left: 2px;
+	position: absolute;
+	transition: .4s;
+	width: 20px;
+}
+.gdpr-switch input:checked + .gdpr-slider {
+	background-color:rgb(99, 179, 95);
+}
+.gdpr-switch input:checked + .gdpr-slider:before {
+	transform: translateX(26px);
+}
+.gdpr-switch .gdpr-slider {
+	border-radius: 34px;
+}
+.gdpr-switch .gdpr-slider:before {
+	border-radius: 50%;
+}
+.gdpr-tab-content>.gdpr-tab-pane {
+    display: none;
+}
+.gdpr-tab-content>.active {
+    display: block;
+}
+.gdpr-fade {
+    transition: opacity .15s linear;
+}
+.gdpr-nav-pills {
+	display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    padding-left: 0;
+    margin-bottom: 0;
+	list-style: none;
+	-ms-flex-direction: column !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    -ms-align-items: stretch !important;
+}
+.nav.gdpr-nav-pills, .gdpr-tab-content {
+	width: 100%;
+	padding: 30px;
+}
+.nav.gdpr-nav-pills {
+	background: #f3f3f3;
+}
+.nav.gdpr-nav-pills .gdpr-nav-link {
+	border: 1px solid #0070ad;
+	margin-bottom: 10px;
+	color: #0070ad;
+	font-size: 14px;
+	display: block;
+	padding: .5rem 1rem;
+	border-radius: .25rem;
+}
+.nav.gdpr-nav-pills .gdpr-nav-link.active, .nav.gdpr-nav-pills .show>.gdpr-nav-link {
+	background-color: #0070ad;
+	border: 1px solid #0070ad;
+}
+.nav.gdpr-nav-pills .gdpr-nav-link.active {
+	color: #ffffff;
+}
+.gdpr-tab-content .gdpr-button-wrapper {
+	padding-top: 30px;
+	margin-top: 30px;
+	border-top: 1px solid #d6d6d6;
+}
+.gdpr-tab-content .gdpr-button-wrapper .btn-gdpr {
+	background-color: #0070ad;
+	border-color: #0070ad;
+	color: #ffffff;
+	font-size: 14px;
+	display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.gdpr-tab-content p {
+	color: #343438;
+	font-size: 14px;
+	margin-top: 0;
+}
+.gdpr-tab-content h4 {
+	font-size: 20px;
+	margin-bottom: .5rem;
+	margin-top: 0;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.2;
+    color: inherit;
+}
+
+
+.cli-container-fluid {
+	padding-right: 15px;
+	padding-left: 15px;
+	margin-right: auto;
+	margin-left: auto;
+}
+.cli-row {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+	margin-right: -15px;
+	margin-left: -15px;
+}
+.cli-col-4 {
+	-ms-flex: 0 0 33.333333%;
+	flex: 0 0 33.333333%;
+	max-width: 33.333333%;
+}
+.cli-col-8 {
+	-ms-flex: 0 0 66.666667%;
+	flex: 0 0 66.666667%;
+	max-width: 66.666667%;
+}
+.cli-align-items-stretch {
+	-ms-flex-align: stretch!important;
+	align-items: stretch!important;
+}
+.cli-d-flex {
+	display: -ms-flexbox!important;
+	display: flex!important;
+}
+.cli-px-0 {
+	padding-left: 0;
+	padding-right: 0;
+}
+.cli-btn {
+	cursor: pointer;
+	font-size: 14px;
+	display: inline-block;
+	font-weight: 400;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	border: 1px solid transparent;
+	padding: .5rem 1.25rem;
+	line-height: 1;
+	border-radius: .25rem;
+	transition: all .15s ease-in-out;
+}
+.cli-btn:hover {
+  opacity: .8;
+}
+.cli-read-more-link {
+	cursor: pointer;
+	font-size: 15px;
+	font-weight: 500;
+	text-decoration: underline;
+}
+.cli-btn:focus {
+	outline: 0;
+}
+.cli-modal-backdrop.cli-show {
+  opacity: .8;
+}
+.cli-modal-open {
+  overflow: hidden
+}
+.cli-barmodal-open {
+  overflow: hidden
+}
+.cli-modal-open .cli-modal {
+	overflow-x: hidden;
+	overflow-y: auto
+}
+.cli-modal.cli-fade .cli-modal-dialog {
+	transition: -webkit-transform .3s ease-out;
+	transition: transform .3s ease-out;
+	transition: transform .3s ease-out,-webkit-transform .3s ease-out;
+	-webkit-transform: translate(0,-25%);
+	transform: translate(0,-25%)
+}
+.cli-modal.cli-show .cli-modal-dialog {
+	-webkit-transform: translate(0,0);
+	transform: translate(0,0)
+}
+.cli-modal-backdrop {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 1040;
+	background-color: #000;
+	display: none;
+}
+.cli-modal-backdrop.cli-fade {
+  opacity: 0
+}
+.cli-modal-backdrop.cli-show {
+	opacity: .5;
+	display: block;
+}
+.cli-modal {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 99999;
+	display: none;
+	overflow: hidden;
+	outline: 0
+}
+.cli-modal.cli-show {
+	display: block;
+}
+.cli-modal a {
+	text-decoration: none;
+}
+.cli-modal .cli-modal-dialog {
+	position: relative;
+	width: auto;
+	margin: .5rem;
+	pointer-events: none;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #212529;
+	text-align: left;
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-align: center;
+	align-items: center;
+	min-height: calc(100% - (.5rem * 2))
+}
+@media (min-width: 576px) {
+	.cli-modal .cli-modal-dialog {
+		max-width:500px;
+		margin: 1.75rem auto;
+		min-height: calc(100% - (1.75rem * 2))
+	}
+}
+@media (min-width: 992px) {
+	.cli-modal .cli-modal-dialog {
+		max-width: 900px;
+	}
+}
+.cli-modal-content {
+	position: relative;
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	width: 100%;
+	pointer-events: auto;
+	background-color: #fff;
+	background-clip: padding-box;
+	border: 1px solid rgba(0,0,0,.2);
+	border-radius: .3rem;
+	outline: 0
+}
+.cli-modal .row {
+	margin: 0 -15px;
+}
+.cli-modal .modal-body {
+	padding: 0;
+	position: relative;
+	-ms-flex: 1 1 auto;
+	flex: 1 1 auto;
+}
+.cli-modal .cli-modal-close {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	z-index: 1;
+	padding: 0;
+	background-color: transparent;
+	border: 0;
+	-webkit-appearance: none;
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1;
+	color: #000;
+	text-shadow: 0 1px 0 #fff;
+}
+.cli-modal .cli-modal-close:focus {
+	outline: 0;
+}
+.cli-switch {
+	display: inline-block;
+	position: relative;
+	min-height: 1px;
+	padding-left: 70px;
+	font-size: 14px;
+}
+.cli-switch input[type="checkbox"] {
+    display:none;
+}
+.cli-switch .cli-slider {
+    background-color: #e3e1e8;
+    height: 24px;
+    width: 50px;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+}
+.cli-switch .cli-slider:before {
+    background-color: #fff;
+    bottom: 2px;
+    content: "";
+    height: 20px;
+    left: 2px;
+    position: absolute;
+    transition: .4s;
+    width: 20px;
+}
+.cli-switch input:checked + .cli-slider {
+    background-color: #00acad
+}
+.cli-switch input:checked + .cli-slider:before {
+    transform: translateX(26px);
+}
+.cli-switch .cli-slider {
+    border-radius: 34px;
+}
+.cli-switch .cli-slider:before {
+    border-radius: 50%;
+}
+.cli-tab-content {
+background: #ffffff;
+}
+.cli-tab-content>.cli-tab-pane {
+    display: none;
+}
+.cli-tab-content>.cli-active {
+    display: block;
+}
+.cli-fade {
+    transition: opacity .15s linear;
+}
+.cli-nav-pills {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+.cli-nav-pills, .cli-tab-content {
+    width: 100%;
+    padding: 30px;
+}
+@media (max-width: 767px) {
+	.cli-nav-pills, .cli-tab-content {
+    padding: 30px 10px;
+	}
+}
+.cli-nav-pills {
+    background: #f3f3f3;
+}
+.cli-nav-pills .cli-nav-link {
+    border: 1px solid #00acad;
+    margin-bottom: 10px;
+    color: #00acad;
+    font-size: 14px;
+    display: block;
+    padding: .5rem 1rem;
+    border-radius: .25rem;
+    cursor: pointer
+}
+.cli-nav-pills .cli-nav-link.cli-active, .cli-nav-pills .cli-show>.cli-nav-link {
+    background-color: #00acad;
+    border: 1px solid #00acad;
+}
+.cli-nav-pills .cli-nav-link.cli-active {
+    color: #ffffff;
+}
+.cli-tab-content .cli-button-wrapper {
+    padding-top: 30px;
+    margin-top: 30px;
+    border-top: 1px solid #d6d6d6;
+}
+.cli-tab-content p {
+    color: #343438;
+    font-size: 14px;
+    margin-top: 0;
+}
+.cli-tab-content h4 {
+    font-size: 20px;
+    margin-bottom: 1.5rem;
+    margin-top: 0;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.2;
+    color: inherit;
+}
