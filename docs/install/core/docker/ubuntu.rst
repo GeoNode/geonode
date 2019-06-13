@@ -16,8 +16,9 @@ Docker Setup (First time only)
   sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
   sudo apt-get update -y
-  sudo apt-get install -y docker-ce docker-ce docker-ce-cli containerd.io docker-compose
+  sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose
   sudo apt autoremove --purge
 
   sudo usermod -aG docker geonode
   su geonode
+
