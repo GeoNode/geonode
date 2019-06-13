@@ -145,7 +145,7 @@ services:
   # dumps the non geodata db
   pgdumper_nogeo:
     container_name: dumper_${GEONODE_DATABASE}_${COMPOSE_PROJECT_NAME}
-    image: tisdar/pgdumper:latest
+    image: olivierdalang/pgdumper:latest
     build: ./pgdumper/
     volumes:
       - pgdumps:/spcgeonode-pgdumps/
@@ -157,7 +157,7 @@ services:
   # dumps the geodata db
   pgdumper_geo:
     container_name: dumper_${GEONODE_GEODATABASE}_${COMPOSE_PROJECT_NAME}
-    image: tisdar/pgdumper:latest
+    image: olivierdalang/pgdumper:latest
     build: ./pgdumper/
     volumes:
       - pgdumps:/spcgeonode-pgdumps/
