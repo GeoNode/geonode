@@ -11,7 +11,7 @@ Create Maps
 
     *The Create Map Menu*
 
-| To add layers to the map click on the *layers* icon on the left and the *Add layer*
+| To add layers to the map click on the *layers* icon on the left and the :guilabel:`Add layer` button
 
 .. figure:: img/maps_layers_button.png
     :align: center
@@ -26,7 +26,7 @@ Create Maps
     *The Add Layer Menu*
 
 | This will open the catalog pane on the right with the available layers previously loaded on GeoNode. Layers can be filtered by typing a text.
-| Each layer provides an *Add to map* button. Once added it will appear on the map and on the left pane *layer switcher*
+| Each layer provides an :guilabel:`Add to map` button. Once added it will appear on the map and on the left pane *layer switcher*
 
 .. figure:: img/maps_layers_add_to_map.png
     :align: center
@@ -41,7 +41,7 @@ Create Maps
     *The Layers Switcher Pane*
 
 | You can add as many layers as you want, use the left panel to adjust their order on the map (by dragging and dropping them up or down in the list) and opacity.
-| The map can be then saved by closing the right catalog pane and clicking on the *options button*, then chose *save as*.
+| The map can be then saved by closing the right catalog pane and clicking on the :guilabel:`options` button, then chose :guilabel:`save as`.
 
 .. figure:: img/maps_save_map_button.png
     :align: center
