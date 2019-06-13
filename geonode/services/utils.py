@@ -20,7 +20,6 @@
 import re
 import math
 import logging
-from decimal import Decimal
 
 logger = logging.getLogger(__name__)
 
@@ -118,10 +117,17 @@ def get_esri_extent(esriobj):
 
 def decimal_encode(bbox):
     _bbox = []
-    for o in [float(coord) for coord in bbox]:
-        if isinstance(o, Decimal):
-            o = (str(o) for o in [o])
-        _bbox.append("{0:.15f}".format(round(o, 2)))
+    _srid = None
+    for o in bbox:
+        try:
+            o = float(o)
+        except BaseException:
+            o = None if 'EPSG' not in o else o
+        if o and isinstance(o, float):
+            _bbox.append("{0:.15f}".format(round(o, 2)))
+        elif o and 'EPSG' in o:
+            _srid = o
+    _bbox = _bbox if not _srid else _bbox + [_srid]
     return _bbox
 
 
