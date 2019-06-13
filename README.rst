@@ -78,7 +78,7 @@ and configuration settings.
 Development
 -----------
 
-.. code:: html
+.. raw:: html
 
 	<img src="docs/img/opensource.png">
 
