@@ -8,7 +8,7 @@ Those guides **are not** meant to be used on a production system. There will be 
 Ubuntu 18.04
 ============
 
-This part of the documentation describes the complete setup process for GeoNode on an Ubuntu 18.04 64-bit clean environment (Desktop or Server). All examples use shell commands that you must enter on a local terminal or a remote shell. 
+This part of the documentation describes the complete setup process for GeoNode on an Ubuntu 18.04 64-bit clean environment (Desktop or Server). All examples use shell commands that you must enter on a local terminal or a remote shell.
 - If you have a graphical desktop environment you can open the terminal application after login;
 - if you are working on a remote server the provider or sysadmin should has given you access through an ssh client.
 
@@ -42,7 +42,7 @@ Create User ``geonode`` **if not present**:
   # Follow the prompts to set the new user's information.
   # It is fine to accept the defaults to leave all of this information blank.
   sudo adduser geonode
-  
+
   # The following command adds the user geonode to group sudo
   sudo usermod -aG sudo geonode
 
@@ -84,7 +84,7 @@ First, we are going to install all the **system packages** needed for the GeoNod
 Geonode Project Installation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Geonode project is the proper way to run a customized installation of Geonode. The repository of geonode-project contains a minimal set of files following the structure of a django-project. Geonode itself will be installed as a requirement of your project. 
+Geonode project is the proper way to run a customized installation of Geonode. The repository of geonode-project contains a minimal set of files following the structure of a django-project. Geonode itself will be installed as a requirement of your project.
 Inside the project structure is possible to extend, replace or modify all geonode componentse (e.g. css and other static files, templates, models..) and even register new django apps **without touching the original Geonode code**.
 
 
@@ -97,7 +97,7 @@ First of all we need to prepare a new Python Virtual Environment
 Check that the file ``virtualenvwrapper.sh`` exists in the ``$HOME/.local/bin/`` (``$HOME`` is the current user home directory and in our case should be ``/home/geonode``) and then add this line to your file ``~/.bashrc``
 
 .. code-block:: shell
-  
+
   vim ~/.bashrc
 
 .. code-block:: shell
@@ -155,7 +155,7 @@ Docker
 .. warning:: Before moving with this section, you should have read and clearly understood the ``INSTALLATION > GeoNode Core`` sections, and in particular the ``Docker`` one. Everything said for the GeoNode Core Vanilla applies here too, except that the Docker container names will be slightly different. As an instance if you named your project ``my_geonode``, your containers will be called:
 
   .. code-block:: shell
-  
+
     'django4my_geonode' instead of 'django4geonode' and so on...
 
 Deploy an instance of a geonode-project Django template 2.10.x with Docker on localhost
@@ -191,13 +191,13 @@ Make an instance out of the ``Django Template``
 Modify the code and the templates and rebuild the Docker Containers
 
 .. code-block:: shell
-  
+
   docker-compose -f docker-compose.yml -f docker-compose.override.yml build --no-cache
 
 Finally, run the containers
 
 .. code-block:: shell
-  
+
   docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
 
 Deploy an instance of a geonode-project Django template 2.10.x with Docker on a domain
@@ -210,26 +210,26 @@ Stop the containers
 .. code-block:: shell
 
   cd /opt/geonode_custom/my_geonode
-  
+
   docker-compose -f docker-compose.yml -f docker-compose.override.yml stop
-  
+
 Edit the ``ENV`` override file in order to deploy on ``www.example.org``
 
 .. code-block:: shell
 
   # Make a copy of docker-compose.override.yml
   cp docker-compose.override.yml docker-compose.override.example-org.yml
-    
+
 Replace everywhere ``localhost`` with ``www.example.org``
 
 .. code-block:: shell
 
   vim docker-compose.override.example-org.yml
-  
+
 .. code-block:: shell
 
   # e.g.: :%s/localhost/www.example.org/g
-  
+
   version: '2.2'
   services:
 

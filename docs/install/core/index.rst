@@ -8,7 +8,7 @@ Those guides **are not** meant to be used on a production system. There will be 
 Ubuntu 18.04
 ============
 
-This part of the documentation describes the complete setup process for GeoNode on an Ubuntu 18.04 64-bit clean environment (Desktop or Server). All examples use shell commands that you must enter on a local terminal or a remote shell. 
+This part of the documentation describes the complete setup process for GeoNode on an Ubuntu 18.04 64-bit clean environment (Desktop or Server). All examples use shell commands that you must enter on a local terminal or a remote shell.
 - If you have a graphical desktop environment you can open the terminal aplication after login;
 - if you are working on a remote server the provider or sysadmin should has gave you access through an ssh client.
 
@@ -30,36 +30,18 @@ Check that your system is already up-to-date with the repository running the fol
    sudo apt upgrade
 
 
-Create a Dedicated User
-.......................
-
-In the following steps a User named ``geonode`` is used: to run installation commands the user must be in the ``sudo`` group.
-
-Create User ``geonode`` **if not present**:
-
-.. code-block:: shell
-
-  # Follow the prompts to set the new user's information.
-  # It is fine to accept the defaults to leave all of this information blank.
-  sudo adduser geonode
-  
-  # The following command adds the user geonode to group sudo
-  sudo usermod -aG sudo geonode
-
-  # make sure the newly created user is allowed to login by ssh
-  # (out of the scope of this documentation) and switch to User geonode
-  su geonode
-
 Packages Installation
 .....................
 
-First, we are going to install all the **system packages** needed for the GeoNode setup.
+We will use **example.com** as fictitious Domain Name.
+
+First, we are going to install all the **system packages** needed for the GeoNode setup. Login to the target machine and execute the following commands:
 
 .. code-block:: shell
 
   # Install packages from GeoNode core
   sudo apt install -y python-gdal gdal-bin
-  sudo apt install -y python-pip python-dev python-virtualenv
+  sudo apt install -y python-pip python-dev python-virtualenv virtualenvwrapper
   sudo apt install -y libxml2 libxml2-dev gettext
   sudo apt install -y libxslt1-dev libjpeg-dev libpng-dev libpq-dev libgdal-dev libgdal20
   sudo apt install -y software-properties-common build-essential
@@ -78,9 +60,25 @@ First, we are going to install all the **system packages** needed for the GeoNod
   sudo apt purge -y
   sudo apt clean -y
 
-  # Install Packages for Virtual environment management
-  sudo apt install -y virtualenv virtualenvwrapper
-  
+Create a Dedicated User
+.......................
+
+In the following steps a User named ``geonode`` is created (if needed) and used: to run installation commands the user must be in the ``sudo`` group.
+
+Create User ``geonode`` **if not present**:
+
+.. code-block:: shell
+
+  # Follow the prompts to set the new user's information.
+  # It is fine to accept the defaults to leave all of this information blank.
+  sudo adduser geonode
+
+  # The following command adds the user geonode to group sudo
+  sudo usermod -aG sudo geonode
+
+  # make sure the newly created user is allowed to login by ssh
+  # (out of the scope of this documentation) and switch to User geonode
+  su geonode
 
 GeoNode Installation
 ^^^^^^^^^^^^^^^^^^^^
@@ -94,23 +92,9 @@ First of all we need to prepare a new Python Virtual Environment
 
 Since geonode needs a large number of different python libraries and packages, it's recommended to use a python virtual environment to avoid conflicts on dependencies with system wide python packages and other installed softwares. See also documentation of `Virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/stable/>`_. package for mode information
 
-Check that the file ``virtualenvwrapper.sh`` exists in the ``$HOME/.local/bin/`` (``$HOME`` is the current user home directory and in our case should be ``/home/geonode``) and then add this line to your file ``~/.bashrc``
-
-.. code-block:: shell
-  
-  vim ~/.bashrc
-
 .. code-block:: shell
 
-  # virtualenv
-  source $HOME/.local/bin/virtualenvwrapper.sh
-
-Then run the ``.bashrc`` from shell
-
-.. code-block:: shell
-
-  source ~/.bashrc
-  #create a new virtualenv called geonode
+  # Create the GeoNode Virtual Environment (first time only)
   mkvirtualenv --no-site-packages geonode
 
 At this point your command prompt shows a ``(geonode)`` prefix, this indicates that your virtualenv is active.
@@ -141,7 +125,8 @@ At this point your command prompt shows a ``(geonode)`` prefix, this indicates t
 
   # Install GDAL Utilities for Python
   GDAL_VERSION=`gdal-config --version`; \
-    PYGDAL_VERSION="$(pip install pygdal==$GDAL_VERSION 2>&1 | grep -oP '(?<=: )(.*)(?=\))' | grep -oh $GDAL_VERSION\.[0-9])"; \
+    PYGDAL_VERSION="$(pip install pygdal==$GDAL_VERSION 2>&1 | grep -oP '(?<=: )(.*)(?=\))' | \
+    grep -oh '\b'${GDAL_VERSION}'[0-9.]\+\b')"; \
     pip install pygdal==$PYGDAL_VERSION
 
 Run GeoNode for the first time in DEBUG Mode
@@ -1023,7 +1008,7 @@ Clone the Project
 
 Start the Docker instances on ``localhost``
 
-.. warning:: The first time pulling down the images will take some time. You will need a good internet connection.
+.. warning:: The first time pulling the images will take some time. You will need a good internet connection.
 
 .. code-block:: shell
 
@@ -1039,7 +1024,7 @@ Start the Docker instances on ``localhost``
 
   In this case you can of course skip the ``pull`` step to download the ``pre-built`` images.
 
-.. note:: To startup the ``daemonized images``, which means they will keep running even if you ``log out`` from the server or close the ``shell``, just add the ``-d`` option to the ``up`` command, e.g.:
+.. note:: To startup the containers daemonized, which means they will be started in the background (and keep running if you ``log out`` from the server or close the ``shell``) add the ``-d`` option to the ``up`` command as in the following. ``docker-compose`` will take care to restart the containers if necessary (e.g. after boot).
 
   .. code-block:: shell
 
@@ -1051,7 +1036,7 @@ Start the Docker instances on ``localhost``
 Test the instance and follow the logs
 .....................................
 
-If you run the ``daemonized images`` with the ``-d`` option, you can either run specific Docker commands to follow the ``startup and initialization logs`` or entering the image ``shell`` and check for the ``GeoNode logs``.
+If you run the containers daemonized (with the ``-d`` option), you can either run specific Docker commands to follow the ``startup and initialization logs`` or entering the image ``shell`` and check for the ``GeoNode logs``.
 
 In order to follow the ``startup and initialization logs``, you will need to run the following command from the repository folder
 
@@ -1067,7 +1052,7 @@ Alternatively:
   cd /opt/geonode
   docker-compose logs -f django
 
-You should be able to see several initialization messages. Once the image is up and running, you will see the following statements
+You should be able to see several initialization messages. Once the container is up and running, you will see the following statements
 
 .. code-block:: shell
 
@@ -1079,13 +1064,13 @@ You should be able to see several initialization messages. Once the image is up 
 
 To exit just hit ``CTRL+C``.
 
-This message means that the GeoNode images have bee started. Browsing to ``http://localhost/`` will show the GeoNode home page. You should be able to successfully log with the default admin user (``admin`` / ``admin``) and start using it right away.
+This message means that the GeoNode containers have bee started. Browsing to ``http://localhost/`` will show the GeoNode home page. You should be able to successfully log with the default admin user (``admin`` / ``admin``) and start using it right away.
 
-With Docker it is also possible to enter the images shell and follow the logs exactly the same as you deployed it on a physical host. To achieve this run
+With Docker it is also possible to run a shell in the container and follow the logs exactly the same as you deployed it on a physical host. To achieve this run
 
 .. code-block:: shell
 
-  docker exec -it django4geonode bash
+  docker exec -it django4geonode /bin/bash
 
   # Once logged in the GeoNode image, follow the logs by executing
   tail -F -n 300 /var/log/geonode.log
@@ -1094,7 +1079,7 @@ Alternatively:
 
 .. code-block:: shell
 
-  docker-compose exec django bash
+  docker-compose exec django /bin/bash
 
 To exit just hit ``CTRL+C`` and ``exit`` to return to the host.
 
@@ -1173,14 +1158,14 @@ Run the containers in daemon mode
 
   docker-compose -f docker-compose.yml -f docker-compose.override.example-org.yml up --build -d
 
-Access the django4geonode Docker image to update the code-base and/or change internal settings
+Access the django4geonode Docker container to update the code-base and/or change internal settings
 ..............................................................................................
 
 Access the container ``bash``
 
 .. code-block:: shell
 
-  docker exec -i -t django4geonode bash
+  docker exec -i -t django4geonode /bin/bash
 
 You will be logged into the GeoNode instance as ``root``. The folder is ``/usr/src/app/`` where the GeoNode project is cloned. Here you will find the GeoNode source code as in the GitHub repository.
 
@@ -1216,24 +1201,24 @@ Whenever you need to change some settings or environment variable, the easiest t
   # Restart the container in Daemon mode
   docker-compose -f docker-compose.yml -f docker-compose.override.<whatever>.yml up -d
 
-Whenever you change the model, remember to run later from the image ``bash``:
+Whenever you change the model, remember to run later in the container via ``bash``:
 
 .. code-block:: shell
 
   python manage.py makemigrations
   python manage.py migrate
 
-Access the geoserver4geonode Docker image to update the GeoServer version
-.........................................................................
+Access the geoserver4geonode Docker container to update the GeoServer version
+.............................................................................
 
 This procedure allows you to access the GeoServer container.
 
-The concept is exactly the same as above, log into the container ``bash``.
+The concept is exactly the same as above, log into the container with ``bash``.
 
 .. code-block:: shell
 
   # Access the container bash
-  docker exec -it geoserver4geonode bash
+  docker exec -it geoserver4geonode /bin/bash
 
 You will be logged into the GeoServer instance as ``root``.
 
@@ -1247,7 +1232,7 @@ GeoServer is deployed on an Apache Tomcat instance which can be found here
 
 Update the GeoServer instance inside the GeoServer Container
 
-..warning :: The old configuration will be kept since it is ``external``
+.. warning:: The old configuration will be kept since it is ``external``
 
 .. code-block:: shell
 
@@ -1292,9 +1277,9 @@ This procedure allows you to stop all the containers and reset all the data with
 Passages to completely get rid of old Docker images and volumes (reset the environment completely)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. note:: For more details on Docker commands, please refers to the official Docker documentation.
+.. note:: For more details on Docker commands, please refer to the official Docker documentation.
 
-It is possible to ask Docker which images are currently running
+It is possible to let docker show which containers are currently running (add ``-a`` for all containers, also stopped ones)
 
 .. code-block:: shell
 
@@ -1321,7 +1306,7 @@ Force kill all containers by running
 
   docker kill $(docker ps -q)
 
-To clean up all the images, without deleting the static volumes (i.e. the ``DB`` and the ``GeoServer catalog``)
+I you want to clean up all containers and images, without deleting the static volumes (i.e. the ``DB`` and the ``GeoServer catalog``), issue the following commands
 
 .. code-block:: shell
 
@@ -1341,8 +1326,12 @@ If you want to remove a ``volume`` also
   # List of the running volumes
   docker volume ls
 
-  # Remove the GeoServer catalog
+  # Remove the GeoServer catalog by its name
   docker volume rm -f geonode-gsdatadir
 
-  # Remove all docker volumes
-  docker volume ls -qf dangling=true | xargs -r docker volume rm
+  # Remove all dangling docker volumes
+  docker volume rm $(docker volume ls -qf dangling=true)
+
+  # update all images, should be run regularly to fetch published updates
+  for i in $(docker images| awk 'NR>1{print $1":"$2}'| grep -v '<none>'); do docker pull "$i" ;done
+

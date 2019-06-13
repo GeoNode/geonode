@@ -7,7 +7,7 @@ GeoNode Settings
     :hidden:
     :maxdepth: 3
 
-    developers/settings
+    settings/index
 
 Customise the Look and Feel
 ===========================
@@ -17,3 +17,12 @@ Customise the Look and Feel
     :maxdepth: 3
 
     theme/index
+
+GeoNode permissions
+===================
+
+.. toctree::
+    :caption: Permissions
+    :maxdepth: 3
+
+    permissions/index
