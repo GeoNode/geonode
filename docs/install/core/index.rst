@@ -15,36 +15,16 @@ Install the dependencies
 
 In this section, we are going to install all the basic packages and tools needed for a complete GeoNode installation. To follow this guide, a basic knowledge about Ubuntu Server configuration and working with a shell is required. This guide uses ``vim`` as the editor; fill free to use ``nano``, ``gedit`` or others.
 
-Create a Dedicated User
-.......................
-
-We will use **example.com** as fictitious Domain Name. Further a (``sudo``) User ``geonode`` for running commands.
-
-Create User ``geonode`` **if not present**:
-
-.. code-block:: shell
-
-  ssh root@example.com
-
-  # Follow the prompts to set the new user's information.
-  # It is fine to accept the defaults to leave all of this information blank.
-  sudo adduser geonode
-  sudo usermod -aG sudo geonode
-
-  # make sure the newly created user is allowed to login by ssh
-  # (out of the scope of this documentation) and switch to User geonode
-  su geonode
-
 Packages Installation
 .....................
 
-First, we are going to install all the **system packages** needed for the GeoNode setup.
+First, we are going to install all the **system packages** needed for the GeoNode setup. Login to the target machine and execute the following commands:
 
 .. code-block:: shell
 
   # Install packages from GeoNode core
   sudo apt install -y python-gdal gdal-bin
-  sudo apt install -y python-pip python-dev python-virtualenv
+  sudo apt install -y python-pip python-dev python-virtualenv virtualenvwrapper
   sudo apt install -y libxml2 libxml2-dev gettext
   sudo apt install -y libxslt1-dev libjpeg-dev libpng-dev libpq-dev libgdal-dev libgdal20
   sudo apt install -y software-properties-common build-essential
@@ -63,6 +43,24 @@ First, we are going to install all the **system packages** needed for the GeoNod
   sudo apt purge -y
   sudo apt clean -y
 
+Create a Dedicated User
+.......................
+
+We will use **example.com** as fictitious Domain Name. Further a (``sudo``) User ``geonode`` for running commands.
+
+Create User ``geonode`` **if not present**:
+
+.. code-block:: shell
+
+  # Follow the prompts to set the new user's information.
+  # It is fine to accept the defaults to leave all of this information blank.
+  sudo adduser geonode
+  sudo usermod -aG sudo geonode
+
+  # make sure the newly created user is allowed to login by ssh
+  # (out of the scope of this documentation) and switch to User geonode
+  su geonode
+
 GeoNode Installation
 ....................
 
@@ -73,10 +71,6 @@ It will run locally against a file-system based ``SQLite`` database.
 .. code-block:: shell
 
   # Create the GeoNode Virtual Environment (first time only)
-  sudo python -m pip install pip==9.0.1
-  sudo pip install --upgrade pip
-  pip install --user virtualenv
-  pip install --user virtualenvwrapper
   mkvirtualenv --no-site-packages geonode
 
 .. note:: The next time you need to access the Virtual Environment just run
