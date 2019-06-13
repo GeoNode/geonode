@@ -30,8 +30,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-28 08:48+0200\n"
-"PO-Revision-Date: 2019-04-28 09:37+0200\n"
+"POT-Creation-Date: 2019-05-20 11:56+0200\n"
+"PO-Revision-Date: 2019-05-20 15:50+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
 "de/)\n"
@@ -327,10 +327,8 @@ msgid "Available Layers"
 msgstr "Verfügbare Ebenen"
 
 #: geonode/templates/lang.js:40
-#, fuzzy
-#| msgid "Add Layers"
 msgid "Add feeds"
-msgstr "Ebenen hinzufügen"
+msgstr "Feed hinzufügen"
 
 #: geonode/templates/lang.js:41
 #, fuzzy
@@ -370,10 +368,8 @@ msgid "About"
 msgstr "Über"
 
 #: geonode/templates/lang.js:48
-#, fuzzy
-#| msgid "About this Map"
 msgid "About us"
-msgstr "Über diese Karte"
+msgstr "Über uns"
 
 #: geonode/templates/lang.js:49 geonode/templates/lang.js:169
 msgid "Large"
@@ -388,10 +384,8 @@ msgid "Map Layers"
 msgstr "Kartenebenen"
 
 #: geonode/templates/lang.js:52
-#, fuzzy
-#| msgid "Upload Metadata"
 msgid "Upload your own data"
-msgstr "Metadaten hochladen"
+msgstr "Eigene Daten hochladen"
 
 #: geonode/templates/lang.js:53
 msgid "View available data from:"
@@ -480,10 +474,8 @@ msgid "Mini"
 msgstr "Mini"
 
 #: geonode/templates/lang.js:75
-#, fuzzy
-#| msgid "Add Layers"
 msgid "Add Category"
-msgstr "Ebenen hinzufügen"
+msgstr "Kategorie hinzufügen"
 
 #: geonode/templates/lang.js:76
 msgid " Add a new category to the layer tree"
@@ -610,10 +602,8 @@ msgid "Unknown Map"
 msgstr "Unbekannte Karte"
 
 #: geonode/templates/lang.js:109
-#, fuzzy
-#| msgid "Selected Layers"
 msgid "Unsupported Layers"
-msgstr "Ausgewählte Ebenen"
+msgstr "nicht unterstützte Ebenen"
 
 #: geonode/templates/lang.js:110
 #, fuzzy
@@ -670,16 +660,12 @@ msgid "Upload Layer"
 msgstr "SLD hochladen"
 
 #: geonode/templates/lang.js:122
-#, fuzzy
-#| msgid "Create Map"
 msgid "Create Layer"
-msgstr "Karte erstellen"
+msgstr "Ebene erstellen"
 
 #: geonode/templates/lang.js:123
-#, fuzzy
-#| msgid "Selected Layers"
 msgid "Rectify Layer"
-msgstr "Ausgewählte Ebenen"
+msgstr "Bildkorrektur"
 
 #: geonode/templates/lang.js:124
 #, fuzzy
@@ -703,9 +689,8 @@ msgstr ""
 "Wenn Sie diese Seite verlassen, gehen nicht gespeicherte Änderungen verloren."
 
 #: geonode/templates/lang.js:128
-#, fuzzy
 msgid "Center for Geographic Analysis"
-msgstr "Zentrum für Geographische Analyse"
+msgstr "Zentrum für Geographische Analysen"
 
 #: geonode/templates/lang.js:129
 #, fuzzy
@@ -904,10 +889,8 @@ msgid "Source"
 msgstr "Quelle"
 
 #: geonode/templates/lang.js:249
-#, fuzzy
-#| msgid "Data"
 msgid "Data Type"
-msgstr "Daten"
+msgstr "Datentyp"
 
 #: geonode/templates/lang.js:251
 #, fuzzy
