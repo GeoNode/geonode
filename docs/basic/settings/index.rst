@@ -154,7 +154,7 @@ ANONYMOUS_USER_ID
     | Default: ``-1``
     | Env: ``ANONYMOUS_USER_ID``
 
-    The id of an anonymous user. This is an django-guardian settings.
+    The id of an anonymous user. This is an django-guardian setting.
 
 API_INCLUDE_REGIONS_COUNT
 -------------------------
@@ -211,7 +211,7 @@ AWS_ACCESS_KEY_ID
     | Default: ``''``
     | Env: ``AWS_ACCESS_KEY_ID``
 
-    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
+    This is a `Django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
     Your Amazon Web Services access key, as a string.
 
 AWS_BUCKET_NAME
@@ -221,14 +221,14 @@ AWS_BUCKET_NAME
     | Env: ``S3_BUCKET_NAME``
 
     The name of the S3 bucket GeoNode will pull static and/or media files from. Set through the environment variable S3_BUCKET_NAME.
-    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
+    This is a `Django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
 
 AWS_QUERYSTRING_AUTH
 --------------------
 
     | Default: ``False``
 
-    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
+    This is a `Django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
     Setting AWS_QUERYSTRING_AUTH to False to remove query parameter authentication from generated URLs. This can be useful if your S3 buckets are public.
 
 AWS_S3_BUCKET_DOMAIN
@@ -243,7 +243,7 @@ AWS_SECRET_ACCESS_KEY
     | Default: ``''``
     | Env: ``AWS_SECRET_ACCESS_KEY``
 
-    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
+    This is a `Django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
     Your Amazon Web Services secret access key, as a string.
 
 AWS_STORAGE_BUCKET_NAME
@@ -252,7 +252,7 @@ AWS_STORAGE_BUCKET_NAME
     | Default: ``''``
     | Env: ``S3_BUCKET_NAME``
 
-    This is a `django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
+    This is a `Django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
     Your Amazon Web Services storage bucket name, as a string.
 
 B
@@ -271,8 +271,8 @@ BROKER_HEARTBEAT
 
     | Default: ``0``
 
-    At intervals the worker will monitor that the broker hasn’t missed too many heartbeats. 
-    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
+    Heartbeats are used both by the client and the broker to detect if a connection was closed.
+    This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#broker-heartbeat>`__.
     
 
 BROKER_TRANSPORT_OPTIONS
@@ -393,15 +393,13 @@ CELERY_RESULT_SERIALIZER
 
     This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
 
-CELERY_SEND_TASK_EVENTS
------------------------
-
-    TBD
-
 CELERY_SEND_TASK_SENT_EVENT
 ---------------------------
 
-    TBD
+    Default: ``True``
+
+    If enabled, a task-sent event will be sent for every task so tasks can be tracked before they are consumed by a worker. This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#new-lowercase-settings>`__.
+
 
 CELERY_TASK_ALWAYS_EAGER
 ------------------------
@@ -427,7 +425,15 @@ CELERY_TASK_IGNORE_RESULT
 CELERY_TASK_QUEUES
 ------------------
 
-    TBD
+    Default::
+
+        Queue('default', GEONODE_EXCHANGE, routing_key='default'),
+        Queue('geonode', GEONODE_EXCHANGE, routing_key='geonode'),
+        Queue('update', GEONODE_EXCHANGE, routing_key='update'),
+        Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup'),
+        Queue('email', GEONODE_EXCHANGE, routing_key='email'),
+
+    A tuple with registered Queues.
 
 CELERY_TASK_RESULT_EXPIRES
 --------------------------
@@ -461,12 +467,16 @@ CELERY_TRACK_STARTED
 CELERY_WORKER_DISABLE_RATE_LIMITS
 ---------------------------------
 
-    TBD
+    Default: ``False``
+
+    Disable the worker rate limits (number of tasks that can be run in a given time frame).
 
 CELERY_WORKER_SEND_TASK_EVENTS
 ------------------------------
 
-    TBD
+    Default: ``False``
+    
+    Send events so the worker can be monitored by other tools.
 
 CLIENT_RESULTS_LIMIT
 --------------------
@@ -502,7 +512,7 @@ CSRF_COOKIE_HTTPONLY
     | Default: `False`
     | Env: `CSRF_COOKIE_HTTPONLY`
 
-    Whether to use HttpOnly flag on the CSRF cookie. If this is set to True, client-side JavaScript will not to be able to access the CSRF cookie. This is a `Django Setting <https://docs.djangoproject.com/en/2.1/ref/settings/#csrf-cookie-httponly>`__
+    Whether to use HttpOnly flag on the CSRF cookie. If this is set to True, client-side JavaScript will not be able to access the CSRF cookie. This is a `Django Setting <https://docs.djangoproject.com/en/2.1/ref/settings/#csrf-cookie-httponly>`__
 
 CSRF_COOKIE_SECURE
 ------------------
@@ -520,7 +530,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS
 
     Default: `100000`
 
-    Maximun value of parsed attributes.
+    Maximum value of parsed attributes.
 
 DEBUG
 -----
@@ -543,14 +553,14 @@ DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
 
     Default: `True`
 
-    Whether the uplaoded resources should downloadable by default.
+    Whether the uploaded resources should downloadable by default.
 
 DEFAULT_ANONYMOUS_VIEW_PERMISSION
 ---------------------------------
 
     Default: `True`
 
-    Whether the uplaoded resources should be public by default.
+    Whether the uploaded resources should be public by default.
 
 DEFAULT_LAYER_FORMAT
 --------------------
@@ -751,7 +761,7 @@ FREETEXT_KEYWORDS_READONLY
     | Default: ``False``
     | Env: ``FREETEXT_KEYWORDS_READONLY``
 
-    Make Free-Text Kaywords writable from users. Or read-only when set to False.
+    Make Free-Text Keywords writable from users. Or read-only when set to False.
 
 G
 =
@@ -762,7 +772,7 @@ GEOFENCE_SECURITY_ENABLED
     | Default: ``True`` (False is Test is true)
     | Env: ``GEOFENCE_SECURITY_ENABLED``
 
-    Wheather the geofence security system is used.
+    Whether the geofence security system is used.
 
 GEOIP_PATH
 ----------
@@ -770,7 +780,7 @@ GEOIP_PATH
     | Default: ``Path to project``
     | Env: ``PROJECT_ROOT``
 
-    The local path where GeoIPCities.dat is written to. Make sure your user has write permissions.
+    The local path where GeoIPCities.dat is written to. Make sure your user has to have write permissions.
 
 
 GEONODE_APPS
@@ -791,12 +801,17 @@ GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY
 GEONODE_EXCHANGE
 ----------------
 
-    TBD
+    Default:: ``Exchange("default", type="direct", durable=True)``
+    
+    The definition of Exchanges published by geonode. Find more about Exchanges at `celery docs <https://docs.celeryproject.org/en/latest/userguide/routing.html#exchanges-queues-and-routing-keys>`__.
+    
 
 GEOSERVER_EXCHANGE
 ------------------
 
-    TBD
+    Default:: ``Exchange("geonode", type="topic", durable=False)``
+
+    The definition of Exchanges published by GeoServer. Find more about Exchanges at `celery docs <https://docs.celeryproject.org/en/latest/userguide/routing.html#exchanges-queues-and-routing-keys>`__.
 
 GEOSERVER_LOCATION
 ------------------
@@ -865,7 +880,7 @@ HAYSTACK_FACET_COUNTS
     | Default: ``True``
     | Env: ``HAYSTACK_FACET_COUNTS``
 
-    If set to True users will be presented with feedback about the number of resource which match terms they may be interested in.
+    If set to True users will be presented with feedback about the number of resources which matches terms they may be interested in.
 
 HAYSTACK_SEARCH
 ---------------
@@ -938,11 +953,6 @@ MAPBOX_ACCESS_TOKEN
     | Env: ``MAPBOX_ACCESS_TOKEN``
 
     Your Mapbox Access Token.
-
-MAPPROXY_URL
-------------
-
-    TBD
 
 MAP_BASELAYERS
 --------------
@@ -1104,7 +1114,7 @@ O
 OAUTH2_PROVIDER
 ---------------
 
-    Django OAuth Toolkit provide a support layer for Django REST Framework.
+    Django OAuth Toolkit provides a support layer for Django REST Framework.
     For settings visit: `OAuth Toolkit settings <https://django-oauth-toolkit.readthedocs.io/en/latest/rest-framework/getting_started.html>`__
 
 OGC_SERVER_DEFAULT_PASSWORD
@@ -1337,14 +1347,14 @@ RABBITMQ_SIGNALS_BROKER_URL
 
     Default: ``amqp://localhost:5672``
 
-    The Rabbitmq enpoint
+    The Rabbitmq endpoint
 
 REDIS_SIGNALS_BROKER_URL
 ------------------------
 
     Default: ``redis://localhost:6379/0``
 
-    The Redis enpoint.
+    The Redis endpoint.
 
 REGISTRATION_OPEN
 -----------------
@@ -1399,7 +1409,7 @@ SEARCH_FILTERS
     'REGION_ENABLED': True,
     'EXTENT_ENABLED': True,
 
-    Enabled Search Filters for filtering ressources.
+    Enabled Search Filters for filtering resources.
 
 SECURE_BROWSER_XSS_FILTER
 -------------------------
@@ -1473,14 +1483,14 @@ SESSION_EXPIRED_CONTROL_ENABLED
                     The latter is typically installed and configured automatically at GeoNode bootstrap through the default fixtures.
     #. The user has been deactivated for some reason; an Admin has disabled it or its password has expired.
 
-    Whenever tthe middleware terminates the session and the user forced to log out, a message will appear to the GeoNode interface.
+    Whenever the middleware terminates the session and the user forced to log out, a message will appear to the GeoNode interface.
 
 SHOW_PROFILE_EMAIL
 ------------------
 
     Default: ``False``
 
-    A boolean which specifies whether to display the email in user's profile.
+    A boolean which specifies whether to display the email in the user’s profile.
 
 SITE_HOST_NAME
 --------------
