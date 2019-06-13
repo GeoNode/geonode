@@ -1211,7 +1211,7 @@ GeoServer is deployed on an Apache Tomcat instance which can be found here
 
 Update the GeoServer instance inside the GeoServer Container
 
-..warning :: The old configuration will be kept since it is ``external``
+.. warning:: The old configuration will be kept since it is ``external``
 
 .. code-block:: shell
 
