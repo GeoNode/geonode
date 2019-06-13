@@ -84,7 +84,8 @@ app, created = Application.objects.get_or_create(
     pk=1,
     name='GeoServer',
     client_type='confidential',
-    authorization_grant_type='authorization-code'
+    authorization_grant_type='authorization-code',
+    skip_authorization=True
 )
 redirect_uris = [
     'http://{}/geoserver'.format(os.getenv('HTTPS_HOST',"") if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_HOST')),

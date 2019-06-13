@@ -100,8 +100,8 @@ fi
 sed -i -r "s|<cliendId>.*</cliendId>|<cliendId>$CLIENT_ID</cliendId>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
 sed -i -r "s|<clientSecret>.*</clientSecret>|<clientSecret>$CLIENT_SECRET</clientSecret>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
 # OAuth endpoints (client)
-sed -i -r "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>$BASEURL/o/authorize/</userAuthorizationUri>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
-sed -i -r "s|<redirectUri>.*</redirectUri>|<redirectUri>$BASEURL/geoserver/index.html</redirectUri>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
+sed -i -r "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>/o/authorize/</userAuthorizationUri>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
+sed -i -r "s|<redirectUri>.*</redirectUri>|<redirectUri>$BASEURL/index.html</redirectUri>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
 sed -i -r "s|<logoutUri>.*</logoutUri>|<logoutUri>$BASEURL/account/logout/</logoutUri>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
 # OAuth endpoints (server)
 sed -i -r "s|<accessTokenUri>.*</accessTokenUri>|<accessTokenUri>http://nginx/o/token/</accessTokenUri>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"

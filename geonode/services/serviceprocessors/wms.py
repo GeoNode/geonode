@@ -117,7 +117,6 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         self.indexing_method = (
             INDEXED if self._offers_geonode_projection() else CASCADED)
         # self.url = self.parsed_service.url
-        # TODO: Check if the name already esists
         self.name = slugify(self.url)[:255]
 
     def create_cascaded_store(self):
@@ -322,19 +321,20 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             "name": name,
             "workspace": workspace,
             "store": store.name,
-            "typename": "{}:{}".format(workspace, name),
-            "alternate": "{}:{}".format(workspace, name),
-            "storeType": "remoteStore",  # store.resource_type,
+            "typename": "{}:{}".format(workspace, name) if workspace not in name else name,
+            "alternate": "{}:{}".format(workspace, name) if workspace not in name else name,
+            "storeType": "remoteStore",
             "title": geoserver_resource.title,
             "abstract": geoserver_resource.abstract,
             "bbox_x0": bbox[0],
             "bbox_x1": bbox[1],
             "bbox_y0": bbox[2],
             "bbox_y1": bbox[3],
+            "srid": bbox[4] if len(bbox) > 4 else "EPSG:4326",
         }
 
     def _get_indexed_layer_fields(self, layer_meta):
-        bbox = utils.decimal_encode(layer_meta.boundingBoxWGS84)
+        bbox = utils.decimal_encode(layer_meta.boundingBox)
         return {
             "name": layer_meta.name,
             "store": self.name,
@@ -348,6 +348,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             "bbox_x1": bbox[2],
             "bbox_y0": bbox[1],
             "bbox_y1": bbox[3],
+            "srid": bbox[4] if len(bbox) > 4 else "EPSG:4326",
             "keywords": [keyword[:100] for keyword in layer_meta.keywords],
         }
 
