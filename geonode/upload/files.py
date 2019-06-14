@@ -259,7 +259,7 @@ def get_scan_hint(valid_extensions):
 def scan_file(file_name, scan_hint=None, charset=None):
     '''get a list of SpatialFiles for the provided file'''
     if not os.path.exists(file_name):
-        raise Exception(_("Could not access to uploaded data."))
+        raise Exception(_("Could not access to uploaded data.").encode('UTF-8'))
 
     dirname = os.path.dirname(file_name)
     if zipfile.is_zipfile(file_name):
