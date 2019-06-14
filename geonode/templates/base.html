@@ -262,8 +262,10 @@
                 {% if perms.announcements.can_manage %}
                 <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
                 {% endif %}
+                {% if user.is_authenticated %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
+                {% endif %}
                 {% if user.is_superuser %}
                 <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
                 <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
@@ -421,7 +423,9 @@
             {% if perms.announcements.can_manage %}
             <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
             {% endif %}
+            {% if user.is_authenticated %}
             <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
+            {% endif %}
             {% if user.is_superuser %}
             <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
             <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
