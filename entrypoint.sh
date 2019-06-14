@@ -17,6 +17,13 @@ echo GEOSERVER_WEB_UI_LOCATION=$GEOSERVER_WEB_UI_LOCATION
 echo "waitfordbs task done"
 /usr/local/bin/invoke migrations >> /usr/src/app/invoke.log
 echo "migrations task done"
+/usr/local/bin/invoke prepare
+echo "prepare task done"
+/usr/local/bin/invoke fixtures
+echo "fixture task done"
+echo "refresh static data"
+/usr/local/bin/invoke statics
+echo "static data refreshed"
 
 cmd="$@"
 
@@ -38,17 +45,9 @@ else
     else
 
         if [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
-            /usr/local/bin/invoke prepare
-            echo "prepare task done"
-            /usr/local/bin/invoke fixtures
-            echo "fixture task done"
+            /usr/local/bin/invoke initialized
+            echo "initialized"
         fi
-        /usr/local/bin/invoke initialized
-        echo "initialized"
-
-        echo "refresh static data"
-        /usr/local/bin/invoke statics
-        echo "static data refreshed"
 
         cmd=$UWSGI_CMD
         echo "Executing UWSGI server $cmd for Production"
@@ -57,4 +56,5 @@ else
 
 fi
 
+echo "command to be executed is $cmd"
 exec $cmd

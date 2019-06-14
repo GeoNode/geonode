@@ -1,0 +1,138 @@
+version: '2.2'
+services:
+
+  db:
+    image: geonode/postgis:10
+    restart: unless-stopped
+    container_name: db4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    # tty: true
+    labels:
+      org.geonode.component: db
+      org.geonode.instance.name: geonode
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - dbbackups:/pg_backups
+    env_file:
+      - ./scripts/docker/env/development/db.env
+
+  elasticsearch:
+    image: elasticsearch:2.4.1
+    restart: unless-stopped
+    container_name: elasticsearch4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    tty: true
+    labels:
+        org.geonode.component: elasticsearch
+        org.geonode.instance.name: geonode
+
+  rabbitmq:
+    image: rabbitmq
+    restart: unless-stopped
+    container_name: rabbitmq4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    tty: true
+    labels:
+        org.geonode.component: rabbitmq
+        org.geonode.instance.name: geonode
+
+  celery:
+    restart: unless-stopped
+    build: .
+    container_name: celery4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    # tty: true
+    labels:
+        org.geonode.component: celery
+        org.geonode.instance.name: geonode
+    depends_on:
+      - db
+      - elasticsearch
+      - rabbitmq
+    command: celery worker --app=geonode.celery_app:app -B -l INFO
+    volumes:
+      - statics:/mnt/volumes/statics
+      - geoserver-data-dir:/geoserver_data/data
+    env_file:
+      - ./scripts/docker/env/development/celery.env
+
+  geoserver:
+    image: geonode/geoserver:2.14.x
+    restart: unless-stopped
+    container_name: geoserver4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    # tty: true
+    labels:
+        org.geonode.component: geoserver
+        org.geonode.instance.name: geonode
+    depends_on:
+      - db
+      - elasticsearch
+      - rabbitmq
+      - data-dir-conf
+    volumes:
+      - geoserver-data-dir:/geoserver_data/data
+    env_file:
+      - ./scripts/docker/env/development/geoserver.env
+
+  django:
+    restart: unless-stopped
+    build: .
+    container_name: django4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    # tty: true
+    labels:
+      org.geonode.component: django
+      org.geonode.instance.name: geonode
+    depends_on:
+      - db
+      - elasticsearch
+      - rabbitmq
+      - data-dir-conf
+    command: paver start_django -b 0.0.0.0:8000
+    volumes:
+      - statics:/mnt/volumes/statics
+      - geoserver-data-dir:/geoserver_data/data
+    env_file:
+      - ./scripts/docker/env/development/django.env
+
+  geonode:
+    image: geonode/nginx:development
+    restart: unless-stopped
+    container_name: nginx4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    # tty: true
+    labels:
+        org.geonode.component: nginx
+        org.geonode.instance.name: geonode
+    depends_on:
+      - django
+      - celery
+      - geoserver
+    ports:
+      - 80:80
+
+
+  data-dir-conf:
+    image: geonode/geoserver_data:2.14.x
+    restart: on-failure
+    container_name: gsconf4${COMPOSE_PROJECT_NAME}
+    labels:
+        org.geonode.component: conf
+        org.geonode.instance.name: geonode
+    command: /bin/true
+    # command: tail -f /dev/null
+    volumes:
+      - geoserver-data-dir:/geoserver_data/data
+
+
+volumes:
+  geoserver-data-dir:
+    name: ${COMPOSE_PROJECT_NAME}-gsdatadir
+  dbdata:
+    name: ${COMPOSE_PROJECT_NAME}-dbdata
+  dbbackups:
+    driver: ${BACKUPS_VOLUME_DRIVER}
+    name: ${COMPOSE_PROJECT_NAME}-dbbackups
+  statics:
+    name: ${COMPOSE_PROJECT_NAME}-statics

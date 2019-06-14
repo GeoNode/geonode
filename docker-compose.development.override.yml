@@ -1,0 +1,37 @@
+version: '2.2'
+services:
+  django:
+    command: python manage.py runserver --settings=geonode.settings 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app
+      - statics:/mnt/volumes/statics
+      - geoserver-data-dir:/geoserver_data/data
+    environment:
+      DOCKER_ENV: development
+      DEBUG: 'True'
+      GEONODE_LB_HOST_IP: localhost
+      GEONODE_LB_PORT: 80
+      SITEURL: http://localhost/
+      ALLOWED_HOSTS: "['localhost']"
+      GEOSERVER_PUBLIC_LOCATION: http://localhost/geoserver/
+
+  celery:
+    command: celery worker --app=geonode.celery_app:app --broker=amqp://guest:guest@rabbitmq:5672/ -B -l DEBUG
+    volumes:
+      - .:/usr/src/app
+      - statics:/mnt/volumes/statics
+      - geoserver-data-dir:/geoserver_data/data
+    environment:
+      DOCKER_ENV: development
+      DEBUG: 'True'
+      GEONODE_LB_HOST_IP: localhost
+      GEONODE_LB_PORT: 80
+      SITEURL: http://localhost/
+      ALLOWED_HOSTS: "['localhost']"
+      GEOSERVER_PUBLIC_LOCATION: http://localhost/geoserver/
+
+  geoserver:
+    environment:
+      GEONODE_LB_HOST_IP: localhost
+      GEONODE_LB_PORT: 80
+      NGINX_BASE_URL:
