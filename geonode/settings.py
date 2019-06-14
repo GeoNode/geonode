@@ -1466,6 +1466,8 @@ SEARCH_FILTERS = {
     'DATE_ENABLED': True,
     'REGION_ENABLED': True,
     'EXTENT_ENABLED': True,
+    'GROUPS_ENABLED': True,
+    'GROUP_CATEGORIES_ENABLED': True,
 }
 
 # Make Free-Text Kaywords writable from users or read-only
