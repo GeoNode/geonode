@@ -1014,7 +1014,7 @@ except ValueError:
 # fill the list like below:
 #
 # AUTH_IP_WHITELIST = ['192.168.1.158', '192.168.1.159']
-AUTH_IP_WHITELIST = [] if os.getenv('AUTH_IP_WHITELIST') is None \
+AUTH_IP_WHITELIST = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('AUTH_IP_WHITELIST') is None \
         else re.split(r' *[,|:|;] *', os.getenv('AUTH_IP_WHITELIST'))
 
 # A tuple of hosts the proxy can send requests to.

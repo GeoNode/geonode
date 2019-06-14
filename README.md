@@ -1,23 +1,18 @@
-.. raw:: html
-
-	<div align="right">
-	<a href="http://travis-ci.org/GeoNode/geonode"><img src="https://secure.travis-ci.org/GeoNode/geonode.png"></a> <a href="https://codecov.io/gh/GeoNode/geonode"><img src="https://codecov.io/gh/GeoNode/geonode/branch/master/graph/badge.svg"></a> <a href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="docs/img/gpl.png" alt="GPL badge"></a></div><img src="docs/img/geonode-logo_for_readme.gif" alt="GeoNode Logo" width="450px"/><div style="text-align:center"><hr><b>A powerful yet easy to use web-based application and platform for deploying spatial data infrastructures (SDI).</b><hr></div>
-
-	
+# ![GeoNode](docs/img/geonode-logo_for_readme.gif) <hr><b>A powerful yet easy to use web-based application and platform for deploying spatial data infrastructures (SDI).</b><hr> [![GeoNode](docs/img/gpl.png)](https://www.gnu.org/licenses/gpl-3.0.en.html)  [![Build Status](https://travis-ci.org/GeoNode/geonode.svg?branch=master)](https://travis-ci.org/GeoNode/geonode)  [![Test Coverage](https://codecov.io/gh/GeoNode/geonode/branch/master/graph/badge.svg)](https://codecov.io/gh/GeoNode/geonode/branch/master)
 
 Table of Contents
------------------
+=================
 
--  `What is GeoNode? <#what-is-geonode>`__
--  `Try out GeoNode <#try-out-geonode>`__
--  `Install <#install>`__
--  `Learn GeoNode <#learn-geonode>`__
--  `Development <#development>`__
--  `Contributing <#contributing>`__
--  `Roadmap <#roadmap>`__
--  `Showcase <#showcase>`__
--  `Most useful links <#most-useful-links>`__
--  `Licensing <#licensing>`__
+-  [What is GeoNode?](#what-is-geonode)
+-  [Try out GeoNode](#try-out-geonode)
+-  [Install](#install)
+-  [Learn GeoNode](#learn-geonode)
+-  [Development](#development)
+-  [Contributing](#contributing)
+-  [Roadmap](#roadmap)
+-  [Showcase](#showcase)
+-  [Most useful links](#most-useful-links)
+-  [Licensing](#licensing)
 
 What is GeoNode?
 ----------------
@@ -47,40 +42,38 @@ If you just want to try out GeoNode visit our official Demo online at:
 http://master.demo.geonode.org. After your registration you will be able
 to test all basic functionalities like uploading layers, creation of
 maps, editing metadata, styles and much more. To get an overview what
-GeoNode can do we recommend to have a look at the `Users
-Workshop <http://docs.geonode.org/en/master/tutorials/users/index.html>`__.
+GeoNode can do we recommend to have a look at the [Users
+Workshop](http://docs.geonode.org/en/master/tutorials/users/index.html).
 
 Install
 -------
 
-    The latest official release is 2.8.2!
+    The latest official release is 2.10!
 
 GeoNode can be setup in different ways, flavors and plattforms. If
 you´re planning to do development or install for production please visit
 the offical GeoNode installation documentation:
 
-- `Docker <http://docs.geonode.org/en/master/tutorials/install_and_admin/running_docker/index.html>`__
-- `VM Setup with VirtualBox <http://docs.geonode.org/en/master/tutorials/install_and_admin/vm_setup_virtualbox.html>`__
-- `Ubuntu 16.04 <http://docs.geonode.org/en/master/tutorials/install_and_admin/geonode_install/index.html>`__
-- `CentOS 7 <http://docs.geonode.org/en/master/tutorials/install_and_admin/setup_on_centos/index.html>`__
+- [Docker](http://docs.geonode.org/en/master/tutorials/install_and_admin/running_docker/index.html)
+- [VM Setup with VirtualBox](http://docs.geonode.org/en/master/tutorials/install_and_admin/vm_setup_virtualbox.html)
+- [Ubuntu 18.04](http://docs.geonode.org/en/master/tutorials/install_and_admin/geonode_install/index.html)
+- [CentOS 7](http://docs.geonode.org/en/master/tutorials/install_and_admin/setup_on_centos/index.html)
 
 Learn GeoNode
 -------------
 
 After you´ve finished the setup process make yourself familiar with the
-general usage and settings of your GeoNodes instance. - the `User
-Training <http://docs.geonode.org/en/master/tutorials/users/index.html>`__
-is going in depth into what we can do. - the `Administrators
-Workshop <http://docs.geonode.org/en/master/tutorials/admin/index.html>`__
+general usage and settings of your GeoNodes instance. - the [User
+Training](http://docs.geonode.org/en/master/tutorials/users/index.html)
+is going in depth into what we can do. - the [Administrators
+Workshop](http://docs.geonode.org/en/master/tutorials/admin/index.html)
 will guide you to the most important parts regarding management commands
 and configuration settings.
 
 Development
 -----------
 
-.. raw:: html
-
-	<img src="docs/img/opensource.png">
+![](docs/img/opensource.png)
 
 GeoNode is a web based GIS tool, and as such, in order to do development
 on GeoNode itself or to integrate it into your own application, you
@@ -91,31 +84,30 @@ For development GeoNode can be run in a 'development environment'. In
 contrast to a 'production environment' development differs as it uses
 lightweight components to speed up things.
 
-To get you started have a look at the `Install
-instructions <#install>`__ which cover all what is needed to run GeoNode
-for development. Further visit the the `Developer
-workshop <http://docs.geonode.org/en/master/tutorials/devel/index.html>`__
+To get you started have a look at the [Install
+instructions](#install) which cover all what is needed to run GeoNode
+for development. Further visit the the [Developer
+workshop](http://docs.geonode.org/en/master/tutorials/devel/index.html)
 for a basic overview.
 
-If you´re planning of customizing your GeoNode instance, or to extend
-it´s functionalities it´s not advisable to change core files in any
-case. In this case it´s common to use setup a `GeoNode Project
-Template <https://github.com/GeoNode/geonode-project>`__.
+If you're planning of customizing your GeoNode instance, or to extend
+it's functionalities it's not advisable to change core files in any
+case. In this case it's common to use setup a [GeoNode Project
+Template](https://github.com/GeoNode/geonode-project).
 
 Contributing
 ------------
 
 GeoNode is an open source project and contributors are needed to keep
 this project moving forward. Learn more on how to contribute on our
-`Community
-Bylaws <https://github.com/GeoNode/geonode/wiki/Community-Bylaws>`__.
+[Community
+Bylaws](https://github.com/GeoNode/geonode/wiki/Community-Bylaws).
 
 Roadmap
 -------
 
 GeoNode's development roadmap is documented in a series of GeoNode
-Improvement Projects (GNIPS). They are documented at GeoNode Wiki:
-https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals.
+Improvement Projects (GNIPS). They are documented at [GeoNode Wiki](https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals).
 
 GNIPS are considered to be large undertakings which will add a large
 amount of features to the project. As such they are the topic of
@@ -127,8 +119,8 @@ Showcase
 
 A handful of other Open Source projects extend GeoNode’s functionality
 by tapping into the re-usability of Django applications. Visit our
-gallery to see how the community uses GeoNode: `GeoNode
-Showcase <http://geonode.org/gallery/>`__.
+gallery to see how the community uses GeoNode: [GeoNode
+Showcase](http://geonode.org/gallery/).
 
 The development community is very supportive of new projects and
 contributes ideas and guidance for newcomers.
