@@ -186,7 +186,7 @@ class Layer(ResourceBase):
 
     @property
     def ows_url(self):
-        if self.remote_service is not None and self.remote_service.method == INDEXED:
+        if self.remote_service is not None:
             result = self.remote_service.service_url
         else:
             result = "{base}ows".format(
@@ -200,7 +200,7 @@ class Layer(ResourceBase):
 
     @property
     def service_typename(self):
-        if self.remote_service is not None and self.remote_service.method == INDEXED:
+        if self.remote_service is not None:
             return "%s:%s" % (self.remote_service.name, self.alternate)
         else:
             return self.alternate
