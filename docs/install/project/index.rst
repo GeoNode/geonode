@@ -184,7 +184,7 @@ Make an instance out of the ``Django Template``
 .. code-block:: shell
 
   mkvirtualenv my_geonode
-  pip install Django==1.11.20
+  pip install Django==1.11.21
   django-admin startproject --template=./geonode-project -e py,rst,json,yml,ini,env,sample -n Dockerfile my_geonode
   cd /opt/geonode_custom/my_geonode
 
