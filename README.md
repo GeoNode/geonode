@@ -71,8 +71,6 @@ and configuration settings.
 Development
 -----------
 
-![](docs/img/opensource.png)
-
 GeoNode is a web based GIS tool, and as such, in order to do development
 on GeoNode itself or to integrate it into your own application, you
 should be familiar with basic web development concepts as well as with
