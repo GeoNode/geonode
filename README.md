@@ -1,4 +1,4 @@
-# ![GeoNode](docs/img/geonode-logo_for_readme.gif) <hr><b>A powerful yet easy to use web-based application and platform for deploying spatial data infrastructures (SDI).</b><hr> [![GeoNode](docs/img/gpl.png)](https://www.gnu.org/licenses/gpl-3.0.en.html)  [![Build Status](https://travis-ci.org/GeoNode/geonode.svg?branch=master)](https://travis-ci.org/GeoNode/geonode)  [![Test Coverage](https://codecov.io/gh/GeoNode/geonode/branch/master/graph/badge.svg)](https://codecov.io/gh/GeoNode/geonode/branch/master)
+![GeoNode](docs/about/img/geonode-logo_for_readme.gif "GeoNode")
 
 Table of Contents
 =================
@@ -54,10 +54,8 @@ GeoNode can be setup in different ways, flavors and plattforms. If
 you´re planning to do development or install for production please visit
 the offical GeoNode installation documentation:
 
-- [Docker](http://docs.geonode.org/en/master/tutorials/install_and_admin/running_docker/index.html)
-- [VM Setup with VirtualBox](http://docs.geonode.org/en/master/tutorials/install_and_admin/vm_setup_virtualbox.html)
-- [Ubuntu 18.04](http://docs.geonode.org/en/master/tutorials/install_and_admin/geonode_install/index.html)
-- [CentOS 7](http://docs.geonode.org/en/master/tutorials/install_and_admin/setup_on_centos/index.html)
+- [Docker](http://docs.geonode.org/en/master/install/core/index.html#docker)
+- [Ubuntu 18.04](http://docs.geonode.org/en/master/install/core/index.html#ubuntu-18-04)
 
 Learn GeoNode
 -------------
@@ -72,8 +70,6 @@ and configuration settings.
 
 Development
 -----------
-
-![](docs/img/opensource.png)
 
 GeoNode is a web based GIS tool, and as such, in order to do development
 on GeoNode itself or to integrate it into your own application, you
