@@ -1,4 +1,4 @@
-![GeoNode](docs/img/geonode-logo_for_readme.gif "GeoNode")
+![GeoNode](docs/about/img/geonode-logo_for_readme.gif "GeoNode")
 
 Table of Contents
 =================
