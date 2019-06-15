@@ -465,7 +465,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         workspace, layername = layer.alternate.split(
             ":") if ":" in layer.alternate else (None, layer.alternate)
         # WARNING Please make sure to have enabled DJANGO CACHE as per
-        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+        # https://docs.djangoproject.com/en/2.10/topics/cache/#filesystem-caching
         wms_capabilities_resp = get_capabilities(
             request, layer.id, tolerant=True)
         if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
@@ -578,7 +578,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         workspace, layername = layer.alternate.split(
             ":") if ":" in layer.alternate else (None, layer.alternate)
         # WARNING Please make sure to have enabled DJANGO CACHE as per
-        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+        # https://docs.djangoproject.com/en/2.10/topics/cache/#filesystem-caching
         wms_capabilities_resp = get_capabilities(
             request, layer.id, tolerant=True)
         if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
