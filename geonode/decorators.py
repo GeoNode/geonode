@@ -18,12 +18,18 @@
 #
 #########################################################################
 
+import json
 import logging
 
 from functools import wraps
+from django.conf import settings
+from django.http import HttpResponse
 from django.utils.decorators import classonlymethod
 from django.core.exceptions import PermissionDenied
-from geonode.utils import check_ogc_backend
+
+from geonode.utils import (check_ogc_backend,
+                           get_client_ip,
+                           get_client_host)
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +44,6 @@ def on_ogc_backend(backend_package):
     Useful to decorate features/tests that only available for specific
     backend.
     """
-
     def decorator(func):
 
         @wraps(func)
@@ -46,9 +51,7 @@ def on_ogc_backend(backend_package):
             on_backend = check_ogc_backend(backend_package)
             if on_backend:
                 return func(*args, **kwargs)
-
         return wrapper
-
     return decorator
 
 
@@ -97,6 +100,41 @@ def superuser_only(function):
     def _inner(request, *args, **kwargs):
         if not request.user.is_superuser and not request.user.is_staff:
             raise PermissionDenied
+        return function(request, *args, **kwargs)
+    return _inner
+
+
+def superuser_protected(function):
+    """Decorator that forces a view to be accessible by SUPERUSERS only.
+    """
+    def _inner(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return HttpResponse(
+                json.dumps({
+                    'error': 'unauthorized_request'
+                }),
+                status=403,
+                content_type="application/json"
+            )
+        return function(request, *args, **kwargs)
+    return _inner
+
+
+def whitelist_protected(function):
+    """Decorator that forces a view to be accessible by WHITE_LISTED
+    IPs only.
+    """
+    def _inner(request, *args, **kwargs):
+        if not settings.AUTH_IP_WHITELIST or \
+            (get_client_ip(request) not in settings.AUTH_IP_WHITELIST and
+             get_client_host(request) not in settings.AUTH_IP_WHITELIST):
+                return HttpResponse(
+                    json.dumps({
+                        'error': 'unauthorized_request'
+                    }),
+                    status=403,
+                    content_type="application/json"
+                )
         return function(request, *args, **kwargs)
     return _inner
 

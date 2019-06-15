@@ -32,6 +32,24 @@ from oauthlib.common import generate_token
 logger = logging.getLogger(__name__)
 
 
+def extract_headers(request):
+    """
+    Extracts headers from the Django request object
+    :param request: The current django.http.HttpRequest object
+    :return: a dictionary with OAuthLib needed headers
+    """
+    headers = request.META.copy()
+    if "wsgi.input" in headers:
+        del headers["wsgi.input"]
+    if "wsgi.errors" in headers:
+        del headers["wsgi.errors"]
+    if "HTTP_AUTHORIZATION" in headers:
+        headers["Authorization"] = headers["HTTP_AUTHORIZATION"]
+
+    return headers
+
+
+
 def make_token_expiration(seconds=86400):
     _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', seconds)
     _expire_time = datetime.datetime.now(timezone.get_current_timezone())

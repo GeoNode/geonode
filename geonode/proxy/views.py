@@ -100,15 +100,15 @@ def get_headers(request, url, raw_url):
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     access_token = None
-
     site_url = urlsplit(settings.SITEURL)
-    if site_url.netloc == url.netloc:
+    if site_url.hostname == url.hostname:
         # we give precedence to obtained from Aithorization headers
         if 'HTTP_AUTHORIZATION' in request.META:
             auth_header = request.META.get(
                 'HTTP_AUTHORIZATION',
                 request.META.get('HTTP_AUTHORIZATION2'))
             if auth_header:
+                headers['Authorization'] = auth_header
                 access_token = get_token_from_auth_header(auth_header)
         # otherwise we check if a session is active
         elif request and request.user.is_authenticated:

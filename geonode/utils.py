@@ -1226,6 +1226,22 @@ def raw_sql(query, params=None, ret=True):
                 yield dict(zip(desc, row))
 
 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+def get_client_host(request):
+    hostname = None
+    http_host = request.META.get('HTTP_HOST')
+    if http_host:
+        hostname = http_host.split(':')[0]
+    return hostname
+
 def check_ogc_backend(backend_package):
     """Check that geonode use a particular OGC Backend integration
 
@@ -1288,7 +1304,7 @@ class HttpClient(object):
                     tb = traceback.format_exc()
                     logger.debug(tb)
                     pass
-            else:
+            elif user == self.username:
                 valid_uname_pw = base64.b64encode(
                     b"%s:%s" % (self.username, self.password)).decode("ascii")
                 headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
