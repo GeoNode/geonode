@@ -1242,6 +1242,7 @@ def get_client_host(request):
         hostname = http_host.split(':')[0]
     return hostname
 
+
 def check_ogc_backend(backend_package):
     """Check that geonode use a particular OGC Backend integration
 

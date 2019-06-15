@@ -128,13 +128,13 @@ def whitelist_protected(function):
         if not settings.AUTH_IP_WHITELIST or \
             (get_client_ip(request) not in settings.AUTH_IP_WHITELIST and
              get_client_host(request) not in settings.AUTH_IP_WHITELIST):
-                return HttpResponse(
-                    json.dumps({
-                        'error': 'unauthorized_request'
-                    }),
-                    status=403,
-                    content_type="application/json"
-                )
+            return HttpResponse(
+                json.dumps({
+                    'error': 'unauthorized_request'
+                }),
+                status=403,
+                content_type="application/json"
+            )
         return function(request, *args, **kwargs)
     return _inner
 

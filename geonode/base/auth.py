@@ -49,7 +49,6 @@ def extract_headers(request):
     return headers
 
 
-
 def make_token_expiration(seconds=86400):
     _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', seconds)
     _expire_time = datetime.datetime.now(timezone.get_current_timezone())
