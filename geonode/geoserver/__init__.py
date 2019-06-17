@@ -19,6 +19,7 @@
 #########################################################################
 
 import logging
+from django.conf import settings
 from django.utils.translation import ugettext_noop as _
 from geonode.notifications_helper import NotificationsAppConfigBase
 
@@ -54,19 +55,20 @@ def set_resource_links(*args, **kwargs):
     from geonode.catalogue.models import catalogue_post_save
     from geonode.layers.models import Layer
 
-    _all_layers = Layer.objects.all()
-    for index, layer in enumerate(_all_layers, start=1):
-        _lyr_name = layer.name
-        message = "[%s / %s] Updating Layer [%s] ..." % (index, len(_all_layers), _lyr_name)
-        print(message)
-        logger.debug(message)
-        try:
-            set_resource_default_links(layer, layer)
-            catalogue_post_save(instance=layer, sender=layer.__class__)
-        except BaseException:
-            logger.exception(
-                "[ERROR] Layer [%s] couldn't be updated" % _lyr_name
-            )
+    if settings.UPDATE_RESOURCE_LINKS_AT_MIGRATE:
+        _all_layers = Layer.objects.all()
+        for index, layer in enumerate(_all_layers, start=1):
+            _lyr_name = layer.name
+            message = "[%s / %s] Updating Layer [%s] ..." % (index, len(_all_layers), _lyr_name)
+            print(message)
+            logger.debug(message)
+            try:
+                set_resource_default_links(layer, layer)
+                catalogue_post_save(instance=layer, sender=layer.__class__)
+            except BaseException:
+                logger.exception(
+                    "[ERROR] Layer [%s] couldn't be updated" % _lyr_name
+                )
 
 
 class GeoserverAppConfig(NotificationsAppConfigBase):
