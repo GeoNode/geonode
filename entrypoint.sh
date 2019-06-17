@@ -17,13 +17,6 @@ echo GEOSERVER_WEB_UI_LOCATION=$GEOSERVER_WEB_UI_LOCATION
 echo "waitfordbs task done"
 /usr/local/bin/invoke migrations >> /usr/src/app/invoke.log
 echo "migrations task done"
-/usr/local/bin/invoke prepare
-echo "prepare task done"
-/usr/local/bin/invoke fixtures
-echo "fixture task done"
-echo "refresh static data"
-/usr/local/bin/invoke statics
-echo "static data refreshed"
 
 cmd="$@"
 
@@ -31,6 +24,14 @@ echo DOCKER_ENV=$DOCKER_ENV
 
 if [ -z ${DOCKER_ENV} ] || [ ${DOCKER_ENV} = "development" ]
 then
+
+    /usr/local/bin/invoke prepare
+    echo "prepare task done"
+    /usr/local/bin/invoke fixtures
+    echo "fixture task done"
+    echo "refresh static data"
+    /usr/local/bin/invoke statics
+    echo "static data refreshed"
 
     echo "Executing standard Django server $cmd for Development"
 
@@ -45,9 +46,20 @@ else
     else
 
         if [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
-            /usr/local/bin/invoke initialized
-            echo "initialized"
+
+            /usr/local/bin/invoke prepare
+            echo "prepare task done"
+            /usr/local/bin/invoke fixtures
+            echo "fixture task done"
+
         fi
+
+        /usr/local/bin/invoke initialized
+        echo "initialized"
+
+        echo "refresh static data"
+        /usr/local/bin/invoke statics
+        echo "static data refreshed"
 
         cmd=$UWSGI_CMD
         echo "Executing UWSGI server $cmd for Production"
