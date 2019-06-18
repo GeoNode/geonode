@@ -114,6 +114,9 @@ geonode_data:geonode_data@localhost:5432/geonode_data')
         GEODATABASE_URL, conn_max_age=600
     )
 
+# If set to 'True' it will refresh/regenrate all resource links everytime a 'migrate' will be performed
+UPDATE_RESOURCE_LINKS_AT_MIGRATE = ast.literal_eval(os.getenv('UPDATE_RESOURCE_LINKS_AT_MIGRATE', 'False'))
+
 MANAGERS = ADMINS = os.getenv('ADMINS', [])
 
 # Local time zone for this installation. Choices can be found here:
@@ -132,7 +135,6 @@ USE_L10N = ast.literal_eval(os.getenv('USE_I18N', 'True'))
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = os.getenv('LANGUAGE_CODE', "en")
-
 
 _DEFAULT_LANGUAGES = (
     ('en', 'English'),
