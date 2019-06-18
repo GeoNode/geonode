@@ -151,7 +151,7 @@ def delete_old_tokens(user, client='GeoServer'):
             logger.debug(tb)
 
 
-def get_token_from_auth_header(auth_header):
+def get_token_from_auth_header(auth_header, create_if_not_exists=False):
     if 'Basic' in auth_header:
         encoded_credentials = auth_header.split(' ')[1]  # Removes "Basic " to isolate credentials
         decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(':')
@@ -159,7 +159,7 @@ def get_token_from_auth_header(auth_header):
         password = decoded_credentials[1]
         # if the credentials are correct, then the feed_bot is not None, but is a User object.
         user = authenticate(username=username, password=password)
-        return get_auth_token(user)
+        return get_auth_token(user) if not create_if_not_exists else get_or_create_token(user)
     elif 'Bearer' in auth_header:
         return auth_header.replace('Bearer ', '')
     return None
