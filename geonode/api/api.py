@@ -24,6 +24,7 @@ import time
 from django.db.models import Q
 from django.conf.urls import url
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
@@ -283,12 +284,12 @@ class TopicCategoryResource(TypeFilteredResource):
 class GroupCategoryResource(TypeFilteredResource):
     detail_url = fields.CharField()
     member_count = fields.IntegerField()
+    resource_counts = fields.CharField()
 
     class Meta:
         queryset = GroupCategory.objects.all()
         allowed_methods = ['get']
         include_resource_uri = False
-        fields = ['name', 'slug']
         filtering = {'slug': ALL,
                      'name': ALL}
 
@@ -298,69 +299,88 @@ class GroupCategoryResource(TypeFilteredResource):
     def dehydrate_member_count(self, bundle):
         return bundle.obj.groups.all().count()
 
+    def dehydrate(self, bundle):
+        """Provide additional resource counts"""
 
-class GroupResource(TypeFilteredResource):
-    """Groups api"""
+        counts = _get_resource_counts(
+            resourcebase_filter_kwargs={
+                'group__groupprofile__categories': bundle.obj
+            }
+        )
+        bundle.data.update(resource_counts=counts)
+        return bundle
+
+
+class GroupProfileResource(ModelResource):
+    categories = fields.ToManyField(
+        GroupCategoryResource,
+        'categories',
+        full=True
+    )
+    member_count = fields.CharField()
+    manager_count = fields.CharField()
     detail_url = fields.CharField()
-    member_count = fields.IntegerField()
-    manager_count = fields.IntegerField()
-    categories = fields.ToManyField(GroupCategoryResource, 'categories', full=True)
-
-    def build_filters(self, filters=None, ignore_bad_filters=False):
-        """adds filtering by group functionality"""
-        if filters is None:
-            filters = {}
-
-        orm_filters = super(GroupResource, self).build_filters(filters)
-
-        if 'group' in filters:
-            orm_filters['group'] = filters['group']
-
-        if 'name__icontains' in filters:
-            orm_filters['title__icontains'] = filters['name__icontains']
-            orm_filters['title_en__icontains'] = filters['name__icontains']
-        return orm_filters
-
-    def apply_filters(self, request, applicable_filters):
-        """filter by group if applicable by group functionality"""
-
-        group = applicable_filters.pop('group', None)
-        name = applicable_filters.pop('name__icontains', None)
-
-        semi_filtered = super(
-            GroupResource,
-            self).apply_filters(
-            request,
-            applicable_filters)
-
-        if group is not None:
-            semi_filtered = semi_filtered.filter(
-                groupmember__group__slug=group)
-
-        if name is not None:
-            semi_filtered = semi_filtered.filter(
-                Q(title__icontains=name) | Q(title_en__icontains=name))
-
-        return semi_filtered
-
-    def dehydrate_member_count(self, bundle):
-        return bundle.obj.member_queryset().count()
-
-    def dehydrate_manager_count(self, bundle):
-        return bundle.obj.get_managers().count()
-
-    def dehydrate_detail_url(self, bundle):
-        return reverse('group_detail', args=[bundle.obj.slug])
 
     class Meta:
         queryset = GroupProfile.objects.all()
-        resource_name = 'groups'
+        resource_name = 'group_profile'
         allowed_methods = ['get']
         filtering = {
             'title': ALL,
+            'slug': ALL,
             'categories': ALL_WITH_RELATIONS,
         }
         ordering = ['title', 'last_modified']
+
+    def dehydrate_member_count(self, bundle):
+        """Provide relative URL to the geonode UI's page on the group"""
+        return bundle.obj.member_queryset().count()
+
+    def dehydrate_manager_count(self, bundle):
+        """Provide relative URL to the geonode UI's page on the group"""
+        return bundle.obj.get_managers().count()
+
+    def dehydrate_detail_url(self, bundle):
+        """Return relative URL to the geonode UI's page on the group"""
+        return reverse('group_detail', args=[bundle.obj.slug])
+
+
+class GroupResource(ModelResource):
+    group_profile = fields.ToOneField(
+        GroupProfileResource,
+        'groupprofile',
+        full=True,
+        null=True,
+        blank=True
+    )
+    resource_counts = fields.CharField()
+
+    class Meta:
+        queryset = Group.objects.all()
+        resource_name = 'groups'
+        allowed_methods = ['get']
+        filtering = {
+            'name': ALL,
+            'group_profile': ALL_WITH_RELATIONS,
+        }
+        ordering = ['name', 'last_modified']
+
+    def dehydrate(self, bundle):
+        """Provide additional resource counts"""
+
+        counts = _get_resource_counts(
+            resourcebase_filter_kwargs={'group': bundle.obj})
+        bundle.data.update(resource_counts=counts)
+        return bundle
+
+    def get_object_list(self, request):
+        """
+        Overridden in order to exclude the ``anoymous`` group from the list
+
+        """
+
+        qs = super(GroupResource, self).get_object_list(request)
+        return qs.exclude(name="anonymous")
 
 
 class ProfileResource(TypeFilteredResource):
@@ -760,3 +780,58 @@ elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
     class StyleResource(GeoserverStyleResource):
         """Wrapper for Generic Style Resource"""
         pass
+
+
+def _get_resource_counts(
+        resourcebase_filter_kwargs
+):
+    """Return a dict with counts of resources of various types
+
+    The ``resourcebase_filter_kwargs`` argument should be a dict with a suitable
+    queryset filter that can be applied to select only the relevant
+    ``ResourceBase`` objects to use when retrieving counts. For example::
+
+        _get_resource_counts({
+            'group__slug': 'my-group',
+        })
+
+    The above function call would result in only counting ``ResourceBase``
+    objects that belong to the group that has ``my-group`` as slug
+
+    """
+
+    qs = ResourceBase.objects.filter(
+        **resourcebase_filter_kwargs
+    ).values(
+        'polymorphic_ctype__model',
+        'is_approved',
+        'is_published',
+    ).annotate(counts=Count('polymorphic_ctype__model'))
+    types = [
+        'layer',
+        'document',
+        'map',
+        'all'
+    ]
+    counts = {}
+    for type_ in types:
+        counts[type_] = {
+            'total': 0,
+            'visible': 0,
+            'published': 0,
+            'approved': 0,
+        }
+    for record in qs:
+        resource_type = record['polymorphic_ctype__model']
+        is_visible = all((record['is_approved'], record['is_published']))
+        counts['all']['total'] += 1
+        counts['all']['visible'] += 1 if is_visible else 0
+        counts['all']['published'] += 1 if record['is_published'] else 0
+        counts['all']['approved'] += 1 if record['is_approved'] else 0
+        section = counts.get(resource_type)
+        if section is not None:
+            section['total'] += 1
+            section['visible'] += 1 if is_visible else 0
+            section['published'] += 1 if record['is_published'] else 0
+            section['approved'] += 1 if record['is_approved'] else 0
+    return counts
