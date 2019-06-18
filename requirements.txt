@@ -128,4 +128,4 @@ splinter==0.10.0
 pytest-splinter==2.0.1
 pytest-django==3.4.8
 setuptools==41.0.1
-Twisted==18.9.0
+Twisted==19.2.1
