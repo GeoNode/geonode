@@ -1010,9 +1010,11 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     else:
         layers = instance.alternate.encode('utf-8')
         # Compute Bounds
-        _l = Layer.objects.get(alternate=layers)
-        wgs84_bbox = bbox_to_projection(_l.bbox)
-        local_bboxes.append(wgs84_bbox)
+        _ll = Layer.objects.filter(alternate=layers)
+        for _l in _ll:
+            if _l.name == instance.name:
+                wgs84_bbox = bbox_to_projection(_l.bbox)
+                local_bboxes.append(wgs84_bbox)
 
     if local_bboxes:
         for _bbox in local_bboxes:
