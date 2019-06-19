@@ -25,7 +25,7 @@ import logging
 import traceback
 
 from pyproj import transform, Proj
-from urlparse import urlsplit
+from urlparse import urlsplit, urljoin
 
 from django.db import models
 from django.core import serializers
@@ -1145,15 +1145,24 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             actual_name = storage.save(upload_path, ContentFile(image))
             url = storage.url(actual_name)
 
+            # check whether it is an URI or not
+            parsed = urlsplit(url)
+            if not parsed.netloc:
+                # assuming is a relative path to current site
+                site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+                url = urljoin(site_url, url)
+
             # should only have one 'Thumbnail' link
-            obj, created = Link.objects.get_or_create(resource=self,
-                                                      name='Thumbnail',
-                                                      defaults=dict(
-                                                          url=url,
-                                                          extension='png',
-                                                          mime='image/png',
-                                                          link_type='image',
-                                                      ))
+            obj, created = Link.objects.get_or_create(
+                resource=self,
+                name='Thumbnail',
+                defaults=dict(
+                    url=url,
+                    extension='png',
+                    mime='image/png',
+                    link_type='image',
+                )
+            )
             self.thumbnail_url = url
             obj.url = url
             obj.save()
