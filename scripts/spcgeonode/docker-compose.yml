@@ -34,6 +34,8 @@ x-common-django:
     - GEOSERVER_LOCATION=http://nginx/geoserver/
     - ASYNC_SIGNALS=True
     - SESSION_EXPIRED_CONTROL_ENABLED=False
+    - DEFAULT_BACKEND_UPLOADER=geonode.rest
+    - TIME_ENABLED=False
     # TODO : we should probably remove this and set Celery to use JSON serialization instead of pickle
     - C_FORCE_ROOT=True
     # We get an exception after migrations on startup (it seems the monitoring app tries to resolve the geoserver domain name after it's migration, which can happen before oauth migrations on which geoserver startup depends...)
@@ -55,7 +57,7 @@ services:
       retries: 1
       start_period: 60s
     entrypoint: ["/spcgeonode/scripts/spcgeonode/django/docker-entrypoint.sh"]
-    command: "uwsgi --chdir=/spcgeonode --module=geonode.wsgi --socket=:8000 --http=127.0.0.1:8001 --processes=5 --buffer-size=8192"
+    command: "uwsgi --chdir=/spcgeonode --module=geonode.wsgi --socket=:8000 --http=127.0.0.1:8001 --processes=4 --threads=2 --buffer-size=32768 --max-requests=500"
 
   # Celery worker that executes celery tasks created by Django.
   celery:

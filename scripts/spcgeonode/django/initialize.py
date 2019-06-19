@@ -87,9 +87,11 @@ app, created = Application.objects.get_or_create(
     authorization_grant_type='authorization-code',
     skip_authorization=True
 )
+_host = os.getenv('HTTPS_HOST',"") if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_HOST')
+_port = os.getenv('HTTPS_PORT') if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_PORT')
 redirect_uris = [
-    'http://{}/geoserver'.format(os.getenv('HTTPS_HOST',"") if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_HOST')),
-    'http://{}/geoserver/index.html'.format(os.getenv('HTTPS_HOST',"") if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_HOST')),
+    'http://{}:{}/geoserver'.format(_host, _port),
+    'http://{}:{}/geoserver/index.html'.format(_host, _port),
 ]
 app.redirect_uris = "\n".join(redirect_uris)
 app.save()
