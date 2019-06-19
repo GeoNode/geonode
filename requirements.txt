@@ -122,7 +122,7 @@ coverage==4.5.3
 parse-type==0.4.1
 poster~=0.8.1
 flake8==3.7.7
-pytest==4.3.1
+pytest==4.6.3
 pytest-bdd==3.1.0
 splinter==0.10.0
 pytest-splinter==2.0.1
