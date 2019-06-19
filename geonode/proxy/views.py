@@ -49,6 +49,7 @@ from geonode.utils import (resolve_object,
                            http_client,
                            json_response)
 from geonode.base.auth import (extend_token,
+                               get_or_create_token,
                                get_token_from_auth_header,
                                get_token_object_from_session)
 from geonode.base.enumerations import LINK_TYPES as _LT
@@ -100,16 +101,16 @@ def get_headers(request, url, raw_url):
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     access_token = None
-
     site_url = urlsplit(settings.SITEURL)
-    if site_url.netloc == url.netloc:
+    if site_url.hostname == url.hostname:
         # we give precedence to obtained from Aithorization headers
         if 'HTTP_AUTHORIZATION' in request.META:
             auth_header = request.META.get(
                 'HTTP_AUTHORIZATION',
                 request.META.get('HTTP_AUTHORIZATION2'))
             if auth_header:
-                access_token = get_token_from_auth_header(auth_header)
+                headers['Authorization'] = auth_header
+                access_token = get_token_from_auth_header(auth_header, create_if_not_exists=True)
         # otherwise we check if a session is active
         elif request and request.user.is_authenticated:
             access_token = get_token_object_from_session(request.session)
@@ -117,6 +118,8 @@ def get_headers(request, url, raw_url):
             # we extend the token in case the session is active but the token expired
             if access_token and access_token.is_expired():
                 extend_token(access_token)
+            else:
+                access_token = get_or_create_token(request.user)
 
     if access_token:
         headers['Authorization'] = 'Bearer %s' % access_token
