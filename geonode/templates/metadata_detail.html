@@ -320,12 +320,17 @@
 
         <hr>
 
-        {% for link in resource.link_set.download %}
-        <dt>{{link.name}}</dt>
-        <dd><a href="{{link.url}}">{{resource.title}}.{{link.extension}}</a></dd>
-        {% endfor %}
+        {% if "download_resourcebase" in perms_list %}
 
-        <hr>
+
+            {% for link in resource.link_set.download %}
+            <dt>{{link.name}}</dt>
+            <dd><a href="{{link.url}}">{{resource.title}}.{{link.extension}}</a></dd>
+            {% endfor %}
+
+            <hr>
+
+        {% endif %}
 
         {% for link in resource.link_set.ows %}
         <dt>{{link.name}}</dt>
