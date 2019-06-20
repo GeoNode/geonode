@@ -77,7 +77,7 @@ class Command(BaseCommand):
                 set_attributes(layer, overwrite=True)
 
                 # refresh metadata links
-                set_resource_default_links(layer, layer, prune=True)
+                set_resource_default_links(layer, layer, prune=False)
 
                 # refresh catalogue metadata records
                 catalogue_post_save(instance=layer, sender=layer.__class__)

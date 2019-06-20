@@ -1473,7 +1473,7 @@ def slugify_zh(text, separator='_'):
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
     from geonode.base.models import Link
-    from urlparse import urlparse, urljoin
+    from urlparse import urljoin
     from django.core.urlresolvers import reverse
     from django.utils.translation import ugettext
 
@@ -1518,14 +1518,16 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Create Raw Data download link
         download_url = urljoin(settings.SITEURL,
                                reverse('download', args=[instance.id]))
-        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                   url=download_url,
-                                   defaults=dict(extension='zip',
-                                                 name='Original Dataset',
-                                                 mime='application/octet-stream',
-                                                 link_type='original',
-                                                 )
-                                   )
+        Link.objects.update_or_create(
+            resource=instance.resourcebase_ptr,
+            url=download_url,
+            defaults=dict(
+                extension='zip',
+                name='Original Dataset',
+                mime='application/octet-stream',
+                link_type='original',
+            )
+        )
 
         # Set download links for WMS, WCS or WFS and KML
         links = wms_links(ogc_server_settings.public_url + 'ows?',
@@ -1536,15 +1538,16 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                           width)
 
         for ext, name, mime, wms_url in links:
-            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                       name=ugettext(name),
-                                       defaults=dict(
-                                           extension=ext,
-                                           url=wms_url,
-                                           mime=mime,
-                                           link_type='image',
-                                       )
-                                       )
+            Link.objects.update_or_create(
+                resource=instance.resourcebase_ptr,
+                name=ugettext(name),
+                defaults=dict(
+                    extension=ext,
+                    url=wms_url,
+                    mime=mime,
+                    link_type='image',
+                )
+            )
 
         if instance.storeType == "dataStore":
             links = wfs_links(ogc_server_settings.public_url + 'ows?',
@@ -1554,16 +1557,18 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             for ext, name, mime, wfs_url in links:
                 if mime == 'SHAPE-ZIP':
                     name = 'Zipped Shapefile'
-                Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                           url=wfs_url,
-                                           defaults=dict(
-                                               extension=ext,
-                                               name=name,
-                                               mime=mime,
-                                               url=wfs_url,
-                                               link_type='data',
-                                           )
-                                           )
+                Link.objects.update_or_create(
+                    resource=instance.resourcebase_ptr,
+                    url=wfs_url,
+                    defaults=dict(
+                        extension=ext,
+                        name=name,
+                        mime=mime,
+                        url=wfs_url,
+                        link_type='data',
+                    )
+                )
+
         elif instance.storeType == 'coverageStore':
             links = wcs_links(ogc_server_settings.public_url + 'wcs?',
                               instance.alternate.encode('utf-8'),
@@ -1571,42 +1576,16 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                               srid)
 
         for ext, name, mime, wcs_url in links:
-            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                       url=wcs_url,
-                                       defaults=dict(
-                                           extension=ext,
-                                           name=name,
-                                           mime=mime,
-                                           link_type='data',
-                                       )
-                                       )
-
-        # @DEPRECATED: This code targeted to be removed
-        # kml_reflector_link_download = ogc_server_settings.public_url + "wms/kml?" + \
-        #     urllib.urlencode({'layers': instance.alternate.encode('utf-8'), 'mode': "download"})
-        #
-        # Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-        #                            url=kml_reflector_link_download,
-        #                            defaults=dict(
-        #                                extension='kml',
-        #                                name="KML",
-        #                                mime='text/xml',
-        #                                link_type='data',
-        #                            )
-        #                            )
-        #
-        # kml_reflector_link_view = ogc_server_settings.public_url + "wms/kml?" + \
-        #     urllib.urlencode({'layers': instance.alternate.encode('utf-8'), 'mode': "refresh"})
-        #
-        # Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-        #                            url=kml_reflector_link_view,
-        #                            defaults=dict(
-        #                                extension='kml',
-        #                                name="View in Google Earth",
-        #                                mime='text/xml',
-        #                                link_type='data',
-        #                            )
-        #                            )
+            Link.objects.update_or_create(
+                resource=instance.resourcebase_ptr,
+                url=wcs_url,
+                defaults=dict(
+                    extension=ext,
+                    name=name,
+                    mime=mime,
+                    link_type='data',
+                )
+            )
 
         site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
         html_link_url = '%s%s' % (
@@ -1614,16 +1593,18 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         if Link.objects.filter(resource=instance.resourcebase_ptr, url=html_link_url).count() > 1:
             Link.objects.filter(resource=instance.resourcebase_ptr, url=html_link_url).delete()
-        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                   url=html_link_url,
-                                   defaults=dict(
-                                       extension='html',
-                                       name=instance.alternate,
-                                       mime='text/html',
-                                       link_type='html',
-                                   )
-                                   )
+        Link.objects.get_or_create(
+            resource=instance.resourcebase_ptr,
+            url=html_link_url,
+            defaults=dict(
+                extension='html',
+                name=instance.alternate,
+                mime='text/html',
+                link_type='html',
+            )
+        )
 
+        # Legend link
         try:
             Link.objects.filter(resource=instance.resourcebase_ptr, name='Legend').delete()
         except BaseException:
@@ -1637,16 +1618,34 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
             if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() > 1:
                 Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).delete()
-            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                       url=legend_url,
-                                       defaults=dict(
-                                           extension='png',
-                                           name='Legend',
-                                           url=legend_url,
-                                           mime='image/png',
-                                           link_type='image',
-                                       )
-                                       )
+            Link.objects.update_or_create(
+                resource=instance.resourcebase_ptr,
+                name='Legend',
+                url=legend_url,
+                defaults=dict(
+                    extension='png',
+                    url=legend_url,
+                    mime='image/png',
+                    link_type='image',
+                )
+            )
+
+        # Thumbnail link
+        from django.contrib.staticfiles.templatetags import staticfiles
+        if instance.get_thumbnail_url() == staticfiles.static(settings.MISSING_THUMBNAIL):
+            from geonode.geoserver.helpers import create_gs_thumbnail
+            create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
+        else:
+            Link.objects.update_or_create(
+                resource=instance.resourcebase_ptr,
+                name='Thumbnail',
+                url=instance.get_thumbnail_url(),
+                defaults=dict(
+                    extension='png',
+                    mime='image/png',
+                    link_type='image',
+                )
+            )
 
         # ogc_wms_path = '%s/ows' % instance.workspace
         ogc_wms_path = 'ows'
@@ -1654,16 +1653,17 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
         if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).count() > 1:
             Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).delete()
-        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                   url=ogc_wms_url,
-                                   name=ogc_wms_name,
-                                   defaults=dict(
-                                       extension='html',
-                                       url=ogc_wms_url,
-                                       mime='text/html',
-                                       link_type='OGC:WMS',
-                                   )
-                                   )
+        Link.objects.get_or_create(
+            resource=instance.resourcebase_ptr,
+            url=ogc_wms_url,
+            name=ogc_wms_name,
+            defaults=dict(
+                extension='html',
+                url=ogc_wms_url,
+                mime='text/html',
+                link_type='OGC:WMS',
+            )
+        )
 
         if instance.storeType == "dataStore":
             # ogc_wfs_path = '%s/wfs' % instance.workspace
@@ -1672,16 +1672,17 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             ogc_wfs_name = 'OGC WFS: %s Service' % instance.workspace
             if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url).count() > 1:
                 Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url).delete()
-            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                       url=ogc_wfs_url,
-                                       name=ogc_wfs_name,
-                                       defaults=dict(
-                                           extension='html',
-                                           url=ogc_wfs_url,
-                                           mime='text/html',
-                                           link_type='OGC:WFS',
-                                       )
-                                       )
+            Link.objects.get_or_create(
+                resource=instance.resourcebase_ptr,
+                url=ogc_wfs_url,
+                name=ogc_wfs_name,
+                defaults=dict(
+                    extension='html',
+                    url=ogc_wfs_url,
+                    mime='text/html',
+                    link_type='OGC:WFS',
+                )
+            )
 
         if instance.storeType == "coverageStore":
             # ogc_wcs_path = '%s/wcs' % instance.workspace
@@ -1690,43 +1691,17 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             ogc_wcs_name = 'OGC WCS: %s Service' % instance.workspace
             if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url).count() > 1:
                 Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url).delete()
-            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                       url=ogc_wcs_url,
-                                       name=ogc_wcs_name,
-                                       defaults=dict(
-                                           extension='html',
-                                           url=ogc_wcs_url,
-                                           mime='text/html',
-                                           link_type='OGC:WCS',
-                                       )
-                                       )
-
-        # remove links that belong to and old address
-        for link in instance.link_set.all():
-            if not urlparse(
-                settings.SITEURL).hostname == urlparse(
-                link.url).hostname and not urlparse(
-                ogc_server_settings.public_url).hostname == urlparse(
-                    link.url).hostname:
-                link.delete()
-
-        # @DEPRECATED: This code does not work anymore
-        # Define the link after the cleanup, we should use this more rather then remove
-        # potential parasites
-        # tile_url = ('%sgwc/service/gmaps?' % ogc_server_settings.public_url +
-        #             'layers=%s' % instance.alternate.encode('utf-8') +
-        #             '&zoom={z}&x={x}&y={y}' +
-        #             '&format=image/png8'
-        #             )
-        #
-        # link, created = Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-        #                                            extension='tiles',
-        #                                            name="Tiles",
-        #                                            mime='image/png',
-        #                                            link_type='image',
-        #                                            )
-        # if created:
-        #     Link.objects.filter(pk=link.pk).update(url=tile_url)
+            Link.objects.get_or_create(
+                resource=instance.resourcebase_ptr,
+                url=ogc_wcs_url,
+                name=ogc_wcs_name,
+                defaults=dict(
+                    extension='html',
+                    url=ogc_wcs_url,
+                    mime='text/html',
+                    link_type='OGC:WCS',
+                )
+            )
     elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         from geonode.layers.models import LayerFile
         from geonode.qgis_server.helpers import (
