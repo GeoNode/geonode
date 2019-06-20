@@ -2007,6 +2007,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
     width_acc = 256 + left
     first_row = [tmp_tile]
     # Add tiles to fill image width
+    _n_step = 0
     while width > width_acc:
         c = mercantile.ul(tmp_tile.x + 1, tmp_tile.y, zoom)
         lng = _v(c.lng, x=True, target_srid=4326)
@@ -2015,12 +2016,15 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         tmp_tile = mercantile.tile(lng, bounds[3], zoom)
         first_row.append(tmp_tile)
         width_acc = width_acc + 256
+        _n_step = _n_step + 1
+        if width < width_acc or _n_step > numberOfRows:
+            break
 
     # Build Image Request Template
     _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
         <div style='position: absolute; top:{top}px; left:{left}px; z-index: 749; \
         transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
-        \n"                      .format(height=height, width=width, top=top, left=left)
+        \n".format(height=height, width=width, top=top, left=left)
 
     for row in range(0, numberOfRows):
         for col in range(0, len(first_row)):
@@ -2049,7 +2053,9 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                                          height=256, width=256,
                                          left=box[0], top=box[1])
     _img_request_template += "</div></div>"
+
     image = _render_thumbnail(_img_request_template, width=width, height=height)
+
     return image
 
 

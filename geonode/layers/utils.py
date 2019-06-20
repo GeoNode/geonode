@@ -30,6 +30,7 @@ import logging
 import tarfile
 
 from osgeo import gdal, osr
+from urlparse import urlparse
 from zipfile import ZipFile, is_zipfile
 from datetime import datetime
 
@@ -927,20 +928,36 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 ogc_client = http_client
 
             if ogc_client:
-
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                    if image is None and instance.bbox:
-                        instance_bbox = instance.bbox[0:4]
+                    if image is None:
                         request_body = {
-                            'bbox': [str(coord) for coord in instance_bbox],
-                            'srid': instance.srid,
                             'width': width,
                             'height': height
                         }
+                        if instance.bbox and \
+                        (not thumbnail_create_url or 'bbox' not in thumbnail_create_url):
+                            instance_bbox = instance.bbox[0:4]
+                            request_body['bbox'] = [str(coord) for coord in instance_bbox]
+                            request_body['srid'] = instance.srid
+
                         if thumbnail_create_url:
-                            request_body['thumbnail_create_url'] = thumbnail_create_url
+                            params = urlparse(thumbnail_create_url).query.split('&')
+                            request_body = {key: value for (key, value) in
+                                            [(lambda p: (p.split("=")[0], p.split("=")[1]))(p) for p in params]}
+                            # request_body['thumbnail_create_url'] = thumbnail_create_url
+                            if 'bbox' in request_body and isinstance(request_body['bbox'], basestring):
+                                request_body['bbox'] = [str(coord) for coord in request_body['bbox'].split(",")]
+                                request_body['bbox'] = [
+                                    request_body['bbox'][0],
+                                    request_body['bbox'][2],
+                                    request_body['bbox'][1],
+                                    request_body['bbox'][3]
+                                ]
+                            if 'crs' in request_body and 'srid' not in request_body:
+                                request_body['srid'] = request_body['crs']
                         elif instance.alternate:
                             request_body['layers'] = instance.alternate
+
                         image = _prepare_thumbnail_body_from_opts(request_body)
 
                 if image is None:
