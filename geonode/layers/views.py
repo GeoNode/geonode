@@ -1507,8 +1507,12 @@ def layer_metadata_detail(
         except GroupProfile.DoesNotExist:
             group = None
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+
     return render(request, template, context={
         "resource": layer,
+        "perms_list": get_perms(
+            request.user,
+            layer.get_self_resource()) + get_perms(request.user, layer),
         "group": group,
         'SITEURL': site_url
     })
