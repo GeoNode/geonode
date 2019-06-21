@@ -542,7 +542,9 @@ def geoserver_proxy(request,
     import urllib
     raw_url = urllib.unquote(raw_url).decode('utf8')
     timeout = getattr(ogc_server_settings, 'TIMEOUT') or 10
-    return proxy(request, url=raw_url, response_callback=_response_callback, timeout=timeout, **kwargs)
+    allowed_hosts = [urlsplit(ogc_server_settings.public_url).hostname, ]
+    return proxy(request, url=raw_url, response_callback=_response_callback,
+                 timeout=timeout, allowed_hosts=allowed_hosts, **kwargs)
 
 
 def _response_callback(**kwargs):
