@@ -1570,7 +1570,8 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
         url,
         method='POST',
         data=request,
-        headers=headers)
+        headers=headers,
+        user=ogc_server_settings.credentials.username)
 
     exml = etree.fromstring(content)
 
@@ -1601,7 +1602,10 @@ def _stylefilterparams_geowebcache_layer(layer_name):
     url = '%sgwc/rest/layers/%s.xml' % (ogc_server_settings.LOCATION, layer_name)
 
     # read GWC configuration
-    req, content = http_client.get(url, headers=headers)
+    req, content = http_client.get(
+        url,
+        headers=headers,
+        user=ogc_server_settings.credentials.username)
     if req.status_code != 200:
         line = "Error {0} reading Style Filter Params GeoWebCache at {1}".format(
             req.status_code, url
@@ -1622,7 +1626,11 @@ def _stylefilterparams_geowebcache_layer(layer_name):
             param_filters[0].append(style_filters_elem)
             body = ET.tostring(tree)
     if body:
-        req, content = http_client.post(url, data=body, headers=headers)
+        req, content = http_client.post(
+            url,
+            data=body,
+            headers=headers,
+            user=ogc_server_settings.credentials.username)
         if req.status_code != 200:
             line = "Error {0} writing Style Filter Params GeoWebCache at {1}".format(
                 req.status_code, url
@@ -1640,7 +1648,11 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         """.strip().format(layer_name)
     if not url:
         url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
-    req, content = http_client.post(url, data=body, headers=headers)
+    req, content = http_client.post(
+        url,
+        data=body,
+        headers=headers,
+        user=ogc_server_settings.credentials.username)
 
     if req.status_code != 200:
         line = "Error {0} invalidating GeoWebCache at {1}".format(
@@ -2007,6 +2019,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
     width_acc = 256 + left
     first_row = [tmp_tile]
     # Add tiles to fill image width
+    _n_step = 0
     while width > width_acc:
         c = mercantile.ul(tmp_tile.x + 1, tmp_tile.y, zoom)
         lng = _v(c.lng, x=True, target_srid=4326)
@@ -2015,12 +2028,15 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         tmp_tile = mercantile.tile(lng, bounds[3], zoom)
         first_row.append(tmp_tile)
         width_acc = width_acc + 256
+        _n_step = _n_step + 1
+        if width < width_acc or _n_step > numberOfRows:
+            break
 
     # Build Image Request Template
     _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
         <div style='position: absolute; top:{top}px; left:{left}px; z-index: 749; \
         transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
-        \n"                      .format(height=height, width=width, top=top, left=left)
+        \n".format(height=height, width=width, top=top, left=left)
 
     for row in range(0, numberOfRows):
         for col in range(0, len(first_row)):
@@ -2049,7 +2065,9 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                                          height=256, width=256,
                                          left=box[0], top=box[1])
     _img_request_template += "</div></div>"
+
     image = _render_thumbnail(_img_request_template, width=width, height=height)
+
     return image
 
 
