@@ -1570,7 +1570,8 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
         url,
         method='POST',
         data=request,
-        headers=headers)
+        headers=headers,
+        user=ogc_server_settings.credentials.username)
 
     exml = etree.fromstring(content)
 
@@ -1601,7 +1602,10 @@ def _stylefilterparams_geowebcache_layer(layer_name):
     url = '%sgwc/rest/layers/%s.xml' % (ogc_server_settings.LOCATION, layer_name)
 
     # read GWC configuration
-    req, content = http_client.get(url, headers=headers)
+    req, content = http_client.get(
+        url,
+        headers=headers,
+        user=ogc_server_settings.credentials.username)
     if req.status_code != 200:
         line = "Error {0} reading Style Filter Params GeoWebCache at {1}".format(
             req.status_code, url
@@ -1622,7 +1626,11 @@ def _stylefilterparams_geowebcache_layer(layer_name):
             param_filters[0].append(style_filters_elem)
             body = ET.tostring(tree)
     if body:
-        req, content = http_client.post(url, data=body, headers=headers)
+        req, content = http_client.post(
+            url,
+            data=body,
+            headers=headers,
+            user=ogc_server_settings.credentials.username)
         if req.status_code != 200:
             line = "Error {0} writing Style Filter Params GeoWebCache at {1}".format(
                 req.status_code, url
@@ -1640,7 +1648,11 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         """.strip().format(layer_name)
     if not url:
         url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
-    req, content = http_client.post(url, data=body, headers=headers)
+    req, content = http_client.post(
+        url,
+        data=body,
+        headers=headers,
+        user=ogc_server_settings.credentials.username)
 
     if req.status_code != 200:
         line = "Error {0} invalidating GeoWebCache at {1}".format(
