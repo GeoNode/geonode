@@ -141,7 +141,7 @@ When clicking on |advanced_search_button| from the layer *Attributes Table* the 
      :height: 30px
      :align: middle
 
-* Through the **Layer Filter** you can select only those features which comply some conditions on other layers of the map. You can also add conditions on attributes for that layers.
+* Through the **Layer Filter** you can select only those features which comply with some conditions on other layers of the map. You can also add conditions on attributes for those layers.
 
   .. figure:: img/layer_filtering.png
       :align: center
