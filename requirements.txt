@@ -24,7 +24,7 @@ tqdm==4.31.1
 dj-pagination==2.4.0
 django-celery-monitor<=1.1.2
 django-filter==1.1.0
-django-jsonfield<=1.0.1
+django-jsonfield<1.2.1
 django-jsonfield-compat<=0.4.4
 django-leaflet==0.24.0
 django-taggit==0.24.0
