@@ -1941,10 +1941,10 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
 
     width = 240
     if 'width' in request_body:
-        width = request_body['width']
+        width = int(request_body['width'])
     height = 200
     if 'height' in request_body:
-        height = request_body['height']
+        height = int(request_body['height'])
     smurl = None
     if 'smurl' in request_body:
         smurl = request_body['smurl']
@@ -1997,6 +1997,10 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         bounds[3] = 85.0
     if bounds[1] < -85.051:
         bounds[1] = -85.0
+    if bounds[0] > 180.0:
+        bounds[0] = 179.0
+    if bounds[3] < -180.0:
+        bounds[3] = -179.0
     if 'zoom' in request_body:
         zoom = request_body['zoom']
     else:
@@ -2016,28 +2020,26 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
     left = round(abs(bounds_ll.west - bounds[0]) * -lng_res)
 
     tmp_tile = mercantile.tile(bounds[0], bounds[3], zoom)
-    width_acc = 256 + left
+    width_acc = 256 + int(left)
     first_row = [tmp_tile]
     # Add tiles to fill image width
     _n_step = 0
-    while width > width_acc:
+    while int(width) > int(width_acc):
         c = mercantile.ul(tmp_tile.x + 1, tmp_tile.y, zoom)
         lng = _v(c.lng, x=True, target_srid=4326)
         if lng == 180.0:
             lng = -180.0
         tmp_tile = mercantile.tile(lng, bounds[3], zoom)
         first_row.append(tmp_tile)
-        width_acc = width_acc + 256
+        width_acc += 256
         _n_step = _n_step + 1
-        if width < width_acc or _n_step > numberOfRows:
-            break
-
     # Build Image Request Template
     _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
         <div style='position: absolute; top:{top}px; left:{left}px; z-index: 749; \
         transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
         \n".format(height=height, width=width, top=top, left=left)
 
+    numberOfRows = _n_step + 1 if numberOfRows > _n_step else numberOfRows
     for row in range(0, numberOfRows):
         for col in range(0, len(first_row)):
             box = [col * 256, row * 256]
@@ -2065,9 +2067,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                                          height=256, width=256,
                                          left=box[0], top=box[1])
     _img_request_template += "</div></div>"
-
     image = _render_thumbnail(_img_request_template, width=width, height=height)
-
     return image
 
 
