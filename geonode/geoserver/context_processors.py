@@ -27,6 +27,7 @@ def geoserver_urls(request):
     """Global values to pass to templates"""
     defaults = dict(
         GEOSERVER_LOCAL_URL=ogc_server_settings.LOCATION,
+        GEOSERVER_PUBLIC_LOCATION=ogc_server_settings.public_url,
         GEOSERVER_BASE_URL=ogc_server_settings.public_url,
         UPLOADER_URL=reverse('data_upload') if getattr(
             settings,
