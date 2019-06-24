@@ -372,6 +372,6 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 
 def geoserver_post_save_map(instance, sender, created, **kwargs):
     instance.set_missing_info()
-    if created:
+    if not created:
         logger.info("... Creating Thumbnail for Map [%s]" % (instance.title))
         create_gs_thumbnail(instance, overwrite=False, check_bbox=True)

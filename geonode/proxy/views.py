@@ -66,7 +66,7 @@ ows_regexp = re.compile(
     r"^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
 
 
-def get_headers(request, url, raw_url):
+def get_headers(request, url, raw_url, allowed_hosts=[]):
     headers = {}
     cookies = None
     csrftoken = None
@@ -102,7 +102,9 @@ def get_headers(request, url, raw_url):
 
     access_token = None
     site_url = urlsplit(settings.SITEURL)
-    if site_url.hostname == url.hostname:
+    allowed_hosts += [url.hostname]
+    # We want to convert HTTP_AUTH into a Beraer Token only when hitting the local GeoServer
+    if site_url.hostname in allowed_hosts:
         # we give precedence to obtained from Aithorization headers
         if 'HTTP_AUTHORIZATION' in request.META:
             auth_header = request.META.get(
@@ -140,7 +142,8 @@ def get_headers(request, url, raw_url):
 
 @requires_csrf_token
 def proxy(request, url=None, response_callback=None,
-          sec_chk_hosts=True, sec_chk_rules=True, timeout=None, **kwargs):
+          sec_chk_hosts=True, sec_chk_rules=True, timeout=None,
+          allowed_hosts=[], **kwargs):
     # Request default timeout
     if not timeout:
         timeout = TIMEOUT
@@ -203,7 +206,7 @@ def proxy(request, url=None, response_callback=None,
         pass
 
     # Collecting headers and cookies
-    headers, access_token = get_headers(request, url, raw_url)
+    headers, access_token = get_headers(request, url, raw_url, allowed_hosts=allowed_hosts)
 
     # Inject access_token if necessary
     parsed = urlparse(raw_url)

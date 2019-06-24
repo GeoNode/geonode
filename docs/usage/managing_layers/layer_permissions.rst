@@ -5,7 +5,7 @@ Changing the Layer Permissions
 
 When creating or uploading a new Layer you have to set who can view, download, edit and manage that Layer. By default only owners can edit and manage layers, anyone can view and download them.
 
-In order modify the Layer *Permissions* settings you have to click the :guilabel:`Change the Layer Permissions` button in the Layer page.
+In order to modify the Layer *Permissions* settings you have to click the :guilabel:`Change the Layer Permissions` button in the Layer page.
 
 .. figure:: img/change_layer_permissions.png
     :align: center
