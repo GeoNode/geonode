@@ -7,5 +7,8 @@ Managing Maps
 .. toctree::
     :maxdepth: 1
 
-    create_map
+    creating_maps
     map_info
+    map_metadata
+    map_permissions
+    exploring_maps/index
