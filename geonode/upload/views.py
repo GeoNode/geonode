@@ -208,6 +208,7 @@ def save_step_view(req, session):
             tempdir=tempdir,
             base_file=spatial_files,
             name=name,
+            charset=form.cleaned_data["charset"],
             import_session=import_session,
             layer_abstract=form.cleaned_data["abstract"],
             layer_title=form.cleaned_data["layer_title"],
