@@ -27,7 +27,7 @@ django-filter==1.1.0
 django-jsonfield<=1.0.1
 django-jsonfield-compat<=0.4.4
 django-leaflet==0.24.0
-django-taggit==0.24.0
+django-taggit==1.1.0
 django-mptt==0.9.1
 django-treebeard==4.3
 django-guardian<=1.4.9
