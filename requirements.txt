@@ -55,7 +55,7 @@ dj-database-url==0.5.0
 pinax-notifications==5.0.3
 django-forms-bootstrap<=3.1.0
 django-allauth==0.39.1
-django-activity-stream==0.7.0
+django-activity-stream==0.8.0
 django-appconf==1.0.3
 django-autocomplete-light==2.3.3 # pinned because >=2.3.4 throw an exception on startup
 django-geonode-client==1.0.9
