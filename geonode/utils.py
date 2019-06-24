@@ -269,7 +269,7 @@ def bounds_to_zoom_level(bounds, width, height):
     ratio = float(max(width, height)) / float(min(width, height))
     z_offset = 0 if ratio >= 1.5 else -1
     zoom = int(max(latZoom, lngZoom) + z_offset)
-    zoom = int(min(zoom, ZOOM_MAX))
+    zoom = 0 if zoom > ZOOM_MAX else zoom
     return max(zoom, 0)
 
 
