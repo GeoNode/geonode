@@ -56,7 +56,7 @@ If you want this document in your *Favorites* (see :ref:`editing-profile`), open
     *Your Favorite Comment*
 
 GeoNode also supports the *EXIF (EXchangeable Image Format)* for ``jpeg`` and ``tiff`` image documents.
-The *EXIF* means that additional information (metadata) are stored within the image, so GeoNode allows you to see those information in the **Exif** tab.
+The *EXIF* means that additional information (metadata) are stored within the image, so GeoNode allows you to see those information in the **Exif Tab**.
 
 .. figure:: img/exif_tab.png
     :align: center
