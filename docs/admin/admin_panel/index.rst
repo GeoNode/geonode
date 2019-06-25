@@ -1,13 +1,48 @@
 Accessing the panel
 ===================
 
+| The *Admin Panel* is a model-centric interface where trusted users can manage content on GeoNode.
+| Only the staff users can access the admin interface.
+
+.. note:: The “staff” flag, which controls whether the user is allowed to log in to the admin interface, can be set by the admin panel itself.
+
+The panel can be reached from :guilabel:`Admin` link of the *User Menu* in the navigation bar (see the picture below) or through this URL: ``http://<your_geonode_host>/admin``.
+
+.. figure:: img/admin_link.png
+     :align: center
+
+     *The Admin Link of the User Menu*
+
+When clicking on that link the Django-based *Admin Interface* page opens and shows you all the Django models registered in GeoNode.
+
+.. figure:: img/django_geonode_admin_interface.png
+     :align: center
+
+     *The GeoNode Admin Interface*
+
 Reset or Change the admin password
 ==================================
+
+From the *Admin Interface* you can access the :guilabel:`CHANGE PASSWORD` link on the right side of the navigation bar.
+
+.. figure:: img/change_password_link.png
+     :align: center
+
+     *The Change Password Link*
+
+It allows you to access the *Change Password Form* through which you can change your password.
+
+.. figure:: img/change_password_form.png
+     :align: center
+
+     *The Change Password Form*
+
+Once the fields have been filled out, click on :guilabel:`CHANGE MY PASSWORD` to perform the change.
 
 Simple Theming
 ==============
 
-GeoNode provides by default some theming options manageable directly from the Administration panel. 
+GeoNode provides by default some theming options manageable directly from the Administration panel.
 Most of the times those options allows you to easily change the GeoNode look and feel without touching a single line of `HTML` or `CSS`.
 
 As an `administrator` go to ``http://<your_geonode_host>/admin/geonode_themes/geonodethemecustomization/``.
@@ -222,6 +257,7 @@ Remember to save the Themes everytime and refresh the GeoNode home page on the b
 It is also important that there is **only one** Theme enabled **at a time**.
 
 In order to go back to the standard GeoNode behavior, just disable or delete all the available Themes.
+=======
 
 Invite a User
 =============
