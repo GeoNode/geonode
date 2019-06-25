@@ -257,7 +257,6 @@ Remember to save the Themes everytime and refresh the GeoNode home page on the b
 It is also important that there is **only one** Theme enabled **at a time**.
 
 In order to go back to the standard GeoNode behavior, just disable or delete all the available Themes.
-=======
 
 Invite a User
 =============
