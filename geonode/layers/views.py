@@ -615,7 +615,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     context_dict = {
         'resource': layer,
         'group': group,
-        'perms_list': get_perms(request.user, layer.get_self_resource()),
+        'perms_list': get_perms(
+            request.user,
+            layer.get_self_resource()) + get_perms(request.user, layer),
         "permissions_json": _perms_info_json(layer),
         "documents": get_related_documents(layer),
         "metadata": metadata,
@@ -1505,8 +1507,12 @@ def layer_metadata_detail(
         except GroupProfile.DoesNotExist:
             group = None
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+
     return render(request, template, context={
         "resource": layer,
+        "perms_list": get_perms(
+            request.user,
+            layer.get_self_resource()) + get_perms(request.user, layer),
         "group": group,
         'SITEURL': site_url
     })

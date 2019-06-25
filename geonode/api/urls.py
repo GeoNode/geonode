@@ -20,26 +20,22 @@
 
 from tastypie.api import Api
 
-from geonode.api.api import StyleResource
-from .api import TagResource, TopicCategoryResource, ProfileResource, \
-    GroupResource, RegionResource, OwnersResource, ThesaurusKeywordResource, \
-    GroupCategoryResource
-from .resourcebase_api import LayerResource, MapResource, DocumentResource, \
-    ResourceBaseResource, FeaturedResourceBaseResource
+from . import api as resources
+from . import resourcebase_api as resourcebase_resources
 
 api = Api(api_name='api')
 
-api.register(LayerResource())
-api.register(MapResource())
-api.register(DocumentResource())
-api.register(ProfileResource())
-api.register(ResourceBaseResource())
-api.register(TagResource())
-api.register(RegionResource())
-api.register(TopicCategoryResource())
-api.register(GroupResource())
-api.register(FeaturedResourceBaseResource())
-api.register(OwnersResource())
-api.register(ThesaurusKeywordResource())
-api.register(GroupCategoryResource())
-api.register(StyleResource())
+api.register(resources.GroupCategoryResource())
+api.register(resources.GroupResource())
+api.register(resources.OwnersResource())
+api.register(resources.ProfileResource())
+api.register(resources.RegionResource())
+api.register(resources.StyleResource())
+api.register(resources.TagResource())
+api.register(resources.ThesaurusKeywordResource())
+api.register(resources.TopicCategoryResource())
+api.register(resourcebase_resources.DocumentResource())
+api.register(resourcebase_resources.FeaturedResourceBaseResource())
+api.register(resourcebase_resources.LayerResource())
+api.register(resourcebase_resources.MapResource())
+api.register(resourcebase_resources.ResourceBaseResource())

@@ -94,6 +94,9 @@ class UploaderSession(object):
     # the name to try to give the layer
     name = None
 
+    # the input file charset
+    charset = 'UTF-8'
+
     # blob of permissions JSON
     permissions = None
 
@@ -150,6 +153,7 @@ class UploaderSession(object):
 def upload(
         name,
         base_file,
+        charset,
         user=None,
         time_attribute=None,
         time_transform_type=None,
@@ -191,6 +195,7 @@ def upload(
     upload_session = UploaderSession(
         base_file=base_file,
         name=name,
+        charset=charset,
         import_session=import_session,
         layer_abstract="",
         layer_title=name,

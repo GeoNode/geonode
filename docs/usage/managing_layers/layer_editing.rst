@@ -54,6 +54,8 @@ We have replaced the *roads* dataset with the *railways* one. You can see the di
 
      *Result of the Layer Replacement*
 
+.. _layer-data-editing:
+
 Editing the Layer Data
 ----------------------
 

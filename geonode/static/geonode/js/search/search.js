@@ -47,15 +47,8 @@
   // Load group categories
   module.load_group_categories = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
-        if ($location.search().hasOwnProperty('name__icontains')){
-          params['name__icontains'] = $location.search()['name__icontains'];
-        }
         $http.get(GROUP_CATEGORIES_ENDPOINT, {params: params}).success(function(data){
-            if($location.search().hasOwnProperty('slug')){
-                data.objects = module.set_initial_filters_from_query(data.objects,
-                    $location.search()['slug'], 'identifier');
-            }
-            $rootScope.categories = data.objects;
+            $rootScope.groupCategories = data.objects;
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
                 module.haystack_facets($http, $rootScope, $location);
             }
@@ -139,7 +132,15 @@
             }
         });
     }
-
+    module.load_groups = function ($http, $rootScope, $location){
+        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        $http.get(GROUPS_ENDPOINT, {params: params}).success(function(data){
+            $rootScope.groups = data.objects;
+            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+                module.haystack_facets($http, $rootScope, $location);
+            }
+        });
+    }
     module.load_owners = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         if ($location.search().hasOwnProperty('title__icontains')){
@@ -237,7 +238,7 @@
        module.load_categories($http, $rootScope, $location);
     }
 
-    if ($('#groupcategories').length > 0){
+    if ($('#group-categories').length > 0){
        module.load_group_categories($http, $rootScope, $location);
     }
 
@@ -251,6 +252,9 @@
     }
     if ($('#owners').length > 0){
        module.load_owners($http, $rootScope, $location);
+    }
+    if ($('#groups').length > 0){
+       module.load_groups($http, $rootScope, $location);
     }
     if ($('#tkeywords').length > 0){
        module.load_t_keywords($http, $rootScope, $location);

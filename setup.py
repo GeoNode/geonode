@@ -39,6 +39,7 @@ setup(name='GeoNode',
       long_description=open('README.md').read(),
       classifiers=[
           "Development Status :: 4 - Beta"],
+      python_requires='>=2.7, <3',
       keywords='',
       author='GeoNode Developers',
       author_email='dev@geonode.org',
