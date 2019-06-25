@@ -116,6 +116,113 @@ it will be possible to show the Copyright statement to the bottom of the page
 
     *Copyright*
 
+Partners
+^^^^^^^^
+
+GeoNode simple theming, allows also a ``Partners`` section, in order to easily list links to third-party institutions collaborating to the project.
+
+The example below shows the ``Partners`` section of `WorldBank CHIANG MAI URBAN FLOODING <https://urbanflooding.geo-solutions.it/>`_ GeoNode instance
+made through integrating theming options.
+
+.. figure:: img/theming/theme-def-0005.png
+    :align: center
+
+    *Urbanflooding GeoNode Partners Section*
+
+The ``Partners`` items can be managed through the ``http://<your_geonode_host>/admin/geonode_themes/partner/`` Admin section
+
+.. figure:: img/theming/theme-def-0005a.png
+    :align: center
+
+    *GeoNode Partners Admin Section*
+
+From here it is possible to add, modify or delete partners items.
+
+A new partner is defined by few elements, a ``Logo``, a ``Name``, a ``Display Name`` and a ``Website``
+
+.. figure:: img/theming/theme-def-0005b.png
+    :align: center
+
+    *Add a Partner*
+
+In order to attach or detach a ``Partner`` to an existing ``Theme`` on GeoNode, you will need to edit the Theme and go to the ``Partners`` section
+
+.. figure:: img/theming/theme-def-0005c.png
+    :align: center
+
+    *Theme Partners Section*
+
+From here you will be able to either to change the ``Partners title`` text and/or select/deselect ``Partners`` from the ``multi-select`` box.
+
+.. note:: In order to select/deselect elements from the ``multi-select`` box, you **must** use the ``CTRL+CLICK`` button combintation.
+
+Privacy Policies and Cookie settings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By enabling the ``Cookies Law Info Bar`` checkbox (``True`` by default)
+
+.. figure:: img/theming/theme-def-0006.png
+    :align: center
+
+    *Cookies Law Info Bar checkbox*
+
+it will be possible to allow GeoNode presenting the `Privacy Policies and Cookie settings` pop-ups and links at the bottom of the home page
+
+.. figure:: img/theming/theme-def-0006a.png
+    :align: center
+
+    *Cookies Law Info Bar*
+
+There are plenty of options available, allowing you to customize contact info as long as colors of the bar and page.
+
+One of the most importat to consider it is for sure the ``Cookie law info bar text``
+
+.. figure:: img/theming/theme-def-0006b.png
+    :align: center
+
+    *Cookie law info bar text*
+
+The default text contained in this section is the following one
+
+.. code-block:: html
+
+    This website uses cookies to improve your experience,
+    check <strong><a style="color:#000000" href="/privacy_cookies/">this page</a></strong> for details.
+    We'll assume you're ok with this, but you can opt-out if you wish.
+
+
+The text can be changed and customized, of course. Nevertheless it points by default to the following page
+
+.. code-block:: shell
+
+    /privacy_cookies/
+
+aka `http://<your_geonode_host>/privacy_cookies/`
+
+.. figure:: img/theming/theme-def-0006c.png
+    :align: center
+
+    */privacy_cookies/ Default Page*
+
+The page contains a default generic text along with some placeholders, which, most probably, won't feet your needs.
+
+In order to change this you have two options:
+
+1. Change the link reported into the ``Cookie law info bar text`` section, to make it pointing to an external/static page.
+
+2. Change the contents of ``/geonode/templates/privacy-cookies.html`` Django template accordingly to your needs; this is basically a plain ``HTML`` page which can be easily customized by using a standard text editor.
+
+Switching between different themes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the case you have defined more Themes, switching between them is as easy as ``enabling`` one and ``disabling`` the others.
+
+Remember to save the Themes everytime and refresh the GeoNode home page on the browser to see the changes.
+
+It is also important that there is **only one** Theme enabled **at a time**.
+
+In order to go back to the standard GeoNode behavior, just disable or delete all the available Themes.
+
 Invite a User
 =============
 
