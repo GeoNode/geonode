@@ -42,6 +42,10 @@ Jumbotron and Get Started link
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note:: Remember, everytime you want to apply some changes to the Theme, you **must** save the Theme and reload the GeoNode browser tab.
+    In order to quickly switch back to the Home page, you can just click the ``VIEW SITE`` link on the top-right corner of the Admin dashboard.
+
+    .. figure:: img/theming/theme-def-0003c.png
+        :align: center
 
 The next section, allows you to define the first important Theme properties. This part involves the GeoNode main page sections.
 
@@ -63,6 +67,54 @@ to this
     :align: center
 
     *Updating Jumbotron and Logo*
+
+It is possible to optionally **hide** the ``Jumbotron text`` and/or the ``Call to action`` button
+
+.. figure:: img/theming/theme-def-0003d.png
+    :align: center
+
+.. figure:: img/theming/theme-def-0003e.png
+    :align: center
+
+    *Hide Jumbotron text and Call to action button*
+
+Copyright and contact info footer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The default GeoNode footer does not present any type of contact info.
+
+.. figure:: img/theming/theme-def-0004.png
+    :align: center
+
+    *Default GeoNode Footer*
+
+By enabling and editing the ``contact us box`` fields
+
+.. figure:: img/theming/theme-def-0004a.png
+    :align: center
+
+    *Enable contact us box*
+
+it will be possible to show a simple *Contact Us* info box on the GeoNode footer section.
+
+.. figure:: img/theming/theme-def-0004b.png
+    :align: center
+
+    *Contact Us Footer*
+
+Similarly, by editing the ``Copyright`` text box and/or background color
+
+.. figure:: img/theming/theme-def-0004c.png
+    :align: center
+
+    *Copyright Text and Color*
+
+it will be possible to show the Copyright statement to the bottom of the page
+
+.. figure:: img/theming/theme-def-0004d.png
+    :align: center
+
+    *Copyright*
 
 Invite a User
 =============
