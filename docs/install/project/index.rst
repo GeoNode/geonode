@@ -12,7 +12,7 @@ This part of the documentation describes the complete setup process for GeoNode 
 - If you have a graphical desktop environment you can open the terminal application after login;
 - if you are working on a remote server the provider or sysadmin should has given you access through an ssh client.
 
-.. _install_dep:
+.. _install_dep_proj:
 
 Install the dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -90,7 +90,7 @@ Inside the project structure is possible to extend, replace or modify all geonod
 
 .. note:: You can call your geonode project whatever you like following the naming conventions for python packages (generally lower case with underscores (_). In the examples below, replace ``my_geonode`` with whatever you would like to name your project.
 
-See also the `README <https://github.com/GeoNode/geonode-project/blob/master/README.rst>` fiel on geonode-project repository
+See also the `README <https://github.com/GeoNode/geonode-project/blob/master/README.rst>`_ fiel on geonode-project repository
 
 First of all we need to prepare a new Python Virtual Environment
 

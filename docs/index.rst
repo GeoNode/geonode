@@ -12,7 +12,7 @@ Table of contents
 =================
 
 .. toctree::
-    :caption: About GeoNode
+    :caption: About
     :maxdepth: 3
 
     about/index
@@ -24,43 +24,43 @@ Table of contents
     start/index
 
 .. toctree::
-    :caption: Usage
+    :caption: Using
     :maxdepth: 3
 
     usage/index
 
 .. toctree::
-    :caption: Installation
+    :caption: Installing
     :maxdepth: 3
 
     install/index
 
 .. toctree::
-    :caption: Basic Configuration
+    :caption: Configuring (Basic)
     :maxdepth: 3
 
     basic/index
 
 .. toctree::
-    :caption: Intermediate Configuration
+    :caption: Configuring (Intermediate)
     :maxdepth: 3
 
     intermediate/index
 
 .. toctree::
-    :caption: Advanced Configuration
+    :caption: Configuring (Advanced)
     :maxdepth: 3
 
     advanced/index
 
 .. toctree::
-    :caption: Administration
+    :caption: Administering
     :maxdepth: 3
 
     admin/index
 
 .. toctree::
-    :caption: Contribute
+    :caption: Contributing
     :maxdepth: 3
 
     contribute/index
