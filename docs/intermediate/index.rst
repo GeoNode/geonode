@@ -1,6 +1,8 @@
 Monitoring
 ==========
 
+.. _geonode_monitoring:
+
 GeoNode Backup and Restore
 ==========================
 
