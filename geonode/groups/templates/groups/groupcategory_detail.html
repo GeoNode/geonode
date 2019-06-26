@@ -20,7 +20,7 @@
 
   <div class="col-md-4">
     <ul class="list-group">
-      {% if request.user.is_staff %}
+      {% if request.user.is_staff or request.user.is_superuser %}
       <li class="list-group-item"><a href="{% url "group_category_update" object.slug %}">{% trans "Edit Group Category Details" %}</a></li>
       {% endif %}
     </ul>
@@ -30,7 +30,7 @@
   <div class="col-md-12">
     <h4>{% trans "Groups" %}</h4>
     <div class="tab-content paginate paginate-auto" id="search-content">
-    {% include 'groups/_group_list_item.html' %}
+    {% include 'groups/_group_profile_list_item.html' %}
     </div>
   </div>
   {% include 'search/_pagination.html' %}
