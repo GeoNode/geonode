@@ -958,7 +958,10 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         elif instance.alternate:
                             request_body['layers'] = instance.alternate
 
-                        image = _prepare_thumbnail_body_from_opts(request_body)
+                        try:
+                            image = _prepare_thumbnail_body_from_opts(request_body)
+                        except BaseException:
+                            image = None
 
                 if image is None:
                     try:
