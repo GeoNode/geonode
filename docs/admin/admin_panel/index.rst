@@ -353,6 +353,105 @@ To make some user a *Superuser*, the **Superuser status** checkbox should be tic
 Creating a Group
 ================
 
+| In GeoNode is possible to create new groups with set of permissions which will be inherited by all the group members.
+| The creation of a Group can be done both on the GeoNode UI and on the *Admin Panel*, we will explain how in this paragraph.
+
+The :guilabel:`Create Groups` link of *About* menu in the navigation bar allows administrators to reach the *Group Creation Page*.
+
+.. figure:: img/create_group_page_link.png
+    :align: center
+
+    *The Create Group Link*
+
+The following form will open.
+
+.. figure:: img/group_creation_form.png
+    :align: center
+
+    *The Group Creation Form*
+
+Fill out all the required fields and click :guilabel:`Create` to create the group.
+The *Group Details Page* will open.
+
+.. figure:: img/group_details_page.png
+    :align: center
+
+    *The Group Details Page*
+
+The new created group will be searchable in the *Groups List Page*.
+
+.. figure:: img/groups_list_page.png
+    :align: center
+
+    *The Groups List Page*
+
+.. note:: The :guilabel:`Create a New Group` button on the *Groups List Page* allows to reach the *Group Creation Form*.
+
+| As already mentioned above, groups can also be created from the Django-based *Admin Interface* of GeoNode.
+| The *Groups* link of the *AUTHENTICATION AND AUTHORIZATION* section allows to manage basic Django groups which only care about permissions.
+| To create a GeoNode group you should take a look at the *GROUPS* section.
+
+.. figure:: img/groups_admin_section.png
+    :align: center
+
+    *The Groups Section on the Admin Panel*
+
+As you can see, GeoNode provides two types of groups. You will learn more about that in the next paragraph.
+
+Types of Groups
+^^^^^^^^^^^^^^^
+
+In GeoNode users can be grouped through a *Group Profile*, an enhanced Django group which can be enriched with some further information such as a description, a logo, an email address, some keywords, etc.
+It also possible to define some *Group Categories* based on which those group profiles can be divided and filtered.
+
+A new **Group Profile** can be created as follow:
+
+* click on the *Group Profile* :guilabel:`+ Add` button
+
+* fill out all the required fields (see the picture below), *Group Profiles* can be explicitly related to group categories
+
+  .. figure:: img/new_group_profile_form.png
+      :align: center
+
+      *A new Group Profile*
+
+* click on :guilabel:`SAVE` to perform the creation, the new created group profile will be visible in the *Group Profiles List*
+
+  .. figure:: img/group_profiles_list.png
+      :align: center
+
+      *The Group Profiles List*
+
+Group Categories
+^^^^^^^^^^^^^^^^
+
+*Group Profiles* can also be related to *Group Categories* which represents common topics between groups.
+In order to add a new **Group Category** follow these steps:
+
+* click on the *Group Categories* :guilabel:`+ Add` button
+
+* fill out the creation form (type *name* and *description*)
+
+  .. figure:: img/new_group_category_form.png
+      :align: center
+
+      *A new Group Category*
+
+* click on :guilabel:`SAVE` to perform the creation, the new created category will be visible in the *Group Categories List*
+
+  .. figure:: img/group_categories_list.png
+      :align: center
+
+      *The Group Categories List*
+
+| When a GeoNode resource (layer, document or maps) is associated to some *Group Profile*, it is also possible to retrieve the *Group Category* it belongs to.
+| So when searching for resources (see :ref:`finding-data`) you can also filter the data by group category.
+
+.. figure:: img/layers_group_category.png
+    :align: center
+
+    *Filtering Layers by Group Category*
+
 Managing a Group
 ================
 
