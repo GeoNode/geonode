@@ -258,9 +258,6 @@ It is also important that there is **only one** Theme enabled **at a time**.
 
 In order to go back to the standard GeoNode behavior, just disable or delete all the available Themes.
 
-Invite a User
-=============
-
 Add a new user
 ==============
 
@@ -361,6 +358,77 @@ Managing a Group
 
 Group based advanced data workflow
 ==================================
+
+By default GeoNode is configured to make every resource (Layer, Document or Map) suddenly available to everyone, i.e. publicly accessible
+even from anonymous/non-logged in users.
+
+It is actually possible to change few configuration settings in order to allow GeoNode to enable an advanced publication workflow.
+
+With the advanced workflow enabled,  your layer, document or map won't be automatically published (i.e. made visible and accessible for all, contributors or simple users).
+
+For now, your item is only visible by yourself, the manager of the group to which the layer, document or map is linked (this information is filled in the metadata), the members of this group, and the GeoNode Administrators.
+
+Before being published, the layer, document or map will follow a two-stage review process, which is described below:
+
+.. figure:: img/adv_data_workflow/adv_data_workflow_001.jpg
+    :align: center
+
+    *From upload to publication: the review process on GeoNode*
+
+How to enable the advanced workflow
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You have to tweak the GeoNode settings accordingly.
+
+Please see the details of the following GeoNode ``Settings``:
+
+* `ADMIN_MODERATE_UPLOADS <../../basic/settings/index.html#admin-moderate-uploads>`_
+
+* `GROUP_PRIVATE_RESOURCES <../../basic/settings/index.html#group-private-resources>`_
+
+* `RESOURCE_PUBLISHING <../../basic/settings/index.html#resource-publishing>`_
+
+The group Manager approval
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+Here, the role of the Manager of the group to which your layer, document or map is linked is to check that the uploaded item is correct.
+Particularly, in the case of a layer or a map, it consists of checking that the chosen cartographic representation and the style are 
+fitting but also that the discretization is appropriate.
+
+The Manager must also check that the metadata are properly completed and that the mandatory information 
+(Title, Abstract, Edition, Keywords, Category, Group, Region) are filled.
+
+If needed, the Manager can contact the contributor responsible of the layer, document or map in order to report potential comments or 
+request clarifications.
+
+Members of the group can also take part in the reviewing process and give some potential inputs to the responsible of the 
+layer, document or map.
+
+When the Manager considers that the layer, document or map is ready to be published, he should approve it. 
+To do so, the Manager goes to the layer, document or map page, then opens the :guilabel:`Wizard` in order to edit the metadata. 
+In the :guilabel:`Settings` tab, the manager checks the :guilabel:`Approved` box, and then updates the metadata and saves the changes:
+
+.. figure:: img/adv_data_workflow/approbation_manager.gif
+    :align: center
+
+    *The approbation process of an item by a Manager*
+
+Following this approval, the GeoNode Administrators receive a notification informing them that an item is now waiting for publication
+
+.. figure:: img/adv_data_workflow/unpublished.png
+    :align: center
+
+    *An approved layer, waiting for publication by the GeoNode administrators*
+
+The publication by the GeoNode Administrator
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Prior to the public release of an approved layer, a document or a map, the Administrator of the platform performs a final validation of 
+the item and its metadata, notably to check that it is in line with licence policies.
+
+If needed, the GeoNode Administrator can contact the Manager who has approved the layer, document or map, as well as its responsible.
+
+Once the layer, document or map is validated, the item is made public by the Administrator. 
+It can now be viewed, accessed, and downloaded in accordance with the ``Permissions`` set by the responsible contributor.
 
 Manage profiles using the admin panel
 =====================================
