@@ -9,8 +9,8 @@ Ubuntu 18.04
 ============
 
 This part of the documentation describes the complete setup process for GeoNode on an Ubuntu 18.04 64-bit clean environment (Desktop or Server). All examples use shell commands that you must enter on a local terminal or a remote shell.
-- If you have a graphical desktop environment you can open the terminal aplication after login;
-- if you are working on a remote server the provider or sysadmin should has gave you access through an ssh client.
+- If you have a graphical desktop environment you can open the terminal application after login;
+- if you are working on a remote server the provider or sysadmin should has given you access through an ssh client.
 
 .. _install_dep:
 
@@ -90,7 +90,7 @@ It will run locally against a file-system based ``SQLite`` database.
 
 First of all we need to prepare a new Python Virtual Environment
 
-Since geonode needs a large number of different python libraries and packages, it's recommended to use a python virtual environment to avoid conflicts on dependencies with system wide python packages and other installed softwares. See also documentation of `Virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/stable/>`_. package for mode information
+Since geonode needs a large number of different python libraries and packages, it's recommended to use a python virtual environment to avoid conflicts on dependencies with system wide python packages and other installed software. See also documentation of `Virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/stable/>`_ package for more information
 
 .. code-block:: shell
 
@@ -210,7 +210,7 @@ First, create the geonode user. GeoNode is going to use this user to access the 
 
 You will be prompted asked to set a password for the user. Enter ``geonode`` as password.
 
-.. warning:: This is a sample password used for the sake of simplicty. This password is very **weak** and should be changed in a production environment.
+.. warning:: This is a sample password used for the sake of simplicity. This password is very **weak** and should be changed in a production environment.
 
 Create database ``geonode`` and ``geonode_data`` with owner ``geonode``
 
@@ -601,7 +601,7 @@ Serving {“geonode”, “geoserver”} via NGINX
 
 .. code-block:: shell
 
-  # Backup the origina NGINX config
+  # Backup the original NGINX config
   sudo mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig
 
   # Create the GeoNode Default NGINX config
@@ -900,7 +900,7 @@ Install and enable HTTPS secured connection through the Let's Encrypt provider
 
 1. Update the ``GeoNode`` **OAuth2** ``Redirect URIs`` accordingly.
 
-  From the ``GeoNode Admin Dashboard`` goto ``Home › Django/GeoNode OAuth Toolkit › Applications › GeoServer``
+  From the ``GeoNode Admin Dashboard`` go to ``Home › Django/GeoNode OAuth Toolkit › Applications › GeoServer``
 
   .. figure:: img/ubuntu-https-001.png
         :align: center
@@ -909,7 +909,7 @@ Install and enable HTTPS secured connection through the Let's Encrypt provider
 
 2. Update the ``GeoServer`` ``Proxy Base URL`` accordingly.
 
-  From the ``GeoServer Admin GUI`` goto ``About & Status > Global``
+  From the ``GeoServer Admin GUI`` go to ``About & Status > Global``
 
   .. figure:: img/ubuntu-https-002.png
         :align: center
@@ -919,7 +919,7 @@ Install and enable HTTPS secured connection through the Let's Encrypt provider
 
 3. Update the ``GeoServer`` ``Role Base URL`` accordingly.
 
-  From the ``GeoServer Admin GUI`` goto ``Security > Users, Groups, Roles > geonode REST role service``
+  From the ``GeoServer Admin GUI`` go to ``Security > Users, Groups, Roles > geonode REST role service``
 
   .. figure:: img/ubuntu-https-003.png
         :align: center
@@ -928,7 +928,7 @@ Install and enable HTTPS secured connection through the Let's Encrypt provider
 
 4. Update the ``GeoServer`` ``OAuth2 Service Parameters`` accordingly.
 
-  From the ``GeoServer Admin GUI`` goto ``Security > Authentication > Authentication Filters > geonode-oauth2``
+  From the ``GeoServer Admin GUI`` go to ``Security > Authentication > Authentication Filters > geonode-oauth2``
 
   .. figure:: img/ubuntu-https-004.png
         :align: center
@@ -945,7 +945,7 @@ Install and enable HTTPS secured connection through the Let's Encrypt provider
     # Change everywhere 'http' to 'https'
     %s/http/https/g
 
-    # Add two more 'env' variables to the configruation
+    # Add two more 'env' variables to the configuration
     env = SECURE_SSL_REDIRECT=True
     env = SECURE_HSTS_INCLUDE_SUBDOMAINS=True
 
@@ -1159,7 +1159,7 @@ Run the containers in daemon mode
   docker-compose -f docker-compose.yml -f docker-compose.override.example-org.yml up --build -d
 
 Access the django4geonode Docker container to update the code-base and/or change internal settings
-..............................................................................................
+..................................................................................................
 
 Access the container ``bash``
 

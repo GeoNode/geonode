@@ -1381,7 +1381,7 @@ SESSION_COOKIE_SECURE
 SESSION_EXPIRED_CONTROL_ENABLED
 -------------------------------
 
-    | Default: ``False``
+    | Default: ``True``
     | Env: ``SESSION_EXPIRED_CONTROL_ENABLED``
 
     By enabling this variable, a new middleware ``geonode.security.middleware.SessionControlMiddleware`` will be added to the ``MIDDLEWARE_CLASSES``.
