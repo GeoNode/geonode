@@ -433,14 +433,84 @@ It can now be viewed, accessed, and downloaded in accordance with the ``Permissi
 Manage profiles using the admin panel
 =====================================
 
+So far GeoNode implements two distinct roles, that can be assigned to resources such as layers, maps or documents:
+
+* party who authored the resource
+* party who can be contacted for acquiring knowledge about or acquisition of the resource
+
+These two profiles can be set in the GeoNode interface by accessing the metadata page and setting the ``Point of Contact`` and ``Metadata Author`` fields respectively.
+
+Is possible for an administrator to add new roles if needed, by clicking on the :guilabel:`Add Role` button in the :guilabel:`Base -> Contact Roles` section:
+
+.. figure:: img/admin-roles-add.png
+
+Clicking on the :guilabel:`People` section (see figure) will open a web for with some personal information plus a section called :guilabel:`Users`.
+
+.. figure:: img/admin-people.png
+
+Is important that this last section is not modified here unless the administrator is very confident in that operation.
+
+.. figure:: img/admin-profiles-contactroles.png
+
 Manage layers using the admin panel
 ===================================
+
+Some of the Layers information can be edited directly through the admin interface although the best place is in the :guilabel:`Layer -> Metadata Edit` in GeoNode.
+
+Clicking on the :guilabel:`Admin > Layers` link will show the list of available layers.
+
+.. figure:: img/admin-layers.png
+
+.. warning:: It is not recommended to modify the Layers' ``Attributes`` or ``Styles`` directly from the Admin dashboard unless you are aware of your actions.
+
+The ``Metadata`` information can be changed for multiple Layers at once throguh the :guilabel:`Metadata batch edit` action.
+
+.. figure:: img/admin-layers-batch.png
+
+By clicking over one Layer link, it will show a detail page allowing you to modify some of the resource info like the metadata, the keywords, the title, etc. 
+
+.. note:: It is strongly recommended to always use the GeoNode :guilabel:`Metadata Wizard` or :guilabel:`Metadata Advanced` tools in order to edit the metadata info.
 
 Manage the maps using the admin panel
 =====================================
 
+Similarly to the Layers, it is possible to manage the available GeoNode Maps through the Admin panel also.
+
+Move to :guilabel:`Admin > Maps` to access the Maps list.
+
+.. figure:: img/admin-maps.png
+
+The ``Metadata`` information can be changed for multiple Maps at once throguh the :guilabel:`Metadata batch edit` action.
+
+.. figure:: img/admin-layers-batch.png
+
+By clicking over one Map link, it will show a detail page allowing you to modify some of the resource info like the metadata, the keywords, the title, etc. 
+
+.. note:: It is strongly recommended to always use the GeoNode :guilabel:`Metadata Wizard` or :guilabel:`Metadata Advanced` tools in order to edit the metadata info.
+
+Notice that by enabling the ``Featured`` option here, will allow GeoNode to show the Map thumbnail and the Map detail link on the :guilabel:`Home Page`
+
+.. figure:: img/admin-maps-featured-001.png
+
+.. figure:: img/admin-maps-featured-002.png
+
+
 Manage the documents using the admin panel
 ==========================================
+
+Similarly to the Layers and Maps, it is possible to manage the available GeoNode Documents through the Admin panel also.
+
+Move to :guilabel:`Admin > Documents` to access the Documents list.
+
+.. figure:: img/admin-documents.png
+
+The ``Metadata`` information can be changed for multiple Documents at once throguh the :guilabel:`Metadata batch edit` action.
+
+.. figure:: img/admin-layers-batch.png
+
+By clicking over one Document link, it will show a detail page allowing you to modify some of the resource info like the metadata, the keywords, the title, etc. 
+
+.. note:: It is strongly recommended to always use the GeoNode :guilabel:`Metadata Wizard` or :guilabel:`Metadata Advanced` tools in order to edit the metadata info.
 
 Announcements
 =============
