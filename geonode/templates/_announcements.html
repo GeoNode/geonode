@@ -4,6 +4,7 @@
 {% if site_wide_announcements %}
 <div id="site_wide_announcements">
     {% for announcement in site_wide_announcements %}
+    {% if not announcement.members_only or request.user.is_authenticated %}
     <div class="alert alert-block announcement {{ announcement.level_css  }}">
         {% if announcement.dismissal_type > 1 %}
         <a type="button" class="close" data-dismiss="alert" data-dismiss-url="{% url "announcements_dismiss" announcement.pk %}" href="#">×</a>
@@ -12,6 +13,7 @@
         <p><small><em>{{ announcement.creation_date }}</em></small></p>
         <div>{{ announcement.content }}</div>
     </div>
+    {% endif %}
     {% endfor %}
 </div>
 {% endif %}
