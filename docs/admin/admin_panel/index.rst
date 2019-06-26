@@ -264,14 +264,94 @@ Invite a User
 Add a new user
 ==============
 
+In GeoNode, administrators can manage other users. For example, they can *Add New Users* through the following form.
+
+.. figure:: img/add_user_form.png
+    :align: center
+
+    *Adding New Users*
+
+The form above can be reached from the *Admin Panel* at the following path: *Home > People > Users*. Click on :guilabel:`ADD USER +` to open the form page.
+
+.. figure:: img/add_user_button.png
+    :align: center
+
+    *The Add User button in the Users List page*
+
+It is also available, in the GeoNode UI, the :guilabel:`Add User` link of the *About* menu in the navigation bar.
+
+.. figure:: img/add_user_link.png
+    :align: center
+
+    *Add User Link*
+
+To perform the user creation fill out the required fields (*username* and *password*) and click on :guilabel:`SAVE`.
+You will be redirected to the *User Details Page* which allows to insert further information about the user.
+
+.. figure:: img/user_details_admin_page.png
+    :align: center
+
+    *The User Details Page*
+
+The user will be visible into the *Users List Page* of the *Admin Panel* and in the *People Page* (see :ref:`user-info`).
+
+.. figure:: img/new_user_in_people.png
+    :align: center
+
+    *The User in the People page*
+
 Activate/Disable a User
 =======================
+
+When created, new users are *active* by default.
+You can check that in the *User Details Page* from the *Admin Panel* (see the picture below).
+
+.. figure:: img/new_user_active.png
+    :align: center
+
+    *New Users Active by default*
+
+| *Active* users can interact with other users and groups, can manage resources and, more in general, can take actions on the GeoNode platform.
+| Untick the *Active* checkbox to disable the user. It will be not considered as user by the GeoNode system.
+
+.. figure:: img/new_user_disabled.png
+    :align: center
+
+    *Disabeld Users*
 
 Change a User password
 ======================
 
+GeoNode administrators can also change/reset the password for those users who forget it.
+As shown in the picture below, click on ``this form`` link from the *User Details Page* to access the *Change Password Form*.
+
+.. figure:: img/change_user_password_link.png
+    :align: center
+
+    *Changing Users Passwords*
+
+The *Change User Password Form* should looks like the following one.
+Insert the new password two times and click on :guilabel:`CHANGE PASSWORD`.
+
+.. figure:: img/chenge_user_password_form.png
+    :align: center
+
+    *Changing Users Passwords*
+
 Promoting a User to Staff member or superuser
 =============================================
+
+Active users have not access to admin tools.
+GeoNode makes available those tools only to *Staff Members* who have the needed permissions.
+*Superusers* are staff members with full access to admin tools (all permissions are assigned to them).
+
+Administrators can promote a user to *Staff Member* by ticking the **Staff status** checkbox in the *User Details Page*.
+To make some user a *Superuser*, the **Superuser status** checkbox should be ticked. See the picture below.
+
+.. figure:: img/staff_and_superuser_permissions.png
+    :align: center
+
+    *Staff and Superuser permissions*
 
 Creating a Group
 ================
