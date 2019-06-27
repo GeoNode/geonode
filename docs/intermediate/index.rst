@@ -1,7 +1,12 @@
+.. _geonode_monitoring:
+
 Monitoring
 ==========
 
-.. _geonode_monitoring:
+.. toctree::
+    :maxdepth: 3
+
+    monitoring/index
 
 GeoNode Backup and Restore
 ==========================
