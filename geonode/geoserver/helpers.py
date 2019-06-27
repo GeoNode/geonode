@@ -1913,8 +1913,22 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         from geonode.utils import (_v,
                                    bbox_to_projection,
                                    bounds_to_zoom_level)
+        image = None
+        width = 240
+        height = 200
+
         if isinstance(request_body, basestring):
-            request_body = json.loads(request_body)
+            try:
+                request_body = json.loads(request_body)
+            except BaseException:
+                try:
+                    image = _render_thumbnail(
+                        request_body, width=width, height=height)
+                except BaseException:
+                    image = None
+
+        if image is not None:
+            return image
 
         # Defaults
         _img_src_template = """<img src='{ogc_location}'
@@ -1941,10 +1955,8 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             if not coord:
                 return None
 
-        width = 240
         if 'width' in request_body:
             width = int(request_body['width'])
-        height = 200
         if 'height' in request_body:
             height = int(request_body['height'])
         smurl = None
