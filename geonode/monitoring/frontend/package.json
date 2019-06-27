@@ -6,7 +6,8 @@
   "scripts": {
     "start": "webpack-dev-server --inline --hot --host 0.0.0.0 --port 8888 --color",
     "build": "webpack -p --progress --config webpack.config.prod.js",
-    "compile": "webpack -d --progress --config webpack.config.js"
+    "compile": "webpack -d --progress --config webpack.config.js",
+    "lint-fix": "eslint --fix --ext .js,.vue src"
   },
   "repository": {
     "type": "git",
@@ -15,7 +16,7 @@
   "license": "GPL-3.0",
   "homepage": "https://github.com/mekanix/materialui-starter",
   "devDependencies": {
-    "babel-cli": "^7.4.4",
+    "babel-cli": "^6.24.1",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "base64-font-loader": "0.0.4",
     "csv-loader": "^2.1.1",
