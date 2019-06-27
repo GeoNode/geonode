@@ -578,6 +578,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'announcements.auth_backends.AnnouncementPermissionsBackend'
 )
 
 OAUTH2_PROVIDER = {
