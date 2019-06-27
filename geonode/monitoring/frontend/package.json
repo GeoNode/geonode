@@ -66,7 +66,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^1.0.3",
     "style-loader": "^0.13.2",
-    "webpack": "^2.0.0",
+    "webpack": "^2.7.0",
     "webpack-dev-middleware": "^1.12.2",
     "webpack-dev-server": "^3.4.1",
     "webpack-hot-middleware": "^2.25.0"
