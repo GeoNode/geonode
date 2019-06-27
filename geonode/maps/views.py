@@ -214,7 +214,7 @@ def map_metadata(
         new_regions = map_form.cleaned_data['regions']
         new_title = strip_tags(map_form.cleaned_data['title'])
         new_abstract = strip_tags(map_form.cleaned_data['abstract'])
-        
+
         new_category = None
         if category_form and 'category_choice_field' in category_form.cleaned_data and\
         category_form.cleaned_data['category_choice_field']:
