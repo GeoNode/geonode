@@ -659,6 +659,7 @@ These two profiles can be set in the GeoNode interface by accessing the metadata
 Is possible for an administrator to add new roles if needed, by clicking on the :guilabel:`Add Role` button in the :guilabel:`Base -> Contact Roles` section:
 
 .. figure:: img/admin-roles-add.png
+    :align: center
 
 Clicking on the :guilabel:`People` section (see figure) will open a web for with some personal information plus a section called :guilabel:`Users`.
 
@@ -667,6 +668,7 @@ Clicking on the :guilabel:`People` section (see figure) will open a web for with
 Is important that this last section is not modified here unless the administrator is very confident in that operation.
 
 .. figure:: img/admin-profiles-contactroles.png
+    :align: center
 
 Manage layers using the admin panel
 ===================================
@@ -676,12 +678,14 @@ Some of the Layers information can be edited directly through the admin interfac
 Clicking on the :guilabel:`Admin > Layers` link will show the list of available layers.
 
 .. figure:: img/admin-layers.png
+    :align: center
 
 .. warning:: It is not recommended to modify the Layers' ``Attributes`` or ``Styles`` directly from the Admin dashboard unless you are aware of your actions.
 
 The ``Metadata`` information can be changed for multiple Layers at once throguh the :guilabel:`Metadata batch edit` action.
 
 .. figure:: img/admin-layers-batch.png
+    :align: center
 
 By clicking over one Layer link, it will show a detail page allowing you to modify some of the resource info like the metadata, the keywords, the title, etc.
 
@@ -695,10 +699,12 @@ Similarly to the Layers, it is possible to manage the available GeoNode Maps thr
 Move to :guilabel:`Admin > Maps` to access the Maps list.
 
 .. figure:: img/admin-maps.png
+    :align: center
 
 The ``Metadata`` information can be changed for multiple Maps at once throguh the :guilabel:`Metadata batch edit` action.
 
 .. figure:: img/admin-layers-batch.png
+    :align: center
 
 By clicking over one Map link, it will show a detail page allowing you to modify some of the resource info like the metadata, the keywords, the title, etc.
 
@@ -707,9 +713,10 @@ By clicking over one Map link, it will show a detail page allowing you to modify
 Notice that by enabling the ``Featured`` option here, will allow GeoNode to show the Map thumbnail and the Map detail link on the :guilabel:`Home Page`
 
 .. figure:: img/admin-maps-featured-001.png
+    :align: center
 
 .. figure:: img/admin-maps-featured-002.png
-
+    :align: center
 
 Manage the documents using the admin panel
 ==========================================
@@ -719,10 +726,12 @@ Similarly to the Layers and Maps, it is possible to manage the available GeoNode
 Move to :guilabel:`Admin > Documents` to access the Documents list.
 
 .. figure:: img/admin-documents.png
+    :align: center
 
 The ``Metadata`` information can be changed for multiple Documents at once throguh the :guilabel:`Metadata batch edit` action.
 
 .. figure:: img/admin-layers-batch.png
+    :align: center
 
 By clicking over one Document link, it will show a detail page allowing you to modify some of the resource info like the metadata, the keywords, the title, etc.
 
@@ -730,6 +739,107 @@ By clicking over one Document link, it will show a detail page allowing you to m
 
 Announcements
 =============
+
+As an Administrator you might need to broadcast announcements to the world about your portal or simply to the internal contributors.
+
+GeoNode ``Announcements`` allow actually to do that; an admin has the possibility to create thre types of messages, accordingly to their severity,
+decide their validity in terms of time period (start date and expiring date of the announcement), who can view them or not (everyone or just the 
+registerd members) and whenever a user can hide the message or not and how long.
+
+A GeoNode announcement actually looks like this:
+
+.. figure:: img/announcments/admin-announcments-001.png
+    :align: center
+
+    *A sample Warning Announcement*
+
+There are three types of announcements accordingly to their severity level: ``General``, ``Warning`` and ``Critical``
+The difference is mainly the color of the announcement box.
+
+.. figure:: img/announcments/admin-announcments-002.png
+    :align: center
+
+    *General Announcement*
+
+.. figure:: img/announcments/admin-announcments-003.png
+    :align: center
+
+    *Warning Announcement*
+
+.. figure:: img/announcments/admin-announcments-004.png
+    :align: center
+
+    *Critical Announcement*
+
+Only administrators and staff members can create and manage announcements.
+
+Currently there two ways to access and manage the announcements list:
+
+#. Via the GeoNode interface, from the :guilabel:`Profile` panel
+
+    .. note:: Those are accessible by both admins and staff members.
+
+    .. figure:: img/announcments/admin-announcments-005.png
+        :align: center
+
+        *Announcements from the Profile panel*
+
+#. Via the GeoNode :guilabel:`Admin` panel
+
+    .. note:: Those are accessible by admins only.
+
+    .. figure:: img/announcments/admin-announcments-006.png
+        :align: center
+
+        *Announcements from the Admin panel*
+
+The functionalities are almost the same for both the interfaces, except that from the :guilabel:`Admin` panel it is possible to manage the 
+dismissals too.
+
+``Dismissals`` are basically records of members that have read the announcement and closed the message box. An announcement can have one 
+``dismissal type`` among the three below:
+
+#. :guilabel:`No Dismissal Allowed` it won't be possible to close the announcement's message box at all.
+
+#. :guilabel:`Session Only Dismissal` (*) the default one, it will be possible to close the announcement's message box for the current browser session. It will show up again at next access.
+
+#. :guilabel:`Permanent Dismissal Allowed` once the announcement's message box is closed, it won't appear again for the current member.
+
+How to create and manage Announcements
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+From the :guilabel:`Profile` panel, click on ``Announcements`` link
+
+.. figure:: img/announcments/admin-announcments-007.png
+    :align: center
+
+    *Announcements List from the Profile panel*
+
+Click either on :guilabel:`New Announcement` to create a new one or over a title of an existing one to manage its contents.
+
+Create a new announcement is quite straight; you have to fill the fields provided by the form.
+
+.. warning:: In order to be visible, you will need to check the :guilabel:`Site wide` option **in any case**. You might want to hide the message to *anonymous* users by enabling the :guilabel:`Members only` option too.
+
+.. figure:: img/announcments/admin-announcments-008.png
+    :align: center
+
+    *Create Announcement from the Profile panel*
+
+Managing announcements form the :guilabel:`Admin` panel, is basically the same; the fields for the form will be exactly the same.
+
+.. figure:: img/announcments/admin-announcments-009.png
+    :align: center
+
+    *Create Announcement from the Admin panel*
+
+Accessing announcements options from the :guilabel:`Admin` panel, allows you to manage dismissals also.
+Through this interface you will be able to selectively decide members which can or cannot view a specific announcement, or force them to visualize the messages again by deleting the dismissals accordingly.
+
+.. figure:: img/announcments/admin-announcments-010.png
+    :align: center
+
+    *Create Dismissal from the Admin panel*
 
 Keywords
 ========
