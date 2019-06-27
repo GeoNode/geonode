@@ -89,6 +89,10 @@ def resource_urls(request):
             settings,
             'ADMIN_MODERATE_UPLOADS',
             False),
+        TOPICCATEGORY_MANDATORY=getattr(
+            settings,
+            'TOPICCATEGORY_MANDATORY',
+            False),
         GROUP_MANDATORY_RESOURCES=getattr(
             settings,
             'GROUP_MANDATORY_RESOURCES',
