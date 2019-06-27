@@ -737,6 +737,147 @@ By clicking over one Document link, it will show a detail page allowing you to m
 
 .. note:: It is strongly recommended to always use the GeoNode :guilabel:`Metadata Wizard` or :guilabel:`Metadata Advanced` tools in order to edit the metadata info.
 
+Manage the base metadata choices using the admin panel
+======================================================
+
+:guilabel:`Admin > Base` contains almost all the objects you need to populate the resources metadata choices.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0001.png
+    :align: center
+
+    *Admin dashboard Base Panel*
+
+In other words the options available from the :guilabel:`select-boxes` of the :guilabel:`Metadata Wizard` and :guilabel:`Metadata Advanced` panels.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0002.png
+    :align: center
+
+    *Metadata Wizard Panel*
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0003.png
+    :align: center
+
+    *Metadata Advanced Panel*
+
+.. note:: When editing the resource metadata throguh the :guilabel:`Metadata Wizard`, some fields are marked as ``mandatory`` and by filling those information
+    the ``Completeness`` progress will advance accordingly.
+
+    .. figure:: img/metadata-base/admin-panel-metadata-contents-0003a.png
+        :align: center
+
+        *Metadata Completeness*
+    
+    Even if not all the fields have been filled, the system won't prevent you to update the metadata; this is why the ``Mandatory`` fields are
+    mandatory to be fully compliant with an ``ISO 19115`` metadata schema, but are only recommended to be compliant with GeoNode.
+
+    Also the ``Completeness`` indicates how far the metadata is to be compliant with an ``ISO 19115`` metadata schema.
+
+    Of course, it is **highly** recommended to always fill as much as possible at least all the metadata fields marked as ``Mandatory``.
+
+    This will improve not only the quality of the data stored into the system, but will help the users to easily search for them on GeoNode.
+
+    All the ``Search & Filter`` panels and options of GeoNode are, in fact, based on the resources metadata fields. Too much generic descriptions and
+    too empty metadata fields, will give highly un-precise and very wide search results to the users.
+
+Hierarchical keywords
+^^^^^^^^^^^^^^^^^^^^^
+
+Through the :guilabel:`Admin > Base > Hierarchical keywords` panel it will be possible to manage all the keywords associated to the resources.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0004.png
+    :align: center
+
+    *Hierarchical keywords list*
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0005.png
+    :align: center
+
+    *Hierarchical keywords edit*
+
+* The :guilabel:`Name` is the human readable text of the keyword, what users will see.
+
+* The :guilabel:`Slug` is a unique label used by the system to identify the keyword; most of the times it is equal to the name.
+
+Notice that through the :guilabel:`Position` and :guilabel:`Relative to` selectors, it is possible to establish a hierarchy between the available keywords.
+The hierarchy will be reflected in the form of a tree from the metadata panels.
+
+By default each user with editing metadata rights on any resource, will be able to insert new keywords into the system by simply typing a free text on the keywords metadata field.
+
+It is possible to force the user to select from a fixed list of keywords throug the `FREETEXT_KEYWORDS_READONLY <../../basic/settings/index.html#freetext-keywords-readonly>`_ setting.
+
+When set to `True` keywords won't be writable from users anymore. Only admins can will be able to manage them through the :guilabel:`Admin > Base > Hierarchical keywords` panel.
+
+Licenses
+^^^^^^^^
+
+Through the :guilabel:`Admin > Base > Licenses` panel it will be possible to manage all the licenses associated to the resources.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0006.png
+    :align: center
+
+    *Metadata editor Licenses*
+
+The licence description and the info URL will be shown on the resource detail page.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0007.png
+    :align: center
+
+    *Resource detail License*
+
+The licence text will be shown on the catalogue metadata XML documents.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0008.png
+    :align: center
+
+    *Resource Metadata ISO License*
+
+.. warning:: It is **strongly** recommended to not publish resources without an appropriate licence. Always make sure the data provider specifies the correct licence and that all the restrictions have been honored.
+
+Metadata Regions
+^^^^^^^^^^^^^^^^
+
+Through the :guilabel:`Admin > Base > Metadata Regions` panel it will be possible to manage all the admin areas associated to the resources.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0009.png
+    :align: center
+
+    *Resource Metadata Regions*
+
+Notice that those regions are used by GeoNode to filter search results also through the resource list view.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0010.png
+    :align: center
+
+    *GeoNode fitlering by Metadata Regions*
+
+.. note:: GeoNode tries to guess the ``Regions`` intersecting the data bounding boxes when uploading a new layer. Those should be refined by the user layer on anyway.
+
+Metadata Restriction Code Types and Spatial Representation Types
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Through the :guilabel:`Admin > Base > Metadata Restriction Code Types` and :guilabel:`Admin > Base > Metadata Spatial Representation Types` panels, it will
+be possible to **update only** the metadata descriptions for restrictions and spatial representation types.
+
+Such lists are *read-only* by default since they have been associated to the specific codes of the ``ISO 19115`` metadata schema.
+Changing them would require the system to provide a custom dictionary throguh the metadata catalog too. Such functionality is not supported actually by GeoNode.
+
+Metadata Topic Categories
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Through the :guilabel:`Admin > Base > Metadata Topic Categories` panel it will be possible to manage all the resource metadata categories avaialble into the system.
+
+Notice that by default, GeoNode provides the standard topic categories avaialble with the ``ISO 19115`` metadata schema. Changing them means that the system won't be
+compliant with the standard ``ISO 19115`` metadata schema anymore. ``ISO 19115`` metadata schema extensions are not currently supported natively by GeoNode.
+
+It is worth notice that GeoNode allows you to associate `Font Awesome Icons <https://fontawesome.com/icons?d=gallery>`_ to each topic category through their ``fa-icon`` code.
+Those icons will be used by GeoNode to represent the topic category on both the ``Search & Filter`` menus and :guilabel:`Metadata` panels.
+
+.. warning:: The list of the ``Metadata Topic Categories`` on the home page is currently fixed. To change it you will need to update or override the GeoNode ``index.html`` HTML template.
+
+By default the ``Metadata Topic Categories`` are *writable*. Meaning that they can be removed or created by the :guilabel:`Admin` panel.
+
+It is possible to make them fixed (it will be possible to update their descriptions and icons only) through the `MODIFY_TOPICCATEGORY <../../basic/settings/index.html#modify-topiccategory>`_ setting.
+
 Announcements
 =============
 
@@ -840,18 +981,6 @@ Through this interface you will be able to selectively decide members which can 
     :align: center
 
     *Create Dismissal from the Admin panel*
-
-Keywords
-========
-
-Licenses
-========
-
-Topic Categories
-================
-
-Regions
-=======
 
 Menus, Items and Placeholders
 =============================
