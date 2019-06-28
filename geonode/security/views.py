@@ -75,10 +75,17 @@ def resource_permissions(request, resource_id):
             resource.set_permissions(permission_spec)
 
             # Check Users Permissions Consistency
+            view_any = False
             info = _perms_info(resource)
             info_users = dict([(u.username, perms) for u, perms in info['users'].items()])
+
             for user, perms in info_users.items():
-                if 'download_resourcebase' in perms and 'view_resourcebase' not in perms:
+                if user == 'AnonymousUser':
+                    view_any = ('view_resourcebase' in perms)
+                    break
+
+            for user, perms in info_users.items():
+                if 'download_resourcebase' in perms and 'view_resourcebase' not in perms and not view_any:
                     success = False
                     message = 'User ' + str(user) + ' has Download permissions but ' \
                               'cannot access the resource. ' \

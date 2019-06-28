@@ -26,6 +26,7 @@ from geonode.base.auth import get_token_from_auth_header
 
 
 class OAuthAuthentication(Authentication):
+
     def extract_auth_header(self, request):
         auth_header = None
         try:

@@ -23,7 +23,7 @@ A
 ACCESS_TOKEN_EXPIRE_SECONDS
 ---------------------------
 
-    | Default: ``86400`` 
+    | Default: ``86400``
     | Env: ``ACCESS_TOKEN_EXPIRE_SECONDS``
 
     When a user logs into GeoNode, if no ``ACCESS_TOKEN`` exists, a new one will be created with a default expiration time of ``ACCESS_TOKEN_EXPIRE_SECONDS`` seconds (1 day by default).
@@ -265,7 +265,7 @@ BROKER_HEARTBEAT
 
     Heartbeats are used both by the client and the broker to detect if a connection was closed.
     This is a `Celery setting <https://docs.celeryproject.org/en/latest/userguide/configuration.html#broker-heartbeat>`__.
-    
+
 
 BROKER_TRANSPORT_OPTIONS
 ------------------------
@@ -341,7 +341,7 @@ CELERY_ACKS_LATE
 CELERY_BEAT_SCHEDULE
 --------------------
 
-    Here you can define your scheduled task. 
+    Here you can define your scheduled task.
 
 CELERY_DISABLE_RATE_LIMITS
 --------------------------
@@ -467,7 +467,7 @@ CELERY_WORKER_SEND_TASK_EVENTS
 ------------------------------
 
     Default: ``False``
-    
+
     Send events so the worker can be monitored by other tools.
 
 CLIENT_RESULTS_LIMIT
@@ -531,7 +531,7 @@ DEBUG
 
     One of the main features of debug mode is the display of detailed error pages. If your app raises an exception when DEBUG is True, Django will display a detailed traceback, including a lot of metadata about your environment, such as all the currently defined Django settings (from settings.py).
     This is a `Django Setting <https://docs.djangoproject.com/en/2.1/ref/settings/#debug>`__
-    
+
 
 DEBUG_STATIC
 ------------
@@ -670,6 +670,14 @@ DISPLAY_WMS_LINKS
 
     If set to False direct WMS link to GeoServer is hidden.
 
+DISPLAY_ORIGINAL_DATASET_LINK
+-----------------------------
+
+    | Default: ``True``
+    | Env: ``DISPLAY_ORIGINAL_DATASET_LINK``
+
+    If set to False original dataset download is hidden.
+
 DOWNLOAD_FORMATS_METADATA
 -------------------------
 
@@ -794,9 +802,9 @@ GEONODE_EXCHANGE
 ----------------
 
     Default:: ``Exchange("default", type="direct", durable=True)``
-    
+
     The definition of Exchanges published by geonode. Find more about Exchanges at `celery docs <https://docs.celeryproject.org/en/latest/userguide/routing.html#exchanges-queues-and-routing-keys>`__.
-    
+
 
 GEOSERVER_EXCHANGE
 ------------------
@@ -871,7 +879,7 @@ HAYSTACK_SEARCH
     | Default: ``False``
     | Env: ``HAYSTACK_SEARCH``
 
-    Enable/disable haystack Search Backend Configuration. 
+    Enable/disable haystack Search Backend Configuration.
 
 
 L
@@ -1204,7 +1212,7 @@ PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT
     | Default: ``-1``
     | Env: ``NOTIFICATIONS_LOCK_WAIT_TIMEOUT``
 
-    It defines how long to wait for the lock to become available. Default of -1 means to never wait for the lock to become available. 
+    It defines how long to wait for the lock to become available. Default of -1 means to never wait for the lock to become available.
     This is a `pinax notification setting: <https://django-notification.readthedocs.io/en/latest/settings.html#pinax-notifications-lock-wait-timeout>`__
 
 PINAX_NOTIFICATIONS_QUEUE_ALL
@@ -1212,7 +1220,7 @@ PINAX_NOTIFICATIONS_QUEUE_ALL
 
     | Default: ``-1``
     | Env: ``NOTIFICATIONS_LOCK_WAIT_TIMEOUT``
-    
+
     By default, calling notification.send will send the notification immediately, however, if you set this setting to True, then the default behavior of the send method will be to queue messages in the database for sending via the emit_notices command.
     This is a `pinax notification setting: <https://django-notification.readthedocs.io/en/latest/settings.html#pinax-notifications-queue-all>`__
 
@@ -1381,7 +1389,7 @@ SESSION_COOKIE_SECURE
 SESSION_EXPIRED_CONTROL_ENABLED
 -------------------------------
 
-    | Default: ``False``
+    | Default: ``True``
     | Env: ``SESSION_EXPIRED_CONTROL_ENABLED``
 
     By enabling this variable, a new middleware ``geonode.security.middleware.SessionControlMiddleware`` will be added to the ``MIDDLEWARE_CLASSES``.
@@ -1668,4 +1676,3 @@ X_FRAME_OPTIONS
 Default: ``'ALLOW-FROM %s' % SITEURL``
 
 This is a `Django setting <https://docs.djangoproject.com/en/2.2/ref/clickjacking/#setting-x-frame-options-for-all-responses>`__
-

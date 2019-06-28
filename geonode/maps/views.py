@@ -150,7 +150,9 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         'resource': map_obj,
         'group': group,
         'layers': layers,
-        'perms_list': get_perms(request.user, map_obj.get_self_resource()),
+        'perms_list': get_perms(
+            request.user,
+            map_obj.get_self_resource()) + get_perms(request.user, map_obj),
         'permissions_json': _perms_info_json(map_obj),
         "documents": get_related_documents(map_obj),
         'links': links,
@@ -196,7 +198,8 @@ def map_metadata(
     if request.method == "POST":
         map_form = MapForm(request.POST, instance=map_obj, prefix="resource")
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
-            request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
+            request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
+            request.POST["category_choice_field"] else None)
     else:
         map_form = MapForm(instance=map_obj, prefix="resource")
         category_form = CategoryForm(
@@ -211,8 +214,12 @@ def map_metadata(
         new_regions = map_form.cleaned_data['regions']
         new_title = strip_tags(map_form.cleaned_data['title'])
         new_abstract = strip_tags(map_form.cleaned_data['abstract'])
-        new_category = TopicCategory.objects.get(
-            id=category_form.cleaned_data['category_choice_field'])
+
+        new_category = None
+        if category_form and 'category_choice_field' in category_form.cleaned_data and\
+        category_form.cleaned_data['category_choice_field']:
+            new_category = TopicCategory.objects.get(
+                id=int(category_form.cleaned_data['category_choice_field']))
 
         if new_poc is None:
             if poc is None:
@@ -332,6 +339,7 @@ def map_metadata(
         "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'geoext'),
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
         "metadata_author_groups": metadata_author_groups,
+        "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
     })
 

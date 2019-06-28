@@ -571,7 +571,7 @@ SECURE_SSL_REDIRECT = ast.literal_eval(os.environ.get('SECURE_SSL_REDIRECT', 'Fa
 SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '3600'))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = ast.literal_eval(os.environ.get('SECURE_HSTS_INCLUDE_SUBDOMAINS', 'True'))
 
-# Replacement of default authentication backend in order to support
+# Replacement of the default authentication backend in order to support
 # permissions per object.
 AUTHENTICATION_BACKENDS = (
     'oauth2_provider.backends.OAuth2Backend',
@@ -579,6 +579,11 @@ AUTHENTICATION_BACKENDS = (
     'guardian.backends.ObjectPermissionBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
+
+if 'announcements' in INSTALLED_APPS:
+    AUTHENTICATION_BACKENDS += (
+        'announcements.auth_backends.AnnouncementPermissionsBackend',
+    )
 
 OAUTH2_PROVIDER = {
     'SCOPES': {
@@ -610,6 +615,12 @@ SLPi97Rwe7OiVCHJvFxmCI9RYPbJzUO7B0sAB7AuKvMDglF8UAnbTJXDOavrbXrb
 g+gp5fQ4nmDrSNHjakzQCX2mKMsx/GLWZzoIDd7ECV9f
 -----END RSA PRIVATE KEY-----"""
 }
+# In order to protect oauth2 REST endpoints, used by GeoServer to fetch user roles and
+# infos, you should set this key and configure the "geonode REST role service"
+# accordingly. Keep it secret!
+# WARNING: If not set, the endpoint can be accessed by users without authorization.
+OAUTH2_API_KEY = os.environ.get('OAUTH2_API_KEY', None)
+
 # 1 day expiration time by default
 ACCESS_TOKEN_EXPIRE_SECONDS = int(os.getenv('ACCESS_TOKEN_EXPIRE_SECONDS', '86400'))
 
@@ -720,6 +731,10 @@ OGP_URL = os.getenv('OGP_URL', "http://geodata.tufts.edu/solr/select")
 # Topic Categories list should not be modified (they are ISO). In case you
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = ast.literal_eval(os.getenv('MODIFY_TOPICCATEGORY', 'True'))
+
+# If this option is enabled, Topic Categories will become strictly Mandatory on
+# Metadata Wizard
+TOPICCATEGORY_MANDATORY = ast.literal_eval(os.environ.get('TOPICCATEGORY_MANDATORY', 'False'))
 
 MISSING_THUMBNAIL = os.getenv(
     'MISSING_THUMBNAIL', 'geonode/img/missing_thumb.png'
@@ -1082,6 +1097,10 @@ DOWNLOAD_FORMATS_RASTER = [
     'QGIS project file (.qgs)',
     'Zipped All Files'
 ]
+
+
+DISPLAY_ORIGINAL_DATASET_LINK = ast.literal_eval(
+    os.getenv('DISPLAY_ORIGINAL_DATASET_LINK', 'True'))
 
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = ast.literal_eval(
     os.getenv('ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE', 'False'))
@@ -1468,6 +1487,8 @@ SEARCH_FILTERS = {
     'DATE_ENABLED': True,
     'REGION_ENABLED': True,
     'EXTENT_ENABLED': True,
+    'GROUPS_ENABLED': True,
+    'GROUP_CATEGORIES_ENABLED': True,
 }
 
 # Make Free-Text Kaywords writable from users or read-only
@@ -1782,7 +1803,8 @@ INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 
 # Choose thumbnail generator -- this is the default generator
 THUMBNAIL_GENERATOR = "geonode.layers.utils.create_gs_thumbnail_geonode"
-THUMBNAIL_GENERATOR_DEFAULT_BG = r"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+#THUMBNAIL_GENERATOR_DEFAULT_BG = r"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+THUMBNAIL_GENERATOR_DEFAULT_BG = r"https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
 
 # define the urls after the settings are overridden
 if USE_GEOSERVER:

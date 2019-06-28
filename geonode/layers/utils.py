@@ -30,6 +30,7 @@ import logging
 import tarfile
 
 from osgeo import gdal, osr
+from urlparse import urlparse
 from zipfile import ZipFile, is_zipfile
 from datetime import datetime
 
@@ -927,57 +928,80 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 ogc_client = http_client
 
             if ogc_client:
-                try:
-                    params = {
-                        'width': width,
-                        'height': height
-                    }
-                    # Add the bbox param only if the bbox is different to [None, None,
-                    # None, None]
-                    if None not in instance.bbox:
-                        params['bbox'] = instance.bbox_string
-                        params['crs'] = instance.srid
+                if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                    if image is None:
+                        request_body = {
+                            'width': width,
+                            'height': height
+                        }
+                        if instance.bbox and \
+                        (not thumbnail_create_url or 'bbox' not in thumbnail_create_url):
+                            instance_bbox = instance.bbox[0:4]
+                            request_body['bbox'] = [str(coord) for coord in instance_bbox]
+                            request_body['srid'] = instance.srid
 
-                    for _p in params.keys():
-                        if _p.lower() not in thumbnail_create_url.lower():
-                            thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (_p, params[_p])
-                    headers = {}
-                    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                        _ogc_server_settings = settings.OGC_SERVER['default']
-                        _user = _ogc_server_settings['USER'] if 'USER' in _ogc_server_settings else 'admin'
-                        _pwd = _ogc_server_settings['PASSWORD'] if 'PASSWORD' in _ogc_server_settings else 'geoserver'
-                        import base64
-                        valid_uname_pw = base64.b64encode(
-                            b"%s:%s" % (_user, _pwd)).decode("ascii")
-                        headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
-                    resp, image = ogc_client.request(thumbnail_create_url, headers=headers)
-                    if 'ServiceException' in image or \
-                       resp.status_code < 200 or resp.status_code > 299:
-                        msg = 'Unable to obtain thumbnail: %s' % image
-                        logger.error(msg)
+                        if thumbnail_create_url:
+                            params = urlparse(thumbnail_create_url).query.split('&')
+                            request_body = {key: value for (key, value) in
+                                            [(lambda p: (p.split("=")[0], p.split("=")[1]))(p) for p in params]}
+                            # request_body['thumbnail_create_url'] = thumbnail_create_url
+                            if 'bbox' in request_body and isinstance(request_body['bbox'], basestring):
+                                request_body['bbox'] = [str(coord) for coord in request_body['bbox'].split(",")]
+                                request_body['bbox'] = [
+                                    request_body['bbox'][0],
+                                    request_body['bbox'][2],
+                                    request_body['bbox'][1],
+                                    request_body['bbox'][3]
+                                ]
+                            if 'crs' in request_body and 'srid' not in request_body:
+                                request_body['srid'] = request_body['crs']
+                        elif instance.alternate:
+                            request_body['layers'] = instance.alternate
+
+                        try:
+                            image = _prepare_thumbnail_body_from_opts(request_body)
+                        except BaseException:
+                            image = None
+
+                if image is None:
+                    try:
+                        params = {
+                            'width': width,
+                            'height': height
+                        }
+                        # Add the bbox param only if the bbox is different to [None, None,
+                        # None, None]
+                        if None not in instance.bbox:
+                            params['bbox'] = instance.bbox_string
+                            params['crs'] = instance.srid
+
+                        for _p in params.keys():
+                            if _p.lower() not in thumbnail_create_url.lower():
+                                thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (_p, params[_p])
+                        headers = {}
+                        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                            _ogc_server_settings = settings.OGC_SERVER['default']
+                            _user = _ogc_server_settings['USER'] if 'USER' in _ogc_server_settings else 'admin'
+                            _pwd = _ogc_server_settings['PASSWORD'] if \
+                                'PASSWORD' in _ogc_server_settings else 'geoserver'
+                            import base64
+                            valid_uname_pw = base64.b64encode(
+                                b"%s:%s" % (_user, _pwd)).decode("ascii")
+                            headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+                        resp, image = ogc_client.request(thumbnail_create_url, headers=headers)
+                        if 'ServiceException' in image or \
+                        resp.status_code < 200 or resp.status_code > 299:
+                            msg = 'Unable to obtain thumbnail: %s' % image
+                            logger.error(msg)
+
+                            # Replace error message with None.
+                            image = None
+
+                    except BaseException as e:
+                        logger.exception(e)
 
                         # Replace error message with None.
                         image = None
-                except BaseException as e:
-                    logger.exception(e)
-
-                    # Replace error message with None.
-                    image = None
-
-            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                if image is None and instance.bbox:
-                    instance_bbox = instance.bbox[0:4]
-                    request_body = {
-                        'bbox': [str(coord) for coord in instance_bbox],
-                        'srid': instance.srid,
-                        'width': width,
-                        'height': height
-                    }
-                    if thumbnail_create_url:
-                        request_body['thumbnail_create_url'] = thumbnail_create_url
-                    elif instance.alternate:
-                        request_body['layers'] = instance.alternate
-                    image = _prepare_thumbnail_body_from_opts(request_body)
 
                 if image is not None:
                     instance.save_thumbnail(thumbnail_name, image=image)
@@ -1010,9 +1034,11 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     else:
         layers = instance.alternate.encode('utf-8')
         # Compute Bounds
-        _l = Layer.objects.get(alternate=layers)
-        wgs84_bbox = bbox_to_projection(_l.bbox)
-        local_bboxes.append(wgs84_bbox)
+        _ll = Layer.objects.filter(alternate=layers)
+        for _l in _ll:
+            if _l.name == instance.name:
+                wgs84_bbox = bbox_to_projection(_l.bbox)
+                local_bboxes.append(wgs84_bbox)
 
     if local_bboxes:
         for _bbox in local_bboxes:

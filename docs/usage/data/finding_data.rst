@@ -126,6 +126,8 @@ To find *Layers* you can:
 
    *Layers filtered by extent*
 
+.. _finding-maps:
+
 Maps
 ----
 

@@ -5,4 +5,4 @@
 # │     │     │     │     ┌───────────── day of week (0 - 6) (Sunday to Saturday; 7 is also Sunday on some systems)
 # │     │     │     │     │
 
-  0     0     *     *     *     date && pg_dump -C "${DATABASE_URL}" > /spcgeonode-pgdumps/latest.pgdump && echo "Dump successful"
+  0     0     *     *     *     date && pg_dump -C "${DATABASE_URL}" > /spcgeonode-pgdumps/${DATABASE}_daily.pgdump && echo "${DATABASE} dump successful"
