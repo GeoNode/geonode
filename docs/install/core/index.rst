@@ -1,12 +1,13 @@
+============
+GeoNode Core
+============
+
 Overview
 ========
 
 The following steps will guide you to a fresh setup of GeoNode. All guides will first install and configure the system to run it in ``DEBUG`` mode (also known as ``DEVELOPMENT`` mode) and then by configuring an HTTPD server to serve GeoNode through the standard ``HTTP`` (``80``) port.
 
 Those guides **are not** meant to be used on a production system. There will be dedicated chapters that will show you some *hints* to optimize GeoNode for a production-ready machine. In any case, we strongly suggest to task an experienced *DevOp* or *System Administrator* before exposing your server to the ``WEB``.
-
-.. contents::
-   :depth: 4
 
 Ubuntu 18.04
 ============
@@ -178,6 +179,8 @@ Sign-in with::
 
   user: admin
   password: admin
+
+.. _configure_dbs_core:
 
 Postgis database Setup
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -1341,4 +1344,3 @@ If you want to remove a ``volume`` also
 
   # update all images, should be run regularly to fetch published updates
   for i in $(docker images| awk 'NR>1{print $1":"$2}'| grep -v '<none>'); do docker pull "$i" ;done
-

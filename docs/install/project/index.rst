@@ -1,12 +1,15 @@
+.. _geonode-project:
+
+===============
+GeoNode Project
+===============
+
 Overview
 ========
 
 The following steps will guide you to a new setup of GeoNode Project. All guides will first install and configure the system to run it in ``DEBUG`` mode (also known as ``DEVELOPMENT`` mode) and then by configuring an HTTPD server to serve GeoNode through the standard ``HTTP`` (``80``) port.
 
 Those guides **are not** meant to be used on a production system. There will be dedicated chapters that will show you some *hints* to optimize GeoNode for a production-ready machine. In any case, we strongly suggest to task an experienced *DevOp* or *System Administrator* before exposing your server to the ``WEB``.
-
-.. contents::
-   :depth: 4
 
 Ubuntu 18.04
 ============
@@ -97,48 +100,34 @@ See also the `README <https://github.com/GeoNode/geonode-project/blob/master/REA
 
 First of all we need to prepare a new Python Virtual Environment
 
-Check that the file ``virtualenvwrapper.sh`` exists in the ``$HOME/.local/bin/`` (``$HOME`` is the current user home directory and in our case should be ``/home/geonode``) and then add this line to your file ``~/.bashrc``
+Prepare the environment
 
 .. code-block:: shell
 
-  vim ~/.bashrc
-
-.. code-block:: shell
-
-  # virtualenv
-  source $HOME/.local/bin/virtualenvwrapper.sh
-
-Then run the ``.bashrc`` from shell
-
-.. code-block:: shell
-
-  source ~/.bashrc
-  #create a new virtualenv called geonode
-  mkvirtualenv --no-site-packages geonode
-
-At this point, your command prompt shows a ``(geonode)`` prefix, this indicates that your virtualenv is active.
-
-.. note:: The next time you need to access the Virtual Environment just run
-
-  .. code-block:: shell
-
-    workon geonode
-
-
-.. code-block:: shell
-
-  # Let's create the GeoNode core base folder and clone it
-  sudo mkdir -p /opt/geonode/
+  sudo mkdir -p /opt/geonode_custom/
   sudo usermod -a -G www-data geonode
-  sudo chown -Rf geonode:www-data /opt/geonode/
-  sudo chmod -Rf 775 /opt/geonode/
+  sudo chown -Rf geonode:www-data /opt/geonode_custom/
+  sudo chmod -Rf 775 /opt/geonode_custom/
 
-  # Clone the GeoNode source code on /opt/geonode
-  cd /opt
-  git clone https://github.com/GeoNode/geonode.git geonode
+Clone the source code
+
+.. code-block:: shell
+
+  cd /opt/geonode_custom/
+  git clone https://github.com/GeoNode/geonode-project.git
+
+Make an instance out of the ``Django Template``
+
+.. note:: We will call our instance ``my_geonode``. You can change the name at your convenience.
+
+.. code-block:: shell
+
+  mkvirtualenv my_geonode
+  pip install Django==1.11.21
+  django-admin startproject --template=./geonode-project -e py,rst,json,yml,ini,env,sample -n Dockerfile my_geonode
 
   # Install the Python packages
-  cd /opt/geonode
+  cd /opt/geonode_custom/my_geonode
   pip install -r requirements.txt --upgrade --no-cache --no-cache-dir
   pip install -e . --upgrade --no-cache --no-cache-dir
 
@@ -147,10 +136,58 @@ At this point, your command prompt shows a ``(geonode)`` prefix, this indicates 
     PYGDAL_VERSION="$(pip install pygdal==$GDAL_VERSION 2>&1 | grep -oP '(?<=: )(.*)(?=\))' | grep -oh $GDAL_VERSION\.[0-9])"; \
     pip install pygdal==$PYGDAL_VERSION
 
+Run GeoNode Project for the first time in DEBUG Mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. warning::
 
+  Be sure you have successfully completed all the steps of the section :ref:`install_dep_proj`.
 
-TODO
+This command will run both GeoNode and GeoServer locally after having prepared the SQLite database. The server will start in ``DEBUG`` (or ``DEVELOPMENT``) mode, and it will start the following services:
+
+#. GeoNode on ``http://localhost:8000/``
+#. GeoServer on ``http://localhost:8080/geoserver/``
+
+This modality is beneficial to debug issues and/or develop new features, but it cannot be used on a production system.
+
+.. code-block:: shell
+
+  # Prepare the GeoNode SQLite database (the first time only)
+  paver setup
+  paver sync
+
+.. note::
+
+  In case you want to start again from a clean situation, just run
+
+  .. code:: shell
+
+    paver reset_hard
+
+.. warning:: This will blow up completely your ``local_settings``, delete the SQLlite database and remove the GeoServer data dir.
+
+.. code-block:: shell
+
+  # Run the server in DEBUG mode
+  paver start
+
+Once the server has finished the initialization and prints on the console the sentence ``GeoNode is now available.``, you can open a browser and go to::
+
+  http://localhost:8000/
+
+Sign-in with::
+
+  user: admin
+  password: admin
+
+From now on, everything already said for GeoNode Core (plese refer to the section :ref:`configure_dbs_core` and following), applies to a
+GeoNode Project.
+
+**Be careful** to use the **new** paths and names everywhere:
+
+* Everytime you'll find the keyword ``goenode``, you'll need to use your geonode custom name instead (in this example ``my_geonode``).
+
+* Everytime you'll find paths pointing to ``/opt/geonode/``, you'll need to update them to point to your custom project instead (in this example ``/opt/geonode_custom/my_geonode``).
 
 Docker
 ======

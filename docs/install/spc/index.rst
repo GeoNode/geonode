@@ -1,3 +1,7 @@
+==========
+SPCGeoNode
+==========
+
 Overiview
 =========
 
@@ -5,15 +9,12 @@ SPCgeonode is a setup for Geonode deployment at SPC. It makes it easy to deploy 
 
 The setup is also usable for Geonode development or customization.
 
-.. contents::
-   :depth: 4
-
 Prerequisites
 =============
 
 Make sure you have a version of Docker (tested with 17.12) and docker-compose.
 
-- Linux : https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-from-a-package and https://docs.docker.com/compose/install/#install-compose 
+- Linux : https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-from-a-package and https://docs.docker.com/compose/install/#install-compose
 - Windows : https://store.docker.com/editions/community/docker-ce-desktop-windows
 - Mac : https://store.docker.com/editions/community/docker-ce-desktop-mac
 
@@ -51,7 +52,7 @@ Production (using composer)
 Using a text editor, edit the `.env` file (you can also override those with environment variables) :
 
 .. code-block:: shell
-    
+
     # General configuration
     nano .env
 
@@ -88,7 +89,7 @@ Upgrade the stack
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: shell
-    
+
     docker-compose -f docker-compose.yml up -d --build
 
 Development vs Production

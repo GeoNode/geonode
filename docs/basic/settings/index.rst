@@ -1589,6 +1589,14 @@ THESAURI
     A list of Keywords thesauri settings:
     For example `THESAURI = [{'name':'inspire_themes', 'required':True, 'filter':True}, {'name':'inspire_concepts', 'filter':True}, ]`
 
+TOPICCATEGORY_MANDATORY
+-----------------------
+
+    | Default: ``False``
+    | Env: ``TOPICCATEGORY_MANDATORY``
+
+    If this option is enabled, Topic Categories will become strictly Mandatory on Metadata Wizard
+
 TWITTER_CARD
 ------------
 
