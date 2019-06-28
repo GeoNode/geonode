@@ -16,6 +16,8 @@ Visit our gallery to see how the community uses GeoNode: `GeoNode Showcase <http
 
 The development community is very supportive of new projects and contributes ideas and guidance for newcomers.
 
+For a live demo see also :ref:`online_demo`
+
 Most useful links
 -----------------
 
@@ -61,6 +63,8 @@ Current Version and Features
 GeoNode current version: `2.10rc5 <https://github.com/GeoNode/geonode/releases/tag/2.10rc5>`_
 
 Main Features: `State of GeoNode 2.10 <http://summit.geonode.org/presentation/2019/afabiani_StateOfGeoNode.pdf>`_
+
+.. _get_in_touch:
 
 Get in touch with the community
 ===============================
