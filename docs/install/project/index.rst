@@ -1,3 +1,5 @@
+.. _geonode-project:
+
 ===============
 GeoNode Project
 ===============
@@ -178,7 +180,7 @@ Sign-in with::
   user: admin
   password: admin
 
-From now on, everything already said for GeoNode Core (plese refer to the section :ref:`configure_dbs_core` and following), applies to a 
+From now on, everything already said for GeoNode Core (plese refer to the section :ref:`configure_dbs_core` and following), applies to a
 GeoNode Project.
 
 **Be careful** to use the **new** paths and names everywhere:
