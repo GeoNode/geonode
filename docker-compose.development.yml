@@ -121,7 +121,6 @@ services:
         org.geonode.component: conf
         org.geonode.instance.name: geonode
     command: /bin/true
-    # command: tail -f /dev/null
     volumes:
       - geoserver-data-dir:/geoserver_data/data
 
