@@ -1344,4 +1344,3 @@ If you want to remove a ``volume`` also
 
   # update all images, should be run regularly to fetch published updates
   for i in $(docker images| awk 'NR>1{print $1":"$2}'| grep -v '<none>'); do docker pull "$i" ;done
-

@@ -39,6 +39,8 @@ It allows you to access the *Change Password Form* through which you can change 
 
 Once the fields have been filled out, click on :guilabel:`CHANGE MY PASSWORD` to perform the change.
 
+.. _simple-theming:
+
 Simple Theming
 ==============
 
@@ -884,7 +886,7 @@ Announcements
 As an Administrator you might need to broadcast announcements to the world about your portal or simply to the internal contributors.
 
 GeoNode ``Announcements`` allow actually to do that; an admin has the possibility to create thre types of messages, accordingly to their severity,
-decide their validity in terms of time period (start date and expiring date of the announcement), who can view them or not (everyone or just the 
+decide their validity in terms of time period (start date and expiring date of the announcement), who can view them or not (everyone or just the
 registerd members) and whenever a user can hide the message or not and how long.
 
 A GeoNode announcement actually looks like this:
@@ -934,10 +936,10 @@ Currently there two ways to access and manage the announcements list:
 
         *Announcements from the Admin panel*
 
-The functionalities are almost the same for both the interfaces, except that from the :guilabel:`Admin` panel it is possible to manage the 
+The functionalities are almost the same for both the interfaces, except that from the :guilabel:`Admin` panel it is possible to manage the
 dismissals too.
 
-``Dismissals`` are basically records of members that have read the announcement and closed the message box. An announcement can have one 
+``Dismissals`` are basically records of members that have read the announcement and closed the message box. An announcement can have one
 ``dismissal type`` among the three below:
 
 #. :guilabel:`No Dismissal Allowed` it won't be possible to close the announcement's message box at all.
