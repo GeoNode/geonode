@@ -24,6 +24,22 @@ Editing a document's metadata is done in three steps (*Basic Metadata*, *Locatio
 
   Once all the fields are filled, click on the blue button :guilabel:`Next >>` in the bottom right corner of the page.
 
+  .. note:: When a document is linked to some resources, you can see that link on the *Resource Page*.
+
+    .. figure:: img/documents_linked_to_layer.png
+        :align: center
+        :width: 500px
+
+        *Documents linked to a Layer*
+
+    It will be also visible on the :ref:`document-info` page.
+
+    .. figure:: img/resources_linked_to_document.png
+        :align: center
+        :width: 500px
+
+        *Resources linked to a Document*
+
 2. On the **Location and Licenses** page, the following information should be filled:
 
   * The *Language* of the document;

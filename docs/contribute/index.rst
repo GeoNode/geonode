@@ -7,13 +7,13 @@ Report Problems on the Issue Tracking System
 Write Documentation
 ===================
 
+Provide Translations
+====================
+
 .. toctree::
     :maxdepth: 3
 
     translation/index
-
-Provide Translations
-====================
 
 Write Code
 ==========

@@ -3,7 +3,7 @@
 Creating Maps
 =============
 
-In this section, we’ll create a *Map* using some uploaded layers, combine them with some layers from remote web services, and then share the resulting map for public viewing.
+In this section, we’ll create a *Map* using some uploaded layers, combine them with some other layers from remote web services, and then share the resulting map for public viewing.
 
 In order to create new maps you can use:
 
