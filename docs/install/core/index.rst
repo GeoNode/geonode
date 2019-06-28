@@ -179,6 +179,8 @@ Sign-in with::
   user: admin
   password: admin
 
+.. _configure_dbs_core:
+
 Postgis database Setup
 ^^^^^^^^^^^^^^^^^^^^^^
 

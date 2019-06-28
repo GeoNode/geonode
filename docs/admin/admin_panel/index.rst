@@ -985,5 +985,86 @@ Through this interface you will be able to selectively decide members which can 
 Menus, Items and Placeholders
 =============================
 
+GeoNode provides some integrated functionalities allowing you to quickly and easily customize the top-bar menu (see the example below).
+
+.. figure:: img/admin-panel-menus-0000.png
+    :align: center
+
+    *GeoNode Top-Bar Menu customization*
+
+With minor changes of the ``basic.html`` template, potentially, it could be possible to use the same approach for a more complex customization.
+Let's start with the simple one.
+
+By default GeoNode provides a custom ``placeholder`` already defined into the ``basic.html`` template, called ``TOPBAR_MENU``
+
+.. code-block:: python
+
+    ...
+    <ul class="nav navbar-nav navbar-right">
+
+        {% block my_extra_right_tab %}
+
+            {% render_nav_menu 'TOPBAR_MENU' %}
+
+        {% endblock my_extra_right_tab %}
+
+        <li>
+            <div class="search">
+            <form id="search" action="{% url "search" %}" >
+                <span class="fa fa-search"></span>
+                {% if HAYSTACK_SEARCH %}
+                <input id="search_input" type="text" placeholder="{% trans 'Search' %}" name="q">
+                {% else %}
+                <input id="search_input" type="text" placeholder="{% trans 'Search' %}" name="title__icontains">
+                {% endif %}
+            </form>
+            </div>
+        </li>
+    ...
+
+From the :guilabel:`Admin > Base` panel, it is possible to access to the ``Menu``, ``Menu Items`` and ``Menu Placeholder`` options.
+
+.. figure:: img/admin-panel-menus-0001.png
+    :align: center
+
+    *Menu, Menu Items and Menu Placeholder options on the Admin panel*
+
+The hierarchical structure of a custom ``Menu`` is the following one:
+
+1. ``Menu Placeholder``; first of all you need to define a *placeholder* both into the :guilabel:`Admin > Base` panel and the ``basic.html`` template, using the same **keyword**.
+    By default GeoNode provides an already defined one called ``TOPBAR_MENU``
+
+    .. figure:: img/admin-panel-menus-0002.png
+        :align: center
+
+        *The default ``TOPBAR_MENU`` Menu Placeholder on the Admin panel*
+
+2. ``Menu``; second thing to do is to create a new *menu* associated to the corresponding *placeholder*.
+    This is still possible from the :guilabel:`Admin > Base` panel
+
+    .. figure:: img/admin-panel-menus-0003.png
+        :align: center
+
+        *Create a new Menu from the Admin panel*
+    
+    You will need to provide:
+
+    * A ``Title``, representing the name of the ``Menu`` visible by the users
+
+      .. warning:: By using this approach, internationalization won't be supported. For the time being GeoNode does not support this for menus created from the :guilabel:`Admin > Base` panel.
+
+    * A ``Menu Placeholder`` from the existing ones.
+
+    * A ``Order`` in the case you'll create more menus associated to the same placeholder.
+
+3. ``Menu Item``; finally you will need to create voices belonging to the *menu*. For the time being, GeoNode allows you to create only ``href`` links.
+
+    .. figure:: img/admin-panel-menus-0004.png
+        :align: center
+
+        *Create a new Menu Item from the Admin panel*
+
+    .. note:: The ``Menu`` will be visbile 
+
 OAuth2 Access Tokens
 ====================
