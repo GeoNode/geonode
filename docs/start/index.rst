@@ -1,5 +1,86 @@
+.. _geonode_basics:
+
 GeoNode Basics
 ==============
+
+  .. figure:: img/geonode.png
+        :align: center
+
+is a platform for the management and publication of geospatial data.
+It brings together mature open-source software projects under an easy to use interface. 
+
+  .. figure:: img/gn_simplified_architecture.png
+        :align: center
+
+        *GeoNode simplified architecture*
+
+*With GeoNode, non-speclallzed users can share data and create interactive maps.*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  .. figure:: img/gn_is_made_for.png
+        :align: center
+  .. figure:: img/gn_publication_data.png
+        :align: center
+  .. figure:: img/gn_publication_data_2.png
+        :align: center
+
+Geospatial data storage
+^^^^^^^^^^^^^^^^^^^^^^^
+
+GeoNode allows users to upload vector data (currently shapefiles, json, csv, kml and kmz) and raster data in their original projections 
+using a web form.
+
+Vector data is converted into geospatial tables on a DB, satellite imagery and other kinds of raster data are retained as GeoTIFFs.
+
+Special importance is given to standard metadata formats like ISO 19139:2007 / ISO 19115 metadata standards.
+
+As soon as the upload is finished, the user can fill the resource metadata in order to make it suddenly available through the `CSW`_ (OGC Catalogue Service)
+endpoints and apis. 
+
+Users may also upload a metadata XML document (ISO, FGDC, and Dublin Core format) to fill key GeoNode metadata elements automatically.
+
+Similarly, GeoNode provides a web based styler that lets the users to change the data portryals and preview the changes at real time.
+
+.. _CSW: http://www.opengeospatial.org/standards/cat
+
+
+Data mixing, maps creation
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Once the data has been uploaded, GeoNode lets the user search for it geographically or via keywords in order to create fancy maps.
+
+All the layers are automatically re-projected to web mercator for maps display, making it possible to use different popular base layers, 
+like Open Street Map, Google Satellite or Bing layers.
+
+Once the maps are saved, it is possible to embed them in any web page or get a PDF version for printing.
+
+GeoNode as a building block
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A handful of other Open Source projects extend GeoNode's functionality by tapping into the re-usability of Django applications. 
+
+Visit our gallery to see how the community uses GeoNode: `GeoNode Projects <http://geonode.org/gallery/>`_.
+
+The development community is very supportive of new projects and contributes ideas and guidance for newcomers.
+
+Convinced! Where do I sign?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The next steps are:
+
+1. Make a ride on the :ref:`online_demo`
+
+2. Follow the :ref:`quick_setup_guide` in order to play with your own local instance and access all the admin functionalities
+
+3. Read the documentation starting from the :doc:`user guide </usage/index>` to the :doc:`admin guide </admin/index>`
+
+4. Subscribe to the `geonode-users`_ and/or `geonode-devel`_ mailing lists to join the community.
+   See also the section :ref:`get_in_touch` for more info.
+
+Thanks for your interest!
+
+.. _geonode-users: https://lists.osgeo.org/mailman/listinfo/geonode-users
+.. _geonode-devel: https://lists.osgeo.org/mailman/listinfo/geonode-devel
 
 .. _supported_browsers:
 
@@ -81,6 +162,8 @@ It should hopefully allow you to easily and quickly make a tour of the main capa
 .. warning:: This GeoNode instance is configured with standars settings and a very low security level.
     This is a demo only not to be considered a really production ready system.
     For a complete list of settings, refer to the section: :ref:`settings`
+
+.. _quick_setup_guide:
 
 Quick Installation Guide
 ========================
