@@ -5,9 +5,6 @@ The following steps will guide you to a fresh setup of GeoNode. All guides will 
 
 Those guides **are not** meant to be used on a production system. There will be dedicated chapters that will show you some *hints* to optimize GeoNode for a production-ready machine. In any case, we strongly suggest to task an experienced *DevOp* or *System Administrator* before exposing your server to the ``WEB``.
 
-.. contents::
-   :depth: 4
-
 Ubuntu 18.04
 ============
 
