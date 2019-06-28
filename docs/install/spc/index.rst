@@ -5,9 +5,6 @@ SPCgeonode is a setup for Geonode deployment at SPC. It makes it easy to deploy 
 
 The setup is also usable for Geonode development or customization.
 
-.. contents::
-   :depth: 4
-
 Prerequisites
 =============
 
