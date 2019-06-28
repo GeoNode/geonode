@@ -1,5 +1,3 @@
-GeoNode Core
-============
 
 .. toctree::
     :caption: GeoNode Core
@@ -7,17 +5,11 @@ GeoNode Core
 
     core/index
 
-GeoNode Project
-===============
-
 .. toctree::
     :caption: GeoNode Project
     :maxdepth: 3
 
     project/index
-
-SPCGeoNode
-==========
 
 .. toctree::
     :caption: SPCGeoNode
