@@ -1,100 +1,55 @@
 version: '2.2'
 services:
 
-  db:
-    image: geonode/postgis:10
-    restart: unless-stopped
-    container_name: db4${COMPOSE_PROJECT_NAME}
-    stdin_open: true
-    # tty: true
-    labels:
-      org.geonode.component: db
-      org.geonode.instance.name: geonode
-    volumes:
-      - dbdata:/var/lib/postgresql/data
-      - dbbackups:/pg_backups
-    env_file:
-      - ./scripts/docker/env/${SET_DOCKER_ENV}/db.env
-
-  elasticsearch:
-    image: elasticsearch:2.4.1
-    restart: unless-stopped
-    container_name: elasticsearch4${COMPOSE_PROJECT_NAME}
-    stdin_open: true
-    tty: true
-    labels:
-        org.geonode.component: elasticsearch
-        org.geonode.instance.name: geonode
-
-  rabbitmq:
-    image: rabbitmq
-    restart: unless-stopped
-    container_name: rabbitmq4${COMPOSE_PROJECT_NAME}
-    stdin_open: true
-    tty: true
-    labels:
-        org.geonode.component: rabbitmq
-        org.geonode.instance.name: geonode
-
   celery:
-    restart: unless-stopped
     build: .
-    container_name: celery4${COMPOSE_PROJECT_NAME}
-    stdin_open: true
-    # tty: true
-    labels:
-        org.geonode.component: celery
-        org.geonode.instance.name: geonode
+    command: celery worker --app=geonode.celery_app:app --broker=amqp://guest:guest@rabbitmq:5672/ -B -l DEBUG
     depends_on:
       - db
       - elasticsearch
       - rabbitmq
-    command: celery worker --app=geonode.celery_app:app -B -l INFO
     volumes:
+      - .:/usr/src/app
       - statics:/mnt/volumes/statics
       - geoserver-data-dir:/geoserver_data/data
-    env_file:
-      - ./scripts/docker/env/${SET_DOCKER_ENV}/celery.env
-
-  geoserver:
-    image: geonode/geoserver:2.14.3
-    restart: unless-stopped
-    container_name: geoserver4${COMPOSE_PROJECT_NAME}
-    stdin_open: true
-    # tty: true
-    labels:
-        org.geonode.component: geoserver
-        org.geonode.instance.name: geonode
-    depends_on:
-      - db
-      - elasticsearch
-      - rabbitmq
-      - data-dir-conf
-    volumes:
-      - geoserver-data-dir:/geoserver_data/data
-    env_file:
-      - ./scripts/docker/env/${SET_DOCKER_ENV}/geoserver.env
+    environment:
+      - DOCKER_ENV=${SET_DOCKER_ENV}
+      - IS_CELERY=True
+      - DEBUG=True
+      - GEONODE_LB_HOST_IP=localhost
+      - GEONODE_LB_PORT=80
+      - SITEURL=http://localhost/
+      - ALLOWED_HOSTS=['localhost', ]
+      - GEOSERVER_PUBLIC_LOCATION=http://localhost/geoserver/
+      - GEOSERVER_WEB_UI_LOCATION=http://localhost/geoserver/
 
   django:
-    restart: unless-stopped
     build: .
-    container_name: django4${COMPOSE_PROJECT_NAME}
-    stdin_open: true
-    # tty: true
-    labels:
-      org.geonode.component: django
-      org.geonode.instance.name: geonode
+    command: python manage.py runserver --settings=geonode.settings 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app
+      - statics:/mnt/volumes/statics
+      - geoserver-data-dir:/geoserver_data/data
+    environment:
+      - DOCKER_ENV=${SET_DOCKER_ENV}
+      - IS_CELERY=False
+      - DEBUG=True
+      - GEONODE_LB_HOST_IP=localhost
+      - GEONODE_LB_PORT=80
+      - SITEURL=http://localhost/
+      - ALLOWED_HOSTS=['localhost', ]
+      - GEOSERVER_PUBLIC_LOCATION=http://localhost/geoserver/
+      - GEOSERVER_WEB_UI_LOCATION=http://localhost/geoserver/
+
+  geoserver:
     depends_on:
       - db
       - elasticsearch
       - rabbitmq
       - data-dir-conf
-    command: paver start_django -b 0.0.0.0:8000
-    volumes:
-      - statics:/mnt/volumes/statics
-      - geoserver-data-dir:/geoserver_data/data
-    env_file:
-      - ./scripts/docker/env/${SET_DOCKER_ENV}/django.env
+    environment:
+      - GEONODE_LB_HOST_IP=localhost
+      - GEONODE_LB_PORT=80
 
   geonode:
     image: geonode/nginx:${SET_DOCKER_ENV}
@@ -111,27 +66,3 @@ services:
       - geoserver
     ports:
       - 80:80
-
-
-  data-dir-conf:
-    image: geonode/geoserver_data:2.14.3
-    restart: on-failure
-    container_name: gsconf4${COMPOSE_PROJECT_NAME}
-    labels:
-        org.geonode.component: conf
-        org.geonode.instance.name: geonode
-    command: /bin/true
-    volumes:
-      - geoserver-data-dir:/geoserver_data/data
-
-
-volumes:
-  geoserver-data-dir:
-    name: ${COMPOSE_PROJECT_NAME}-gsdatadir
-  dbdata:
-    name: ${COMPOSE_PROJECT_NAME}-dbdata
-  dbbackups:
-    driver: ${BACKUPS_VOLUME_DRIVER}
-    name: ${COMPOSE_PROJECT_NAME}-dbbackups
-  statics:
-    name: ${COMPOSE_PROJECT_NAME}-statics
