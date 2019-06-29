@@ -4,6 +4,19 @@ Start to develop with Docker
 How to run the instance for development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Set the variable SET_DOCKER_ENV for development
+...............................................
+
+.. code-block:: shell
+
+    vi .env
+
+Change to
+
+.. code-block:: shell
+
+    SET_DOCKER_ENV=development
+
 Use dedicated docker-compose files while developing
 ...................................................
 

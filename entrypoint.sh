@@ -38,6 +38,8 @@ then
 
     else
 
+        echo "install requirements for development"
+        /usr/local/bin/invoke devrequirements
         echo "refresh static data"
         /usr/local/bin/invoke statics
         echo "static data refreshed"
