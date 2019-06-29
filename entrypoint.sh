@@ -29,11 +29,22 @@ then
     echo "prepare task done"
     /usr/local/bin/invoke fixtures
     echo "fixture task done"
-    echo "refresh static data"
-    /usr/local/bin/invoke statics
-    echo "static data refreshed"
 
-    echo "Executing standard Django server $cmd for Development"
+    if [ ${IS_CELERY} = "true" ] || [ ${IS_CELERY} = "True" ]
+    then
+
+        cmd=$cmd
+        echo "Executing Celery server $cmd for Development"
+
+    else
+
+        echo "refresh static data"
+        /usr/local/bin/invoke statics
+        echo "static data refreshed"
+        cmd=$cmd
+        echo "Executing standard Django server $cmd for Development"
+
+    fi
 
 else
 
