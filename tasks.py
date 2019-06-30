@@ -115,6 +115,12 @@ def initialized(ctx):
     ctx.run('date > /mnt/volumes/statics/geonode_init.lock')
 
 
+@task
+def devrequirements(ctx):
+    print "*********************install dev requirements**********************"
+    ctx.run('pip install -r requirements_dev.txt --upgrade')
+
+
 def _update_db_connstring():
     user = os.getenv('GEONODE_DATABASE', 'geonode')
     pwd = os.getenv('GEONODE_DATABASE_PASSWORD', 'geonode')
