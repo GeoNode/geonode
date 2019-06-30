@@ -14,7 +14,7 @@ It brings together mature open-source software projects under an easy to use int
 
         *GeoNode simplified architecture*
 
-*With GeoNode, non-speclallzed users can share data and create interactive maps.*
+*With GeoNode, non-specialized users can share data and create interactive maps.*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   .. figure:: img/gn_is_made_for.png
@@ -35,11 +35,11 @@ Vector data is converted into geospatial tables on a DB, satellite imagery and o
 Special importance is given to standard metadata formats like ISO 19139:2007 / ISO 19115 metadata standards.
 
 As soon as the upload is finished, the user can fill the resource metadata in order to make it suddenly available through the `CSW`_ (OGC Catalogue Service)
-endpoints and apis. 
+endpoints and APIs. 
 
 Users may also upload a metadata XML document (ISO, FGDC, and Dublin Core format) to fill key GeoNode metadata elements automatically.
 
-Similarly, GeoNode provides a web based styler that lets the users to change the data portryals and preview the changes at real time.
+Similarly, GeoNode provides a web based styler that lets the users to change the data portrayals and preview the changes at real time.
 
 .. _CSW: http://www.opengeospatial.org/standards/cat
 
@@ -49,7 +49,7 @@ Data mixing, maps creation
 
 Once the data has been uploaded, GeoNode lets the user search for it geographically or via keywords in order to create fancy maps.
 
-All the layers are automatically re-projected to web mercator for maps display, making it possible to use different popular base layers, 
+All the layers are automatically re-projected to web Mercator for maps display, making it possible to use different popular base layers, 
 like Open Street Map, Google Satellite or Bing layers.
 
 Once the maps are saved, it is possible to embed them in any web page or get a PDF version for printing.
@@ -97,7 +97,7 @@ This list includes (but is not limited to):
 - `Microsoft Edge <https://developer.microsoft.com/en-us/microsoft-edge/>`_.
 - Microsoft Internet Explorer.
 
-.. note:: The vast majority of GeoNode developers perfer using Google Chrome.
+.. note:: The vast majority of GeoNode developers prefer using Google Chrome.
 
 Internet Explorer
 ^^^^^^^^^^^^^^^^^
@@ -141,7 +141,7 @@ Online Demo
 ===========
 
 .. note:: **Disclaimer** we do not guarantee for any data published on this Demo Site. Publish the data at your own risk.
-    Every dataset will be removed automatically every Sunday. If you find some dataset that shouldn't be there, plese
+    Every dataset will be removed automatically every Sunday. If you find some dataset that shouldn't be there, please
     write suddenly to developers and maintainers.
     
     See the section :ref:`get_in_touch` for details.
@@ -159,7 +159,7 @@ Since it is a demo site, every sunday al the datasets will be wiped out. Users, 
 
 It should hopefully allow you to easily and quickly make a tour of the main capabilities of GeoNode.
 
-.. warning:: This GeoNode instance is configured with standars settings and a very low security level.
+.. warning:: This GeoNode instance is configured with standards settings and a very low security level.
     This is a demo only not to be considered a really production ready system.
     For a complete list of settings, refer to the section: :ref:`settings`
 
