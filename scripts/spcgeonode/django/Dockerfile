@@ -30,7 +30,7 @@ RUN echo "Updating apt-get" && \
 
 # Install python dependencies
 RUN echo "Geonode python dependencies"
-RUN pip install pygdal==$(gdal-config --version).*
+RUN pip install numpy==1.16.* && pip install pygdal==$(gdal-config --version).*
 RUN pip install celery==4.1.0 # see https://github.com/GeoNode/geonode/pull/3714
 
 # Install geonode dependencies
