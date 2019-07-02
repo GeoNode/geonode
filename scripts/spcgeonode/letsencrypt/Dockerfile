@@ -1,7 +1,7 @@
 FROM alpine:3.6
 
 # 1-2. Install system dependencies
-RUN apk add --no-cache certbot
+RUN apk add --no-cache certbot py-pip && pip install pyopenssl==16.0.0
 
 # Installing scripts
 ADD docker-entrypoint.sh /docker-entrypoint.sh
