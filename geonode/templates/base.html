@@ -216,7 +216,7 @@
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
           <i class="fa fa-navicon fa-lg"></i>
         </button>
-        <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
+        <a class="navbar-brand" href="{% url "home" %}">Test</a>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav toolbar">
@@ -239,6 +239,7 @@
                 {% endif %}
                 {% if user.is_superuser or user.is_staff %}
                     <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
+                     <li><a href="#">{% trans "Update Layers" %}</a></li>
                 {% endif %}
               </ul>
             </li>
