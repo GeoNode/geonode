@@ -1,0 +1,168 @@
+{% extends "geonode_base.html" %}
+{% load i18n %}
+
+{% block head %}
+{{ block.super }}
+<style>
+    #left {
+        float: left;
+        margin: 5px 0 0 10px;
+        /* height: 40px; */
+    }
+
+    #right {
+        float: right;
+        margin: 5px 10px 0 0;
+        /* height: 40px; */
+    }
+
+    .inline-headers h4, .inline-headers select {
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .active {
+        background-color: #cccccc !important;
+        font-weight: bold !important;
+    }
+
+    .faqHeader {
+        font-size: 17px;
+        margin: 20px;
+    }
+
+    .panel-heading [data-toggle="collapse"]:after {
+        font-family: 'FontAwesome';
+        content: "\f078"; /* "play" icon */
+        float: right;
+        color: #F58723;
+        font-size: 18px;
+        line-height: 22px;
+        /* rotate "play" icon from > (right arrow) to down arrow */
+    /*    -webkit-transform: rotate(-90deg);
+        -moz-transform: rotate(-90deg);
+        -ms-transform: rotate(-90deg);
+        -o-transform: rotate(-90deg);
+        transform: rotate(-90deg); */
+    }
+
+    .panel-heading [data-toggle="collapse"].collapsed:after {
+        /* rotate "play" icon from > (right arrow) to ^ (up arrow) */
+    /*    -webkit-transform: rotate(90deg);
+        -moz-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        transform: rotate(90deg); */
+        color: #454444;
+    }
+
+    .help-tip{
+        position: absolute;
+        /* top: 18px;
+        right: 18px;
+        bottom: 50px;  */
+        margin-left: 10px;
+        text-align: center;
+        background-color: #BCDBEA;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+        line-height: 26px;
+        cursor: default;
+    }
+
+    .help-tip:before{
+        content:'?';
+        font-weight: bold;
+        color:#fff;
+    }
+
+    .button-tip{
+        position: absolute;
+    }
+
+    .help-tip:hover p,
+    .button-tip:hover p{
+        display:block;
+        transform-origin: 100% 0%;
+
+        -webkit-animation: fadeIn 0.3s ease-in-out;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .help-tip p,
+    .button-tip p{    /* The tooltip */
+        display: none;
+        text-align: justify;
+        background-color: #1E2021;
+        padding: 10px;
+        width: 150px;
+        max-width: 300px;
+        position: absolute;
+        border-radius: 10px;
+        box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+        right: -15px;
+        color: #FFF;
+        font-size: 10px;
+        line-height: 1.4;
+        z-index: 10000;
+    }
+
+    .help-tip p:before,
+    .button-tip p:before{ /* The pointer of the tooltip */
+        position: absolute;
+        content: '';
+        width:0;
+        height: 0;
+        border:6px solid transparent;
+        border-bottom-color:#1E2021;
+        right:10px;
+        top:-12px;
+    }
+
+    .help-tip p:after,
+    .button-tip p:after{ /* Prevents the tooltip from being hidden */
+        width:100%;
+        height:40px;
+        content:'';
+        position: absolute;
+        top:-40px;
+        left:0;
+    }
+
+    /* CSS animation */
+
+    @-webkit-keyframes fadeIn {
+        0% {
+            opacity:0;
+            transform: scale(0.6);
+        }
+
+        100% {
+            opacity:100%;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes fadeIn {
+        0% { opacity:0; }
+        100% { opacity:100%; }
+    }
+</style>
+{% endblock %}
+
+{% block title %} {{ block.super }} {% endblock %}
+
+{% block body_class %}{% trans "data" %}{% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
+  <h2 class="page-title">{% trans "Upload Layers" %}</h2>
+</div>
+<div class="row">
+  {% block body %}{% endblock body %}
+  {% block sidebar %}{% endblock sidebar %}
+</div>
+{% endblock body_outer %}

@@ -36,6 +36,7 @@ urlpatterns = [
         {'facet_type': 'layers', 'is_layer': True},
         name='layer_browse'),
     url(r'^upload$', views.layer_upload, name='layer_upload'),
+     url(r'^update$', views.layers_update, name='layers_update'),
     url(r'^upload_metadata$', views.layer_metadata_upload,
         name='layer_metadata_upload'),
     url(r'^upload_style$', views.layer_sld_upload, name='layer_sld_upload'),

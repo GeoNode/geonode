@@ -1538,6 +1538,8 @@ def layer_metadata_upload(
     })
 
 
+
+
 def layer_sld_upload(
         request,
         layername,
@@ -1571,3 +1573,8 @@ def layer_view_counter(layer_id, viewer):
     _l = Layer.objects.get(id=layer_id)
     _u = get_user_model().objects.get(username=viewer)
     _l.view_count_up(_u, do_local=True)
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def layers_update(request, template='update/layers_update.html'):
+    return render(request, template)      
