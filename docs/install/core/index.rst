@@ -1,3 +1,7 @@
+============
+GeoNode Core
+============
+
 Overview
 ========
 
@@ -127,10 +131,7 @@ At this point your command prompt shows a ``(geonode)`` prefix, this indicates t
   pip install -e . --upgrade --no-cache --no-cache-dir
 
   # Install GDAL Utilities for Python
-  GDAL_VERSION=`gdal-config --version`; \
-    PYGDAL_VERSION="$(pip install pygdal==$GDAL_VERSION 2>&1 | grep -oP '(?<=: )(.*)(?=\))' | \
-    grep -oh '\b'${GDAL_VERSION}'[0-9.]\+\b')"; \
-    pip install pygdal==$PYGDAL_VERSION
+  pip install pygdal=="`gdal-config --version`.*"
 
 Run GeoNode for the first time in DEBUG Mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -175,6 +176,8 @@ Sign-in with::
 
   user: admin
   password: admin
+
+.. _configure_dbs_core:
 
 Postgis database Setup
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -1338,4 +1341,3 @@ If you want to remove a ``volume`` also
 
   # update all images, should be run regularly to fetch published updates
   for i in $(docker images| awk 'NR>1{print $1":"$2}'| grep -v '<none>'); do docker pull "$i" ;done
-

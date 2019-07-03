@@ -39,6 +39,8 @@ It allows you to access the *Change Password Form* through which you can change 
 
 Once the fields have been filled out, click on :guilabel:`CHANGE MY PASSWORD` to perform the change.
 
+.. _simple-theming:
+
 Simple Theming
 ==============
 
@@ -737,13 +739,154 @@ By clicking over one Document link, it will show a detail page allowing you to m
 
 .. note:: It is strongly recommended to always use the GeoNode :guilabel:`Metadata Wizard` or :guilabel:`Metadata Advanced` tools in order to edit the metadata info.
 
+Manage the base metadata choices using the admin panel
+======================================================
+
+:guilabel:`Admin > Base` contains almost all the objects you need to populate the resources metadata choices.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0001.png
+    :align: center
+
+    *Admin dashboard Base Panel*
+
+In other words the options available from the :guilabel:`select-boxes` of the :guilabel:`Metadata Wizard` and :guilabel:`Metadata Advanced` panels.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0002.png
+    :align: center
+
+    *Metadata Wizard Panel*
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0003.png
+    :align: center
+
+    *Metadata Advanced Panel*
+
+.. note:: When editing the resource metadata throguh the :guilabel:`Metadata Wizard`, some fields are marked as ``mandatory`` and by filling those information
+    the ``Completeness`` progress will advance accordingly.
+
+    .. figure:: img/metadata-base/admin-panel-metadata-contents-0003a.png
+        :align: center
+
+        *Metadata Completeness*
+    
+    Even if not all the fields have been filled, the system won't prevent you to update the metadata; this is why the ``Mandatory`` fields are
+    mandatory to be fully compliant with an ``ISO 19115`` metadata schema, but are only recommended to be compliant with GeoNode.
+
+    Also the ``Completeness`` indicates how far the metadata is to be compliant with an ``ISO 19115`` metadata schema.
+
+    Of course, it is **highly** recommended to always fill as much as possible at least all the metadata fields marked as ``Mandatory``.
+
+    This will improve not only the quality of the data stored into the system, but will help the users to easily search for them on GeoNode.
+
+    All the ``Search & Filter`` panels and options of GeoNode are, in fact, based on the resources metadata fields. Too much generic descriptions and
+    too empty metadata fields, will give highly un-precise and very wide search results to the users.
+
+Hierarchical keywords
+^^^^^^^^^^^^^^^^^^^^^
+
+Through the :guilabel:`Admin > Base > Hierarchical keywords` panel it will be possible to manage all the keywords associated to the resources.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0004.png
+    :align: center
+
+    *Hierarchical keywords list*
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0005.png
+    :align: center
+
+    *Hierarchical keywords edit*
+
+* The :guilabel:`Name` is the human readable text of the keyword, what users will see.
+
+* The :guilabel:`Slug` is a unique label used by the system to identify the keyword; most of the times it is equal to the name.
+
+Notice that through the :guilabel:`Position` and :guilabel:`Relative to` selectors, it is possible to establish a hierarchy between the available keywords.
+The hierarchy will be reflected in the form of a tree from the metadata panels.
+
+By default each user with editing metadata rights on any resource, will be able to insert new keywords into the system by simply typing a free text on the keywords metadata field.
+
+It is possible to force the user to select from a fixed list of keywords throug the `FREETEXT_KEYWORDS_READONLY <../../basic/settings/index.html#freetext-keywords-readonly>`_ setting.
+
+When set to `True` keywords won't be writable from users anymore. Only admins can will be able to manage them through the :guilabel:`Admin > Base > Hierarchical keywords` panel.
+
+Licenses
+^^^^^^^^
+
+Through the :guilabel:`Admin > Base > Licenses` panel it will be possible to manage all the licenses associated to the resources.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0006.png
+    :align: center
+
+    *Metadata editor Licenses*
+
+The licence description and the info URL will be shown on the resource detail page.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0007.png
+    :align: center
+
+    *Resource detail License*
+
+The licence text will be shown on the catalogue metadata XML documents.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0008.png
+    :align: center
+
+    *Resource Metadata ISO License*
+
+.. warning:: It is **strongly** recommended to not publish resources without an appropriate licence. Always make sure the data provider specifies the correct licence and that all the restrictions have been honored.
+
+Metadata Regions
+^^^^^^^^^^^^^^^^
+
+Through the :guilabel:`Admin > Base > Metadata Regions` panel it will be possible to manage all the admin areas associated to the resources.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0009.png
+    :align: center
+
+    *Resource Metadata Regions*
+
+Notice that those regions are used by GeoNode to filter search results also through the resource list view.
+
+.. figure:: img/metadata-base/admin-panel-metadata-contents-0010.png
+    :align: center
+
+    *GeoNode fitlering by Metadata Regions*
+
+.. note:: GeoNode tries to guess the ``Regions`` intersecting the data bounding boxes when uploading a new layer. Those should be refined by the user layer on anyway.
+
+Metadata Restriction Code Types and Spatial Representation Types
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Through the :guilabel:`Admin > Base > Metadata Restriction Code Types` and :guilabel:`Admin > Base > Metadata Spatial Representation Types` panels, it will
+be possible to **update only** the metadata descriptions for restrictions and spatial representation types.
+
+Such lists are *read-only* by default since they have been associated to the specific codes of the ``ISO 19115`` metadata schema.
+Changing them would require the system to provide a custom dictionary throguh the metadata catalog too. Such functionality is not supported actually by GeoNode.
+
+Metadata Topic Categories
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Through the :guilabel:`Admin > Base > Metadata Topic Categories` panel it will be possible to manage all the resource metadata categories avaialble into the system.
+
+Notice that by default, GeoNode provides the standard topic categories avaialble with the ``ISO 19115`` metadata schema. Changing them means that the system won't be
+compliant with the standard ``ISO 19115`` metadata schema anymore. ``ISO 19115`` metadata schema extensions are not currently supported natively by GeoNode.
+
+It is worth notice that GeoNode allows you to associate `Font Awesome Icons <https://fontawesome.com/icons?d=gallery>`_ to each topic category through their ``fa-icon`` code.
+Those icons will be used by GeoNode to represent the topic category on both the ``Search & Filter`` menus and :guilabel:`Metadata` panels.
+
+.. warning:: The list of the ``Metadata Topic Categories`` on the home page is currently fixed. To change it you will need to update or override the GeoNode ``index.html`` HTML template.
+
+By default the ``Metadata Topic Categories`` are *writable*. Meaning that they can be removed or created by the :guilabel:`Admin` panel.
+
+It is possible to make them fixed (it will be possible to update their descriptions and icons only) through the `MODIFY_TOPICCATEGORY <../../basic/settings/index.html#modify-topiccategory>`_ setting.
+
 Announcements
 =============
 
 As an Administrator you might need to broadcast announcements to the world about your portal or simply to the internal contributors.
 
 GeoNode ``Announcements`` allow actually to do that; an admin has the possibility to create thre types of messages, accordingly to their severity,
-decide their validity in terms of time period (start date and expiring date of the announcement), who can view them or not (everyone or just the 
+decide their validity in terms of time period (start date and expiring date of the announcement), who can view them or not (everyone or just the
 registerd members) and whenever a user can hide the message or not and how long.
 
 A GeoNode announcement actually looks like this:
@@ -793,10 +936,10 @@ Currently there two ways to access and manage the announcements list:
 
         *Announcements from the Admin panel*
 
-The functionalities are almost the same for both the interfaces, except that from the :guilabel:`Admin` panel it is possible to manage the 
+The functionalities are almost the same for both the interfaces, except that from the :guilabel:`Admin` panel it is possible to manage the
 dismissals too.
 
-``Dismissals`` are basically records of members that have read the announcement and closed the message box. An announcement can have one 
+``Dismissals`` are basically records of members that have read the announcement and closed the message box. An announcement can have one
 ``dismissal type`` among the three below:
 
 #. :guilabel:`No Dismissal Allowed` it won't be possible to close the announcement's message box at all.
@@ -841,20 +984,205 @@ Through this interface you will be able to selectively decide members which can 
 
     *Create Dismissal from the Admin panel*
 
-Keywords
-========
-
-Licenses
-========
-
-Topic Categories
-================
-
-Regions
-=======
-
 Menus, Items and Placeholders
 =============================
 
+GeoNode provides some integrated functionalities allowing you to quickly and easily customize the top-bar menu (see the example below).
+
+.. figure:: img/admin-panel-menus-0000.png
+    :align: center
+
+    *GeoNode Top-Bar Menu customization*
+
+With minor changes of the ``basic.html`` template, potentially, it could be possible to use the same approach for a more complex customization.
+Let's start with the simple one.
+
+By default GeoNode provides a custom ``placeholder`` already defined into the ``basic.html`` template, called ``TOPBAR_MENU``
+
+.. code-block:: python
+
+    ...
+    <ul class="nav navbar-nav navbar-right">
+
+        {% block my_extra_right_tab %}
+
+            {% render_nav_menu 'TOPBAR_MENU' %}
+
+        {% endblock my_extra_right_tab %}
+
+        <li>
+            <div class="search">
+            <form id="search" action="{% url "search" %}" >
+                <span class="fa fa-search"></span>
+                {% if HAYSTACK_SEARCH %}
+                <input id="search_input" type="text" placeholder="{% trans 'Search' %}" name="q">
+                {% else %}
+                <input id="search_input" type="text" placeholder="{% trans 'Search' %}" name="title__icontains">
+                {% endif %}
+            </form>
+            </div>
+        </li>
+    ...
+
+From the :guilabel:`Admin > Base` panel, it is possible to access to the ``Menu``, ``Menu Items`` and ``Menu Placeholder`` options.
+
+.. figure:: img/admin-panel-menus-0001.png
+    :align: center
+
+    *Menu, Menu Items and Menu Placeholder options on the Admin panel*
+
+The hierarchical structure of a custom ``Menu`` is the following one:
+
+1. ``Menu Placeholder``; first of all you need to define a *placeholder* both into the :guilabel:`Admin > Base` panel and the ``basic.html`` template, using the same **keyword**.
+    By default GeoNode provides an already defined one called ``TOPBAR_MENU``
+
+    .. figure:: img/admin-panel-menus-0002.png
+        :align: center
+
+        *The default ``TOPBAR_MENU`` Menu Placeholder on the Admin panel*
+
+2. ``Menu``; second thing to do is to create a new *menu* associated to the corresponding *placeholder*.
+    This is still possible from the :guilabel:`Admin > Base` panel
+
+    .. figure:: img/admin-panel-menus-0003.png
+        :align: center
+
+        *Create a new Menu from the Admin panel*
+    
+    You will need to provide:
+
+    * A ``Title``, representing the name of the ``Menu`` visible by the users
+
+      .. warning:: By using this approach, internationalization won't be supported. For the time being GeoNode does not support this for menus created from the :guilabel:`Admin > Base` panel.
+
+    * A ``Menu Placeholder`` from the existing ones.
+
+    * A ``Order`` in the case you'll create more menus associated to the same placeholder.
+
+3. ``Menu Item``; finally you will need to create voices belonging to the *menu*. For the time being, GeoNode allows you to create only ``href`` links.
+
+    .. figure:: img/admin-panel-menus-0004.png
+        :align: center
+
+        *Create a new Menu Item from the Admin panel*
+
+    .. warning:: The ``Menu`` won't be visible until you add at least one ``Menu Item``
+
+.. _oauth2_admin_panel_access_tokens:
+
 OAuth2 Access Tokens
 ====================
+
+This small section won't cover entirely the GeoNode OAuth2 security integration, this is explained in detail in other sections of the documentation
+(refer to :ref:`oauth2_fixtures_and_migration` and :ref:`oauth2_tokens_and_sessions`).
+
+Here we will focus mainly on the :guilabel:`Admin > DJANGO/GEONODE OAUTH TOOLKIT` panel items with a specific attention to the ``Access tokens`` management.
+
+The :guilabel:`Admin > DJANGO/GEONODE OAUTH TOOLKIT` panel (as shown in the figure below) allows an admin to manage everything related to 
+GeoNode OAuth2 grants and permissions.
+
+As better explained in other sections of the documentation, this is needed to correctly handle the communication between GeoNode and GeoServer.
+
+.. figure:: img/oauth2-tokens/admin-panel-tokens-0001.png
+    :align: center
+
+    *DJANGO/GEONODE OAUTH TOOLKIT Admin panel*
+
+Specifically from this panel an admin can create, delete or extend OAuth2 ``Access tokens``.
+
+The section :ref:`oauth2_tokens_and_sessions` better explains the concepts behind OAuth2 sessions; we want just to refresh the mind here 
+about the basic concepts:
+
+* If the `SESSION_EXPIRED_CONTROL_ENABLED <../../basic/settings/index.html#session-expired-control-enabled>`_ setting is set to `True` (by default it is set to `True`)
+  a registered user cannot login to neither GeoNode nor GeoServer without a valid ``Access token``.
+
+* When logging-in into GeoNode through the sign-up form, GeoNode checks if a valid ``Access token`` exists and it creates a new one if not, or extends
+  the existing one if expired.
+
+* New ``Access tokens`` expire automatically after `ACCESS_TOKEN_EXPIRE_SECONDS <../../basic/settings/index.html#access-token-expire-seconds>`_ setting (by default 86400)
+
+* When an ``Access token`` expires, the user will be kicked out from the session and forced to login again
+
+Create a new token or extend an existing one
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is possible from the :guilabel:`Admin > DJANGO/GEONODE OAUTH TOOLKIT` panel to create a new ``Access token`` for a user.
+
+In order to do that, just click on the :guilabel:`Add` button beside ``Access tokens`` topic
+
+.. figure:: img/oauth2-tokens/admin-panel-tokens-0002.png
+    :align: center
+
+    *Add a new ``Access token``*
+
+On the new form
+
+.. figure:: img/oauth2-tokens/admin-panel-tokens-0003.png
+    :align: center
+
+    *Create an ``Access token``*
+
+select the followings:
+
+1. ``User``; use the search tool in order to select the correct user. The form want the user PK, which is a number, and **not** the username.
+   The search tool will do everything for you.
+
+    .. figure:: img/oauth2-tokens/admin-panel-tokens-0003a.png
+        :align: center
+
+        *Select a User*
+
+2. ``Source refresh token``; this is not mandatory, leave it blank.
+
+3. ``Token``; write here any alphanumeric string. This will be the ``access_token`` that the member can use to access the OWS services.
+   We suggest to use a service like https://passwordsgenerator.net/ in order to generate a strong token string.
+
+    .. figure:: img/oauth2-tokens/admin-panel-tokens-0003b.png
+        :align: center
+
+        *Select a Token*
+
+4. ``Application``; select **GeoServer**, this is mandatory
+
+    .. figure:: img/oauth2-tokens/admin-panel-tokens-0003c.png
+        :align: center
+
+        *Select the GeoServer Application*
+
+5. ``Expires``; select an expiration date by uwing the :guilabel:`date-time` widgets.
+
+    .. figure:: img/oauth2-tokens/admin-panel-tokens-0003d.png
+        :align: center
+
+        *Select the Token Expiration*
+
+6. ``Scope``; select **write**, this is mandatory.
+
+    .. figure:: img/oauth2-tokens/admin-panel-tokens-0003e.png
+        :align: center
+
+        *Select the Application Scope*
+
+Do not forget to :guilabel:`Save`.
+
+From now on, GeoNode will use this ``Access Token`` to control the user session (notice that the user need to login again if closing the browser session),
+and the user will be able to access the OWS Services by using the new ``Access Token``, e.g.:
+
+.. code-block:: shell
+
+    https://dev.geonode.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities&access_token=123456
+
+
+Notice the ``...quest=GetCapabilities&access_token=123456`` (**access_token**) parameter at the end of the URL.
+
+Force a User Session to expire
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Everyting said about the creation of a new ``Access Token``, applies to the deletion of the latter.
+
+From the same interface an admin can either select an expiration date or delete all the ``Access Tokens`` associated to a user, in order to
+force its session to expire.
+
+Remember that the user could activate another session by logging-in again on GeoNode with its credentials.
+
+In order to be sure the user won't force GeoNode to refresh the token, reset first its password or de-activate it.
