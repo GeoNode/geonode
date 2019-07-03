@@ -1575,6 +1575,6 @@ def layer_view_counter(layer_id, viewer):
     _l.view_count_up(_u, do_local=True)
 
 
-@user_passes_test(lambda u: u.is_superuser)
+@login_required
 def layers_update(request, template='update/layers_update.html'):
     return render(request, template)      
