@@ -4,32 +4,14 @@
 {% block head %}
 {{ block.super }}
 <style>
-    #left {
-        float: left;
-        margin: 5px 0 0 10px;
-        /* height: 40px; */
-    }
 
-    #right {
-        float: right;
-        margin: 5px 10px 0 0;
-        /* height: 40px; */
-    }
+#update-zone {
+	background: #eeeeee;
+	margin-bottom: 10px;
+	padding: 5px;
 
-    .inline-headers h4, .inline-headers select {
-      display: inline-block;
-      vertical-align: top;
-    }
+}
 
-    .active {
-        background-color: #cccccc !important;
-        font-weight: bold !important;
-    }
-
-    .faqHeader {
-        font-size: 17px;
-        margin: 20px;
-    }
 
     .panel-heading [data-toggle="collapse"]:after {
         font-family: 'FontAwesome';
@@ -56,31 +38,7 @@
         color: #454444;
     }
 
-    .help-tip{
-        position: absolute;
-        /* top: 18px;
-        right: 18px;
-        bottom: 50px;  */
-        margin-left: 10px;
-        text-align: center;
-        background-color: #BCDBEA;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        font-size: 14px;
-        line-height: 26px;
-        cursor: default;
-    }
 
-    .help-tip:before{
-        content:'?';
-        font-weight: bold;
-        color:#fff;
-    }
-
-    .button-tip{
-        position: absolute;
-    }
 
     .help-tip:hover p,
     .button-tip:hover p{
@@ -166,3 +124,4 @@
   {% block sidebar %}{% endblock sidebar %}
 </div>
 {% endblock body_outer %}
+

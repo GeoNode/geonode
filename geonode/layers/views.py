@@ -1576,5 +1576,6 @@ def layer_view_counter(layer_id, viewer):
 
 
 @login_required
-def layers_update(request, template='update/layers_update.html'):
-    return render(request, template)      
+def layers_update(request):
+    template = 'update/layers_update.html'
+    return render(request, template)

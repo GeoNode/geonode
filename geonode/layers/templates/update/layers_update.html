@@ -1,24 +1,119 @@
-{% extends "update/layer_update_base.html" %}
+{% extends "update/layers_update_base.html" %}
 {% load i18n %}
 {% load staticfiles %}
 
-{% block title %} {% trans "Update Layers"  %} - {{ block.super }}  {% endblock %}
+{% block title %} {% trans "Update Layers" %} - {{ block.super }}  {% endblock %}
 
-{% block body_class %}{% trans "layers update" %}{% endblock %}
+{% block body_class %}{% trans "layers upload" %}{% endblock %}
 
 
 {% block head %}
 
-{{ block.super }}
+    {{ block.super }}
 {% endblock %}
 
 {% block body_outer %}
 
-<!-- content goes here -->
 
-{% if GEONODE_SECURITY_ENABLED %}
-{% with resource=layer %}
-{% include "_permissions_form_js.html" %}
-{% endwith %}
-{% endif %}
+    <div class="page-header">
+        <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}"
+           class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
+        <h2 class="page-title">{% trans "Update Layers" %}</h2>
+
+        <script language="javascript">
+            var json_mosaics = [
+                {% for mosaic in mosaics %}
+                    {
+                        "name": "{{mosaic.name}}",
+                        "workspace": "{{mosaic.workspace}}",
+                        "is_mosaic": "{{mosaic.is_mosaic}}",
+                        "has_time": "{{mosaic.has_time}}",
+                        "has_elevation": "{{mosaic.has_elevation}}",
+                        "time_regex": "{{mosaic.time_regex}}",
+                        "elevation_regex": "{{mosaic.elevation_regex}}"
+                    },
+                {% endfor %}
+            ]
+        </script>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            {% if incomplete %}
+                <section class="widget" id="incomplete-download-list">
+                    <h3>{% trans "Incomplete Uploads" %}</h3>
+                    <p>{% trans "You have the following incomplete uploads" %}:</p>
+                    {% for u in incomplete %}
+                        <div class="clearfix uip" id="incomplete-{{ u.import_id }}">
+                            <div class="pull-left">{{ u.name }}, {% trans "last updated on" %} {{ u.date }}</div>
+                            <div class="upload_actions pull-right">
+                                <a class="btn btn-mini" href="#" id="resume-{{ u.import_id }}">{% trans "Resume" %}</a>
+                                <a class="btn btn-mini" href="#" id="delete-{{ u.import_id }}"><i
+                                        class="icon-trash"></i> {% trans "Delete" %}</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </section>
+                <div id="confirm-delete" class="hidden alert alert-warning">
+                    {% trans "Are you sure you want to delete this upload?" %}
+                    <a href="#y" class="btn btn-danger">{% trans "Delete" %}</a>
+                    <a href="#n" class="btn btn-default">{% trans "Cancel" %}</a>
+                    <a href="#yy">{% trans "Delete, and don't ask me again." %}</a>
+                </div>
+            {% endif %}
+
+            {% block additional_info %}{% endblock %}
+
+            {% if errors %}
+                <div id="errors" class="alert alert-danger">
+                    {% for error in errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div id="upload-status"></div>
+
+            <section id="drop-zone" style="border: 0px dashed #777777;">
+
+            {% facets as facets %}
+
+                <h3><i class="fa fa-square-o fa-4x rotate-45"></i><br/>{{ facets.layer|default:_("No") }} {% blocktrans count counter=facets.layer %}Layer{% plural %}Layers{% endblocktrans %}</h3>
+            </section>
+
+
+            <section>
+                <a href="#" id="upload-button" class="btn btn-danger">{% trans "Update Layers" %}</a>
+            </section>
+        </div>
+
+        {% if GEONODE_SECURITY_ENABLED %}
+
+        {% endif %}
+    </div>
+{% endblock %}
+
+
+{% block extra_script %}
+    {{ block.super }}
+    <script data-main="{% static 'geonode/js/upload/main' %}"
+            src="{% static 'lib/js/require.js' %}">
+    </script>
+    <script type="text/javascript">
+        {% autoescape off %}
+
+            csrf_token = "{{ csrf_token }}",
+                form_target = "{{ UPLOADER_URL }}",
+                time_enabled = {{ TIME_ENABLED|lower  }},
+                mosaic_enabled = {{ MOSAIC_ENABLED|lower  }},
+                userLookup = "{% url "account_ajax_lookup" %}"
+
+        {% endautoescape %}
+
+    </script>
+    {% if GEONODE_SECURITY_ENABLED %}
+        {% with resource=layer %}
+            {% include "_permissions_form_js.html" %}
+        {% endwith %}
+    {% endif %}
 {% endblock extra_script %}
+
