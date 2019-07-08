@@ -6,20 +6,23 @@ This script initializes Geonode
 # Setting up the  context
 #########################################################
 
-import os, requests, json, uuid, django, time
+import os, requests, json, uuid, django, datetime, time
 django.setup()
 
 #########################################################
 # Imports
 #########################################################
 
-from django.core.management import call_command
+from django.conf import settings
+from django.utils import timezone
 from django.db import connection
 from django.db.utils import OperationalError
+from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from requests.exceptions import ConnectionError
 from geonode.people.models import Profile
-from oauth2_provider.models import Application
-from django.conf import settings
+from oauthlib.common import generate_token
+from oauth2_provider.models import AccessToken, get_application_model
 
 # Getting the secrets
 admin_username = os.getenv('ADMIN_USERNAME')
@@ -174,3 +177,28 @@ if old_password=='M(cqp{V1':
     r2.raise_for_status()
 else:
     print("Master password was already changed. No changes made.")
+
+
+#########################################################
+# 10. Test User Model
+#########################################################
+
+print("-----------------------------------------------------")
+print("10. Test User Model")
+
+def make_token_expiration(seconds=86400):
+    _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', seconds)
+    _expire_time = datetime.datetime.now(timezone.get_current_timezone())
+    _expire_delta = datetime.timedelta(seconds=_expire_seconds)
+    return _expire_time + _expire_delta
+
+
+user = get_user_model().objects.get(username=admin_username)
+expires = make_token_expiration()
+Application = get_application_model()
+app = Application.objects.get(name='GeoServer')
+(access_token, created) = AccessToken.objects.get_or_create(
+    user=user,
+    application=app,
+    expires=expires,
+    token=generate_token())
