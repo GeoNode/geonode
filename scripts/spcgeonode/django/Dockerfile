@@ -2,7 +2,7 @@
 # But it seems it's not possible for now because alpine only has geos 3.6 which is not supported by django 1.8
 # (probably because of https://code.djangoproject.com/ticket/28441)
 
-FROM python:2.7.14-slim-stretch
+FROM python:2.7.16-slim-stretch
 
 # Install system dependencies
 RUN echo "Updating apt-get" && \
@@ -30,7 +30,8 @@ RUN echo "Updating apt-get" && \
 
 # Install python dependencies
 RUN echo "Geonode python dependencies"
-RUN pip install celery==4.1.0 # see https://github.com/GeoNode/geonode/pull/3714
+RUN pip install celery==4.2.1 # see https://github.com/GeoNode/geonode/pull/3714
+RUN pip install django-celery-monitor==1.1.2
 
 # Install geonode dependencies
 ADD requirements.txt /requirements.txt
