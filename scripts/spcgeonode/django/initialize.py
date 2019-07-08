@@ -14,8 +14,8 @@ django.setup()
 #########################################################
 
 from django.conf import settings
-from django.utils import timezone
 from django.db import connection
+from django.utils import timezone
 from django.db.utils import OperationalError
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
@@ -83,6 +83,8 @@ except Profile.DoesNotExist:
 
 print("-----------------------------------------------------")
 print("4. Create/update an OAuth2 provider to use authorisations keys")
+
+Application = get_application_model()
 app, created = Application.objects.get_or_create(
     pk=1,
     name='GeoServer',
@@ -192,11 +194,8 @@ def make_token_expiration(seconds=86400):
     _expire_delta = datetime.timedelta(seconds=_expire_seconds)
     return _expire_time + _expire_delta
 
-
 user = get_user_model().objects.get(username=admin_username)
 expires = make_token_expiration()
-Application = get_application_model()
-app = Application.objects.get(name='GeoServer')
 (access_token, created) = AccessToken.objects.get_or_create(
     user=user,
     application=app,
