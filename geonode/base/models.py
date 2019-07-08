@@ -80,8 +80,8 @@ class ContactRole(models.Model):
         """
         Make sure there is only one poc and author per resource
         """
-        if (self.role == self.resource.poc_role) or (
-                self.role == self.resource.metadata_author_role):
+        if (self.role == self.resource.poc) or (
+                self.role == self.resource.metadata_author):
             contacts = self.resource.contacts.filter(
                 contactrole__role=self.role)
             if contacts.count() == 1:
@@ -90,7 +90,7 @@ class ContactRole(models.Model):
                     raise ValidationError(
                         'There can be only one %s for a given resource' %
                         self.role)
-        if self.contact.user is None:
+        if self.contact is None:
             # verify that any unbound contact is only associated to one
             # resource
             bounds = ContactRole.objects.filter(contact=self.contact).count()

@@ -20,6 +20,7 @@
     var metadata_update_done = false;
     var metadata_preview = false;
     var is_advanced = (metadata_uri.match(/metadata_advanced/i) != null);
+    var is_category_mandatory = {% if TOPICCATEGORY_MANDATORY %}true{% else %}false{% endif %};
     var is_group_mandatory = {% if GROUP_MANDATORY_RESOURCES %}true{% else %}false{% endif %};
 
     var updateWizard = function() {
@@ -417,8 +418,13 @@
         $('#btn_next_dwn').click(function(){getNextTab()});
 
         $('#btn_upd_md_up').click(function(){
-            if((!is_advanced && $('#category_form').hasClass("input-empty")) ||
-                (is_advanced && !$('#category_form input:checked').val())) {
+            if
+            ( is_category_mandatory &&
+                (
+                    (!is_advanced && $('#category_form').hasClass("input-empty")) ||
+                    (is_advanced && !$('#category_form input:checked').val())
+                )
+            ) {
                 $('#category_mandatoryDialog').modal();
             } else if
               ( is_group_mandatory &&
@@ -434,8 +440,13 @@
         });
 
         $('#btn_upd_md_dwn').click(function(){
-            if((!is_advanced && $('#category_form').hasClass("input-empty")) ||
-                (is_advanced && !$('#category_form input:checked').val())) {
+            if
+            ( is_category_mandatory &&
+                (
+                    (!is_advanced && $('#category_form').hasClass("input-empty")) ||
+                    (is_advanced && !$('#category_form input:checked').val())
+                )
+            ) {
                 $('#category_mandatoryDialog').modal();
             } else if
               ( is_group_mandatory &&
@@ -451,8 +462,13 @@
         });
 
         $('#btn_upd_md_done').click(function(){
-            if((!is_advanced && $('#category_form').hasClass("input-empty")) ||
-                (is_advanced && !$('#category_form input:checked').val())) {
+            if
+            ( is_category_mandatory &&
+                (
+                    (!is_advanced && $('#category_form').hasClass("input-empty")) ||
+                    (is_advanced && !$('#category_form input:checked').val())
+                )
+            ) {
                 $('#category_mandatoryDialog').modal();
             } else if
               ( is_group_mandatory &&
@@ -471,8 +487,13 @@
         });
 
         $('#preview_tab').on('show.bs.tab', function(){
-            if((!is_advanced && $('#category_form').hasClass("input-empty")) ||
-                (is_advanced && !$('#category_form input:checked').val())) {
+            if
+            ( is_category_mandatory &&
+                (
+                    (!is_advanced && $('#category_form').hasClass("input-empty")) ||
+                    (is_advanced && !$('#category_form input:checked').val())
+                )
+            ) {
                 $('#category_mandatoryDialog').modal();
             } else if
               ( is_group_mandatory &&
@@ -514,8 +535,13 @@
         });
 
         $('#metadata_update').submit(function(e) {
-            if((!is_advanced && $('#category_form').hasClass("input-empty")) ||
-                (is_advanced && !$('#category_form input:checked').val())) {
+            if
+            ( is_category_mandatory &&
+                (
+                    (!is_advanced && $('#category_form').hasClass("input-empty")) ||
+                    (is_advanced && !$('#category_form input:checked').val())
+                )
+            ) {
                 $('#category_mandatoryDialog').modal();
             } else if
               ( is_group_mandatory &&

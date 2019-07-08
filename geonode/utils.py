@@ -1517,18 +1517,22 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                                              instance.bbox_x1, instance.bbox_y1])
 
         # Create Raw Data download link
-        download_url = urljoin(settings.SITEURL,
-                               reverse('download', args=[instance.id]))
-        Link.objects.update_or_create(
-            resource=instance.resourcebase_ptr,
-            url=download_url,
-            defaults=dict(
-                extension='zip',
-                name='Original Dataset',
-                mime='application/octet-stream',
-                link_type='original',
+        if settings.DISPLAY_ORIGINAL_DATASET_LINK:
+            download_url = urljoin(settings.SITEURL,
+                                   reverse('download', args=[instance.id]))
+            Link.objects.update_or_create(
+                resource=instance.resourcebase_ptr,
+                url=download_url,
+                defaults=dict(
+                    extension='zip',
+                    name='Original Dataset',
+                    mime='application/octet-stream',
+                    link_type='original',
+                )
             )
-        )
+        else:
+            Link.objects.filter(resource=instance.resourcebase_ptr,
+                                name='Original Dataset').delete()
 
         # Set download links for WMS, WCS or WFS and KML
         links = wms_links(ogc_server_settings.public_url + 'ows?',

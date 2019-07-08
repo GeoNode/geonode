@@ -1,3 +1,7 @@
+============
+GeoNode Core
+============
+
 Overview
 ========
 
@@ -33,7 +37,7 @@ Check that your system is already up-to-date with the repository running the fol
 Packages Installation
 .....................
 
-We will use **example.com** as fictitious Domain Name.
+We will use **example.org** as fictitious Domain Name.
 
 First, we are going to install all the **system packages** needed for the GeoNode setup. Login to the target machine and execute the following commands:
 
@@ -52,6 +56,9 @@ First, we are going to install all the **system packages** needed for the GeoNod
   sudo -i apt update
   sudo apt install openjdk-8-jdk-headless default-jdk-headless -y
   sudo update-java-alternatives --jre-headless --jre --set java-1.8.0-openjdk-amd64
+
+  # Install VIM
+  sudo apt install -y vim
 
   sudo apt update -y
   sudo apt upgrade -y
@@ -124,10 +131,7 @@ At this point your command prompt shows a ``(geonode)`` prefix, this indicates t
   pip install -e . --upgrade --no-cache --no-cache-dir
 
   # Install GDAL Utilities for Python
-  GDAL_VERSION=`gdal-config --version`; \
-    PYGDAL_VERSION="$(pip install pygdal==$GDAL_VERSION 2>&1 | grep -oP '(?<=: )(.*)(?=\))' | \
-    grep -oh '\b'${GDAL_VERSION}'[0-9.]\+\b')"; \
-    pip install pygdal==$PYGDAL_VERSION
+  pip install pygdal=="`gdal-config --version`.*"
 
 Run GeoNode for the first time in DEBUG Mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -172,6 +176,8 @@ Sign-in with::
 
   user: admin
   password: admin
+
+.. _configure_dbs_core:
 
 Postgis database Setup
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -795,7 +801,7 @@ Update the settings in order to use the ``PostgreSQL`` Database
   # sudo sed -i -e "s/'PASSWORD': 'geonode',/'PASSWORD': '<your_db_role_password>',/g" geonode/local_settings.py
 
   # Stop Tomcat
-  sudo systemctl restart tomcat
+  sudo systemctl stop tomcat
 
   # Initialize GeoNode
   DJANGO_SETTINGS_MODULE=geonode.local_settings paver reset
@@ -813,7 +819,8 @@ Change ``geonode.settings`` to ``geonode.local_settings``
 
 .. code-block:: shell
 
-  %s/geonode.settings/geonode.local_settings/g
+  :%s/geonode.settings/geonode.local_settings/g
+  :wq
 
 Restart ``UWSGI`` and update ``OAuth2`` by using the new ``geonode.local_settings``
 
@@ -1334,4 +1341,3 @@ If you want to remove a ``volume`` also
 
   # update all images, should be run regularly to fetch published updates
   for i in $(docker images| awk 'NR>1{print $1":"$2}'| grep -v '<none>'); do docker pull "$i" ;done
-

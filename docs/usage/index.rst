@@ -1,3 +1,6 @@
+GeoNode Users Guide
+===================
+
 .. toctree::
     :maxdepth: 2
 

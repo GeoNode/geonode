@@ -73,7 +73,7 @@ if not hasattr(settings, 'OGC_SERVER'):
     msg = (
         'Please configure OGC_SERVER when enabling geonode.geoserver.'
         ' More info can be found at '
-        'http://docs.geonode.org/en/master/reference/developers/settings.html#ogc-server')
+        'http://docs.geonode.org/en/master/basic/settings/index.html#ogc-server')
     raise ImproperlyConfigured(msg)
 
 
@@ -1913,8 +1913,22 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         from geonode.utils import (_v,
                                    bbox_to_projection,
                                    bounds_to_zoom_level)
+        image = None
+        width = 240
+        height = 200
+
         if isinstance(request_body, basestring):
-            request_body = json.loads(request_body)
+            try:
+                request_body = json.loads(request_body)
+            except BaseException:
+                try:
+                    image = _render_thumbnail(
+                        request_body, width=width, height=height)
+                except BaseException:
+                    image = None
+
+        if image is not None:
+            return image
 
         # Defaults
         _img_src_template = """<img src='{ogc_location}'
@@ -1941,10 +1955,8 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             if not coord:
                 return None
 
-        width = 240
         if 'width' in request_body:
             width = int(request_body['width'])
-        height = 200
         if 'height' in request_body:
             height = int(request_body['height'])
         smurl = None
@@ -1999,12 +2011,8 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             bounds[3] = 85.0
         if bounds[1] < -85.051:
             bounds[1] = -85.0
-        if bounds[0] > 180.0:
-            bounds[0] = 179.0
-        if bounds[3] < -180.0:
-            bounds[3] = -179.0
         if 'zoom' in request_body:
-            zoom = request_body['zoom']
+            zoom = int(request_body['zoom'])
         else:
             zoom = bounds_to_zoom_level(bounds, width, height)
 
@@ -2041,7 +2049,6 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
             \n".format(height=height, width=width, top=top, left=left)
 
-        numberOfRows = _n_step + 1 if numberOfRows > _n_step else numberOfRows
         for row in range(0, numberOfRows):
             for col in range(0, len(first_row)):
                 box = [col * 256, row * 256]

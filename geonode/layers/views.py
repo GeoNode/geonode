@@ -962,7 +962,8 @@ def layer_metadata(
             prefix="layer_attribute_set",
             queryset=Attribute.objects.order_by('display_order'))
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
-            request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
+            request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
+            request.POST["category_choice_field"] else None)
         tkeywords_form = TKeywordForm(
             request.POST,
             prefix="tkeywords")
@@ -1044,8 +1045,11 @@ def layer_metadata(
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
-        new_category = TopicCategory.objects.get(
-            id=category_form.cleaned_data['category_choice_field'])
+        new_category = None
+        if category_form and 'category_choice_field' in category_form.cleaned_data and\
+        category_form.cleaned_data['category_choice_field']:
+            new_category = TopicCategory.objects.get(
+                id=int(category_form.cleaned_data['category_choice_field']))
 
         for form in attribute_form.cleaned_data:
             la = Attribute.objects.get(id=int(form['id'].id))
@@ -1078,10 +1082,9 @@ def layer_metadata(
         if up_sessions.count() > 0 and up_sessions[0].user != the_layer.owner:
             up_sessions.update(user=the_layer.owner)
 
-        if new_category is not None:
-            Layer.objects.filter(id=the_layer.id).update(
-                category=new_category
-            )
+        Layer.objects.filter(id=the_layer.id).update(
+            category=new_category
+        )
 
         if not ajax:
             return HttpResponseRedirect(
@@ -1196,8 +1199,8 @@ def layer_metadata(
             'FREETEXT_KEYWORDS_READONLY',
             False),
         "metadata_author_groups": metadata_author_groups,
-        "GROUP_MANDATORY_RESOURCES":
-            getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
+        "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
+        "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
     })
 
 

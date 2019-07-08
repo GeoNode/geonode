@@ -24,6 +24,7 @@ from autocomplete_light.widgets import ChoiceWidget
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from django import forms
+from django.conf import settings
 from django.core import validators
 from django.forms import models
 from django.forms.fields import ChoiceField
@@ -200,10 +201,12 @@ class RegionsSelect(forms.Select):
             label)
 
     def render_options(self, selected_choices):
+
         # Normalize to strings.
         def _region_id_from_choice(choice):
-            if isinstance(choice, int):
-                return choice
+            if isinstance(choice, int) or \
+            (isinstance(choice, basestring) and choice.isdigit()):
+                return int(choice)
             else:
                 return choice.id
 
@@ -274,8 +277,8 @@ class CategoryForm(forms.Form):
     def clean(self):
         cleaned_data = self.data
         ccf_data = cleaned_data.get("category_choice_field")
-
-        if not ccf_data:
+        category_mandatory = getattr(settings, 'TOPICCATEGORY_MANDATORY', False)
+        if category_mandatory and not ccf_data:
             msg = _("Category is required.")
             self._errors = self.error_class([msg])
 
