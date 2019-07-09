@@ -1439,7 +1439,15 @@ def layer_thumbnail(request, layername):
             except BaseException:
                 image = _render_thumbnail(request.body)
 
-        if not image:
+        is_image = False
+        if image:
+            import imghdr
+            for th in imghdr.tests:
+                is_image = th(image, None)
+                if is_image:
+                    break
+
+        if not is_image:
             return HttpResponse(
                 content=_('couldn\'t generate thumbnail'),
                 status=500,
