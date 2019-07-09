@@ -1497,6 +1497,10 @@ def resourcebase_post_save(instance, *args, **kwargs):
         if tb:
             logger.debug(tb)
 
+    # refresh catalogue metadata records
+    from geonode.catalogue.models import catalogue_post_save
+    catalogue_post_save(instance=instance, sender=instance.__class__)
+
 
 def rating_post_save(instance, *args, **kwargs):
     """

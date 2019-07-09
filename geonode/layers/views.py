@@ -1074,17 +1074,12 @@ def layer_metadata(
         if new_regions is not None:
             layer.regions.clear()
             layer.regions.add(*new_regions)
+        layer.category = new_category
+        layer.save()
 
-        the_layer = layer_form.instance
-        the_layer.save()
-
-        up_sessions = UploadSession.objects.filter(layer=the_layer.id)
-        if up_sessions.count() > 0 and up_sessions[0].user != the_layer.owner:
-            up_sessions.update(user=the_layer.owner)
-
-        Layer.objects.filter(id=the_layer.id).update(
-            category=new_category
-        )
+        up_sessions = UploadSession.objects.filter(layer=layer)
+        if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:
+            up_sessions.update(user=layer.owner)
 
         if not ajax:
             return HttpResponseRedirect(
