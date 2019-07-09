@@ -4,7 +4,7 @@ version: '3.4'
 # Common Django template for Geonode, Celery and Celerycam services below
 x-common-django:
   &default-common-django
-  image: olivierdalang/spcgeonode:django-dev
+  image: olivierdalang/spcgeonode:django-latest
   environment:
     - DEBUG=True
   volumes:
@@ -27,29 +27,29 @@ services:
     command: 'celery events --app=geonode.celery_app:app --pidfile="/celeryev.pid" --camera=django_celery_monitor.camera.Camera --frequency=2.0 -l debug'
 
   nginx:
-    image: olivierdalang/spcgeonode:nginx-dev
+    image: olivierdalang/spcgeonode:nginx-latest
     volumes:
       - ./_volume_static:/spcgeonode-static/
       - ./_volume_media:/spcgeonode-media/
       - ./_volume_certificates:/spcgeonode-certificates/
 
   geoserver:
-    image: olivierdalang/spcgeonode:geoserver-dev
+    image: olivierdalang/spcgeonode:geoserver-latest
     volumes:
       - ./_volume_geodatadir:/spcgeonode-geodatadir/
 
   letsencrypt:
-    image: olivierdalang/spcgeonode:letsencrypt-dev
+    image: olivierdalang/spcgeonode:letsencrypt-latest
     volumes:
       - ./_volume_certificates:/spcgeonode-certificates/
 
   pgdumper:
-    image: olivierdalang/spcgeonode:pgdumper-dev
+    image: olivierdalang/spcgeonode:pgdumper-latest
     volumes:
       - ./_volume_pgdumps:/spcgeonode-pgdumps/
 
   rclone:
-    image: olivierdalang/spcgeonode:rclone-dev
+    image: olivierdalang/spcgeonode:rclone-latest
     volumes:
       - ./_volume_pgdumps:/spcgeonode-pgdumps/
       - ./_volume_media:/spcgeonode-media/

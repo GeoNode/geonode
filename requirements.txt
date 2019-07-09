@@ -96,7 +96,7 @@ inflection<=0.3.1
 jdcal==1.4
 mock<=2.0.0
 python-dateutil==2.8.0
-pytz==2018.9
+pytz==2019.1
 requests==2.22.0
 simplejson==3.16.0
 timeout-decorator==0.4.1
@@ -125,7 +125,7 @@ poster~=0.8.1
 flake8==3.7.7
 pytest==4.6.3
 pytest-bdd==3.1.0
-splinter==0.10.0
+splinter==0.11.0
 pytest-splinter==2.0.1
 pytest-django==3.5.1
 setuptools==41.0.1
