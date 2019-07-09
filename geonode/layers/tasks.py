@@ -24,6 +24,8 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 
 from geonode.layers.models import Layer
+from .helpers import gs_slurp
+
 
 logger = get_task_logger(__name__)
 
@@ -41,3 +43,15 @@ def delete_layer(self, layer_id):
     logger.info('Deleting Layer {0}'.format(layer))
     layer.delete()
     return True
+
+
+@shared_task(bind=True, queue='update')
+def update_layers(self, *args, **kwargs):
+    """
+    Runs update layers.
+    """
+    return gs_slurp(*args, **kwargs)
+
+
+
+

@@ -27,12 +27,12 @@ from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from geonode.geoserver.catalog import Catalog, FailedRequestError
-from geonode.geoserver.resource import FeatureType, Coverage
-from geonode.geoserver.store import CoverageStore, DataStore, datastore_from_index, \
+from geoserver.catalog import Catalog, FailedRequestError
+from geoserver.resource import FeatureType, Coverage
+from geoserver.store import CoverageStore, DataStore, datastore_from_index, \
     coveragestore_from_index, wmsstore_from_index
-from geonode.geoserver.support import DimensionInfo
-from geonode.geoserver.workspace import Workspace
+from geoserver.support import DimensionInfo
+from geoserver.workspace import Workspace
 from gsimporter import Client
 from lxml import etree
 from owslib.wcs import WebCoverageService
@@ -40,8 +40,8 @@ from owslib.wms import WebMapService
 from geonode import GeoNodeException
 from geonode.base.auth import get_or_create_token
 from geonode.utils import http_client
-from layers.models import Layer, Attribute, Style
-from layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from .models import Layer, Attribute, Style
+from .enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.security.views import _perms_info_json
 from geonode.security.utils import set_geowebcache_invalidate_cache
 import xml.etree.ElementTree as ET

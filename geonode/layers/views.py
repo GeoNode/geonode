@@ -88,7 +88,8 @@ from geonode.maps.models import Map
 from geonode.geoserver.helpers import (gs_catalog,
                                        ogc_server_settings,
                                        set_layer_style)  # cascading_delete
-from .tasks import delete_layer
+from .tasks import delete_layer, update_layers
+from .helpers import gs_slurp
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import (_render_thumbnail,
@@ -1578,4 +1579,26 @@ def layer_view_counter(layer_id, viewer):
 @login_required
 def layers_update(request):
     template = 'update/layers_update.html'
+
+    params = request.GET
+    # Get the owner specified in the request if any, otherwise used the logged
+    # user
+    owner = params.get('owner', None)
+    owner = get_user_model().objects.get(
+        username=owner) if owner is not None else request.user
+    workspace = params.get('workspace', None)
+    store = params.get('store', None)
+    filter = params.get('filter', None)
+    update_layers.delay(
+        ignore_errors=False, owner=owner, workspace=workspace,
+        store=store, filter=filter)
+
     return render(request, template)
+
+@login_required
+def start_layers_update(request):
+    context = {
+        gs_slurp(layer_view_counter(0))
+    }
+    return render(request, 'update/layers_update.html', context)
+
