@@ -104,10 +104,9 @@ def zip_dir(basedir, archivename):
 r"""
  HOW TO RUN THE TESTS
  --------------------
- (https://github.com/GeoNode/geonode/blob/master/docs/tutorials/devel/testing.txt)
 
  1)
-  (https://github.com/GeoNode/geonode/blob/master/docs/tutorials/devel/envsetup/paver.txt)
+  (http://docs.geonode.org/en/2.10.x/install/core/index.html?highlight=paver#run-geonode-for-the-first-time-in-debug-mode)
 
   $ paver setup
 

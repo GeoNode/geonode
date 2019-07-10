@@ -28,7 +28,15 @@ from geonode.monitoring.utils import MonitoringHandler, MonitoringFilter
 from django.http import HttpResponse
 
 
-FILTER_URLS = (settings.MEDIA_URL, settings.STATIC_URL, '/admin/jsi18n/',)
+FILTER_URLS = (settings.MEDIA_URL,
+               settings.STATIC_URL,
+               '/gs/',
+               '/api/',
+               '/security/',
+               '/lang.js',
+               '/jsi18n/',
+               '/h_keywords_api',
+               '/admin/jsi18n/',)
 
 
 class MonitoringMiddleware(object):
