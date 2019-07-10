@@ -1,9 +1,6 @@
 Contribute to Translations
 ==========================
 
-.. contents::
-   :depth: 4
-
 Behind the scenes, GeoNode is using a software called GNU gettext further text-based translation files (django.po and djangojs.po) for translating content.  If you'd like to know more about how all of this works you'll find a full description at the  `Django Docs 
 <https://docs.djangoproject.com/en/2.2/topics/i18n/translation/>`_.
 Following will concentrate on what is needed for edit existing or contribute a new translation.

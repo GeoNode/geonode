@@ -25,7 +25,28 @@ echo DOCKER_ENV=$DOCKER_ENV
 if [ -z ${DOCKER_ENV} ] || [ ${DOCKER_ENV} = "development" ]
 then
 
-    echo "Executing standard Django server $cmd for Development"
+    /usr/local/bin/invoke prepare
+    echo "prepare task done"
+    /usr/local/bin/invoke fixtures
+    echo "fixture task done"
+
+    if [ ${IS_CELERY} = "true" ] || [ ${IS_CELERY} = "True" ]
+    then
+
+        cmd=$cmd
+        echo "Executing Celery server $cmd for Development"
+
+    else
+
+        echo "install requirements for development"
+        /usr/local/bin/invoke devrequirements
+        echo "refresh static data"
+        /usr/local/bin/invoke statics
+        echo "static data refreshed"
+        cmd=$cmd
+        echo "Executing standard Django server $cmd for Development"
+
+    fi
 
 else
 
@@ -38,11 +59,14 @@ else
     else
 
         if [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
+
             /usr/local/bin/invoke prepare
             echo "prepare task done"
             /usr/local/bin/invoke fixtures
             echo "fixture task done"
+
         fi
+
         /usr/local/bin/invoke initialized
         echo "initialized"
 
@@ -57,4 +81,5 @@ else
 
 fi
 
+echo "command to be executed is $cmd"
 exec $cmd

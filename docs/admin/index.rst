@@ -1,5 +1,5 @@
-Usage of the GeoNode's Django Administration Panel
-==================================================
+GeoNode Admins Guide
+====================
 
 GeoNode has an administration panel, based on the Django admin, which can be used to do some database operations.
 Although most of the operations can and should be done through the normal GeoNode interface,

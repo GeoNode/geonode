@@ -1,9 +1,6 @@
 Monitoring
 ==========
 
-.. contents::
-   :depth: 4
-
 Internal Monitoring Application (geonode.monitoring)
 ----------------------------------------------------
 
