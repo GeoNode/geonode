@@ -42,7 +42,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-23 13:57+0200\n"
-"PO-Revision-Date: 2016-08-23 13:57+0000\n"
+"PO-Revision-Date: 2019-06-26 14:39-0300\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Spanish (http://www.transifex.com/geonode/geonode/language/"
 "es/)\n"
@@ -51,6 +51,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.2.3\n"
 
 #: geonode/base/__init__.py:27
 msgid "Request to download a resource"
@@ -77,8 +78,9 @@ msgid "copy or imitation of an existing or hypothetical object"
 msgstr "copiar o imitar un objeto real o hipotético"
 
 #: geonode/base/enumerations.py:31
+#, fuzzy
 msgid "collection hardware"
-msgstr "Coleccion de equipos"
+msgstr "hardware de colección"
 
 #: geonode/base/enumerations.py:32
 msgid "collection session"
@@ -94,7 +96,7 @@ msgstr "tipo de propiedad"
 
 #: geonode/base/enumerations.py:35
 msgid "field session"
-msgstr "Sesión de campo"
+msgstr "sesión de campo"
 
 #: geonode/base/enumerations.py:36
 msgid "dataset"
@@ -110,7 +112,7 @@ msgstr "clase de atributo"
 
 #: geonode/base/enumerations.py:39
 msgid "characteristic of a feature"
-msgstr "características de un objeto "
+msgstr "características de un objeto"
 
 #: geonode/base/enumerations.py:40
 msgid "tile or spatial subset of geographic data"
@@ -122,7 +124,7 @@ msgstr "objeto"
 
 #: geonode/base/enumerations.py:42
 msgid "dimension group"
-msgstr "Dimensión del Grupo"
+msgstr "dimensión del Grupo"
 
 #: geonode/base/enumerations.py:46
 msgid "frequency of maintenance for the data is not known"
@@ -220,11 +222,11 @@ msgstr "Fecha"
 
 #: geonode/base/forms.py:280 geonode/base/models.py:496
 msgid "temporal extent start"
-msgstr "Inicio de extensión temporal (extent)"
+msgstr "inicio de extensión temporal (extent)"
 
 #: geonode/base/forms.py:287 geonode/base/models.py:498
 msgid "temporal extent end"
-msgstr "Fin de extensión temporal (extent)"
+msgstr "fin de extensión temporal (extent)"
 
 #: geonode/base/forms.py:295 geonode/base/forms.py:303
 msgid "Person outside GeoNode (fill form)"
@@ -265,11 +267,12 @@ msgstr "Palabras claves"
 
 #: geonode/base/forms.py:313
 #, fuzzy
-#| msgid "A space or comma-separated list of keywords"
 msgid ""
 "A space or comma-separated list of keywords. Use the widget to select from "
 "Hierarchical tree."
-msgstr "Una lista de palabras clave separadas por un espacio o comas"
+msgstr ""
+"Un espacio o una lista de palabras clave separadas por comas. Utilice el "
+"widget para seleccionar desde el árbol jerárquico."
 
 #: geonode/base/forms.py:324
 #: geonode/base/templates/base/_resourcebase_info_panel.html:72
@@ -389,7 +392,7 @@ msgstr ""
 
 #: geonode/base/models.py:458
 msgid "title"
-msgstr "título "
+msgstr "título"
 
 #: geonode/base/models.py:458
 msgid "name by which the cited resource is known"
@@ -397,35 +400,35 @@ msgstr "nombre por el cual se conoce el recurso citado"
 
 #: geonode/base/models.py:459
 msgid "date"
-msgstr "Fecha"
+msgstr "fecha"
 
 #: geonode/base/models.py:460
 msgid "date type"
-msgstr "Tipo de Fecha"
+msgstr "tipo de fecha"
 
 #: geonode/base/models.py:462
 msgid "edition"
-msgstr "Edición"
+msgstr "edición"
 
 #: geonode/base/models.py:463
 msgid "abstract"
-msgstr "Resumen"
+msgstr "resumen"
 
 #: geonode/base/models.py:464
 msgid "purpose"
-msgstr "Propósito"
+msgstr "propósito"
 
 #: geonode/base/models.py:465
 msgid "maintenance frequency"
-msgstr "Frecuencia de actualización"
+msgstr "frecuencia de actualización"
 
 #: geonode/base/models.py:468 geonode/people/models.py:96
 msgid "keywords"
-msgstr "Palabras claves"
+msgstr "palabras claves"
 
 #: geonode/base/models.py:471
 msgid "keywords region"
-msgstr "Región de palabras claves"
+msgstr "región de palabras claves"
 
 #: geonode/base/models.py:474
 msgid "restrictions"
@@ -446,15 +449,15 @@ msgstr "Licencia"
 
 #: geonode/base/models.py:484
 msgid "language"
-msgstr "Idioma"
+msgstr "idioma"
 
 #: geonode/base/models.py:492
 msgid "spatial representation type"
-msgstr "Tipo de representación espacial"
+msgstr "tipo de representación espacial"
 
 #: geonode/base/models.py:501
 msgid "supplemental information"
-msgstr "Información adicional "
+msgstr "información adicional"
 
 #: geonode/base/models.py:502
 msgid "any other descriptive information about the dataset"
@@ -462,15 +465,15 @@ msgstr "cualquier otra información descriptiva del conjunto de datos"
 
 #: geonode/base/models.py:505
 msgid "data quality statement"
-msgstr "Declaración de calidad de datos"
+msgstr "declaración de calidad de datos"
 
 #: geonode/base/models.py:520
 msgid "CSW typename"
-msgstr "nombre de tipo CSW"
+msgstr "nombre CSW"
 
 #: geonode/base/models.py:522
 msgid "CSW schema"
-msgstr "esquema de tipo CSW"
+msgstr "esquema CSW"
 
 #: geonode/base/models.py:527
 msgid "CSW source"
@@ -847,7 +850,7 @@ msgstr "Documento eliminado"
 
 #: geonode/documents/__init__.py:29
 msgid "A Document was deleted"
-msgstr "Un documento fué eliminado "
+msgstr "Un documento fué eliminado"
 
 #: geonode/documents/__init__.py:30
 msgid "Comment on Document"
@@ -946,14 +949,16 @@ msgstr "Metadata"
 #: geonode/documents/templates/documents/document_detail.html:135
 #: geonode/layers/templates/layers/layer_detail.html:337
 #: geonode/maps/templates/maps/map_detail.html:133
+#, fuzzy
 msgid "Wizard"
-msgstr ""
+msgstr "Asistente"
 
 #: geonode/documents/templates/documents/document_detail.html:136
 #: geonode/layers/templates/layers/layer_detail.html:338
 #: geonode/maps/templates/maps/map_detail.html:134
+#, fuzzy
 msgid "Advanced Edit"
-msgstr ""
+msgstr "Edición Avanzada"
 
 #: geonode/documents/templates/documents/document_detail.html:142
 #: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:9
@@ -998,7 +1003,7 @@ msgstr "Recursos utilizando este documento"
 
 #: geonode/documents/templates/documents/document_detail.html:199
 msgid "List of resources using this document:"
-msgstr "Lista de recursos utilizando este documento"
+msgstr "Lista de recursos utilizando este documento:"
 
 #: geonode/documents/templates/documents/document_detail.html:203
 msgid "This document is related to a "
@@ -1065,8 +1070,9 @@ msgstr "Proveedor de metadatos"
 #: geonode/documents/templates/documents/document_metadata.html:83
 #: geonode/layers/templates/layers/layer_metadata.html:97
 #: geonode/maps/templates/maps/map_metadata.html:80
+#, fuzzy
 msgid "<< Back"
-msgstr ""
+msgstr "<< Retroceder"
 
 #: geonode/documents/templates/documents/document_metadata.html:84
 #: geonode/documents/templates/documents/document_metadata_advanced.html:53
@@ -1116,7 +1122,6 @@ msgid ""
 "\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
 "Estás seguro de que desea borrar <a href=\"%(document.get_absolute_url)s\">"
 "%(document_title)s</a>?"
 
@@ -1145,7 +1150,7 @@ msgstr "Remplaza Documento"
 
 #: geonode/documents/templates/documents/document_replace.html:16
 msgid "Replace "
-msgstr "Remplaza"
+msgstr "Remplazar "
 
 #: geonode/documents/templates/documents/document_replace.html:27
 #: geonode/layers/templates/layers/layer_metadata_upload.html:81
@@ -1161,9 +1166,8 @@ msgstr "Carga Documento"
 
 #: geonode/documents/templates/documents/document_upload.html:21
 #, fuzzy
-#| msgid "uploaded"
 msgid "Upload"
-msgstr "subido"
+msgstr "Cargar"
 
 #: geonode/documents/views.py:49
 msgid "You are not permitted to delete this document"
@@ -1239,7 +1243,7 @@ msgstr "Se produjo una excepción en la carga de datos de PostGIS"
 
 #: geonode/geoserver/helpers.py:1003
 msgid " Additionally an error occured during database cleanup"
-msgstr "Adicionalmente ocurrió un error durante la limpieza de base de datos"
+msgstr " Adicionalmente ocurrió un error durante la limpieza de base de datos"
 
 #: geonode/geoserver/ows.py:43
 msgid "GZIP"
@@ -1251,7 +1255,7 @@ msgstr "GeoTIFF"
 
 #: geonode/geoserver/ows.py:67
 msgid "Zipped Shapefile"
-msgstr "Shapefile Comprimido "
+msgstr "Shapefile Comprimido"
 
 #: geonode/geoserver/ows.py:68
 msgid "GML 2.0"
@@ -1307,9 +1311,8 @@ msgstr "Un grupo ya existe con ese nombre."
 
 #: geonode/groups/models.py:46 geonode/templates/base.html:90
 #, fuzzy
-#| msgid "Categories"
 msgid "Group Categories"
-msgstr "Categorías"
+msgstr "Categorías de Grupo"
 
 #: geonode/groups/models.py:64
 msgid "Public"
@@ -1446,9 +1449,8 @@ msgstr "No hay ninguna acción aún"
 #: geonode/groups/templates/groups/category_list.html:5
 #: geonode/groups/templates/groups/category_list.html:14
 #, fuzzy
-#| msgid "Explore Groups"
 msgid "Explore Group Categories"
-msgstr "Explorar Grupos"
+msgstr "Explorar categorías de grupo"
 
 #: geonode/groups/templates/groups/category_list.html:12
 #, fuzzy
@@ -1659,16 +1661,19 @@ msgid "A Layer was deleted"
 msgstr "Una capa fue borrada"
 
 #: geonode/layers/models.py:50
+#, fuzzy
 msgid "YYYYMMDD"
-msgstr ""
+msgstr "DDMMAAAA"
 
 #: geonode/layers/models.py:51
+#, fuzzy
 msgid "YYYYMMDD'T'hhmmss"
-msgstr ""
+msgstr "DDMMAAAA'T'hhmmss"
 
 #: geonode/layers/models.py:52
+#, fuzzy
 msgid "YYYYMMDD'T'hhmmss'Z'"
-msgstr ""
+msgstr "DDMMAAAA'T'hhmmss'Z'"
 
 #: geonode/layers/models.py:66
 msgid "style name"
@@ -4163,26 +4168,24 @@ msgid "Delete These"
 msgstr "Eliminar estos"
 
 #: geonode/templates/base.html:61
+#, fuzzy
 msgid "Data"
-msgstr ""
+msgstr "Datos"
 
 #: geonode/templates/base.html:70 geonode/templates/base.html.py:199
 #, fuzzy
-#| msgid "Remote Services"
 msgid "Add Remote Service"
-msgstr "Servicios Remotos"
+msgstr "Agregar Servicio Remoto"
 
 #: geonode/templates/base.html:79 geonode/templates/base.html.py:208
 #, fuzzy
-#| msgid "Create a Map"
 msgid "Create Map"
-msgstr "Crear un mapa"
+msgstr "Crear mapa"
 
 #: geonode/templates/base.html:96 geonode/templates/base.html.py:221
 #, fuzzy
-#| msgid "Add layers"
 msgid "Add User"
-msgstr "Agrega Capas"
+msgstr "Agregar Usuario"
 
 #: geonode/templates/developer.html:4 geonode/templates/developer.html.py:8
 msgid "Information for Developers"
@@ -4318,16 +4321,18 @@ msgid "Metadata search via CSW:"
 msgstr "Búsqueda de metadatos vía CSW:"
 
 #: geonode/templates/developer.html:85
+#, fuzzy
 msgid "Metadata search via OpenSearch:"
-msgstr "Buscar metadatos vía OpenSearch"
+msgstr "Buscar metadatos vía OpenSearch:"
 
 #: geonode/templates/developer.html:89
 msgid "Metadata search via OAI-PMH:"
 msgstr "Búsqueda de metadatos vía OAI-PMH:"
 
 #: geonode/templates/developer.html:93
+#, fuzzy
 msgid "Open Data:"
-msgstr ""
+msgstr "Datos Libre:"
 
 #: geonode/templates/developer.html:97
 msgid "Cached tiles via WMTS:"
@@ -4669,31 +4674,33 @@ msgstr "Primeros Pasos"
 
 #: geonode/templates/index.html:28
 #, fuzzy
-#| msgid "Search"
 msgid "Search for Data."
-msgstr "Buscar"
+msgstr "Búsqueda de datos."
 
 #: geonode/templates/metadata_detail.html:26
+#, fuzzy
 msgid "Return to Document"
-msgstr ""
+msgstr "Volver al Documento"
 
 #: geonode/templates/metadata_detail.html:28
+#, fuzzy
 msgid "Return to Layer"
-msgstr ""
+msgstr "Volver a la Capa"
 
 #: geonode/templates/metadata_detail.html:30
 #, fuzzy
-#| msgid "Return to"
 msgid "Return to Map"
-msgstr "Volver a"
+msgstr "Volver al Mapa"
 
 #: geonode/templates/metadata_detail.html:38
+#, fuzzy
 msgid "Identification"
-msgstr ""
+msgstr "Identificación"
 
 #: geonode/templates/metadata_detail.html:102
+#, fuzzy
 msgid "Published"
-msgstr ""
+msgstr "Publicado"
 
 #: geonode/templates/metadata_detail.html:103
 #: geonode/templates/metadata_detail.html:106
@@ -4703,14 +4710,14 @@ msgstr ""
 #: geonode/templates/metadata_detail.html:123
 #: geonode/templates/metadata_detail.html:265
 #: geonode/templates/metadata_detail.html:341
+#, fuzzy
 msgid "email"
-msgstr "Correo electrónico"
+msgstr "correo electrónico"
 
 #: geonode/templates/metadata_detail.html:153
 #, fuzzy
-#| msgid "format"
 msgid "Information"
-msgstr "formato"
+msgstr "Información"
 
 #: geonode/templates/metadata_detail.html:158
 msgid "Identification Image"
@@ -4741,8 +4748,9 @@ msgid "Extension y1"
 msgstr ""
 
 #: geonode/templates/metadata_detail.html:187
+#, fuzzy
 msgid "Features"
-msgstr ""
+msgstr "Características"
 
 #: geonode/templates/metadata_detail.html:257
 msgid "Contact Points"
@@ -4766,7 +4774,7 @@ msgstr ""
 
 #: geonode/templates/pinax/notifications/account_active/full.txt:3
 msgid "Your account has been approved and is now active."
-msgstr "Su cuenta ha sido aprobada y activada"
+msgstr "su cuenta ha sido aprobada y activada"
 
 #: geonode/templates/pinax/notifications/account_active/full.txt:5
 msgid "You can use the login form at"
@@ -4778,7 +4786,7 @@ msgstr "Su cuenta esta activa"
 
 #: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "has requested access to the site."
-msgstr "ha solicitado acceso al sitio"
+msgstr "ha solicitado acceso al sitio."
 
 #: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid ""
@@ -4857,7 +4865,7 @@ msgstr "calificado"
 
 #: geonode/templates/pinax/notifications/document_rated/full.txt:5
 msgid "the following document"
-msgstr "Un documento siguiente "
+msgstr "un documento siguiente "
 
 #: geonode/templates/pinax/notifications/document_rated/full.txt:8
 #: geonode/templates/pinax/notifications/layer_comment/full.txt:5
@@ -4889,7 +4897,7 @@ msgstr "Se ha publicado un comentario de una capa"
 
 #: geonode/templates/pinax/notifications/layer_created/full.txt:3
 msgid "uploaded the following layer"
-msgstr "Una Capa fué subida"
+msgstr "una capa fué subida"
 
 #: geonode/templates/pinax/notifications/layer_created/short.txt:3
 msgid "A new layer has been uploaded"
@@ -4905,7 +4913,7 @@ msgstr "Un capa ha sido eliminado"
 
 #: geonode/templates/pinax/notifications/layer_rated/full.txt:5
 msgid "the following layer"
-msgstr "La siguiente capa"
+msgstr "la siguiente capa"
 
 #: geonode/templates/pinax/notifications/layer_rated/short.txt:3
 msgid "A layer has been rated"
@@ -4968,7 +4976,7 @@ msgstr "Un mapa ha sido actualizado"
 
 #: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:3
 msgid "requested you to download this resource"
-msgstr "Usted a solicitado descargar este recurso"
+msgstr "usted a solicitado descargar este recurso"
 
 #: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:12
 msgid ""
@@ -5021,8 +5029,9 @@ msgid "Unblock"
 msgstr "Desloquear"
 
 #: geonode/templates/relationships/_profile_follow.html:17
+#, fuzzy
 msgid "Block"
-msgstr "bloque"
+msgstr "bloqueado"
 
 #: geonode/templates/relationships/confirm.html:4
 #: geonode/templates/relationships/confirm.html:7
@@ -5036,7 +5045,7 @@ msgstr "Confirma"
 #: geonode/templates/relationships/relationship_list.html:26
 #, python-format
 msgid "You're not %(status_slug)s anyone!"
-msgstr "Usted no es %(status_slug)s nadie"
+msgstr "usted no es %(status_slug)s nadie"
 
 #: geonode/templates/relationships/success.html:5
 msgid "Success"
@@ -5047,8 +5056,9 @@ msgid "You are "
 msgstr "Usted es "
 
 #: geonode/templates/relationships/success.html:6
+#, fuzzy
 msgid "no longer"
-msgstr "Ya no"
+msgstr "ya no"
 
 #: geonode/templates/relationships/success.html:7
 #, python-format
@@ -5099,7 +5109,7 @@ msgstr ""
 
 #: geonode/templates/search/_search_user_content.html:10
 msgid "search"
-msgstr ""
+msgstr "buscar"
 
 #: geonode/templates/search/_sort_filters.html:36
 #: geonode/templates/search/_sort_filters.html:42
@@ -5135,9 +5145,8 @@ msgstr "Texto"
 
 #: geonode/templates/search/_text_filter.html:10
 #, fuzzy
-#| msgid "Search"
 msgid "Search by text"
-msgstr "Buscar"
+msgstr "Búsqueda por texto"
 
 #: geonode/templates/search/search.html:6
 #: geonode/templates/search/search.html:12
@@ -5202,7 +5211,7 @@ msgstr "Enviar Respuesta"
 
 #: geonode/utils.py:60
 msgid "Invalid permission level."
-msgstr "Nivel de permiso inválido"
+msgstr "Nivel de permiso inválido."
 
 #: geonode/utils.py:568
 msgid "Permission Denied"
