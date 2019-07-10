@@ -1,3 +1,7 @@
+============
+GeoNode Core
+============
+
 Overview
 ========
 
@@ -9,8 +13,8 @@ Ubuntu 18.04
 ============
 
 This part of the documentation describes the complete setup process for GeoNode on an Ubuntu 18.04 64-bit clean environment (Desktop or Server). All examples use shell commands that you must enter on a local terminal or a remote shell.
-- If you have a graphical desktop environment you can open the terminal aplication after login;
-- if you are working on a remote server the provider or sysadmin should has gave you access through an ssh client.
+- If you have a graphical desktop environment you can open the terminal application after login;
+- if you are working on a remote server the provider or sysadmin should has given you access through an ssh client.
 
 .. _install_dep:
 
@@ -33,7 +37,7 @@ Check that your system is already up-to-date with the repository running the fol
 Packages Installation
 .....................
 
-We will use **example.com** as fictitious Domain Name.
+We will use **example.org** as fictitious Domain Name.
 
 First, we are going to install all the **system packages** needed for the GeoNode setup. Login to the target machine and execute the following commands:
 
@@ -52,6 +56,9 @@ First, we are going to install all the **system packages** needed for the GeoNod
   sudo -i apt update
   sudo apt install openjdk-8-jdk-headless default-jdk-headless -y
   sudo update-java-alternatives --jre-headless --jre --set java-1.8.0-openjdk-amd64
+
+  # Install VIM
+  sudo apt install -y vim
 
   sudo apt update -y
   sudo apt upgrade -y
@@ -90,7 +97,7 @@ It will run locally against a file-system based ``SQLite`` database.
 
 First of all we need to prepare a new Python Virtual Environment
 
-Since geonode needs a large number of different python libraries and packages, it's recommended to use a python virtual environment to avoid conflicts on dependencies with system wide python packages and other installed softwares. See also documentation of `Virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/stable/>`_. package for mode information
+Since geonode needs a large number of different python libraries and packages, it's recommended to use a python virtual environment to avoid conflicts on dependencies with system wide python packages and other installed software. See also documentation of `Virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/stable/>`_ package for more information
 
 .. code-block:: shell
 
@@ -124,10 +131,7 @@ At this point your command prompt shows a ``(geonode)`` prefix, this indicates t
   pip install -e . --upgrade --no-cache --no-cache-dir
 
   # Install GDAL Utilities for Python
-  GDAL_VERSION=`gdal-config --version`; \
-    PYGDAL_VERSION="$(pip install pygdal==$GDAL_VERSION 2>&1 | grep -oP '(?<=: )(.*)(?=\))' | \
-    grep -oh '\b'${GDAL_VERSION}'[0-9.]\+\b')"; \
-    pip install pygdal==$PYGDAL_VERSION
+  pip install pygdal=="`gdal-config --version`.*"
 
 Run GeoNode for the first time in DEBUG Mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -173,6 +177,8 @@ Sign-in with::
   user: admin
   password: admin
 
+.. _configure_dbs_core:
+
 Postgis database Setup
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -210,7 +216,7 @@ First, create the geonode user. GeoNode is going to use this user to access the 
 
 You will be prompted asked to set a password for the user. Enter ``geonode`` as password.
 
-.. warning:: This is a sample password used for the sake of simplicty. This password is very **weak** and should be changed in a production environment.
+.. warning:: This is a sample password used for the sake of simplicity. This password is very **weak** and should be changed in a production environment.
 
 Create database ``geonode`` and ``geonode_data`` with owner ``geonode``
 
@@ -601,7 +607,7 @@ Serving {“geonode”, “geoserver”} via NGINX
 
 .. code-block:: shell
 
-  # Backup the origina NGINX config
+  # Backup the original NGINX config
   sudo mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig
 
   # Create the GeoNode Default NGINX config
@@ -795,7 +801,7 @@ Update the settings in order to use the ``PostgreSQL`` Database
   # sudo sed -i -e "s/'PASSWORD': 'geonode',/'PASSWORD': '<your_db_role_password>',/g" geonode/local_settings.py
 
   # Stop Tomcat
-  sudo systemctl restart tomcat
+  sudo systemctl stop tomcat
 
   # Initialize GeoNode
   DJANGO_SETTINGS_MODULE=geonode.local_settings paver reset
@@ -813,7 +819,8 @@ Change ``geonode.settings`` to ``geonode.local_settings``
 
 .. code-block:: shell
 
-  %s/geonode.settings/geonode.local_settings/g
+  :%s/geonode.settings/geonode.local_settings/g
+  :wq
 
 Restart ``UWSGI`` and update ``OAuth2`` by using the new ``geonode.local_settings``
 
@@ -900,7 +907,7 @@ Install and enable HTTPS secured connection through the Let's Encrypt provider
 
 1. Update the ``GeoNode`` **OAuth2** ``Redirect URIs`` accordingly.
 
-  From the ``GeoNode Admin Dashboard`` goto ``Home › Django/GeoNode OAuth Toolkit › Applications › GeoServer``
+  From the ``GeoNode Admin Dashboard`` go to ``Home › Django/GeoNode OAuth Toolkit › Applications › GeoServer``
 
   .. figure:: img/ubuntu-https-001.png
         :align: center
@@ -909,7 +916,7 @@ Install and enable HTTPS secured connection through the Let's Encrypt provider
 
 2. Update the ``GeoServer`` ``Proxy Base URL`` accordingly.
 
-  From the ``GeoServer Admin GUI`` goto ``About & Status > Global``
+  From the ``GeoServer Admin GUI`` go to ``About & Status > Global``
 
   .. figure:: img/ubuntu-https-002.png
         :align: center
@@ -919,7 +926,7 @@ Install and enable HTTPS secured connection through the Let's Encrypt provider
 
 3. Update the ``GeoServer`` ``Role Base URL`` accordingly.
 
-  From the ``GeoServer Admin GUI`` goto ``Security > Users, Groups, Roles > geonode REST role service``
+  From the ``GeoServer Admin GUI`` go to ``Security > Users, Groups, Roles > geonode REST role service``
 
   .. figure:: img/ubuntu-https-003.png
         :align: center
@@ -928,7 +935,7 @@ Install and enable HTTPS secured connection through the Let's Encrypt provider
 
 4. Update the ``GeoServer`` ``OAuth2 Service Parameters`` accordingly.
 
-  From the ``GeoServer Admin GUI`` goto ``Security > Authentication > Authentication Filters > geonode-oauth2``
+  From the ``GeoServer Admin GUI`` go to ``Security > Authentication > Authentication Filters > geonode-oauth2``
 
   .. figure:: img/ubuntu-https-004.png
         :align: center
@@ -945,7 +952,7 @@ Install and enable HTTPS secured connection through the Let's Encrypt provider
     # Change everywhere 'http' to 'https'
     %s/http/https/g
 
-    # Add two more 'env' variables to the configruation
+    # Add two more 'env' variables to the configuration
     env = SECURE_SSL_REDIRECT=True
     env = SECURE_HSTS_INCLUDE_SUBDOMAINS=True
 
@@ -1159,7 +1166,7 @@ Run the containers in daemon mode
   docker-compose -f docker-compose.yml -f docker-compose.override.example-org.yml up --build -d
 
 Access the django4geonode Docker container to update the code-base and/or change internal settings
-..............................................................................................
+..................................................................................................
 
 Access the container ``bash``
 
@@ -1287,7 +1294,7 @@ It is possible to let docker show which containers are currently running (add ``
   docker ps
 
   CONTAINER ID        IMAGE                      COMMAND                  CREATED             STATUS              PORTS                NAMES
-  3b232931f820        geonode/nginx:geoserver    "nginx -g 'daemon of…"   26 minutes ago      Up 26 minutes       0.0.0.0:80->80/tcp   nginx4geonode
+  3b232931f820        geonode/nginx:production    "nginx -g 'daemon of…"   26 minutes ago      Up 26 minutes       0.0.0.0:80->80/tcp   nginx4geonode
   ff7002ae6e91        geonode/geonode:latest     "/usr/src/app/entryp…"   26 minutes ago      Up 26 minutes       8000/tcp             django4geonode
   2f155e5043be        geonode/geoserver:2.14.3   "/usr/local/tomcat/t…"   26 minutes ago      Up 26 minutes       8080/tcp             geoserver4geonode
   97f1668a01b1        geonode_celery             "/usr/src/app/entryp…"   26 minutes ago      Up 26 minutes       8000/tcp             geonode_celery_1
@@ -1334,4 +1341,3 @@ If you want to remove a ``volume`` also
 
   # update all images, should be run regularly to fetch published updates
   for i in $(docker images| awk 'NR>1{print $1":"$2}'| grep -v '<none>'); do docker pull "$i" ;done
-

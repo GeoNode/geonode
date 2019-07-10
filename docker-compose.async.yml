@@ -14,7 +14,7 @@ services:
       - dbdata:/var/lib/postgresql/data
       - dbbackups:/pg_backups
     env_file:
-      - ./scripts/docker/env/production/db.env
+      - ./scripts/docker/env/${SET_DOCKER_ENV}/db.env
 
   elasticsearch:
     image: elasticsearch:2.4.1
@@ -40,7 +40,7 @@ services:
 
   celery:
     restart: unless-stopped
-    image: geonode/geonode:latest
+    image: geonode/geonode:2.10
     container_name: celery4${COMPOSE_PROJECT_NAME}
     stdin_open: true
     # tty: true
@@ -56,7 +56,7 @@ services:
       - statics:/mnt/volumes/statics
       - geoserver-data-dir:/geoserver_data/data
     env_file:
-      - ./scripts/docker/env/production/celery.env
+      - ./scripts/docker/env/${SET_DOCKER_ENV}/celery.env
 
   geoserver:
     image: geonode/geoserver:2.14.3
@@ -75,11 +75,11 @@ services:
     volumes:
       - geoserver-data-dir:/geoserver_data/data
     env_file:
-      - ./scripts/docker/env/production/geoserver.env
+      - ./scripts/docker/env/${SET_DOCKER_ENV}/geoserver.env
 
   django:
     restart: unless-stopped
-    image: geonode/geonode:latest
+    image: geonode/geonode:2.10
     container_name: django4${COMPOSE_PROJECT_NAME}
     stdin_open: true
     # tty: true
@@ -97,10 +97,10 @@ services:
       - statics:/mnt/volumes/statics
       - geoserver-data-dir:/geoserver_data/data
     env_file:
-      - ./scripts/docker/env/production/django.env
+      - ./scripts/docker/env/${SET_DOCKER_ENV}/django.env
 
   geonode:
-    image: geonode/nginx:geoserver
+    image: geonode/nginx:${SET_DOCKER_ENV}
     restart: unless-stopped
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     stdin_open: true

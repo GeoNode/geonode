@@ -32,9 +32,9 @@ import sys
 from threading import local
 import time
 import uuid
-
+import base64
 import urllib
-from urlparse import urlsplit, urlparse, urljoin
+from urlparse import urlsplit, urljoin
 
 from agon_ratings.models import OverallRating
 from bs4 import BeautifulSoup
@@ -73,7 +73,7 @@ if not hasattr(settings, 'OGC_SERVER'):
     msg = (
         'Please configure OGC_SERVER when enabling geonode.geoserver.'
         ' More info can be found at '
-        'http://docs.geonode.org/en/master/reference/developers/settings.html#ogc-server')
+        'http://docs.geonode.org/en/2.10.x/basic/settings/index.html#ogc-server')
     raise ImproperlyConfigured(msg)
 
 
@@ -1881,8 +1881,10 @@ _esri_types = {
 def _render_thumbnail(req_body, width=240, height=180):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
-    hostname = urlparse(settings.SITEURL).hostname
-    params = dict(width=width, height=height, auth="%s,%s,%s" % (hostname, _user, _password))
+    headers = {'Content-type': 'text/html'}
+    valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
+    headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+    params = dict(width=width, height=height)
     url = url + "?" + urllib.urlencode(params)
 
     # @todo annoying but not critical
@@ -1899,11 +1901,12 @@ def _render_thumbnail(req_body, width=240, height=180):
     data = unicode(data, errors='ignore').encode('UTF-8')
     try:
         req, content = http_client.post(
-            url, data=data, headers={'Content-type': 'text/html'})
+            url, data=data, headers=headers)
     except BaseException as e:
         logger.warning('Error generating thumbnail')
         logger.exception(e)
         return
+
     return content
 
 
@@ -1913,8 +1916,22 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         from geonode.utils import (_v,
                                    bbox_to_projection,
                                    bounds_to_zoom_level)
+        image = None
+        width = 240
+        height = 200
+
         if isinstance(request_body, basestring):
-            request_body = json.loads(request_body)
+            try:
+                request_body = json.loads(request_body)
+            except BaseException:
+                try:
+                    image = _render_thumbnail(
+                        request_body, width=width, height=height)
+                except BaseException:
+                    image = None
+
+        if image is not None:
+            return image
 
         # Defaults
         _img_src_template = """<img src='{ogc_location}'
@@ -1941,10 +1958,8 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             if not coord:
                 return None
 
-        width = 240
         if 'width' in request_body:
             width = int(request_body['width'])
-        height = 200
         if 'height' in request_body:
             height = int(request_body['height'])
         smurl = None
@@ -1999,12 +2014,8 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             bounds[3] = 85.0
         if bounds[1] < -85.051:
             bounds[1] = -85.0
-        if bounds[0] > 180.0:
-            bounds[0] = 179.0
-        if bounds[3] < -180.0:
-            bounds[3] = -179.0
         if 'zoom' in request_body:
-            zoom = request_body['zoom']
+            zoom = int(request_body['zoom'])
         else:
             zoom = bounds_to_zoom_level(bounds, width, height)
 
@@ -2041,7 +2052,6 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
             \n".format(height=height, width=width, top=top, left=left)
 
-        numberOfRows = _n_step + 1 if numberOfRows > _n_step else numberOfRows
         for row in range(0, numberOfRows):
             for col in range(0, len(first_row)):
                 box = [col * 256, row * 256]

@@ -363,7 +363,8 @@ def document_metadata(
                 instance=document,
                 prefix="resource")
             category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
-                request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
+                request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
+                request.POST["category_choice_field"] else None)
         else:
             document_form = DocumentForm(instance=document, prefix="resource")
             category_form = CategoryForm(
@@ -376,8 +377,12 @@ def document_metadata(
             new_author = document_form.cleaned_data['metadata_author']
             new_keywords = document_form.cleaned_data['keywords']
             new_regions = document_form.cleaned_data['regions']
-            new_category = TopicCategory.objects.get(
-                id=category_form.cleaned_data['category_choice_field'])
+
+            new_category = None
+            if category_form and 'category_choice_field' in category_form.cleaned_data and\
+            category_form.cleaned_data['category_choice_field']:
+                new_category = TopicCategory.objects.get(
+                    id=int(category_form.cleaned_data['category_choice_field']))
 
             if new_poc is None:
                 if poc is None:
@@ -415,21 +420,19 @@ def document_metadata(
                 if author_form.has_changed and author_form.is_valid():
                     new_author = author_form.save()
 
-            the_document = document_form.instance
+            document = document_form.instance
             if new_poc is not None and new_author is not None:
-                the_document.poc = new_poc
-                the_document.metadata_author = new_author
+                document.poc = new_poc
+                document.metadata_author = new_author
             if new_keywords:
-                the_document.keywords.clear()
-                the_document.keywords.add(*new_keywords)
+                document.keywords.clear()
+                document.keywords.add(*new_keywords)
             if new_regions:
-                the_document.regions.clear()
-                the_document.regions.add(*new_regions)
-            the_document.save()
+                document.regions.clear()
+                document.regions.add(*new_regions)
+            document.category = new_category
+            document.save()
             document_form.save_many2many()
-            Document.objects.filter(
-                id=the_document.id).update(
-                category=new_category)
 
             if not ajax:
                 return HttpResponseRedirect(
@@ -495,6 +498,7 @@ def document_metadata(
             "author_form": author_form,
             "category_form": category_form,
             "metadata_author_groups": metadata_author_groups,
+            "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
             "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
         })
 

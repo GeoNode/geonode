@@ -571,7 +571,7 @@ SECURE_SSL_REDIRECT = ast.literal_eval(os.environ.get('SECURE_SSL_REDIRECT', 'Fa
 SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '3600'))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = ast.literal_eval(os.environ.get('SECURE_HSTS_INCLUDE_SUBDOMAINS', 'True'))
 
-# Replacement of default authentication backend in order to support
+# Replacement of the default authentication backend in order to support
 # permissions per object.
 AUTHENTICATION_BACKENDS = (
     'oauth2_provider.backends.OAuth2Backend',
@@ -579,6 +579,11 @@ AUTHENTICATION_BACKENDS = (
     'guardian.backends.ObjectPermissionBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
+
+if 'announcements' in INSTALLED_APPS:
+    AUTHENTICATION_BACKENDS += (
+        'announcements.auth_backends.AnnouncementPermissionsBackend',
+    )
 
 OAUTH2_PROVIDER = {
     'SCOPES': {
@@ -636,6 +641,7 @@ AUTH_EXEMPT_URLS = (
     '%s/api/adminRole' % FORCE_SCRIPT_NAME,
     '%s/api/users' % FORCE_SCRIPT_NAME,
     '%s/api/layers' % FORCE_SCRIPT_NAME,
+    '%s/monitoring' % FORCE_SCRIPT_NAME,
 )
 
 ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID', '-1')
@@ -726,6 +732,10 @@ OGP_URL = os.getenv('OGP_URL', "http://geodata.tufts.edu/solr/select")
 # Topic Categories list should not be modified (they are ISO). In case you
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = ast.literal_eval(os.getenv('MODIFY_TOPICCATEGORY', 'True'))
+
+# If this option is enabled, Topic Categories will become strictly Mandatory on
+# Metadata Wizard
+TOPICCATEGORY_MANDATORY = ast.literal_eval(os.environ.get('TOPICCATEGORY_MANDATORY', 'False'))
 
 MISSING_THUMBNAIL = os.getenv(
     'MISSING_THUMBNAIL', 'geonode/img/missing_thumb.png'
@@ -1088,6 +1098,10 @@ DOWNLOAD_FORMATS_RASTER = [
     'QGIS project file (.qgs)',
     'Zipped All Files'
 ]
+
+
+DISPLAY_ORIGINAL_DATASET_LINK = ast.literal_eval(
+    os.getenv('DISPLAY_ORIGINAL_DATASET_LINK', 'True'))
 
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = ast.literal_eval(
     os.getenv('ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE', 'False'))
@@ -1755,9 +1769,12 @@ SOCIALACCOUNT_PROVIDERS = {
             'r_liteprofile',
         ],
         'PROFILE_FIELDS': [
-            'emailAddress',
-            'firstName',
-            'lastName',
+            'id',
+            'email-address',
+            'first-name',
+            'last-name',
+            'picture-url',
+            'public-profile-url',
         ]
     },
     'facebook': {

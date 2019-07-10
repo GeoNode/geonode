@@ -55,6 +55,8 @@ The map will automatically re-center on that area delimiting it by a polygon in 
 
      *Result of a Search*
 
+.. _sidebar:
+
 Sidebar Tools
 -------------
 
@@ -136,6 +138,8 @@ The *Sidebar* contains the following tools:
 * You can switch between the previous and the next zoom level through the *Go Back* button |go_back_button| and the *Go Forward* one |go_forward_button|.
 
 * The *Switch to Full Screen* |full_screen_button| button allows to have a full screen map.
+
+.. _basemap-switcher:
 
 Basemap Switcher
 ----------------
