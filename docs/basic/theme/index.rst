@@ -247,7 +247,7 @@ You can see on `line 189 of the GeoNode base.html template <https://github.com/G
                 {% if not custom_theme.jumbotron_cta_hide %}
                     <p>
                         <a class="btn btn-default btn-lg" target="_blank" role="button"
-                          href="{{custom_theme.jumbotron_cta_link|default:_('http://docs.geonode.org/en/master/usage/')}}">
+                          href="{{custom_theme.jumbotron_cta_link|default:_('http://docs.geonode.org/en/2.10.x/usage/')}}">
                             {{custom_theme.jumbotron_cta_text|default:_("Get Started &raquo;")}}
                         </a>
                     </p>

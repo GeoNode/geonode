@@ -1084,8 +1084,8 @@ msgstr "GeoNode ist eine Open-Source-Plattform zur Veröffentlichung von Geodate
 
 #: geonode/contrib/geosites/site_template/templates/site_index.html:14
 #: geonode/contrib/geosites/templates/master_index.html:15 geonode/templates/index.html:23
-msgid "http://docs.geonode.org/en/master/usage"
-msgstr "http://docs.geonode.org/en/master/usage"
+msgid "http://docs.geonode.org/en/2.10.x/usage"
+msgstr "http://docs.geonode.org/en/2.10.x/usage"
 
 #: geonode/contrib/geosites/site_template/templates/site_index.html:15
 #: geonode/contrib/geosites/templates/master_index.html:16 geonode/templates/index.html:23

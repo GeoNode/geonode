@@ -20,7 +20,9 @@
   		<p></p>
 		<p>{{custom_theme.jumbotron_welcome_content|default:_("GeoNode is an open source platform for sharing geospatial data and maps.")}}</p>
 		{% if not custom_theme.jumbotron_cta_hide %}
-  		<p><a class="btn btn-default btn-lg" target="_blank" href="{{custom_theme.jumbotron_cta_link|default:_("http://docs.geonode.org/en/master/usage")}}" role="button">{{custom_theme.jumbotron_cta_text|default:_("Get Started &raquo;")}}</a></p>
+  		<p><a class="btn btn-default btn-lg" target="_blank"
+  				href="{{custom_theme.jumbotron_cta_link|default:_("http://docs.geonode.org/en/2.10.x/usage")}}"
+  				role="button">{{custom_theme.jumbotron_cta_text|default:_("Get Started &raquo;")}}</a></p>
 		{% endif %}
 	</div>
   </div>

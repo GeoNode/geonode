@@ -6266,8 +6266,8 @@ msgid "GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr "GeoNode هو منصة مفتوحة المصدر لتبادل البيانات الجغرافية والخرائط."
 
 #: geonode/templates/index.html:23
-msgid "http://docs.geonode.org/en/master/usage"
-msgstr "http://docs.geonode.org/en/master/usage"
+msgid "http://docs.geonode.org/en/2.10.x/usage"
+msgstr "http://docs.geonode.org/en/2.10.x/usage"
 
 #: geonode/templates/index.html:23
 msgid "Get Started &raquo;"
