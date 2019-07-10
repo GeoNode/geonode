@@ -7827,7 +7827,7 @@ msgid "home"
 msgstr ""
 
 #: geonode/templates/index.html:23
-msgid "http://docs.geonode.org/en/master/usage"
+msgid "http://docs.geonode.org/en/2.10.x/usage"
 msgstr ""
 
 #: geonode/templates/index.html:23
