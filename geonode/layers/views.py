@@ -1578,7 +1578,6 @@ def layer_view_counter(layer_id, viewer):
 
 @login_required
 def layers_update(request):
-    template = 'update/layers_update.html'
 
     params = request.GET
     # Get the owner specified in the request if any, otherwise used the logged
@@ -1589,16 +1588,27 @@ def layers_update(request):
     workspace = params.get('workspace', None)
     store = params.get('store', None)
     filter = params.get('filter', None)
-    update_layers.delay(
+    output = update_layers.delay(
         ignore_errors=False, owner=owner, workspace=workspace,
         store=store, filter=filter)
+    # output.get()
 
-    return render(request, template)
+    display_results = gs_slurp(output)
+
+
+    print(display_results)
+
+    # return render(request, template)
+    return HttpResponseRedirect(reverse('display_layers_update'))
 
 @login_required
-def start_layers_update(request):
+def display_layers_update(request):
+    template = 'update/layers_update.html'
+
     context = {
-        gs_slurp(layer_view_counter(0))
+
+
     }
-    return render(request, 'update/layers_update.html', context)
+
+    return render(request, template, context)
 

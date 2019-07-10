@@ -63,6 +63,7 @@ from .helpers import (get_stores,
                       _stylefilterparams_geowebcache_layer,
                       _invalidate_geowebcache_layer)
 
+
 from django_basic_auth import logged_in_or_basicauth
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_control
@@ -90,6 +91,7 @@ def updatelayers(request):
     geoserver_update_layers.delay(
         ignore_errors=False, owner=owner, workspace=workspace,
         store=store, filter=filter)
+
 
     return HttpResponseRedirect(reverse('layer_browse'))
 

@@ -20,46 +20,11 @@
            class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
         <h2 class="page-title">{% trans "Update Layers" %}</h2>
 
-        <script language="javascript">
-            var json_mosaics = [
-                {% for mosaic in mosaics %}
-                    {
-                        "name": "{{mosaic.name}}",
-                        "workspace": "{{mosaic.workspace}}",
-                        "is_mosaic": "{{mosaic.is_mosaic}}",
-                        "has_time": "{{mosaic.has_time}}",
-                        "has_elevation": "{{mosaic.has_elevation}}",
-                        "time_regex": "{{mosaic.time_regex}}",
-                        "elevation_regex": "{{mosaic.elevation_regex}}"
-                    },
-                {% endfor %}
-            ]
-        </script>
+
     </div>
     <div class="row">
         <div class="col-md-8">
-            {% if incomplete %}
-                <section class="widget" id="incomplete-download-list">
-                    <h3>{% trans "Incomplete Uploads" %}</h3>
-                    <p>{% trans "You have the following incomplete uploads" %}:</p>
-                    {% for u in incomplete %}
-                        <div class="clearfix uip" id="incomplete-{{ u.import_id }}">
-                            <div class="pull-left">{{ u.name }}, {% trans "last updated on" %} {{ u.date }}</div>
-                            <div class="upload_actions pull-right">
-                                <a class="btn btn-mini" href="#" id="resume-{{ u.import_id }}">{% trans "Resume" %}</a>
-                                <a class="btn btn-mini" href="#" id="delete-{{ u.import_id }}"><i
-                                        class="icon-trash"></i> {% trans "Delete" %}</a>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </section>
-                <div id="confirm-delete" class="hidden alert alert-warning">
-                    {% trans "Are you sure you want to delete this upload?" %}
-                    <a href="#y" class="btn btn-danger">{% trans "Delete" %}</a>
-                    <a href="#n" class="btn btn-default">{% trans "Cancel" %}</a>
-                    <a href="#yy">{% trans "Delete, and don't ask me again." %}</a>
-                </div>
-            {% endif %}
+
 
             {% block additional_info %}{% endblock %}
 
@@ -77,12 +42,12 @@
 
           
 
-                <h3><i class="fa fa-square-o fa-4x rotate-45"></i><br/>{{ facets.layer|default:_("No") }} {% blocktrans count counter=facets.layer %}Layer{% plural %}Layers{% endblocktrans %}</h3>
+                <h3><i class="fa fa-square-o fa-4x rotate-45"></i><br/>Layers</h3>
             </section>
 
 
             <section>
-                <a href="#" id="upload-button" class="btn btn-danger">{% trans "Update Layers" %}</a>
+                <a href="{% url "start_layers_update" %}"  class="btn btn-danger">{% trans "Update Layers" %}</a>
             </section>
         </div>
 

@@ -46,9 +46,28 @@ from geonode.security.views import _perms_info_json
 from geonode.security.utils import set_geowebcache_invalidate_cache
 import xml.etree.ElementTree as ET
 from django.utils.module_loading import import_string
-
+from geonode.geoserver.helpers import *
 
 logger = logging.getLogger(__name__)
+
+
+
+
+
+
+
+
+ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
+
+_wms = None
+_csw = None
+_user, _password = ogc_server_settings.credentials
+
+url = ogc_server_settings.rest
+gs_catalog = Catalog(url, _user, _password)
+gs_uploader = Client(url, _user, _password)
+
+
 
 
 def gs_slurp(

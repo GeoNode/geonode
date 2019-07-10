@@ -239,7 +239,7 @@
                 {% endif %}
                 {% if user.is_superuser or user.is_staff %}
                     <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
-                     <li><a href="{% url "layers_update" %}">{% trans "Update Layers" %}</a></li>
+                     <li><a href="{% url "display_layers_update" %}">{% trans "Update Layers" %}</a></li>
                 {% endif %}
               </ul>
             </li>
