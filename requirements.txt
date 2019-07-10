@@ -1,5 +1,5 @@
 # native dependencies
-Pillow==6.0.0
+Pillow==6.1.0
 lxml==4.3.3
 psycopg2==2.8.3
 Django==1.11.22
@@ -17,7 +17,7 @@ celery==4.2.1
 kombu==4.4.0
 boto<=2.49.0
 six<1.11.0 # https://github.com/benjaminp/six/issues/210
-tqdm==4.31.1
+tqdm==4.32.2
 
 # Django Apps
 django-allauth==0.39.1
@@ -102,7 +102,7 @@ simplejson==3.16.0
 timeout-decorator==0.4.1
 
 # required by monitoring
-psutil==5.6.1
+psutil==5.6.3
 django-cors-headers==2.5.2
 django-multi-email-field<=0.5.1
 user-agents
