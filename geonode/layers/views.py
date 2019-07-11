@@ -1596,7 +1596,9 @@ def layers_update(request):
     display_results = gs_slurp(output)
 
 
+
     print(display_results)
+
 
     # return render(request, template)
     return HttpResponseRedirect(reverse('display_layers_update'))
@@ -1605,10 +1607,28 @@ def layers_update(request):
 def display_layers_update(request):
     template = 'update/layers_update.html'
 
-    context = {
+    # results = layers_update
 
+    data = gs_slurp()
+
+    status = data['layers'][0]['status']
+    layer_name = data['layers'][0]['name']
+    deleted = data['stats']['deleted']
+    failed = data['stats']['failed']
+    updated = data['stats']['updated']
+    duration = data['stats']['duration_sec']
+
+    print (updated)
+    context = {
+        'status': status,
+        'layer_name': layer_name,
+        'deleted': deleted,
+        'failed': failed,
+        'updated': updated,
+        'duration': duration,
 
     }
+
 
     return render(request, template, context)
 
