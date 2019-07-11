@@ -1182,7 +1182,7 @@ msgstr ""
 #: geonode/contrib/geosites/site_template/templates/site_index.html:14
 #: geonode/contrib/geosites/templates/master_index.html:15
 #: geonode/templates/index.html:23
-msgid "http://docs.geonode.org/en/master/usage"
+msgid "http://docs.geonode.org/en/2.10.x/usage"
 msgstr ""
 
 #: geonode/contrib/geosites/site_template/templates/site_index.html:15

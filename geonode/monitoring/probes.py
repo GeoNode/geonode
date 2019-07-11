@@ -80,6 +80,7 @@ class BaseProbe(object):
         cpu = psutil.cpu_times()
         return {
             'usage': cpu.user + cpu.system,
+            'usage.percent': psutil.cpu_percent()
         }
 
     @staticmethod

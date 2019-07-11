@@ -32,9 +32,9 @@ import sys
 from threading import local
 import time
 import uuid
-
+import base64
 import urllib
-from urlparse import urlsplit, urlparse, urljoin
+from urlparse import urlsplit, urljoin
 
 from agon_ratings.models import OverallRating
 from bs4 import BeautifulSoup
@@ -73,7 +73,7 @@ if not hasattr(settings, 'OGC_SERVER'):
     msg = (
         'Please configure OGC_SERVER when enabling geonode.geoserver.'
         ' More info can be found at '
-        'http://docs.geonode.org/en/master/basic/settings/index.html#ogc-server')
+        'http://docs.geonode.org/en/2.10.x/basic/settings/index.html#ogc-server')
     raise ImproperlyConfigured(msg)
 
 
@@ -1881,8 +1881,10 @@ _esri_types = {
 def _render_thumbnail(req_body, width=240, height=180):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
-    hostname = urlparse(settings.SITEURL).hostname
-    params = dict(width=width, height=height, auth="%s,%s,%s" % (hostname, _user, _password))
+    headers = {'Content-type': 'text/html'}
+    valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
+    headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+    params = dict(width=width, height=height)
     url = url + "?" + urllib.urlencode(params)
 
     # @todo annoying but not critical
@@ -1899,11 +1901,12 @@ def _render_thumbnail(req_body, width=240, height=180):
     data = unicode(data, errors='ignore').encode('UTF-8')
     try:
         req, content = http_client.post(
-            url, data=data, headers={'Content-type': 'text/html'})
+            url, data=data, headers=headers)
     except BaseException as e:
         logger.warning('Error generating thumbnail')
         logger.exception(e)
         return
+
     return content
 
 
