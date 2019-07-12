@@ -138,10 +138,14 @@ if [ ! -z "$HTTPS_HOST" ]; then
         openssl x509 -out server.crt
 
     # create a keystore and import certificate
-    keytool -import -noprompt -trustcacerts \
+    if [ "$(ls -A /keystore.jks)" ]; then
+    echo 'Keystore not empty, skipping initialization...'
+    else
+    echo 'Keystore empty, we run initialization...'
+        keytool -import -noprompt -trustcacerts \
             -alias ${HTTPS_HOST} -file server.crt \
             -keystore /keystore.jks -storepass ${PASSWORD}
-
+    fi
     rm server.crt
 
     JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.keyStore=/keystore.jks -Djavax.net.ssl.keyStorePassword=$PASSWORD"
