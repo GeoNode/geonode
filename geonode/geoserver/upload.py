@@ -221,7 +221,11 @@ def geoserver_upload(
     style = None
     if sld is not None:
         try:
-            style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
+            style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE)
+        except geoserver.catalog.FailedRequestError:
+            style = cat.get_style(name)
+
+        try:
             overwrite = style or False
             cat.create_style(name, sld, overwrite=overwrite, raw=True, workspace=settings.DEFAULT_WORKSPACE)
         except geoserver.catalog.ConflictingDataError as e:
