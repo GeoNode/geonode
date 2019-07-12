@@ -1353,7 +1353,6 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
 
 
 def get_store(cat, name, workspace=None):
-
     # Make sure workspace is a workspace object and not a string.
     # If the workspace does not exist, continue as if no workspace had been defined.
     if isinstance(workspace, basestring):

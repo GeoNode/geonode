@@ -1248,7 +1248,8 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
 
             thumbnail_url = map_obj.get_thumbnail_url()
 
-            self.assertEquals(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+            if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+                self.assertEquals(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
         finally:
             # Cleanup
             saved_layer.delete()
