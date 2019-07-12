@@ -35,7 +35,7 @@ services:
 
   django:
     restart: unless-stopped
-    image: geonode/geonode:latest
+    image: geonode/geonode:2.10
     container_name: django4${COMPOSE_PROJECT_NAME}
     stdin_open: true
     # tty: true
@@ -54,7 +54,7 @@ services:
       - ./scripts/docker/env/${SET_DOCKER_ENV}/django.env
 
   geonode:
-    image: geonode/nginx:geoserver
+    image: geonode/nginx:${SET_DOCKER_ENV}
     restart: unless-stopped
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     stdin_open: true
