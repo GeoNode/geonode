@@ -1495,10 +1495,10 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         srid = instance.srid if instance.srid else getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:4326')
         try:
             gs_resource = gs_catalog.get_resource(
-                instance.name,
+                name=instance.name,
                 workspace=instance.workspace)
             if not gs_resource:
-                gs_resource = gs_catalog.get_resource(instance.name)
+                gs_resource = gs_catalog.get_resource(name=instance.name)
             bbox = gs_resource.native_bbox
 
             dx = float(bbox[1]) - float(bbox[0])

@@ -88,7 +88,7 @@ def geoserver_post_save(instance, sender, created, **kwargs):
             instance.set_dirty_state()
 
         if instance.storeType != 'remoteStore' and created:
-            logger.info("... Creating Default Resource Linkks for Layer [%s]" % (instance.alternate))
+            logger.info("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
             set_resource_default_links(instance, sender, prune=True)
             logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
             try:
@@ -139,13 +139,12 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                                                    # keywords=instance.keywords,
                                                                    charset=instance.charset)
 
+    gs_resource = gs_catalog.get_resource(
+        name=instance.name,
+        store=instance.store,
+        workspace=instance.workspace)
     if not gs_resource:
-        gs_resource = gs_catalog.get_resource(
-            instance.name,
-            store=instance.store,
-            workspace=instance.workspace)
-        if not gs_resource:
-            gs_resource = gs_catalog.get_resource(instance.alternate)
+        gs_resource = gs_catalog.get_resource(name=instance.alternate)
 
     if gs_resource:
         gs_resource.title = instance.title or ""

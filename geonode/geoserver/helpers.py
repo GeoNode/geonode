@@ -389,9 +389,9 @@ def cascading_delete(cat, layer_name):
                 logger.debug(
                     'cascading delete was called on a layer where the workspace was not found')
                 return
-            resource = cat.get_resource(name, store=store, workspace=workspace)
+            resource = cat.get_resource(name=name, store=store, workspace=workspace)
         else:
-            resource = cat.get_resource(layer_name)
+            resource = cat.get_resource(name=layer_name)
     except EnvironmentError as e:
         if e.errno == errno.ECONNREFUSED:
             msg = ('Could not connect to geoserver at "%s"'
@@ -421,7 +421,7 @@ def cascading_delete(cat, layer_name):
             pass
         gs_styles = [x for x in cat.get_styles()]
         if settings.DEFAULT_WORKSPACE:
-            gs_styles = gs_styles + [x for x in cat.get_styles(workspace=settings.DEFAULT_WORKSPACE)]
+            gs_styles = gs_styles + [x for x in cat.get_styles(workspaces=settings.DEFAULT_WORKSPACE)]
             ws_styles = []
             for s in styles:
                 if s is not None and s.name not in _default_style_names:
@@ -1245,7 +1245,7 @@ def create_geoserver_db_featurestore(
     ds_exists = False
     try:
         if dsname:
-            ds = cat.get_store(dsname)
+            ds = cat.get_store(dsname, workspace=workspace)
         else:
             return None
         if ds is None:
@@ -1288,7 +1288,10 @@ def create_geoserver_db_featurestore(
     if ds_exists:
         ds.save_method = "PUT"
 
+    logger.info('Updating target datastore % s' % dsname)
     cat.save(ds)
+
+    logger.info('Reloading target datastore % s' % dsname)
     ds = get_store(cat, dsname, workspace=workspace)
     assert ds.enabled
 
@@ -1303,7 +1306,7 @@ def _create_featurestore(name, data, overwrite=False, charset="UTF-8", workspace
     except BaseException as e:
         logger.exception(e)
     store = get_store(cat, name, workspace=workspace)
-    return store, cat.get_resource(name, store=store, workspace=workspace)
+    return store, cat.get_resource(name=name, store=store, workspace=workspace)
 
 
 def _create_coveragestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
@@ -1313,7 +1316,7 @@ def _create_coveragestore(name, data, overwrite=False, charset="UTF-8", workspac
     except BaseException as e:
         logger.exception(e)
     store = get_store(cat, name, workspace=workspace)
-    return store, cat.get_resource(name, store=store, workspace=workspace)
+    return store, cat.get_resource(name=name, store=store, workspace=workspace)
 
 
 def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
@@ -1335,7 +1338,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
                               overwrite=overwrite,
                               workspace=workspace,
                               charset=charset)
-        resource = cat.get_resource(name, store=ds, workspace=workspace)
+        resource = cat.get_resource(name=name, store=ds, workspace=workspace)
         assert resource is not None
         return ds, resource
     except Exception:

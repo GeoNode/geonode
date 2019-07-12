@@ -764,7 +764,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         self.assertRaises(
             FailedRequestError,
             lambda: gs_cat.get_resource(
-                shp_layer.name,
+                name=shp_layer.name,
                 store=tif_store))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
