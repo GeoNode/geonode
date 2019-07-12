@@ -33,7 +33,7 @@ django-guardian<=1.4.9
 django-downloadview<=1.9
 django-polymorphic==2.0.3
 django-tastypie<=0.14.0
-oauthlib==3.0.1
+oauthlib==3.0.2
 pyopenssl==19.0.0
 
 # geopython dependencies
