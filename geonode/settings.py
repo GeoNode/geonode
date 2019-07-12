@@ -1769,9 +1769,12 @@ SOCIALACCOUNT_PROVIDERS = {
             'r_liteprofile',
         ],
         'PROFILE_FIELDS': [
-            'emailAddress',
-            'firstName',
-            'lastName',
+            'id',
+            'email-address',
+            'first-name',
+            'last-name',
+            'picture-url',
+            'public-profile-url',
         ]
     },
     'facebook': {
