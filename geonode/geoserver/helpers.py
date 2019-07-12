@@ -262,7 +262,7 @@ def get_sld_for(gs_catalog, layer):
     if gs_layer and gs_layer.resource and gs_layer.resource.resource_type == 'featureType':
         res = gs_layer.resource
         res.fetch()
-        ft = res.store.get_resources(res.name)
+        ft = res.store.get_resources(names=[res.name])
         ft.fetch()
         for attr in ft.dom.find("attributes").getchildren():
             attr_binding = attr.find("binding")
@@ -549,13 +549,13 @@ def gs_slurp(
                 if store is None:
                     resources = []
                 else:
-                    resources = cat.get_resources(store=store)
+                    resources = cat.get_resources(stores=[store])
             else:
-                resources = cat.get_resources(workspace=workspace)
+                resources = cat.get_resources(workspaces=[workspace])
 
     elif store is not None:
         store = get_store(cat, store)
-        resources = cat.get_resources(store=store)
+        resources = cat.get_resources(stores=[store])
     else:
         resources = cat.get_resources()
     if remove_deleted:
@@ -1783,7 +1783,7 @@ def set_time_info(layer, attribute, end_attribute, presentation,
         raise ValueError('no such layer: %s' % layer.name)
     resource = layer.resource if layer else None
     if not resource:
-        resources = gs_catalog.get_resources(store=layer.name)
+        resources = gs_catalog.get_resources(stores=[layer.name])
         if resources:
             resource = resources[0]
 
@@ -1816,7 +1816,7 @@ def get_time_info(layer):
         raise ValueError('no such layer: %s' % layer.name)
     resource = layer.resource if layer else None
     if not resource:
-        resources = gs_catalog.get_resources(store=layer.name)
+        resources = gs_catalog.get_resources(stores=[layer.name])
         if resources:
             resource = resources[0]
 
@@ -2136,7 +2136,7 @@ def set_time_dimension(cat, name, workspace, time_presentation, time_presentatio
     layer = cat.get_layer(name)
     resource = layer.resource if layer else None
     if not resource:
-        resources = cat.get_resources(store=name) or cat.get_resources(store=name, workspace=workspace)
+        resources = cat.get_resources(stores=[name]) or cat.get_resources(stores=[name], workspaces=[workspace])
         if resources:
             resource = resources[0]
 
