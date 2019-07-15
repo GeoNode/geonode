@@ -295,7 +295,7 @@ def fixup_style(cat, resource, style):
     for lyr in layers:
         if lyr.default_style.name in _style_templates:
             logger.info("%s uses a default style, generating a new one", lyr)
-            name = _style_name(lyr)
+            name = _style_name(lyr.resource)
             if style is None:
                 sld = get_sld_for(cat, lyr)
             else:
@@ -1312,7 +1312,7 @@ def _create_featurestore(name, data, overwrite=False, charset="UTF-8", workspace
 def _create_coveragestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     cat = gs_catalog
     try:
-        cat.create_coveragestore(name, data, overwrite=overwrite)
+        cat.create_coveragestore(name, path=data, overwrite=overwrite)
     except BaseException as e:
         logger.exception(e)
     store = get_store(cat, name, workspace=workspace)
