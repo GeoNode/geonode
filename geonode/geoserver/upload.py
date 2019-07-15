@@ -165,10 +165,10 @@ def geoserver_upload(
     # Verify the resource was created
     if not gs_resource:
         gs_resource = gs_catalog.get_resource(
-            name,
+            name=name,
             workspace=workspace)
         if not gs_resource:
-            gs_resource = gs_catalog.get_resource(name)
+            gs_resource = gs_catalog.get_resource(name=name)
     if gs_resource is not None:
         assert gs_resource.name == name
     else:
@@ -221,7 +221,11 @@ def geoserver_upload(
     style = None
     if sld is not None:
         try:
-            style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
+            style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE)
+        except geoserver.catalog.FailedRequestError:
+            style = cat.get_style(name)
+
+        try:
             overwrite = style or False
             cat.create_style(name, sld, overwrite=overwrite, raw=True, workspace=settings.DEFAULT_WORKSPACE)
         except geoserver.catalog.ConflictingDataError as e:
