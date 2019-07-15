@@ -50,8 +50,6 @@ from tastypie.test import ResourceTestCaseMixin
 
 from geonode.qgis_server.models import QGISServerLayer
 
-from geoserver.catalog import FailedRequestError
-
 # from geonode.security.models import *
 from geonode.decorators import on_ogc_backend
 from geonode.base.models import TopicCategory, Link
