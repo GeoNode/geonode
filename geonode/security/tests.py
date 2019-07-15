@@ -1268,7 +1268,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 set_layer_style(test_perm_layer, test_perm_layer.alternate, sld)
 
             fixup_style(gs_catalog, test_perm_layer.alternate, None)
-            self.assertIsNone(get_sld_for(gs_catalog, test_perm_layer))
+            self.assertIsNotNone(get_sld_for(gs_catalog, test_perm_layer))
             _log("3. ------------ %s " % get_sld_for(gs_catalog, test_perm_layer))
 
             create_gs_thumbnail(test_perm_layer, overwrite=True)
