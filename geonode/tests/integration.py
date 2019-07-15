@@ -761,11 +761,11 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         ws = gs_cat.get_workspace(tif_layer.workspace)
         tif_store = gs_cat.get_store(tif_layer.store, ws)
         tif_layer.delete()
-        self.assertRaises(
-            FailedRequestError,
-            lambda: gs_cat.get_resource(
-                name=shp_layer.name,
-                store=tif_store))
+        self.assertIsNone(gs_cat.get_resource(
+            name=shp_layer.name,
+            store=tif_store,
+            workspace=ws)
+        )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)

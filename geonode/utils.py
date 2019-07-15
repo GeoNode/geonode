@@ -457,8 +457,9 @@ class GXPMapBase(object):
                        for source in sources.values() if source and 'url' in source]
 
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
-            if len(sources.keys(
-            )) > 0 and not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
+            if len(sources.keys()) > 0 and \
+                'url' in settings.MAP_BASELAYERS[0]['source'] and \
+                    not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
                 keys = sorted(sources.keys())
                 settings.MAP_BASELAYERS[0]['source'][
                     'title'] = 'Local Geoserver'
