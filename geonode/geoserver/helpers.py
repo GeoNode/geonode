@@ -262,7 +262,7 @@ def get_sld_for(gs_catalog, layer):
     if gs_layer and gs_layer.resource and gs_layer.resource.resource_type == 'featureType':
         res = gs_layer.resource
         res.fetch()
-        ft = res.store.get_resources(names=[res.name])
+        ft = res.store.get_resources(name=res.name)
         ft.fetch()
         for attr in ft.dom.find("attributes").getchildren():
             attr_binding = attr.find("binding")
@@ -1312,7 +1312,7 @@ def _create_featurestore(name, data, overwrite=False, charset="UTF-8", workspace
 def _create_coveragestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     cat = gs_catalog
     try:
-        cat.create_coveragestore(name, path=data, overwrite=overwrite)
+        cat.create_coveragestore(name, path=data, overwrite=overwrite, upload_data=True)
     except BaseException as e:
         logger.exception(e)
     store = get_store(cat, name, workspace=workspace)
