@@ -54,7 +54,10 @@ The `OSGeo Foundation <http://osgeo.org/>`_ is a not-for-profit supporting Geosp
 Install via Ansible
 ^^^^^^^^^^^^^^^^^^^
 
-TODO
+`Ansible <https://www.ansible.com/>`__  is an open source automation tool for server configuration and management. It works by organizing your server inventory into groups, describes how those groups should be configured or what actions should be taken on them. We can use ansible for installing GeoNode-project on one or many servers.
+
+*  :ref:`Manual installation of geonode-project <install-with-ansible>` by use of Ansible
+
 
 Install via Docker
 ^^^^^^^^^^^^^^^^^^

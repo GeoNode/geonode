@@ -49,6 +49,7 @@ log = logging.getLogger(__name__)
 
 
 class MonitoringFilter(logging.Filter):
+
     def __init__(self, service, skip_urls=tuple(), *args, **kwargs):
         super(MonitoringFilter, self).__init__(*args, **kwargs)
         self.service = service

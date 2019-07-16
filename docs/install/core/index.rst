@@ -131,10 +131,7 @@ At this point your command prompt shows a ``(geonode)`` prefix, this indicates t
   pip install -e . --upgrade --no-cache --no-cache-dir
 
   # Install GDAL Utilities for Python
-  GDAL_VERSION=`gdal-config --version`; \
-    PYGDAL_VERSION="$(pip install pygdal==$GDAL_VERSION 2>&1 | grep -oP '(?<=: )(.*)(?=\))' | \
-    grep -oh '\b'${GDAL_VERSION}'[0-9.]\+\b')"; \
-    pip install pygdal==$PYGDAL_VERSION
+  pip install pygdal=="`gdal-config --version`.*"
 
 Run GeoNode for the first time in DEBUG Mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1297,7 +1294,7 @@ It is possible to let docker show which containers are currently running (add ``
   docker ps
 
   CONTAINER ID        IMAGE                      COMMAND                  CREATED             STATUS              PORTS                NAMES
-  3b232931f820        geonode/nginx:geoserver    "nginx -g 'daemon of…"   26 minutes ago      Up 26 minutes       0.0.0.0:80->80/tcp   nginx4geonode
+  3b232931f820        geonode/nginx:production    "nginx -g 'daemon of…"   26 minutes ago      Up 26 minutes       0.0.0.0:80->80/tcp   nginx4geonode
   ff7002ae6e91        geonode/geonode:latest     "/usr/src/app/entryp…"   26 minutes ago      Up 26 minutes       8000/tcp             django4geonode
   2f155e5043be        geonode/geoserver:2.14.3   "/usr/local/tomcat/t…"   26 minutes ago      Up 26 minutes       8080/tcp             geoserver4geonode
   97f1668a01b1        geonode_celery             "/usr/src/app/entryp…"   26 minutes ago      Up 26 minutes       8000/tcp             geonode_celery_1

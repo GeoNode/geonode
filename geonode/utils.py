@@ -457,8 +457,9 @@ class GXPMapBase(object):
                        for source in sources.values() if source and 'url' in source]
 
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
-            if len(sources.keys(
-            )) > 0 and not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
+            if len(sources.keys()) > 0 and \
+                'url' in settings.MAP_BASELAYERS[0]['source'] and \
+                    not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
                 keys = sorted(sources.keys())
                 settings.MAP_BASELAYERS[0]['source'][
                     'title'] = 'Local Geoserver'
@@ -1495,10 +1496,10 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         srid = instance.srid if instance.srid else getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:4326')
         try:
             gs_resource = gs_catalog.get_resource(
-                instance.name,
+                name=instance.name,
                 workspace=instance.workspace)
             if not gs_resource:
-                gs_resource = gs_catalog.get_resource(instance.name)
+                gs_resource = gs_catalog.get_resource(name=instance.name)
             bbox = gs_resource.native_bbox
 
             dx = float(bbox[1]) - float(bbox[0])
