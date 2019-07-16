@@ -58,6 +58,7 @@ def geoserver_delete(typename):
         cascading_delete(gs_catalog, typename)
 
 
+@on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer
     """
@@ -69,6 +70,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
                 cascading_delete(gs_catalog, instance.alternate)
 
 
+@on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_pre_save(*args, **kwargs):
     # nothing to do here, processing is pushed to post-save
     pass
@@ -88,7 +90,7 @@ def geoserver_post_save(instance, sender, created, **kwargs):
             instance.set_dirty_state()
 
         if instance.storeType != 'remoteStore' and created:
-            logger.info("... Creating Default Resource Linkks for Layer [%s]" % (instance.alternate))
+            logger.info("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
             set_resource_default_links(instance, sender, prune=True)
             logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
             try:
@@ -97,6 +99,7 @@ def geoserver_post_save(instance, sender, created, **kwargs):
                 logger.warn("Failure Creating Thumbnail for Layer [%s]" % (instance.alternate))
 
 
+@on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_post_save_local(instance, *args, **kwargs):
     """Send information to geoserver.
 
@@ -139,13 +142,12 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                                                    # keywords=instance.keywords,
                                                                    charset=instance.charset)
 
+    gs_resource = gs_catalog.get_resource(
+        name=instance.name,
+        store=instance.store,
+        workspace=instance.workspace)
     if not gs_resource:
-        gs_resource = gs_catalog.get_resource(
-            instance.name,
-            store=instance.store,
-            workspace=instance.workspace)
-        if not gs_resource:
-            gs_resource = gs_catalog.get_resource(instance.alternate)
+        gs_resource = gs_catalog.get_resource(name=instance.alternate)
 
     if gs_resource:
         gs_resource.title = instance.title or ""
@@ -351,6 +353,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         call_command('update_index')
 
 
+@on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_pre_save_maplayer(instance, sender, **kwargs):
     # If this object was saved via fixtures,
     # do not do post processing.
@@ -370,6 +373,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
             raise e
 
 
+@on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_post_save_map(instance, sender, created, **kwargs):
     instance.set_missing_info()
     if not created:
