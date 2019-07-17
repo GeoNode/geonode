@@ -16,7 +16,7 @@ decorator==4.3.2
 celery==4.2.1
 kombu==4.4.0
 boto<=2.49.0
-six<1.11.0 # https://github.com/benjaminp/six/issues/210
+six<1.13.0 # https://github.com/benjaminp/six/issues/210
 tqdm==4.32.2
 
 # Django Apps
