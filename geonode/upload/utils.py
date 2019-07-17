@@ -581,7 +581,8 @@ def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
     if ogc_server_settings.datastore_db and task.target.store_type != 'coverageStore':
         target = create_geoserver_db_featurestore(
             # store_name=ogc_server_settings.DATASTORE,
-            store_name=ogc_server_settings.datastore_db['NAME']
+            store_name=ogc_server_settings.datastore_db['NAME'],
+            workspace=settings.DEFAULT_WORKSPACE
         )
         _log(
             'setting target datastore %s %s',
