@@ -103,7 +103,7 @@ timeout-decorator==0.4.1
 
 # required by monitoring
 psutil==5.6.3
-django-cors-headers==2.5.2
+django-cors-headers==3.0.2
 django-multi-email-field<=0.5.1
 user-agents
 xmljson
