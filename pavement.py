@@ -825,7 +825,6 @@ def test_bdd():
     local = str2bool(options.get('local', 'false'))
     if local:
         call_task('reset_hard')
-        call_task('setup')
     else:
         call_task('reset')
     call_task('setup')
@@ -887,14 +886,10 @@ def test_integration(options):
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings if settings else ''
 
         if name == 'geonode.upload.tests.integration':
-            sh("%s python -W ignore manage.py makemigrations --noinput" % settings)
-            sh("%s python -W ignore manage.py migrate --noinput" % settings)
-            sh("%s python -W ignore manage.py loaddata sample_admin.json" % settings)
-            sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" %
-               settings)
-            sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" %
-               settings)
-            call_task('start_geoserver')
+            call_task('reset_hard')
+            call_task('setup', options={'settings': settings})
+            call_task('sync', options={'settings': settings})
+            call_task('start_geoserver', options={'settings': settings})
             bind = options.get('bind', '0.0.0.0:8000')
             foreground = '' if options.get('foreground', False) else '&'
             sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))

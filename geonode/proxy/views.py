@@ -163,6 +163,7 @@ def proxy(request, url=None, response_callback=None,
         settings.SITEURL,
         raw_url) if raw_url.startswith("/") else raw_url
     url = urlsplit(raw_url)
+    scheme = str(url.scheme)
     locator = str(url.path)
     if url.query != "":
         locator += '?' + url.query
@@ -170,8 +171,8 @@ def proxy(request, url=None, response_callback=None,
         locator += '#' + url.fragment
 
     # White-Black Listing Hosts
+    site_url = urlsplit(settings.SITEURL)
     if sec_chk_hosts and not settings.DEBUG:
-        site_url = urlsplit(settings.SITEURL)
         if site_url.hostname not in PROXY_ALLOWED_HOSTS:
             PROXY_ALLOWED_HOSTS += (site_url.hostname, )
 
@@ -210,7 +211,9 @@ def proxy(request, url=None, response_callback=None,
 
     # Inject access_token if necessary
     parsed = urlparse(raw_url)
-    parsed._replace(path=locator.encode('utf8'))
+    parsed = parsed._replace(path=locator.encode('utf8'))
+    if parsed.netloc in site_url.netloc:
+        parsed = parsed._replace(scheme=site_url.scheme)
 
     _url = parsed.geturl()
 
