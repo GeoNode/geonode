@@ -56,7 +56,7 @@ django-celery-monitor<=1.1.2
 django-floppyforms<=1.7.0
 django-forms-bootstrap<=3.1.0
 django-activity-stream==0.8.0
-django-autocomplete-light==2.3.3 # pinned because >=2.3.4 throw an exception on startup
+django-autocomplete-light==3.3.5 # pinned because >=2.3.4 throw an exception on startup
 django-basic-authentication-decorator==0.9
 django-leaflet==0.24.0
 django-invitations<=1.9.2
