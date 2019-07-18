@@ -173,9 +173,12 @@ def proxy(request, url=None, response_callback=None,
     # White-Black Listing Hosts
     site_url = urlsplit(settings.SITEURL)
     if sec_chk_hosts and not settings.DEBUG:
+
+        # Attach current SITEURL
         if site_url.hostname not in PROXY_ALLOWED_HOSTS:
             PROXY_ALLOWED_HOSTS += (site_url.hostname, )
 
+        # Attach current hostname
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import ogc_server_settings
             hostname = (
@@ -184,6 +187,7 @@ def proxy(request, url=None, response_callback=None,
             if hostname not in PROXY_ALLOWED_HOSTS:
                 PROXY_ALLOWED_HOSTS += hostname
 
+        # Check OWS regexp
         if url.query and ows_regexp.match(url.query):
             ows_tokens = ows_regexp.match(url.query).groups()
             if len(ows_tokens) == 4 and 'version' == ows_tokens[0] and StrictVersion(
@@ -192,6 +196,12 @@ def proxy(request, url=None, response_callback=None,
                             'getcapabilities') and ows_tokens[3].upper() in ('OWS', 'WCS', 'WFS', 'WMS', 'WPS', 'CSW'):
                 if url.hostname not in PROXY_ALLOWED_HOSTS:
                     PROXY_ALLOWED_HOSTS += (url.hostname, )
+
+        # Check Remote Services base_urls
+        from geonode.services.models import Service
+        for _s in Service.objects.all():
+            _remote_host = urlsplit(_s.base_url).hostname
+            PROXY_ALLOWED_HOSTS += (_remote_host, )
 
         if not validate_host(
                 url.hostname, PROXY_ALLOWED_HOSTS):
