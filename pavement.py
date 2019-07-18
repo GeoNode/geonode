@@ -368,10 +368,10 @@ def win_install_deps(options):
         print "Windows dependencies now complete.  Run pip install -e geonode --use-mirrors"
 
 
+@task
 @cmdopts([
     ('version=', 'v', 'Legacy GeoNode version of the existing database.')
 ])
-@task
 def upgradedb(options):
     """
     Add 'fake' data migrations for existing tables from legacy GeoNode versions
@@ -392,7 +392,7 @@ def updategeoip(options):
     Update geoip db
     """
     settings = options.get('settings', '')
-    if settings:
+    if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
     sh("%s python -W ignore manage.py updategeoip -o" % settings)
@@ -407,7 +407,7 @@ def sync(options):
     Run the migrate and migrate management commands to create and migrate a DB
     """
     settings = options.get('settings', '')
-    if settings:
+    if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
     sh("%s python -W ignore manage.py makemigrations --noinput" % settings)
@@ -491,7 +491,7 @@ def package(options):
     ('foreground', 'f', 'Do not run in background but in foreground'),
     ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ], share_with=['start_django', 'start_geoserver'])
-def start():
+def start(options):
     """
     Start GeoNode (Django, GeoServer & Client)
     """
@@ -500,7 +500,7 @@ def start():
 
 
 @task
-def stop_django():
+def stop_django(options):
     """
     Stop the GeoNode Django application
     """
@@ -510,7 +510,7 @@ def stop_django():
 
 
 @task
-def stop_geoserver():
+def stop_geoserver(options):
     """
     Stop GeoServer
     """
@@ -552,7 +552,7 @@ def stop_geoserver():
 @cmdopts([
     ('qgis_server_port=', 'p', 'The port of the QGIS Server instance.')
 ])
-def stop_qgis_server():
+def stop_qgis_server(options):
     """
     Stop QGIS Server Backend.
     """
@@ -575,26 +575,26 @@ def stop_qgis_server():
     'stop_geoserver',
     'stop_qgis_server'
 ])
-def stop():
+def stop(options):
     """
     Stop GeoNode
     """
     # windows needs to stop the geoserver first b/c we can't tell which python
     # is running, so we kill everything
     info("Stopping GeoNode ...")
-    stop_django()
+    stop_django(options)
 
 
+@task
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.')
 ])
-@task
-def start_django():
+def start_django(options):
     """
     Start the GeoNode Django application
     """
     settings = options.get('settings', '')
-    if settings:
+    if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     bind = options.get('bind', '0.0.0.0:8000')
     foreground = '' if options.get('foreground', False) else '&'
@@ -623,21 +623,22 @@ def start_django():
         sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
 
 
-def start_messaging():
+@task
+def start_messaging(options):
     """
     Start the GeoNode messaging server
     """
     settings = options.get('settings', '')
-    if settings:
+    if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     foreground = '' if options.get('foreground', False) else '&'
     sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
 
 
+@task
 @cmdopts([
     ('java_path=', 'j', 'Full path to java install for Windows')
 ])
-@task
 def start_geoserver(options):
     """
     Start GeoServer with GeoNode extensions
@@ -769,7 +770,7 @@ def start_geoserver(options):
 @cmdopts([
     ('qgis_server_port=', 'p', 'The port of the QGIS Server instance.')
 ])
-def start_qgis_server():
+def start_qgis_server(options):
     """Start QGIS Server instance with GeoNode related plugins."""
     # only start if using QGIS Serrver backend
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
@@ -818,14 +819,13 @@ def test(options):
 @cmdopts([
     ('local=', 'l', 'Set to True if running bdd tests locally')
 ])
-def test_bdd():
+def test_bdd(options):
     """
     Run GeoNode's BDD Test Suite
     """
     local = str2bool(options.get('local', 'false'))
     if local:
         call_task('reset_hard')
-        call_task('setup')
     else:
         call_task('reset')
     call_task('setup')
@@ -858,19 +858,13 @@ def test_integration(options):
     if _backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS:
         call_task('stop_geoserver')
         _reset()
-        # Start GeoServer
-        call_task('start_geoserver')
     else:
         call_task('stop_qgis_server')
         _reset()
-        # Start QGis Server
-        call_task('start_qgis_server')
-
-    sh('sleep 30')
 
     name = options.get('name', 'geonode.tests.integration')
     settings = options.get('settings', '')
-    if not settings and name == 'geonode.upload.tests.integration':
+    if name == 'geonode.upload.tests.integration':
         if _django_11:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
             settings = 'geonode.test_settings'
@@ -879,35 +873,38 @@ def test_integration(options):
 
     success = False
     try:
+        call_task('setup', options={'settings': settings})
+
         if name == 'geonode.tests.csw':
             call_task('sync', options={'settings': settings})
             call_task('start', options={'settings': settings})
             call_task('setup_data', options={'settings': settings})
 
-        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings if settings else ''
-
         if name == 'geonode.upload.tests.integration':
-            sh("%s python -W ignore manage.py makemigrations --noinput" % settings)
-            sh("%s python -W ignore manage.py migrate --noinput" % settings)
-            sh("%s python -W ignore manage.py loaddata sample_admin.json" % settings)
-            sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" %
+            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py makemigrations --noinput" % settings)
+            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py migrate --noinput" % settings)
+            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py loaddata sample_admin.json" % settings)
+            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" %
                settings)
-            sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" %
+            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" %
                settings)
+
             call_task('start_geoserver')
+
             bind = options.get('bind', '0.0.0.0:8000')
             foreground = '' if options.get('foreground', False) else '&'
-            sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
-            sh('%s python -W ignore manage.py runserver %s %s' %
+            sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
+               (settings, foreground))
+            sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
                (settings, bind, foreground))
             sh('sleep 30')
-            settings = 'REUSE_DB=1 %s' % settings
+            settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
 
         live_server_option = '--liveserver=localhost:8000'
         if _django_11:
             live_server_option = ''
 
-        info("GeoNode is now available, running the tests now.")
+        info("Running the tests now...")
         sh(('%s python -W ignore manage.py test %s'
             ' %s --noinput %s' % (settings, name, _keepdb, live_server_option)))
 
@@ -917,10 +914,9 @@ def test_integration(options):
         success = True
     finally:
         # don't use call task here - it won't run since it already has
-        stop()
+        stop(options)
+        _reset()
 
-    call_task('stop_geoserver')
-    _reset()
     if not success:
         sys.exit(1)
 
@@ -966,7 +962,7 @@ def run_tests(options):
 
 @task
 @needs(['stop'])
-def reset():
+def reset(options):
     """
     Reset a development environment (Database, GeoServer & Catalogue)
     """
@@ -985,7 +981,7 @@ def _reset():
 
 
 @needs(['reset'])
-def reset_hard():
+def reset_hard(options):
     """
     Reset a development environment (Database, GeoServer & Catalogue)
     """
@@ -997,7 +993,7 @@ def reset_hard():
     ('type=', 't', 'Import specific data type ("vector", "raster", "time")'),
     ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ])
-def setup_data():
+def setup_data(options):
     """
     Import sample data (from gisdata package) into GeoNode
     """
@@ -1011,7 +1007,7 @@ def setup_data():
         data_dir = os.path.join(gisdata.GOOD_DATA, ctype)
 
     settings = options.get('settings', '')
-    if settings:
+    if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
     sh("%s python -W ignore manage.py importlayers %s -v2" % (settings, data_dir))
@@ -1090,7 +1086,7 @@ def deb(options):
 
 
 @task
-def publish():
+def publish(options):
     if 'GPG_KEY_GEONODE' in os.environ:
         key = os.environ['GPG_KEY_GEONODE']
     else:
