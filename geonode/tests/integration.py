@@ -50,8 +50,6 @@ from tastypie.test import ResourceTestCaseMixin
 
 from geonode.qgis_server.models import QGISServerLayer
 
-from geoserver.catalog import FailedRequestError
-
 # from geonode.security.models import *
 from geonode.decorators import on_ogc_backend
 from geonode.base.models import TopicCategory, Link
@@ -106,7 +104,7 @@ r"""
  --------------------
 
  1)
-  (http://docs.geonode.org/en/master/install/core/index.html?highlight=paver#run-geonode-for-the-first-time-in-debug-mode)
+  (http://docs.geonode.org/en/2.10.x/install/core/index.html?highlight=paver#run-geonode-for-the-first-time-in-debug-mode)
 
   $ paver setup
 
@@ -761,11 +759,11 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         ws = gs_cat.get_workspace(tif_layer.workspace)
         tif_store = gs_cat.get_store(tif_layer.store, ws)
         tif_layer.delete()
-        self.assertRaises(
-            FailedRequestError,
-            lambda: gs_cat.get_resource(
-                shp_layer.name,
-                store=tif_store))
+        self.assertIsNone(gs_cat.get_resource(
+            name=shp_layer.name,
+            store=tif_store,
+            workspace=ws)
+        )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -1248,7 +1246,8 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
 
             thumbnail_url = map_obj.get_thumbnail_url()
 
-            self.assertNotEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+            if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+                self.assertEquals(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
         finally:
             # Cleanup
             saved_layer.delete()

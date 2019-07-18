@@ -29,9 +29,9 @@ from geonode.people.models import Profile
 
 def is_gs_resource_valid(layer):
     gs_resource = gs_catalog.get_resource(
-            layer.name,
-            store=layer.store,
-            workspace=layer.workspace)
+        name=layer.name,
+        store=layer.store,
+        workspace=layer.workspace)
     if gs_resource:
         return True
     else:

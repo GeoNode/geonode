@@ -241,20 +241,19 @@ def map_metadata(
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
-        the_map = map_form.instance
         if new_poc is not None and new_author is not None:
-            the_map.poc = new_poc
-            the_map.metadata_author = new_author
-        the_map.title = new_title
-        the_map.abstract = new_abstract
+            map_obj.poc = new_poc
+            map_obj.metadata_author = new_author
+        map_obj.title = new_title
+        map_obj.abstract = new_abstract
         if new_keywords:
-            the_map.keywords.clear()
-            the_map.keywords.add(*new_keywords)
+            map_obj.keywords.clear()
+            map_obj.keywords.add(*new_keywords)
         if new_regions:
-            the_map.regions.clear()
-            the_map.regions.add(*new_regions)
-        the_map.category = new_category
-        the_map.save()
+            map_obj.regions.clear()
+            map_obj.regions.add(*new_regions)
+        map_obj.category = new_category
+        map_obj.save()
 
         if not ajax:
             return HttpResponseRedirect(

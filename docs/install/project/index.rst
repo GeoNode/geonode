@@ -476,7 +476,7 @@ with following content
         branch_name: master
         virtualenv_dir: /home/geo/.venvs
         site_url: http://mygeonode.org/
-        geoserver_url: https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-2.14.3.war
+        geoserver_url: https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-2.15.2.war
         pg_max_connections: 100
         pg_shared_buffers: 128MB
         tomcat_xms: 1024M
