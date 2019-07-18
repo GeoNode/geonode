@@ -873,14 +873,31 @@ def test_integration(options):
 
     success = False
     try:
-        setup(options={'settings': settings})
-        sync(options={'settings': settings})
-        start(options={'settings': settings})
+        call_task('setup', options={'settings': settings})
 
         if name == 'geonode.tests.csw':
+            call_task('sync', options={'settings': settings})
+            call_task('start', options={'settings': settings})
             call_task('setup_data', options={'settings': settings})
 
         if name == 'geonode.upload.tests.integration':
+            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py makemigrations --noinput" % settings)
+            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py migrate --noinput" % settings)
+            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py loaddata sample_admin.json" % settings)
+            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" %
+               settings)
+            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" %
+               settings)
+
+            call_task('start_geoserver')
+
+            bind = options.get('bind', '0.0.0.0:8000')
+            foreground = '' if options.get('foreground', False) else '&'
+            sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
+               (settings, foreground))
+            sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
+               (settings, bind, foreground))
+            sh('sleep 30')
             settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
 
         live_server_option = '--liveserver=localhost:8000'
