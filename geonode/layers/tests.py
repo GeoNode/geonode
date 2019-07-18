@@ -310,7 +310,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
-            self.assertEquals(len(links), 3)
+            self.assertEquals(len(links), 5)
 
         lyr = Layer.objects.filter(storeType="coverageStore").first()
         self.assertEquals(lyr.storeType, "coverageStore")
@@ -342,7 +342,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
-            self.assertEquals(len(links), 7)
+            self.assertEquals(len(links), 9)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user

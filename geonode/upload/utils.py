@@ -155,7 +155,7 @@ def json_load_byteified(file_handle):
     )
 
 
-def json_loads_byteified(json_text):
+def json_loads_byteified(json_text, charset):
     return _byteify(
         json.loads(json_text, object_hook=_byteify),
         ignore_dicts=True
@@ -523,17 +523,22 @@ def _get_layer_values(layer, upload_session, expand=0):
         lyr = inDataSource.GetLayer(str(layer.name))
         limit = 100
         for feat in islice(lyr, 0, limit):
-            feat_values = json_loads_byteified(feat.ExportToJson()).get('properties')
-            for k in feat_values.keys():
-                type_code = feat.GetFieldDefnRef(k).GetType()
-                binding = feat.GetFieldDefnRef(k).GetFieldTypeName(type_code)
-                feat_value = feat_values[k] if str(feat_values[k]) != 'None' else 0
-                if expand > 0:
-                    ff = {'value': feat_value, 'binding': binding}
-                    feat_values[k] = ff
-                else:
-                    feat_values[k] = feat_value
-            layer_values.append(feat_values)
+            try:
+                feat_values = json_loads_byteified(
+                    feat.ExportToJson(),
+                    upload_session.charset).get('properties')
+                for k in feat_values.keys():
+                    type_code = feat.GetFieldDefnRef(k).GetType()
+                    binding = feat.GetFieldDefnRef(k).GetFieldTypeName(type_code)
+                    feat_value = feat_values[k] if str(feat_values[k]) != 'None' else 0
+                    if expand > 0:
+                        ff = {'value': feat_value, 'binding': binding}
+                        feat_values[k] = ff
+                    else:
+                        feat_values[k] = feat_value
+                layer_values.append(feat_values)
+            except BaseException as e:
+                logger.exception(e)
     return layer_values
 
 
@@ -576,7 +581,8 @@ def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
     if ogc_server_settings.datastore_db and task.target.store_type != 'coverageStore':
         target = create_geoserver_db_featurestore(
             # store_name=ogc_server_settings.DATASTORE,
-            store_name=ogc_server_settings.datastore_db['NAME']
+            store_name=ogc_server_settings.datastore_db['NAME'],
+            workspace=settings.DEFAULT_WORKSPACE
         )
         _log(
             'setting target datastore %s %s',

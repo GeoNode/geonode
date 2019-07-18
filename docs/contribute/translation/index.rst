@@ -5,8 +5,6 @@ Behind the scenes, GeoNode is using a software called GNU gettext further text-b
 <https://docs.djangoproject.com/en/2.2/topics/i18n/translation/>`_.
 Following will concentrate on what is needed for edit existing or contribute a new translation.
 
-
-
 Download the translation File
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

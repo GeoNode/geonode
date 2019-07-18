@@ -35,6 +35,8 @@ from django.http import HttpResponseRedirect, Http404
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 
+from geonode.base.models import ContactRole
+
 from .models import Profile
 from .forms import ProfileCreationForm, ProfileChangeForm
 
@@ -42,6 +44,10 @@ from autocomplete_light.forms import modelform_factory
 
 csrf_protect_m = method_decorator(csrf_protect)
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
+
+
+class ContactRolesInline(admin.TabularInline):
+    model = ContactRole
 
 
 class ProfileAdmin(admin.ModelAdmin):
@@ -76,6 +82,7 @@ class ProfileAdmin(admin.ModelAdmin):
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('username',)
     filter_horizontal = ('groups', 'user_permissions',)
+    inlines = [ContactRolesInline]
 
     def get_fieldsets(self, request, obj=None):
         if not obj:

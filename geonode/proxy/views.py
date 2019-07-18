@@ -49,6 +49,7 @@ from geonode.utils import (resolve_object,
                            http_client,
                            json_response)
 from geonode.base.auth import (extend_token,
+                               get_or_create_token,
                                get_token_from_auth_header,
                                get_token_object_from_session)
 from geonode.base.enumerations import LINK_TYPES as _LT
@@ -65,7 +66,7 @@ ows_regexp = re.compile(
     r"^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
 
 
-def get_headers(request, url, raw_url):
+def get_headers(request, url, raw_url, allowed_hosts=[]):
     headers = {}
     cookies = None
     csrftoken = None
@@ -100,16 +101,18 @@ def get_headers(request, url, raw_url):
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     access_token = None
-
     site_url = urlsplit(settings.SITEURL)
-    if site_url.netloc == url.netloc:
+    allowed_hosts += [url.hostname]
+    # We want to convert HTTP_AUTH into a Beraer Token only when hitting the local GeoServer
+    if site_url.hostname in allowed_hosts:
         # we give precedence to obtained from Aithorization headers
         if 'HTTP_AUTHORIZATION' in request.META:
             auth_header = request.META.get(
                 'HTTP_AUTHORIZATION',
                 request.META.get('HTTP_AUTHORIZATION2'))
             if auth_header:
-                access_token = get_token_from_auth_header(auth_header)
+                headers['Authorization'] = auth_header
+                access_token = get_token_from_auth_header(auth_header, create_if_not_exists=True)
         # otherwise we check if a session is active
         elif request and request.user.is_authenticated:
             access_token = get_token_object_from_session(request.session)
@@ -117,6 +120,8 @@ def get_headers(request, url, raw_url):
             # we extend the token in case the session is active but the token expired
             if access_token and access_token.is_expired():
                 extend_token(access_token)
+            else:
+                access_token = get_or_create_token(request.user)
 
     if access_token:
         headers['Authorization'] = 'Bearer %s' % access_token
@@ -137,7 +142,8 @@ def get_headers(request, url, raw_url):
 
 @requires_csrf_token
 def proxy(request, url=None, response_callback=None,
-          sec_chk_hosts=True, sec_chk_rules=True, timeout=None, **kwargs):
+          sec_chk_hosts=True, sec_chk_rules=True, timeout=None,
+          allowed_hosts=[], **kwargs):
     # Request default timeout
     if not timeout:
         timeout = TIMEOUT
@@ -157,6 +163,7 @@ def proxy(request, url=None, response_callback=None,
         settings.SITEURL,
         raw_url) if raw_url.startswith("/") else raw_url
     url = urlsplit(raw_url)
+    scheme = str(url.scheme)
     locator = str(url.path)
     if url.query != "":
         locator += '?' + url.query
@@ -164,11 +171,14 @@ def proxy(request, url=None, response_callback=None,
         locator += '#' + url.fragment
 
     # White-Black Listing Hosts
+    site_url = urlsplit(settings.SITEURL)
     if sec_chk_hosts and not settings.DEBUG:
-        site_url = urlsplit(settings.SITEURL)
+
+        # Attach current SITEURL
         if site_url.hostname not in PROXY_ALLOWED_HOSTS:
             PROXY_ALLOWED_HOSTS += (site_url.hostname, )
 
+        # Attach current hostname
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import ogc_server_settings
             hostname = (
@@ -177,6 +187,7 @@ def proxy(request, url=None, response_callback=None,
             if hostname not in PROXY_ALLOWED_HOSTS:
                 PROXY_ALLOWED_HOSTS += hostname
 
+        # Check OWS regexp
         if url.query and ows_regexp.match(url.query):
             ows_tokens = ows_regexp.match(url.query).groups()
             if len(ows_tokens) == 4 and 'version' == ows_tokens[0] and StrictVersion(
@@ -185,6 +196,12 @@ def proxy(request, url=None, response_callback=None,
                             'getcapabilities') and ows_tokens[3].upper() in ('OWS', 'WCS', 'WFS', 'WMS', 'WPS', 'CSW'):
                 if url.hostname not in PROXY_ALLOWED_HOSTS:
                     PROXY_ALLOWED_HOSTS += (url.hostname, )
+
+        # Check Remote Services base_urls
+        from geonode.services.models import Service
+        for _s in Service.objects.all():
+            _remote_host = urlsplit(_s.base_url).hostname
+            PROXY_ALLOWED_HOSTS += (_remote_host, )
 
         if not validate_host(
                 url.hostname, PROXY_ALLOWED_HOSTS):
@@ -200,11 +217,13 @@ def proxy(request, url=None, response_callback=None,
         pass
 
     # Collecting headers and cookies
-    headers, access_token = get_headers(request, url, raw_url)
+    headers, access_token = get_headers(request, url, raw_url, allowed_hosts=allowed_hosts)
 
     # Inject access_token if necessary
     parsed = urlparse(raw_url)
     parsed._replace(path=locator.encode('utf8'))
+    if parsed.netloc == site_url.netloc and scheme != site_url.scheme:
+        parsed = parsed._replace(scheme=site_url.scheme)
 
     _url = parsed.geturl()
 

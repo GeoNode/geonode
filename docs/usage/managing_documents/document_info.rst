@@ -16,25 +16,25 @@ On the page of a document, the resource is either directly displayed on the page
 Exploring the Tabs Sections
 ---------------------------
 
-There is a **tab section** below the document, where you can first view *Info* about the document.
+There is a *Tab Section* below the document, where you can first view *Info* about the document.
 
-The *Info* tab section shows the document metadata such as its title, abstract, date of publication etc. The metadata also indicates the user who is responsible for uploading and managing this content, as well as the group to which it is linked.
+The **Info Tab** section shows the document metadata such as its title, abstract, date of publication etc. The metadata also indicates the user who is responsible for uploading and managing this content, as well as the group to which it is linked.
 
-The *Share* tab provides the social media links for the document to share. There is also a link to share the document through email.
+The **Share Tab** provides the social media links for the document to share. There is also a link to share the document through email.
 
 .. figure:: img/document_sharing.png
     :align: center
 
     *Document Sharing*
 
-You can *Rate* the document through the *Ratings system*.
+You can **Rate** the document through the *Ratings system*.
 
 .. figure:: img/document_rating.png
     :align: center
 
     *Rate the Document*
 
-In the *Comments* tab section you can post your comment. Click on :guilabel:`Add Comment`, insert your comment and click :guilabel:`Submit Comment` to post it.
+In the **Comments Tab** section you can post your comment. Click on :guilabel:`Add Comment`, insert your comment and click :guilabel:`Submit Comment` to post it.
 
 .. figure:: img/document_comments.png
     :align: center
@@ -48,12 +48,20 @@ Your comment will be added next to the last already existing comment. If you wan
 
     *Your Comment*
 
-If you want this document in your *Favorites* (see :ref:`editing-profile`), open the *Favorite* tab and click on :guilabel:`Add to Favorites`.
+If you want this document in your *Favorites* (see :ref:`editing-profile`), open the **Favorite Tab** and click on :guilabel:`Add to Favorites`.
 
 .. figure:: img/favorite_document.png
     :align: center
 
     *Your Favorite Comment*
+
+GeoNode also supports the *EXIF (EXchangeable Image Format)* for ``jpeg`` and ``tiff`` image documents.
+The *EXIF* means that additional information (metadata) are stored within the image, so GeoNode allows you to see those information in the **Exif Tab**.
+
+.. figure:: img/exif_tab.png
+    :align: center
+
+    *The EXIF tab*
 
 The Tools Section
 -----------------

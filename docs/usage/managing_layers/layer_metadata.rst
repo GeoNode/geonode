@@ -72,7 +72,7 @@ Metadata Wizard
   * The *Category* which the layer belongs to;
   * The *Group* which the layer is linked to.
 
-* Location and Licenses
+* *Location and Licenses*
 
   .. figure:: img/location_licenses_layer_metadata.png
       :align: center
@@ -87,7 +87,7 @@ Metadata Wizard
   * The *Data Quality statement* (general explanation of the data producer's knowledge about the lineage of a dataset);
   * Potential *Restrictions* on layer sharing.
 
-* Optional Metadata
+* *Optional Metadata*
 
   .. figure:: img/optional_layer_metadata.png
       :align: center
@@ -103,7 +103,7 @@ Metadata Wizard
   * The users who are *Responsible* for the layer, its *Owner*, and the *Author* of its metadata;
   * The *Spatial representation type* used.
 
-* Dataset Attributes
+* *Dataset Attributes*
 
   .. figure:: img/dataset_attributes_layer_metadata.png
       :align: center
