@@ -881,13 +881,13 @@ def test_integration(options):
             call_task('setup_data', options={'settings': settings})
 
         if name == 'geonode.upload.tests.integration':
-            settings = 'REUSE_DB=1 %s' % settings
+            settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
 
         live_server_option = '--liveserver=localhost:8000'
         if _django_11:
             live_server_option = ''
 
-        info("GeoNode is now available, running the tests now.")
+        info("Running the tests now...")
         sh(('%s python -W ignore manage.py test %s'
             ' %s --noinput %s' % (settings, name, _keepdb, live_server_option)))
 
