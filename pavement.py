@@ -391,7 +391,7 @@ def updategeoip():
     """
     Update geoip db
     """
-    settings = options.get('settings', None)
+    settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
@@ -406,7 +406,7 @@ def sync():
     """
     Run the migrate and migrate management commands to create and migrate a DB
     """
-    settings = options.get('settings', None)
+    settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
@@ -593,7 +593,7 @@ def start_django():
     """
     Start the GeoNode Django application
     """
-    settings = options.get('settings', None)
+    settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     bind = options.get('bind', '0.0.0.0:8000')
@@ -627,7 +627,7 @@ def start_messaging():
     """
     Start the GeoNode messaging server
     """
-    settings = options.get('settings', None)
+    settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     foreground = '' if options.get('foreground', False) else '&'
@@ -868,7 +868,7 @@ def test_integration():
     sh('sleep 30')
 
     name = options.get('name', 'geonode.tests.integration')
-    settings = options.get('settings', None)
+    settings = options.get('settings', '')
     if not settings and name == 'geonode.upload.tests.integration':
         if _django_11:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
@@ -1001,7 +1001,7 @@ def setup_data():
     if ctype in ['vector', 'raster', 'time']:
         data_dir = os.path.join(gisdata.GOOD_DATA, ctype)
 
-    settings = options.get('settings', None)
+    settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 

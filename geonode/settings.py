@@ -1045,7 +1045,7 @@ except ValueError:
         else re.split(r' *[,|:|;] *', os.getenv('PROXY_ALLOWED_HOSTS'))
 
 # The proxy to use when making cross origin requests.
-PROXY_URL = '/proxy/?url=' if DEBUG else os.environ.get('PROXY_URL', None)
+PROXY_URL = os.environ.get('PROXY_URL', '/proxy/?url=')
 
 # Haystack Search Backend Configuration. To enable,
 # first install the following:
