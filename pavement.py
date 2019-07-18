@@ -368,11 +368,11 @@ def win_install_deps(options):
         print "Windows dependencies now complete.  Run pip install -e geonode --use-mirrors"
 
 
+@task
 @cmdopts([
     ('version=', 'v', 'Legacy GeoNode version of the existing database.')
 ])
-@task
-def upgradedb(options):
+def upgradedb():
     """
     Add 'fake' data migrations for existing tables from legacy GeoNode versions
     """
@@ -387,12 +387,12 @@ def upgradedb(options):
 
 
 @task
-def updategeoip(options):
+def updategeoip():
     """
     Update geoip db
     """
-    settings = options.get('settings', '')
-    if settings:
+    settings = options.get('settings', None)
+    if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
     sh("%s python -W ignore manage.py updategeoip -o" % settings)
@@ -402,12 +402,12 @@ def updategeoip(options):
 @cmdopts([
     ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ])
-def sync(options):
+def sync():
     """
     Run the migrate and migrate management commands to create and migrate a DB
     """
-    settings = options.get('settings', '')
-    if settings:
+    settings = options.get('settings', None)
+    if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
     sh("%s python -W ignore manage.py makemigrations --noinput" % settings)
@@ -585,16 +585,16 @@ def stop():
     stop_django()
 
 
+@task
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.')
 ])
-@task
 def start_django():
     """
     Start the GeoNode Django application
     """
-    settings = options.get('settings', '')
-    if settings:
+    settings = options.get('settings', None)
+    if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     bind = options.get('bind', '0.0.0.0:8000')
     foreground = '' if options.get('foreground', False) else '&'
@@ -627,18 +627,18 @@ def start_messaging():
     """
     Start the GeoNode messaging server
     """
-    settings = options.get('settings', '')
-    if settings:
+    settings = options.get('settings', None)
+    if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     foreground = '' if options.get('foreground', False) else '&'
     sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
 
 
+@task
 @cmdopts([
     ('java_path=', 'j', 'Full path to java install for Windows')
 ])
-@task
-def start_geoserver(options):
+def start_geoserver():
     """
     Start GeoServer with GeoNode extensions
     """
@@ -849,7 +849,7 @@ def test_javascript(options):
     ('name=', 'n', 'Run specific tests.'),
     ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ])
-def test_integration(options):
+def test_integration():
     """
     Run GeoNode's Integration test suite against the external apps
     """
@@ -868,7 +868,7 @@ def test_integration(options):
     sh('sleep 30')
 
     name = options.get('name', 'geonode.tests.integration')
-    settings = options.get('settings', '')
+    settings = options.get('settings', None)
     if not settings and name == 'geonode.upload.tests.integration':
         if _django_11:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
@@ -923,7 +923,7 @@ def test_integration(options):
     ('coverage', 'c', 'use this flag to generate coverage during test runs'),
     ('local=', 'l', 'Set to True if running bdd tests locally')
 ])
-def run_tests(options):
+def run_tests():
     """
     Executes the entire test suite.
     """
@@ -1001,8 +1001,8 @@ def setup_data():
     if ctype in ['vector', 'raster', 'time']:
         data_dir = os.path.join(gisdata.GOOD_DATA, ctype)
 
-    settings = options.get('settings', '')
-    if settings:
+    settings = options.get('settings', None)
+    if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
     sh("%s python -W ignore manage.py importlayers %s -v2" % (settings, data_dir))
@@ -1013,7 +1013,7 @@ def setup_data():
     ('key=', 'k', 'The GPG key to sign the package'),
     ('ppa=', 'p', 'PPA this package should be published to.'),
 ])
-def deb(options):
+def deb():
     """
     Creates debian packages.
 
