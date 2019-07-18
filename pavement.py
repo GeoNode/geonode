@@ -869,7 +869,7 @@ def test_integration():
 
     name = options.get('name', 'geonode.tests.integration')
     settings = options.get('settings', '')
-    if not settings or name == 'geonode.upload.tests.integration':
+    if name == 'geonode.upload.tests.integration':
         if _django_11:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
             settings = 'geonode.test_settings'
