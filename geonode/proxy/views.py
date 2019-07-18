@@ -26,6 +26,7 @@ import logging
 import tempfile
 import traceback
 
+from hyperlink import URL
 from slugify import slugify
 from urlparse import urlparse, urlsplit, urljoin
 
@@ -226,6 +227,13 @@ def proxy(request, url=None, response_callback=None,
         parsed = parsed._replace(scheme=site_url.scheme)
 
     _url = parsed.geturl()
+
+    # Some clients / JS libraries generate URLs with relative URL paths, e.g.
+    # "http://host/path/path/../file.css", which the requests library cannot
+    # currently handle (https://github.com/kennethreitz/requests/issues/2982).
+    # We parse and normalise such URLs into absolute paths before attempting
+    # to proxy the request.
+    _url = URL.from_text(_url).normalize().to_text()
 
     if request.method == "GET" and access_token and 'access_token' not in _url:
         query_separator = '&' if '?' in _url else '?'
