@@ -379,8 +379,8 @@ Let's externalize the ``GEOSERVER_DATA_DIR`` and ``logs``
   sudo chmod -Rf 775 /opt/data/logs
 
   # Download and extract the default GEOSERVER_DATA_DIR
-  sudo wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/data-2.14.3.zip
-  sudo unzip data-2.14.3.zip -d /opt/data/
+  sudo wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/data-2.15.2.zip
+  sudo unzip data-2.15.2.zip -d /opt/data/
 
   sudo mv /opt/data/data/ /opt/data/geoserver_data
   sudo chown -Rf tomcat:www-data /opt/data/geoserver_data
@@ -395,8 +395,8 @@ Let's externalize the ``GEOSERVER_DATA_DIR`` and ``logs``
   sudo chmod -Rf 775 /opt/data/gwc_cache_dir
 
   # Download and install GeoServer
-  sudo wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-2.14.3.war
-  sudo mv geoserver-2.14.3.war /usr/local/apache-tomcat8/webapps/geoserver.war
+  sudo wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-2.15.2.war
+  sudo mv geoserver-2.15.2.war /usr/local/apache-tomcat8/webapps/geoserver.war
 
 Let's now configure the ``JAVA_OPTS``, i.e. the parameters to run the Servlet Container, like heap memory, garbage collector and so on.
 
@@ -1248,10 +1248,10 @@ Update the GeoServer instance inside the GeoServer Container
 .. code-block:: shell
 
   cd /usr/local/tomcat/
-  wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-2.14.3.war
+  wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-.2.15.2.war
   mkdir tmp/geoserver
   cd tmp/geoserver/
-  unzip /usr/local/tomcat/geoserver-2.14.3.war
+  unzip /usr/local/tomcat/geoserver-2.15.2.war
   rm -Rf data
   cp -Rf /usr/local/tomcat/webapps/geoserver/data/ .
   cd /usr/local/tomcat/
@@ -1296,7 +1296,7 @@ It is possible to let docker show which containers are currently running (add ``
   CONTAINER ID        IMAGE                      COMMAND                  CREATED             STATUS              PORTS                NAMES
   3b232931f820        geonode/nginx:production    "nginx -g 'daemon of…"   26 minutes ago      Up 26 minutes       0.0.0.0:80->80/tcp   nginx4geonode
   ff7002ae6e91        geonode/geonode:latest     "/usr/src/app/entryp…"   26 minutes ago      Up 26 minutes       8000/tcp             django4geonode
-  2f155e5043be        geonode/geoserver:2.14.3   "/usr/local/tomcat/t…"   26 minutes ago      Up 26 minutes       8080/tcp             geoserver4geonode
+  2f155e5043be        geonode/geoserver:2.15.2   "/usr/local/tomcat/t…"   26 minutes ago      Up 26 minutes       8080/tcp             geoserver4geonode
   97f1668a01b1        geonode_celery             "/usr/src/app/entryp…"   26 minutes ago      Up 26 minutes       8000/tcp             geonode_celery_1
   1b623598b1bd        geonode/postgis:10         "docker-entrypoint.s…"   About an hour ago   Up 26 minutes       5432/tcp             db4geonode
 

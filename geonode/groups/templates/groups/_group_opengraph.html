@@ -1,7 +1,7 @@
 {% load avatar_tags %}
 <meta property="og:title" content="{{ object.title|default:object.slug|truncatechars:70 }}" />
 <meta property="og:site_name" content="{{ SITE_NAME }}" />
-<meta property="og:url" content="http{% if request.is_secure %}s{% endif %}://{{ SITE_DOMAIN }}{{ object.get_absolute_url }}" />
+<meta property="og:url" content="{{ SITEURL }}{{ object.get_absolute_url|slice:"1:" }}" />
 <meta property="og:description" content="Group {{ object.title|default:object.slug }} on {{ SITE_NAME }}" />
 <!-- Need to create thumbnails for group logos since there are size restrictions
 <meta name="og:image" content="" />
