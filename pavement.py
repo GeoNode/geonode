@@ -869,7 +869,7 @@ def test_integration():
 
     name = options.get('name', 'geonode.tests.integration')
     settings = options.get('settings', '')
-    if not settings and name == 'geonode.upload.tests.integration':
+    if not settings or name == 'geonode.upload.tests.integration':
         if _django_11:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
             settings = 'geonode.test_settings'
@@ -878,8 +878,6 @@ def test_integration():
 
     success = False
     try:
-        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings if settings else ''
-
         call_task('sync', options={'settings': settings})
         call_task('start', options={'settings': settings})
 
@@ -889,6 +887,7 @@ def test_integration():
             call_task('start_geoserver', options={'settings': settings})
             bind = options.get('bind', '0.0.0.0:8000')
             foreground = '' if options.get('foreground', False) else '&'
+            settings = 'DJANGO_SETTINGS_MODULE=%s' % settings if settings else ''
             sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
             sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
             sh('sleep 30')
