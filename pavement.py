@@ -878,23 +878,19 @@ def test_integration(options):
 
     success = False
     try:
-        if name == 'geonode.tests.csw':
-            call_task('sync', options={'settings': settings})
-            call_task('start', options={'settings': settings})
-            call_task('setup_data', options={'settings': settings})
-
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings if settings else ''
 
-        if name == 'geonode.upload.tests.integration':
-            call_task('reset_hard')
-            call_task('setup', options={'settings': settings})
-            call_task('sync', options={'settings': settings})
+        call_task('sync', options={'settings': settings})
+        call_task('start', options={'settings': settings})
+
+        if name == 'geonode.tests.csw':
+            call_task('setup_data', options={'settings': settings})
+        elif name == 'geonode.upload.tests.integration':
             call_task('start_geoserver', options={'settings': settings})
             bind = options.get('bind', '0.0.0.0:8000')
             foreground = '' if options.get('foreground', False) else '&'
             sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
-            sh('%s python -W ignore manage.py runserver %s %s' %
-               (settings, bind, foreground))
+            sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
             sh('sleep 30')
             settings = 'REUSE_DB=1 %s' % settings
 
