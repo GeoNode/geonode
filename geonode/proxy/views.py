@@ -211,7 +211,8 @@ def proxy(request, url=None, response_callback=None,
 
     # Inject access_token if necessary
     parsed = urlparse(raw_url)
-    if parsed.netloc in site_url.netloc:
+    parsed._replace(path=locator.encode('utf8'))
+    if parsed.netloc == site_url.netloc and scheme != site_url.scheme:
         parsed = parsed._replace(scheme=site_url.scheme)
 
     _url = parsed.geturl()
