@@ -91,7 +91,7 @@ def upload_step(step=None):
     return step
 
 
-def get_wms(version='1.1.1', type_name=None):
+def get_wms(version='1.1.1', type_name=None, username=None, password=None):
     """ Function to return an OWSLib WMS object """
     # right now owslib does not support auth for get caps
     # requests. Either we should roll our own or fix owslib
@@ -101,12 +101,15 @@ def get_wms(version='1.1.1', type_name=None):
     else:
         url = GEOSERVER_URL + \
             'wms?request=getcapabilities'
-    return WebMapService(
-        url,
-        version=version,
-        username=GEOSERVER_USER,
-        password=GEOSERVER_PASSWD
-    )
+    if username and password:
+        return WebMapService(
+            url,
+            version=version,
+            username=username,
+            password=password
+        )
+    else:
+        return WebMapService(url)
 
 
 class Client(object):
@@ -367,7 +370,8 @@ class UploaderBase(GeoNodeBaseTestSupport):
         """ Check that a layer shows up in GeoServer's get
         capabilities document """
         # using owslib
-        wms = get_wms(type_name=type_name)
+        wms = get_wms(
+            type_name=type_name, username=GEOSERVER_USER, password=GEOSERVER_PASSWD)
         ws, layer_name = type_name.split(':')
         self.assertTrue(layer_name in wms.contents,
                         '%s is not in %s' % (layer_name, wms.contents))
@@ -767,7 +771,8 @@ class TestUploadDBDataStore(UploaderBase):
 
                 url = urllib.unquote(url)
                 self.check_layer_complete(url, layer_name)
-                wms = get_wms(type_name='geonode:%s' % layer_name)
+                wms = get_wms(
+                    type_name='geonode:%s' % layer_name, username=GEOSERVER_USER, password=GEOSERVER_PASSWD)
                 layer_info = wms.items()[0][1]
                 self.assertEquals(100, len(layer_info.timepositions))
             else:
@@ -830,7 +835,8 @@ class TestUploadDBDataStore(UploaderBase):
 
                 url = urllib.unquote(url)
                 self.check_layer_complete(url, layer_name)
-                wms = get_wms(type_name='geonode:%s' % layer_name)
+                wms = get_wms(
+                    type_name='geonode:%s' % layer_name, username=GEOSERVER_USER, password=GEOSERVER_PASSWD)
                 layer_info = wms.items()[0][1]
                 self.assertEquals(100, len(layer_info.timepositions))
             else:

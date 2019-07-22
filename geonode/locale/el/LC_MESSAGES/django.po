@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-03 23:36+0300\n"
-"PO-Revision-Date: 2019-05-06 21:33+0300\n"
+"PO-Revision-Date: 2019-07-19 12:46+0300\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Greek (http://www.transifex.com/geonode/geonode/language/"
 "el/)\n"
@@ -37,7 +37,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.7\n"
+"X-Generator: Poedit 2.0.6\n"
 
 #: geonode/base/__init__.py:27
 msgid "Request to download a resource"
@@ -845,7 +845,7 @@ msgstr "Ανέβασμα Στυλ QML"
 #: geonode/templates/500.html:172 geonode/templates/base.html:179
 #: geonode/templates/base.html:337
 msgid "Explore Maps"
-msgstr "Εξερεύνηση Χάρτών"
+msgstr "Εξερεύνηση Χαρτών"
 
 #: geonode/client/templates/leaflet/maps/map_edit.html:8
 #: geonode/client/templates/leaflet/maps/map_view.html:8
@@ -1806,7 +1806,7 @@ msgstr "Όνομα Επιπέδου"
 
 #: geonode/contrib/worldmap/gazetteer/models.py:16
 msgid "Layer Attribute"
-msgstr "Ιδιότητα Επιπέδου"
+msgstr "Χαρακτηριστικό Επιπέδου"
 
 #: geonode/contrib/worldmap/gazetteer/models.py:17
 msgid "Feature Type"
@@ -2489,8 +2489,7 @@ msgstr "Αυτό το έγγραφο δεν σχετίζεται με οποιο
 #: geonode/documents/templates/documents/document_detail.html:221
 msgid "Click the button below to change the permissions of this document."
 msgstr ""
-"Κάντε κλικ στο κουμπί παρακάτω για να αλλάξετε τα δικαιώματα του παρόντος "
-"εγγράφου."
+"Κάντε κλικ στο κουμπί για να αλλάξετε τα δικαιώματα του παρόντος εγγράφου."
 
 #: geonode/documents/templates/documents/document_detail.html:222
 msgid "Change Document Permissions"
@@ -3832,6 +3831,8 @@ msgid ""
 "Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
+"Κάντε κλικ στο κουμπί για να επιτρέψετε στο GeoNode να ανανεώσει την λίστα "
+"των διαθέσιμων χαρακτηριστικών και στατιστικών αυτού του επιπέδου."
 
 #: geonode/layers/templates/layers/layer_detail.html:671
 msgid "Refresh Attributes and Statistics"
@@ -5754,20 +5755,16 @@ msgid "Remote Services"
 msgstr "Ηλεκτρονικές Υπηρεσίες"
 
 #: geonode/services/templates/services/service_list.html:28
-#, fuzzy
-#| msgid "service interfaces"
 msgid "No services registered"
-msgstr "διεπαφές υπηρεσιών"
+msgstr "Δεν έχουν καταχωρηθεί ηλεκτρονικές υπηρεσίες"
 
 #: geonode/services/templates/services/service_register.html:9
-#, fuzzy
-#| msgid "Register a new Service"
 msgid "Register Service"
-msgstr "Καταχωρήστε μια νέα υπηρεσία"
+msgstr "Εισαγωγή Υπηρεσίας"
 
 #: geonode/services/templates/services/service_register.html:13
 msgid "Register New Service"
-msgstr ""
+msgstr "Εισαγωγή Νέας Υπηρεσίας"
 
 #: geonode/services/templates/services/service_register.html:39
 msgid "Service has been created:"
@@ -6410,6 +6407,9 @@ msgid ""
 "If you have not created an account yet, then please\n"
 "      <a href=\"%(signup_url)s\">sign up</a> first."
 msgstr ""
+"Αν δεν έχετε λογαριασμό χρήστη, μπορείτε να δημιουργήσετε ένα "
+"χρησιμοποιώντας την \n"
+"      <a href=\"%(signup_url)s\">φόρμα εγγραφής</a>."
 
 #: geonode/templates/account/login.html:44
 #, fuzzy
@@ -6540,7 +6540,7 @@ msgstr "Επαναφορά του κωδικού πρόσβασής μου"
 #: geonode/templates/account/signup.html:11
 #: geonode/templates/account/signup.html:33
 msgid "Sign up"
-msgstr "Εγγραφείτε"
+msgstr "Εγγραφή"
 
 #: geonode/templates/account/signup.html:16
 msgid ""
@@ -6549,10 +6549,8 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/account/signup.html:24
-#, fuzzy
-#| msgid "Create a new map"
 msgid "Create a new local account"
-msgstr "Δημιουργήστε ένα νέο χάρτη"
+msgstr "Δημιουργήστε ένα νέο χρήστη"
 
 #: geonode/templates/account/signup_closed.html:5
 #: geonode/templates/account/signup_closed.html:8
@@ -7873,15 +7871,13 @@ msgstr "Ημερομηνία τελειώνει πριν από:"
 
 #: geonode/templates/search/_pagination.html:13
 msgid "page"
-msgstr ""
+msgstr "σελίδα"
 
 #: geonode/templates/search/_pagination.html:13
 msgid "of"
 msgstr "από"
 
 #: geonode/templates/search/_region_filter.html:10
-#, fuzzy
-#| msgid "Search"
 msgid "Search by region"
 msgstr "Αναζήτηση"
 
@@ -7891,21 +7887,17 @@ msgstr "Ρυθμίστε τα δικαιώματα"
 
 #: geonode/templates/search/_search_content.html:23
 msgid "Filters"
-msgstr ""
+msgstr "Φίλτρα"
 
 #: geonode/templates/search/_search_content.html:54
-#, fuzzy
-#| msgid "Layers"
 msgid "Layers found"
-msgstr "Επιφάνειες"
+msgstr "Επίπεδα"
 
 #: geonode/templates/search/_search_content.html:56
 msgid "Maps found"
-msgstr ""
+msgstr "Χάρτες"
 
 #: geonode/templates/search/_search_content.html:58
-#, fuzzy
-#| msgid "Documents"
 msgid "Documents found"
 msgstr "Έγγραφα"
 
@@ -7954,8 +7946,6 @@ msgid "Text"
 msgstr "Κείμενο"
 
 #: geonode/templates/search/_text_filter.html:10
-#, fuzzy
-#| msgid "Search"
 msgid "Search by text"
 msgstr "Αναζήτηση"
 
@@ -8013,17 +8003,13 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/socialaccount/signup.html:6
-#, fuzzy
-#| msgid "Sign up"
 msgid "Signup"
-msgstr "Εγγραφείτε"
+msgstr "Εγγραφή"
 
 #: geonode/templates/socialaccount/signup.html:9
 #: geonode/templates/socialaccount/signup.html:20
-#, fuzzy
-#| msgid "Sign up"
 msgid "Sign Up"
-msgstr "Εγγραφείτε"
+msgstr "Εγγραφή"
 
 #: geonode/templates/socialaccount/signup.html:11
 #, python-format
@@ -8046,10 +8032,8 @@ msgstr ""
 
 #: geonode/templates/socialaccount/snippets/provider_list.html:23
 #: geonode/templates/socialaccount/snippets/remaining_providers_list.html:23
-#, fuzzy
-#| msgid "Sign up"
 msgid "Sign up with"
-msgstr "Εγγραφείτε"
+msgstr "Εγγραφή"
 
 #: geonode/templates/user_messages/_message_snippet.html:9
 msgid "With"
