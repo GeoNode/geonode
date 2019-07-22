@@ -115,7 +115,7 @@ pycountry
 uWSGI==2.0.18
 gunicorn==19.9.0
 ipython==5.8.0
-docker==3.7.0
+docker==4.0.2
 invoke==1.2.0
 
 # tests
