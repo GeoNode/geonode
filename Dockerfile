@@ -1,4 +1,4 @@
-FROM geonode/geonode:2.10.x
+FROM geonode/geonode:latest
 MAINTAINER GeoNode development team
 
 COPY requirements.txt /usr/src/app/
