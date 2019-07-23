@@ -154,7 +154,7 @@ def get_or_create_datastore(cat, workspace=None, charset="UTF-8"):
         raise GeoNodeException(msg)
 
     try:
-        ds = cat.get_store(dsname, workspace)
+        ds = cat.get_store(dsname, workspace=workspace)
     except FailedRequestError:
         ds = cat.create_datastore(dsname, workspace=workspace)
 
@@ -177,7 +177,7 @@ def get_or_create_datastore(cat, workspace=None, charset="UTF-8"):
 
     # we need to reload the ds as gsconfig-1.0.6 apparently does not populate ds.type
     # using create_datastore (TODO fix this in gsconfig)
-    ds = cat.get_store(dsname, workspace)
+    ds = cat.get_store(dsname, workspace=workspace)
 
     return ds
 

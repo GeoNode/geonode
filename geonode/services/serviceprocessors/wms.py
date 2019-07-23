@@ -380,7 +380,10 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         store = self._get_store(create=False)
         cat = store.catalog
         workspace = store.workspace
-        layer_resource = cat.get_resource(layer_meta.id, store, workspace)
+        layer_resource = cat.get_resource(
+            name=layer_meta.id,
+            store=store,
+            workspace=workspace)
         if layer_resource is None:
             layer_resource = cat.create_wmslayer(
                 workspace, store, layer_meta.id)
