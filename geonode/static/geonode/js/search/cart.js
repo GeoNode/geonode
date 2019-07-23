@@ -70,10 +70,10 @@
         );
       };
     })
-    .directive('resourceCart', [function(){
+    .directive('resourceCart', ['$sce', function($sce){
       return {
         restrict: 'EA',
-        templateUrl: siteUrl + "static/geonode/js/templates/cart.html",
+        templateUrl: $sce.trustAsResourceUrl(staticUrl + "geonode/js/templates/cart.html"),
         link: function($scope, $element){
           // Don't use isolateScope, but add to parent scope
           $scope.facetType = $element.attr("data-facet-type");
