@@ -7,7 +7,7 @@ Django==1.11.22
 # Other
 amqp==2.5.0
 pyyaml>=4.2b1
-beautifulsoup4==4.7.1
+beautifulsoup4==4.8.0
 httplib2<0.13.1
 hyperlink==19.0.0
 idna<2.7>=2.5
@@ -29,7 +29,7 @@ django-jsonfield<1.2.1
 django-jsonfield-compat<=0.4.4
 django-taggit==0.24.0
 django-mptt==0.9.1
-django-modeltranslation>=0.11,<0.13.3
+django-modeltranslation>=0.11,<0.13.4
 django-treebeard==4.3
 django-guardian<=1.4.9
 django-downloadview<=1.9
