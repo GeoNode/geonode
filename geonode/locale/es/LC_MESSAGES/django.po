@@ -1122,8 +1122,10 @@ msgid ""
 "\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"Estás seguro de que desea borrar <a href=\"%(document.get_absolute_url)s\">"
-"%(document_title)s</a>?"
+"\n"
+"          Estás seguro de que desea borrar <a href=\"%(document.get_absolute_url)s\">"
+"%(document_title)s</a>?\n"
+"        "
 
 #: geonode/documents/templates/documents/document_remove.html:20
 #: geonode/groups/templates/groups/group_remove.html:19
