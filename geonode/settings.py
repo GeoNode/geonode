@@ -436,7 +436,7 @@ LOGGING = {
             "handlers": ["console"], "level": "INFO", },
         "geonode.qgis_server": {
             "handlers": ["console"], "level": "ERROR", },
-        "gsconfig.catalog": {
+        "geoserver-restconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
         "owslib": {
             "handlers": ["console"], "level": "ERROR", },
@@ -641,6 +641,7 @@ AUTH_EXEMPT_URLS = (
     '%s/api/adminRole' % FORCE_SCRIPT_NAME,
     '%s/api/users' % FORCE_SCRIPT_NAME,
     '%s/api/layers' % FORCE_SCRIPT_NAME,
+    '%s/monitoring' % FORCE_SCRIPT_NAME,
 )
 
 ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID', '-1')
@@ -1044,7 +1045,7 @@ except ValueError:
         else re.split(r' *[,|:|;] *', os.getenv('PROXY_ALLOWED_HOSTS'))
 
 # The proxy to use when making cross origin requests.
-PROXY_URL = '/proxy/?url=' if DEBUG else os.environ.get('PROXY_URL', None)
+PROXY_URL = os.environ.get('PROXY_URL', '/proxy/?url=')
 
 # Haystack Search Backend Configuration. To enable,
 # first install the following:
@@ -1768,9 +1769,12 @@ SOCIALACCOUNT_PROVIDERS = {
             'r_liteprofile',
         ],
         'PROFILE_FIELDS': [
-            'emailAddress',
-            'firstName',
-            'lastName',
+            'id',
+            'email-address',
+            'first-name',
+            'last-name',
+            'picture-url',
+            'public-profile-url',
         ]
     },
     'facebook': {

@@ -32,9 +32,9 @@ import sys
 from threading import local
 import time
 import uuid
-
+import base64
 import urllib
-from urlparse import urlsplit, urlparse, urljoin
+from urlparse import urlsplit, urljoin
 
 from agon_ratings.models import OverallRating
 from bs4 import BeautifulSoup
@@ -73,7 +73,7 @@ if not hasattr(settings, 'OGC_SERVER'):
     msg = (
         'Please configure OGC_SERVER when enabling geonode.geoserver.'
         ' More info can be found at '
-        'http://docs.geonode.org/en/master/basic/settings/index.html#ogc-server')
+        'http://docs.geonode.org/en/2.10.x/basic/settings/index.html#ogc-server')
     raise ImproperlyConfigured(msg)
 
 
@@ -262,7 +262,7 @@ def get_sld_for(gs_catalog, layer):
     if gs_layer and gs_layer.resource and gs_layer.resource.resource_type == 'featureType':
         res = gs_layer.resource
         res.fetch()
-        ft = res.store.get_resources(res.name)
+        ft = res.store.get_resources(name=res.name)
         ft.fetch()
         for attr in ft.dom.find("attributes").getchildren():
             attr_binding = attr.find("binding")
@@ -295,7 +295,7 @@ def fixup_style(cat, resource, style):
     for lyr in layers:
         if lyr.default_style.name in _style_templates:
             logger.info("%s uses a default style, generating a new one", lyr)
-            name = _style_name(lyr)
+            name = _style_name(lyr.resource)
             if style is None:
                 sld = get_sld_for(cat, lyr)
             else:
@@ -389,9 +389,9 @@ def cascading_delete(cat, layer_name):
                 logger.debug(
                     'cascading delete was called on a layer where the workspace was not found')
                 return
-            resource = cat.get_resource(name, store=store, workspace=workspace)
+            resource = cat.get_resource(name=name, store=store, workspace=workspace)
         else:
-            resource = cat.get_resource(layer_name)
+            resource = cat.get_resource(name=layer_name)
     except EnvironmentError as e:
         if e.errno == errno.ECONNREFUSED:
             msg = ('Could not connect to geoserver at "%s"'
@@ -421,7 +421,7 @@ def cascading_delete(cat, layer_name):
             pass
         gs_styles = [x for x in cat.get_styles()]
         if settings.DEFAULT_WORKSPACE:
-            gs_styles = gs_styles + [x for x in cat.get_styles(workspace=settings.DEFAULT_WORKSPACE)]
+            gs_styles = gs_styles + [x for x in cat.get_styles(workspaces=settings.DEFAULT_WORKSPACE)]
             ws_styles = []
             for s in styles:
                 if s is not None and s.name not in _default_style_names:
@@ -549,13 +549,13 @@ def gs_slurp(
                 if store is None:
                     resources = []
                 else:
-                    resources = cat.get_resources(store=store)
+                    resources = cat.get_resources(stores=[store])
             else:
-                resources = cat.get_resources(workspace=workspace)
+                resources = cat.get_resources(workspaces=[workspace])
 
     elif store is not None:
         store = get_store(cat, store)
-        resources = cat.get_resources(store=store)
+        resources = cat.get_resources(stores=[store])
     else:
         resources = cat.get_resources()
     if remove_deleted:
@@ -1245,7 +1245,7 @@ def create_geoserver_db_featurestore(
     ds_exists = False
     try:
         if dsname:
-            ds = cat.get_store(dsname)
+            ds = cat.get_store(dsname, workspace=workspace)
         else:
             return None
         if ds is None:
@@ -1288,7 +1288,10 @@ def create_geoserver_db_featurestore(
     if ds_exists:
         ds.save_method = "PUT"
 
+    logger.info('Updating target datastore % s' % dsname)
     cat.save(ds)
+
+    logger.info('Reloading target datastore % s' % dsname)
     ds = get_store(cat, dsname, workspace=workspace)
     assert ds.enabled
 
@@ -1303,17 +1306,17 @@ def _create_featurestore(name, data, overwrite=False, charset="UTF-8", workspace
     except BaseException as e:
         logger.exception(e)
     store = get_store(cat, name, workspace=workspace)
-    return store, cat.get_resource(name, store=store, workspace=workspace)
+    return store, cat.get_resource(name=name, store=store, workspace=workspace)
 
 
 def _create_coveragestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     cat = gs_catalog
     try:
-        cat.create_coveragestore(name, data, overwrite=overwrite)
+        cat.create_coveragestore(name, path=data, overwrite=overwrite, upload_data=True)
     except BaseException as e:
         logger.exception(e)
     store = get_store(cat, name, workspace=workspace)
-    return store, cat.get_resource(name, store=store, workspace=workspace)
+    return store, cat.get_resource(name=name, store=store, workspace=workspace)
 
 
 def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
@@ -1335,7 +1338,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
                               overwrite=overwrite,
                               workspace=workspace,
                               charset=charset)
-        resource = cat.get_resource(name, store=ds, workspace=workspace)
+        resource = cat.get_resource(name=name, store=ds, workspace=workspace)
         assert resource is not None
         return ds, resource
     except Exception:
@@ -1350,7 +1353,6 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
 
 
 def get_store(cat, name, workspace=None):
-
     # Make sure workspace is a workspace object and not a string.
     # If the workspace does not exist, continue as if no workspace had been defined.
     if isinstance(workspace, basestring):
@@ -1780,7 +1782,7 @@ def set_time_info(layer, attribute, end_attribute, presentation,
         raise ValueError('no such layer: %s' % layer.name)
     resource = layer.resource if layer else None
     if not resource:
-        resources = gs_catalog.get_resources(store=layer.name)
+        resources = gs_catalog.get_resources(stores=[layer.name])
         if resources:
             resource = resources[0]
 
@@ -1813,7 +1815,7 @@ def get_time_info(layer):
         raise ValueError('no such layer: %s' % layer.name)
     resource = layer.resource if layer else None
     if not resource:
-        resources = gs_catalog.get_resources(store=layer.name)
+        resources = gs_catalog.get_resources(stores=[layer.name])
         if resources:
             resource = resources[0]
 
@@ -1881,8 +1883,10 @@ _esri_types = {
 def _render_thumbnail(req_body, width=240, height=180):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
-    hostname = urlparse(settings.SITEURL).hostname
-    params = dict(width=width, height=height, auth="%s,%s,%s" % (hostname, _user, _password))
+    headers = {'Content-type': 'text/html'}
+    valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
+    headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+    params = dict(width=width, height=height)
     url = url + "?" + urllib.urlencode(params)
 
     # @todo annoying but not critical
@@ -1899,11 +1903,12 @@ def _render_thumbnail(req_body, width=240, height=180):
     data = unicode(data, errors='ignore').encode('UTF-8')
     try:
         req, content = http_client.post(
-            url, data=data, headers={'Content-type': 'text/html'})
+            url, data=data, headers=headers)
     except BaseException as e:
         logger.warning('Error generating thumbnail')
         logger.exception(e)
         return
+
     return content
 
 
@@ -2130,7 +2135,7 @@ def set_time_dimension(cat, name, workspace, time_presentation, time_presentatio
     layer = cat.get_layer(name)
     resource = layer.resource if layer else None
     if not resource:
-        resources = cat.get_resources(store=name) or cat.get_resources(store=name, workspace=workspace)
+        resources = cat.get_resources(stores=[name]) or cat.get_resources(stores=[name], workspaces=[workspace])
         if resources:
             resource = resources[0]
 
