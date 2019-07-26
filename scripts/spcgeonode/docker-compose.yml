@@ -34,8 +34,6 @@ x-common-django:
     - GEONODE_GEODATABASE_PASSWORD=${GEONODE_GEODATABASE_PASSWORD}
     - DATABASE_URL=postgres://${GEONODE_DATABASE}:${GEONODE_DATABASE_PASSWORD}@postgres:5432/${GEONODE_DATABASE}
     - GEODATABASE_URL=postgis://${GEONODE_GEODATABASE}:${GEONODE_GEODATABASE_PASSWORD}@postgres:5432/${GEONODE_GEODATABASE}
-
-
     # hardcoded
     - DEBUG=False
     - DJANGO_SETTINGS_MODULE=geonode.settings
@@ -52,7 +50,7 @@ x-common-django:
     # We get an exception after migrations on startup (it seems the monitoring app tries to resolve the geoserver domain name after it's migration, which can happen before oauth migrations on which geoserver startup depends...)
     - MONITORING_ENABLED=False
     # Automated tests hang for unknown reasons using 'mapstore' by default
-    - GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY=geoext
+    # - GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY=geoext
   volumes:
     - static:/spcgeonode-static/
     - media:/spcgeonode-media/
