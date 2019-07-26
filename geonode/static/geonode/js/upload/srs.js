@@ -13,7 +13,7 @@ requirejs.config({
      },
      waitSeconds: 5
   },
-  baseUrl: siteUrl + 'static/lib/js',
+  baseUrl: staticUrl + 'lib/js',
   shim: {
     'underscore': { exports: '_'}
   },
