@@ -995,7 +995,7 @@ msgstr "Créer une Couche"
 #: geonode/layers/templates/upload/layer_upload_base.html:161
 #: geonode/layers/templates/upload/layer_upload_metadata_base.html:10
 msgid "Explore Layers"
-msgstr "Esplora Layer"
+msgstr "Explorer les Couches"
 
 #: geonode/contrib/createlayer/templates/createlayer/layer_create.html:20
 msgid "Create an empty layer"
@@ -1178,7 +1178,7 @@ msgstr[1] "Couches"
 #: geonode/contrib/geosites/templates/master_index.html:26
 #: geonode/templates/index.html:260
 msgid "Click to search for geospatial data published by other users, organizations and public sources. Download data in standard formats."
-msgstr "Cliquer pour rechercher des données spatiales publiées par d'autres utilisateurs, organisations ou de sources publiques. Télécharger ces données dans des formats standards."
+msgstr "Consultez, téléchargez des couches et leurs métadonnées. Partagez l'information spatiale. Intégrez les couches dans vos outils."
 
 #: geonode/contrib/geosites/templates/master_index.html:28
 #: geonode/templates/index.html:262
@@ -1200,7 +1200,7 @@ msgstr[1] "Cartes"
 
 #: geonode/contrib/geosites/templates/master_index.html:36
 msgid "Data is available for browsing, aggregating and styling to generate maps which can be shared publicly or restricted to specific users only."
-msgstr "Les données sont disponibles pour la visualisation, l'aggrégation, la création et définition de styles afin de construire des cartes qui pourront ensuite être publiées et partagées publiquement ou uniquement pour certains groupes ou ulisateurs particuliers."
+msgstr "Créez et publiez des cartes thématiques à partir des couches du portail ou disponibles depuis un service web (WMS ou WFS)."
 
 #: geonode/contrib/geosites/templates/master_index.html:38
 #: geonode/templates/index.html:272
@@ -3485,7 +3485,7 @@ msgstr "Images"
 #: geonode/templates/500.html:152 geonode/templates/base.html:157
 #: geonode/templates/base.html:317
 msgid "Data"
-msgstr "Date"
+msgstr "Données"
 
 #: geonode/layers/templates/layers/layer_detail.html:301
 msgid "Click to filter the layer"
@@ -6891,7 +6891,7 @@ msgstr "Les données sont disponibles pour la navigation, l'agrégation et le st
 
 #: geonode/templates/index.html:280
 msgid "As for the layers and maps GeoNode allows to publish tabular and text data, manage theirs metadata and associated documents."
-msgstr "En ce qui concerne les couches et les cartes, GeoNode vous permet de publier des donnéestabulaire et texte, gestion des métadonnées et des documents associés."
+msgstr "Accédez aux documents liés ou non aux couches et cartes présentes sur le portail : rapports, notices, licences, documentation ..."
 
 #: geonode/templates/index.html:282
 msgid "Add documents"
