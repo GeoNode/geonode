@@ -155,7 +155,7 @@ A live demo of the latest stable build is available at http://master.demo.geonod
 
 Anyone may sign up for a user account, upload and style data, create and share maps, and change permissions.
 
-Since it is a demo site, every sunday al the datasets will be wiped out. Users, passwords and groups will be preserved.
+Since it is a demo site, every sunday all the datasets will be wiped out. Users, passwords and groups will be preserved.
 
 It should hopefully allow you to easily and quickly make a tour of the main capabilities of GeoNode.
 
