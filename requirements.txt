@@ -121,7 +121,7 @@ docker==4.0.2
 invoke==1.2.0
 
 # tests
-coverage==4.5.3
+coverage==4.5.4
 parse-type==0.5.2
 poster~=0.8.1
 flake8==3.7.8
