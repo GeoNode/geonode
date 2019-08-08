@@ -27,7 +27,7 @@ from django.template.loader import get_template
 from owslib.csw import CatalogueServiceWeb, namespaces
 from owslib.util import http_post
 from urlparse import urlparse
-from lxml import etree
+from defusedxml import lxml as dlxml
 from geonode.catalogue.backends.base import BaseCatalogueBackend
 
 logger = logging.getLogger(__name__)
@@ -100,7 +100,7 @@ class Catalogue(CatalogueServiceWeb):
                 urllib2.HTTPCookieProcessor(),
                 urllib2.HTTPRedirectHandler())
             response = self.opener.open(request)
-            doc = etree.fromstring(response.read())
+            doc = dlxml.fromstring(response.read())
             assert doc.tag == 'ok', "GeoNetwork login failed!"
             self.connected = True
 
@@ -174,7 +174,7 @@ class Catalogue(CatalogueServiceWeb):
 
     def csw_gen_anytext(self, xml):
         """ get all element data from an XML document """
-        xml = etree.fromstring(xml)
+        xml = dlxml.fromstring(xml)
         return ' '.join([value.strip() for value in xml.xpath('//text()')])
 
     def csw_request(self, layer, template):
@@ -201,7 +201,7 @@ class Catalogue(CatalogueServiceWeb):
             # set layer.uuid based on what GeoNetwork returns
             # this is needed for inserting FGDC metadata in GN
 
-            exml = etree.fromstring(response.read())
+            exml = dlxml.fromstring(response.read())
             identifier = exml.find(
                 '{%s}InsertResult/{%s}BriefRecord/identifier' %
                 (namespaces['csw'], namespaces['csw'])).text
@@ -255,7 +255,7 @@ class Catalogue(CatalogueServiceWeb):
             # get the id of the data.
             request = urllib2.Request(get_dbid_url)
             response = self.urlopen(request)
-            doc = etree.fromstring(response.read())
+            doc = dlxml.fromstring(response.read())
             data_dbid = doc.find(
                 'metadata/{http://www.fao.org/geonetwork}info/id').text
 
@@ -295,7 +295,7 @@ class Catalogue(CatalogueServiceWeb):
             self.base, urllib.urlencode({'type': 'groups'}))
         request = urllib2.Request(get_groups_url)
         response = self.urlopen(request)
-        doc = etree.fromstring(response.read())
+        doc = dlxml.fromstring(response.read())
         groups = {}
         for gp in doc.findall('groups/group'):
             groups[gp.find('name').text.lower()] = gp.attrib['id']
@@ -311,7 +311,7 @@ class Catalogue(CatalogueServiceWeb):
             self.base, urllib.urlencode({'type': 'operations'}))
         request = urllib2.Request(get_ops_url)
         response = self.urlopen(request)
-        doc = etree.fromstring(response.read())
+        doc = dlxml.fromstring(response.read())
         ops = {}
         for op in doc.findall('operations/operation'):
             ops[op.find('name').text.lower()] = op.attrib['id']

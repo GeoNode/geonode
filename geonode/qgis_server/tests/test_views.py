@@ -28,7 +28,7 @@ import zipfile
 from imghdr import what
 
 import requests
-from lxml import etree
+from defusedxml import lxml as dlxml
 
 import gisdata
 from django.conf import settings
@@ -267,7 +267,7 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
 
         # Check xml content
         self.assertEqual(response.status_code, 200, response.content)
-        root = etree.fromstring(response.content)
+        root = dlxml.fromstring(response.content)
         layer_xml = root.xpath(
             'wms:Capability/wms:Layer/wms:Layer/wms:Name',
             namespaces={'wms': 'http://www.opengis.net/wms'})

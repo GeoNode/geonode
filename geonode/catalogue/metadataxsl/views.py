@@ -22,6 +22,7 @@ import traceback
 import logging
 
 from lxml import etree
+from defusedxml import lxml as dlxml
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
@@ -53,7 +54,7 @@ def prefix_xsl_line(req, id):
     try:
         # generate an XML document (GeoNode's default is ISO)
         if resource.metadata_uploaded and resource.metadata_uploaded_preserve:
-            md_doc = etree.tostring(etree.fromstring(resource.metadata_xml))
+            md_doc = etree.tostring(dlxml.fromstring(resource.metadata_xml))
         else:
             md_doc = catalogue.catalogue.csw_gen_xml(resource, 'catalogue/full_metadata.xml')
         xml = md_doc

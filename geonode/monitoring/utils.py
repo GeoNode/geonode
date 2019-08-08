@@ -35,7 +35,7 @@ from urlparse import urlsplit
 from bs4 import BeautifulSoup as bs
 from requests.auth import HTTPBasicAuth
 from datetime import datetime, timedelta
-from xml.etree import ElementTree as etree
+from defusedxml import lxml as dlxml
 
 from django.conf import settings
 from django.db.models.fields.related import RelatedField
@@ -179,7 +179,7 @@ class GeoServerMonitorClient(object):
         except (ValueError, TypeError,):
             # traceback.print_exc()
             try:
-                data = etree.fromstring(r.content)
+                data = dlxml.fromstring(r.content)
             except Exception as err:
                 log.debug("Cannot parse xml contents for %s: %s", href, err, exc_info=err)
                 data = bs(r.content)
