@@ -27,7 +27,7 @@ import logging
 
 from lxml import etree
 
-from django.conf import settings
+from defusedxml import lxml as dlxml
 
 from geonode import geoserver, qgis_server
 from geonode.utils import check_ogc_backend
@@ -310,7 +310,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         if csw.catalogue.type == 'pycsw_http':
             # upload a native FGDC metadata document
             md_doc = etree.tostring(
-                etree.fromstring(
+                dlxml.fromstring(
                     open(
                         os.path.join(
                             gisdata.GOOD_METADATA,
@@ -418,7 +418,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
                 for mfile in files:
                     if mfile.endswith('.xml'):
                         md_doc = etree.tostring(
-                            etree.fromstring(
+                            dlxml.fromstring(
                                 open(
                                     os.path.join(
                                         root,
@@ -431,7 +431,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
                             csw.catalogue.results['insertresults'][0])
 
             for md in glob.glob(os.path.join(gisdata.GOOD_METADATA, 'wustl.edu', '*.xml')):
-                md_doc = etree.tostring(etree.fromstring(open(md).read()))
+                md_doc = etree.tostring(dlxml.fromstring(open(md).read()))
                 csw.catalogue.transaction(
                     ttype='insert',
                     typename='gmd:MD_Metadata',

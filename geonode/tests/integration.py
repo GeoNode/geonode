@@ -34,7 +34,7 @@ from StringIO import StringIO
 # import traceback
 import gisdata
 from decimal import Decimal
-from lxml import etree
+from defusedxml import lxml as dlxml
 from urlparse import urljoin
 
 from django.conf import settings
@@ -1465,7 +1465,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             # 0. test capabilities_layer
             url = reverse('capabilities_layer', args=[layer1.id])
             resp = self.client.get(url)
-            layercap = etree.fromstring(resp.content)
+            layercap = dlxml.fromstring(resp.content)
             rootdoc = etree.ElementTree(layercap)
             layernodes = rootdoc.findall('./[wms:Name]', namespaces)
             layernode = layernodes[0]
@@ -1477,7 +1477,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             # 1. test capabilities_user
             url = reverse('capabilities_user', args=[norman.username])
             resp = self.client.get(url)
-            layercap = etree.fromstring(resp.content)
+            layercap = dlxml.fromstring(resp.content)
             rootdoc = etree.ElementTree(layercap)
             layernodes = rootdoc.findall('./[wms:Name]', namespaces)
 
@@ -1496,7 +1496,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             # 2. test capabilities_category
             url = reverse('capabilities_category', args=[category.identifier])
             resp = self.client.get(url)
-            layercap = etree.fromstring(resp.content)
+            layercap = dlxml.fromstring(resp.content)
             rootdoc = etree.ElementTree(layercap)
             layernodes = rootdoc.findall('./[wms:Name]', namespaces)
 

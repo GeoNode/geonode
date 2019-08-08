@@ -24,6 +24,7 @@ import logging
 from django.conf import settings
 from django.db.models import signals
 from lxml import etree
+from defusedxml import lxml as dlxml
 from geonode.layers.models import Layer
 from geonode.documents.models import Document
 from geonode.catalogue import get_catalogue
@@ -85,7 +86,7 @@ def catalogue_post_save(instance, sender, **kwargs):
 
         # generate an XML document (GeoNode's default is ISO)
         if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
-            md_doc = etree.tostring(etree.fromstring(instance.metadata_xml))
+            md_doc = etree.tostring(dlxml.fromstring(instance.metadata_xml))
         else:
             md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
 

@@ -32,7 +32,7 @@ from django.contrib.gis.gdal import CoordTransform, SpatialReference
 from django.contrib.gis.geos import GEOSGeometry, Point
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
-from lxml import etree
+from defusedxml import lxml as dlxml
 from requests import Request
 
 from geonode import qgis_server, geoserver
@@ -791,7 +791,7 @@ def style_list(layer, internal=True, generating_qgis_capabilities=False):
     try:
         response = requests.get(url)
 
-        root_xml = etree.fromstring(response.content)
+        root_xml = dlxml.fromstring(response.content)
         styles_xml = root_xml.xpath(
             'wms:Capability/wms:Layer/wms:Layer/wms:Style',
             namespaces={
