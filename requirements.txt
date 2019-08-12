@@ -19,7 +19,7 @@ celery==4.2.1
 kombu==4.6.3
 boto<=2.49.0
 six<1.11.0 # https://github.com/benjaminp/six/issues/210
-tqdm==4.32.2
+tqdm==4.33.0
 
 # Django Apps
 django-allauth==0.39.1
