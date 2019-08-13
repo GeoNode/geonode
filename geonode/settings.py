@@ -271,6 +271,7 @@ GEONODE_CORE_APPS = (
     'geonode.security',
     'geonode.catalogue',
     'geonode.catalogue.metadataxsl',
+    'geonode.curated_thumbs',
 )
 
 GEONODE_INTERNAL_APPS = (

@@ -121,6 +121,7 @@ urlpatterns += [
     url(r'^messages/', include('user_messages.urls')),
     url(r'^social/', include('geonode.social.urls')),
     url(r'^security/', include('geonode.security.urls')),
+    url(r'^thumbnails/', include('geonode.curated_thumbs.urls')),
 
     # Accounts
     url(r'^account/ajax_login$',
