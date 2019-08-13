@@ -26,8 +26,9 @@ import gisdata
 import logging
 
 from lxml import etree
-
 from defusedxml import lxml as dlxml
+
+from django.conf import settings
 
 from geonode import geoserver, qgis_server
 from geonode.utils import check_ogc_backend

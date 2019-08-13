@@ -35,6 +35,7 @@ from StringIO import StringIO
 import gisdata
 from decimal import Decimal
 from defusedxml import lxml as dlxml
+from lxml import etree
 from urlparse import urljoin
 
 from django.conf import settings
