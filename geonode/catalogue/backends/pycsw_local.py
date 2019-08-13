@@ -19,7 +19,7 @@
 #########################################################################
 
 import os
-from lxml import etree
+from defusedxml import lxml as dlxml
 from django.conf import settings
 from ConfigParser import SafeConfigParser
 from owslib.iso import MD_Metadata
@@ -76,7 +76,7 @@ class CatalogueBackend(GenericCatalogueBackend):
         if len(results) < 1:
             return None
 
-        result = etree.fromstring(results).find('{http://www.isotc211.org/2005/gmd}MD_Metadata')
+        result = dlxml.fromstring(results).find('{http://www.isotc211.org/2005/gmd}MD_Metadata')
 
         if result is None:
             return None
@@ -96,7 +96,7 @@ class CatalogueBackend(GenericCatalogueBackend):
         with self.catalogue:
             lresults = self._csw_local_dispatch(keywords, keywords, start + 1, limit, bbox)
             # serialize XML
-            e = etree.fromstring(lresults)
+            e = dlxml.fromstring(lresults)
 
             self.catalogue.records = \
                 [MD_Metadata(x) for x in e.findall('//{http://www.isotc211.org/2005/gmd}MD_Metadata')]
