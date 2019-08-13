@@ -2,7 +2,7 @@
 # But it seems it's not possible for now because alpine only has geos 3.6 which is not supported by django 1.8
 # (probably because of https://code.djangoproject.com/ticket/28441)
 
-FROM python:2.7.14-slim-stretch
+FROM python:2.7.16-slim-stretch
 
 # Install system dependencies
 RUN echo "Updating apt-get" && \
