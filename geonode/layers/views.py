@@ -471,12 +471,12 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
             wms_capabilities = wms_capabilities_resp.getvalue()
             if wms_capabilities:
-                import xml.etree.ElementTree as ET
+                from defusedxml import lxml as dlxml
                 namespaces = {'wms': 'http://www.opengis.net/wms',
                               'xlink': 'http://www.w3.org/1999/xlink',
                               'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
 
-                e = ET.fromstring(wms_capabilities)
+                e = dlxml.fromstring(wms_capabilities)
                 for atype in e.findall(
                         "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
                     dim_name = atype.get('name')
@@ -584,12 +584,12 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
             wms_capabilities = wms_capabilities_resp.getvalue()
             if wms_capabilities:
-                import xml.etree.ElementTree as ET
+                from defusedxml import lxml as dlxml
                 namespaces = {'wms': 'http://www.opengis.net/wms',
                               'xlink': 'http://www.w3.org/1999/xlink',
                               'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
 
-                e = ET.fromstring(wms_capabilities)
+                e = dlxml.fromstring(wms_capabilities)
                 for atype in e.findall(
                         "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
                     dim_name = atype.get('name')

@@ -26,6 +26,7 @@ import zipfile
 import traceback
 
 from lxml import etree
+from defusedxml import lxml as dlxml
 from osgeo import ogr
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -182,7 +183,7 @@ def _byteify(data, ignore_dicts=False):
 
 def get_kml_doc(kml_bytes):
     """Parse and return an etree element with the kml file's content"""
-    kml_doc = etree.fromstring(
+    kml_doc = dlxml.fromstring(
         kml_bytes,
         parser=etree.XMLParser(resolve_entities=False)
     )

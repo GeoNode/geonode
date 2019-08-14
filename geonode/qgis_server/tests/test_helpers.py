@@ -27,6 +27,7 @@ from imghdr import what
 
 from geonode.qgis_server.models import QGISServerLayer
 from lxml import etree
+from defusedxml import lxml as dlxml
 
 import gisdata
 import shutil
@@ -157,14 +158,14 @@ class HelperTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.headers.get('Content-Type'), 'text/xml')
 
         # it has to contains qgis tags
-        style_xml = etree.fromstring(response.content)
+        style_xml = dlxml.fromstring(response.content)
         self.assertTrue('qgis' in style_xml.tag)
 
         # Add new style
         # change default style slightly
         self.assertTrue('WhiteToBlack' not in response.content)
         self.assertTrue('BlackToWhite' in response.content)
-        new_style_xml = etree.fromstring(
+        new_style_xml = dlxml.fromstring(
             response.content.replace('BlackToWhite', 'WhiteToBlack'))
         new_xml_content = etree.tostring(new_style_xml, pretty_print=True)
 
