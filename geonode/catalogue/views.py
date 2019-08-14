@@ -22,6 +22,7 @@ import json
 import os
 import logging
 import xml.etree.ElementTree as ET
+from defusedxml import lxml as dlxml
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -173,7 +174,7 @@ def csw_global_dispatch(request):
             ET.register_namespace(prefix, uri)
 
         if access_token and not access_token.is_expired():
-            tree = ET.fromstring(content)
+            tree = dlxml.fromstring(content)
             for online_resource in tree.findall(
                     '*//gmd:CI_OnlineResource', spaces):
                 try:

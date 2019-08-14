@@ -24,7 +24,7 @@
 # Standard Modules
 import logging
 import datetime
-from lxml import etree
+from defusedxml import lxml as dlxml
 
 # Geonode functionality
 from geonode import GeoNodeException
@@ -42,7 +42,7 @@ def set_metadata(xml):
 
     # check if document is XML
     try:
-        exml = etree.fromstring(xml)
+        exml = dlxml.fromstring(xml)
     except Exception as err:
         raise GeoNodeException(
             'Uploaded XML document is not XML: %s' % str(err))

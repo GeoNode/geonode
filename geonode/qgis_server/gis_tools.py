@@ -23,7 +23,7 @@ import traceback
 from urllib import urlencode, urlretrieve
 from os.path import splitext
 from math import atan, degrees, sinh, pi
-from lxml import etree
+from defusedxml import lxml as dlxml
 
 from django.conf import settings as geonode_config
 
@@ -63,7 +63,7 @@ def set_attributes(layer, overwrite=False):
         try:
             temp_file = urlretrieve(dft_url)[0]
             with open(temp_file, 'r') as wfs_file:
-                doc = etree.fromstring(wfs_file.read())
+                doc = dlxml.fromstring(wfs_file.read())
 
             path = './/{xsd}extension/{xsd}sequence/{xsd}element'.format(
                 xsd='{http://www.w3.org/2001/XMLSchema}')

@@ -22,7 +22,7 @@ import logging
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from datetime import datetime
-from lxml import etree
+from defusedxml import lxml as dlxml
 
 from django.core.urlresolvers import reverse
 
@@ -265,7 +265,7 @@ community."
         self.assertEquals(response.status_code, 200)
 
         # check specific XPaths
-        wmc = etree.fromstring(response.content)
+        wmc = dlxml.fromstring(response.content)
 
         namespace = '{http://www.opengis.net/context}'
         title = '{ns}General/{ns}Title'.format(ns=namespace)

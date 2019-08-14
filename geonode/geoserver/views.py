@@ -24,6 +24,7 @@ import json
 import logging
 import traceback
 from lxml import etree
+from defusedxml import lxml as dlxml
 from os.path import isfile
 
 from urlparse import urlsplit, urljoin
@@ -776,7 +777,7 @@ def get_capabilities(request, layerid=None, user=None,
                         namespaces = {'wms': 'http://www.opengis.net/wms',
                                       'xlink': 'http://www.w3.org/1999/xlink',
                                       'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-                        layercap = etree.fromstring(layercap)
+                        layercap = dlxml.fromstring(layercap)
                         rootdoc = etree.ElementTree(layercap)
                         format_online_resource(workspace, layername, rootdoc, namespaces)
                         service_name = rootdoc.find('.//wms:Service/wms:Name', namespaces)
