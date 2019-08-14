@@ -47,6 +47,8 @@ from mptt.models import MPTTModel, TreeForeignKey
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 from agon_ratings.models import OverallRating
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
@@ -1407,6 +1409,16 @@ class MenuItem(models.Model):
             ('menu', 'title'),
         )
         ordering = ['order']
+
+
+class CuratedThumbnail(models.Model):
+    resource = models.OneToOneField(ResourceBase)
+    img = models.ImageField(upload_to='curated_thumbs')
+    # TOD read thumb size from settings
+    img_thumbnail = ImageSpecField(source='img',
+                                   processors=[ResizeToFill(240, 180)],
+                                   format='PNG',
+                                   options={'quality': 60})
 
 
 def resourcebase_post_save(instance, *args, **kwargs):

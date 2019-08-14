@@ -149,6 +149,7 @@
                   <i class="fa fa-photo fa-3x"></i>
                   <h4>{% trans "Thumbnail" %}</h4>
                   <a class="btn btn-default btn-block btn-xs" href="{% url "document_thumb_upload" resource.id %}" id="set_thumbnail">{% trans "Set" %}</a>
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "thumbnail_upload" resource.resourcebase_ptr.id %}">{% trans "Upload" %}</a>
                 </div>
                 {% endif %}
                 {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list %}
