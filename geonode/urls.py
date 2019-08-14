@@ -35,6 +35,7 @@ from . import views
 
 from geonode.api.urls import api
 from geonode.api.views import verify_token, user_info, roles, users, admin_role
+from geonode.base.views import thumbnail_upload
 
 from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
@@ -166,6 +167,10 @@ urlpatterns += [
     url(r'^api/adminRole', admin_role, name='adminRole'),
     url(r'^api/users', users, name='users'),
     url(r'', include(api.urls)),
+
+    # Curated Thumbnail
+    url(r'^base/(?P<res_id>[^/]+)/thumbnail_upload$', thumbnail_upload,
+        name='thumbnail_upload'),
 ]
 
 urlpatterns += i18n_patterns(
