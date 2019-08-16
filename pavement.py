@@ -410,6 +410,7 @@ def sync(options):
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
+    sh("%s python -W ignore manage.py makemigrations --merge" % settings)
     sh("%s python -W ignore manage.py makemigrations --noinput" % settings)
     sh("%s python -W ignore manage.py migrate --noinput" % settings)
     sh("%s python -W ignore manage.py loaddata sample_admin.json" % settings)
