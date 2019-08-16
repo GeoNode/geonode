@@ -27,6 +27,7 @@ from django import forms
 from django.conf import settings
 from django.core import validators
 from django.forms import models
+from django.forms import ModelForm
 from django.forms.fields import ChoiceField
 from django.forms.utils import flatatt
 from django.utils.html import format_html
@@ -41,7 +42,7 @@ from django.utils.encoding import (
 from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
 
-from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License
+from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License, CuratedThumbnail
 from geonode.people.models import Profile
 from geonode.base.enumerations import ALL_LANGUAGES
 from django.contrib.auth.models import Group
@@ -510,3 +511,10 @@ class BatchEditForm(forms.Form):
         choices=LANGUAGES,
     )
     keywords = forms.CharField(required=False)
+
+
+class CuratedThumbnailForm(ModelForm):
+
+    class Meta:
+        model = CuratedThumbnail
+        fields = ['img']

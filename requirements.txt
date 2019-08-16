@@ -26,6 +26,7 @@ tqdm==4.33.0
 django-allauth==0.39.1
 django-appconf==1.0.3
 django-filter==1.1.0
+django-imagekit==4.0.2
 django-jsonfield<1.2.1
 django-jsonfield-compat<=0.4.4
 django-taggit==0.24.0
