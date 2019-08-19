@@ -799,6 +799,54 @@ def get_stores(store_type=None):
     return store_list
 
 
+def get_attribute_map_from_postgis(layer):
+    """
+    Get attribute_map from PostGIS
+    """
+    import psycopg2
+
+    attribute_map = []
+    gs_layer = gs_catalog.get_layer(layer.name)
+    store = gs_layer.resource.store
+
+    if store.type == 'PostGIS':
+        db = ogc_server_settings.datastore_db
+        db_name = store.connection_parameters['database']
+        user = db['USER']
+        password = db['PASSWORD']
+        host = store.connection_parameters['host']
+        port = store.connection_parameters['port']
+        conn = None
+
+        try:
+            # this could fail because of permissions to query information_schema
+            conn = psycopg2.connect(dbname=db_name, user=user, host=host, port=port, password=password)
+            cur = conn.cursor()
+            sql = """
+                SELECT column_name, data_type
+                FROM information_schema.columns
+                WHERE table_name = '%s'
+                AND table_catalog = '%s';
+            """ % (layer.name, db_name)
+            cur.execute(sql)
+            records = cur.fetchall()
+            attribute_map = [[field_name, _postgis_types.get(field_type, 'xsd:anyType')]
+                             for field_name, field_type in records]
+        except Exception as e:
+            logger.error(
+                "Error getting attributes from PostGIS for layer %s:%s",
+                layer.name,
+                str(e))
+        finally:
+            try:
+                if conn:
+                    conn.close()
+            except Exception as e:
+                logger.error("Error closing PostGIS conn for layer %s:%s", layer.name, str(e))
+
+    return attribute_map
+
+
 def set_attributes(
         layer,
         attribute_map,
@@ -811,6 +859,7 @@ def set_attributes(
         *attribute_stats*: dictionary of return values from get_attribute_statistics(),
             of the form to get values by referencing attribute_stats[<layer_name>][<field_name>].
     """
+
     # we need 3 more items; description, attribute_label, and display_order
     attribute_map_dict = {
         'field': 0,
@@ -952,6 +1001,9 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 tb = traceback.format_exc()
                 logger.debug(tb)
                 attribute_map = []
+
+        if not attribute_map:
+            attribute_map = get_attribute_map_from_postgis(layer)
 
     elif layer.storeType in ["coverageStore"]:
         dc_url = server_url + "wcs?" + urllib.urlencode({
@@ -1879,6 +1931,15 @@ _esri_types = {
     "esriFieldTypeGUID": "xsd:string",
     "esriFieldTypeGlobalID": "xsd:string",
     "esriFieldTypeXML": "xsd:anyType"}
+_postgis_types = {
+    "integer": "xsd:int",
+    "smallint": "xsd:int",
+    "bigint": "xsd:int",
+    "USER-DEFINED": "xsd:geometry",
+    "character varying": "xsd:string",
+    "oid": "xsd:long",
+    "double precision": "xsd:long",
+}
 
 
 def _render_thumbnail(req_body, width=240, height=180):
