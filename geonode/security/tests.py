@@ -214,6 +214,14 @@ class SecurityViewsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         set_attributes_from_geoserver(test_layer, overwrite=True)
         self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
 
+        # Remove permissions to anonymous users and try to refresh attributes again
+        test_layer.set_permissions({'users': {'AnonymousUser': []}})
+        test_layer.attribute_set.all().delete()
+        test_layer.save()
+
+        set_attributes_from_geoserver(test_layer, overwrite=True)
+        self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
+
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_invalidate_tiledlayer_cache(self):
         layers = Layer.objects.all()[:2].values_list('id', flat=True)
