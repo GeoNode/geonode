@@ -1372,11 +1372,12 @@ class HttpClient(object):
             self.password = ogc_server_settings['PASSWORD'] if 'PASSWORD' in ogc_server_settings else 'geoserver'
 
     def request(self, url, method='GET', data=None, headers={}, stream=False, timeout=None, user=None):
-
         if (user or self.username != 'admin') and \
         check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
             if connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
                 try:
+                    if user and isinstance(user, basestring):
+                        user = get_user_model().objects.get(username=user)
                     _u = user or get_user_model().objects.get(username=self.username)
                     access_token = get_or_create_token(_u)
                     if access_token and not access_token.is_expired():
