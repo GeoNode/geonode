@@ -30,7 +30,7 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
                         os.path.join(PROJECT_ROOT, "static_root")
                         )
 
-# SECRET_KEY = '************************'
+SECRET_KEY = 'qM-??jCGzC46L$wd'
 
 SITEURL = "http://localhost:8000/"
 
@@ -44,10 +44,28 @@ if not SITEURL.endswith('/'):
 
 ALLOWED_HOSTS = ['localhost', 'geonode', 'django', 'geonode.example.com']
 
-# TIME_ZONE = 'Europe/Paris'
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend'
+)
 
+SESSION_EXPIRED_CONTROL_ENABLED = False
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
+
+# Backend
 DATABASES = {
     'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'upload_test',
+        'USER': 'geonode',
+        'PASSWORD': 'geonode',
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'CONN_TOUT': 900,
+    },
+    # vector datastore for uploads
+    'datastore': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'upload_test',
         'USER': 'geonode',
@@ -62,9 +80,23 @@ GEOSERVER_LOCATION = os.getenv(
     'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
 )
 
+GEOSERVER_PUBLIC_HOST = os.getenv(
+    'GEOSERVER_PUBLIC_HOST', SITE_HOST_NAME
+)
+
+GEOSERVER_PUBLIC_PORT = os.getenv(
+    'GEOSERVER_PUBLIC_PORT', 8080
+)
+
+_default_public_location = 'http://{}:{}/geoserver/'.format(
+    GEOSERVER_PUBLIC_HOST, GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/geoserver/'.format(GEOSERVER_PUBLIC_HOST)
+
+GEOSERVER_WEB_UI_LOCATION = os.getenv(
+    'GEOSERVER_WEB_UI_LOCATION', GEOSERVER_LOCATION
+)
+
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    #  'GEOSERVER_PUBLIC_LOCATION', '{}geoserver/'.format(SITEURL)
-    'GEOSERVER_PUBLIC_LOCATION', GEOSERVER_LOCATION
+    'GEOSERVER_PUBLIC_LOCATION', _default_public_location
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -80,6 +112,7 @@ OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
         'LOCATION': GEOSERVER_LOCATION,
+        'WEB_UI_LOCATION': GEOSERVER_WEB_UI_LOCATION,
         'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
         'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
         # PUBLIC_LOCATION needs to be kept like this because in dev mode
@@ -96,20 +129,15 @@ OGC_SERVER = {
         'BACKEND_WRITE_ENABLED': True,
         'WPS_ENABLED': False,
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
-        # Set to dictionary identifier of database containing spatial data in
-        # DATABASES dictionary to enable
-        'DATASTORE': 'default',
-        'TIMEOUT': 10  # number of seconds to allow for HTTP requests
+        # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
+        'DATASTORE': 'datastore',
+        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '5')),
+        'MAX_RETRIES': int(os.getenv('OGC_REQUEST_MAX_RETRIES', '5')),
+        'BACKOFF_FACTOR': float(os.getenv('OGC_REQUEST_BACKOFF_FACTOR', '0.3')),
+        'POOL_MAXSIZE': int(os.getenv('OGC_REQUEST_POOL_MAXSIZE', '10')),
+        'POOL_CONNECTIONS': int(os.getenv('OGC_REQUEST_POOL_CONNECTIONS', '10')),
     }
 }
-
-# WARNING: Map Editing is affected by this. GeoExt Configuration is cached for 5 minutes
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-#         'LOCATION': '/var/tmp/django_cache',
-#     }
-# }
 
 # If you want to enable Mosaics use the following configuration
 UPLOADER = {
@@ -140,3 +168,25 @@ UPLOADER = {
         '.xml'
     ]
 }
+
+# Settings for MONITORING plugin
+MONITORING_ENABLED = True
+USER_ANALYTICS_ENABLED = True
+
+MONITORING_CONFIG = os.getenv("MONITORING_CONFIG", None)
+MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
+MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'local-geonode')
+
+# how long monitoring data should be stored
+MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 365)))
+
+# this will disable csrf check for notification config views,
+# use with caution - for dev purpose only
+MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get('MONITORING_DISABLE_CSRF', 'False'))
+
+if MONITORING_ENABLED:
+    if 'geonode.monitoring' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode.monitoring',)
+    if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
+        MIDDLEWARE_CLASSES += \
+            ('geonode.monitoring.middleware.MonitoringMiddleware',)

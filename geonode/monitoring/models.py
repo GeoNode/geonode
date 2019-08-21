@@ -51,6 +51,8 @@ from ipware import get_client_ip
 import pycountry
 from multi_email_field.forms import MultiEmailField
 
+from django.db.models import Sum, F, Case, When, Max
+
 from geonode.utils import parse_datetime
 
 
@@ -160,20 +162,24 @@ class MonitoredResource(models.Model):
     TYPE_EMPTY = ''
     TYPE_LAYER = 'layer'
     TYPE_MAP = 'map'
+    TYPE_RESOURCE_BASE = 'resource_base'
     TYPE_DOCUMENT = 'document'
     TYPE_STYLE = 'style'
     TYPE_ADMIN = 'admin'
+    TYPE_URL = 'url'
     TYPE_OTHER = 'other'
     _TYPES = (TYPE_EMPTY, TYPE_LAYER, TYPE_MAP,
               TYPE_DOCUMENT, TYPE_STYLE, TYPE_ADMIN,
-              TYPE_OTHER,)
+              TYPE_URL, TYPE_OTHER,)
 
     TYPES = ((TYPE_EMPTY, _("No resource"),),
              (TYPE_LAYER, _("Layer"),),
              (TYPE_MAP, _("Map"),),
+             (TYPE_RESOURCE_BASE, _("Resource base"),),
              (TYPE_DOCUMENT, _("Document"),),
              (TYPE_STYLE, _("Style"),),
              (TYPE_ADMIN, _("Admin"),),
+             (TYPE_URL, _("URL"),),
              (TYPE_OTHER, _("Other"),))
 
     name = models.CharField(max_length=255, null=False, blank=True, default='')
@@ -189,6 +195,13 @@ class MonitoredResource(models.Model):
 
     def __str__(self):
         return 'Monitored Resource: {} {}'.format(self.name, self.type)
+
+    @classmethod
+    def get(cls, resource_type, resource_name, or_create=False):
+        if or_create:
+            res, _ = cls.objects.get_or_create(type=resource_type, name=resource_name)
+            return res
+        res = cls.objects.get(type=resource_type, name=resource_name)
 
 
 class Metric(models.Model):
@@ -209,6 +222,21 @@ class Metric(models.Model):
                      TYPE_VALUE: 'sum(value_num)',
                      TYPE_VALUE_NUMERIC: 'max(value_num)',
                      TYPE_COUNT: 'sum(value_num)'}
+
+    AGGREGATE_DJANGO_MAP = {TYPE_RATE: (Sum(Case(When(samples_count__gt=0,
+                                                      then=F('value_num')),
+                                                 default=0),
+                                            output_field=models.DecimalField(max_digits=16,
+                                                                             decimal_places=2)) /
+                                        Sum(Case(When(samples_count__gt=0,
+                                                      then=F('samples_count')),
+                                                 default=1),
+                                            output_field=models.DecimalField(max_digits=16,
+                                                                             decimal_places=2))),
+                            TYPE_VALUE: Sum(F('value_num')),
+                            TYPE_COUNT: Sum(F('value_num')),
+                            TYPE_VALUE_NUMERIC: Max(F('value_num'))
+                            }
 
     UNIT_BYTES = 'B'
     UNIT_KILOBYTES = 'KB'
@@ -249,6 +277,9 @@ class Metric(models.Model):
         null=True,
         blank=True,
         choices=UNITS)
+
+    def get_aggregate_field(self):
+        return self.AGGREGATE_DJANGO_MAP[self.type]
 
     def get_aggregate_name(self):
         return self.AGGREGATE_MAP[self.type]
@@ -295,19 +326,51 @@ class ServiceTypeMetric(models.Model):
         return '{} - {}'.format(self.service_type, self.metric)
 
 
-class OWSService(models.Model):
+class EventType(models.Model):
     _ows_types = 'tms wms-c wmts wcs wfs wms wps'.upper().split(' ')
-    OWS_OTHER = 'other'
-    OWS_ALL = 'all'
-    OWS_TYPES = zip(_ows_types, _ows_types) + \
-        [(OWS_ALL, _("All"))] + [(OWS_OTHER, _("Other"))]
+
+    # OWS_OTHER = 'other'
+    # OWS_ALL = 'all'
+    # OWS_TYPES = zip(_ows_types, _ows_types) + \
+    #     [(OWS_ALL, _("All"))] + [(OWS_OTHER, _("Other"))]
+
+    EVENT_DOWNLOAD = 'download'
+    EVENT_CREATE = 'create'
+    EVENT_CHANGE = 'change'
+    EVENT_CHANGE_METADATA = 'change_metadata'
+    EVENT_REMOVE = 'remove'
+    EVENT_VIEW = 'view'
+    EVENT_VIEW_METADATA = 'view_metadata'
+    EVENT_PUBLISH = 'publish'
+    EVENT_UPLOAD = 'upload'
+    EVENT_GEOSERVER = 'geoserver'  # other event from GS
+    # special event types
+    EVENT_OWS = 'OWS:ALL'  # any ows event
+    EVENT_OTHER = 'other'  # non-ows event
+    EVENT_ALL = 'all'  # all events - baseline: ows + non-ows
+
+    EVENT_TYPES = zip(['OWS:{}'.format(ows) for ows in _ows_types], _ows_types) + \
+        [(EVENT_OTHER, _("Non-OWS"))] +\
+        [(EVENT_OWS, _("Any OWS"))] +\
+        [(EVENT_ALL, _("All"))] +\
+        [(EVENT_CREATE, _("Create"))] +\
+        [(EVENT_UPLOAD, _("Upload"))] +\
+        [(EVENT_CHANGE, _("Change"))] +\
+        [(EVENT_CHANGE_METADATA, _("Change Metadata"))] +\
+        [(EVENT_VIEW_METADATA, _("View Metadata"))] +\
+        [(EVENT_VIEW, _("View"))] +\
+        [(EVENT_DOWNLOAD, _("Download"))] +\
+        [(EVENT_PUBLISH, _("Publish"))] +\
+        [(EVENT_REMOVE, _("Remove"))] +\
+        [(EVENT_GEOSERVER, _("Geoserver event"))]
+
     name = models.CharField(max_length=16, unique=True,
-                            choices=OWS_TYPES,
+                            choices=EVENT_TYPES,
                             null=False,
                             blank=False)
 
     def __str__(self):
-        return 'OWS Service: {}'.format(self.name)
+        return 'Event Type: {}'.format(self.name)
 
     @classmethod
     def get(cls, service_name=None):
@@ -327,11 +390,23 @@ class OWSService(models.Model):
 
     @property
     def is_all(self):
-        return self.name == self.OWS_ALL
+        return self.name == self.EVENT_ALL
 
     @property
     def is_other(self):
-        return self.name == self.OWS_OTHER
+        return self.name == self.EVENT_OTHER
+
+    @property
+    def is_ows(self):
+        return self.name.upper().startswith('OWS:')
+
+    @property
+    def is_download(self):
+        return self.name == self.EVENT_DOWNLOAD
+
+    @property
+    def is_view(self):
+        return self.name == self.EVENT_VIEW
 
 
 class RequestEvent(models.Model):
@@ -340,7 +415,7 @@ class RequestEvent(models.Model):
     created = models.DateTimeField(db_index=True, null=False)
     received = models.DateTimeField(db_index=True, null=False)
     service = models.ForeignKey(Service)
-    ows_service = models.ForeignKey(OWSService, blank=True, null=True)
+    event_type = models.ForeignKey(EventType, blank=True, null=True)
     host = models.CharField(max_length=255, blank=True, default='')
     request_path = models.TextField(blank=False, default='')
 
@@ -373,7 +448,7 @@ class RequestEvent(models.Model):
         default=None)
     user_agent_family = models.CharField(
         max_length=255, null=True, default=None, blank=True)
-    client_ip = models.GenericIPAddressField(null=False)
+    client_ip = models.GenericIPAddressField(null=True, blank=True)
     client_lat = models.DecimalField(
         max_digits=11,
         decimal_places=5,
@@ -402,6 +477,18 @@ class RequestEvent(models.Model):
         default=None,
         blank=True,
         db_index=True)
+    # keep user anonymized identifier
+    user_identifier = models.CharField(
+        max_length=255,
+        null=True,
+        default=None,
+        blank=True,
+        db_index=True)
+    user_username = models.CharField(
+        max_length=150,
+        default=None,
+        null=True,
+        blank=True)
 
     @classmethod
     def _get_resources(cls, type_name, resources_list):
@@ -420,15 +507,122 @@ class RequestEvent(models.Model):
         Return serialized resources affected by request
         """
         rqmeta = getattr(request, '_monitoring', {})
+        events = rqmeta['events']
         resources = []
-        for type_name in 'layer map document style'.split():
-            res = rqmeta['resources'].get(type_name) or []
-            resources.extend(cls._get_resources(type_name, res))
+        # for type_name in 'layer map document style'.split():
+        #     res = rqmeta['resources'].get(type_name) or []
+        #     resources.extend(cls._get_resources(type_name, res))
+
+        for evt_type, res_type, res_name in events:
+            resources.extend(cls._get_resources(res_type, [res_name]))
+
         return resources
+
+    @classmethod
+    def _get_event_type(cls, request, default_event_type='view'):
+        """
+        Returns event type based on events
+        """
+        rqmeta = getattr(request, '_monitoring', {})
+        events = set(e[0] for e in rqmeta['events'])
+        event_name = default_event_type
+        if len(events) == 1:
+            event_name = events.pop()
+        elif len(events) == 2 and default_event_type in events:
+            events.remove(default_event_type)
+            event_name = events.pop()
+        return EventType.get(event_name)
 
     @staticmethod
     def _get_ua_family(ua):
         return str(user_agents.parse(ua))
+
+    @classmethod
+    def _get_user_agent(cls, ua):
+        ua_family = cls._get_ua_family(ua)
+        return {'user_agent': ua,
+                'user_agent_family': ua_family}
+
+    @classmethod
+    def _get_user_consent(cls, request):
+        return settings.USER_ANALYTICS_ENABLED
+        # if  request.user.is_authenticated():
+        #    return request.user.allow_analytics
+        # return True
+
+    @classmethod
+    def _get_user_location(cls, request_ip):
+        out = {}
+        lat = lon = None
+        country = region = city = None
+        if request_ip:
+            geoip = get_geoip()
+            if request_ip in ('127.0.0.1',):
+                return out
+            try:
+                client_loc = geoip.city(request_ip)
+            except Exception as err:
+                log.warning("Cannot resolve %s: %s", request_ip, err)
+                client_loc = None
+
+            if client_loc:
+                lat, lon = client_loc['latitude'], client_loc['longitude'],
+                country = client_loc.get(
+                    'country_code3') or client_loc['country_code']
+                if len(country) == 2:
+                    _c = pycountry.countries.get(alpha_2=country)
+                    country = _c.alpha_3
+                region = client_loc['region']
+                city = client_loc['city']
+
+                out.update({'client_ip': request_ip,
+                            'client_lat': lat,
+                            'client_lon': lon,
+                            'client_country': country,
+                            'client_region': region,
+                            'client_city': city})
+        return out
+
+    @classmethod
+    def _get_user_data_gn(cls, request):
+        out = {}
+        # check consent
+        if not cls._get_user_consent(request):
+            return out
+
+        rqmeta = getattr(request, '_monitoring', {})
+        if rqmeta.get('user_identifier'):
+            out['user_identifier'] = rqmeta.get('user_identifier')
+        if rqmeta.get('user_username'):
+            out['user_username'] = rqmeta.get('user_username')
+
+        ua = request.META.get('HTTP_USER_AGENT') or ''
+        ua_data = cls._get_user_agent(ua)
+        out.update(ua_data)
+
+        request_ip, is_routable = get_client_ip(request)
+        if request_ip and is_routable:
+            location_data = cls._get_user_location(request_ip)
+            out.update(location_data)
+        return out
+
+    @classmethod
+    def _get_user_data_gs(cls, request):
+        out = {}
+
+        # check consent
+        # if not cls._get_user_consent(request):
+        #    return out
+
+        ua = request.get('remoteUserAgent') or ''
+        ua_data = cls._get_user_agent(ua)
+        out.update(ua_data)
+
+        request_ip = request.get('remoteAddr')
+        if request_ip:
+            location_data = cls._get_user_location(request_ip)
+            out.update(location_data)
+        return out
 
     @classmethod
     def from_geonode(cls, service, request, response):
@@ -441,61 +635,61 @@ class RequestEvent(models.Model):
             'finished',
             datetime.utcnow().replace(
                 tzinfo=pytz.utc))
-        duration = ((_ended - created).microseconds) / 1000.0
+        duration = (_ended - created).microseconds / 1000.0
 
-        ua = request.META.get('HTTP_USER_AGENT') or ''
-        ua_family = cls._get_ua_family(ua)
+        sensitive_data = cls._get_user_data_gn(request)
+        event_type = cls._get_event_type(request)
 
-        ip, is_routable = get_client_ip(request)
-        lat = lon = None
-        country = region = city = None
-        if ip and is_routable:
-            ip = ip.split(':')[0]
-            if settings.TEST and ip == 'testserver':
-                ip = '127.0.0.1'
-            try:
-                ip = gethostbyname(ip)
-            except Exception as err:
-                pass
-
-            geoip = get_geoip()
-            try:
-                client_loc = geoip.city(ip)
-            except Exception as err:
-                log.warning("Cannot resolve %s: %s", ip, err)
-                client_loc = None
-
-            if client_loc:
-                lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc.get(
-                    'country_code3') or client_loc['country_code']
-                if len(country) == 2:
-                    _c = pycountry.countries.get(alpha_2=country)
-                    country = _c.alpha_3
-
-                region = client_loc['region']
-                city = client_loc['city']
+        # ua = request.META.get('HTTP_USER_AGENT') or ''
+        # ua_family = cls._get_ua_family(ua)
+        #
+        # ip, is_routable = get_client_ip(request)
+        # lat = lon = None
+        # country = region = city = None
+        # if ip and is_routable:
+        #     ip = ip.split(':')[0]
+        #     if settings.TEST and ip == 'testserver':
+        #         ip = '127.0.0.1'
+        #     try:
+        #         ip = gethostbyname(ip)
+        #     except Exception as err:
+        #         pass
+        #
+        #     geoip = get_geoip()
+        #     try:
+        #         client_loc = geoip.city(ip)
+        #     except Exception as err:
+        #         log.warning("Cannot resolve %s: %s", ip, err)
+        #         client_loc = None
+        #
+        #     if client_loc:
+        #         lat, lon = client_loc['latitude'], client_loc['longitude'],
+        #         country = client_loc.get(
+        #             'country_code3') or client_loc['country_code']
+        #         if len(country) == 2:
+        #             _c = pycountry.countries.get(alpha_2=country)
+        #             country = _c.alpha_3
+        #
+        #         region = client_loc['region']
+        #         city = client_loc['city']
 
         data = {'received': received,
                 'created': created,
                 'host': request.get_host(),
                 'service': service,
-                'ows_service': None,
+                'user_identifier': None,
+                'user_username': None,
+                'event_type': event_type,
                 'request_path': request.get_full_path(),
                 'request_method': request.method,
                 'response_status': response.status_code,
                 'response_size':
                     response.get('Content-length') or len(response.getvalue()),
                 'response_type': response.get('Content-type'),
-                'response_time': duration,
-                'user_agent': ua,
-                'user_agent_family': ua_family,
-                'client_ip': ip,
-                'client_lat': lat,
-                'client_lon': lon,
-                'client_country': country,
-                'client_region': region,
-                'client_city': city}
+                'response_time': duration}
+
+        data.update(sensitive_data)
+
         try:
             inst = cls.objects.create(**data)
             resources = cls._get_geonode_resources(request)
@@ -519,28 +713,31 @@ class RequestEvent(models.Model):
             log.warning("request not finished %s", rd.get('status'))
             return
         received = received or datetime.utcnow().replace(tzinfo=pytz.utc)
-        ua = rd.get('remoteUserAgent') or ''
-        ua_family = cls._get_ua_family(ua)
-        ip = rd['remoteAddr']
-        lat = lon = None
-        country = region = city = None
-        if ip:
-            geoip = get_geoip()
-            try:
-                client_loc = geoip.city(ip)
-            except Exception as err:
-                log.warning("Cannot resolve %s: %s", ip, err)
-                client_loc = None
 
-            if client_loc:
-                lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc.get(
-                    'country_code3') or client_loc['country_code']
-                if len(country) == 2:
-                    _c = pycountry.countries.get(alpha_2=country)
-                    country = _c.alpha_3
-                region = client_loc['region']
-                city = client_loc['city']
+        sensitive_data = cls._get_user_data_gs(rd)
+
+        # ua = rd.get('remoteUserAgent') or ''
+        # ua_family = cls._get_ua_family(ua)
+        # ip = rd['remoteAddr']
+        # lat = lon = None
+        # country = region = city = None
+        # if ip:
+        #     geoip = get_geoip()
+        #     try:
+        #         client_loc = geoip.city(ip)
+        #     except Exception as err:
+        #         log.warning("Cannot resolve %s: %s", ip, err)
+        #         client_loc = None
+        #
+        #     if client_loc:
+        #         lat, lon = client_loc['latitude'], client_loc['longitude'],
+        #         country = client_loc.get(
+        #             'country_code3') or client_loc['country_code']
+        #         if len(country) == 2:
+        #             _c = pycountry.countries.get(alpha_2=country)
+        #             country = _c.alpha_3
+        #         region = client_loc['region']
+        #         city = client_loc['city']
 
         from dateutil.tz import tzlocal
         utc = pytz.utc
@@ -554,10 +751,15 @@ class RequestEvent(models.Model):
         start_time = start_time.replace(tzinfo=utc).astimezone(local_tz)
 
         rl = rd['responseLength']
+        event_type_name = rd.get('service')
+        if event_type_name:
+            event_type = EventType.get('OWS:{}'.format(event_type_name.upper()))
+        else:
+            event_type = EventType.get(EventType.EVENT_GEOSERVER)
         data = {'created': start_time,
                 'received': received,
                 'host': rd['host'],
-                'ows_service': OWSService.get(rd.get('service')),
+                'event_type': event_type,
                 'service': service,
                 'request_path':
                     '{}?{}'.format(rd['path'], rd['queryString']) if rd.get(
@@ -566,16 +768,9 @@ class RequestEvent(models.Model):
                 'response_status': rd['responseStatus'],
                 'response_size': rl[0] if isinstance(rl, list) else rl,
                 'response_type': rd.get('responseContentType'),
-                'response_time': rd['totalTime'],
-                'user_agent': ua,
-                'user_agent_family': ua_family,
-                'custom_id': rd['internalid'],
-                'client_ip': ip,
-                'client_lat': lat,
-                'client_lon': lon,
-                'client_country': country,
-                'client_region': region,
-                'client_city': city}
+                'response_time': rd['totalTime']}
+        data.update(sensitive_data)
+
         inst = cls.objects.create(**data)
         resource_names = (rd.get('resources') or {}).get('string') or []
         if not isinstance(resource_names, (list, tuple,)):
@@ -657,7 +852,7 @@ class ExceptionEvent(models.Model):
                                         'path': e.request.request_path,
                                         'host': e.request.host,
                                         },
-                            'ows_service': e.request.ows_service.name if e.request.ows_service else None,
+                            'event_type': e.request.event_type.name if e.request.event_type else None,
                             'resources': [{'name': str(r)} for r in e.request.resources.all()],
                             'client': {'ip': e.request.client_ip,
                                        'user_agent': e.request.user_agent,
@@ -689,13 +884,15 @@ class MetricValue(models.Model):
     valid_to = models.DateTimeField(db_index=True, null=False)
     service_metric = models.ForeignKey(ServiceTypeMetric)
     service = models.ForeignKey(Service)
-    ows_service = models.ForeignKey(
-        OWSService,
+    event_type = models.ForeignKey(
+        EventType,
         null=True,
         blank=True,
         related_name='metric_values')
     resource = models.ForeignKey(
         MonitoredResource,
+        null=True,
+        blank=True,
         related_name='metric_values')
     label = models.ForeignKey(MetricLabel, related_name='metric_values')
     value = models.CharField(max_length=255, null=False, blank=False)
@@ -718,7 +915,7 @@ class MetricValue(models.Model):
              'service_metric',
              'resource',
              'label',
-             'ows_service',
+             'event_type',
              ))
 
     def __str__(self):
@@ -739,7 +936,7 @@ class MetricValue(models.Model):
     def add(cls, metric, valid_from, valid_to, service, label,
             value_raw=None, resource=None,
             value=None, value_num=None,
-            data=None, ows_service=None, samples_count=None):
+            data=None, event_type=None, samples_count=None):
         """
         Create new MetricValue shortcut
         """
@@ -752,19 +949,19 @@ class MetricValue(models.Model):
                 service_type=service.service_type, metric__name=metric)
 
         label, _ = MetricLabel.objects.get_or_create(name=label or 'count')
-        if ows_service:
-            if not isinstance(ows_service, OWSService):
-                ows_service = OWSService.get(ows_service)
-        if not resource:
-            resource, _ = MonitoredResource.objects.get_or_create(
-                type=MonitoredResource.TYPE_EMPTY, name='')
+        if event_type:
+            if not isinstance(event_type, EventType):
+                event_type = EventType.get(event_type)
+        # if not resource:
+        #     resource, _ = MonitoredResource.objects.get_or_create(
+        #         type=MonitoredResource.TYPE_EMPTY, name='')
         try:
             inst = cls.objects.get(valid_from=valid_from,
                                    valid_to=valid_to,
                                    service=service,
                                    label=label,
                                    resource=resource,
-                                   ows_service=ows_service,
+                                   event_type=event_type,
                                    service_metric=service_metric)
             inst.value = abs(value) if value else 0
             inst.value_raw = abs(value_raw) if value_raw else 0
@@ -780,7 +977,7 @@ class MetricValue(models.Model):
                                   service_metric=service_metric,
                                   label=label,
                                   resource=resource,
-                                  ows_service=ows_service,
+                                  event_type=event_type,
                                   value=value_raw,
                                   value_raw=value_raw,
                                   value_num=value_num,
@@ -789,7 +986,7 @@ class MetricValue(models.Model):
 
     @classmethod
     def get_for(cls, metric, service=None, valid_on=None,
-                resource=None, label=None, ows_service=None):
+                resource=None, label=None, event_type=None):
         qparams = models.Q()
         if isinstance(metric, Metric):
             qparams = qparams & models.Q(service_metric__metric=metric)
@@ -822,11 +1019,11 @@ class MetricValue(models.Model):
                 rtype, rname = resource.split('=')
                 qparams = qparams & models.Q(
                     resource__type=rtype, resource__name=rname)
-        if ows_service:
-            if isinstance(ows_service, OWSService):
-                qparams = qparams & models.Q(ows_service=ows_service)
+        if event_type:
+            if isinstance(event_type, EventType):
+                qparams = qparams & models.Q(event_type=event_type)
             else:
-                qparams = qparams & models.Q(ows_service__name=ows_service)
+                qparams = qparams & models.Q(event_type__name=event_type)
 
         q = cls.objects.filter(qparams).order_by('-valid_to')
         return q
@@ -997,7 +1194,7 @@ class NotificationCheck(models.Model):
         inst.description = description
         user_thresholds = {}
         for (metric_name, field_opt, use_service,
-             use_resource, use_label, use_ows_service,
+             use_resource, use_label, use_event_type,
              minimum, maximum, thresholds, _description) in user_threshold:
 
             # metric_name is a string for metric.name
@@ -1171,7 +1368,7 @@ class NotificationMetricDefinition(models.Model):
     use_service = models.BooleanField(null=False, default=False)
     use_resource = models.BooleanField(null=False, default=False)
     use_label = models.BooleanField(null=False, default=False)
-    use_ows_service = models.BooleanField(null=False, default=False)
+    use_event_type = models.BooleanField(null=False, default=False)
     field_option = models.CharField(max_length=32,
                                     choices=FIELD_OPTION_CHOICES,
                                     null=False,
@@ -1297,7 +1494,7 @@ class MetricNotificationCheck(models.Model):
         blank=True)
     resource = models.ForeignKey(MonitoredResource, null=True, blank=True)
     label = models.ForeignKey(MetricLabel, null=True, blank=True)
-    ows_service = models.ForeignKey(OWSService, null=True, blank=True)
+    event_type = models.ForeignKey(EventType, null=True, blank=True)
     min_value = models.DecimalField(
         max_digits=20,
         decimal_places=4,
@@ -1385,8 +1582,8 @@ class MetricNotificationCheck(models.Model):
 
         def_msg = self.definition.description
         msg_prefix = []
-        if self.ows_service:
-            os = self.ows_service
+        if self.event_type:
+            os = self.event_type
             if os.is_all or os.is_other:
                 msg_prefix.append("for {} OWS".format(os.name))
             else:
@@ -1464,8 +1661,8 @@ class MetricNotificationCheck(models.Model):
             qfilter['resource'] = self.resource
         if self.label:
             qfilter['label'] = self.label
-        if self.ows_service:
-            qfilter['ows_service'] = self.ows_service
+        if self.event_type:
+            qfilter['event_type'] = self.event_type
         if self.max_timeout is None:
             metrics = MetricValue.get_for(valid_on=for_timestamp, **qfilter)
         else:
@@ -1487,7 +1684,7 @@ class BuiltIns(object):
     # metrics_count = ('request.count', 'request.method', 'request.
 
     geonode_metrics = (
-        'request', 'request.count', 'request.ip', 'request.ua', 'request.path',
+        'request', 'request.count', 'request.users', 'request.ip', 'request.ua', 'request.path',
         'request.ua.family', 'request.method', 'response.error.count',
         'request.country', 'request.region', 'request.city',
         'response.time', 'response.status', 'response.size',
@@ -1506,7 +1703,7 @@ class BuiltIns(object):
 
     values = ('request.ip', 'request.ua', 'request.ua.family', 'request.path',
               'request.method', 'request.country', 'request.region',
-              'request.city', 'response.status', 'response.ereror.types',)
+              'request.city', 'response.status', 'response.ereror.types', 'request.users',)
 
     values_numeric = (
         'storage.total', 'storage.used', 'storage.free', 'mem.free', 'mem.usage',
@@ -1527,6 +1724,7 @@ class BuiltIns(object):
     unit_percentage = ('cpu.usage.percent', 'mem.usage.percent',)
 
     descriptions = {'request.count': 'Number of requests',
+                    'request.users': 'Number of users visiting',
                     'response.time': 'Time of making a response',
                     'request.ip': 'IP Address of source of request',
                     'request.ua': 'User Agent of source of request',
@@ -1570,8 +1768,8 @@ def populate():
         name__in=BuiltIns.values_numeric).update(
         type=Metric.TYPE_VALUE_NUMERIC)
 
-    for otype, otype_name in OWSService.OWS_TYPES:
-        OWSService.objects.get_or_create(name=otype)
+    for etype, etype_name in EventType.EVENT_TYPES:
+        EventType.objects.get_or_create(name=etype)
 
     for attr_name in dir(BuiltIns):
         if not attr_name.startswith('unit_'):

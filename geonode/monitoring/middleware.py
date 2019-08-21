@@ -20,11 +20,13 @@
 
 import logging
 import pytz
+import hashlib
+import types
 
 from datetime import datetime
 from django.conf import settings
 from geonode.monitoring.models import Service, Host
-from geonode.monitoring.utils import MonitoringHandler, MonitoringFilter
+from geonode.monitoring.utils import MonitoringHandler
 from django.http import HttpResponse
 
 
@@ -52,8 +54,6 @@ class MonitoringMiddleware(object):
         self.service = self.get_service()
         self.handler = MonitoringHandler(self.service)
         self.handler.setLevel(logging.DEBUG)
-        self.filter = MonitoringFilter(self.service, FILTER_URLS)
-        self.handler.addFilter(self.filter)
         self.log.addHandler(self.handler)
 
     def get_service(self):
@@ -71,14 +71,25 @@ class MonitoringMiddleware(object):
                 service = None
 
     @staticmethod
-    def add_resource(request, resource_type, name):
+    def should_process(request):
+        current = request.path
+
+        for skip_url in settings.MONITORING_SKIP_PATHS:
+            if isinstance(skip_url, types.StringTypes):
+                if current.startswith(skip_url):
+                    return False
+            elif hasattr(skip_url, 'match'):
+                if skip_url.match(current):
+                    return False
+        return True
+
+    @staticmethod
+    def register_event(request, event_type, resource_type, resource_name):
         m = getattr(request, '_monitoring', None)
         if not m:
             return
-        res = m['resources']
-        res_list = res.get(resource_type) or []
-        res_list.append(name)
-        res[resource_type] = res_list
+        events = m['events']
+        events.append((event_type, resource_type, resource_name,))
 
     def register_request(self, request, response):
         if self.service:
@@ -96,17 +107,33 @@ class MonitoringMiddleware(object):
             del request._monitoring
 
     def process_request(self, request):
+        if not self.should_process(request):
+            return
         utc = pytz.utc
         now = datetime.utcnow().replace(tzinfo=utc)
+
+        # enforce session create
+        if not request.session.session_key:
+            request.session.create()
+
         meta = {'started': now,
                 'resources': {},
-                'finished': None}
+                'events': [],
+                'finished': None,
+                }
+
+        if settings.USER_ANALYTICS_ENABLED:
+            meta.update({
+                'user_identifier': hashlib.sha256(request.session.session_key or '').hexdigest(),
+                'user_username': request.user.username if request.user.is_authenticated() else None
+            })
+
         request._monitoring = meta
 
-        def add_resource(resource_type, name):
-            return self.add_resource(request, resource_type, name)
+        def register_event(event_type, resource_type, name):
+            self.register_event(request, event_type, resource_type, name)
 
-        request.add_resource = add_resource
+        request.register_event = register_event
 
     def process_response(self, request, response):
         m = getattr(request, '_monitoring', None)

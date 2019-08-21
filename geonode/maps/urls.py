@@ -23,6 +23,7 @@ from django.views.generic import TemplateView
 
 from geonode import geoserver, qgis_server
 from geonode.utils import check_ogc_backend
+from geonode.monitoring import register_url_event
 from . import views
 
 js_info_dict = {
@@ -57,10 +58,12 @@ elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     map_json = MapUpdateView.as_view()
     map_thumbnail = set_thumbnail_map
 
+maps_list = register_url_event()(TemplateView.as_view(template_name='maps/map_list.html'))
+
 urlpatterns = [
     # 'geonode.maps.views',
     url(r'^$',
-        TemplateView.as_view(template_name='maps/map_list.html'),
+        maps_list,
         {'facet_type': 'maps'},
         name='maps_browse'),
     url(r'^new$', new_map_view, name="new_map"),
