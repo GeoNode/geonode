@@ -617,12 +617,26 @@ class TestUpload(UploaderBase):
             GOOD_DATA,
             'vector',
             'san_andres_y_providencia_water.shp')
-        self.upload_file(fname, self.complete_upload)
+        self.upload_file(fname, self.complete_upload,
+                         check_name='san_andres_y_providencia_water')
+
+        test_layer = Layer.objects.all().first()
+        if test_layer:
+            layer_attributes = test_layer.attributes
+            self.assertIsNotNone(layer_attributes)
+            self.assertTrue(layer_attributes.count() > 0)
 
     def test_raster_upload(self):
         """ Tests if a raster layer can be upload to a running GeoNode GeoServer"""
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
-        self.upload_file(fname, self.complete_raster_upload)
+        self.upload_file(fname, self.complete_raster_upload,
+                         check_name='relief_san_andres')
+
+        test_layer = Layer.objects.all().first()
+        if test_layer:
+            layer_attributes = test_layer.attributes
+            self.assertIsNotNone(layer_attributes)
+            self.assertTrue(layer_attributes.count() > 0)
 
     def test_zipped_upload(self):
         """Test uploading a zipped shapefile"""
