@@ -1,0 +1,47 @@
+{% extends "geonode_base.html" %}
+{% load i18n %}
+
+
+{% block body_class %}{% trans "Upload a Thumbnail" %}{% endblock %}
+
+{% block body_outer %}
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+{% endif %}
+
+<div class="page-header">
+  <h2>{% trans "Upload a Thumbnail" %}</h2>
+</div>
+
+<div class="row">
+
+  <div class="col-md-4">
+
+    <!-- current uploaded thumb -->
+    {% if resource.curatedthumbnail %}
+      <h5>Current thumbnail</h5>
+      <img src='{{ resource.curatedthumbnail.img_thumbnail.url }}'></img>
+      <form method="POST" class="post-form">
+        {% csrf_token %}
+          <button type="submit" class="save btn btn-default" name="remove-thumb">
+            {% trans "Remove (and use auto generated thumbnail)" %}</button>
+      </form>
+    {% endif %}
+
+    <!-- upload form -->
+    <form method="POST" enctype="multipart/form-data" class="post-form">
+      {% csrf_token %}
+        {{ form.img }}
+        <button type="submit" class="save btn btn-default"  name="upload-thumb">{% trans "Upload" %}</button>
+    </form>
+
+  </div>
+
+  <div class="col-md-4">
+    <h5>Auto generated thumbnail</h5>
+    <img src='{{ resource.thumbnail_url }}'></img>
+  </div>
+
+</div>
+
+{% endblock %}

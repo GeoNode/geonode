@@ -781,6 +781,10 @@ class LayerResource(CommonModelApi):
 
             formatted_obj['gtype'] = self.dehydrate_gtype(bundle)
 
+            # replace thumbnail_url with curated_thumbs
+            if hasattr(obj, 'curatedthumbnail'):
+                formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+
             # put the object on the response stack
             formatted_objects.append(formatted_obj)
         return formatted_objects
@@ -982,6 +986,11 @@ class MapResource(CommonModelApi):
                     layer, fields=map_layer_fields)
                 formatted_layers.append(formatted_map_layer)
             formatted_obj['layers'] = formatted_layers
+
+            # replace thumbnail_url with curated_thumbs
+            if hasattr(obj, 'curatedthumbnail'):
+                formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+
             formatted_objects.append(formatted_obj)
         return formatted_objects
 
@@ -1031,6 +1040,10 @@ class DocumentResource(CommonModelApi):
             # Probe Remote Services
             formatted_obj['store_type'] = 'dataset'
             formatted_obj['online'] = True
+
+            # replace thumbnail_url with curated_thumbs
+            if hasattr(obj, 'curatedthumbnail'):
+                formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
 
             formatted_objects.append(formatted_obj)
         return formatted_objects

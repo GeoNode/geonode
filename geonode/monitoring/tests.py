@@ -26,7 +26,7 @@ from datetime import datetime, timedelta
 
 import os
 import pytz
-from xml.etree.ElementTree import fromstring
+from defusedxml import lxml as dlxml
 import json
 import xmljson
 from decimal import Decimal
@@ -56,8 +56,8 @@ req_path = os.path.join(res_dir, 'req.xml')
 req_err_xml = open(req_err_path, 'rt').read()
 req_xml = open(req_path, 'rt').read()
 
-req_big = xmljson.yahoo.data(fromstring(req_xml))
-req_err_big = xmljson.yahoo.data(fromstring(req_err_xml))
+req_big = xmljson.yahoo.data(dlxml.fromstring(req_xml))
+req_err_big = xmljson.yahoo.data(dlxml.fromstring(req_err_xml))
 
 
 @override_settings(USE_TZ=True)

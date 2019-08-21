@@ -46,7 +46,8 @@ from geonode.base.models import (
     HierarchicalKeyword,
     MenuPlaceholder,
     Menu,
-    MenuItem
+    MenuItem,
+    CuratedThumbnail,
 )
 from django.http import HttpResponseRedirect
 
@@ -266,6 +267,11 @@ class MenuItemAdmin(admin.ModelAdmin):
     list_display = ('title', 'menu', 'order', 'blank_target', 'url')
 
 
+class CuratedThumbnailAdmin(admin.ModelAdmin):
+    model = CuratedThumbnail
+    list_display = ('id', 'resource', 'img', 'img_thumbnail')
+
+
 admin.site.register(TopicCategory, TopicCategoryAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(SpatialRepresentationType, SpatialRepresentationTypeAdmin)
@@ -278,6 +284,7 @@ admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
 admin.site.register(MenuPlaceholder, MenuPlaceholderAdmin)
 admin.site.register(Menu, MenuAdmin)
 admin.site.register(MenuItem, MenuItemAdmin)
+admin.site.register(CuratedThumbnail, CuratedThumbnailAdmin)
 
 
 class ResourceBaseAdminForm(ModelForm):

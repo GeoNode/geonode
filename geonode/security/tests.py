@@ -214,6 +214,14 @@ class SecurityViewsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         set_attributes_from_geoserver(test_layer, overwrite=True)
         self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
 
+        # Remove permissions to anonymous users and try to refresh attributes again
+        test_layer.set_permissions({'users': {'AnonymousUser': []}})
+        test_layer.attribute_set.all().delete()
+        test_layer.save()
+
+        set_attributes_from_geoserver(test_layer, overwrite=True)
+        self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
+
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_invalidate_tiledlayer_cache(self):
         layers = Layer.objects.all()[:2].values_list('id', flat=True)
@@ -450,6 +458,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             check_layer(saved_layer)
 
             from lxml import etree
+            from defusedxml import lxml as dlxml
             from geonode.geoserver.helpers import get_store
             from geonode.geoserver.signals import gs_catalog
 
@@ -475,7 +484,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertEquals(r.status_code, 200)
             _log(r.text)
 
-            featureType = etree.ElementTree(etree.fromstring(r.text))
+            featureType = etree.ElementTree(dlxml.fromstring(r.text))
             metadata = featureType.findall('./[metadata]')
             self.assertEquals(len(metadata), 0)
 
@@ -511,7 +520,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertEquals(r.status_code, 200)
             _log(r.text)
 
-            featureType = etree.ElementTree(etree.fromstring(r.text))
+            featureType = etree.ElementTree(dlxml.fromstring(r.text))
             metadata = featureType.findall('./[metadata]')
             _log(etree.tostring(metadata[0], encoding='utf8', method='xml'))
             self.assertEquals(len(metadata), 1)
@@ -534,7 +543,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                                   'xlink': 'http://www.w3.org/1999/xlink',
                                   'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
 
-                    e = etree.fromstring(wms_capabilities)
+                    e = dlxml.fromstring(wms_capabilities)
                     for atype in e.findall(
                             "./[wms:Name='%s']/wms:Dimension[@name='time']" % (saved_layer.alternate), namespaces):
                         dim_name = atype.get('name')
