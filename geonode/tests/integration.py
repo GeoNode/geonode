@@ -1712,14 +1712,14 @@ class LayersStylesApiInteractionTests(
         resp = self.client.post(style_list_url, data=data)
 
         # Should not be able to add style without authentication
-        self.assertEqual(resp.status_code, 403)
+        self.assertTrue(resp.status_code in [403, 405])
 
         # Login using anonymous user
         self.client.login(username='AnonymousUser')
         style_stream.seek(0)
         resp = self.client.post(style_list_url, data=data)
         # Should not be able to add style without correct permission
-        self.assertEqual(resp.status_code, 403)
+        self.assertTrue(resp.status_code in [403, 405])
         self.client.logout()
 
         # Use admin credentials
