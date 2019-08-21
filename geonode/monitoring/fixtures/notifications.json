@@ -42,7 +42,7 @@
          "min_value" : "0.0000",
          "description" : "Number of handled requests is lower than",
          "max_value" : "10.0000",
-         "use_ows_service" : false,
+         "use_event_type" : false,
          "notification_check" : 2,
          "metric" : 2,
          "use_service" : false,
@@ -55,7 +55,7 @@
       "model" : "monitoring.notificationmetricdefinition",
       "fields" : {
          "max_value" : null,
-         "use_ows_service" : false,
+         "use_event_type" : false,
          "use_service" : false,
          "use_resource" : false,
          "notification_check" : 2,
@@ -76,7 +76,7 @@
          "use_service" : false,
          "use_label" : false,
          "max_value" : null,
-         "use_ows_service" : false,
+         "use_event_type" : false,
          "min_value" : "500.0000",
          "description" : "Response time is higher than",
          "steps" : null,
@@ -88,7 +88,7 @@
    {
       "pk" : 20,
       "fields" : {
-         "ows_service" : null,
+         "event_type" : null,
          "active" : true,
          "notification_check" : 2,
          "metric" : 2,
@@ -109,7 +109,7 @@
          "resource" : null,
          "definition" : 3,
          "active" : true,
-         "ows_service" : null,
+         "event_type" : null,
          "metric" : 2,
          "notification_check" : 2,
          "label" : null,
@@ -131,7 +131,7 @@
          "max_value" : null,
          "service" : null,
          "active" : true,
-         "ows_service" : null,
+         "event_type" : null,
          "metric" : 11,
          "notification_check" : 2
       }

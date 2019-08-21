@@ -86,3 +86,5 @@ geonode\.tests\.bdd\.e2e\.test_login/
 /celerybeat-schedule
 
 scripts/spcgeonode/_volume_*
+
+/geonode/test_settings.py
