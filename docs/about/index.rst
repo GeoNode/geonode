@@ -62,7 +62,7 @@ with GeoNode. If not, see http://www.gnu.org/licenses.
 Current Version and Features
 ============================
 
-GeoNode current version: `2.10rc5 <https://github.com/GeoNode/geonode/releases/tag/2.10rc5>`_
+GeoNode current version: `2.10 <https://github.com/GeoNode/geonode/releases/tag/2.10>`_
 
 Main Features: `State of GeoNode 2.10 <http://summit.geonode.org/presentation/2019/afabiani_StateOfGeoNode.pdf>`_
 
