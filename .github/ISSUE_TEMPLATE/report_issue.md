@@ -1,3 +1,12 @@
+---
+name: Report a bug
+about: Report a bug or regression for this project
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 ## Expected Behavior
 
 
