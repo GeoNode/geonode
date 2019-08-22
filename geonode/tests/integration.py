@@ -100,7 +100,7 @@ def zip_dir(basedir, archivename):
                 z.write(absfn, zfn)
 
 
-r"""
+"""
  HOW TO RUN THE TESTS
  --------------------
 
@@ -1658,7 +1658,6 @@ class LayersStylesApiInteractionTests(
         self.assertTrue('body' in obj and obj['body'])
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_add_delete_styles(self):
         """Style API Add/Delete interaction."""
         # Check styles count
