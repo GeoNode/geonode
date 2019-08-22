@@ -100,7 +100,7 @@ def zip_dir(basedir, archivename):
                 z.write(absfn, zfn)
 
 
-"""
+r"""
  HOW TO RUN THE TESTS
  --------------------
 
