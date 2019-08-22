@@ -11,7 +11,7 @@ pyyaml>=4.2b1
 beautifulsoup4==4.8.0
 httplib2<0.13.2
 hyperlink==19.0.0
-idna<2.7,>=2.5
+idna>=2.5,<2.9
 urllib3==1.25.3
 Paver==1.3.4
 python-slugify==3.0.3
