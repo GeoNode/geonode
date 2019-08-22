@@ -3,7 +3,50 @@
   "version": "2.0.0",
   "description": "Builds static (JS, CSS, IMG) assets for GeoNode 2.0",
   "main": "gruntfile.js",
-  "dependencies": {},
+  "dependencies": {
+    "@bower_components/Leaflet.EasyButton": "CliffCloud/Leaflet.EasyButton#^2.2.4",
+    "@bower_components/angular": "angular/bower-angular#1.4.0",
+    "@bower_components/angular-cookies": "angular/bower-angular-cookies#1.4.0",
+    "@bower_components/angular-leaflet-directive": "tombatossals/angular-leaflet-directive#0.7.9",
+    "@bower_components/bootstrap": "twbs/bootstrap#3.3.7",
+    "@bower_components/bootstrap-datepicker": "eternicode/bootstrap-datepicker#1.6.4",
+    "@bower_components/bootstrap-multiselect": "davidstutz/bootstrap-multiselect#*",
+    "@bower_components/bootstrap-select": "snapappointments/bootstrap-select#1.12.1",
+    "@bower_components/bootstrap-table": "wenzhixin/bootstrap-table#1.11.1",
+    "@bower_components/bootstrap-toggle": "minhur/bootstrap-toggle#2.2.2",
+    "@bower_components/bootstrap-tokenfield": "sliptree/bootstrap-tokenfield#0.12.1",
+    "@bower_components/bootstrap-treeview": "jonmiles/bootstrap-treeview#1.2.0",
+    "@bower_components/bootstrap-wysiwyghtml5": "jhollingworth/bootstrap-wysihtml5#*",
+    "@bower_components/bootstrap3-typeahead": "bassjobsen/Bootstrap-3-Typeahead#^4.0.2",
+    "@bower_components/clipboard": "zenorocha/clipboard.js#^1.7.1",
+    "@bower_components/datatables": "DataTables/DataTables#1.10",
+    "@bower_components/eonasdan-bootstrap-datetimepicker": "Eonasdan/bootstrap-datetimepicker#4.17.43",
+    "@bower_components/fastsearch": "dbrekalo/fastsearch#~1",
+    "@bower_components/fastselect": "dbrekalo/fastselect#*",
+    "@bower_components/fontselect-jquery-plugin": "tommoor/fontselect-jquery-plugin#*",
+    "@bower_components/jquery": "jquery/jquery-dist#2.1.4",
+    "@bower_components/jquery-ajaxprogress": "kpozin/jquery-ajaxprogress#*",
+    "@bower_components/jquery-timeago": "rmm5t/jquery-timeago#0.11.4",
+    "@bower_components/jquery-ui": "components/jqueryui#1.10.4",
+    "@bower_components/jquery-waypoints": "imakewebthings/waypoints#2.0.5",
+    "@bower_components/jquery.ajaxQueue": "gnarf/jquery-ajaxQueue#*",
+    "@bower_components/json2": "douglascrockford/JSON-js#43d7836c8ec9b31a02a31ae0c400bdae04d3650d",
+    "@bower_components/leaflet": "Leaflet/Leaflet#~1.0.1",
+    "@bower_components/leaflet-fullscreen": "Leaflet/Leaflet.fullscreen#*",
+    "@bower_components/leaflet-measure": "ljagis/leaflet-measure#2.1.7",
+    "@bower_components/leaflet-navbar": "davidchouse/Leaflet.NavBar#1.0.1",
+    "@bower_components/leaflet-opacity": "lizardtechblog/Leaflet.OpacityControls#master",
+    "@bower_components/mime": "broofa/node-mime#~> 1.4.1",
+    "@bower_components/moment": "moment/moment#2.17.1",
+    "@bower_components/multi-select": "lou/multi-select#*",
+    "@bower_components/raty": "wbotelhos/raty#2.5.2",
+    "@bower_components/requirejs": "jrburke/requirejs-bower#2.1.2",
+    "@bower_components/requirejs-text": "requirejs/text#2.0.3",
+    "@bower_components/select2": "ivaynberg/select2#3.5.4",
+    "@bower_components/underscore": "jashkenas/underscore#^1.9.1",
+    "@bower_components/wysihtml5": "xing/wysihtml5#~0.3.0",
+    "@bower_components/zeroclipboard": "zeroclipboard/zeroclipboard#2.1.5"
+  },
   "devDependencies": {
     "bower": "^1.8.8",
     "grunt": "^1.0.4",
@@ -16,5 +59,11 @@
     "grunt-contrib-uglify": "^2.3.0",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-text-replace": "^0.4.0"
+  },
+  "engines": {
+    "yarn": ">= 1.0.0"
+  },
+  "scripts": {
+    "postinstall": "node -e \"try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), '.components', 'junction') } catch (e) { }\""
   }
 }
