@@ -37,7 +37,7 @@ const fail = createAction(
 const get = () =>
   (dispatch) => {
     dispatch(begin());
-    const url = `${apiUrl}/ows_services/`;
+    const url = `${apiUrl}/event_types/`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));
