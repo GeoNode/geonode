@@ -39,6 +39,7 @@ from geonode.base.views import thumbnail_upload
 
 from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
+from geonode.monitoring import register_url_event
 
 from autocomplete_light.registry import autodiscover
 
@@ -57,9 +58,11 @@ sitemaps = {
     "map": MapSitemap
 }
 
+homepage = register_url_event()(TemplateView.as_view(template_name='index.html'))
+
 urlpatterns = [
     url(r'^$',
-        TemplateView.as_view(template_name='index.html'),
+        homepage,
         name='home'),
     url(r'^help/$',
         TemplateView.as_view(template_name='help.html'),

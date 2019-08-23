@@ -34,11 +34,11 @@ const fail = createAction(
 );
 
 
-const get = (interval, layer, owsService) =>
+const get = (interval, layer, eventType) =>
   (dispatch) => {
     dispatch(begin());
     const url = `${apiUrl}/metric_data/response.time/?last=${interval}&interval=${interval}`;
-    fetch({ url: `${url}&resource=${layer}&ows_service=${owsService}` })
+    fetch({ url: `${url}&resource=${layer}&event_type=${eventType}` })
       .then(response => {
         dispatch(success(response));
         return response;
