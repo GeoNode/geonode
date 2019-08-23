@@ -19,9 +19,7 @@
 #########################################################################
 
 import os
-import re
 import pytz
-import types
 import Queue
 import logging
 import xmljson
@@ -46,25 +44,6 @@ from geonode.monitoring.models import RequestEvent, ExceptionEvent
 GS_FORMAT = '%Y-%m-%dT%H:%M:%S'  # 2010-06-20T2:00:00
 
 log = logging.getLogger(__name__)
-
-
-class MonitoringFilter(logging.Filter):
-
-    def __init__(self, service, skip_urls=tuple(), *args, **kwargs):
-        super(MonitoringFilter, self).__init__(*args, **kwargs)
-        self.service = service
-        self.skip_urls = skip_urls
-
-    def filter(self, record):
-        fp = record.request.get_full_path()
-        for skip_url in self.skip_urls:
-            if isinstance(skip_url, types.StringTypes):
-                if fp.startswith(skip_url):
-                    return False
-            elif isinstance(skip_url, re.RegexObject):
-                if skip_url.match(fp):
-                    return False
-        return record
 
 
 class MonitoringHandler(logging.Handler):
@@ -238,7 +217,7 @@ def align_period_start(start, interval):
 def generate_periods(since, interval, end=None, align=True):
     """
     Generator of periods: tuple of [start, end).
-    since parameter will be aligned to closest interval before since.1
+    since parameter will be aligned to closest interval before since.
     """
     utc = pytz.utc
     end = end or datetime.utcnow().replace(tzinfo=utc)
@@ -246,7 +225,8 @@ def generate_periods(since, interval, end=None, align=True):
         since_aligned = align_period_start(since, interval)
     else:
         since_aligned = since
-
+    if end < since:
+        raise ValueError("End cannot be earlienr than beginning")
     full_interval = (end - since).total_seconds()
     _periods = divmod(full_interval, interval.total_seconds())
     periods_count = _periods[0]
@@ -338,12 +318,12 @@ class TypeChecks(object):
         raise ValueError("Invalid label value: {}".format(val))
 
     @staticmethod
-    def ows_service_type(val):
-        from geonode.monitoring.models import OWSService
+    def event_type_type(val):
+        from geonode.monitoring.models import EventType
         try:
-            return OWSService.objects.get(name=val)
-        except OWSService.DoesNotExist:
-            raise ValueError("OWS Service {} doesn't exist".format(val))
+            return EventType.objects.get(name=val)
+        except EventType.DoesNotExist:
+            raise ValueError("Event Type {} doesn't exist".format(val))
 
 
 def dump(obj, additional_fields=tuple()):

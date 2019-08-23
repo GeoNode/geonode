@@ -20,20 +20,162 @@
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-import contextlib
+import os
 import copy
+import json
 import urllib
 import urllib2
+import logging
+import contextlib
 
-from django.core.management import call_command
-from django.db.models import signals
+from bs4 import BeautifulSoup
+from poster.streaminghttp import register_openers
+from poster.encode import multipart_encode, MultipartParam
+
 from django.core import mail
 from django.conf import settings
+from django.db.models import signals
+from django.core.urlresolvers import reverse
+from django.core.management import call_command
 
 from geonode.maps.models import Layer
 from geonode.geoserver.helpers import set_attributes
 from geonode.geoserver.signals import geoserver_post_save
 from geonode.notifications_helper import has_notifications, notifications
+
+logger = logging.getLogger(__name__)
+
+
+def upload_step(step=None):
+    step = reverse('data_upload', args=[step] if step else [])
+    return step
+
+
+class Client(object):
+
+    """client for making http requests"""
+
+    def __init__(self, url, user, passwd):
+        self.url = url
+        self.user = user
+        self.passwd = passwd
+        self.csrf_token = None
+        self.opener = self._init_url_opener()
+
+    def _init_url_opener(self):
+        self.cookies = urllib2.HTTPCookieProcessor()
+        opener = register_openers()
+        opener.add_handler(self.cookies)  # Add cookie handler
+        return opener
+
+    def make_request(self, path, data=None,
+                     ajax=False, debug=True):
+        url = path if path.startswith("http") else self.url + path
+        if ajax:
+            url += '&ajax=true' if '?' in url else '?ajax=true'
+        request = None
+        if data:
+            items = []
+            # wrap post parameters
+            for name, value in data.items():
+                if isinstance(value, file):
+                    # add file
+                    items.append(MultipartParam.from_file(name, value.name))
+                else:
+                    items.append(MultipartParam(name, value))
+            datagen, headers = multipart_encode(items)
+            request = urllib2.Request(url, datagen, headers)
+        else:
+            request = urllib2.Request(url=url)
+
+        if ajax:
+            request.add_header('X_REQUESTED_WITH', 'XMLHttpRequest')
+        try:
+            # return urllib2.urlopen(request)
+            return self.opener.open(request)
+        except urllib2.HTTPError as ex:
+            if not debug:
+                raise
+            logger.error('error in request to %s' % path)
+            logger.error(ex.reason)
+            logger.error(ex.read())
+            raise
+
+    def get(self, path, debug=True):
+        return self.make_request(path, debug=debug)
+
+    def login(self):
+        """ Method to login the GeoNode site"""
+        self.csrf_token = self.get_csrf_token()
+        params = {'csrfmiddlewaretoken': self.csrf_token,
+                  'username': self.user,
+                  'next': '/',
+                  'password': self.passwd}
+        self.make_request(
+            reverse('account_login'),
+            data=params
+        )
+        self.csrf_token = self.get_csrf_token()
+
+    def upload_file(self, _file):
+        """ function that uploads a file, or a collection of files, to
+        the GeoNode"""
+        if not self.csrf_token:
+            self.login()
+        spatial_files = ("dbf_file", "shx_file", "prj_file")
+
+        base, ext = os.path.splitext(_file)
+        params = {
+            # make public since wms client doesn't do authentication
+            'permissions': '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            'csrfmiddlewaretoken': self.csrf_token
+        }
+
+        # deal with shapefiles
+        if ext.lower() == '.shp':
+            for spatial_file in spatial_files:
+                ext, _ = spatial_file.split('_')
+                file_path = base + '.' + ext
+                # sometimes a shapefile is missing an extra file,
+                # allow for that
+                if os.path.exists(file_path):
+                    params[spatial_file] = open(file_path, 'rb')
+
+        base_file = open(_file, 'rb')
+        params['base_file'] = base_file
+        resp = self.make_request(
+            upload_step(),
+            data=params,
+            ajax=True)
+        data = resp.read()
+        try:
+            return resp, json.loads(data)
+        except ValueError:
+            # raise ValueError(
+            #     'probably not json, status %s' %
+            #     resp.getcode(),
+            #     data)
+            return resp, data
+
+    def get_html(self, path, debug=True):
+        """ Method that make a get request and passes the results to bs4
+        Takes a path and returns a tuple
+        """
+        resp = self.get(path, debug)
+        return resp, BeautifulSoup(resp.read())
+
+    def get_json(self, path):
+        resp = self.get(path)
+        return resp, json.loads(resp.read())
+
+    def get_csrf_token(self, last=False):
+        """Get a csrf_token from the home page or read from the cookie jar
+        based on the last response
+        """
+        if not last:
+            self.get('/')
+        csrf = [c for c in self.cookies.cookiejar if c.name == 'csrftoken']
+        return csrf[0].value if csrf else None
 
 
 def get_web_page(url, username=None, password=None, login_url=None):

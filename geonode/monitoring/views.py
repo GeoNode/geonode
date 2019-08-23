@@ -20,9 +20,11 @@
 
 import json
 import pytz
+
 from datetime import datetime, timedelta
 from django.shortcuts import render
 from django import forms
+from django.contrib import auth
 from django.conf import settings
 from django.views.generic.base import View
 from django.core.urlresolvers import reverse
@@ -39,7 +41,7 @@ from geonode.monitoring.models import (
     MetricLabel,
     MonitoredResource,
     ExceptionEvent,
-    OWSService,
+    EventType,
     NotificationCheck,
     MetricNotificationCheck,
 )
@@ -148,12 +150,22 @@ class CheckTypeForm(_ValidFromToLastForm):
 class MetricsFilters(CheckTypeForm):
     GROUP_BY_RESOURCE = 'resource'
     GROUP_BY_CHOICES = ((GROUP_BY_RESOURCE, "By resource",),)
+    GROUP_BY_RESOURCE_NO_LABEL = 'resource_no_label'
+    GROUP_BY_LABEL = 'label'
+    GROUP_BY_EVENT_TYPE = 'event_type'
+    GROUP_BY_EVENT_TYPE_ON_LABEL = 'event_type_on_label'
+    GROUP_BY_CHOICES = ((GROUP_BY_RESOURCE, "By resource",),
+                        (GROUP_BY_RESOURCE_NO_LABEL, "By resource but no label",),
+                        (GROUP_BY_LABEL, "By label",),
+                        (GROUP_BY_EVENT_TYPE, "By event type",),
+                        (GROUP_BY_EVENT_TYPE_ON_LABEL, "By event type on label",),
+                        )
     service = forms.CharField(required=False)
     label = forms.CharField(required=False)
     resource = forms.CharField(required=False)
     resource_type = forms.ChoiceField(
         choices=MonitoredResource.TYPES, required=False)
-    ows_service = forms.CharField(required=False)
+    event_type = forms.CharField(required=False)
     service_type = forms.CharField(required=False)
     group_by = forms.ChoiceField(choices=GROUP_BY_CHOICES, required=False)
 
@@ -166,8 +178,8 @@ class MetricsFilters(CheckTypeForm):
     def clean_label(self):
         return self._check_type('label')
 
-    def clean_ows_service(self):
-        return self._check_type('ows_service')
+    def clean_event_type(self):
+        return self._check_type('event_type')
 
     def clean_service_type(self):
         return self._check_type('service_type')
@@ -277,6 +289,28 @@ class ResourcesList(FilteredView):
         return q
 
 
+class ResourceTypesList(FilteredView):
+
+    output_name = 'resource_types'
+
+    def get(self, request, *args, **kwargs):
+        if self.filter_form:
+            f = self.filter_form(data=request.GET)
+            if not f.is_valid():
+                return json_response({'success': False,
+                                      'status': 'errors',
+                                      'errors': f.errors},
+                                     status=400)
+        out = [{"name": mrt[0], "type": mrt[1]} for mrt in MonitoredResource.TYPES]
+        data = {self.output_name: out,
+                'success': True,
+                'errors': {},
+                'status': 'ok'}
+        if self.output_name != 'data':
+            data['data'] = {'key': self.output_name}
+        return json_response(data)
+
+
 class LabelsList(FilteredView):
 
     filter_form = LabelsFilterForm
@@ -307,13 +341,13 @@ class LabelsList(FilteredView):
         return q
 
 
-class OWSServiceList(FilteredView):
+class EventTypeList(FilteredView):
 
     fields_map = (('name', 'name',),)
-    output_name = 'ows_services'
+    output_name = 'event_types'
 
     def get_queryset(self, **kwargs):
-        return OWSService.objects.all()
+        return EventType.objects.all()
 
 
 class MetricDataView(View):
@@ -436,7 +470,7 @@ class BeaconView(View):
 
 
 def index(request):
-    if request.user.is_superuser:
+    if auth.get_user(request).is_superuser:
         return render(request, 'monitoring/index.html')
     return render(request, 'monitoring/non_superuser.html')
 
@@ -453,7 +487,7 @@ class MetricNotificationCheckForm(forms.ModelForm):
     service = forms.CharField(required=False)
     resource = forms.CharField(required=False)
     label = forms.CharField(required=False)
-    ows_service = forms.CharField(required=False)
+    event_type = forms.CharField(required=False)
 
     class Meta:
         model = MetricNotificationCheck
@@ -483,8 +517,8 @@ class MetricNotificationCheckForm(forms.ModelForm):
     def clean_label(self):
         return self._get_clean_model(MetricLabel, 'label')
 
-    def clean_ows_service(self):
-        return self._get_clean_model(OWSService, 'ows_service')
+    def clean_event_type(self):
+        return self._get_clean_model(EventType, 'event_type')
 
     def clean_resource(self):
         val = self.cleaned_data.get('resource')
@@ -516,7 +550,7 @@ class UserNotificationConfigView(View):
                   'steps_calculated',
                   'unit',
                   'is_enabled',)
-        if request.user.is_authenticated():
+        if auth.get_user(request).is_authenticated():
             obj = self.get_object()
             out['success'] = True
             out['status'] = 'ok'
@@ -535,7 +569,7 @@ class UserNotificationConfigView(View):
     def post(self, request, *args, **kwargs):
         out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
         status = 500
-        if request.user.is_authenticated():
+        if auth.get_user(request).is_authenticated():
             obj = self.get_object()
             try:
                 is_json = True
@@ -576,7 +610,7 @@ class NotificationsList(FilteredView):
 
     def get_filter_args(self, *args, **kwargs):
         self.errors = {}
-        if not self.request.user.is_authenticated():
+        if not auth.get_user(self.request).is_authenticated():
             self.errors = {'user': ['User is not authenticated']}
         return {}
 
@@ -642,13 +676,13 @@ class StatusCheckView(View):
 
 class AutoconfigureView(View):
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated():
+        if not auth.get_user(request).is_authenticated():
             out = {'success': False,
                    'status': 'error',
                    'errors': {'user': ['User is not authenticated']}
                    }
             return json_response(out, status=401)
-        if not (request.user.is_superuser or request.user.is_staff):
+        if not (auth.get_user(request).is_superuser or auth.get_user(request).is_staff):
             out = {'success': False,
                    'status': 'error',
                    'errors': {'user': ['User is not permitted']}
@@ -691,7 +725,8 @@ api_services = ServicesList.as_view()
 api_hosts = HostsList.as_view()
 api_labels = LabelsList.as_view()
 api_resources = ResourcesList.as_view()
-api_ows_services = OWSServiceList.as_view()
+api_resource_types = ResourceTypesList.as_view()
+api_event_types = EventTypeList.as_view()
 api_metric_data = MetricDataView.as_view()
 api_metric_collect = CollectMetricsView.as_view()
 api_exceptions = ExceptionsListView.as_view()

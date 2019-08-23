@@ -37,7 +37,7 @@ const fail = createAction(
 const get = (service, interval) =>
   (dispatch) => {
     dispatch(begin());
-    let url = `${apiUrl}/metric_data/response.time/?ows_service=${service}`;
+    let url = `${apiUrl}/metric_data/response.time/?event_type=${service}`;
     url += `&last=${interval}&interval=${interval}`;
     fetch({ url })
       .then(response => {
