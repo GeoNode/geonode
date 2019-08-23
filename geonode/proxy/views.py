@@ -51,6 +51,7 @@ from geonode.utils import (resolve_object,
 from geonode.base.enumerations import LINK_TYPES as _LT
 
 from geonode import geoserver, qgis_server  # noqa
+from geonode.monitoring import register_event
 
 TIMEOUT = 300
 
@@ -324,6 +325,7 @@ def download(request, resourceid, sender=Layer):
             target_file_name = "".join([instance.name, ".zip"])
             target_file = os.path.join(dirpath, target_file_name)
             zip_dir(target_folder, target_file)
+            register_event(request, 'download', instance)
             response = HttpResponse(
                 content=open(target_file),
                 status=200,

@@ -992,6 +992,31 @@ MONITORING_ENABLED
 
     See :ref:`geonode_monitoring` for details.
 
+.. _monitoring-data-aggregation:
+
+MONITORING_DATA_AGGREGATION
+---------------------------
+
+    Default:
+
+    .. code::
+
+        (
+            (timedelta(seconds=0), timedelta(minutes=1),),
+            (timedelta(days=1), timedelta(minutes=60),),
+            (timedelta(days=14), timedelta(days=1),),
+        )
+
+    Configure aggregation of past data to control data resolution. It lists data age and aggregation in reverse order, by default:
+
+    | - for current data, 1 minute resolution
+    | - for data older than 1 day, 1-hour resolution
+    | - for data older than 2 weeks, 1 day resolution
+
+    See :ref:`geonode_monitoring` for further details.
+
+    This setting takes effects only if :ref:`user-analytics` is true.
+
 MONITORING_DATA_TTL
 -------------------
 
@@ -1007,6 +1032,31 @@ MONITORING_DISABLE_CSRF
     | Env: ``MONITORING_DISABLE_CSRF``
 
     Set this to true to disable csrf check for notification config views, use with caution - for dev purpose only.
+
+.. _monitoring-skip-paths:
+
+MONITORING_SKIP_PATHS
+-----------------------
+
+    Default:
+
+    .. code::
+
+        (
+            '/api/o/',
+            '/monitoring/',
+            '/admin',
+            '/lang.js',
+            '/jsi18n',
+            STATIC_URL,
+            MEDIA_URL,
+            re.compile('^/[a-z]{2}/admin/'),
+        )
+
+    Skip certain useless paths to not to mud analytics stats too much.
+    See :ref:`geonode_monitoring` to learn more about it.
+
+    This setting takes effects only if :ref:`user-analytics` is true.
 
 N
 =
@@ -1674,6 +1724,18 @@ USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS
 
     Set to true to have multiple recipients in /message/create/
 
+.. _user-analytics:
+
+USER_ANALYTICS_ENABLED
+----------------------
+
+    | Default: ``False``
+    | Env: ``USER_ANALYTICS_ENABLED``
+
+    Set to true to anonymously collect user data for analytics.
+    If true you have to set :ref:`monitoring-data-aggregation` and :ref:`monitoring-skip-paths`.
+
+    See :ref:`geonode_monitoring` to learn more about it.
 
 X
 =
