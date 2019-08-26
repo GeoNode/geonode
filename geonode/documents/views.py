@@ -53,6 +53,7 @@ from geonode.utils import build_social_links
 from geonode.groups.models import GroupProfile
 from geonode.base.views import batch_modify
 from geonode.monitoring import register_event
+from geonode.monitoring.models import EventType
 
 logger = logging.getLogger("geonode.documents.views")
 
@@ -154,7 +155,7 @@ def document_detail(request, docid):
                 from geonode.favorite.utils import get_favorite_info
                 context_dict["favorite_info"] = get_favorite_info(request.user, document)
 
-        register_event(request, 'view', document)
+        register_event(request, EventType.EVENT_VIEW, document)
 
         return render(
             request,
@@ -165,10 +166,6 @@ def document_detail(request, docid):
 def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)
 
-    if settings.MONITORING_ENABLED and document:
-        dtitle = getattr(document, 'alternate', None) or document.title
-        request.register_event('upload', 'document', dtitle)
-
     if not request.user.has_perm(
             'base.download_resourcebase',
             obj=document.get_self_resource()):
@@ -176,7 +173,7 @@ def document_download(request, docid):
             loader.render_to_string(
                 '401.html', context={
                     'error_message': _("You are not allowed to view this document.")}, request=request), status=401)
-    register_event(request, 'download', document)
+    register_event(request, EventType.EVENT_DOWNLOAD, document)
     return DownloadResponse(document.doc_file)
 
 
@@ -275,7 +272,7 @@ class DocumentUploadView(CreateView):
             except BaseException:
                 print "Could not send slack message for new document."
 
-        register_event(self.request, 'upload', self.object)
+        register_event(self.request, EventType.EVENT_UPLOAD, self.object)
 
         if self.request.GET.get('no__redirect', False):
             out['success'] = True
@@ -318,7 +315,7 @@ class DocumentUpdateView(UpdateView):
         If the form is valid, save the associated model.
         """
         self.object = form.save()
-        register_event(self.request, 'change', self.object)
+        register_event(self.request, EventType.EVENT_CHANGE, self.object)
         return HttpResponseRedirect(
             reverse(
                 'document_metadata',
@@ -443,7 +440,7 @@ def document_metadata(
             document.save()
             document_form.save_many2many()
 
-            register_event(request, 'change_metadata', document)
+            register_event(request, EventType.EVENT_CHANGE_METADATA, document)
             if not ajax:
                 return HttpResponseRedirect(
                     reverse(
@@ -500,7 +497,7 @@ def document_metadata(
                     document_form.fields['is_approved'].widget.attrs.update(
                         {'disabled': 'true'})
 
-        register_event(request, 'view_metadata', document)
+        register_event(request, EventType.EVENT_VIEW_METADATA, document)
         return render(request, template, context={
             "resource": document,
             "document": document,
@@ -636,7 +633,7 @@ def document_remove(request, docid, template='documents/document_remove.html'):
         if request.method == 'POST':
             document.delete()
 
-            register_event(request, 'remove', document)
+            register_event(request, EventType.EVENT_REMOVE, document)
             return HttpResponseRedirect(reverse("document_browse"))
         else:
             return HttpResponse("Not allowed", status=403)
@@ -665,7 +662,7 @@ def document_metadata_detail(
         except GroupProfile.DoesNotExist:
             group = None
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-    register_event(request, 'view_metadata', document)
+    register_event(request, EventType.EVENT_VIEW_METADATA, document)
     return render(request, template, context={
         "resource": document,
         "group": group,

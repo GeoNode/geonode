@@ -189,6 +189,7 @@ class MonitoredResource(models.Model):
         blank=False,
         choices=TYPES,
         default=TYPE_EMPTY)
+    resource_id = models.IntegerField(null=True, blank=True)
 
     class Meta:
         unique_together = (('name', 'type',),)
@@ -502,6 +503,18 @@ class RequestEvent(models.Model):
         return out
 
     @classmethod
+    def _get_or_create_resources(cls, res_name, res_type, res_id):
+        out = []
+        r, _ = MonitoredResource.objects.get_or_create(
+            name=res_name, type=res_type
+        )
+        if r and res_id:
+            r.resource_id = res_id
+            r.save()
+        out.append(r)
+        return out
+
+    @classmethod
     def _get_geonode_resources(cls, request):
         """
         Return serialized resources affected by request
@@ -513,8 +526,8 @@ class RequestEvent(models.Model):
         #     res = rqmeta['resources'].get(type_name) or []
         #     resources.extend(cls._get_resources(type_name, res))
 
-        for evt_type, res_type, res_name in events:
-            resources.extend(cls._get_resources(res_type, [res_name]))
+        for evt_type, res_type, res_name, res_id in events:
+            resources.extend(cls._get_or_create_resources(res_name, res_type, res_id))
 
         return resources
 
@@ -874,6 +887,11 @@ class ExceptionEvent(models.Model):
 class MetricLabel(models.Model):
 
     name = models.TextField(null=False, blank=True, default='')
+    user = models.CharField(
+        max_length=150,
+        default=None,
+        null=True,
+        blank=True)
 
     def __str__(self):
         return 'Metric Label: {}'.format(self.name)
@@ -948,7 +966,15 @@ class MetricValue(models.Model):
             service_metric = ServiceTypeMetric.objects.get(
                 service_type=service.service_type, metric__name=metric)
 
-        label, _ = MetricLabel.objects.get_or_create(name=label or 'count')
+        label_name = label
+        label_user = None
+        if label and isinstance(label, tuple):
+            label_name = label[0]
+            label_user = label[1]
+        label, c = MetricLabel.objects.get_or_create(name=label_name or 'count')
+        if c and label_user:
+            label.user = label_user
+            label.save()
         if event_type:
             if not isinstance(event_type, EventType):
                 event_type = EventType.get(event_type)
