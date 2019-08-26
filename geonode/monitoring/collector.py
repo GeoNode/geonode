@@ -45,6 +45,7 @@ from geonode.monitoring.aggregation import (aggregate_past_periods, calculate_ra
                                             extract_event_types, extract_special_event_types,
                                             get_resources_for_metric, get_labels_for_metric,
                                             get_metric_names)
+from geonode.base.models import ResourceBase
 from geonode.utils import parse_datetime
 
 
@@ -677,11 +678,11 @@ class CollectorAPI(object):
         col = 'mv.value_num'
         agg_f = self.get_aggregate_function(col, metric_name, service)
         has_agg = agg_f != col
-        group_by_map = {'resource': {'select': ['mr.id', 'mr.type', 'mr.name', ],
+        group_by_map = {'resource': {'select': ['mr.id', 'mr.type', 'mr.name', 'mr.resource_id'],
                                      'from': ['join monitoring_monitoredresource mr on (mv.resource_id = mr.id)'],
                                      'where': ['and mv.resource_id is not NULL'],
                                      'order_by': None,
-                                     'grouper': ['resource', 'name', 'type', 'id', ],
+                                     'grouper': ['resource', 'name', 'type', 'id', 'resource_id'],
                                      },
                         # group by resource, but do not show labels. number of unique labels will be used as val
                         'resource_no_label': {'select_only': ['mr.id', 'mr.type', 'mr.name',
@@ -696,7 +697,7 @@ class CollectorAPI(object):
                                               'where': ['and mv.resource_id is not NULL'],
                                               'order_by': ['val desc'],
                                               'group_by': ['mr.id', 'mr.type', 'mr.name'],
-                                              'grouper': ['resource', 'name', 'type', 'id', ],
+                                              'grouper': ['resource', 'name', 'type', 'id', 'resource_id'],
                                               },
                         'event_type': {'select_only': ['ev.name as event_type', 'count(1) as val',
                                                        'count(1) as metric_count',
@@ -832,7 +833,15 @@ class CollectorAPI(object):
                 t = {}
                 tcol = grouper[0]
                 for scol in grouper[1:]:
-                    t[scol] = row.pop(scol)
+                    if scol == 'resource_id':
+                        r_id = row.pop(scol)
+                        try:
+                            rb = ResourceBase.objects.get(id=r_id)
+                            t['href'] = rb.detail_url
+                        except BaseException:
+                            pass
+                    else:
+                        t[scol] = row.pop(scol)
                 row[tcol] = t
             return row
 

@@ -84,12 +84,12 @@ class MonitoringMiddleware(object):
         return True
 
     @staticmethod
-    def register_event(request, event_type, resource_type, resource_name):
+    def register_event(request, event_type, resource_type, resource_name, resource_id):
         m = getattr(request, '_monitoring', None)
         if not m:
             return
         events = m['events']
-        events.append((event_type, resource_type, resource_name,))
+        events.append((event_type, resource_type, resource_name, resource_id,))
 
     def register_request(self, request, response):
         if self.service:
@@ -130,8 +130,8 @@ class MonitoringMiddleware(object):
 
         request._monitoring = meta
 
-        def register_event(event_type, resource_type, name):
-            self.register_event(request, event_type, resource_type, name)
+        def register_event(event_type, resource_type, name, resource_id):
+            self.register_event(request, event_type, resource_type, name, resource_id)
 
         request.register_event = register_event
 

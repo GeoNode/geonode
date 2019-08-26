@@ -189,6 +189,7 @@ class MonitoredResource(models.Model):
         blank=False,
         choices=TYPES,
         default=TYPE_EMPTY)
+    resource_id = models.IntegerField(null=True, blank=True)
 
     class Meta:
         unique_together = (('name', 'type',),)
@@ -502,6 +503,18 @@ class RequestEvent(models.Model):
         return out
 
     @classmethod
+    def _get_or_create_resources(cls, res_name, res_type, res_id):
+        out = []
+        r, _ = MonitoredResource.objects.get_or_create(
+            name=res_name, type=res_type
+        )
+        if r and res_id:
+            r.resource_id = res_id
+            r.save()
+        out.append(r)
+        return out
+
+    @classmethod
     def _get_geonode_resources(cls, request):
         """
         Return serialized resources affected by request
@@ -513,8 +526,8 @@ class RequestEvent(models.Model):
         #     res = rqmeta['resources'].get(type_name) or []
         #     resources.extend(cls._get_resources(type_name, res))
 
-        for evt_type, res_type, res_name in events:
-            resources.extend(cls._get_resources(res_type, [res_name]))
+        for evt_type, res_type, res_name, res_id in events:
+            resources.extend(cls._get_or_create_resources(res_name, res_type, res_id))
 
         return resources
 

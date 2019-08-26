@@ -92,12 +92,14 @@ def register_event(request, event_type, resource):
     if isinstance(resource, types.StringTypes):
         resource_type = 'url'
         resource_name = request.path
+        resource_id = None
     elif isinstance(resource, ResourceBase):
         resource_type = resource.__class__._meta.verbose_name_raw
         resource_name = getattr(resource, 'alternate', None) or resource.title
+        resource_id = resource.id
     else:
         raise ValueError("Invalid resource: {}".format(resource))
-    request.register_event(event_type, resource_type, resource_name)
+    request.register_event(event_type, resource_type, resource_name, resource_id)
 
 
 def register_proxy_event(request):
