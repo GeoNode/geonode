@@ -887,6 +887,11 @@ class ExceptionEvent(models.Model):
 class MetricLabel(models.Model):
 
     name = models.TextField(null=False, blank=True, default='')
+    user = models.CharField(
+        max_length=150,
+        default=None,
+        null=True,
+        blank=True)
 
     def __str__(self):
         return 'Metric Label: {}'.format(self.name)
@@ -961,7 +966,15 @@ class MetricValue(models.Model):
             service_metric = ServiceTypeMetric.objects.get(
                 service_type=service.service_type, metric__name=metric)
 
-        label, _ = MetricLabel.objects.get_or_create(name=label or 'count')
+        label_name = label
+        label_user = None
+        if label and isinstance(label, tuple):
+            label_name = label[0]
+            label_user = label[1]
+        label, c = MetricLabel.objects.get_or_create(name=label_name or 'count')
+        if c and label_user:
+            label.user = label_user
+            label.save()
         if event_type:
             if not isinstance(event_type, EventType):
                 event_type = EventType.get(event_type)
