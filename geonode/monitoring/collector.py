@@ -796,21 +796,14 @@ class CollectorAPI(object):
         # if not group_by and not resource:
         #     resource = MonitoredResource.get('', '', or_create=True)
 
-        if label and has_agg:
-            q_group.extend(['ml.name'])
-
-        if resource and group_by in ('resource', 'resource_no_label',):
-            raise ValueError(
-                "Cannot use resource and group by resource at the same time")
-        elif resource:
-            q_from.append('join monitoring_monitoredresource mr on '
-                          'mv.resource_id = mr.id ')
-            q_where.append(' and mr.id = %(resource_id)s ')
-            params['resource_id'] = resource.id
         if resource and has_agg:
             q_group.append('mr.name')
             # group returned columns into a dict
             # config in grouping map: target_column = {source_column1: val, ...}
+
+        if label and has_agg:
+            q_group.extend(['ml.name'])
+
         grouper = None
         if group_by:
             group_by_cfg = group_by_map[group_by]
@@ -835,6 +828,15 @@ class CollectorAPI(object):
                 q_from.append('join monitoring_monitoredresource mr on mv.resource_id = mr.id ')
             q_where.append(' and mr.type = %(resource_type)s ')
             params['resource_type'] = resource_type
+
+        if resource and group_by in ('resource', 'resource_no_label',):
+            raise ValueError(
+                "Cannot use resource and group by resource at the same time")
+        elif resource:
+            if not [mr for mr in q_from if 'monitoring_monitoredresource' in mr]:
+                q_from.append('join monitoring_monitoredresource mr on mv.resource_id = mr.id ')
+            q_where.append(' and mr.id = %(resource_id)s ')
+            params['resource_id'] = resource.id
 
         if 'ml.name' in q_group:
             q_select.append(', max(ml.user) as user')
