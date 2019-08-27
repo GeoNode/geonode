@@ -39,6 +39,7 @@ from django.conf import settings
 from django.db.models.fields.related import RelatedField
 
 from geonode.monitoring.models import RequestEvent, ExceptionEvent
+from geonode.settings import DATETIME_INPUT_FORMATS
 
 
 GS_FORMAT = '%Y-%m-%dT%H:%M:%S'  # 2010-06-20T2:00:00
@@ -139,7 +140,7 @@ class GeoServerMonitorClient(object):
             if data:
                 yield data
             else:
-                log.href("Skipping payload for {}".format(href))
+                log.warning("Skipping payload for {}".format(href))
 
     def get_request(self, href, format=format):
         username = settings.OGC_SERVER['default']['USER']
@@ -353,3 +354,20 @@ def dump(obj, additional_fields=tuple()):
                    'seconds': val.total_seconds()}
         out[fname] = val
     return out
+
+
+def extend_datetime_input_formats(formats):
+    """
+    Add new DateTime input formats
+    :param formats: input formats yoy want to add (tuple or list)
+    :return: extended input formats
+    """
+    input_formats = DATETIME_INPUT_FORMATS
+    if isinstance(input_formats, tuple):
+        input_formats += tuple(formats)
+    elif isinstance(input_formats, list):
+        input_formats.extend(formats)
+    else:
+        raise ValueError("Input parameter must be tuple or list.")
+    return input_formats
+

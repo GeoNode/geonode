@@ -46,7 +46,7 @@ from geonode.monitoring.models import (
     MetricNotificationCheck,
 )
 from geonode.monitoring.models import do_autoconfigure
-from geonode.monitoring.utils import TypeChecks, dump
+from geonode.monitoring.utils import TypeChecks, dump, extend_datetime_input_formats
 from geonode.monitoring.service_handlers import exposes
 
 # Create your views here.
@@ -100,8 +100,14 @@ class HostsList(View):
 
 
 class _ValidFromToLastForm(forms.Form):
-    valid_from = forms.DateTimeField(required=False)
-    valid_to = forms.DateTimeField(required=False)
+    valid_from = forms.DateTimeField(
+        required=False,
+        input_formats=extend_datetime_input_formats(['%Y-%m-%dT%H:%M:%S.%fZ'])
+    )
+    valid_to = forms.DateTimeField(
+        required=False,
+        input_formats=extend_datetime_input_formats(['%Y-%m-%dT%H:%M:%S.%fZ'])
+    )
     interval = forms.IntegerField(min_value=60, required=False)
     last = forms.IntegerField(min_value=60, required=False)
 
