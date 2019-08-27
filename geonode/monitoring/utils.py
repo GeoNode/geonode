@@ -370,4 +370,3 @@ def extend_datetime_input_formats(formats):
     else:
         raise ValueError("Input parameter must be tuple or list.")
     return input_formats
-
