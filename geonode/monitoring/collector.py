@@ -698,7 +698,7 @@ class CollectorAPI(object):
                                      'grouper': ['resource', 'name', 'type', 'id', 'resource_id'],
                                      },
                         # group by resource, but do not show labels. number of unique labels will be used as val
-                        'resource_no_label': {'select_only': ['mr.id', 'mr.type', 'mr.name',
+                        'resource_no_label': {'select_only': ['mr.id', 'mr.type', 'mr.name', 'mr.resource_id',
                                                               'count(distinct(ml.name)) as val',
                                                               'count(1) as metric_count',
                                                               'sum(samples_count) as samples_count',
@@ -855,12 +855,13 @@ class CollectorAPI(object):
                 tcol = grouper[0]
                 for scol in grouper[1:]:
                     if scol == 'resource_id':
-                        r_id = row.pop(scol)
-                        try:
-                            rb = ResourceBase.objects.get(id=r_id)
-                            t['href'] = rb.detail_url
-                        except BaseException:
-                            pass
+                        if scol in row:
+                            r_id = row.pop(scol)
+                            try:
+                                rb = ResourceBase.objects.get(id=r_id)
+                                t['href'] = rb.detail_url
+                            except BaseException:
+                                pass
                     else:
                         t[scol] = row.pop(scol)
                 row[tcol] = t
