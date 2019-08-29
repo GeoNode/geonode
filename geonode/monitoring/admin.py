@@ -16,7 +16,7 @@ from geonode.monitoring.models import (
     MetricNotificationCheck,
     NotificationMetricDefinition,
     NotificationReceiver,
-    OWSService,)
+    EventType,)
 
 
 @admin.register(Host)
@@ -24,8 +24,8 @@ class HostAdmin(admin.ModelAdmin):
     list_display = ('name', 'active',)
 
 
-@admin.register(OWSService)
-class OWSServiceAdmin(admin.ModelAdmin):
+@admin.register(EventType)
+class EventTypeAdmin(admin.ModelAdmin):
     list_display = ('name', )
 
 
@@ -63,8 +63,8 @@ class MetricAdmin(admin.ModelAdmin):
 @admin.register(RequestEvent)
 class RequestEvent(admin.ModelAdmin):
     list_display = ('service', 'created', 'received', 'request_method', 'response_status',
-                    'ows_service', 'response_size', 'client_country', 'request_path')
-    list_filter = ('host', 'service', 'request_method', 'response_status', 'ows_service',)
+                    'event_type', 'response_size', 'client_country', 'request_path')
+    list_filter = ('host', 'service', 'request_method', 'response_status', 'event_type',)
 
 
 @admin.register(MetricLabel)

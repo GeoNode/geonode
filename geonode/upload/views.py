@@ -54,6 +54,8 @@ from django.shortcuts import render
 from django.views.generic import CreateView, DeleteView
 from geonode.utils import fixup_shp_columnnames
 from geonode.base.enumerations import CHARSETS
+from geonode.monitoring import register_event
+from geonode.monitoring.models import EventType
 
 from .forms import (
     LayerUploadForm,
@@ -567,6 +569,9 @@ def final_step_view(req, upload_session):
                         'success': True
                     }
                 )
+
+                register_event(req, EventType.EVENT_UPLOAD, saved_layer)
+
                 return _json_response
             except LayerNotReady:
                 return json_response({'status': 'pending',
