@@ -351,7 +351,7 @@ class EventType(models.Model):
     EVENT_ALL = 'all'  # all events - baseline: ows + non-ows
 
     EVENT_TYPES = zip(['OWS:{}'.format(ows) for ows in _ows_types], _ows_types) + \
-        [(EVENT_OTHER, _("Non-OWS"))] +\
+        [(EVENT_OTHER, _("Not OWS"))] +\
         [(EVENT_OWS, _("Any OWS"))] +\
         [(EVENT_ALL, _("All"))] +\
         [(EVENT_CREATE, _("Create"))] +\

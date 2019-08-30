@@ -31,12 +31,13 @@ from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives as EmailMessage
 from django.utils.translation import ugettext_noop as _
 from django.db.models import Max
+from django.urls import resolve, Resolver404
 
 
 from geonode.utils import raw_sql
 from geonode.notifications_helper import send_notification
 from geonode.monitoring import MonitoringAppConfig as AppConf
-from geonode.monitoring.models import (Metric, MetricValue, RequestEvent,
+from geonode.monitoring.models import (Metric, MetricValue, RequestEvent, MonitoredResource,
                                        ExceptionEvent, EventType, NotificationCheck,)
 
 from geonode.monitoring.utils import generate_periods, align_period_start, align_period_end
@@ -786,7 +787,7 @@ class CollectorAPI(object):
         if group_by not in ('event_type', 'event_type_on_label',) and event_type is None:
             event_type = EventType.get(EventType.EVENT_ALL)
 
-        if event_type:
+        if event_type and metric_name not in ['uptime',]:
             q_where.append(' and mv.event_type_id = %(event_type)s ')
             params['event_type'] = event_type.id
 
@@ -861,9 +862,15 @@ class CollectorAPI(object):
                                 rb = ResourceBase.objects.get(id=r_id)
                                 t['href'] = rb.detail_url
                             except BaseException:
-                                pass
+                                t['href'] = ""
                     else:
                         t[scol] = row.pop(scol)
+                        if scol == 'type' and t[scol] == MonitoredResource.TYPE_URL:
+                            try:
+                                resolve(t['name'])
+                                t['href'] = t['name']
+                            except Resolver404:
+                                t['href'] = ""
                 row[tcol] = t
             return row
 
