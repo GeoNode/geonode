@@ -20,7 +20,7 @@
 
 from __future__ import print_function
 
-from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.tests.base import GeoNodeLiveTestSupport
 
 from datetime import datetime, timedelta
 
@@ -37,10 +37,10 @@ from defusedxml import lxml as dlxml
 
 from django.core import mail
 from django.conf import settings
-from django.http import HttpRequest
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
-from django.contrib.auth import login, get_user, get_user_model
+from django.core.management import call_command
+from django.contrib.auth import get_user, get_user_model
 
 from geonode.monitoring.models import (
     RequestEvent, Host, Service, ServiceType,
@@ -61,7 +61,7 @@ from geonode.documents.models import Document
 from geonode.tests.utils import Client
 from geonode.geoserver.helpers import ogc_server_settings
 
-from django.test.client import Client as DjangoTestClient
+from django.test.client import FakePayload, Client as DjangoTestClient
 
 import gisdata
 from geoserver.catalog import Catalog
@@ -97,6 +97,45 @@ req_err_big = xmljson.yahoo.data(dlxml.fromstring(req_err_xml))
 
 class TestClient(DjangoTestClient):
 
+    def _base_environ(self, **request):
+        """
+        The base environment for a request.
+        """
+        # This is a minimal valid WSGI environ dictionary, plus:
+        # - HTTP_COOKIE: for cookie support,
+        # - REMOTE_ADDR: often useful, see #8551.
+        # See https://www.python.org/dev/peps/pep-3333/#environ-variables
+        environ = {
+            'HTTP_COOKIE': '; '.join(sorted(
+                '%s=%s' % (morsel.key, morsel.coded_value)
+                for morsel in self.cookies.values()
+            )),
+            'PATH_INFO': str('/'),
+            'REMOTE_ADDR': str('127.0.0.1'),
+            'REQUEST_METHOD': str('GET'),
+            'SCRIPT_NAME': str(''),
+            'SERVER_NAME': str('testserver'),
+            'SERVER_PORT': str('80'),
+            'SERVER_PROTOCOL': str('HTTP/1.1'),
+            'wsgi.version': (1, 0),
+            'wsgi.url_scheme': str('http'),
+            'wsgi.input': FakePayload(b''),
+            'wsgi.errors': self.errors,
+            'wsgi.multiprocess': True,
+            'wsgi.multithread': False,
+            'wsgi.run_once': False,
+        }
+        environ.update(self.defaults)
+        environ.update(request)
+        return environ
+
+    @property
+    def session(self):
+        if not hasattr(self, "_persisted_session"):
+            engine = import_module(settings.SESSION_ENGINE)
+            self._persisted_session = engine.SessionStore("persistent")
+        return self._persisted_session
+
     def login_user(self, user):
         """
         Login as specified user, does not depend on auth backend (hopefully)
@@ -106,35 +145,13 @@ class TestClient(DjangoTestClient):
         """
         if 'django.contrib.sessions' not in settings.INSTALLED_APPS:
             raise AssertionError("Unable to login without django.contrib.sessions in INSTALLED_APPS")
-        user.backend = "%s.%s" % ("django.contrib.auth.backends",
-                                  "ModelBackend")
-        engine = import_module(settings.SESSION_ENGINE)
+        user.backend = "%s.%s" % ("django.contrib.auth.backends", "ModelBackend")
 
-        # Create a fake request to store login details.
-        request = HttpRequest()
-        if self.session:
-            request.session = self.session
-        else:
-            request.session = engine.SessionStore()
-        login(request, user)
-
-        # Set the cookie to represent the session.
-        session_cookie = settings.SESSION_COOKIE_NAME
-        self.cookies[session_cookie] = request.session.session_key
-        cookie_data = {
-            'max-age': None,
-            'path': '/',
-            'domain': settings.SESSION_COOKIE_DOMAIN,
-            'secure': settings.SESSION_COOKIE_SECURE or None,
-            'expires': None,
-        }
-        self.cookies[session_cookie].update(cookie_data)
-
-        # Save the session values.
-        request.session.save()
+        # Login
+        self.force_login(user, backend=user.backend)
 
 
-class MonitoringTestBase(GeoNodeBaseTestSupport):
+class MonitoringTestBase(GeoNodeLiveTestSupport):
 
     type = 'layer'
 
@@ -166,7 +183,7 @@ class MonitoringTestBase(GeoNodeBaseTestSupport):
             GEOSERVER_URL + 'rest', GEOSERVER_USER, GEOSERVER_PASSWD
         )
 
-        self.client = TestClient()
+        self.client = TestClient(REMOTE_ADDR='127.0.0.1')
 
         self._tempfiles = []
         # createlayer must use postgis as a datastore
@@ -256,7 +273,7 @@ class RequestsTestCase(MonitoringTestBase):
         """
         Test if we have geonode requests logged
         """
-        self.client.force_login(self.u)
+        self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated())
 
         _l = file_upload(
@@ -285,7 +302,7 @@ class RequestsTestCase(MonitoringTestBase):
         """
         Test if we get geonode errors logged
         """
-        self.client.force_login(self.u)
+        self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated())
 
         _l = file_upload(
@@ -311,7 +328,7 @@ class RequestsTestCase(MonitoringTestBase):
         """
         Test if we can calculate metrics
         """
-        self.client.force_login(self.u)
+        self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated())
 
         _l = file_upload(
@@ -589,41 +606,37 @@ class MonitoringChecksTestCase(MonitoringTestBase):
                                                resource=resource,
                                                max_timeout=None)
 
-        self.client.force_login(self.u)
+        self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated())
 
         nresp = self.client.get(reverse('monitoring:api_user_notifications'))
         self.assertIsNotNone(nresp)
-        # AF: TODO there's no way to make Monitoring aware this user is_authenticated
-        # self.assertEqual(nresp.status_code, 200, nresp)
-        # data = json.loads(nresp.content)
-        # self.assertTrue(data['data'][0]['id'] == nc.id)
+        self.assertEqual(nresp.status_code, 200, nresp)
+        data = json.loads(nresp.content)
+        self.assertTrue(data['data'][0]['id'] == nc.id)
 
         nresp = self.client.get(
             reverse('monitoring:api_user_notification_config',
                     kwargs={'pk': nc.id}))
         self.assertIsNotNone(nresp)
-        # AF: TODO there's no way to make Monitoring aware this user is_authenticated
-        # self.assertEqual(nresp.status_code, 200, nresp)
-        # data = json.loads(nresp.content)
-        # self.assertTrue(data['data']['notification']['id'] == nc.id)
+        self.assertEqual(nresp.status_code, 200, nresp)
+        data = json.loads(nresp.content)
+        self.assertTrue(data['data']['notification']['id'] == nc.id)
 
         nresp = self.client.get(reverse('monitoring:api_user_notifications'))
         self.assertIsNotNone(nresp)
-        # AF: TODO there's no way to make Monitoring aware this user is_authenticated
-        # self.assertEqual(nresp.status_code, 200, nresp)
-        # data = json.loads(nresp.content)
-        # self.assertTrue(data['data'][0]['id'] == nc.id)
+        self.assertEqual(nresp.status_code, 200, nresp)
+        data = json.loads(nresp.content)
+        self.assertTrue(data['data'][0]['id'] == nc.id)
 
-        self.client.force_login(self.u2)
+        self.client.login_user(self.u2)
         self.assertTrue(get_user(self.client).is_authenticated())
 
         nresp = self.client.get(reverse('monitoring:api_user_notifications'))
         self.assertIsNotNone(nresp)
-        # AF: TODO there's no way to make Monitoring aware this user is_authenticated
-        # self.assertEqual(nresp.status_code, 200, nresp)
-        # data = json.loads(nresp.content)
-        # self.assertTrue(len(data['data']) == 1)
+        self.assertEqual(nresp.status_code, 200, nresp)
+        data = json.loads(nresp.content)
+        self.assertTrue(len(data['data']) == 1)
 
     def test_notifications_edit_views(self):
 
@@ -640,7 +653,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         label, _ = MetricLabel.objects.get_or_create(name='discount')
 
         c = self.client
-        c.force_login(self.u)
+        c.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated())
         notification_url = reverse('monitoring:api_user_notifications')
         uthreshold = [(
@@ -679,40 +692,38 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         notification_data.update(fields)
         out = c.post(notification_url, notification_data)
         self.assertIsNotNone(out)
-        # AF: TODO there's no way to make Monitoring aware this user is_authenticated
-        # self.assertEqual(out.status_code, 200, out)
-        # jout = json.loads(out.content)
-        # n = NotificationCheck.objects.get()
-        # self.assertTrue(n.is_error)
-        # self.assertEqual(MetricNotificationCheck.objects.all().count(), 2)
-        # for nrow in jout['data']:
-        #     nitem = MetricNotificationCheck.objects.get(id=nrow['id'])
-        #     for nkey, nval in nrow.items():
-        #         if not isinstance(nval, dict):
-        #             compare_to = getattr(nitem, nkey)
-        #             if isinstance(compare_to, Decimal):
-        #                 nval = Decimal(nval)
-        #             self.assertEqual(compare_to, nval)
+        self.assertEqual(out.status_code, 200, out)
+        jout = json.loads(out.content)
+        n = NotificationCheck.objects.get()
+        self.assertTrue(n.is_error)
+        self.assertEqual(MetricNotificationCheck.objects.all().count(), 2)
+        for nrow in jout['data']:
+            nitem = MetricNotificationCheck.objects.get(id=nrow['id'])
+            for nkey, nval in nrow.items():
+                if not isinstance(nval, dict):
+                    compare_to = getattr(nitem, nkey)
+                    if isinstance(compare_to, Decimal):
+                        nval = Decimal(nval)
+                    self.assertEqual(compare_to, nval)
 
         out = c.post(
             notification_url,
             json.dumps(notification_data),
             content_type='application/json')
         self.assertIsNotNone(out)
-        # AF: TODO there's no way to make Monitoring aware this user is_authenticated
-        # self.assertEqual(out.status_code, 200)
-        # jout = json.loads(out.content)
-        # n = NotificationCheck.objects.get()
-        # self.assertTrue(n.is_error)
-        # self.assertEqual(MetricNotificationCheck.objects.all().count(), 2)
-        # for nrow in jout['data']:
-        #     nitem = MetricNotificationCheck.objects.get(id=nrow['id'])
-        #     for nkey, nval in nrow.items():
-        #         if not isinstance(nval, dict):
-        #             compare_to = getattr(nitem, nkey)
-        #             if isinstance(compare_to, Decimal):
-        #                 nval = Decimal(nval)
-        #             self.assertEqual(compare_to, nval)
+        self.assertEqual(out.status_code, 200)
+        jout = json.loads(out.content)
+        n = NotificationCheck.objects.get()
+        self.assertTrue(n.is_error)
+        self.assertEqual(MetricNotificationCheck.objects.all().count(), 2)
+        for nrow in jout['data']:
+            nitem = MetricNotificationCheck.objects.get(id=nrow['id'])
+            for nkey, nval in nrow.items():
+                if not isinstance(nval, dict):
+                    compare_to = getattr(nitem, nkey)
+                    if isinstance(compare_to, Decimal):
+                        nval = Decimal(nval)
+                    self.assertEqual(compare_to, nval)
 
     def test_notifications_api(self):
         capi = CollectorAPI()
@@ -733,7 +744,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
                                   False, False, 500, None, None, 'Response time is higher than',),))
         nc = NotificationCheck.create(*notifications_config)
         self.assertTrue(nc.definitions.all().count() == 2)
-        self.client.force_login(self.u2)
+        self.client.login_user(self.u2)
         self.assertTrue(get_user(self.client).is_authenticated())
         for nc in NotificationCheck.objects.all():
             notifications_config_url = reverse(
@@ -752,7 +763,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
                 idx += 1
             resp = self.client.post(notifications_config_url, data)
 
-            self.assertEqual(resp.status_code, 401)
+            self.assertEqual(resp.status_code, 400)  # 401
 
             vals = [7, 600]
             data = {'emails': '\n'.join(
@@ -768,16 +779,15 @@ class MonitoringChecksTestCase(MonitoringTestBase):
             # data['emails'] = '\n'.join(data['emails'])
             resp = self.client.post(notifications_config_url, data)
             nc.refresh_from_db()
-            # AF: TODO there's no way to make Monitoring aware this user is_authenticated
-            # self.assertEqual(resp.status_code, 200, resp)
-            # _emails = data['emails'].split('\n')[-1:]
-            # _users = data['emails'].split('\n')[:-1]
-            # self.assertEqual(
-            #     set([u.email for u in nc.get_users()]),
-            #     set(_users))
-            # self.assertEqual(
-            #     set([email for email in nc.get_emails()]),
-            #     set(_emails))
+            self.assertEqual(resp.status_code, 200, resp)
+            _emails = data['emails'].split('\n')[-1:]
+            _users = data['emails'].split('\n')[:-1]
+            self.assertEqual(
+                set([u.email for u in nc.get_users()]),
+                set(_users))
+            self.assertEqual(
+                set([email for email in nc.get_emails()]),
+                set(_emails))
 
         metric_rq_count = Metric.objects.get(name='request.count')
         metric_rq_time = Metric.objects.get(name='response.time')
@@ -801,12 +811,11 @@ class MonitoringChecksTestCase(MonitoringTestBase):
                         value=700)
 
         nc = NotificationCheck.objects.get()
-        # AF: TODO there's no way to make Monitoring aware this user is_authenticated
-        # self.assertTrue(len(nc.get_emails()) > 0)
-        # self.assertTrue(len(nc.get_users()) > 0)
-        # self.assertEqual(nc.last_send, None)
-        # self.assertTrue(nc.can_send)
-        # self.assertEqual(len(mail.outbox), 0)
+        self.assertTrue(len(nc.get_emails()) > 0)
+        self.assertTrue(len(nc.get_users()) > 0)
+        self.assertEqual(nc.last_send, None)
+        self.assertTrue(nc.can_send)
+        self.assertEqual(len(mail.outbox), 0)
 
         # make sure inactive will not trigger anything
         nc.active = False
@@ -824,24 +833,23 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         notifications_url = reverse('monitoring:api_user_notifications')
         nresp = self.client.get(notifications_url)
         self.assertIsNotNone(nresp)
-        # AF: TODO there's no way to make Monitoring aware this user is_authenticated
-        # self.assertEqual(nresp.status_code, 200)
-        # ndata = json.loads(nresp.content)
-        # self.assertEqual(set([n['id'] for n in ndata['data']]),
-        #                  set(NotificationCheck.objects.all().values_list('id', flat=True)))
-        # self.assertTrue(isinstance(nc.last_send, datetime))
-        # self.assertFalse(nc.can_send)
-        # mail.outbox = []
-        # self.assertEqual(len(mail.outbox), 0)
-        # capi.emit_notifications(start)
-        # self.assertEqual(len(mail.outbox), 0)
-        # nc.last_send = start - nc.grace_period
-        # nc.save()
-        # self.assertTrue(nc.can_send)
-        # mail.outbox = []
-        # self.assertEqual(len(mail.outbox), 0)
-        # capi.emit_notifications(start)
-        # self.assertEqual(len(mail.outbox), nc.receivers.all().count())
+        self.assertEqual(nresp.status_code, 200)
+        ndata = json.loads(nresp.content)
+        self.assertEqual(set([n['id'] for n in ndata['data']]),
+                         set(NotificationCheck.objects.all().values_list('id', flat=True)))
+        self.assertTrue(isinstance(nc.last_send, datetime))
+        self.assertFalse(nc.can_send)
+        mail.outbox = []
+        self.assertEqual(len(mail.outbox), 0)
+        capi.emit_notifications(start)
+        self.assertEqual(len(mail.outbox), 0)
+        nc.last_send = start - nc.grace_period
+        nc.save()
+        self.assertTrue(nc.can_send)
+        mail.outbox = []
+        self.assertEqual(len(mail.outbox), 0)
+        capi.emit_notifications(start)
+        self.assertEqual(len(mail.outbox), nc.receivers.all().count())
 
 
 @override_settings(USE_TZ=True)
@@ -890,112 +898,992 @@ class AutoConfigTestCase(MonitoringTestBase):
         resp = self.client.post(autoconf_url)
         self.assertEqual(resp.status_code, 401)
 
-        self.client.force_login(self.u)
+        self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated())
         resp = self.client.post(autoconf_url)
-        # AF: TODO there's no way to make Monitoring aware this user is_authenticated
-        # self.assertEqual(resp.status_code, 200, resp)
+        self.assertEqual(resp.status_code, 200, resp)
 
 
 @override_settings(USE_TZ=True)
 class MonitoringAnalyticsTestCase(MonitoringTestBase):
 
+    # fixtures = ['metric_data']
+
     def setUp(self):
         super(MonitoringAnalyticsTestCase, self).setUp()
 
-        self.user = 'admin'
+        call_command('loaddata', 'metric_data', verbosity=0)
+
+        self.username = 'admin'
         self.passwd = 'admin'
-        self.u, _ = get_user_model().objects.get_or_create(username=self.user)
-        self.u.is_active = True
-        self.u.email = 'test@email.com'
-        self.u.set_password(self.passwd)
-        self.u.save()
-        self.ua = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
-                   "(KHTML, like Gecko) Chrome/59.0.3071.47 Safari/537.36")
+        self.admin, _ = get_user_model().objects.get_or_create(username=self.username)
+        self.admin.set_password(self.passwd)
+        self.admin.is_active = True
+        self.admin.is_superuser = True
+        self.admin.email = 'test_admin@email.com'
+        self.admin.save()
 
-        populate()
+        self._username = 'user'
+        self._passwd = 'user'
+        self.user, _ = get_user_model().objects.get_or_create(username=self._username)
+        self.user.set_password(self._passwd)
+        self.user.is_active = True
+        self.user.email = 'test_user@email.com'
+        self.user.save()
 
-        self.host, _ = Host.objects.get_or_create(
-            name='localhost', ip='127.0.0.1')
-        self.service_type = ServiceType.objects.get(
-            name=ServiceType.TYPE_GEONODE)
-        self.service, _ = Service.objects.get_or_create(
-            name=settings.MONITORING_SERVICE_NAME,
-            host=self.host,
-            service_type=self.service_type)
-
-        file_upload(
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "san_andres_y_providencia_poi.shp"),
-            name="san_andres_y_providencia_poi",
-            user=self.u,
-            overwrite=True,
+    def test_layer_view_endpoints(self):
+        # layer/view
+        url = "%s?%s&%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=2628000',
+            'event_type=view',
+            'resource_type=layer'
         )
-
-    def test_metric_data_endpoints(self):
-        """
-        Test GeoNode collect metrics
-        """
-        # Login (optional)
-        self.client.force_login(self.u)
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
         self.assertTrue(get_user(self.client).is_authenticated())
-
-        _l = Layer.objects.all().first()
-
-        # Event
-        self.client.get(
-            reverse('layer_detail',
-                    args=(_l.alternate,
-                          )),
-            **{"HTTP_USER_AGENT": self.ua}
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"]
+        metric = out["data"]["metric"]
+        interval = out["data"]["interval"]
+        label = out["data"]["label"]
+        valid_from = out["data"]["input_valid_from"]
+        valid_to = out["data"]["input_valid_to"]
+        axis_label = out["data"]["axis_label"]
+        type = out["data"]["type"]
+        self.assertEqual(metric, 'request.users')
+        self.assertEqual(interval, 2628000)
+        self.assertEqual(label, None)
+        self.assertEqual(valid_from, '2018-08-29T20:00:00Z')
+        self.assertEqual(valid_to, '2019-08-29T20:00:00Z')
+        self.assertEqual(axis_label, 'Count')
+        self.assertEqual(type, 'value')
+        # check data
+        self.assertEqual(len(data), 12)  # 12 months
+        for d in data[:-1]:
+            self.assertFalse(d["data"])
+        last_month_data = data[-1]["data"]
+        # First
+        self.assertEqual(last_month_data[0]["samples_count"], 2)
+        self.assertEqual(last_month_data[0]["val"], "2.0000")
+        self.assertEqual(last_month_data[0]["min"], "1.0000")
+        self.assertEqual(last_month_data[0]["max"], "1.0000")
+        self.assertEqual(last_month_data[0]["sum"], "2.0000")
+        self.assertEqual(
+            last_month_data[0]["label"],
+            "d2e837d24027cfd1ca361d60a63fc4f474993bd909bffbcc83117c3c76653c10"
         )
-        requests = RequestEvent.objects.all()
-        self.assertTrue(requests.count() > 0)
-        # First check for MetricValue table
-        self.assertTrue(MetricValue.objects.all().count() == 0)
-        # Metric data collection
-        collector = CollectorAPI()
-        q = requests.order_by('created')
-        collector.process_requests(
-            self.service,
-            requests,
-            q.first().created,
-            q.last().created
+        self.assertEqual(last_month_data[0]["user"], "joe")
+        self.assertEqual(last_month_data[0]["metric_count"], 2)
+        # Second
+        self.assertEqual(last_month_data[1]["samples_count"], 1)
+        self.assertEqual(last_month_data[1]["val"], "1.0000")
+        self.assertEqual(last_month_data[1]["min"], "1.0000")
+        self.assertEqual(last_month_data[1]["max"], "1.0000")
+        self.assertEqual(last_month_data[1]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[1]["label"],
+            "68ce3486a49de17ac675ead5ba963cc31a0444bd7eb7c6da9db17c933637186b"
         )
-        # Second check for MetricValue table
-        self.assertTrue(MetricValue.objects.all().count() >= 0)
-        # Call endpoint
-        url = "%s?%s" % (reverse('monitoring:api_metric_data', args={
-                         'request.users'}), 'last=86400&interval=86400&event_type=view&resource_type=layer')
-        response = self.client.get(url)  # noqa
-        # TODO check response
+        self.assertEqual(last_month_data[1]["user"], "mary")
+        self.assertEqual(last_month_data[1]["metric_count"], 1)
+
+    def test_layer_upload_endpoints(self):
+        # layer/upload
+        url = "%s?%s&%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=2628000',
+            'event_type=upload',
+            'resource_type=layer'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"]
+        metric = out["data"]["metric"]
+        interval = out["data"]["interval"]
+        label = out["data"]["label"]
+        valid_from = out["data"]["input_valid_from"]
+        valid_to = out["data"]["input_valid_to"]
+        axis_label = out["data"]["axis_label"]
+        type = out["data"]["type"]
+        self.assertEqual(metric, 'request.users')
+        self.assertEqual(interval, 2628000)
+        self.assertEqual(label, None)
+        self.assertEqual(valid_from, '2018-08-29T20:00:00Z')
+        self.assertEqual(valid_to, '2019-08-29T20:00:00Z')
+        self.assertEqual(axis_label, 'Count')
+        self.assertEqual(type, 'value')
+        # check data
+        self.assertEqual(len(data), 12)  # 12 months
+        for d in data[:-1]:
+            self.assertFalse(d["data"])
+        last_month_data = data[-1]["data"]
+        # First
+        self.assertEqual(last_month_data[0]["samples_count"], 2)
+        self.assertEqual(last_month_data[0]["val"], "2.0000")
+        self.assertEqual(last_month_data[0]["min"], "1.0000")
+        self.assertEqual(last_month_data[0]["max"], "1.0000")
+        self.assertEqual(last_month_data[0]["sum"], "2.0000")
+        self.assertEqual(
+            last_month_data[0]["label"],
+            "d2e837d24027cfd1ca361d60a63fc4f474993bd909bffbcc83117c3c76653c10"
+        )
+        self.assertEqual(last_month_data[0]["user"], "joe")
+        self.assertEqual(last_month_data[0]["metric_count"], 2)
+        # Second
+        self.assertEqual(last_month_data[1]["samples_count"], 1)
+        self.assertEqual(last_month_data[1]["val"], "1.0000")
+        self.assertEqual(last_month_data[1]["min"], "1.0000")
+        self.assertEqual(last_month_data[1]["max"], "1.0000")
+        self.assertEqual(last_month_data[1]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[1]["label"],
+            "68ce3486a49de17ac675ead5ba963cc31a0444bd7eb7c6da9db17c933637186b"
+        )
+        self.assertEqual(last_month_data[1]["user"], "mary")
+        self.assertEqual(last_month_data[1]["metric_count"], 1)
+
+    def test_layer_view_metadata_endpoints(self):
+        # layer/view_metadata
+        url = "%s?%s&%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=2628000',
+            'event_type=view_metadata',
+            'resource_type=layer'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"]
+        metric = out["data"]["metric"]
+        interval = out["data"]["interval"]
+        label = out["data"]["label"]
+        valid_from = out["data"]["input_valid_from"]
+        valid_to = out["data"]["input_valid_to"]
+        axis_label = out["data"]["axis_label"]
+        type = out["data"]["type"]
+        self.assertEqual(metric, 'request.users')
+        self.assertEqual(interval, 2628000)
+        self.assertEqual(label, None)
+        self.assertEqual(valid_from, '2018-08-29T20:00:00Z')
+        self.assertEqual(valid_to, '2019-08-29T20:00:00Z')
+        self.assertEqual(axis_label, 'Count')
+        self.assertEqual(type, 'value')
+        # check data
+        self.assertEqual(len(data), 12)  # 12 months
+        for d in data[:-1]:
+            self.assertFalse(d["data"])
+        last_month_data = data[-1]["data"]
+        # First
+        self.assertEqual(last_month_data[0]["samples_count"], 1)
+        self.assertEqual(last_month_data[0]["val"], "1.0000")
+        self.assertEqual(last_month_data[0]["min"], "1.0000")
+        self.assertEqual(last_month_data[0]["max"], "1.0000")
+        self.assertEqual(last_month_data[0]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[0]["label"],
+            "68ce3486a49de17ac675ead5ba963cc31a0444bd7eb7c6da9db17c933637186b"
+        )
+        self.assertEqual(last_month_data[0]["user"], "mary")
+        self.assertEqual(last_month_data[0]["metric_count"], 1)
+        # Second
+        self.assertEqual(last_month_data[1]["samples_count"], 1)
+        self.assertEqual(last_month_data[1]["val"], "1.0000")
+        self.assertEqual(last_month_data[1]["min"], "1.0000")
+        self.assertEqual(last_month_data[1]["max"], "1.0000")
+        self.assertEqual(last_month_data[1]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[1]["label"],
+            "d2e837d24027cfd1ca361d60a63fc4f474993bd909bffbcc83117c3c76653c10"
+        )
+        self.assertEqual(last_month_data[1]["user"], "joe")
+        self.assertEqual(last_month_data[1]["metric_count"], 1)
+
+    def test_layer_change_metadata_endpoints(self):
+        # layer/change_metadata
+        url = "%s?%s&%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=2628000',
+            'event_type=change_metadata',
+            'resource_type=layer'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"]
+        metric = out["data"]["metric"]
+        interval = out["data"]["interval"]
+        label = out["data"]["label"]
+        valid_from = out["data"]["input_valid_from"]
+        valid_to = out["data"]["input_valid_to"]
+        axis_label = out["data"]["axis_label"]
+        type = out["data"]["type"]
+        self.assertEqual(metric, 'request.users')
+        self.assertEqual(interval, 2628000)
+        self.assertEqual(label, None)
+        self.assertEqual(valid_from, '2018-08-29T20:00:00Z')
+        self.assertEqual(valid_to, '2019-08-29T20:00:00Z')
+        self.assertEqual(axis_label, 'Count')
+        self.assertEqual(type, 'value')
+        # check data
+        self.assertEqual(len(data), 12)  # 12 months
+        for d in data[:-1]:
+            self.assertFalse(d["data"])
+        last_month_data = data[-1]["data"]
+        # First
+        self.assertEqual(last_month_data[0]["samples_count"], 1)
+        self.assertEqual(last_month_data[0]["val"], "1.0000")
+        self.assertEqual(last_month_data[0]["min"], "1.0000")
+        self.assertEqual(last_month_data[0]["max"], "1.0000")
+        self.assertEqual(last_month_data[0]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[0]["label"],
+            "68ce3486a49de17ac675ead5ba963cc31a0444bd7eb7c6da9db17c933637186b"
+        )
+        self.assertEqual(last_month_data[0]["user"], "mary")
+        self.assertEqual(last_month_data[0]["metric_count"], 1)
+
+    def test_layer_download_endpoints(self):
+        # layer/download
+        url = "%s?%s&%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=2628000',
+            'event_type=download',
+            'resource_type=layer'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"]
+        metric = out["data"]["metric"]
+        interval = out["data"]["interval"]
+        label = out["data"]["label"]
+        valid_from = out["data"]["input_valid_from"]
+        valid_to = out["data"]["input_valid_to"]
+        axis_label = out["data"]["axis_label"]
+        type = out["data"]["type"]
+        self.assertEqual(metric, 'request.users')
+        self.assertEqual(interval, 2628000)
+        self.assertEqual(label, None)
+        self.assertEqual(valid_from, '2018-08-29T20:00:00Z')
+        self.assertEqual(valid_to, '2019-08-29T20:00:00Z')
+        self.assertEqual(axis_label, 'Count')
+        self.assertEqual(type, 'value')
+        # check data
+        self.assertEqual(len(data), 12)  # 12 months
+        for d in data[:-1]:
+            self.assertFalse(d["data"])
+        last_month_data = data[-1]["data"]
+        # First
+        self.assertEqual(last_month_data[0]["samples_count"], 1)
+        self.assertEqual(last_month_data[0]["val"], "1.0000")
+        self.assertEqual(last_month_data[0]["min"], "1.0000")
+        self.assertEqual(last_month_data[0]["max"], "1.0000")
+        self.assertEqual(last_month_data[0]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[0]["label"],
+            "d2e837d24027cfd1ca361d60a63fc4f474993bd909bffbcc83117c3c76653c10"
+        )
+        self.assertEqual(last_month_data[0]["user"], "joe")
+        self.assertEqual(last_month_data[0]["metric_count"], 1)
+
+    def test_map_create_endpoints(self):
+        # map/create
+        url = "%s?%s&%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=2628000',
+            'event_type=create',
+            'resource_type=map'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"]
+        metric = out["data"]["metric"]
+        interval = out["data"]["interval"]
+        label = out["data"]["label"]
+        valid_from = out["data"]["input_valid_from"]
+        valid_to = out["data"]["input_valid_to"]
+        axis_label = out["data"]["axis_label"]
+        type = out["data"]["type"]
+        self.assertEqual(metric, 'request.users')
+        self.assertEqual(interval, 2628000)
+        self.assertEqual(label, None)
+        self.assertEqual(valid_from, '2018-08-29T20:00:00Z')
+        self.assertEqual(valid_to, '2019-08-29T20:00:00Z')
+        self.assertEqual(axis_label, 'Count')
+        self.assertEqual(type, 'value')
+        # check data
+        self.assertEqual(len(data), 12)  # 12 months
+        for d in data[:-1]:
+            self.assertFalse(d["data"])
+        last_month_data = data[-1]["data"]
+        # First
+        self.assertEqual(last_month_data[0]["samples_count"], 1)
+        self.assertEqual(last_month_data[0]["val"], "1.0000")
+        self.assertEqual(last_month_data[0]["min"], "1.0000")
+        self.assertEqual(last_month_data[0]["max"], "1.0000")
+        self.assertEqual(last_month_data[0]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[0]["label"],
+            "c8f5e7537002284ef547abbb376ca766ec0dff798a7e9f3d428c10af462d146c"
+        )
+        self.assertEqual(last_month_data[0]["user"], "jhon")
+        self.assertEqual(last_month_data[0]["metric_count"], 1)
+        # Second
+        self.assertEqual(last_month_data[1]["samples_count"], 1)
+        self.assertEqual(last_month_data[1]["val"], "1.0000")
+        self.assertEqual(last_month_data[1]["min"], "1.0000")
+        self.assertEqual(last_month_data[1]["max"], "1.0000")
+        self.assertEqual(last_month_data[1]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[1]["label"],
+            "d2e837d24027cfd1ca361d60a63fc4f474993bd909bffbcc83117c3c76653c10"
+        )
+        self.assertEqual(last_month_data[1]["user"], "joe")
+        self.assertEqual(last_month_data[1]["metric_count"], 1)
+
+    def test_map_change_endpoints(self):
+        # map/change
+        url = "%s?%s&%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=2628000',
+            'event_type=change',
+            'resource_type=map'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"]
+        metric = out["data"]["metric"]
+        interval = out["data"]["interval"]
+        label = out["data"]["label"]
+        valid_from = out["data"]["input_valid_from"]
+        valid_to = out["data"]["input_valid_to"]
+        axis_label = out["data"]["axis_label"]
+        type = out["data"]["type"]
+        self.assertEqual(metric, 'request.users')
+        self.assertEqual(interval, 2628000)
+        self.assertEqual(label, None)
+        self.assertEqual(valid_from, '2018-08-29T20:00:00Z')
+        self.assertEqual(valid_to, '2019-08-29T20:00:00Z')
+        self.assertEqual(axis_label, 'Count')
+        self.assertEqual(type, 'value')
+        # check data
+        self.assertEqual(len(data), 12)  # 12 months
+        for d in data:
+            self.assertFalse(d["data"])
+
+    def test_document_upload_endpoints(self):
+        # document/upload
+        url = "%s?%s&%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=2628000',
+            'event_type=upload',
+            'resource_type=document'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"]
+        metric = out["data"]["metric"]
+        interval = out["data"]["interval"]
+        label = out["data"]["label"]
+        valid_from = out["data"]["input_valid_from"]
+        valid_to = out["data"]["input_valid_to"]
+        axis_label = out["data"]["axis_label"]
+        type = out["data"]["type"]
+        self.assertEqual(metric, 'request.users')
+        self.assertEqual(interval, 2628000)
+        self.assertEqual(label, None)
+        self.assertEqual(valid_from, '2018-08-29T20:00:00Z')
+        self.assertEqual(valid_to, '2019-08-29T20:00:00Z')
+        self.assertEqual(axis_label, 'Count')
+        self.assertEqual(type, 'value')
+        # check data
+        self.assertEqual(len(data), 12)  # 12 months
+        for d in data:
+            self.assertFalse(d["data"])
+
+    def test_document_view_metadata_endpoints(self):
+        # document/view_metadata
+        url = "%s?%s&%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=2628000',
+            'event_type=view_metadata',
+            'resource_type=document'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"]
+        metric = out["data"]["metric"]
+        interval = out["data"]["interval"]
+        label = out["data"]["label"]
+        valid_from = out["data"]["input_valid_from"]
+        valid_to = out["data"]["input_valid_to"]
+        axis_label = out["data"]["axis_label"]
+        type = out["data"]["type"]
+        self.assertEqual(metric, 'request.users')
+        self.assertEqual(interval, 2628000)
+        self.assertEqual(label, None)
+        self.assertEqual(valid_from, '2018-08-29T20:00:00Z')
+        self.assertEqual(valid_to, '2019-08-29T20:00:00Z')
+        self.assertEqual(axis_label, 'Count')
+        self.assertEqual(type, 'value')
+        # check data
+        self.assertEqual(len(data), 12)  # 12 months
+        for d in data:
+            self.assertFalse(d["data"])
+
+    def test_document_change_metadata_endpoints(self):
+        # document/change_metadata
+        url = "%s?%s&%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=2628000',
+            'event_type=change_metadata',
+            'resource_type=document'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+
+        self.client.login_user(self.user)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"]
+        metric = out["data"]["metric"]
+        interval = out["data"]["interval"]
+        label = out["data"]["label"]
+        valid_from = out["data"]["input_valid_from"]
+        valid_to = out["data"]["input_valid_to"]
+        axis_label = out["data"]["axis_label"]
+        type = out["data"]["type"]
+        self.assertEqual(metric, 'request.users')
+        self.assertEqual(interval, 2628000)
+        self.assertEqual(label, None)
+        self.assertEqual(valid_from, '2018-08-29T20:00:00Z')
+        self.assertEqual(valid_to, '2019-08-29T20:00:00Z')
+        self.assertEqual(axis_label, 'Count')
+        self.assertEqual(type, 'value')
+        # check data
+        self.assertEqual(len(data), 12)  # 12 months
+        for d in data:
+            self.assertFalse(d["data"])
+
+    def test_document_download_endpoints(self):
+        # document/download
+        url = "%s?%s&%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=2628000',
+            'event_type=download',
+            'resource_type=document'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"]
+        metric = out["data"]["metric"]
+        interval = out["data"]["interval"]
+        label = out["data"]["label"]
+        valid_from = out["data"]["input_valid_from"]
+        valid_to = out["data"]["input_valid_to"]
+        axis_label = out["data"]["axis_label"]
+        type = out["data"]["type"]
+        self.assertEqual(metric, 'request.users')
+        self.assertEqual(interval, 2628000)
+        self.assertEqual(label, None)
+        self.assertEqual(valid_from, '2018-08-29T20:00:00Z')
+        self.assertEqual(valid_to, '2019-08-29T20:00:00Z')
+        self.assertEqual(axis_label, 'Count')
+        self.assertEqual(type, 'value')
+        # check data
+        self.assertEqual(len(data), 12)  # 12 months
+        for d in data:
+            self.assertFalse(d["data"])
+
+    def test_url_view_endpoints(self):
+        # url/view
+        url = "%s?%s&%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=2628000',
+            'event_type=view',
+            'resource_type=url'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"]
+        metric = out["data"]["metric"]
+        interval = out["data"]["interval"]
+        label = out["data"]["label"]
+        valid_from = out["data"]["input_valid_from"]
+        valid_to = out["data"]["input_valid_to"]
+        axis_label = out["data"]["axis_label"]
+        type = out["data"]["type"]
+        self.assertEqual(metric, 'request.users')
+        self.assertEqual(interval, 2628000)
+        self.assertEqual(label, None)
+        self.assertEqual(valid_from, '2018-08-29T20:00:00Z')
+        self.assertEqual(valid_to, '2019-08-29T20:00:00Z')
+        self.assertEqual(axis_label, 'Count')
+        self.assertEqual(type, 'value')
+        # check data
+        self.assertEqual(len(data), 12)  # 12 months
+        for d in data[:-1]:
+            self.assertFalse(d["data"])
+        last_month_data = data[-1]["data"]
+        # 1
+        self.assertEqual(last_month_data[0]["samples_count"], 2)
+        self.assertEqual(last_month_data[0]["val"], "2.0000")
+        self.assertEqual(last_month_data[0]["min"], "2.0000")
+        self.assertEqual(last_month_data[0]["max"], "2.0000")
+        self.assertEqual(last_month_data[0]["sum"], "2.0000")
+        self.assertEqual(
+            last_month_data[0]["label"],
+            "3fb62200068b35db416d20bf3e1ef4a1723b3671302c67f7bb36880bfd7dd8a2"
+        )
+        self.assertEqual(last_month_data[0]["user"], "joe")
+        self.assertEqual(last_month_data[0]["metric_count"], 1)
+        # 2
+        self.assertEqual(last_month_data[1]["samples_count"], 2)
+        self.assertEqual(last_month_data[1]["val"], "2.0000")
+        self.assertEqual(last_month_data[1]["min"], "1.0000")
+        self.assertEqual(last_month_data[1]["max"], "1.0000")
+        self.assertEqual(last_month_data[1]["sum"], "2.0000")
+        self.assertEqual(
+            last_month_data[1]["label"],
+            "cf4fca4c598c55ebb2b277378647ef0f961a8d6a28f77f68d2400925821533ac"
+        )
+        self.assertEqual(last_month_data[1]["user"], "admin")
+        self.assertEqual(last_month_data[1]["metric_count"], 2)
+        # 3
+        self.assertEqual(last_month_data[2]["samples_count"], 2)
+        self.assertEqual(last_month_data[2]["val"], "2.0000")
+        self.assertEqual(last_month_data[2]["min"], "1.0000")
+        self.assertEqual(last_month_data[2]["max"], "1.0000")
+        self.assertEqual(last_month_data[2]["sum"], "2.0000")
+        self.assertEqual(
+            last_month_data[2]["label"],
+            "f9db79c41b73a2d6fc5f4a974008798e518a4813a3876da5db33ed0265d0e3bc"
+        )
+        self.assertEqual(last_month_data[2]["user"], "admin")
+        self.assertEqual(last_month_data[2]["metric_count"], 2)
+        # 4
+        self.assertEqual(last_month_data[3]["samples_count"], 1)
+        self.assertEqual(last_month_data[3]["val"], "1.0000")
+        self.assertEqual(last_month_data[3]["min"], "1.0000")
+        self.assertEqual(last_month_data[3]["max"], "1.0000")
+        self.assertEqual(last_month_data[3]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[3]["label"],
+            "8cfca7c4dbb8b54164c9f62e53e639f6e6db2814f299b9c202dc1b8c3797b773"
+        )
+        self.assertEqual(last_month_data[3]["user"], "AnonymousUser")
+        self.assertEqual(last_month_data[3]["metric_count"], 1)
+        # 5
+        self.assertEqual(last_month_data[4]["samples_count"], 1)
+        self.assertEqual(last_month_data[4]["val"], "1.0000")
+        self.assertEqual(last_month_data[4]["min"], "1.0000")
+        self.assertEqual(last_month_data[4]["max"], "1.0000")
+        self.assertEqual(last_month_data[4]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[4]["label"],
+            "9d013cdaef339aedf8794f6558aacf4eaf5eddfaee11b6316b05105ea5b1968a"
+        )
+        self.assertEqual(last_month_data[4]["user"], "AnonymousUser")
+        self.assertEqual(last_month_data[4]["metric_count"], 1)
+        # 6
+        self.assertEqual(last_month_data[5]["samples_count"], 1)
+        self.assertEqual(last_month_data[5]["val"], "1.0000")
+        self.assertEqual(last_month_data[5]["min"], "1.0000")
+        self.assertEqual(last_month_data[5]["max"], "1.0000")
+        self.assertEqual(last_month_data[5]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[5]["label"],
+            "bc1b2cea3df6bd09c27ae5b8f81a645f83a8dfb0ff83b9efb78a6be6a9ffa99e"
+        )
+        self.assertEqual(last_month_data[5]["user"], "AnonymousUser")
+        self.assertEqual(last_month_data[5]["metric_count"], 1)
+        # 7
+        self.assertEqual(last_month_data[6]["samples_count"], 1)
+        self.assertEqual(last_month_data[6]["val"], "1.0000")
+        self.assertEqual(last_month_data[6]["min"], "1.0000")
+        self.assertEqual(last_month_data[6]["max"], "1.0000")
+        self.assertEqual(last_month_data[6]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[6]["label"],
+            "2365500a901139d13d9271b17a0d2bf42efb228aa7afef29aaee4179d5f6be3b"
+        )
+        self.assertEqual(last_month_data[6]["user"], "AnonymousUser")
+        self.assertEqual(last_month_data[6]["metric_count"], 1)
+        # 8
+        self.assertEqual(last_month_data[7]["samples_count"], 1)
+        self.assertEqual(last_month_data[7]["val"], "1.0000")
+        self.assertEqual(last_month_data[7]["min"], "1.0000")
+        self.assertEqual(last_month_data[7]["max"], "1.0000")
+        self.assertEqual(last_month_data[7]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[7]["label"],
+            "c8f5e7537002284ef547abbb376ca766ec0dff798a7e9f3d428c10af462d146c"
+        )
+        self.assertEqual(last_month_data[7]["user"], "jhon")
+        self.assertEqual(last_month_data[7]["metric_count"], 1)
+        # 9
+        self.assertEqual(last_month_data[8]["samples_count"], 1)
+        self.assertEqual(last_month_data[8]["val"], "1.0000")
+        self.assertEqual(last_month_data[8]["min"], "1.0000")
+        self.assertEqual(last_month_data[8]["max"], "1.0000")
+        self.assertEqual(last_month_data[8]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[8]["label"],
+            "ce5e2908916d029e9ba3c1e3dd27ea568d356f6a0ed05c7309a834260d51e996"
+        )
+        self.assertEqual(last_month_data[8]["user"], "AnonymousUser")
+        self.assertEqual(last_month_data[8]["metric_count"], 1)
+        # 10
+        self.assertEqual(last_month_data[9]["samples_count"], 1)
+        self.assertEqual(last_month_data[9]["val"], "1.0000")
+        self.assertEqual(last_month_data[9]["min"], "1.0000")
+        self.assertEqual(last_month_data[9]["max"], "1.0000")
+        self.assertEqual(last_month_data[9]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[9]["label"],
+            "d2e837d24027cfd1ca361d60a63fc4f474993bd909bffbcc83117c3c76653c10"
+        )
+        self.assertEqual(last_month_data[9]["user"], "joe")
+        self.assertEqual(last_month_data[9]["metric_count"], 1)
+        # 11
+        self.assertEqual(last_month_data[10]["samples_count"], 1)
+        self.assertEqual(last_month_data[10]["val"], "1.0000")
+        self.assertEqual(last_month_data[10]["min"], "1.0000")
+        self.assertEqual(last_month_data[10]["max"], "1.0000")
+        self.assertEqual(last_month_data[10]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[10]["label"],
+            "f35fc9dd6dd617d3c9cc6f984ff9e421ce6e83420b049d9a68f9c62bcbaa4322"
+        )
+        self.assertEqual(last_month_data[10]["user"], "AnonymousUser")
+        self.assertEqual(last_month_data[10]["metric_count"], 1)
+        # 12
+        self.assertEqual(last_month_data[11]["samples_count"], 1)
+        self.assertEqual(last_month_data[11]["val"], "1.0000")
+        self.assertEqual(last_month_data[11]["min"], "1.0000")
+        self.assertEqual(last_month_data[11]["max"], "1.0000")
+        self.assertEqual(last_month_data[11]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[11]["label"],
+            "bed96eb3d8b4905d47b59774121200232042b9b2745bc9eb819ab61c83a20379"
+        )
+        self.assertEqual(last_month_data[11]["user"], "admin")
+        self.assertEqual(last_month_data[11]["metric_count"], 1)
+        # 13
+        self.assertEqual(last_month_data[12]["samples_count"], 1)
+        self.assertEqual(last_month_data[12]["val"], "1.0000")
+        self.assertEqual(last_month_data[12]["min"], "1.0000")
+        self.assertEqual(last_month_data[12]["max"], "1.0000")
+        self.assertEqual(last_month_data[12]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[12]["label"],
+            "68ce3486a49de17ac675ead5ba963cc31a0444bd7eb7c6da9db17c933637186b"
+        )
+        self.assertEqual(last_month_data[12]["user"], "mary")
+        self.assertEqual(last_month_data[12]["metric_count"], 1)
+        # 14
+        self.assertEqual(last_month_data[13]["samples_count"], 1)
+        self.assertEqual(last_month_data[13]["val"], "1.0000")
+        self.assertEqual(last_month_data[13]["min"], "1.0000")
+        self.assertEqual(last_month_data[13]["max"], "1.0000")
+        self.assertEqual(last_month_data[13]["sum"], "1.0000")
+        self.assertEqual(
+            last_month_data[13]["label"],
+            "7447fc6af5d3c693fb6250f0db31e5a9c2de10e37607be6ff015c89172522ebb"
+        )
+        self.assertEqual(last_month_data[13]["user"], "AnonymousUser")
+        self.assertEqual(last_month_data[13]["metric_count"], 1)
 
     def test_resources_endpoint(self):
-        response = self.client.get(reverse('monitoring:api_resources'))
-        self.assertEqual(response.status_code, 200)
-        resources = json.loads(response.content)['resources']
-        r_ids = [r['id'] for r in resources]
-        m_resources = MonitoredResource.objects.all()
-        mr_ids = [mr.id for mr in m_resources]
-        if mr_ids:
-            self.assertEqual(r_ids, mr_ids)
+        url = reverse('monitoring:api_resources')
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["status"], "ok")
+        self.assertFalse(out["errors"])
+        self.assertEqual(out["data"]["key"], "resources")
+        resources = out["resources"]
+        self.assertEqual(len(resources), 6)
+        for i, r in enumerate(resources):
+            if resources[i]["name"] == "San Francisco Transport Map":
+                # San Francisco Transport Map
+                self.assertEqual(resources[i]["type"], "map")
+            elif resources[i]["name"] == "geonode:waterways":
+                # geonode:waterways
+                self.assertEqual(resources[i]["type"], "layer")
+            elif resources[i]["name"] == "geonode:railways":
+                # geonode:railways
+                self.assertEqual(resources[i]["type"], "layer")
+            elif resources[i]["name"] == "Amsterdam Waterways Map":
+                # Amsterdam Waterways Map
+                self.assertEqual(resources[i]["type"], "map")
+            elif resources[i]["name"] == "geonode:roads":
+                # geonode:roads
+                self.assertEqual(resources[i]["type"], "layer")
+            elif resources[i]["name"] == "/":
+                # home
+                self.assertEqual(resources[i]["type"], "url")
 
     def test_resource_types_endpoint(self):
-        response = self.client.get(reverse('monitoring:api_resource_types'))
-        self.assertEqual(response.status_code, 200)
-        resource_types = json.loads(response.content)['resource_types']
-        r_types = [rt['name'] for rt in resource_types]
-        m_resources = MonitoredResource.objects.all()
-        mr_types = [mr.type for mr in m_resources]
-        if mr_types:
-            self.assertEqual(r_types, mr_types, resource_types)
+        url = reverse('monitoring:api_resource_types')
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["status"], "ok")
+        self.assertFalse(out["errors"])
+        self.assertEqual(out["data"]["key"], "resource_types")
+        resources = out["resource_types"]
+        # No resource
+        self.assertEqual(resources[0]["type_label"], "No resource")
+        self.assertEqual(resources[0]["name"], "")
+        # Layer
+        self.assertEqual(resources[1]["type_label"], "Layer")
+        self.assertEqual(resources[1]["name"], "layer")
+        # Map
+        self.assertEqual(resources[2]["type_label"], "Map")
+        self.assertEqual(resources[2]["name"], "map")
+        # Resource Base
+        self.assertEqual(resources[3]["type_label"], "Resource base")
+        self.assertEqual(resources[3]["name"], "resource_base")
+        # Document
+        self.assertEqual(resources[4]["type_label"], "Document")
+        self.assertEqual(resources[4]["name"], "document")
+        # Style
+        self.assertEqual(resources[5]["type_label"], "Style")
+        self.assertEqual(resources[5]["name"], "style")
+        # Admin
+        self.assertEqual(resources[6]["type_label"], "Admin")
+        self.assertEqual(resources[6]["name"], "admin")
+        # url
+        self.assertEqual(resources[7]["type_label"], "URL")
+        self.assertEqual(resources[7]["name"], "url")
+        # other
+        self.assertEqual(resources[8]["type_label"], "Other")
+        self.assertEqual(resources[8]["name"], "other")
 
     def test_event_types_endpoint(self):
-        response = self.client.get(reverse('monitoring:api_event_types'))
-        self.assertEqual(response.status_code, 200)
-        event_types = json.loads(response.content)['event_types']
-        e_types = [et['name'] for et in event_types]
-        ev_types = [e.name for e in EventType.objects.all()]
-        if ev_types:
-            self.assertEqual(e_types, ev_types, event_types)
+        url = reverse('monitoring:api_event_types')
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["status"], "ok")
+        self.assertFalse(out["errors"])
+        self.assertEqual(out["data"]["key"], "event_types")
+        resources = out["event_types"]
+        # OWS:TMS
+        self.assertEqual(resources[0]["type_label"], "TMS")
+        self.assertEqual(resources[0]["name"], "OWS:TMS")
+        # OWS:WMS-C
+        self.assertEqual(resources[1]["type_label"], "WMS-C")
+        self.assertEqual(resources[1]["name"], "OWS:WMS-C")
+        # OWS:WMTS
+        self.assertEqual(resources[2]["type_label"], "WMTS")
+        self.assertEqual(resources[2]["name"], "OWS:WMTS")
+        # OWS:WCS
+        self.assertEqual(resources[3]["type_label"], "WCS")
+        self.assertEqual(resources[3]["name"], "OWS:WCS")
+        # OWS:WFS
+        self.assertEqual(resources[4]["type_label"], "WFS")
+        self.assertEqual(resources[4]["name"], "OWS:WFS")
+        # OWS:WMS
+        self.assertEqual(resources[5]["type_label"], "WMS")
+        self.assertEqual(resources[5]["name"], "OWS:WMS")
+        # OWS:WPS
+        self.assertEqual(resources[6]["type_label"], "WPS")
+        self.assertEqual(resources[6]["name"], "OWS:WPS")
+        # other
+        self.assertEqual(resources[7]["type_label"], "Not OWS")
+        self.assertEqual(resources[7]["name"], "other")
+        # OWS:ALL
+        self.assertEqual(resources[8]["type_label"], "Any OWS")
+        self.assertEqual(resources[8]["name"], "OWS:ALL")
+        # all
+        self.assertEqual(resources[9]["type_label"], "All")
+        self.assertEqual(resources[9]["name"], "all")
+        # create
+        self.assertEqual(resources[10]["type_label"], "Create")
+        self.assertEqual(resources[10]["name"], "create")
+        # upload
+        self.assertEqual(resources[11]["type_label"], "Upload")
+        self.assertEqual(resources[11]["name"], "upload")
+        # other
+        self.assertEqual(resources[12]["type_label"], "Change")
+        self.assertEqual(resources[12]["name"], "change")
+        # change_metadata
+        self.assertEqual(resources[13]["type_label"], "Change Metadata")
+        self.assertEqual(resources[13]["name"], "change_metadata")
+        # view_metadata
+        self.assertEqual(resources[14]["type_label"], "View Metadata")
+        self.assertEqual(resources[14]["name"], "view_metadata")
+        # view
+        self.assertEqual(resources[15]["type_label"], "View")
+        self.assertEqual(resources[15]["name"], "view")
+        # download
+        self.assertEqual(resources[16]["type_label"], "Download")
+        self.assertEqual(resources[16]["name"], "download")
+        # publish
+        self.assertEqual(resources[17]["type_label"], "Publish")
+        self.assertEqual(resources[17]["name"], "publish")
+        # remove
+        self.assertEqual(resources[18]["type_label"], "Remove")
+        self.assertEqual(resources[18]["name"], "remove")
+        # geoserver
+        self.assertEqual(resources[19]["type_label"], "Geoserver event")
+        self.assertEqual(resources[19]["name"], "geoserver")

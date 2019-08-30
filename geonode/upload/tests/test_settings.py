@@ -49,9 +49,14 @@ AUTHENTICATION_BACKENDS = (
     'guardian.backends.ObjectPermissionBackend'
 )
 
-SESSION_EXPIRED_CONTROL_ENABLED = False
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
+
+SESSION_EXPIRED_CONTROL_ENABLED = False
+if 'geonode.security.middleware.SessionControlMiddleware' in MIDDLEWARE_CLASSES:
+    _middleware = list(MIDDLEWARE_CLASSES)
+    _middleware.remove('geonode.security.middleware.SessionControlMiddleware')
+    MIDDLEWARE_CLASSES = tuple(_middleware)
 
 # Backend
 DATABASES = {
