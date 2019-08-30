@@ -31,12 +31,13 @@ from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives as EmailMessage
 from django.utils.translation import ugettext_noop as _
 from django.db.models import Max
+from django.urls import resolve, Resolver404
 
 
 from geonode.utils import raw_sql
 from geonode.notifications_helper import send_notification
 from geonode.monitoring import MonitoringAppConfig as AppConf
-from geonode.monitoring.models import (Metric, MetricValue, RequestEvent,
+from geonode.monitoring.models import (Metric, MetricValue, RequestEvent, MonitoredResource,
                                        ExceptionEvent, EventType, NotificationCheck,)
 
 from geonode.monitoring.utils import generate_periods, align_period_start, align_period_end
@@ -45,6 +46,7 @@ from geonode.monitoring.aggregation import (aggregate_past_periods, calculate_ra
                                             extract_event_types, extract_special_event_types,
                                             get_resources_for_metric, get_labels_for_metric,
                                             get_metric_names)
+from geonode.base.models import ResourceBase
 from geonode.utils import parse_datetime
 
 
@@ -394,41 +396,54 @@ class CollectorAPI(object):
         if metric.is_rate:
             row = requests.aggregate(value=models.Avg(column_name))
             row['samples'] = requests.count()
-            row['label'] = 'rate'
+            row['label'] = Metric.TYPE_RATE
             q = [row]
+
         elif metric.is_count:
             q = []
             values = requests.distinct(
                 column_name).values_list(column_name, flat=True)
             for v in values:
-                row = requests.filter(**{column_name: v})\
-                    .aggregate(value=models.Sum(column_name),
-                               samples=models.Count(column_name))
+                rqs = requests.filter(**{column_name: v})
+                row = rqs.aggregate(
+                    value=models.Sum(column_name),
+                    samples=models.Count(column_name)
+                )
                 row['label'] = v
                 q.append(row)
-
             q.sort(key=_key)
             q.reverse()
 
         elif metric.is_value:
-
             q = []
-            values = requests.distinct(
-                column_name).values_list(column_name, flat=True)
+            is_user_metric = column_name == "user_identifier"
+            if is_user_metric:
+                values = requests.distinct(
+                    column_name).values_list(column_name, "user_username")
+            else:
+                values = requests.distinct(
+                    column_name).values_list(column_name, flat=True)
             for v in values:
-                row = requests.filter(**{column_name: v})\
-                    .aggregate(value=models.Count(column_name),
-                               samples=models.Count(column_name))
+                value = v
+                if is_user_metric:
+                    value = v[0]
+                rqs = requests.filter(**{column_name: value})
+                row = rqs.aggregate(
+                    value=models.Count(column_name),
+                    samples=models.Count(column_name)
+                )
                 row['label'] = v
                 q.append(row)
             q.sort(key=_key)
             q.reverse()
+
         elif metric.is_value_numeric:
             q = []
             row = requests.aggregate(value=models.Max(column_name),
                                      samples=models.Count(column_name))
-            row['label'] = v  # TODO: v could be undefined
+            row['label'] = Metric.TYPE_VALUE_NUMERIC
             q.append(row)
+
         else:
             raise ValueError("Unsupported metric type: {}".format(metric.type))
         rows = q[:100]
@@ -677,14 +692,14 @@ class CollectorAPI(object):
         col = 'mv.value_num'
         agg_f = self.get_aggregate_function(col, metric_name, service)
         has_agg = agg_f != col
-        group_by_map = {'resource': {'select': ['mr.id', 'mr.type', 'mr.name', ],
+        group_by_map = {'resource': {'select': ['mr.id', 'mr.type', 'mr.name', 'mr.resource_id'],
                                      'from': ['join monitoring_monitoredresource mr on (mv.resource_id = mr.id)'],
                                      'where': ['and mv.resource_id is not NULL'],
                                      'order_by': None,
-                                     'grouper': ['resource', 'name', 'type', 'id', ],
+                                     'grouper': ['resource', 'name', 'type', 'id', 'resource_id'],
                                      },
                         # group by resource, but do not show labels. number of unique labels will be used as val
-                        'resource_no_label': {'select_only': ['mr.id', 'mr.type', 'mr.name',
+                        'resource_no_label': {'select_only': ['mr.id', 'mr.type', 'mr.name', 'mr.resource_id',
                                                               'count(distinct(ml.name)) as val',
                                                               'count(1) as metric_count',
                                                               'sum(samples_count) as samples_count',
@@ -696,7 +711,7 @@ class CollectorAPI(object):
                                               'where': ['and mv.resource_id is not NULL'],
                                               'order_by': ['val desc'],
                                               'group_by': ['mr.id', 'mr.type', 'mr.name'],
-                                              'grouper': ['resource', 'name', 'type', 'id', ],
+                                              'grouper': ['resource', 'name', 'type', 'id', 'resource_id'],
                                               },
                         'event_type': {'select_only': ['ev.name as event_type', 'count(1) as val',
                                                        'count(1) as metric_count',
@@ -772,7 +787,7 @@ class CollectorAPI(object):
         if group_by not in ('event_type', 'event_type_on_label',) and event_type is None:
             event_type = EventType.get(EventType.EVENT_ALL)
 
-        if event_type:
+        if event_type and metric_name not in ['uptime', ]:
             q_where.append(' and mv.event_type_id = %(event_type)s ')
             params['event_type'] = event_type.id
 
@@ -781,20 +796,15 @@ class CollectorAPI(object):
             params['label'] = label.id
         # if not group_by and not resource:
         #     resource = MonitoredResource.get('', '', or_create=True)
-        if resource and not group_by:
-            q_from.append('join monitoring_monitoredresource mr on '
-                          '(mv.resource_id = mr.id and mr.id = %(resource_id)s) ')
-            params['resource_id'] = resource.id
 
-        if label and has_agg:
-            q_group.extend(['ml.name'])
-        if resource and group_by in ('resource', 'resource_no_label',):
-            raise ValueError(
-                "Cannot use resource and group by resource at the same time")
         if resource and has_agg:
             q_group.append('mr.name')
             # group returned columns into a dict
             # config in grouping map: target_column = {source_column1: val, ...}
+
+        if label and has_agg:
+            q_group.extend(['ml.name'])
+
         grouper = None
         if group_by:
             group_by_cfg = group_by_map[group_by]
@@ -814,11 +824,24 @@ class CollectorAPI(object):
                 q_group.extend(group_by_cfg['select'])
             grouper = group_by_cfg['grouper']
 
-        if resource_type:
+        if resource_type and not resource:
             if not [mr for mr in q_from if 'monitoring_monitoredresource' in mr]:
                 q_from.append('join monitoring_monitoredresource mr on mv.resource_id = mr.id ')
             q_where.append(' and mr.type = %(resource_type)s ')
             params['resource_type'] = resource_type
+
+        if resource and group_by in ('resource', 'resource_no_label',):
+            raise ValueError(
+                "Cannot use resource and group by resource at the same time")
+        elif resource:
+            if not [mr for mr in q_from if 'monitoring_monitoredresource' in mr]:
+                q_from.append('join monitoring_monitoredresource mr on mv.resource_id = mr.id ')
+            q_where.append(' and mr.id = %(resource_id)s ')
+            params['resource_id'] = resource.id
+
+        if 'ml.name' in q_group:
+            q_select.append(', max(ml.user) as user')
+            # q_group.extend(['ml.user']) not needed
 
         if q_group:
             q_group = [' group by ', ','.join(q_group)]
@@ -832,7 +855,22 @@ class CollectorAPI(object):
                 t = {}
                 tcol = grouper[0]
                 for scol in grouper[1:]:
-                    t[scol] = row.pop(scol)
+                    if scol == 'resource_id':
+                        if scol in row:
+                            r_id = row.pop(scol)
+                            try:
+                                rb = ResourceBase.objects.get(id=r_id)
+                                t['href'] = rb.detail_url
+                            except BaseException:
+                                t['href'] = ""
+                    else:
+                        t[scol] = row.pop(scol)
+                        if scol == 'type' and t[scol] == MonitoredResource.TYPE_URL:
+                            try:
+                                resolve(t['name'])
+                                t['href'] = t['name']
+                            except Resolver404:
+                                t['href'] = ""
                 row[tcol] = t
             return row
 
