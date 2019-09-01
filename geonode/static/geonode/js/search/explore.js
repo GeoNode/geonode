@@ -1,5 +1,4 @@
 $(function() {
-    // $(".datepicker").datetimepicker({autoclose:true});
     $("#slide-pane a.toggle-pane").click(function(e) {
         e.preventDefault();
         var span$ = $("#slide-pane").parents(".col-md-3");

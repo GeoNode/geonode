@@ -80,18 +80,13 @@ def facets(context):
             pass
 
     if facet_type == 'documents':
-
         documents = Document.objects.filter(title__icontains=title_filter)
-
         if category_filter:
             documents = documents.filter(category__identifier__in=category_filter)
-
         if regions_filter:
             documents = documents.filter(regions__name__in=regions_filter)
-
         if owner_filter:
             documents = documents.filter(owner__username__in=owner_filter)
-
         if date_gte_filter:
             documents = documents.filter(date__gte=date_gte_filter)
         if date_lte_filter:
@@ -126,20 +121,14 @@ def facets(context):
         facets = dict([(count['doc_type'], count['count']) for count in counts])
 
         return facets
-
     else:
-
         layers = Layer.objects.filter(title__icontains=title_filter)
-
         if category_filter:
             layers = layers.filter(category__identifier__in=category_filter)
-
         if regions_filter:
             layers = layers.filter(regions__name__in=regions_filter)
-
         if owner_filter:
             layers = layers.filter(owner__username__in=owner_filter)
-
         if date_gte_filter:
             layers = layers.filter(date__gte=date_gte_filter)
         if date_lte_filter:
@@ -214,15 +203,12 @@ def facets(context):
         if category_filter:
             maps = maps.filter(category__identifier__in=category_filter)
             documents = documents.filter(category__identifier__in=category_filter)
-
         if regions_filter:
             maps = maps.filter(regions__name__in=regions_filter)
             documents = documents.filter(regions__name__in=regions_filter)
-
         if owner_filter:
             maps = maps.filter(owner__username__in=owner_filter)
             documents = documents.filter(owner__username__in=owner_filter)
-
         if date_gte_filter:
             maps = maps.filter(date__gte=date_gte_filter)
             documents = documents.filter(date__gte=date_gte_filter)
