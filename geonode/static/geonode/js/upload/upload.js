@@ -192,9 +192,10 @@ define(['underscore',
         var target = event.target || event.srcElement;
         var id = target.id.split("-")[1];
         var target = siteUrl + "upload/delete/" + id;
-        $.ajaxQueue({
+        $.ajax({
             url: target,
             async: false,
+            mode: "queue",
             contentType: false,
         }).done(function (resp) {
             var div = "#incomplete-" + id;
@@ -213,9 +214,10 @@ define(['underscore',
         var target = event.target || event.srcElement;
         var id = target.id.split("-")[1];
         var target = siteUrl + "upload/?id=" + id;
-        $.ajaxQueue({
+        $.ajax({
             url: target,
             async: false,
+            mode: "queue",
             contentType: false,
         }).done(function (data) {
           if('redirect_to' in data) {
@@ -241,8 +243,9 @@ define(['underscore',
 
     doSrs = function (event) {
         var form = $("#srsForm")
-        $.ajaxQueue({
+        $.ajax({
            type: "POST",
+           mode: "queue",
            url: siteUrl + 'upload/srs',
            data: form.serialize(), // serializes the form's elements.
            success: function(data)

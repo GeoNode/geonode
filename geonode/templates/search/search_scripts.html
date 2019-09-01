@@ -2,9 +2,9 @@
 {% load static from staticfiles %}
 
 {% if DEBUG_STATIC %}
-<script src="{% static "lib/js/angular.js" %}?v={{ VERSION }}"></script>
+<script src="{% static "lib/js/angular.min.js" %}?v={{ VERSION }}"></script>
+<script src="{% static "lib/js/main.js"?v={{ VERSION }}></script>
 <script src="{% static "lib/js/angular-leaflet-directive.min.js" %}?v={{ VERSION }}"></script>
-<script src="{% static "lib/js/bootstrap-treeview.min.js" %}?v={{ VERSION }}"></script>
 {% endif %}
 
 {% if include_spatial == 'true' %}

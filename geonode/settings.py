@@ -1316,72 +1316,72 @@ To enable the Leaflet based Client:
 if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'leaflet':
     GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode.client.hooksets.LeafletHookSet')
 
-    LEAFLET_CONFIG = {
-        'TILES': [
-            # Find tiles at:
-            # http://leaflet-extras.github.io/leaflet-providers/preview/
-
-            # Stamen toner lite.
-            ('Watercolor',
-             'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
-             'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-             <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
-             &mdash; Map data &copy; \
-             <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-             <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
-             CC-BY-SA</a>'),
-            ('Toner Lite',
-             'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
-             'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-             <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
-             &mdash; Map data &copy; \
-             <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-             <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
-             CC-BY-SA</a>'),
-        ],
-        'PLUGINS': {
-            'esri-leaflet': {
-                'js': 'lib/js/esri-leaflet.js',
-                'auto-include': True,
-            },
-            'leaflet-fullscreen': {
-                'css': 'lib/css/leaflet.fullscreen.css',
-                'js': 'lib/js/Leaflet.fullscreen.min.js',
-                'auto-include': True,
-            },
-            'leaflet-opacity': {
-                'css': 'lib/css/Control.Opacity.css',
-                'js': 'lib/js/Control.Opacity.js',
-                'auto-include': True,
-            },
-            'leaflet-navbar': {
-                'css': 'lib/css/Leaflet.NavBar.css',
-                'js': 'lib/js/Leaflet.NavBar.js',
-                'auto-include': True,
-            },
-            'leaflet-measure': {
-                'css': 'lib/css/leaflet-measure.css',
-                'js': 'lib/js/leaflet-measure.js',
-                'auto-include': True,
-            },
-        },
-        'SRID': 3857,
-        'RESET_VIEW': False
-    }
-
-    if not DEBUG_STATIC:
-        # if not DEBUG_STATIC, use minified css and js
-        LEAFLET_CONFIG['PLUGINS'] = {
-            'leaflet-plugins': {
-                'js': 'lib/js/leaflet-plugins.min.js',
-                'css': 'lib/css/leaflet-plugins.min.css',
-                'auto-include': True,
-            }
-        }
-
     CORS_ORIGIN_WHITELIST = (
         HOSTNAME
     )
+
+LEAFLET_CONFIG = {
+    'TILES': [
+        # Find tiles at:
+        # http://leaflet-extras.github.io/leaflet-providers/preview/
+
+        # Stamen toner lite.
+        ('Watercolor',
+            'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
+            'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+            <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+            &mdash; Map data &copy; \
+            <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+            <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+            CC-BY-SA</a>'),
+        ('Toner Lite',
+            'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
+            'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+            <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+            &mdash; Map data &copy; \
+            <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+            <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+            CC-BY-SA</a>'),
+    ],
+    'PLUGINS': {
+        'esri-leaflet': {
+            'js': 'lib/js/esri-leaflet.js',
+            'auto-include': True,
+        },
+        'leaflet-fullscreen': {
+            'css': 'lib/css/leaflet.fullscreen.css',
+            'js': 'lib/js/Leaflet.fullscreen.min.js',
+            'auto-include': True,
+        },
+        'leaflet-opacity': {
+            'css': 'lib/css/Control.Opacity.css',
+            'js': 'lib/js/Control.Opacity.js',
+            'auto-include': True,
+        },
+        'leaflet-navbar': {
+            'css': 'lib/css/Leaflet.NavBar.css',
+            'js': 'lib/js/Leaflet.NavBar.js',
+            'auto-include': True,
+        },
+        'leaflet-measure': {
+            'css': 'lib/css/leaflet-measure.css',
+            'js': 'lib/js/leaflet-measure.js',
+            'auto-include': True,
+        },
+    },
+    'SRID': 3857,
+    'RESET_VIEW': False
+}
+
+if not DEBUG_STATIC:
+    # if not DEBUG_STATIC, use minified css and js
+    LEAFLET_CONFIG['PLUGINS'] = {
+        'leaflet-plugins': {
+            'js': 'lib/js/leaflet-plugins.min.js',
+            'css': 'lib/css/leaflet-plugins.min.css',
+            'auto-include': True,
+        }
+    }
 
 """
 To enable the MapStore2 REACT based Client:

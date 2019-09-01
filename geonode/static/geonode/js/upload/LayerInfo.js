@@ -555,9 +555,10 @@ define(function (require, exports) {
             self = this;
         var prog = "";
 
-        $.ajaxQueue({
+        $.ajax({
             url: form_target,
             async: true,
+            mode: "queue",
             type: "POST",
             data: form_data,
             processData: false,

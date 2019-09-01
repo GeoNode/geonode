@@ -228,7 +228,7 @@
         initSelection: function(element, callback) {
           var data = [];
           var val = element.val().split(",");
-          $(element.val().split(",")).each(function (index,value) {
+          $(val).each(function (index, value) {
             data.push({username: value});
           });
           callback(data);
@@ -261,7 +261,7 @@
         initSelection: function(element, callback) {
           var data = [];
           var val = element.val().split(",");
-          $(element.val().split(",")).each(function (index,value) {
+          $(val).each(function (index, value) {
               data.push({name: value});
           });
           callback(data);
