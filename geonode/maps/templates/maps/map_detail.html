@@ -349,7 +349,7 @@
                 $('#embed-widget-body').text(formatted_data);
             });
         });
-        var clipboard = new Clipboard('.btn');
+        var clipboard = new ClipboardJS('.btn');
         clipboard.on('success', function(e) {
             alert("Code copied");
         });

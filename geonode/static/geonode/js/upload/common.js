@@ -20,13 +20,14 @@ define(function (require, exports) {
      */
     make_request = exports.make_request = (function () {
         return function (options) {
+            options.mode ="queue";
             var success = options.success,
                 failure = options.failure;
 
             delete options.success;
             delete options.failure;
 
-            $.ajaxQueue(options).done(function (resp, status, obj) {
+            $.ajax(options).done(function (resp, status, obj) {
                if (typeof resp === "object" && resp.success === true) {
                     success(resp, status);
                } else if (typeof resp === "string"){

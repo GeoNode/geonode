@@ -32,27 +32,41 @@
         if ($location.search().hasOwnProperty('title__icontains')){
           params['title__icontains'] = $location.search()['title__icontains'];
         }
-        $http.get(CATEGORIES_ENDPOINT, {params: params}).success(function(data){
-            if($location.search().hasOwnProperty('category__identifier__in')){
-                data.objects = module.set_initial_filters_from_query(data.objects,
-                    $location.search()['category__identifier__in'], 'identifier');
-            }
-            $rootScope.categories = data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
-        });
+        $http.get(CATEGORIES_ENDPOINT, {params: params}).then(successCallback, errorCallback);
+
+        function successCallback(data) {
+          //success code
+          if($location.search().hasOwnProperty('category__identifier__in')){
+              data.data.objects = module.set_initial_filters_from_query(data.data.objects,
+                  $location.search()['category__identifier__in'], 'identifier');
+          }
+          $rootScope.categories = data.data.objects;
+          if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+              module.haystack_facets($http, $rootScope, $location);
+          }
+        };
+
+        function errorCallback(error) {
+          //error code
+        };
     }
 
   // Load group categories
   module.load_group_categories = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
-        $http.get(GROUP_CATEGORIES_ENDPOINT, {params: params}).success(function(data){
-            $rootScope.groupCategories = data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
-        });
+        $http.get(GROUP_CATEGORIES_ENDPOINT, {params: params}).then(successCallback, errorCallback);
+        
+        function successCallback(data) {
+          //success code
+          $rootScope.groupCategories = data.data.objects;
+          if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+              module.haystack_facets($http, $rootScope, $location);
+          }
+        };
+
+        function errorCallback(error) {
+          //error code
+        };
     }
 
   module.load_keywords = function ($http, $rootScope, $location){
@@ -60,23 +74,34 @@
         if ($location.search().hasOwnProperty('title__icontains')){
           params['title__icontains'] = $location.search()['title__icontains'];
         }
-        $http.get(KEYWORDS_ENDPOINT, {params: params}).success(function(data){
-            if($location.search().hasOwnProperty('keywords__slug__in')){
-                data.objects = module.set_initial_filters_from_query(data.objects,
-                    $location.search()['keywords__slug__in'], 'slug');
-            }
-            $rootScope.keywords = data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
-        });
+        $http.get(KEYWORDS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
+        
+        function successCallback(data) {
+          //success code
+          debugger;
+          if($location.search().hasOwnProperty('keywords__slug__in')){
+              data.data.objects = module.set_initial_filters_from_query(data.data.objects,
+                  $location.search()['keywords__slug__in'], 'slug');
+          }
+          $rootScope.keywords = data.data.objects;
+          if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+              module.haystack_facets($http, $rootScope, $location);
+          }
+        };
+
+        function errorCallback(error) {
+          //error code
+        };
     }
 
   module.load_h_keywords = function($http, $rootScope, $location){
     var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
-    $http.get(H_KEYWORDS_ENDPOINT, {params: params}).success(function(data){
+    $http.get(H_KEYWORDS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
+        
+    function successCallback(data) {
+      //success code
       $('#treeview').treeview({
-        data: data,
+        data: data.data,
         multiSelect: true,
         onNodeSelected: function($event, node) {
           $rootScope.$broadcast('select_h_keyword', node);
@@ -96,66 +121,100 @@
           }
         }
       });
-    });
+    };
+
+    function errorCallback(error) {
+      //error code
+    };
   };
 
   module.load_t_keywords = function ($http, $rootScope, $location){
-        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
-        if ($location.search().hasOwnProperty('title__icontains')){
-          params['title__icontains'] = $location.search()['title__icontains'];
-        }
-        $http.get(T_KEYWORDS_ENDPOINT, {params: params}).success(function(data){
-            if($location.search().hasOwnProperty('tkeywords__id__in')){
-                data.objects = module.set_initial_filters_from_query(data.objects,
-                    $location.search()['tkeywords__id__in'], 'id');
-            }
-            $rootScope.tkeywords = data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
-        });
+    var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+    if ($location.search().hasOwnProperty('title__icontains')){
+      params['title__icontains'] = $location.search()['title__icontains'];
     }
+    $http.get(T_KEYWORDS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
+    
+    function successCallback(data) {
+      //success code
+      if($location.search().hasOwnProperty('tkeywords__id__in')){
+          data.data.objects = module.set_initial_filters_from_query(data.data.objects,
+              $location.search()['tkeywords__id__in'], 'id');
+      }
+      $rootScope.tkeywords = data.data.objects;
+      if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+          module.haystack_facets($http, $rootScope, $location);
+      }
+    };
+
+    function errorCallback(error) {
+      //error code
+    };
+  }
 
   module.load_regions = function ($http, $rootScope, $location){
-        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
-        if ($location.search().hasOwnProperty('title__icontains')){
-          params['title__icontains'] = $location.search()['title__icontains'];
-        }
-        $http.get(REGIONS_ENDPOINT, {params: params}).success(function(data){
-            if($location.search().hasOwnProperty('regions__name__in')){
-                data.objects = module.set_initial_filters_from_query(data.objects,
-                    $location.search()['regions__name__in'], 'name');
-            }
-            $rootScope.regions = data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
-        });
+    var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+    if ($location.search().hasOwnProperty('title__icontains')){
+      params['title__icontains'] = $location.search()['title__icontains'];
     }
+    $http.get(REGIONS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
+    
+    function successCallback(data) {
+        //success code
+        if($location.search().hasOwnProperty('regions__name__in')){
+            data.data.objects = module.set_initial_filters_from_query(data.data.objects,
+                $location.search()['regions__name__in'], 'name');
+        }
+        $rootScope.regions = data.data.objects;
+        if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+            module.haystack_facets($http, $rootScope, $location);
+        }
+      };
+
+      function errorCallback(error) {
+        //error code
+      };
+    }
+
     module.load_groups = function ($http, $rootScope, $location){
-        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
-        $http.get(GROUPS_ENDPOINT, {params: params}).success(function(data){
-            $rootScope.groups = data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
-        });
-    }
-    module.load_owners = function ($http, $rootScope, $location){
-        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
-        if ($location.search().hasOwnProperty('title__icontains')){
-            params['title__icontains'] = $location.search()['title__icontains'];
+      var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+      $http.get(GROUPS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
+      
+      function successCallback(data) {
+        //success code
+        $rootScope.groups = data.data.objects;
+        if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+            module.haystack_facets($http, $rootScope, $location);
         }
-        $http.get(OWNERS_ENDPOINT, {params: params}).success(function(data){
-            if($location.search().hasOwnProperty('owner__username__in')){
-                data.objects = module.set_initial_filters_from_query(data.objects,
-                    $location.search()['owner__username__in'], 'identifier');
-            }
-            $rootScope.owners = data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
-        });
+      };
+
+      function errorCallback(error) {
+        //error code
+      };
+    }
+
+    module.load_owners = function ($http, $rootScope, $location){
+      var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+      if ($location.search().hasOwnProperty('title__icontains')){
+          params['title__icontains'] = $location.search()['title__icontains'];
+      }
+      $http.get(OWNERS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
+      
+      function successCallback(data) {
+        //success code
+        if($location.search().hasOwnProperty('owner__username__in')){
+            data.data.objects = module.set_initial_filters_from_query(data.data.objects,
+                $location.search()['owner__username__in'], 'identifier');
+        }
+        $rootScope.owners = data.data.objects;
+        if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+            module.haystack_facets($http, $rootScope, $location);
+        }
+      };
+
+      function errorCallback(error) {
+        //error code
+      };
     }
 
   // Update facet counts for categories and keywords
@@ -295,11 +354,14 @@
 
     //Get data from apis and make them available to the page
     function query_api(data){
-      $http.get(Configs.url, {params: data || {}}).success(function(data){
+      $http.get(Configs.url, {params: data || {}}).then(successCallback, errorCallback);
+      
+      function successCallback(data) {
+        //success code
         setTimeout(function(){$('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();},0);
-        $scope.results = data.objects;
-        $scope.total_counts = data.meta.total_count;
-        $scope.$root.query_data = data;
+        $scope.results = data.data.objects;
+        $scope.total_counts = data.data.meta.total_count;
+        $scope.$root.query_data = data.data;
         if (HAYSTACK_SEARCH) {
           if ($location.search().hasOwnProperty('q')){
             $scope.text_query = $location.search()['q'].replace(/\+/g," ");
@@ -315,11 +377,11 @@
             try {
                 module.haystack_facets($http, $scope.$root, $location);
                 $("#types").find("a").each(function(){
-                    if ($(this)[0].id in data.meta.facets.subtype) {
-                        $(this).find("span").text(data.meta.facets.subtype[$(this)[0].id]);
+                    if ($(this)[0].id in data.data.meta.facets.subtype) {
+                        $(this).find("span").text(data.data.meta.facets.subtype[$(this)[0].id]);
                     }
-                    else if ($(this)[0].id in data.meta.facets.type) {
-                        $(this).find("span").text(data.meta.facets.type[$(this)[0].id]);
+                    else if ($(this)[0].id in data.data.meta.facets.type) {
+                        $(this).find("span").text(data.data.meta.facets.type[$(this)[0].id]);
                     } else {
                         $(this).find("span").text("0");
                     }
@@ -328,7 +390,11 @@
                 // console.log(err);
             }
         }
-      });
+      };
+
+      function errorCallback(error) {
+        //error code
+      };
     };
     query_api($scope.query);
 
