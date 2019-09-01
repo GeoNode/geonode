@@ -101,12 +101,14 @@
               if(key !== 'csrftoken') {
                 try {
                   var obj = JSON.parse(geonodeCart[key]);
-                  obj['$$hashKey'] = "object:" + index;
-                  if('alternate' in obj) {
+                  if (!Number.isInteger(obj)) {
+                    obj.$$hashKey = "object:" + index;
+                    if ('alternate' in obj) {
                       cartSession.push(obj);
+                    }
                   }
                 } catch(err) {
-                  console.log("Cart Session Issue: " + err.message);
+                  // console.log("Cart Session Issue: " + err.message);
                 }
               }
             });

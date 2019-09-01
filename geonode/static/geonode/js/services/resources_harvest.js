@@ -27,19 +27,17 @@ var TableFilter = function () {
                 me.filterButton[filterInfo[i].id] = $('#btn-' + filterInfo[i].id);
                 me.groupedData[filterInfo[i].id] = _.groupBy(resData, filterInfo[i].data_key)
                 values = _.keys(me.groupedData[filterInfo[i].id]);
-
                 me.filterElems[filterInfo[i].id].typeahead({
                     source: values,
                     autoSelect: true,
 
                 });
                 me.filterElems[filterInfo[i].id].change(function () {
-                    var current = $(this).typeahead("getActive");
+                    // var current = $(this).typeahead("getActive");
                     var val = $(this).val();
-                    if (current == val) {
+                    // if (current == val) {
                         me.searchRows();
-
-                    }
+                    // }
 
                 });
                 me.filterElems[filterInfo[i].id].keydown(function (e) {
