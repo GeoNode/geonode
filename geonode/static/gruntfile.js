@@ -79,7 +79,7 @@ module.exports = function(grunt) {
           dest: 'lib/css',
           src: [
             'datatables/media/css/jquery.dataTables.min.css',
-            'select2/select2.css',
+            'select2/dist/css/select2.min.css',
             'multi-select/dist/bundles/multi-select.css',
             'jquery-ui/themes/base/*.css',
             'raty-js/lib/jquery.raty.css',
@@ -189,8 +189,8 @@ module.exports = function(grunt) {
             'requirejs/require.js',
             'requirejs-text/text.js',
             'select/dist/select.js',
-            'select2/select2.js',
-            'select2/select2.min.js',
+            'select2/dist/js/select2.full.js',
+            'select2/dist/js/select2.full.min.js',
             'timeago/jquery.timeago.js',
             'tree-multiselect/dist/jquery.tree-multiselect.min.js',
             'underscore/underscore-min.js',
@@ -291,7 +291,7 @@ module.exports = function(grunt) {
             'lib/css/L.Control.Locate.min.css',
             'lib/css/L.Control.Pan.css',
             'lib/css/multi-select.css',
-            'lib/css/select2.css',
+            'lib/css/select2.min.css',
             'lib/css/fastselect.css',
             'lib/css/bootstrap-treeview.min.css'
           ],
@@ -351,7 +351,7 @@ module.exports = function(grunt) {
             'lib/js/jquery.tree-multiselect.min.js',
             'lib/js/multi-select.js',
             'lib/js/select.js',
-            'lib/js/select2.js',
+            'lib/js/select2.full.js',
             'lib/js/waypoints.js',
             'lib/js/underscore.js',
             'lib/js/ZeroClipboard.min.js'
@@ -404,7 +404,7 @@ module.exports = function(grunt) {
             'lib/js/jquery.tree-multiselect.min.js',
             'lib/js/multi-select.js',
             'lib/js/select.js',
-            'lib/js/select2.min.js',
+            'lib/js/select2.full.min.js',
             'lib/js/waypoints.min.js',
             'lib/js/underscore.js',
             'lib/js/ZeroClipboard.min.js'
