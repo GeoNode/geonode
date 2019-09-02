@@ -23,7 +23,7 @@ six<1.11.0 # https://github.com/benjaminp/six/issues/210
 tqdm==4.35.0
 
 # Django Apps
-django-allauth==0.39.1
+django-allauth==0.40.0
 django-appconf==1.0.3
 django-filter==1.1.0
 django-imagekit==4.0.2
