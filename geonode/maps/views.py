@@ -136,8 +136,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     else:
         config = snapshot_config(snapshot, map_obj, request)
 
-    if settings.MONITORING_ENABLED:
-        request.register_event('view', 'map', map_obj.title)
+    register_event(request, EventType.EVENT_VIEW, map_obj.title)
 
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
@@ -261,7 +260,7 @@ def map_metadata(
         map_obj.category = new_category
         map_obj.save()
 
-        register_event(request, 'change_metadata', map_obj)
+        register_event(request, EventType.EVENT_CHANGE_METADATA, map_obj)
         if not ajax:
             return HttpResponseRedirect(
                 reverse(
@@ -333,7 +332,7 @@ def map_metadata(
                 map_form.fields['is_approved'].widget.attrs.update(
                     {'disabled': 'true'})
 
-    register_event(request, 'view_metadata', map_obj)
+    register_event(request, EventType.EVENT_VIEW_METADATA, map_obj)
     return render(request, template, context={
         "config": json.dumps(config),
         "resource": map_obj,
@@ -391,7 +390,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
         else:
             delete_map.delay(object_id=map_obj.id)
 
-        register_event(request, 'remove', map_obj)
+        register_event(request, EventType.EVENT_REMOVE, map_obj)
 
         return HttpResponseRedirect(reverse("maps_browse"))
 
@@ -417,7 +416,7 @@ def map_embed(
             config = snapshot_config(
                 snapshot, map_obj, request)
 
-        register_event(request, 'view', map_obj)
+        register_event(request, EventType.EVENT_VIEW, map_obj)
     return render(request, template, context={
         'config': json.dumps(config)
     })
@@ -500,7 +499,7 @@ def map_embed_widget(request, mapid,
         'map_bbox': map_bbox,
         'map_layers': layers
     }
-    register_event(request, 'view', map_obj)
+    register_event(request, EventType.EVENT_VIEW, map_obj)
     message = render(request, template, context)
     return HttpResponse(message)
 
@@ -548,7 +547,7 @@ def map_view(request, mapid, snapshot=None, layer_name=None,
         config = add_layers_to_map_config(
             request, map_obj, (layer_name, ), False)
 
-    register_event(request, 'view', request.path)
+    register_event(request, EventType.EVENT_VIEW, request.path)
     return render(request, template, context={
         'config': json.dumps(config),
         'map': map_obj,
@@ -609,7 +608,7 @@ def map_json(request, mapid, snapshot=None):
                 map=map_obj,
                 user=request.user)
 
-            register_event(request, 'change', map_obj)
+            register_event(request, EventType.EVENT_CHANGE, map_obj)
             return HttpResponse(
                 json.dumps(
                     map_obj.viewer_json(request)))
@@ -731,7 +730,7 @@ def new_map_json(request):
         except ValueError as e:
             return HttpResponse(str(e), status=400)
         else:
-            register_event(request, 'upload', map_obj)
+            register_event(request, EventType.EVENT_UPLOAD, map_obj)
             return HttpResponse(
                 json.dumps({'id': map_obj.id}),
                 status=200,
@@ -1170,7 +1169,7 @@ def map_wms(request, mapid):
                 layerGroupName=layerGroupName,
                 ows=getattr(ogc_server_settings, 'ows', ''),
             )
-            register_event(request, 'publish', map_obj)
+            register_event(request, EventType.EVENT_PUBLISH, map_obj)
             return HttpResponse(
                 json.dumps(response),
                 content_type="application/json")
@@ -1393,7 +1392,7 @@ def map_metadata_detail(
         except GroupProfile.DoesNotExist:
             group = None
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-    register_event(request, 'view_metadata', map_obj)
+    register_event(request, EventType.EVENT_VIEW_METADATA, map_obj)
     return render(request, template, context={
         "resource": map_obj,
         "group": group,

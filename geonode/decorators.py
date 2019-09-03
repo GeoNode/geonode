@@ -22,6 +22,7 @@ import json
 import logging
 
 from functools import wraps
+from django.contrib import auth
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils.decorators import classonlymethod
@@ -85,7 +86,7 @@ def view_or_apiauth(view, request, test_func, *args, **kwargs):
     are already logged in or if they have provided proper http-authorization
     and returning the view if all goes well, otherwise responding with a 401.
     """
-    if test_func(request.user) or not settings.OAUTH2_API_KEY:
+    if test_func(auth.get_user(request)) or not settings.OAUTH2_API_KEY:
         # Already logged in, just return the view.
         #
         return view(request, *args, **kwargs)
@@ -93,12 +94,12 @@ def view_or_apiauth(view, request, test_func, *args, **kwargs):
     # They are not logged in. See if they provided login credentials
     #
     if 'HTTP_AUTHORIZATION' in request.META:
-        auth = request.META['HTTP_AUTHORIZATION'].split()
-        if len(auth) == 2:
+        _auth = request.META['HTTP_AUTHORIZATION'].split()
+        if len(_auth) == 2:
             # NOTE: We are only support basic authentication for now.
             #
-            if auth[0].lower() == "apikey":
-                auth_api_key = auth[1]
+            if _auth[0].lower() == "apikey":
+                auth_api_key = _auth[1]
                 if auth_api_key and auth_api_key == settings.OAUTH2_API_KEY:
                     return view(request, *args, **kwargs)
 
@@ -131,7 +132,7 @@ def superuser_only(function):
     --------------------------------------------------------------------------
     """
     def _inner(request, *args, **kwargs):
-        if not request.user.is_superuser and not request.user.is_staff:
+        if not auth.get_user(request).is_superuser and not auth.get_user(request).is_staff:
             raise PermissionDenied
         return function(request, *args, **kwargs)
     return _inner
@@ -141,7 +142,7 @@ def superuser_protected(function):
     """Decorator that forces a view to be accessible by SUPERUSERS only.
     """
     def _inner(request, *args, **kwargs):
-        if not request.user.is_superuser:
+        if not auth.get_user(request).is_superuser:
             return HttpResponse(
                 json.dumps({
                     'error': 'unauthorized_request'
