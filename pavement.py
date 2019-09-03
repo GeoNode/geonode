@@ -61,7 +61,7 @@ _django_11 = django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSI
 
 try:
     from geonode.settings import TEST_RUNNER_KEEPDB, TEST_RUNNER_PARALLEL
-    _keepdb = '-k' if TEST_RUNNER_KEEPDB else ''
+    _keepdb = '--keepdb' if TEST_RUNNER_KEEPDB else ''
     _parallel = ('--parallel=%s' % TEST_RUNNER_PARALLEL) if TEST_RUNNER_PARALLEL else ''
 except BaseException:
     _keepdb = ''

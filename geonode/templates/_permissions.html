@@ -1,4 +1,13 @@
 {% load i18n %}
+
+<style>
+  .select2-selection.required {
+    background-color: #ffffcc !important;
+    /* border-color: #ff9999;
+    border-width: 3px; */
+  }
+</style>
+
 <div class="panel-group" id="permissions-body">
   <!-- view layer -->
   <div class="panel panel-default">
@@ -20,13 +29,13 @@
         <div class="radio">
           <label>
             {% trans "The following users:" %}
-            <input class="user-select" type="text" name="view_resourcebase" id="view_resourcebase_users" />
+            <select class="user-select" name="view_resourcebase" id="view_resourcebase_users" required></select>
           </label>
         </div>
         <div class="radio">
           <label>
             {% trans "The following groups:" %}
-            <input class="group-select" type="text" name="view_resourcebase" id="view_resourcebase_groups" />
+            <select class="group-select" name="view_resourcebase" id="view_resourcebase_groups"></select>
           </label>
         </div>
       </div>
@@ -52,13 +61,13 @@
         <div class="radio">
           <label>
             {% trans "The following users:" %}
-            <input class="user-select" type="text" name="download_resourcebase" id="download_resourcebase_users" />
+            <select class="user-select" name="download_resourcebase" id="download_resourcebase_users" required></select>
           </label>
         </div>
         <div class="radio">
           <label>
             {% trans "The following groups:" %}
-            <input class="group-select" type="text" name="download_resourcebase" id="download_resourcebase_groups" />
+            <select class="group-select" name="download_resourcebase" id="download_resourcebase_groups"></select>
           </label>
         </div>
       </div>
@@ -78,13 +87,13 @@
         <div class="radio">
           <label>
             {% trans "The following users:" %}
-            <input class="user-select" type="text" name="change_resourcebase_metadata" id="change_resourcebase_metadata_users" />
+            <select class="user-select" name="change_resourcebase_metadata" id="change_resourcebase_metadata_users" required></select>
           </label>
         </div>
         <div class="radio">
           <label>
             {% trans "The following groups:" %}
-            <input class="group-select" type="text" name="change_resourcebase_metadata" id="change_resourcebase_metadata_groups" />
+            <select class="group-select" name="change_resourcebase_metadata" id="change_resourcebase_metadata_groups"></select>
           </label>
         </div>
       </div>
@@ -105,13 +114,13 @@
         <div class="radio">
           <label>
             {% trans "The following users:" %}
-            <input class="user-select" type="text" name="change_layer_data" id="change_layer_data_users" />
+            <select class="user-select" name="change_layer_data" id="change_layer_data_users" required></select>
           </label>
         </div>
         <div class="radio">
           <label>
             {% trans "The following groups:" %}
-            <input class="group-select" type="text" name="change_layer_data" id="change_layer_data_groups" />
+            <select class="group-select" name="change_layer_data" id="change_layer_data_groups"></select>
           </label>
         </div>
       </div>
@@ -131,13 +140,13 @@
         <div class="radio">
           <label>
             {% trans "The following users:" %}
-            <input class="user-select" type="text" name="change_layer_style" id="change_layer_style_users" />
+            <select class="user-select" name="change_layer_style" id="change_layer_style_users" required></select>
           </label>
         </div>
         <div class="radio">
           <label>
             {% trans "The following groups:" %}
-            <input class="group-select" type="text" name="change_layer_style" id="change_layer_style_groups" />
+            <select class="group-select" name="change_layer_style" id="change_layer_style_groups"></select>
           </label>
         </div>
       </div>
@@ -158,13 +167,13 @@
         <div class="radio">
           <label>
             {% trans "The following users:" %}
-            <input class="user-select" type="text" name="manage_resourcebase" id="manage_resourcebase_users" />
+            <select class="user-select" name="manage_resourcebase" id="manage_resourcebase_users" required></select>
           </label>
         </div>
         <div class="radio">
           <label>
             {% trans "The following groups:" %}
-            <input class="group-select" type="text" name="manage_resourcebase" id="manage_resourcebase_groups" />
+            <select class="group-select" name="manage_resourcebase" id="manage_resourcebase_groups"></select>
           </label>
         </div>
       </div>

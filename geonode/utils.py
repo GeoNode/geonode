@@ -311,10 +311,10 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             projected_bbox = [str(x) for x in poly.extent]
             # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
             return tuple([projected_bbox[0], projected_bbox[2], projected_bbox[1], projected_bbox[3]]) + \
-                ("EPSG:%s" % poly.srid,)
+                ("EPSG:%s" % target_srid,)
         except BaseException:
             tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.info(tb)
 
     return native_bbox
 

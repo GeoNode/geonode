@@ -30,6 +30,7 @@ from django.views.generic.base import View
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
 from django.views.decorators.csrf import csrf_exempt
+from geonode.decorators import view_decorator, superuser_protected
 
 from geonode.utils import json_response
 from geonode.monitoring.collector import CollectorAPI
@@ -46,7 +47,7 @@ from geonode.monitoring.models import (
     MetricNotificationCheck,
 )
 from geonode.monitoring.models import do_autoconfigure
-from geonode.monitoring.utils import TypeChecks, dump
+from geonode.monitoring.utils import TypeChecks, dump, extend_datetime_input_formats
 from geonode.monitoring.service_handlers import exposes
 
 # Create your views here.
@@ -100,8 +101,14 @@ class HostsList(View):
 
 
 class _ValidFromToLastForm(forms.Form):
-    valid_from = forms.DateTimeField(required=False)
-    valid_to = forms.DateTimeField(required=False)
+    valid_from = forms.DateTimeField(
+        required=False,
+        input_formats=extend_datetime_input_formats(['%Y-%m-%dT%H:%M:%S.%fZ'])
+    )
+    valid_to = forms.DateTimeField(
+        required=False,
+        input_formats=extend_datetime_input_formats(['%Y-%m-%dT%H:%M:%S.%fZ'])
+    )
     interval = forms.IntegerField(min_value=60, required=False)
     last = forms.IntegerField(min_value=60, required=False)
 
@@ -251,6 +258,7 @@ class FilteredView(View):
         return json_response(data)
 
 
+@view_decorator(superuser_protected, subclass=True)
 class ResourcesList(FilteredView):
 
     filter_form = ResourcesFilterForm
@@ -289,6 +297,7 @@ class ResourcesList(FilteredView):
         return q
 
 
+@view_decorator(superuser_protected, subclass=True)
 class ResourceTypesList(FilteredView):
 
     output_name = 'resource_types'
@@ -301,7 +310,7 @@ class ResourceTypesList(FilteredView):
                                       'status': 'errors',
                                       'errors': f.errors},
                                      status=400)
-        out = [{"name": mrt[0], "type": mrt[1]} for mrt in MonitoredResource.TYPES]
+        out = [{"name": mrt[0], "type_label": mrt[1]} for mrt in MonitoredResource.TYPES]
         data = {self.output_name: out,
                 'success': True,
                 'errors': {},
@@ -311,6 +320,7 @@ class ResourceTypesList(FilteredView):
         return json_response(data)
 
 
+@view_decorator(superuser_protected, subclass=True)
 class LabelsList(FilteredView):
 
     filter_form = LabelsFilterForm
@@ -341,15 +351,40 @@ class LabelsList(FilteredView):
         return q
 
 
+@view_decorator(superuser_protected, subclass=True)
 class EventTypeList(FilteredView):
 
-    fields_map = (('name', 'name',),)
+    fields_map = (('name', 'name',), ('type_label', 'type_label',),)
     output_name = 'event_types'
 
     def get_queryset(self, **kwargs):
         return EventType.objects.all()
 
+    def get(self, request, *args, **kwargs):
+        qargs = self.get_filter_args(request)
+        if self.errors:
+            return json_response({'success': False,
+                                  'status': 'errors',
+                                  'errors': self.errors},
+                                 status=400)
+        q = self.get_queryset(**qargs)
+        from_fields = [f[0] for f in self.fields_map]
+        to_fields = [f[1] for f in self.fields_map]
+        labels = dict(EventType.EVENT_TYPES)
+        out = [dict(zip(
+            to_fields,
+            (getattr(item, f) if f != 'type_label' else labels[getattr(item, 'name')] for f in from_fields)
+        )) for item in q]
+        data = {self.output_name: out,
+                'success': True,
+                'errors': {},
+                'status': 'ok'}
+        if self.output_name != 'data':
+            data['data'] = {'key': self.output_name}
+        return json_response(data)
 
+
+@view_decorator(superuser_protected, subclass=True)
 class MetricDataView(View):
 
     def get_filters(self, **kwargs):
@@ -362,7 +397,7 @@ class MetricDataView(View):
             out.update(f.cleaned_data)
         return out
 
-    def get(self, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         filters = self.get_filters(**kwargs)
         if self.errors:
             return json_response({'status': 'error',
