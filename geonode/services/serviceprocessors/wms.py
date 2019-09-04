@@ -495,7 +495,10 @@ class GeoNodeServiceHandler(WmsServiceHandler):
     def _probe_geonode_wms(self, raw_url):
         url = urlsplit(raw_url)
         base_url = '%s://%s/' % (url.scheme, url.netloc)
-        response = requests.get('%sapi/ows_endpoints/' % base_url, {}, timeout=30)
+        response = requests.get(
+            '%sapi/ows_endpoints/' % base_url, {},
+            timeout=30,
+            verify=False)
         content = response.content
         status = response.status_code
         content_type = response.headers['Content-Type']
@@ -522,7 +525,9 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         url = urlsplit(self.url)
         base_url = '%s://%s/' % (url.scheme, url.netloc)
         response = requests.get(
-            '%sapi/layers/?name=%s' % (base_url, layername), {}, timeout=10)
+            '%sapi/layers/?name=%s' % (base_url, layername), {},
+            timeout=10,
+            verify=False)
         content = response.content
         status = response.status_code
         content_type = response.headers['Content-Type']
