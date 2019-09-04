@@ -21,6 +21,8 @@ kombu==4.6.4
 boto<=2.49.0
 six<1.11.0 # https://github.com/benjaminp/six/issues/210
 tqdm==4.35.0
+Deprecated==1.2.6
+wrapt==1.11.2
 
 # Django Apps
 django-allauth==0.40.0
