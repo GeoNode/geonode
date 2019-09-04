@@ -131,7 +131,8 @@ class GeoServerMonitorClient(object):
         resp = requests.get(
             rest_url,
             auth=HTTPBasicAuth(username, password),
-            timeout=30)
+            timeout=30,
+            verify=False)
         doc = bs(resp.content, features="lxml")
         links = doc.find_all('a')
         for l in links:
@@ -149,7 +150,8 @@ class GeoServerMonitorClient(object):
         r = requests.get(
             href,
             auth=HTTPBasicAuth(username, password),
-            timeout=30)
+            timeout=30,
+            verify=False)
         if r.status_code != 200:
             log.warning('Invalid response for %s: %s', href, r)
             return

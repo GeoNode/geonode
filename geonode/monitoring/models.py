@@ -1829,7 +1829,11 @@ def do_autoconfigure():
     # get list of services
     wsite = urlparse(settings.SITEURL)
     # default host
-    hosts = [(wsite.hostname, gethostbyname(wsite.hostname),)]
+    try:
+        _host_by_name = gethostbyname(wsite.hostname)
+    except BaseException:
+        _host_by_name = '127.0.0.1'
+    hosts = [(wsite.hostname, _host_by_name,)]
     # default geonode
     geonode_name = settings.MONITORING_SERVICE_NAME or '{}-geonode'.format(
         wsite.hostname)
@@ -1840,7 +1844,11 @@ def do_autoconfigure():
         if val.get('BACKEND') == 'geonode.geoserver':
             gname = '{}-geoserver'.format(k)
             gsite = urlparse(val['LOCATION'])
-            ghost = (gsite.hostname, gethostbyname(gsite.hostname),)
+            try:
+                _host_by_name = gethostbyname(gsite.hostname)
+            except BaseException:
+                _host_by_name = '127.0.0.1'
+            ghost = (gsite.hostname, _host_by_name,)
             if ghost not in hosts:
                 hosts.append(ghost)
             geoservers.append((gname, val['LOCATION'], ghost,))
