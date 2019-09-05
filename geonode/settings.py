@@ -102,18 +102,19 @@ DATABASE_URL = os.getenv(
 _db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=5)
 if 'spatialite' in DATABASE_URL:
     SPATIALITE_LIBRARY_PATH = 'mod_spatialite.so'
+
+if 'CONN_TOUT' in _db_conf:
+    _db_conf['CONN_TOUT'] = 5
+if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
+    if 'OPTIONS' not in _db_conf:
+        _db_conf['OPTIONS'] = {}
+    _db_conf['OPTIONS'].update({
+        'connect_timeout': 5,
+    })
+
 DATABASES = {
     'default': _db_conf
 }
-if 'CONN_MAX_AGE' in DATABASES['default']:
-    DATABASES['default']['CONN_MAX_AGE'] = 5
-if 'CONN_TOUT' in DATABASES['default']:
-    DATABASES['default']['CONN_TOUT'] = 5
-if 'OPTIONS' not in DATABASES['default']:
-    DATABASES['default']['OPTIONS'] = {}
-DATABASES['default']['OPTIONS'].update({
-    'connect_timeout': 5,
-})
 
 if os.getenv('DEFAULT_BACKEND_DATASTORE'):
     GEODATABASE_URL = os.getenv('GEODATABASE_URL',
@@ -123,15 +124,15 @@ geonode_data:geonode_data@localhost:5432/geonode_data')
         GEODATABASE_URL, conn_max_age=5
     )
     _geo_db = DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')]
-    if 'CONN_MAX_AGE' in _geo_db:
-        _geo_db['CONN_MAX_AGE'] = 5
     if 'CONN_TOUT' in DATABASES['default']:
         _geo_db['CONN_TOUT'] = 5
-    if 'OPTIONS' not in DATABASES['default']:
-        _geo_db['OPTIONS'] = {}
-    _geo_db['OPTIONS'].update({
-        'connect_timeout': 5,
-    })
+    if 'postgresql' in GEODATABASE_URL or 'postgis' in GEODATABASE_URL:
+        if 'OPTIONS' not in DATABASES['default']:
+            _geo_db['OPTIONS'] = {}
+        _geo_db['OPTIONS'].update({
+            'connect_timeout': 5,
+        })
+
     DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = _geo_db
 
 # If set to 'True' it will refresh/regenrate all resource links everytime a 'migrate' will be performed
