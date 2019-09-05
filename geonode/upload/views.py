@@ -228,7 +228,7 @@ def save_step_view(req, session):
             mosaic_time_value=form.cleaned_data['mosaic_time_value'],
             user=req.user
         )
-        upload_session.save()
+        Upload.objects.update_from_session(upload_session)
         req.session[str(upload_session.import_session.id)] = upload_session
         req.session.modified = True
         _log('saved session : %s',
