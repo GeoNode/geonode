@@ -94,22 +94,25 @@ def _log(msg, *args):
     logger.debug(msg, *args)
 
 
+def _get_upload_session(req):
+    upload_session = None
+    if 'id' in req.GET:
+        upload_id = str(req.GET['id'])
+        upload_obj = get_object_or_404(
+            Upload, import_id=upload_id, user=req.user)
+        upload_session = upload_obj.get_session()
+    return upload_session
+
+
 def data_upload_progress(req):
     """This would not be needed if geoserver REST did not require admin role
     and is an inefficient way of getting this information"""
-    if 'id' in req.GET:
-        upload_id = str(req.GET['id'])
-        if upload_id in req.session:
-            upload_obj = get_object_or_404(
-                Upload, import_id=upload_id, user=req.user)
-            upload_session = upload_obj.get_session()
-        else:
-            upload_session = req.session[upload_id]
+    upload_session = _get_upload_session(req)
 
-        if upload_session:
-            import_session = upload_session.import_session
-            progress = import_session.tasks[0].get_progress()
-            return json_response(progress)
+    if upload_session:
+        import_session = upload_session.import_session
+        progress = import_session.tasks[0].get_progress()
+        return json_response(progress)
 
     return json_response({'state': 'NONE'})
 
@@ -643,7 +646,7 @@ def view(req, step):
             if session:
                 upload_session = session
             else:
-                upload_session = req.session[upload_id]
+                upload_session = _get_upload_session(req)
         except BaseException:
             traceback.print_exc()
     try:
@@ -678,8 +681,8 @@ def view(req, step):
                     req.session.modified = True
                 except BaseException:
                     traceback.print_exc()
-        elif upload_id in req.session:
-            upload_session = req.session[upload_id]
+        else:
+            upload_session = _get_upload_session(req)
         if upload_session:
             Upload.objects.update_from_session(upload_session)
         return resp
