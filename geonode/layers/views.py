@@ -249,7 +249,12 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     upload_session = latest_uploads[0]
                     # Ref issue #4232
                     if not isinstance(error, TracebackType):
-                        upload_session.error = pickle.dumps(error).decode("utf-8", "replace")
+                        try:
+                            upload_session.error = pickle.dumps(error).decode("utf-8", "replace")
+                        except BaseException:
+                            err_msg = 'The error could not be parsed'
+                            upload_session.error = err_msg
+                            logger.error("TypeError: can't pickle traceback objects")
                     else:
                         err_msg = 'The error could not be parsed'
                         upload_session.error = err_msg
