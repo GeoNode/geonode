@@ -49,6 +49,7 @@ from geonode.utils import (GXPMapBase,
 from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
 
+from deprecated import deprecated
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
@@ -360,6 +361,7 @@ class Map(ResourceBase, GXPMapBase):
         else:
             return None
 
+    @deprecated(version='2.10.1', reason="APIs have been changed on geospatial service")
     def publish_layer_group(self):
         """
         Publishes local map layers as WMS layer group on local OWS.

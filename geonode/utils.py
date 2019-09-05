@@ -17,27 +17,27 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
+import gc
+import re
 import six
 import ast
-import base64
 import copy
-import datetime
-import logging
-import os
-import re
-import subprocess
-import select
-import tempfile
-import tarfile
 import time
+import base64
+import logging
+import select
 import shutil
 import string
-import requests
-import urlparse
 import urllib
-import gc
+import tarfile
 import weakref
+import datetime
+import requests
+import tempfile
+import urlparse
 import traceback
+import subprocess
 
 from osgeo import ogr
 from slugify import slugify
@@ -50,8 +50,9 @@ from requests.packages.urllib3.util.retry import Retry
 from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
-from django.http import Http404
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
+from django.utils.http import is_safe_url
+from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 # use lazy gettext because some translated strings are used before
 # i18n infra is up
@@ -61,7 +62,10 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import get_user_model
 from geonode import geoserver, qgis_server, GeoNodeException  # noqa
-from geonode.base.auth import get_or_create_token
+from geonode.base.auth import (extend_token,
+                               get_or_create_token,
+                               get_token_from_auth_header,
+                               get_token_object_from_session)
 
 try:
     import json
@@ -135,6 +139,80 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
     return absolute_base_file
 
 
+def get_headers(request, url, raw_url, allowed_hosts=[]):
+    headers = {}
+    cookies = None
+    csrftoken = None
+
+    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(
+            url=raw_url, host=url.hostname):
+        cookies = request.META["HTTP_COOKIE"]
+
+    for cook in request.COOKIES:
+        name = str(cook)
+        value = request.COOKIES.get(name)
+        if name == 'csrftoken':
+            csrftoken = value
+        cook = "%s=%s" % (name, value)
+        cookies = cook if not cookies else (cookies + '; ' + cook)
+
+    csrftoken = get_token(request) if not csrftoken else csrftoken
+
+    if csrftoken:
+        headers['X-Requested-With'] = "XMLHttpRequest"
+        headers['X-CSRFToken'] = csrftoken
+        cook = "%s=%s" % ('csrftoken', csrftoken)
+        cookies = cook if not cookies else (cookies + '; ' + cook)
+
+    if cookies:
+        if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
+            cookies = cookies + '; JSESSIONID=' + \
+                request.session['JSESSIONID']
+        headers['Cookie'] = cookies
+
+    if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
+        headers["Content-Type"] = request.META["CONTENT_TYPE"]
+
+    access_token = None
+    site_url = urlparse.urlsplit(settings.SITEURL)
+    allowed_hosts += [url.hostname]
+    # We want to convert HTTP_AUTH into a Beraer Token only when hitting the local GeoServer
+    if site_url.hostname in allowed_hosts:
+        # we give precedence to obtained from Aithorization headers
+        if 'HTTP_AUTHORIZATION' in request.META:
+            auth_header = request.META.get(
+                'HTTP_AUTHORIZATION',
+                request.META.get('HTTP_AUTHORIZATION2'))
+            if auth_header:
+                headers['Authorization'] = auth_header
+                access_token = get_token_from_auth_header(auth_header, create_if_not_exists=True)
+        # otherwise we check if a session is active
+        elif request and request.user.is_authenticated:
+            access_token = get_token_object_from_session(request.session)
+
+            # we extend the token in case the session is active but the token expired
+            if access_token and access_token.is_expired():
+                extend_token(access_token)
+            else:
+                access_token = get_or_create_token(request.user)
+
+    if access_token:
+        headers['Authorization'] = 'Bearer %s' % access_token
+
+    pragma = "no-cache"
+    referer = request.META[
+        "HTTP_REFERER"] if "HTTP_REFERER" in request.META else \
+        "{scheme}://{netloc}/".format(scheme=site_url.scheme,
+                                      netloc=site_url.netloc)
+    encoding = request.META["HTTP_ACCEPT_ENCODING"] if "HTTP_ACCEPT_ENCODING" in request.META else "gzip"
+    headers.update({"Pragma": pragma,
+                    "Referer": referer,
+                    "Accept-encoding": encoding,
+    })
+
+    return (headers, access_token)
+
+
 def _get_basic_auth_info(request):
     """
     grab basic auth info
@@ -196,14 +274,14 @@ def _v(coord, x, source_srid=4326, target_srid=3857):
     if source_srid == 4326 and x and abs(coord) != 180.0:
         coord = coord - (round(coord / 360.0) * 360.0)
     if source_srid == 4326 and target_srid != 4326:
-        if x and coord >= 180.0:
+        if x and float(coord) >= 179.999:
             return 179.999
-        elif x and coord <= -180.0:
+        elif x and float(coord) <= -179.999:
             return -179.999
 
-        if not x and coord >= 90.0:
+        if not x and float(coord) >= 89.999:
             return 89.999
-        elif not x and coord <= -90.0:
+        elif not x and float(coord) <= -89.999:
             return -89.999
     return coord
 
@@ -233,10 +311,10 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             projected_bbox = [str(x) for x in poly.extent]
             # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
             return tuple([projected_bbox[0], projected_bbox[2], projected_bbox[1], projected_bbox[3]]) + \
-                ("EPSG:%s" % poly.srid,)
+                ("EPSG:%s" % target_srid,)
         except BaseException:
             tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.info(tb)
 
     return native_bbox
 
@@ -828,11 +906,6 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)
-    if settings.MONITORING_ENABLED and obj:
-        if hasattr(obj, 'alternate') or obj.title:
-            resource_name = obj.alternate if hasattr(
-                obj, 'alternate') else obj.title
-            request.add_resource(model._meta.verbose_name_raw, resource_name)
     return obj
 
 
@@ -1294,11 +1367,12 @@ class HttpClient(object):
             self.password = ogc_server_settings['PASSWORD'] if 'PASSWORD' in ogc_server_settings else 'geoserver'
 
     def request(self, url, method='GET', data=None, headers={}, stream=False, timeout=None, user=None):
-
         if (user or self.username != 'admin') and \
         check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
             if connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
                 try:
+                    if user and isinstance(user, basestring):
+                        user = get_user_model().objects.get(username=user)
                     _u = user or get_user_model().objects.get(username=self.username)
                     access_token = get_or_create_token(_u)
                     if access_token and not access_token.is_expired():

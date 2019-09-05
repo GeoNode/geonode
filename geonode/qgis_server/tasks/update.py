@@ -23,7 +23,7 @@ import shutil
 import socket
 
 import requests
-from celery import shared_task
+from geonode.celery_app import app
 from requests.exceptions import HTTPError
 
 
@@ -39,7 +39,7 @@ from geonode.decorators import on_ogc_backend
 logger = logging.getLogger(__name__)
 
 
-@shared_task(
+@app.task(
     name='geonode.qgis_server.tasks.update.create_qgis_server_thumbnail',
     queue='update',
     autoretry_for=(QGISServerLayer.DoesNotExist, ),
@@ -109,7 +109,7 @@ def create_qgis_server_thumbnail(instance, overwrite=False, bbox=None):
         return False
 
 
-@shared_task(
+@app.task(
     name='geonode.qgis_server.tasks.update.cache_request',
     queue='update')
 @on_ogc_backend(qgis_server.BACKEND_PACKAGE)

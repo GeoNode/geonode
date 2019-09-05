@@ -38,7 +38,7 @@ const get = (service, argInterval) =>
   (dispatch) => {
     dispatch(begin());
     const interval = sequenceInterval(argInterval);
-    let url = `${apiUrl}/metric_data/response.time/?ows_service=${service}`;
+    let url = `${apiUrl}/metric_data/response.time/?event_type=${service}`;
     url += `&last=${argInterval}&interval=${interval}`;
     fetch({ url })
       .then(response => {

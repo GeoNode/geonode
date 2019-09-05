@@ -32,11 +32,9 @@ from urlparse import urlparse, urlsplit, urljoin
 
 from django.conf import settings
 from django.http import HttpResponse
-from django.utils.http import is_safe_url
 from django.http.request import validate_host
 from django.views.generic import View
 from django.views.decorators.csrf import requires_csrf_token
-from django.middleware.csrf import get_token
 from distutils.version import StrictVersion
 from django.utils.translation import ugettext as _
 from django.core.files.storage import default_storage as storage
@@ -47,15 +45,13 @@ from geonode.utils import (resolve_object,
                            check_ogc_backend,
                            get_dir_time_suffix,
                            zip_dir,
+                           get_headers,
                            http_client,
                            json_response)
-from geonode.base.auth import (extend_token,
-                               get_or_create_token,
-                               get_token_from_auth_header,
-                               get_token_object_from_session)
 from geonode.base.enumerations import LINK_TYPES as _LT
 
 from geonode import geoserver, qgis_server  # noqa
+from geonode.monitoring import register_event
 
 TIMEOUT = 300
 
@@ -65,80 +61,6 @@ logger = logging.getLogger(__name__)
 
 ows_regexp = re.compile(
     r"^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
-
-
-def get_headers(request, url, raw_url, allowed_hosts=[]):
-    headers = {}
-    cookies = None
-    csrftoken = None
-
-    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(
-            url=raw_url, host=url.hostname):
-        cookies = request.META["HTTP_COOKIE"]
-
-    for cook in request.COOKIES:
-        name = str(cook)
-        value = request.COOKIES.get(name)
-        if name == 'csrftoken':
-            csrftoken = value
-        cook = "%s=%s" % (name, value)
-        cookies = cook if not cookies else (cookies + '; ' + cook)
-
-    csrftoken = get_token(request) if not csrftoken else csrftoken
-
-    if csrftoken:
-        headers['X-Requested-With'] = "XMLHttpRequest"
-        headers['X-CSRFToken'] = csrftoken
-        cook = "%s=%s" % ('csrftoken', csrftoken)
-        cookies = cook if not cookies else (cookies + '; ' + cook)
-
-    if cookies:
-        if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
-            cookies = cookies + '; JSESSIONID=' + \
-                request.session['JSESSIONID']
-        headers['Cookie'] = cookies
-
-    if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
-        headers["Content-Type"] = request.META["CONTENT_TYPE"]
-
-    access_token = None
-    site_url = urlsplit(settings.SITEURL)
-    allowed_hosts += [url.hostname]
-    # We want to convert HTTP_AUTH into a Beraer Token only when hitting the local GeoServer
-    if site_url.hostname in allowed_hosts:
-        # we give precedence to obtained from Aithorization headers
-        if 'HTTP_AUTHORIZATION' in request.META:
-            auth_header = request.META.get(
-                'HTTP_AUTHORIZATION',
-                request.META.get('HTTP_AUTHORIZATION2'))
-            if auth_header:
-                headers['Authorization'] = auth_header
-                access_token = get_token_from_auth_header(auth_header, create_if_not_exists=True)
-        # otherwise we check if a session is active
-        elif request and request.user.is_authenticated:
-            access_token = get_token_object_from_session(request.session)
-
-            # we extend the token in case the session is active but the token expired
-            if access_token and access_token.is_expired():
-                extend_token(access_token)
-            else:
-                access_token = get_or_create_token(request.user)
-
-    if access_token:
-        headers['Authorization'] = 'Bearer %s' % access_token
-
-    pragma = "no-cache"
-    referer = request.META[
-        "HTTP_REFERER"] if "HTTP_REFERER" in request.META else \
-        "{scheme}://{netloc}/".format(scheme=site_url.scheme,
-                                      netloc=site_url.netloc)
-    encoding = request.META["HTTP_ACCEPT_ENCODING"] if "HTTP_ACCEPT_ENCODING" in request.META else "gzip"
-    headers.update({"Pragma": pragma,
-                    "Referer": referer,
-                    "Accept-encoding": encoding,
-    })
-
-    return (headers, access_token)
 
 
 @requires_csrf_token
@@ -403,6 +325,7 @@ def download(request, resourceid, sender=Layer):
             target_file_name = "".join([instance.name, ".zip"])
             target_file = os.path.join(dirpath, target_file_name)
             zip_dir(target_folder, target_file)
+            register_event(request, 'download', instance)
             response = HttpResponse(
                 content=open(target_file),
                 status=200,

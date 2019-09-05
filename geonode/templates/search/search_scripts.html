@@ -3,8 +3,8 @@
 
 {% if DEBUG_STATIC %}
 <script src="{% static "lib/js/angular.js" %}?v={{ VERSION }}"></script>
+<script src="{% static "lib/js/angular-cookies.js" %}"></script>
 <script src="{% static "lib/js/angular-leaflet-directive.min.js" %}?v={{ VERSION }}"></script>
-<script src="{% static "lib/js/bootstrap-treeview.min.js" %}?v={{ VERSION }}"></script>
 {% endif %}
 
 {% if include_spatial == 'true' %}

@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from itertools import islice
 import re
 import os
 import json
@@ -25,14 +24,19 @@ import logging
 import zipfile
 import traceback
 
-from lxml import etree
 from osgeo import ogr
+from lxml import etree
+from itertools import islice
+from defusedxml import lxml as dlxml
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
+
 from geoserver.catalog import FailedRequestError, ConflictingDataError
+
 from geonode.upload import UploadException
 from geonode.utils import json_response as do_json_response, unzip_file
 from geonode.geoserver.helpers import (gs_catalog,
@@ -101,10 +105,6 @@ been notified, but if you'd like, please note this error code
 below and details on what you were doing when you encountered this error.
 That information can help us identify the cause of the problem and help us with
 fixing it.  Thank you!
-"""
-
-"""
-    JSON Responses
 """
 
 
@@ -182,7 +182,7 @@ def _byteify(data, ignore_dicts=False):
 
 def get_kml_doc(kml_bytes):
     """Parse and return an etree element with the kml file's content"""
-    kml_doc = etree.fromstring(
+    kml_doc = dlxml.fromstring(
         kml_bytes,
         parser=etree.XMLParser(resolve_entities=False)
     )

@@ -1,52 +1,20 @@
 {
-  "name": "geonode",
-  "version": "2.10.0",
-  "main": "geonode/css/base.css",
-  "componentsDirectory": ".components",
+  "name": "geonode-assets",
+  "description": "Builds static (JS, CSS, IMG) assets for GeoNode 2.0",
+  "main": "gruntfile.js",
+  "authors": [
+    "afabiani <alessio.fabiani@geo-solutions.it>"
+  ],
+  "license": "GPL2",
+  "homepage": "https://github.com/GeoNode/geonode",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
   "dependencies": {
-    "datatables": "1.10",
-    "select2": "3.5.4",
-    "jquery": "2.1.4",
-    "jquery-timeago": "0.11.4",
-    "jquery-ui": "1.10.4",
-    "requirejs": "2.1.2",
-    "requirejs-text": "2.0.3",
-    "underscore": "^1.9.1",
-    "jquery-waypoints": "2.0.5",
-    "bootstrap": "3.3.7",
-    "moment": "2.17.1",
-    "mime": "~> 1.4.1",
-    "raty": "2.5.2",
-    "json2": "43d7836c8ec9b31a02a31ae0c400bdae04d3650d",
-    "bootstrap-wysiwyghtml5": "https://github.com/jhollingworth/bootstrap-wysihtml5.git",
-    "fontselect-jquery-plugin": "https://github.com/tommoor/fontselect-jquery-plugin.git",
-    "multi-select": "https://github.com/lou/multi-select.git",
-    "jquery-ajaxprogress": "https://github.com/kpozin/jquery-ajaxprogress.git",
-    "jquery.ajaxQueue": "https://github.com/gnarf/jquery-ajaxQueue.git",
-    "angular": "1.4.0",
-    "angular-cookies": "1.4.0",
-    "angular-leaflet-directive": "0.7.9",
-    "zeroclipboard": "2.1.5",
-    "leaflet-fullscreen": "https://github.com/Leaflet/Leaflet.fullscreen.git",
-    "leaflet-opacity": "https://github.com/lizardtechblog/Leaflet.OpacityControls.git#master",
-    "leaflet-navbar": "1.0.1",
-    "leaflet-measure": "2.1.7",
-    "eonasdan-bootstrap-datetimepicker": "4.17.43",
-    "bootstrap-treeview": "1.2.0",
-    "bootstrap-tokenfield": "0.12.1",
-    "bootstrap-datepicker": "1.6.4",
-    "bootstrap-select": "1.12.1",
-    "bootstrap-multiselect": "https://github.com/davidstutz/bootstrap-multiselect",
-    "bootstrap-table": "1.11.1",
-    "bootstrap-toggle": "2.2.2",
-    "bootstrap3-typeahead": "^4.0.2",
-    "fastselect": "https://github.com/dbrekalo/fastselect.git",
-    "clipboard": "^1.7.1",
-    "Leaflet.EasyButton": "^2.2.4"
-  },
-  "resolutions": {
-    "angular": "1.4.0",
-    "bootstrap": "3.3.7",
-    "leaflet": "~1.0.1"
+    "bootstrap3-wysihtml5-bower": "bootstrap3-wysiwyg#^0.3.3"
   }
 }

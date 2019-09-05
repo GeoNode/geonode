@@ -517,7 +517,7 @@
               </div>
               <div class="form-group">
                 <label for="id_password" class="sr-only">{% trans "Password" %}:</label>
-                <input id="id_password" class="form-control" name="password" placeholder="{% trans "Password" %}" type="password" />
+                <input id="id_password" class="form-control" name="password" placeholder="{% trans "Password" %}" type="password" autocomplete="off" />
               </div>
               <label class="checkbox">
                 <input type="checkbox" /> {% trans "Remember Me" %}
@@ -538,7 +538,6 @@
     <script src="{% static "lib/js/jquery.dataTables.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "lib/js/jquery.timeago.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "lib/js/jquery.ajaxprogress.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/jquery.ajaxQueue.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "lib/js/jquery-ui.custom.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "lib/js/jquery.raty.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "lib/js/bootstrap.min.js" %}?v={{ VERSION }}"></script>
