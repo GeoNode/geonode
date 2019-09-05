@@ -74,6 +74,7 @@ from .tasks import delete_map
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
 from requests.compat import urljoin
+from deprecated import deprecated
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
@@ -1147,6 +1148,7 @@ def map_wmc(request, mapid, template="maps/wmc.xml"):
     }, content_type='text/xml')
 
 
+@deprecated(version='2.10.1', reason="APIs have been changed on geospatial service")
 def map_wms(request, mapid):
     """
     Publish local map layers as group layer in local OWS.
