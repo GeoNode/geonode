@@ -99,20 +99,40 @@ DATABASE_URL = os.getenv(
 # 'ENGINE': 'django.contrib.gis.db.backends.postgis'
 # see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
 # detailed list of supported backends and notes.
-_db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+_db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=5)
 if 'spatialite' in DATABASE_URL:
     SPATIALITE_LIBRARY_PATH = 'mod_spatialite.so'
 DATABASES = {
     'default': _db_conf
 }
+if 'CONN_MAX_AGE' in DATABASES['default']:
+    DATABASES['default']['CONN_MAX_AGE'] = 5
+if 'CONN_TOUT' in DATABASES['default']:
+    DATABASES['default']['CONN_TOUT'] = 5
+if 'OPTIONS' not in DATABASES['default']:
+    DATABASES['default']['OPTIONS'] = {}
+DATABASES['default']['OPTIONS'].update({
+    'connect_timeout': 5,
+})
 
 if os.getenv('DEFAULT_BACKEND_DATASTORE'):
     GEODATABASE_URL = os.getenv('GEODATABASE_URL',
                                 'postgis://\
 geonode_data:geonode_data@localhost:5432/geonode_data')
     DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = dj_database_url.parse(
-        GEODATABASE_URL, conn_max_age=600
+        GEODATABASE_URL, conn_max_age=5
     )
+    _geo_db = DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')]
+    if 'CONN_MAX_AGE' in _geo_db:
+        _geo_db['CONN_MAX_AGE'] = 5
+    if 'CONN_TOUT' in DATABASES['default']:
+        _geo_db['CONN_TOUT'] = 5
+    if 'OPTIONS' not in DATABASES['default']:
+        _geo_db['OPTIONS'] = {}
+    _geo_db['OPTIONS'].update({
+        'connect_timeout': 5,
+    })
+    DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = _geo_db
 
 # If set to 'True' it will refresh/regenrate all resource links everytime a 'migrate' will be performed
 UPDATE_RESOURCE_LINKS_AT_MIGRATE = ast.literal_eval(os.getenv('UPDATE_RESOURCE_LINKS_AT_MIGRATE', 'False'))
