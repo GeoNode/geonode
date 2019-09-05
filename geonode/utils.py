@@ -274,14 +274,14 @@ def _v(coord, x, source_srid=4326, target_srid=3857):
     if source_srid == 4326 and x and abs(coord) != 180.0:
         coord = coord - (round(coord / 360.0) * 360.0)
     if source_srid == 4326 and target_srid != 4326:
-        if x and coord >= 180.0:
+        if x and float(coord) >= 179.999:
             return 179.999
-        elif x and coord <= -180.0:
+        elif x and float(coord) <= -179.999:
             return -179.999
 
-        if not x and coord >= 90.0:
+        if not x and float(coord) >= 89.999:
             return 89.999
-        elif not x and coord <= -90.0:
+        elif not x and float(coord) <= -89.999:
             return -89.999
     return coord
 
