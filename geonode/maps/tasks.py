@@ -20,7 +20,7 @@
 
 """celery tasks for geonode.maps."""
 
-from celery.app import shared_task
+from geonode.celery_app import app
 from celery.utils.log import get_task_logger
 
 from geonode.maps.models import Map
@@ -28,12 +28,11 @@ from geonode.maps.models import Map
 logger = get_task_logger(__name__)
 
 
-@shared_task(bind=True, queue='cleanup', expires=300)
+@app.task(bind=True, queue='cleanup', expires=300)
 def delete_map(self, object_id):
     """
     Deletes a map and the associated map layers.
     """
-
     try:
         map_obj = Map.objects.get(id=object_id)
     except Map.DoesNotExist:

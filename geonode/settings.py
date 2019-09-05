@@ -1565,10 +1565,14 @@ LOCAL_SIGNALS_BROKER_URL = 'memory://'
 if ASYNC_SIGNALS:
     _BROKER_URL = os.environ.get('BROKER_URL', RABBITMQ_SIGNALS_BROKER_URL)
     # _BROKER_URL =  = os.environ.get('BROKER_URL', REDIS_SIGNALS_BROKER_URL)
-
     CELERY_RESULT_BACKEND = _BROKER_URL
 else:
     _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
+    CELERY_RESULT_BACKEND_PATH = os.getenv(
+        'CELERY_RESULT_BACKEND_PATH', os.path.join(PROJECT_ROOT, 'results'))
+    if not os.path.exists(CELERY_RESULT_BACKEND_PATH):
+        os.makedirs(CELERY_RESULT_BACKEND_PATH)
+    CELERY_RESULT_BACKEND = 'file:///%s' % CELERY_RESULT_BACKEND_PATH
 
 # Note:BROKER_URL is deprecated in favour of CELERY_BROKER_URL
 CELERY_BROKER_URL = _BROKER_URL
@@ -1580,6 +1584,7 @@ CELERY_ACKS_LATE = True
 
 # Set this to False in order to run async
 CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
+CELERY_TASK_EAGER_PROPAGATES = False if ASYNC_SIGNALS else True
 CELERY_TASK_IGNORE_RESULT = True
 
 # I use these to debug kombu crashes; we get a more informative message.
