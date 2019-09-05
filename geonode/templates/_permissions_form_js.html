@@ -1,7 +1,5 @@
 {% load i18n %}
 
-
-
 <script type="text/javascript">
 
   function permissionsString(form, type) {
@@ -35,15 +33,20 @@
     * Cycle through permissions to map the form structure perm = ['user1',',user2'] to
     * the geonode user = ['perm1','perm2'], the same for groups
     */
-
     for(var perm in data){
-      if(data[perm][0] !== ''){
+      if(data[perm] !== ''){
         var perms_to_assign = [perm];
         if(perm=='manage_resourcebase'){
           perms_to_assign = ['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'];
         }
-        for (var i=0;i<data[perm][0].split(',').length;i++){
-          var user = data[perm][0].split(',')[i];
+        var d_perms = '';
+        if (data[perm] instanceof Array) {
+          d_perms = data[perm][0];
+        } else {
+          d_perms = data[perm];
+        }
+        for (var i=0;i<d_perms.split(',').length;i++){
+          var user = d_perms.split(',')[i];
           for(var j=0;j< perms_to_assign.length;j++){
             if(permissions['users'].hasOwnProperty(user)){
               permissions['users'][user].push(perms_to_assign[j]);
@@ -53,13 +56,19 @@
           }
         }
       }
-      if(data[perm][1] !== ''){
+      if(data[perm] instanceof Array && data[perm].length == 2){
         var perms_to_assign = [perm];
         if(perm=='manage_resourcebase'){
           perms_to_assign = ['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'];
         }
-        for (var i=0;i<data[perm][1].split(',').length;i++){
-          var group = data[perm][1].split(',')[i];
+        var d_perms = '';
+        if (data[perm] instanceof Array) {
+          d_perms = data[perm][1];
+        } else {
+          d_perms = data[perm];
+        }
+        for (var i=0;i<d_perms.split(',').length;i++){
+          var group = d_perms.split(',')[i];
           for(var j=0;j< perms_to_assign.length;j++){
             if(permissions['groups'].hasOwnProperty(group)){
               permissions['groups'][group].push(perms_to_assign[j]);
@@ -154,7 +163,10 @@
                   users[user_perms[i]].push(user);
                 }
               }
-              $('#' + perm + '_users').val(users[perm].join());
+              // $('#' + perm + '_users').val(users[perm].join());
+              $(users[perm]).each(function( index ) {
+                $('#' + perm + '_users').append(new Option(this, this));
+              });
             }
             addSelectUsers();
 
@@ -187,11 +199,12 @@
               }
             }
             for (var perm in groups){
-              $('#' + perm + '_groups').val(groups[perm].join());
+              // $('#' + perm + '_groups').val(groups[perm].join());
+              $(groups[perm]).each(function( index ) {
+                $('#' + perm + '_groups').append(new Option(this, this));
+              });
             }
-
             addSelectGroups();
-
           }
         }
       );
@@ -202,42 +215,51 @@
     });
 
     function addSelectUsers(){
-      $("input.user-select").select2({
+      $(".user-select").select2({
         placeholder: '{% trans "Choose users..." %}',
-        tags: true,
-        tokenSeparators: [',', ' '],
         minimumInputLength: 1,
         multiple: true,
         width: 'copy',
+        containerCssClass: function(e) {
+          return $(e).attr('required') ? 'required' : '';
+        },
         ajax: {
           url: "{% url "account_ajax_lookup" %}",
           dataType: "json",
+          delay: 250,
           type: "POST",
-          data: function (term, page) {
+          data: function (params) {
+            this.data('term', params.term);
             return {
-              query: term,
+              query: params.term,
+              page: params.page || 1,
+              pageSize: 9
             };
           },
-          results: function (data, page) {
-            return {results: data.users};
-          }
-        },
-        id: userID,
-        formatResult: userFormatResult,
-        formatSelection: userFormatSelection,
-        initSelection: function(element, callback) {
-          var data = [];
-          var val = element.val().split(",");
-          $(element.val().split(",")).each(function (index,value) {
-            data.push({username: value});
-          });
-          callback(data);
+          processResults: function (data, params) {
+            if (data.users.length)
+              return {
+                results: data.users.map(d => ({id: d.username, text: d.username})),
+                pagination: {
+                  // more: !!data.paging.next
+                  more: false
+                }
+              };
+            else
+              return {
+                results: [/* { id: this.$element.data('term'), text: this.$element.data('term') } */],
+                pagination: {
+                  more: false
+                }
+            };
+          },
+          cache: true
         }
       });
     }
 
     function addSelectGroups(){
-      $("input.group-select").select2({
+      $(".group-select").select2({
         placeholder: '{% trans "Choose groups..." %}',
         minimumInputLength: 1,
         multiple: true,
@@ -245,58 +267,41 @@
         ajax: {
           url: "{% url "account_ajax_lookup" %}",
           dataType: "json",
+          delay: 250,
           type: "POST",
-          data: function (term, page) {
+          data: function (params) {
+            this.data('term', params.term);
             return {
-              query: term,
+              query: params.term,
+              page: params.page || 1,
+              pageSize: 9
             };
           },
-          results: function (data, page) {
-            return {results: data.groups};
-          }
-        },
-        id: groupID,
-        formatResult: groupFormatResult,
-        formatSelection: groupFormatSelection,
-        initSelection: function(element, callback) {
-          var data = [];
-          var val = element.val().split(",");
-          $(element.val().split(",")).each(function (index,value) {
-              data.push({name: value});
-          });
-          callback(data);
+          processResults: function (data, params) {
+            if (data.groups.length)
+              return {
+                results: data.groups.map(d => ({id: d.name, text: d.title})),
+                pagination: {
+                  // more: !!data.paging.next
+                  more: false
+                }
+              };
+            else
+              return {
+                results: [/* { id: this.$element.data('term'), text: this.$element.data('term') } */],
+                pagination: {
+                  more: false
+                }
+            };
+          },
+          cache: true
         }
       });
-    }
-
-    function userID(user) {
-      return user.username;
-    }
-
-    function groupID(group) {
-      return group.name;
-    }
-
-    function userFormatResult(user) {
-      return user.username;
-    }
-
-    function userFormatSelection(user) {
-        return user.username;
-    }
-
-    function groupFormatResult(group) {
-      return group.title;
-    }
-
-    function groupFormatSelection(group) {
-        return group.name;
     }
 
     var perms_submit = function() {
       var form = $(this);
       var action = form.attr("action");
-
       var permissions = permissionsString(form, 'base');
       $.ajax(
         {

@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from celery.app import shared_task
+from geonode.celery_app import app
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.core.mail import send_mail
@@ -26,9 +26,9 @@ from django.core.mail import send_mail
 logger = get_task_logger(__name__)
 
 
-@shared_task(bind=True,
-             name='geonode.tasks.email.send_mail',
-             queue='email',)
+@app.task(bind=True,
+          name='geonode.tasks.email.send_mail',
+          queue='email',)
 def send_email(self, *args, **kwargs):
     """
     Sends an email using django's send_mail functionality.
@@ -37,9 +37,9 @@ def send_email(self, *args, **kwargs):
     send_mail(*args, **kwargs)
 
 
-@shared_task(bind=True,
-             name='geonode.tasks.notifications.send_queued_notifications',
-             queue='email',)
+@app.task(bind=True,
+          name='geonode.tasks.notifications.send_queued_notifications',
+          queue='email',)
 def send_queued_notifications(self, *args):
     """Sends queued notifications.
 

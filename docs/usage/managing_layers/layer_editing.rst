@@ -30,6 +30,15 @@ Setting the Layer Thumbnail
 
      *The Layer Editing panel*
 
+It is also possible to manually upload a thumbnail by using the :guilabel:`Upload` button of the *Layer Editing* panel.
+Using the "Upload Thumbnail" page it is possible to enable the automatically generated thumbnail or upload an image to be used in place of it.
+
+.. figure:: img/upload_thumbnail.png
+     :align: center
+
+     *The Upload Thumbnail panel*
+
+
 Replacing the Layer
 -------------------
 

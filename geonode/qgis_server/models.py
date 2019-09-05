@@ -29,6 +29,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from geonode.security.models import PermissionLevelMixin
 from lxml import etree
+from defusedxml import lxml as dlxml
+
 
 from geonode import qgis_server
 from geonode.layers.models import Layer
@@ -221,10 +223,10 @@ class QGISServerStyle(models.Model, PermissionLevelMixin):
         """
 
         if isinstance(style_xml, str):
-            style_xml = etree.fromstring(style_xml)
+            style_xml = dlxml.fromstring(style_xml)
 
         elif isinstance(style_xml, ElementTree.Element):
-            style_xml = etree.fromstring(
+            style_xml = dlxml.fromstring(
                 ElementTree.tostring(
                     style_xml, encoding='utf-8', method='xml'))
 
@@ -248,7 +250,7 @@ class QGISServerStyle(models.Model, PermissionLevelMixin):
 
         response = requests.get(style_url)
         style_body = etree.tostring(
-            etree.fromstring(response.content), pretty_print=True)
+            dlxml.fromstring(response.content), pretty_print=True)
 
         default_dict = {
             'title': style_xml.xpath(

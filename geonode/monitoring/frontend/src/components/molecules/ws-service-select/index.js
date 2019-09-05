@@ -36,14 +36,14 @@ class WSServiceSelect extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.selected) {return;}
     const services = nextProps.services;
-    if (services && services.ows_services && services.ows_services.length > 0) {
-      this.props.setService(services.ows_services[0].name);
+    if (services && services.event_types && services.event_types.length > 0) {
+      this.props.setService(services.event_types[0].name);
     }
   }
 
   render() {
     const items = this.props.services
-                ? this.props.services.ows_services.map(service => (
+                ? this.props.services.event_types.map(service => (
                   <MenuItem
                     key={service.name}
                     value={service.name}

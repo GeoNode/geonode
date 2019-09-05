@@ -35,9 +35,11 @@ from . import views
 
 from geonode.api.urls import api
 from geonode.api.views import verify_token, user_info, roles, users, admin_role
+from geonode.base.views import thumbnail_upload
 
 from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
+from geonode.monitoring import register_url_event
 
 from autocomplete_light.registry import autodiscover
 
@@ -56,9 +58,11 @@ sitemaps = {
     "map": MapSitemap
 }
 
+homepage = register_url_event()(TemplateView.as_view(template_name='index.html'))
+
 urlpatterns = [
     url(r'^$',
-        TemplateView.as_view(template_name='index.html'),
+        homepage,
         name='home'),
     url(r'^help/$',
         TemplateView.as_view(template_name='help.html'),
@@ -166,6 +170,10 @@ urlpatterns += [
     url(r'^api/adminRole', admin_role, name='adminRole'),
     url(r'^api/users', users, name='users'),
     url(r'', include(api.urls)),
+
+    # Curated Thumbnail
+    url(r'^base/(?P<res_id>[^/]+)/thumbnail_upload$', thumbnail_upload,
+        name='thumbnail_upload'),
 ]
 
 urlpatterns += i18n_patterns(

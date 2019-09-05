@@ -302,94 +302,100 @@
                     <div class="tab-pane" id="download_tab2">
                     {% endif %}
                       </br>
+
+                      <!-- DOWNLOAD FILTER - START -->
+
                       {% if layer_type == "vector" %}
                         <button type="button" id = "button-toggle" class="btn btn-primary btn-circle" data-toggle="button" data-toggle="tooltip" title="{% trans "Click to filter the layer" %}">
                           {% trans "Do you want to filter it?" %}
                         </button>
-                        <img src="{% static 'lib/css/geonode_icon.png' %}" class="gear pull-right loading_msg" witdth="30" height="30" style="margin-right:10px; display:none"/>
+                        <img src="{% static 'lib/img/geonode_icon.png' %}" class="gear pull-right loading_msg" witdth="30" height="30" style="margin-right:10px; display:none"/>
                         <div class="pull-right loading_msg" style="margin-right:10px;margin-top:5px;display:none">{% trans "Loading..." %}</div>
                         </br></br>
                       {% endif %}
-                      <ul class="nav nav-tabs" id="tabContent" style="display: none;">
+                        <ul class="nav nav-tabs" id="tabContent" style="display: none;">
                           <li class="active"><a href="#query_builder" data-toggle="tab">{% trans "Filter by attributes" %}</a></li>
-                      </ul>
+                        </ul>
                       </br>
 
-                      <div class="tab-content query_builder_tab" style="display:none;">  <!--  added now-->
+                      <div class="tab-content query_builder_tab" style="display:none;">
                         <div id="query_builder" class="tab-pane fade in active">
-                          <div class="form-inline">
+                            <div class="form-inline">
                             {% trans "Match" %}
-                            <div class="input-group" style=" display: inline-table; vertical-align: middle; width: auto;  ">
-                              <div class="input-group-btn" id="drop_operator_list">
-                               <div class="btn-group btn-group-xs">
-                                  <div class="dropdown">
-                                    <button class="btn btn-primary btn-xs dropdown-toggle" id="modal-button-and-or" type="button" data-toggle="dropdown" data-target="#" value="AND">
-                                      <span class="caret"></span></button>
-                                      <ul class="dropdown-menu dropdown-menu-and-or" id="and-or_list" data-modal-button-id="and-or">
-                                       <li><a href="#" id="AND">{% trans "all" %}</a></li>
-                                       <li><a href="#" id="OR">{% trans "any" %}</a></li>
-                                      </ul>
+                              <div class="input-group" style=" display: inline-table; vertical-align: middle; width: auto;  ">
+                                <div class="input-group-btn" id="drop_operator_list">
+                                <div class="btn-group btn-group-xs">
+                                    <div class="dropdown">
+                                      <button class="btn btn-primary btn-xs dropdown-toggle" id="modal-button-and-or" type="button" data-toggle="dropdown" value="AND">
+                                        <span class="caret"></span></button>
+                                        <ul class="dropdown-menu dropdown-menu-and-or" id="and-or_list" data-modal-button-id="and-or">
+                                          <li><a href="#" id="AND">{% trans "all" %}</a></li>
+                                          <li><a href="#" id="OR">{% trans "any" %}</a></li>
+                                        </ul>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
                             {% trans "of the following:" %}
-                          </div>
-                          </br></br>
-                          <div class="input-group" id = "query-filter-tools">
-                            <div class="input-group-btn">
-                              <div class="btn-group btn-group-sm">
-                                <div class="dropdown">
-                                  <button class="btn btn-primary dropdown-toggle" id="modal-button-attributes" type="button" data-toggle="dropdown" data-target="#">{% trans "Attribute" %}
+                            </div>
+                            </br></br>
+                            <div class="input-group" id = "query-filter-tools">
+                              <div class="input-group-btn">
+                                <div class="btn-group btn-group-sm">
+                                    <div class="dropdown">
+                                      <button class="btn btn-primary dropdown-toggle" id="modal-button-attributes" type="button" data-toggle="dropdown">{% trans "Attribute" %}
                                       <span class="caret"></span></button>
-                                    <ul class="dropdown-menu dropdown-menu-attribute" id="attribute_list" data-modal-button-id="attribute">
-                                      {% if schema %}
-                                        {% for key, values in schema.properties.items %}
-                                          <li><a href="#" id= {{ key }} data-type= {{ values }} data-schema= 'yes'>{{ key }}</a></li>
-                                        {% endfor %}
-                                      {% else %}
-                                        {% for attribute in resource.attributes %}
-                                          <li><a href="#" id= {{ attribute }} data-type= 'string' data-schema= 'no'> {{ attribute }} </a></li>
-                                        {% endfor %}
-                                      {% endif %}
+                                      <ul class="dropdown-menu dropdown-menu-attribute" id="attribute_list" data-modal-button-id="attribute">
+                                        {% if schema %}
+                                          {% for key, values in schema.properties.items %}
+                                            <li><a href="#" id= {{ key }} data-type= {{ values }} data-schema= 'yes'>{{ key }}</a></li>
+                                          {% endfor %}
+                                        {% else %}
+                                          {% for attribute in resource.attributes %}
+                                            <li><a href="#" id= {{ attribute }} data-type= 'string' data-schema= 'no'> {{ attribute }} </a></li>
+                                          {% endfor %}
+                                        {% endif %}
+                                      </ul>
+                                    </div>
+                                </div>
+                                <div class="btn-group btn-group-sm">
+                                  <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" id="modal-button-operator" type="button" data-toggle="dropdown">{% trans "Operator" %}
+                                    <span class="caret"></span></button>
+                                    <ul class="dropdown-menu dropdown-menu-operator" id="operator_list" data-modal-button-id="operator">
+                                      <li><a href="#" id="=">=</a></li>
+                                      <li><a href="#" id="&lt;&gt;">&lt;&gt;</a></li>
+                                      <li><a href="#" id="&gt;">&gt;</a></li>
+                                      <li><a href="#" id="&lt;">&lt;</a></li>
+                                      <li><a href="#" id="&gt;=">&gt;=</a></li>
+                                      <li><a href="#" id="&lt;=">&lt;=</a></li>
+                                      <li role="separator" class="divider"></li>
+                                      <li><a href="#" id=" LIKE ">LIKE</a></li>
                                     </ul>
+                                  </div>
                                 </div>
                               </div>
-                              <div class="btn-group btn-group-sm">
-                                <div class="dropdown">
-                                  <button class="btn btn-primary dropdown-toggle" id="modal-button-operator" type="button" data-toggle="dropdown" data-target="#">{% trans "Operator" %}
-                                      <span class="caret"></span></button>
-                                  <ul class="dropdown-menu dropdown-menu-operator" id="operator_list" data-modal-button-id="operator">
-                                   <li><a href="#" id="=">=</a></li>
-                                     <li><a href="#" id="&lt;&gt;">&lt;&gt;</a></li>
-                                     <li><a href="#" id="&gt;">&gt;</a></li>
-                                     <li><a href="#" id="&lt;">&lt;</a></li>
-                                     <li><a href="#" id="&gt;=">&gt;=</a></li>
-                                     <li><a href="#" id="&lt;=">&lt;=</a></li>
-                                     <li role="separator" class="divider"></li>
-                                     <li><a href="#" id=" LIKE ">LIKE</a></li>
-                                  </ul>
-                                </div>
+                              <input type="text" class="form-control js-data-array" style="position:static;" id="single_value" placeholder="" data-toggle="tooltip" title="">
+                              <div class="input-group-btn" id="button_query">
+                                <a href="#" id="query_part" class="btn btn-primary btn-mg" data-toggle="modal" data-target="#myModal" title=""><span class="glyphicon glyphicon-plus"></span></a>
                               </div>
                             </div>
-                            <input type="text" class="form-control js-data-array" style="position:static;" id="single_value" placeholder="" data-toggle="tooltip" title="">
-                            <div class="input-group-btn" id="button_query">
-                              <a href="#" id="query_part" class="btn btn-primary btn-mg" data-toggle="modal" data-target="#myModal" title=""><span class="glyphicon glyphicon-plus"></span></a>
+                            </br>
+                            <div class="text_area">
+                              <div class="form-group" id="added_rules"></div>
+                              <div>
+                                  <p id="whole_query"> </p>
+                              </div>
                             </div>
+                            <label style="font-weight: normal;">{% trans "Feature limit" %}: </label>
+                            <input type="text" id="max_features" name="filter" style="width: 50px"/>
+                            <a href='#' id="clear_filter" style="float:right;">{% trans "Clear" %}</a> </br>
                           </div>
-                          </br>
-                          <div class="text_area">
-                            <div class="form-group" id="added_rules"></div>
-                            <div>
-                                <p id="whole_query"> </p>
-                            </div>
-                          </div>
-                          <label style="font-weight: normal;">{% trans "Feature limit" %}: </label>
-                          <input type="text" id="max_features" name="filter" style="width: 50px"/>
-                          <a href='#' id="clear_filter" style="float:right;">{% trans "Clear" %}</a> </br>
-                        </div>
                         <hr id="hr_filter_layer" />
                       </div>
+
+                      <!-- DOWNLOAD FILTER - END -->
+
                       <li>
                           <h4>{% trans "Pick your download format:" %}</h4>
                           <ul>
@@ -451,7 +457,7 @@
                 <div class="col-sm-3">
                   <i class="fa fa-tint fa-3x"></i>
                   <h4>{% trans "Styles" %}</h4>
-                  {% if preview == 'geoext' or preview == 'react' or  preview == 'leaflet' %}
+                  {% if preview == 'geoext' or preview == 'react' or preview == 'leaflet' %}
                     <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
                   {% else %}
                     <a class="btn btn-default btn-block btn-xs style-edit" href="{% url "layer_sld_edit" resource.service_typename %}">{% trans "Edit" %}</a>
@@ -476,6 +482,7 @@
                 <i class="fa fa-photo fa-3x"></i>
                 <h4>{% trans "Thumbnail" %}</h4>
                 <a class="btn btn-default btn-block btn-xs" href="#" id="set_thumbnail">{% trans "Set" %}</a>
+                <a class="btn btn-default btn-block btn-xs" href="{% url "thumbnail_upload" resource.resourcebase_ptr.id %}">{% trans "Upload" %}</a>
               </div>
               {% endif %}
               {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_data" in layer_perms %}
@@ -738,7 +745,6 @@
     {% include 'rating.html' %}
     {% include 'request_download.html' %}
     {% if DISPLAY_SOCIAL %}
-    <script type="text/javascript">
     {% autoescape off %}
      (function() {
        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
@@ -746,9 +752,7 @@
        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
      })();
      {% endautoescape %}
-     </script>
     {% endif %}
-    <script type="text/javascript">
        $("#comment_submit_btn").click(function(event) {
             $.ajax({
               type: "POST",
@@ -779,10 +783,10 @@
         }).appendTo('#legend_placeholder');
     });
     {% endif %}
-        </script>
+    </script>
 
     {% block thumbnail_script %}
-        <script type="text/javascript">
+      <script type="text/javascript">
             {% if preview == 'react' %}
             $('#set_thumbnail').click(function(){
               window.setThumbnail({{resource.id}})
@@ -794,10 +798,11 @@
               $('#edit-layer').modal('toggle');
             });
             {% endif %}
-        </script>
+      </script>
     {% endblock thumbnail_script %}
 
-    <script type="text/javascript">
+  <script type="text/javascript">
+
       // set default values for the logical operator list
       $("#modal-button-and-or:first-child").text($("#AND").text());
       $("#and-or_list li:not(.divider)").addClass('selected');
@@ -1004,18 +1009,17 @@
       {% if show_popup %}
         $('#download-layer').modal('toggle');
       {% endif %}
-    </script>
+
+  </script>
 
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
-    <script type="text/javascript">
         $(function() {
             if (sessionStorage.getItem("security_refresh_trigger")) {
                 sessionStorage.clear();
                 $("#security_refresh").trigger('click');
             }
         });
-    </script>
     {% endif %}
 
     {% if FAVORITE_ENABLED %}

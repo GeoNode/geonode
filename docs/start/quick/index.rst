@@ -16,6 +16,8 @@ This is meant to be run on a fresh machine with no previously installed packages
 Recommended Minimum System Requirements
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+A definite specification of technical requirements is difficult to recommend. Accepted performance is highly subjective. Furthermore, the performance depends on factors such as concurrent users, records in the database or the network connectivity of your infrastructure.
+
 For deployment of GeoNode on a single server, the following are the *bare minimum* system requirements:
 
 * 8GB of RAM.

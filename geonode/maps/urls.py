@@ -23,6 +23,7 @@ from django.views.generic import TemplateView
 
 from geonode import geoserver, qgis_server
 from geonode.utils import check_ogc_backend
+from geonode.monitoring import register_url_event
 from . import views
 
 js_info_dict = {
@@ -57,10 +58,12 @@ elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     map_json = MapUpdateView.as_view()
     map_thumbnail = set_thumbnail_map
 
+maps_list = register_url_event()(TemplateView.as_view(template_name='maps/map_list.html'))
+
 urlpatterns = [
     # 'geonode.maps.views',
     url(r'^$',
-        TemplateView.as_view(template_name='maps/map_list.html'),
+        maps_list,
         {'facet_type': 'maps'},
         name='maps_browse'),
     url(r'^new$', new_map_view, name="new_map"),
@@ -73,7 +76,6 @@ urlpatterns = [
     url(r'^(?P<mapid>[^/]+)/edit$', map_edit, name='map_edit'),
     url(r'^(?P<mapid>[^/]+)/data$', map_json, name='map_json'),
     url(r'^(?P<mapid>[^/]+)/wmc$', views.map_wmc, name='map_wmc'),
-    url(r'^(?P<mapid>[^/]+)/wms$', views.map_wms, name='map_wms'),
     url(r'^(?P<mapid>[^/]+)/remove$', views.map_remove, name='map_remove'),
     url(r'^(?P<mapid>[^/]+)/metadata$', views.map_metadata, name='map_metadata'),
     url(r'^(?P<mapid>[^/]+)/metadata_advanced$', views.map_metadata_advanced, name='map_metadata_advanced'),

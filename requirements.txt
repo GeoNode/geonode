@@ -1,48 +1,54 @@
 # native dependencies
 Pillow==6.1.0
-lxml==4.3.4
+lxml==4.4.1
+defusedxml==0.6.0
 psycopg2==2.8.3
-Django==1.11.22
+Django==1.11.24
 
 # Other
-amqp==2.5.0
+amqp==2.5.1
 pyyaml>=4.2b1
-beautifulsoup4==4.7.1
-httplib2<0.13.1
-urllib3==1.24.2
+beautifulsoup4==4.8.0
+httplib2<0.13.2
+hyperlink==19.0.0
+idna>=2.5,<2.9
+urllib3==1.25.3
 Paver==1.3.4
-python-slugify==3.0.2
+python-slugify==3.0.3
 decorator==4.4.0
 celery==4.2.1
-kombu==4.6.3
+kombu==4.6.4
 boto<=2.49.0
 six<1.11.0 # https://github.com/benjaminp/six/issues/210
-tqdm==4.32.2
+tqdm==4.35.0
+Deprecated==1.2.6
+wrapt==1.11.2
 
 # Django Apps
-django-allauth==0.39.1
+django-allauth==0.40.0
 django-appconf==1.0.3
 django-filter==1.1.0
-django-jsonfield<1.2.1
+django-imagekit==4.0.2
+django-jsonfield<1.3.2
 django-jsonfield-compat<=0.4.4
 django-taggit==0.24.0
 django-mptt==0.9.1
-django-modeltranslation>=0.11,<0.13.3
+django-modeltranslation>=0.11,<0.13.4
 django-treebeard==4.3
 django-guardian<=1.4.9
 django-downloadview<=1.9
 django-polymorphic==2.1.2
-django-tastypie<=0.14.0
-oauthlib==3.0.2
+django-tastypie<0.15.0
+oauthlib==3.1.0
 pyopenssl==19.0.0
 
 # geopython dependencies
-pyproj>=1.9.5,<2.2.2.0
+pyproj>=1.9.5,<2.2.3.0
 OWSLib==0.18.0
 pycsw==2.4.0
-SQLAlchemy==1.3.5 # required by PyCSW
+SQLAlchemy==1.3.8 # required by PyCSW
 Shapely==1.6.4.post2
-mercantile==1.1.1
+mercantile==1.1.2
 geoip2==2.9.0
 numpy==1.16.*
 
@@ -60,12 +66,12 @@ django-autocomplete-light==2.3.3 # pinned because >=2.3.4 throw an exception on 
 django-basic-authentication-decorator==0.9
 django-leaflet==0.24.0
 django-invitations<=1.9.2
-geonode-oauth-toolkit==1.1.3
+geonode-oauth-toolkit==1.1.4.5
 
 # GeoNode org maintained apps.
 django-geoexplorer==4.0.43
-django-mapstore-adapter==1.0.3
-django-geonode-mapstore-client==1.3.1
+django-mapstore-adapter==1.0.5
+django-geonode-mapstore-client==1.4.0
 django-geonode-client==1.0.9
 geonode-user-messages==0.1.14
 geonode-avatar==2.1.8
@@ -73,9 +79,9 @@ geonode-announcements==1.0.13
 geonode-agon-ratings==0.3.8
 arcrest>=10.0
 geonode-dialogos==1.2
-geoserver-restconfig==1.0.1
-gn-gsimporter>=1.0.9
-gisdata>=0.5.4
+geoserver-restconfig==1.0.2
+gn-gsimporter==1.0.10
+gisdata==0.5.4
 
 # haystack/elasticsearch
 django-haystack==2.8.1
@@ -96,7 +102,7 @@ inflection<=0.3.1
 jdcal==1.4.1
 mock<4.0.0
 python-dateutil==2.8.0
-pytz==2019.1
+pytz==2019.2
 requests==2.22.0
 simplejson==3.16.0
 timeout-decorator==0.4.1
@@ -116,17 +122,17 @@ uWSGI==2.0.18
 gunicorn==19.9.0
 ipython==5.8.0
 docker==4.0.2
-invoke==1.2.0
+invoke==1.3.0
 
 # tests
-coverage==4.5.3
+coverage==4.5.4
 parse-type==0.5.2
 poster~=0.8.1
 flake8==3.7.8
-pytest==4.6.4
-pytest-bdd==3.1.1
+pytest==4.6.5
+pytest-bdd==3.2.1
 splinter==0.11.0
 pytest-splinter==2.0.1
 pytest-django==3.5.1
-setuptools==41.0.1
-Twisted==19.2.1
+setuptools==41.2.0
+Twisted==19.7.0

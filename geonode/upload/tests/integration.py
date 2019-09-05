@@ -30,27 +30,23 @@ See the README.rst in this directory for details on running these tests.
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os.path
-from bs4 import BeautifulSoup
 from django.conf import settings
-from django.core.urlresolvers import reverse
 
-from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.layers.models import Layer
+from geonode.upload.models import Upload
+from geonode.people.models import Profile
 from geonode.documents.models import Document
 
-from geonode.people.models import Profile
-from geonode.upload.models import Upload
+from geonode.tests.utils import upload_step, Client
 from geonode.upload.utils import _ALLOW_TIME_STEP
-from geonode.geoserver.helpers import ogc_server_settings
-from geonode.geoserver.helpers import cascading_delete
+from geonode.geoserver.helpers import ogc_server_settings, cascading_delete
 from geonode.geoserver.signals import gs_catalog
+
 from geoserver.catalog import Catalog
 from gisdata import BAD_DATA
 from gisdata import GOOD_DATA
 from owslib.wms import WebMapService
-from poster.encode import multipart_encode, MultipartParam
-from poster.streaminghttp import register_openers
-# from urllib2 import HTTPError
 from zipfile import ZipFile
 
 import re
@@ -59,13 +55,10 @@ import csv
 import glob
 import time
 import json
-# import signal
 import urllib
-import urllib2
 import logging
 import tempfile
 import unittest
-# import subprocess
 import dj_database_url
 
 GEONODE_USER = 'admin'
@@ -84,11 +77,6 @@ if created:
     u.save()
 else:
     Layer.objects.filter(owner=u).delete()
-
-
-def upload_step(step=None):
-    step = reverse('data_upload', args=[step] if step else [])
-    return step
 
 
 def get_wms(version='1.1.1', type_name=None, username=None, password=None):
@@ -112,195 +100,16 @@ def get_wms(version='1.1.1', type_name=None, username=None, password=None):
         return WebMapService(url)
 
 
-class Client(object):
-
-    """client for making http requests"""
-
-    def __init__(self, url, user, passwd):
-        self.url = url
-        self.user = user
-        self.passwd = passwd
-        self.csrf_token = None
-        self.opener = self._init_url_opener()
-
-    def _init_url_opener(self):
-        self.cookies = urllib2.HTTPCookieProcessor()
-        opener = register_openers()
-        opener.add_handler(self.cookies)  # Add cookie handler
-        return opener
-
-    def make_request(self, path, data=None,
-                     ajax=False, debug=True):
-        url = path if path.startswith("http") else self.url + path
-        if ajax:
-            url += '&ajax=true' if '?' in url else '?ajax=true'
-        request = None
-        if data:
-            items = []
-            # wrap post parameters
-            for name, value in data.items():
-                if isinstance(value, file):
-                    # add file
-                    items.append(MultipartParam.from_file(name, value.name))
-                else:
-                    items.append(MultipartParam(name, value))
-            datagen, headers = multipart_encode(items)
-            request = urllib2.Request(url, datagen, headers)
-        else:
-            request = urllib2.Request(url=url)
-
-        if ajax:
-            request.add_header('X_REQUESTED_WITH', 'XMLHttpRequest')
-        try:
-            # return urllib2.urlopen(request)
-            return self.opener.open(request)
-        except urllib2.HTTPError as ex:
-            if not debug:
-                raise
-            logger.error('error in request to %s' % path)
-            logger.error(ex.reason)
-            logger.error(ex.read())
-            raise
-
-    def get(self, path, debug=True):
-        return self.make_request(path, debug=debug)
-
-    def login(self):
-        """ Method to login the GeoNode site"""
-        self.csrf_token = self.get_csrf_token()
-        params = {'csrfmiddlewaretoken': self.csrf_token,
-                  'username': self.user,
-                  'next': '/',
-                  'password': self.passwd}
-        self.make_request(
-            reverse('account_login'),
-            data=params
-        )
-        self.csrf_token = self.get_csrf_token()
-
-    def upload_file(self, _file):
-        """ function that uploads a file, or a collection of files, to
-        the GeoNode"""
-        if not self.csrf_token:
-            self.login()
-        spatial_files = ("dbf_file", "shx_file", "prj_file")
-
-        base, ext = os.path.splitext(_file)
-        params = {
-            # make public since wms client doesn't do authentication
-            'permissions': '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            'csrfmiddlewaretoken': self.csrf_token
-        }
-
-        # deal with shapefiles
-        if ext.lower() == '.shp':
-            for spatial_file in spatial_files:
-                ext, _ = spatial_file.split('_')
-                file_path = base + '.' + ext
-                # sometimes a shapefile is missing an extra file,
-                # allow for that
-                if os.path.exists(file_path):
-                    params[spatial_file] = open(file_path, 'rb')
-
-        base_file = open(_file, 'rb')
-        params['base_file'] = base_file
-        resp = self.make_request(
-            upload_step(),
-            data=params,
-            ajax=True)
-        data = resp.read()
-        try:
-            return resp, json.loads(data)
-        except ValueError:
-            # raise ValueError(
-            #     'probably not json, status %s' %
-            #     resp.getcode(),
-            #     data)
-            return resp, data
-
-    def get_html(self, path, debug=True):
-        """ Method that make a get request and passes the results to bs4
-        Takes a path and returns a tuple
-        """
-        resp = self.get(path, debug)
-        return resp, BeautifulSoup(resp.read())
-
-    def get_json(self, path):
-        resp = self.get(path)
-        return resp, json.loads(resp.read())
-
-    def get_csrf_token(self, last=False):
-        """Get a csrf_token from the home page or read from the cookie jar
-        based on the last response
-        """
-        if not last:
-            self.get('/')
-        csrf = [c for c in self.cookies.cookiejar if c.name == 'csrftoken']
-        return csrf[0].value if csrf else None
-
-
 class UploaderBase(GeoNodeBaseTestSupport):
 
     settings_overrides = []
 
     @classmethod
     def setUpClass(cls):
-        # super(UploaderBase, cls).setUpClass()
-
-        # make a test_settings module that will apply our overrides
-        # test_settings = ['from geonode.settings import *']
-        # using_test_settings = os.getenv('DJANGO_SETTINGS_MODULE') == 'geonode.upload.tests.test_settings'
-        # if using_test_settings:
-        #     test_settings.append(
-        #         'from geonode.upload.tests.test_settings import *')
-        # for so in cls.settings_overrides:
-        #     test_settings.append('%s=%s' % so)
-        # with open('integration_settings.py', 'w') as fp:
-        #     fp.write('\n'.join(test_settings))
-        #
-        # # runserver with settings
-        # args = [
-        #     'python',
-        #     'manage.py',
-        #     'runserver',
-        #     '--settings=integration_settings',
-        #     '--verbosity=0']
-        # # see for details regarding os.setsid:
-        # # http://www.doughellmann.com/PyMOTW/subprocess/#process-groups-sessions
-        # cls._runserver = subprocess.Popen(
-        #     args,
-        #     preexec_fn=os.setsid)
-
-        # await startup
-        # cl = Client(
-        #     GEONODE_URL, GEONODE_USER, GEONODE_PASSWD
-        # )
-        # for i in range(10):
-        #     time.sleep(.2)
-        #     try:
-        #         cl.get_html('/', debug=False)
-        #         break
-        #     except:
-        #         pass
-        # if cls._runserver.poll() is not None:
-        #     raise Exception("Error starting server, check test.log")
-        #
-        # cls.client = Client(
-        #     GEONODE_URL, GEONODE_USER, GEONODE_PASSWD
-        # )
-        # cls.catalog = Catalog(
-        #     GEOSERVER_URL + 'rest', GEOSERVER_USER, GEOSERVER_PASSWD
-        # )
         pass
 
     @classmethod
     def tearDownClass(cls):
-        # super(UploaderBase, cls).tearDownClass()
-
-        # kill server process group
-        # if cls._runserver.pid:
-        #    os.killpg(cls._runserver.pid, signal.SIGKILL)
-
         if os.path.exists('integration_settings.py'):
             os.unlink('integration_settings.py')
 
@@ -617,12 +426,26 @@ class TestUpload(UploaderBase):
             GOOD_DATA,
             'vector',
             'san_andres_y_providencia_water.shp')
-        self.upload_file(fname, self.complete_upload)
+        self.upload_file(fname, self.complete_upload,
+                         check_name='san_andres_y_providencia_water')
+
+        test_layer = Layer.objects.all().first()
+        if test_layer:
+            layer_attributes = test_layer.attributes
+            self.assertIsNotNone(layer_attributes)
+            self.assertTrue(layer_attributes.count() > 0)
 
     def test_raster_upload(self):
         """ Tests if a raster layer can be upload to a running GeoNode GeoServer"""
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
-        self.upload_file(fname, self.complete_raster_upload)
+        self.upload_file(fname, self.complete_raster_upload,
+                         check_name='relief_san_andres')
+
+        test_layer = Layer.objects.all().first()
+        if test_layer:
+            layer_attributes = test_layer.attributes
+            self.assertIsNotNone(layer_attributes)
+            self.assertTrue(layer_attributes.count() > 0)
 
     def test_zipped_upload(self):
         """Test uploading a zipped shapefile"""

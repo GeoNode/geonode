@@ -550,54 +550,59 @@ define(function (require, exports) {
      *  @params
      *  @returns
      */
-    LayerInfo.prototype.uploadFiles = function () {
-        var form_data = this.prepareFormData(),
-            self = this;
-        var prog = "";
+     LayerInfo.prototype.uploadFiles = function () {
+         var form_data = this.prepareFormData(),
+             self = this;
+         var prog = "";
 
-        $.ajaxQueue({
-            url: form_target,
-            async: true,
-            type: "POST",
-            data: form_data,
-            processData: false,
-            contentType: false,
-            xhr: function() {
-                var req = $.ajaxSettings.xhr();
-                if (req) {
-                    req.upload.addEventListener('progress', function(evt) {
-                        if(evt.lengthComputable) {
-                            var pct = (evt.loaded / evt.total) * 100;
-                            $('#prog > .progress-bar').css('width', pct.toPrecision(3) + '%');
-                        }
-                    }, false);
-                }
-                return req;
-            },
-            beforeSend: function () {
-                self.markStart();
-                self.polling = true;
-                self.startPolling();
-            },
-            error: function (jqXHR) {
-                self.polling = false;
-                if (jqXHR === null) {
-                    self.markError(gettext('Unexpected Error'));
-                } else {
-                    self.markError(jqXHR);
-                }
-            },
-            success: function (resp, status) {
-                self.logStatus({
-                    msg: '<p>' + gettext('Layer files uploaded, configuring in GeoServer') + '</p>',
-                    level: 'alert-success',
-                    empty: 'true'
-                });
-                self.id = resp.id;
-                self.doStep(resp);
-            }
-        });
-    };
+        $.ajax({
+             url: form_target,
+             async: true,
+            mode: "queue",
+             type: "POST",
+             data: form_data,
+             timeout: 15000,
+             processData: false,
+             contentType: false,
+             xhr: function() {
+                 var req = $.ajaxSettings.xhr();
+                 if (req) {
+                     req.upload.addEventListener('progress', function(evt) {
+                         console.log(req.status)
+                         if(evt.lengthComputable) {
+                             var pct = (evt.loaded / evt.total) * 100;
+                             $('#prog > .progress-bar').css('width', pct.toPrecision(3) + '%');
+                         }
+                     }, false);
+                 }
+                 return req;
+             },
+             beforeSend: function () {
+                 self.markStart();
+                 self.polling = true;
+                 self.startPolling();
+             },
+             error: function (jqXHR) {
+                 self.polling = false;
+                 if(jqXHR.status === 500 || jqXHR.status === 0 || jqXHR.readyState === 0){
+                   self.markError('Server Error: ' + jqXHR.statusText + gettext('<br>Please check your network connection. In case of Layer Upload make sure GeoServer is running and accepting connections.'));
+                 } else if (jqXHR.status === 400 || jqXHR.status === 404) {
+                   self.markError('Client Error: ' + jqXHR.statusText + gettext('<br>Bad request or URL not found.'));
+                 } else {
+                   self.markError(gettext('Unexpected Error'));
+                 }
+             },
+             success: function (resp, status) {
+                 self.logStatus({
+                     msg: '<p>' + gettext('Layer files uploaded, configuring in GeoServer') + '</p>',
+                     level: 'alert-success',
+                     empty: 'true'
+                 });
+                 self.id = resp.id;
+                 self.doStep(resp);
+             }
+         });
+     };
 
     /** Function to display the layers collected from the files
      * selected for uploading

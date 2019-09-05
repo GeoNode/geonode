@@ -22,6 +22,7 @@ from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
 from django.conf.urls import url
 from django.views.generic import TemplateView
+from geonode.monitoring import register_url_event
 
 from . import views
 
@@ -29,10 +30,12 @@ js_info_dict = {
     'packages': ('geonode.layers',),
 }
 
+layers_list = register_url_event()(TemplateView.as_view(template_name='layers/layer_list.html'))
+
 urlpatterns = [
     # 'geonode.layers.views',
     url(r'^$',
-        TemplateView.as_view(template_name='layers/layer_list.html'),
+        layers_list,
         {'facet_type': 'layers', 'is_layer': True},
         name='layer_browse'),
     url(r'^upload$', views.layer_upload, name='layer_upload'),

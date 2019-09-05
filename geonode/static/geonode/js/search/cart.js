@@ -70,10 +70,10 @@
         );
       };
     })
-    .directive('resourceCart', [function(){
+    .directive('resourceCart', ['$sce', function($sce){
       return {
         restrict: 'EA',
-        templateUrl: siteUrl + "static/geonode/js/templates/cart.html",
+        templateUrl: $sce.trustAsResourceUrl(staticUrl + "geonode/js/templates/cart.html"),
         link: function($scope, $element){
           // Don't use isolateScope, but add to parent scope
           $scope.facetType = $element.attr("data-facet-type");
@@ -101,12 +101,14 @@
               if(key !== 'csrftoken') {
                 try {
                   var obj = JSON.parse(geonodeCart[key]);
-                  obj['$$hashKey'] = "object:" + index;
-                  if('alternate' in obj) {
+                  if (!Number.isInteger(obj)) {
+                    obj.$$hashKey = "object:" + index;
+                    if ('alternate' in obj) {
                       cartSession.push(obj);
+                    }
                   }
                 } catch(err) {
-                  console.log("Cart Session Issue: " + err.message);
+                  // console.log("Cart Session Issue: " + err.message);
                 }
               }
             });
