@@ -25,6 +25,7 @@
 import re
 import os
 import glob
+import string
 import sys
 import logging
 import tarfile
@@ -33,6 +34,7 @@ from osgeo import gdal, osr
 from urlparse import urlparse
 from zipfile import ZipFile, is_zipfile
 from datetime import datetime
+from random import choice
 
 # Django functionality
 from django.contrib.auth import get_user_model
@@ -298,10 +300,10 @@ def get_valid_name(layer_name):
     """
     name = _clean_string(layer_name)
     proposed_name = name
-    count = 1
     while Layer.objects.filter(name=proposed_name).exists():
-        proposed_name = "%s_%d" % (name, count)
-        count = count + 1
+        possible_chars = string.ascii_lowercase + string.digits
+        suffix = "".join([choice(possible_chars) for i in range(4)])
+        proposed_name = '%s_%s' % (name, suffix)
         logger.warning('Requested name already used; adjusting name '
                        '[%s] => [%s]', layer_name, proposed_name)
     else:
