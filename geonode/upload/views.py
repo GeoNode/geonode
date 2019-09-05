@@ -226,6 +226,7 @@ def save_step_view(req, session):
             user=req.user
         )
         req.session[str(upload_session.import_session.id)] = upload_session
+        req.session.modified = True
         _log('saved session : %s',
              req.session[str(upload_session.import_session.id)])
         return next_step_response(req, upload_session, force_ajax=True)
@@ -620,12 +621,14 @@ def view(req, step):
             session = upload_obj.get_session()
             if session:
                 req.session[upload_id] = session
+                req.session.modified = True
                 return next_step_response(req, session)
         step = 'save'
 
         # delete existing session
         if upload_id and upload_id in req.session:
             del req.session[upload_id]
+            req.session.modified = True
     else:
         if not upload_id:
             return render(
@@ -666,11 +669,13 @@ def view(req, step):
                         Upload.objects.update_from_session(upload_session)
                         upload_session = None
                         del req.session[upload_id]
+                        req.session.modified = True
                 except BaseException:
                     pass
             else:
                 try:
                     req.session[upload_id] = upload_session
+                    req.session.modified = True
                 except BaseException:
                     traceback.print_exc()
         elif upload_id in req.session:
