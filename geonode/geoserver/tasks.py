@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from celery.app import shared_task
+from geonode.celery_app import app
 from celery.utils.log import get_task_logger
 
 from .helpers import gs_slurp
@@ -26,7 +26,7 @@ from .helpers import gs_slurp
 logger = get_task_logger(__name__)
 
 
-@shared_task(bind=True, queue='update')
+@app.task(bind=True, queue='update')
 def geoserver_update_layers(self, *args, **kwargs):
     """
     Runs update layers.

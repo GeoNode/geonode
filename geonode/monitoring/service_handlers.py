@@ -189,7 +189,7 @@ class HostGeoServerService(BaseServiceHandler):
         if not base_url:
             raise ValueError("Service {} should have url provided".format(self.service.name))
         url = '{}{}'.format(base_url.rstrip('/'), self.PATH)
-        rdata = requests.get(url, timeout=10)
+        rdata = requests.get(url, timeout=10, verify=False)
         if rdata.status_code != 200:
             raise ValueError("Error response from api: ({}) {}".format(url, rdata))
         data = rdata.json()['metrics']['metric']
@@ -206,7 +206,7 @@ class HostGeoNodeService(BaseServiceHandler):
         if not base_url:
             raise ValueError("Service {} should have url provided".format(self.service.name))
         url = '{}/monitoring/api/beacon/{}/'.format(base_url.rstrip('/'), self.service.service_type.name)
-        rdata = requests.get(url, timeout=10)
+        rdata = requests.get(url, timeout=10, verify=False)
         if rdata.status_code != 200:
             raise ValueError("Error response from api: ({}) {}".format(url, rdata))
         data = rdata.json()

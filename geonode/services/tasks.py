@@ -23,22 +23,22 @@ from __future__ import absolute_import
 
 import logging
 
-from celery import shared_task
 from django.db import transaction
 
 from . import enumerations
 from . import models
 from .serviceprocessors import get_service_handler
 
+from geonode.celery_app import app
 from geonode.layers.models import Layer
 from geonode.catalogue.models import catalogue_post_save
 
 logger = logging.getLogger(__name__)
 
 
-@shared_task(bind=True,
-             name='geonode.services.tasks.update.harvest_resource',
-             queue='update',)
+@app.task(bind=True,
+          name='geonode.services.tasks.update.harvest_resource',
+          queue='update',)
 def harvest_resource(self, harvest_job_id):
     harvest_job = models.HarvestJob.objects.get(pk=harvest_job_id)
     harvest_job.update_status(

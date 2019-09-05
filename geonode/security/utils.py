@@ -183,7 +183,8 @@ def get_geofence_rules_count():
         r = requests.get(url + 'rest/geofence/rules/count.json',
                          headers=headers,
                          auth=HTTPBasicAuth(user, passwd),
-                         timeout=10)
+                         timeout=10,
+                         verify=False)
         if (r.status_code < 200 or r.status_code > 201):
             logger.warning("Could not retrieve GeoFence Rules count.")
 
@@ -214,7 +215,8 @@ def get_highest_priority():
         r = requests.get(url + 'rest/geofence/rules.json?page=' + str(rules_count - 1) + '&entries=1',
                          headers=headers,
                          auth=HTTPBasicAuth(user, passwd),
-                         timeout=10)
+                         timeout=10,
+                         verify=False)
         if (r.status_code < 200 or r.status_code > 201):
             logger.warning("Could not retrieve GeoFence Rules count.")
 
@@ -246,7 +248,8 @@ def purge_geofence_all():
             r = requests.get(url + 'rest/geofence/rules.json',
                              headers=headers,
                              auth=HTTPBasicAuth(user, passwd),
-                             timeout=10)
+                             timeout=10,
+                             verify=False)
             if (r.status_code < 200 or r.status_code > 201):
                 logger.warning("Could not Retrieve GeoFence Rules")
             else:
@@ -291,7 +294,8 @@ def purge_geofence_layer_rules(resource):
             url, workspace, resource.layer.name),
         headers=headers,
         auth=HTTPBasicAuth(user, passwd),
-        timeout=10
+        timeout=10,
+        verify=False
     )
     if (r.status_code >= 200 and r.status_code < 300):
         gs_rules = r.json()

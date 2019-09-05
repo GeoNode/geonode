@@ -169,14 +169,15 @@ def geoserver_upload(
             workspace=workspace)
         if not gs_resource:
             gs_resource = gs_catalog.get_resource(name=name)
-    if gs_resource is not None:
-        assert gs_resource.name == name
-    else:
+
+    if not gs_resource:
         msg = ('GeoNode encountered problems when creating layer %s.'
                'It cannot find the Layer that matches this Workspace.'
                'try renaming your files.' % name)
         logger.warn(msg)
         raise GeoNodeException(msg)
+
+    assert gs_resource.name == name
 
     # Step 6. Make sure our data always has a valid projection
     # FIXME: Put this in gsconfig.py
@@ -201,9 +202,12 @@ def geoserver_upload(
             _native_bbox = [-180, -90, 180, 90, "EPSG:4326"]
             gs_resource.latlon_bbox = _native_bbox
             gs_resource.projection = "EPSG:4326"
-            cat.save(gs_resource)
-            logger.debug('BBOX coordinates forced to [-180, -90, 180, 90] for layer '
-                         '[%s].', name)
+            try:
+                cat.save(gs_resource)
+                logger.debug('BBOX coordinates forced to [-180, -90, 180, 90] for layer '
+                             '[%s].', name)
+            except BaseException as e:
+                logger.exception('Error occurred while trying to force BBOX on resource', e)
 
     # Step 7. Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
