@@ -755,8 +755,8 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEquals(get_valid_name("blug"), "blug")
         self.assertEquals(get_valid_name("<-->"), "_")
         self.assertEquals(get_valid_name("<ab>"), "_ab_")
-        self.assertEquals(get_valid_name("CA"), "CA_1")
-        self.assertEquals(get_valid_name("CA"), "CA_1")
+        self.assertNotEquals(get_valid_name("CA"), "CA_1")
+        self.assertNotEquals(get_valid_name("CA"), "CA_1")
 
     def test_get_valid_layer_name(self):
         self.assertEquals(get_valid_layer_name("blug", False), "blug")
@@ -768,13 +768,13 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEquals(get_valid_layer_name("<-->", False), "_")
         self.assertEquals(get_valid_layer_name("<-->", True), "<-->")
 
-        self.assertEquals(get_valid_layer_name("CA", False), "CA_1")
-        self.assertEquals(get_valid_layer_name("CA", False), "CA_1")
+        self.assertNotEquals(get_valid_layer_name("CA", False), "CA_1")
+        self.assertNotEquals(get_valid_layer_name("CA", False), "CA_1")
         self.assertEquals(get_valid_layer_name("CA", True), "CA")
         self.assertEquals(get_valid_layer_name("CA", True), "CA")
 
         layer = Layer.objects.get(name="CA")
-        self.assertEquals(get_valid_layer_name(layer, False), "CA_1")
+        self.assertNotEquals(get_valid_layer_name(layer, False), "CA_1")
         self.assertEquals(get_valid_layer_name(layer, True), "CA")
 
         self.assertRaises(GeoNodeException, get_valid_layer_name, 12, False)
