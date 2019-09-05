@@ -228,6 +228,7 @@ def save_step_view(req, session):
             mosaic_time_value=form.cleaned_data['mosaic_time_value'],
             user=req.user
         )
+        upload_session.save()
         req.session[str(upload_session.import_session.id)] = upload_session
         req.session.modified = True
         _log('saved session : %s',
@@ -241,6 +242,8 @@ def save_step_view(req, session):
 
 
 def srs_step_view(request, upload_session):
+    if not upload_session:
+        upload_session = _get_upload_session(request)
     import_session = upload_session.import_session
     assert import_session is not None
 
@@ -314,6 +317,8 @@ def srs_step_view(request, upload_session):
 
 
 def csv_step_view(request, upload_session):
+    if not upload_session:
+        upload_session = _get_upload_session(request)
     import_session = upload_session.import_session
     assert import_session is not None
 
@@ -407,6 +412,8 @@ def csv_step_view(request, upload_session):
 
 
 def check_step_view(request, upload_session):
+    if not upload_session:
+        upload_session = _get_upload_session(request)
     import_session = upload_session.import_session
     assert import_session is not None
 
@@ -432,6 +439,8 @@ def check_step_view(request, upload_session):
 
 
 def create_time_form(request, upload_session, form_data):
+    if not upload_session:
+        upload_session = _get_upload_session(request)
     feature_type = upload_session.import_session.tasks[0].layer
 
     (has_time, layer_values) = layer_eligible_for_time_dimension(
@@ -456,6 +465,8 @@ def create_time_form(request, upload_session, form_data):
 
 
 def time_step_view(request, upload_session):
+    if not upload_session:
+        upload_session = _get_upload_session(request)
     import_session = upload_session.import_session
     assert import_session is not None
 
@@ -538,6 +549,8 @@ def time_step_view(request, upload_session):
 
 def final_step_view(req, upload_session):
     _json_response = None
+    if not upload_session:
+        upload_session = _get_upload_session(req)
     if upload_session:
         import_session = upload_session.import_session
         _log('Checking session %s validity', import_session.id)
