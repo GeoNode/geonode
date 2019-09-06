@@ -111,8 +111,11 @@ def data_upload_progress(req):
 
     if upload_session:
         import_session = upload_session.import_session
-        progress = import_session.tasks[0].get_progress()
-        return json_response(progress)
+        try:
+            progress = import_session.tasks[0].get_progress()
+            return json_response(progress)
+        except BaseException:
+            pass
 
     return json_response({'state': 'NONE'})
 
