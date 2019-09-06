@@ -166,21 +166,22 @@ Ext.onReady(function() {
                 var crs = layer.srs;
                 if (bbox != undefined)
                 {
-                   var extent = new OpenLayers.Bounds();
+                    var extent = new OpenLayers.Bounds();
+                    var layer_bbox = layer.hasOwnProperty('bbox') ? layer.bbox : layer.capability.bbox;
 
-                   if (layer.capability.bbox &&
-                            !Array.isArray(layer.capability.bbox) &&
-                                    map.projection in layer.capability.bbox) {
-                       bbox = layer.capability.bbox[map.projection].bbox;
+                    if (layer_bbox &&
+                       !Array.isArray(layer_bbox) &&
+                       map.projection in layer_bbox) {
+                       bbox = layer_bbox[map.projection].bbox;
                        extent = OpenLayers.Bounds.fromArray(bbox);
-                   } else {
+                    } else {
                        if (crs != map.projection) {
                            extent = OpenLayers.Bounds.fromArray(bbox);
                            extent = extent.clone().transform(crs, map.projection);
                        } else {
                            extent = OpenLayers.Bounds.fromArray(bbox);
                        }
-                   }
+                    }
                 }
             },
            'save': function(obj_id) {

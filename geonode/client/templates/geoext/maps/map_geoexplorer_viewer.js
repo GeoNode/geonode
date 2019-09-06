@@ -169,11 +169,12 @@ Ext.onReady(function() {
                  if (bbox != undefined)
                  {
                     var extent = new OpenLayers.Bounds();
+                    var layer_bbox = layer.hasOwnProperty('bbox') ? layer.bbox : layer.capability.bbox;
 
-                    if (layer.capability.bbox &&
-                             !Array.isArray(layer.capability.bbox) &&
-                                     map.projection in layer.capability.bbox) {
-                        bbox = layer.capability.bbox[map.projection].bbox;
+                    if (layer_bbox &&
+                                !Array.isArray(layer_bbox) &&
+                                        map.projection in layer_bbox) {
+                        bbox = layer_bbox[map.projection].bbox;
                         extent = OpenLayers.Bounds.fromArray(bbox);
                     } else {
                         if (crs != map.projection) {
