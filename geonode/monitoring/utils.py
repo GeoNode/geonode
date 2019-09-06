@@ -321,6 +321,15 @@ class TypeChecks(object):
         raise ValueError("Invalid label value: {}".format(val))
 
     @staticmethod
+    def user_type(val):
+        from geonode.monitoring.models import MetricLabel
+        try:
+            if MetricLabel.objects.filter(user=val).count():
+                return val
+        except MetricLabel.DoesNotExist:
+            raise ValueError("Invalid user value: {}".format(val))
+
+    @staticmethod
     def event_type_type(val):
         from geonode.monitoring.models import EventType
         try:
