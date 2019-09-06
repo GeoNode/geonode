@@ -248,10 +248,14 @@ def get_sld_for(gs_catalog, layer):
         traceback.print_exc()
         pass
 
-    if _default_style is None:
+    try:
         gs_catalog._cache.clear()
+        gs_layer = gs_catalog.get_layer(layer.name)
+    except BaseException:
+        traceback.print_exc()
+
+    if _default_style is None:
         try:
-            gs_layer = gs_catalog.get_layer(layer.name)
             name = gs_layer.default_style.name if gs_layer.default_style is not None else "raster"
         except BaseException:
             traceback.print_exc()
@@ -260,6 +264,7 @@ def get_sld_for(gs_catalog, layer):
         name = _default_style.name
 
     # Detect geometry type if it is a FeatureType
+
     if gs_layer and gs_layer.resource and gs_layer.resource.resource_type == 'featureType':
         res = gs_layer.resource
         res.fetch()
