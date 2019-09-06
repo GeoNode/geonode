@@ -1402,6 +1402,7 @@ class HttpClient(object):
             pool_connections=self.pool_connections
         )
         session.mount("{scheme}://".format(scheme=urlparse.urlsplit(url).scheme), adapter)
+        session.verify = False
         action = getattr(session, method.lower(), None)
         if action:
             response = action(
