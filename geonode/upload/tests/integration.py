@@ -296,17 +296,13 @@ class UploaderBase(GeoNodeBaseTestSupport):
             return
         upload = None
         try:
-            # AF: TODO Headhakes here... nose is not accessing to the test
-            # db!!!
-            uploads = Upload.objects.all()
-            if uploads:
-                upload = Upload.objects.filter(name=str(original_name)).last()
+            upload = Upload.objects.filter(name=str(original_name)).last()
         except Upload.DoesNotExist:
             self.fail('expected to find Upload object for %s' % original_name)
 
-        # AF: TODO Headhakes here... nose is not accessing to the test db!!!
-        if upload:
-            self.assertTrue(upload.complete)
+        # Making sure the Upload object is present on the DB and
+        # the import session is COMPLETE
+        self.assertTrue(upload.complete)
 
     def check_layer_complete(self, layer_page, original_name):
         '''check everything to verify the layer is complete'''

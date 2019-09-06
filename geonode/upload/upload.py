@@ -211,7 +211,7 @@ def upload(
               presentation_strategy, precision_value, precision_step,
               end_time_attribute=end_time_attribute,
               end_time_transform_type=end_time_transform_type,
-              time_format=None, srs=None, use_big_date=use_big_date)
+              time_format=None)
 
     utils.run_import(upload_session, async_upload=False)
 
@@ -306,7 +306,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
         max_length = Upload._meta.get_field('name').max_length
         name = name[:max_length]
         # save record of this whether valid or not - will help w/ debugging
-        upload = Upload.objects.create(
+        upload, _ = Upload.objects.get_or_create(
             user=user,
             name=name,
             state=Upload.STATE_INVALID,
