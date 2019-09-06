@@ -20,6 +20,7 @@ define(['underscore',
         types,
         buildFileInfo,
         displayFiles,
+        doUpload,
         doUploads,
         doSrs,
         doDelete,
@@ -272,6 +273,13 @@ define(['underscore',
         return false;
     };
 
+    /** Function to Upload the selected files to the server
+     */
+    doUpload = function (layers) {
+        if (layers.length > 0) {
+            layers[0].uploadFiles(doUpload, layers.slice(1, layers.length));
+        }
+    };
 
     /** Function to Upload the selected files to the server
      *
@@ -287,13 +295,18 @@ define(['underscore',
         if ($.isEmptyObject(layers) || !checked) {
             alert(gettext('You are trying to upload an incomplete set of files or not all mandatory options have been validated.\n\nPlease check for errors in the form!'));
         } else {
-            $.each(layers, function (name, layerinfo) {
+            /* $.each(layers, function (name, layerinfo) {
                 layerinfo.uploadFiles();
+            }); */
+
+            var layerInfos = [];
+            $.each(layers, function (name, layerinfo) {
+                layerInfos.push(layerinfo);
             });
+            doUpload(layerInfos);
         }
         return false;
     };
-
 
     /** Initialization function. Called from main.js
      *
