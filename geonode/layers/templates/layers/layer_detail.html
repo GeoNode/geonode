@@ -12,6 +12,9 @@
 {% block title %}{{ resource.title|default:resource.alternate }} — {{ block.super }}{% endblock %}
 
 {% block head %}
+
+  <META HTTP-EQUIV="Access-Control-Allow-Origin" CONTENT="{{ SITEURL }}">
+
   {% if TWITTER_CARD %}
     {% include "base/_resourcebase_twittercard.html" %}
   {% endif %}
