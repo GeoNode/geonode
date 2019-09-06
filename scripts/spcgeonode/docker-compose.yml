@@ -49,8 +49,7 @@ x-common-django:
     - C_FORCE_ROOT=True
     # We get an exception after migrations on startup (it seems the monitoring app tries to resolve the geoserver domain name after it's migration, which can happen before oauth migrations on which geoserver startup depends...)
     - MONITORING_ENABLED=False
-    # Automated tests hang for unknown reasons using 'mapstore' by default
-    - GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY=geoext
+    # - GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY=geoext
   volumes:
     - static:/spcgeonode-static/
     - media:/spcgeonode-media/
