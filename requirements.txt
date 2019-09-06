@@ -66,7 +66,7 @@ django-autocomplete-light==2.3.3 # pinned because >=2.3.4 throw an exception on 
 django-basic-authentication-decorator==0.9
 django-leaflet==0.24.0
 django-invitations<=1.9.2
-geonode-oauth-toolkit==1.1.4.5
+geonode-oauth-toolkit==1.1.4.6
 
 # GeoNode org maintained apps.
 django-geoexplorer==4.0.43
@@ -79,7 +79,7 @@ geonode-announcements==1.0.13
 geonode-agon-ratings==0.3.8
 arcrest>=10.0
 geonode-dialogos==1.2
-geoserver-restconfig==1.0.2
+geoserver-restconfig==1.0.3
 gn-gsimporter==1.0.10
 gisdata==0.5.4
 
