@@ -9,7 +9,7 @@ UA should provide information about GeoNode resources usage at user level (not r
 Requests
 --------
 
-1. total number of unique visitors on GeoNode (excluding ows requests) per day. This gives a base view of the reach.
+1. total number of unique sessions on GeoNode (excluding ows requests) per day. This gives a base view of the reach.
 
     * requests from all sessions of all types, ows and non-ows
 
@@ -55,7 +55,7 @@ Requests
             }
           }
 
-2. total number of unique visitors per URL (excluding ows requests). Let me see how many users visits the layers page or the maps page
+2. total number of unique sessions per URL (excluding ows requests). Let me see how many users visits the layers page or the maps page
 
     * get number of unique tracking ids for urls
 
@@ -123,7 +123,7 @@ Requests
             }
           }
 
-3. total number of unique visitors per event_type: for example total number of unique visits of resource pages (indipendently by resource type and id)
+3. total number of unique sessions per event_type: for example total number of unique visits of resource pages (indipendently by resource type and id)
 
     * to get number of requests
 
@@ -189,7 +189,7 @@ Requests
             }
           }
 
-4. total number of unique visitors per event_type and single resource: let me see what was the most visited map page in this day, or what was the most downloaded document, what was the most requested ows layer, etc.
+4. total number of unique sessions per event_type and single resource: let me see what was the most visited map page in this day, or what was the most downloaded document, what was the most requested ows layer, etc.
 
     * list of most visited resources of `url` type
 
@@ -313,3 +313,190 @@ Requests
               "label": null
             }
           }
+
+5. total number of unique visitor (user) per event_type and single resource: let me see how many users visited the map page in this day, or how many users download some resource, etc.
+
+  * number of unique visitors (users) in a year for a given event_type:
+
+    ``GET /monitoring/api/metric_data/request.users/``
+    ``?valid_from=2019-01-01+00:00:00&valid_to=2019-12-31+23:59:59``
+    ``&interval=31536000&event_type=upload&group_by=user``
+
+  * number of unique visitors (users) in a given time interval and for a given resource_type.
+
+    ``GET /monitoring/api/metric_data/request.users/``
+    ``?valid_from=2019-01-01+00:00:00&valid_to=2019-12-31+23:59:59``
+    ``&interval=31536000&resource_type=layer&group_by=user``
+
+  the responses should look like this:
+
+  .. code-block:: json
+
+      {
+        "data": {
+          "input_valid_from": "2019-01-01T00:00:00Z",
+          "input_valid_to": "2019-12-31T23:59:59Z",
+          "data": [
+            {
+              "valid_from": "2019-01-01T00:00:00Z",
+              "data": [
+                {
+                  "samples_count": 3,
+                  "val": 2,
+                  "min": "1.0000",
+                  "max": "2.0000",
+                  "sum": "3.0000",
+                  "metric_count": 2
+                }
+              ],
+              "valid_to": "2020-01-01T00:00:00Z"
+            }
+          ],
+          "metric": "request.users",
+          "interval": 31536000,
+          "type": "value",
+          "axis_label": "Count",
+          "label": null
+        }
+      }
+
+6. total number of unique tracking ids/sessions for a given user.
+
+  * sessions count for anonymous users:
+
+    ``GET /monitoring/api/metric_data/request.users/``
+    ``?valid_from=2019-01-01+00:00:00&valid_to=2019-12-31+23:59:59``
+    ``&interval=31536000&group_by=label&user=AnonymousUser``
+
+    .. code-block:: json
+
+      {
+        "data": {
+          "input_valid_from": "2019-01-01T00:00:00Z",
+          "input_valid_to": "2019-12-31T23:59:59Z",
+          "data": [
+            {
+              "valid_from": "2019-01-01T00:00:00Z",
+              "data": [
+                {
+                  "samples_count": 5,
+                  "val": 5,
+                  "min": "1.0000",
+                  "max": "1.0000",
+                  "sum": "5.0000",
+                  "metric_count": 5
+                }
+              ],
+              "valid_to": "2020-01-01T00:00:00Z"
+            }
+          ],
+          "metric": "request.users",
+          "interval": 31536000,
+          "type": "value",
+          "axis_label": "Count",
+          "label": null
+        }
+      }
+
+7. total number of unique tracking ids/sessions for each user.
+
+  * sessions count for each users:
+
+    ``GET /monitoring/api/metric_data/request.users/``
+    ``?valid_from=2019-01-01+00:00:00&valid_to=2019-12-31+23:59:59``
+    ``&interval=31536000&group_by=user_on_label``
+
+    .. code-block:: json
+
+      {
+        "data": {
+          "input_valid_from": "2019-01-01T00:00:00Z",
+          "input_valid_to": "2019-12-31T23:59:59Z",
+          "data": [
+            {
+              "valid_from": "2019-01-01T00:00:00Z",
+              "data": [
+                {
+                  "samples_count": 5,
+                  "val": 5,
+                  "min": "1.0000",
+                  "max": "1.0000",
+                  "sum": "5.0000",
+                  "user": "AnonymousUser",
+                  "metric_count": 5
+                },
+                {
+                  "samples_count": 16,
+                  "val": 3,
+                  "min": "1.0000",
+                  "max": "2.0000",
+                  "sum": "16.0000",
+                  "user": "admin",
+                  "metric_count": 14
+                },
+                {
+                  "samples_count": 4,
+                  "val": 1,
+                  "min": "1.0000",
+                  "max": "1.0000",
+                  "sum": "4.0000",
+                  "user": "user1_username",
+                  "metric_count": 4
+                }
+              ],
+              "valid_to": "2020-01-01T00:00:00Z"
+            }
+          ],
+          "metric": "request.users",
+          "interval": 31536000,
+          "type": "value",
+          "axis_label": "Count",
+          "label": null
+        }
+      }
+
+  * sessions count for each users which do something with a layer:
+
+    ``GET /monitoring/api/metric_data/request.users/``
+    ``?valid_from=2019-01-01+00:00:00&valid_to=2019-12-31+23:59:59``
+    ``&interval=31536000&resource_type=layer&group_by=user_on_label``
+
+    .. code-block:: json
+
+      {
+        "data": {
+          "input_valid_from": "2019-01-01T00:00:00Z",
+          "input_valid_to": "2019-12-31T23:59:59Z",
+          "data": [
+            {
+              "valid_from": "2019-01-01T00:00:00Z",
+              "data": [
+                {
+                  "samples_count": 2,
+                  "val": 1,
+                  "min": "2.0000",
+                  "max": "2.0000",
+                  "sum": "2.0000",
+                  "user": "admin",
+                  "metric_count": 1
+                },
+                {
+                  "samples_count": 1,
+                  "val": 1,
+                  "min": "1.0000",
+                  "max": "1.0000",
+                  "sum": "1.0000",
+                  "user": "user1_username",
+                  "metric_count": 1
+                }
+              ],
+              "valid_to": "2020-01-01T00:00:00Z"
+            }
+          ],
+          "metric": "request.users",
+          "interval": 31536000,
+          "type": "value",
+          "axis_label": "Count",
+          "label": null
+        }
+      }

@@ -157,18 +157,25 @@ class CheckTypeForm(_ValidFromToLastForm):
 class MetricsFilters(CheckTypeForm):
     GROUP_BY_RESOURCE = 'resource'
     GROUP_BY_CHOICES = ((GROUP_BY_RESOURCE, "By resource",),)
-    GROUP_BY_RESOURCE_NO_LABEL = 'resource_no_label'
+    GROUP_BY_RESOURCE_ON_LABEL = 'resource_on_label'
+    GROUP_BY_RESOURCE_ON_USER = 'resource_on_user'
     GROUP_BY_LABEL = 'label'
+    GROUP_BY_USER = 'user'
+    GROUP_BY_USER_ON_LABEL = 'user_on_label'
     GROUP_BY_EVENT_TYPE = 'event_type'
     GROUP_BY_EVENT_TYPE_ON_LABEL = 'event_type_on_label'
     GROUP_BY_CHOICES = ((GROUP_BY_RESOURCE, "By resource",),
-                        (GROUP_BY_RESOURCE_NO_LABEL, "By resource but no label",),
+                        (GROUP_BY_RESOURCE_ON_LABEL, "By resource on label",),
+                        (GROUP_BY_RESOURCE_ON_USER, "By resource on user",),
                         (GROUP_BY_LABEL, "By label",),
+                        (GROUP_BY_USER, "By user",),
+                        (GROUP_BY_USER_ON_LABEL, "By user on label",),
                         (GROUP_BY_EVENT_TYPE, "By event type",),
                         (GROUP_BY_EVENT_TYPE_ON_LABEL, "By event type on label",),
                         )
     service = forms.CharField(required=False)
     label = forms.CharField(required=False)
+    user = forms.CharField(required=False)
     resource = forms.CharField(required=False)
     resource_type = forms.ChoiceField(
         choices=MonitoredResource.TYPES, required=False)
@@ -184,6 +191,9 @@ class MetricsFilters(CheckTypeForm):
 
     def clean_label(self):
         return self._check_type('label')
+
+    def clean_user(self):
+        return self._check_type('user')
 
     def clean_event_type(self):
         return self._check_type('event_type')
