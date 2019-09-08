@@ -448,7 +448,7 @@ def cascading_delete(cat, layer_name):
                     cat.delete(s, purge='true')
                     workspace, name = layer_name.split(':') if ':' in layer_name else \
                         (settings.DEFAULT_WORKSPACE, layer_name)
-                except FailedRequestError as e:
+                except BaseException as e:
                     # Trying to delete a shared style will fail
                     # We'll catch the exception and log it.
                     logger.debug(e)

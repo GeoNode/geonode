@@ -411,7 +411,7 @@ define(function (require, exports) {
      *  @params {options}
      *  @returns {string}
      */
-    LayerInfo.prototype.doFinal = function (resp) {
+    LayerInfo.prototype.doFinal = function (resp, callback, array) {
         var self = this;
         if (resp.hasOwnProperty('redirect_to') && resp.redirect_to.indexOf('upload/final') > -1) {
             common.make_request({
@@ -429,6 +429,8 @@ define(function (require, exports) {
                 failure: function (resp, status) {
                     self.polling = false;
                     self.markError(resp.errors, status);
+
+                    callback(array);
                 },
                 success: function (resp, status) {
                     self.polling = false;
@@ -440,13 +442,17 @@ define(function (require, exports) {
                         });
                     } else if (resp.status === "pending") {
                         setTimeout(function() {
-                            self.doFinal(resp);
+                            self.doFinal(resp, callback, array);
                         }, 5000);
                     } else if (resp.status === 'error') {
                         self.polling = false;
                         self.markError(resp.error_msg, resp.status);
+
+                        callback(array);
                     } else {
                         self.displayUploadedLayerLinks(resp);
+
+                        callback(array);
                     }
                 }
             });
@@ -468,6 +474,9 @@ define(function (require, exports) {
                 empty: 'true'
             });
             $("#" + element).on('click', resp, self.doResume);
+
+            callback(array);
+
             return;
         } else if (resp.status === "other") {
             self.logStatus({
@@ -475,12 +484,18 @@ define(function (require, exports) {
                 level: 'alert-success',
                 empty: 'true'
             });
+
+            callback(array);
         } else if (resp.status === 'error') {
             self.polling = false;
             self.markError(resp.error_msg, resp.status);
+
+            callback(array);
         } else if (resp.success === true) {
             self.polling = false;
             self.displayUploadedLayerLinks(resp);
+
+            callback(array);
         } else {
             self.polling = false;
             resp.errors = 'Unexpected Error';
@@ -489,6 +504,8 @@ define(function (require, exports) {
                 level: 'alert-error',
                 empty: 'true'
             });
+
+            callback(array);
         }
 
     };
@@ -498,7 +515,7 @@ define(function (require, exports) {
      *  @params {options}
      *  @returns {string}
      */
-    LayerInfo.prototype.doStep = function (resp) {
+    LayerInfo.prototype.doStep = function (resp, callback, array) {
         var self = this;
         self.logStatus({
             msg: '<p>' + gettext('Performing GeoServer Config Step') + '</p>',
@@ -516,20 +533,24 @@ define(function (require, exports) {
                     } else {
                         self.markError(resp.errors, status);
                     }
+
+                    callback(array);
                 },
                 success: function (resp, status) {
                     self.id = resp.id;
                     if (resp.status === 'incomplete') {
                         if (resp.input_required === true) {
-                            self.doFinal(resp);
+                            self.doFinal(resp, callback, array);
                         } else {
-                            self.doStep(resp);
+                            self.doStep(resp, callback, array);
                         }
                     } else if (resp.status === 'error') {
                         self.polling = false;
                         self.markError(resp.error_msg, resp.status);
+
+                        callback(array);
                     } else if (resp.redirect_to.indexOf('upload/final') > -1) {
-                        self.doFinal(resp);
+                        self.doFinal(resp, callback, array);
                     } else {
                         window.location = resp.url;
                     }
@@ -538,10 +559,12 @@ define(function (require, exports) {
         } else if (resp.success === true && resp.status === 'error') {
             self.polling = false;
             self.markError(resp.error_msg, resp.status);
+
+            callback(array);
         } else if (resp.success === true && typeof resp.url != 'undefined') {
-            self.doFinal(resp);
+            self.doFinal(resp, callback, array);
         } else if (resp.success === true && resp.redirect_to.indexOf('upload/final') > -1) {
-            self.doFinal(resp);
+            self.doFinal(resp, callback, array);
         }
     };
 
@@ -550,57 +573,58 @@ define(function (require, exports) {
      *  @params
      *  @returns
      */
-     LayerInfo.prototype.uploadFiles = function () {
-         var form_data = this.prepareFormData(),
-             self = this;
-         var prog = "";
+     LayerInfo.prototype.uploadFiles = function (callback, array) {
+        var form_data = this.prepareFormData(), self = this;
+        var prog = "";
 
         $.ajax({
-             url: form_target,
-             async: true,
+            url: form_target,
+            async: true,
             mode: "queue",
-             type: "POST",
-             data: form_data,
-             timeout: 15000,
-             processData: false,
-             contentType: false,
-             xhr: function() {
-                 var req = $.ajaxSettings.xhr();
-                 if (req) {
-                     req.upload.addEventListener('progress', function(evt) {
-                         console.log(req.status)
-                         if(evt.lengthComputable) {
-                             var pct = (evt.loaded / evt.total) * 100;
-                             $('#prog > .progress-bar').css('width', pct.toPrecision(3) + '%');
-                         }
-                     }, false);
-                 }
-                 return req;
-             },
-             beforeSend: function () {
-                 self.markStart();
-                 self.polling = true;
-                 self.startPolling();
-             },
-             error: function (jqXHR) {
-                 self.polling = false;
-                 if(jqXHR.status === 500 || jqXHR.status === 0 || jqXHR.readyState === 0){
-                   self.markError('Server Error: ' + jqXHR.statusText + gettext('<br>Please check your network connection. In case of Layer Upload make sure GeoServer is running and accepting connections.'));
-                 } else if (jqXHR.status === 400 || jqXHR.status === 404) {
-                   self.markError('Client Error: ' + jqXHR.statusText + gettext('<br>Bad request or URL not found.'));
-                 } else {
-                   self.markError(gettext('Unexpected Error'));
-                 }
-             },
-             success: function (resp, status) {
-                 self.logStatus({
-                     msg: '<p>' + gettext('Layer files uploaded, configuring in GeoServer') + '</p>',
-                     level: 'alert-success',
-                     empty: 'true'
-                 });
-                 self.id = resp.id;
-                 self.doStep(resp);
-             }
+            type: "POST",
+            data: form_data,
+            timeout: 600000, // sets timeout to 10 minutes
+            processData: false,
+            contentType: false,
+            xhr: function() {
+                var req = $.ajaxSettings.xhr();
+                if (req) {
+                    req.upload.addEventListener('progress', function(evt) {
+                        console.log(req.status)
+                        if(evt.lengthComputable) {
+                            var pct = (evt.loaded / evt.total) * 100;
+                            $('#prog > .progress-bar').css('width', pct.toPrecision(3) + '%');
+                        }
+                    }, false);
+                }
+                return req;
+            },
+            beforeSend: function () {
+                self.markStart();
+                self.polling = true;
+                self.startPolling();
+            },
+            error: function (jqXHR) {
+                self.polling = false;
+                if(jqXHR.status === 500 || jqXHR.status === 0 || jqXHR.readyState === 0){
+                  self.markError('Server Error: ' + jqXHR.statusText + gettext('<br>Please check your network connection. In case of Layer Upload make sure GeoServer is running and accepting connections.'));
+                } else if (jqXHR.status === 400 || jqXHR.status === 404) {
+                  self.markError('Client Error: ' + jqXHR.statusText + gettext('<br>Bad request or URL not found.'));
+                } else {
+                  self.markError(gettext('Unexpected Error'));
+                }
+
+                callback(array);
+            },
+            success: function (resp, status) {
+                self.logStatus({
+                    msg: '<p>' + gettext('Layer files uploaded, configuring in GeoServer') + '</p>',
+                    level: 'alert-success',
+                    empty: 'true'
+                });
+                self.id = resp.id;
+                self.doStep(resp, callback, array);
+            }
          });
      };
 

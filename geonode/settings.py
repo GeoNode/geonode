@@ -127,8 +127,7 @@ geonode_data:geonode_data@localhost:5432/geonode_data')
     if 'CONN_TOUT' in DATABASES['default']:
         _geo_db['CONN_TOUT'] = 5
     if 'postgresql' in GEODATABASE_URL or 'postgis' in GEODATABASE_URL:
-        if 'OPTIONS' not in DATABASES['default']:
-            _geo_db['OPTIONS'] = {}
+        _geo_db['OPTIONS'] = DATABASES['default']['OPTIONS'] if 'OPTIONS' in DATABASES['default'] else {}
         _geo_db['OPTIONS'].update({
             'connect_timeout': 5,
         })
@@ -1590,7 +1589,7 @@ if ASYNC_SIGNALS:
 else:
     _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
     CELERY_RESULT_BACKEND_PATH = os.getenv(
-        'CELERY_RESULT_BACKEND_PATH', os.path.join(PROJECT_ROOT, 'results'))
+        'CELERY_RESULT_BACKEND_PATH', os.path.join(PROJECT_ROOT, '.celery_results'))
     if not os.path.exists(CELERY_RESULT_BACKEND_PATH):
         os.makedirs(CELERY_RESULT_BACKEND_PATH)
     CELERY_RESULT_BACKEND = 'file:///%s' % CELERY_RESULT_BACKEND_PATH
@@ -1773,7 +1772,7 @@ MONITORING_SKIP_PATHS = ('/api/o/',
 # for current data, 1 minute resolution
 # for data older than 1 day, 1-hour resolution
 # for data older than 2 weeks, 1 day resolution
-MONITORING_DATA_AGGREGATION = (                           
+MONITORING_DATA_AGGREGATION = (
                                (timedelta(seconds=0), timedelta(minutes=1),),
                                (timedelta(days=1), timedelta(minutes=60),),
                                (timedelta(days=14), timedelta(days=1),),
