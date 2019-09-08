@@ -127,7 +127,7 @@ geonode_data:geonode_data@localhost:5432/geonode_data')
     if 'CONN_TOUT' in DATABASES['default']:
         _geo_db['CONN_TOUT'] = 5
     if 'postgresql' in GEODATABASE_URL or 'postgis' in GEODATABASE_URL:
-        _geo_db['OPTIONS'] = DATABASES['default'] if 'OPTIONS' in DATABASES['default'] else {}
+        _geo_db['OPTIONS'] = DATABASES['default']['OPTIONS'] if 'OPTIONS' in DATABASES['default'] else {}
         _geo_db['OPTIONS'].update({
             'connect_timeout': 5,
         })
