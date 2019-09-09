@@ -80,7 +80,7 @@ geonode-agon-ratings==0.3.8
 arcrest>=10.0
 geonode-dialogos==1.2
 geoserver-restconfig==1.0.3
-gn-gsimporter==1.0.10
+gn-gsimporter==1.0.12
 gisdata==0.5.4
 
 # haystack/elasticsearch
