@@ -1936,12 +1936,12 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             self.assertEqual(month_data[0]["samples_count"], None)
         last_month_data = data[-1]["data"]
         self.assertEqual(len(last_month_data), 1)
-        self.assertEqual(last_month_data[0]["metric_count"], 26)
+        self.assertEqual(last_month_data[0]["metric_count"], 25)
         self.assertEqual(last_month_data[0]["val"], 5)
         self.assertEqual(last_month_data[0]["min"], "1.0000")
         self.assertEqual(last_month_data[0]["max"], "3.0000")
-        self.assertEqual(last_month_data[0]["sum"], "32.0000")
-        self.assertEqual(last_month_data[0]["samples_count"], 32)
+        self.assertEqual(last_month_data[0]["sum"], "31.0000")
+        self.assertEqual(last_month_data[0]["samples_count"], 31)
 
     def test_anonymous_sessions_count_endpoints(self):
         # layer/upload
@@ -2057,13 +2057,13 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(last_month_data[1]["user"], "admin")
         self.assertEqual(last_month_data[1]["samples_count"], 5)
         # 3
-        self.assertEqual(last_month_data[2]["metric_count"], 8)
+        self.assertEqual(last_month_data[2]["metric_count"], 7)
         self.assertEqual(last_month_data[2]["val"], 2)
         self.assertEqual(last_month_data[2]["min"], "1.0000")
         self.assertEqual(last_month_data[2]["max"], "3.0000")
-        self.assertEqual(last_month_data[2]["sum"], "12.0000")
+        self.assertEqual(last_month_data[2]["sum"], "11.0000")
         self.assertEqual(last_month_data[2]["user"], "joe")
-        self.assertEqual(last_month_data[2]["samples_count"], 12)
+        self.assertEqual(last_month_data[2]["samples_count"], 11)
         # 4
         self.assertEqual(last_month_data[3]["metric_count"], 3)
         self.assertEqual(last_month_data[3]["val"], 1)
@@ -2080,3 +2080,186 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(last_month_data[4]["sum"], "5.0000")
         self.assertEqual(last_month_data[4]["user"], "mary")
         self.assertEqual(last_month_data[4]["samples_count"], 5)
+
+    def test_hostgeonode_cpu_endpoints(self):
+        url = "%s?%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'cpu.usage.percent'}),
+            'last=604800&interval=604800',
+            'service=localhost-hostgeonode'
+        )
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        # Check data
+        data = out["data"]
+        self.assertEqual(data["metric"], "cpu.usage.percent")
+        self.assertEqual(data["interval"], 604800)
+        self.assertEqual(data["label"], None)
+        self.assertEqual(data["axis_label"], "%")
+        self.assertEqual(data["type"], "rate")
+        d = data["data"][0]["data"]
+        self.assertEqual(d[0]["samples_count"], 2)
+        self.assertEqual(d[0]["val"], "26.5489000000000000")
+        self.assertEqual(d[0]["min"], "1.6354")
+        self.assertEqual(d[0]["max"], "51.4624")
+        self.assertEqual(d[0]["sum"], "53.0978")
+        self.assertEqual(
+            d[0]["label"],
+            "/proxy/?url=http%3A%2F%2Flocalhost%3A8080%2Fgeoserver%2Fows%3Fservice"
+            "%3DWMS%26version%3D1.1.1%26request%3DDescribeLayer%26layers%3Dgeonode"
+            "%253Arailways%26access_token%3DAGWnjcAoUtdfHP8XjuE5vEefu8j5sz")
+        self.assertEqual(d[0]["user"], None)
+        self.assertEqual(d[0]["metric_count"], 2)
+
+    def test_hostgeoserver_cpu_endpoints(self):
+        url = "%s?%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'cpu.usage.percent'}),
+            'last=604800&interval=604800',
+            'service=localhost-hostgeoserver'
+        )
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        # Check data
+        data = out["data"]
+        self.assertEqual(data["metric"], "cpu.usage.percent")
+        self.assertEqual(data["interval"], 604800)
+        self.assertEqual(data["label"], None)
+        self.assertEqual(data["axis_label"], "%")
+        self.assertEqual(data["type"], "rate")
+        d = data["data"][0]["data"]
+        self.assertEqual(d[0]["samples_count"], 3)
+        self.assertEqual(d[0]["val"], "20.3421000000000000")
+        self.assertEqual(d[0]["min"], "14.3935")
+        self.assertEqual(d[0]["max"], "25.6353")
+        self.assertEqual(d[0]["sum"], "61.0263")
+        self.assertEqual(
+            d[0]["label"],
+            "9d013cdaef339aedf8794f6558aacf4eaf5eddfaee11b6316b05105ea5b1968a")
+        self.assertEqual(d[0]["user"], "AnonymousUser")
+        self.assertEqual(d[0]["metric_count"], 3)
+
+    def test_hostgeonode_mem_endpoints(self):
+        url = "%s?%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'mem.usage.percent'}),
+            'last=604800&interval=604800',
+            'service=localhost-hostgeonode'
+        )
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        # Check data
+        data = out["data"]
+        self.assertEqual(data["metric"], "mem.usage.percent")
+        self.assertEqual(data["interval"], 604800)
+        self.assertEqual(data["label"], None)
+        self.assertEqual(data["axis_label"], "%")
+        self.assertEqual(data["type"], "rate")
+        d = data["data"][0]["data"]
+        self.assertEqual(d[0]["samples_count"], 3)
+        self.assertEqual(d[0]["val"], "83.3176000000000000")
+        self.assertEqual(d[0]["min"], "75.1172")
+        self.assertEqual(d[0]["max"], "88.7119")
+        self.assertEqual(d[0]["sum"], "249.9528")
+        self.assertEqual(d[0]["label"], "/layers/upload")
+        self.assertEqual(d[0]["user"], None)
+        self.assertEqual(d[0]["metric_count"], 3)
+
+    def test_hostgeoserver_mem_endpoints(self):
+        url = "%s?%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'mem.usage.percent'}),
+            'last=604800&interval=604800',
+            'service=localhost-hostgeoserver'
+        )
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        # Check data
+        data = out["data"]
+        self.assertEqual(data["metric"], "mem.usage.percent")
+        self.assertEqual(data["interval"], 604800)
+        self.assertEqual(data["label"], None)
+        self.assertEqual(data["axis_label"], "%")
+        self.assertEqual(data["type"], "rate")
+        d = data["data"][0]["data"]
+        self.assertEqual(d[0]["samples_count"], 3)
+        self.assertEqual(d[0]["val"], "89.8485666666666667")
+        self.assertEqual(d[0]["min"], "81.1286")
+        self.assertEqual(d[0]["max"], "95.5952")
+        self.assertEqual(d[0]["sum"], "269.5457")
+        self.assertEqual(d[0]["label"], "/layers/upload")
+        self.assertEqual(d[0]["user"], None)
+        self.assertEqual(d[0]["metric_count"], 3)
+
+    def test_uptime_endpoints(self):
+        url = reverse('monitoring:api_metric_data', args={'uptime'})
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        # Check data
+        data = out["data"]["data"][0]["data"]
+        # First
+        self.assertEqual(data[0]["samples_count"], 5)
+        self.assertEqual(data[0]["val"], "36023.0000")
+        self.assertEqual(data[0]["min"], "875.0000")
+        self.assertEqual(data[0]["max"], "17171.0000")
+        self.assertEqual(data[0]["sum"], "36023.0000")
+        self.assertEqual(data[0]["label"], "9d013cdaef339aedf8794f6558aacf4eaf5eddfaee11b6316b05105ea5b1968a")
+        self.assertEqual(data[0]["user"], "AnonymousUser")
+        self.assertEqual(data[0]["metric_count"], 5)
+        # Second
+        self.assertEqual(data[1]["samples_count"], 5)
+        self.assertEqual(data[1]["val"], "36012.0318")
+        self.assertEqual(data[1]["min"], "874.4291")
+        self.assertEqual(data[1]["max"], "17167.7007")
+        self.assertEqual(data[1]["sum"], "36012.0318")
+        self.assertEqual(data[1]["label"], "/proxy/?url=http%3A%2F%2Flocalhost%3A8080%2Fgeoserver%2Fows%3F"
+                                           "service%3DWMS%26version%3D1.1.1%26request%3DDescribeLayer%26layers%3D"
+                                           "geonode%253Aroads%26access_token%3DAGWnjcAoUtdfHP8XjuE5vEefu8j5sz")
+        self.assertEqual(data[1]["user"], None)
+        self.assertEqual(data[1]["metric_count"], 5)
