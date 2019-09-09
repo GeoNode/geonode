@@ -46535,5 +46535,707 @@
       "samples_count": 5,
       "data": {}
     }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 386,
+    "fields": {
+      "valid_from": "2019-08-30T10:54:00Z",
+      "valid_to": "2019-08-30T10:55:00Z",
+      "service_metric": 42,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 73,
+      "value": "9997.02",
+      "value_num": "9997.0200",
+      "value_raw": "9997.02",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 725,
+    "fields": {
+      "valid_from": "2019-09-02T15:17:00Z",
+      "valid_to": "2019-09-02T15:18:00Z",
+      "service_metric": 42,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 73,
+      "value": "704.18",
+      "value_num": "704.1800",
+      "value_raw": "704.18",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 2107,
+    "fields": {
+      "valid_from": "2019-09-05T08:50:00Z",
+      "valid_to": "2019-09-05T08:51:00Z",
+      "service_metric": 42,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 73,
+      "value": "4563.34",
+      "value_num": "4563.3400",
+      "value_raw": "4563.34",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 3833,
+    "fields": {
+      "valid_from": "2019-09-05T09:41:00Z",
+      "valid_to": "2019-09-05T09:42:00Z",
+      "service_metric": 42,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 73,
+      "value": "6138.09",
+      "value_num": "6138.0900",
+      "value_raw": "6138.09",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 2108,
+    "fields": {
+      "valid_from": "2019-09-05T08:50:00Z",
+      "valid_to": "2019-09-05T08:51:00Z",
+      "service_metric": 43,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 73,
+      "value": "0.0163537587931",
+      "value_num": "0.0164",
+      "value_raw": "0.0163537587931",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 3834,
+    "fields": {
+      "valid_from": "2019-09-05T09:41:00Z",
+      "valid_to": "2019-09-05T09:42:00Z",
+      "service_metric": 43,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 73,
+      "value": "0.514624183007",
+      "value_num": "0.5146",
+      "value_raw": "0.514624183007",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 2109,
+    "fields": {
+      "valid_from": "2019-09-05T08:50:00Z",
+      "valid_to": "2019-09-05T08:51:00Z",
+      "service_metric": 44,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 72,
+      "value": "1.63537587931",
+      "value_num": "1.6354",
+      "value_raw": "1.63537587931",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 3835,
+    "fields": {
+      "valid_from": "2019-09-05T09:41:00Z",
+      "valid_to": "2019-09-05T09:42:00Z",
+      "service_metric": 44,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 72,
+      "value": "51.4624183007",
+      "value_num": "51.4624",
+      "value_raw": "51.4624183007",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 388,
+    "fields": {
+      "valid_from": "2019-08-30T10:54:00Z",
+      "valid_to": "2019-08-30T10:55:00Z",
+      "service_metric": 63,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 23,
+      "value": "14.3133433693",
+      "value_num": "14.3133",
+      "value_raw": "14.3133433693",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 727,
+    "fields": {
+      "valid_from": "2019-09-02T15:17:00Z",
+      "valid_to": "2019-09-02T15:18:00Z",
+      "service_metric": 63,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 23,
+      "value": "25.6353458529",
+      "value_num": "25.6353",
+      "value_raw": "25.6353458529",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 2111,
+    "fields": {
+      "valid_from": "2019-09-05T08:50:00Z",
+      "valid_to": "2019-09-05T08:51:00Z",
+      "service_metric": 63,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 23,
+      "value": "20.9975134328",
+      "value_num": "20.9975",
+      "value_raw": "20.9975134328",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 3837,
+    "fields": {
+      "valid_from": "2019-09-05T09:41:00Z",
+      "valid_to": "2019-09-05T09:42:00Z",
+      "service_metric": 63,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 23,
+      "value": "14.3934701315",
+      "value_num": "14.3935",
+      "value_raw": "14.3934701315",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 270,
+    "fields": {
+      "valid_from": "2019-08-30T10:54:00Z",
+      "valid_to": "2019-08-30T10:55:00Z",
+      "service_metric": 36,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "381833216",
+      "value_num": "381833216.0000",
+      "value_raw": "381833216",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 609,
+    "fields": {
+      "valid_from": "2019-09-02T15:17:00Z",
+      "valid_to": "2019-09-02T15:18:00Z",
+      "service_metric": 36,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "1536131072",
+      "value_num": "1536131072.0000",
+      "value_raw": "1536131072",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 1991,
+    "fields": {
+      "valid_from": "2019-09-05T08:50:00Z",
+      "valid_to": "2019-09-05T08:51:00Z",
+      "service_metric": 36,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "594771968",
+      "value_num": "594771968.0000",
+      "value_raw": "594771968",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 3717,
+    "fields": {
+      "valid_from": "2019-09-05T09:41:00Z",
+      "valid_to": "2019-09-05T09:42:00Z",
+      "service_metric": 36,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "362184704",
+      "value_num": "362184704.0000",
+      "value_raw": "362184704",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 610,
+    "fields": {
+      "valid_from": "2019-09-02T15:17:00Z",
+      "valid_to": "2019-09-02T15:18:00Z",
+      "service_metric": 37,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "6226784256",
+      "value_num": "6226784256.0000",
+      "value_raw": "6226784256",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 1992,
+    "fields": {
+      "valid_from": "2019-09-05T08:50:00Z",
+      "valid_to": "2019-09-05T08:51:00Z",
+      "service_metric": 37,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "7139155968",
+      "value_num": "7139155968.0000",
+      "value_raw": "7139155968",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 3718,
+    "fields": {
+      "valid_from": "2019-09-05T09:41:00Z",
+      "valid_to": "2019-09-05T09:42:00Z",
+      "service_metric": 37,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "7353704448",
+      "value_num": "7353704448.0000",
+      "value_raw": "7353704448",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 611,
+    "fields": {
+      "valid_from": "2019-09-02T15:17:00Z",
+      "valid_to": "2019-09-02T15:18:00Z",
+      "service_metric": 38,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "75.1172184792",
+      "value_num": "75.1172",
+      "value_raw": "75.1172184792",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 1993,
+    "fields": {
+      "valid_from": "2019-09-05T08:50:00Z",
+      "valid_to": "2019-09-05T08:51:00Z",
+      "service_metric": 38,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "86.1236742045",
+      "value_num": "86.1237",
+      "value_raw": "86.1236742045",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 3719,
+    "fields": {
+      "valid_from": "2019-09-05T09:41:00Z",
+      "valid_to": "2019-09-05T09:42:00Z",
+      "service_metric": 38,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "88.7118938029",
+      "value_num": "88.7119",
+      "value_raw": "88.7118938029",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 391,
+    "fields": {
+      "valid_from": "2019-08-30T10:54:00Z",
+      "valid_to": "2019-08-30T10:55:00Z",
+      "service_metric": 55,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "379006976",
+      "value_num": "379006976.0000",
+      "value_raw": "379006976",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 730,
+    "fields": {
+      "valid_from": "2019-09-02T15:17:00Z",
+      "valid_to": "2019-09-02T15:18:00Z",
+      "service_metric": 55,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "1564332032",
+      "value_num": "1564332032.0000",
+      "value_raw": "1564332032",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 2114,
+    "fields": {
+      "valid_from": "2019-09-05T08:50:00Z",
+      "valid_to": "2019-09-05T08:51:00Z",
+      "service_metric": 55,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "595021824",
+      "value_num": "595021824.0000",
+      "value_raw": "595021824",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 3840,
+    "fields": {
+      "valid_from": "2019-09-05T09:41:00Z",
+      "valid_to": "2019-09-05T09:42:00Z",
+      "service_metric": 55,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "365133824",
+      "value_num": "365133824.0000",
+      "value_raw": "365133824",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 728,
+    "fields": {
+      "valid_from": "2019-09-02T15:17:00Z",
+      "valid_to": "2019-09-02T15:18:00Z",
+      "service_metric": 57,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "81.1285783816",
+      "value_num": "81.1286",
+      "value_raw": "81.1285783816",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 2112,
+    "fields": {
+      "valid_from": "2019-09-05T08:50:00Z",
+      "valid_to": "2019-09-05T08:51:00Z",
+      "service_metric": 57,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "92.8219153714",
+      "value_num": "92.8219",
+      "value_raw": "92.8219153714",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 3838,
+    "fields": {
+      "valid_from": "2019-09-05T09:41:00Z",
+      "valid_to": "2019-09-05T09:42:00Z",
+      "service_metric": 57,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 36,
+      "value": "95.5951842711",
+      "value_num": "95.5952",
+      "value_raw": "95.5951842711",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 385,
+    "fields": {
+      "valid_from": "2019-08-30T10:54:00Z",
+      "valid_to": "2019-08-30T10:55:00Z",
+      "service_metric": 41,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 73,
+      "value": "17167.700748",
+      "value_num": "17167.7007",
+      "value_raw": "17167.700748",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 724,
+    "fields": {
+      "valid_from": "2019-09-02T15:17:00Z",
+      "valid_to": "2019-09-02T15:18:00Z",
+      "service_metric": 41,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 73,
+      "value": "874.42910409",
+      "value_num": "874.4291",
+      "value_raw": "874.42910409",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 2106,
+    "fields": {
+      "valid_from": "2019-09-05T08:50:00Z",
+      "valid_to": "2019-09-05T08:51:00Z",
+      "service_metric": 41,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 73,
+      "value": "6397.37235188",
+      "value_num": "6397.3724",
+      "value_raw": "6397.37235188",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 3832,
+    "fields": {
+      "valid_from": "2019-09-05T09:41:00Z",
+      "valid_to": "2019-09-05T09:42:00Z",
+      "service_metric": 41,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 73,
+      "value": "9443.10245609",
+      "value_num": "9443.1025",
+      "value_raw": "9443.10245609",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 6765,
+    "fields": {
+      "valid_from": "2019-09-09T07:27:00Z",
+      "valid_to": "2019-09-09T07:28:00Z",
+      "service_metric": 41,
+      "service": 2,
+      "event_type": null,
+      "resource": null,
+      "label": 73,
+      "value": "2129.42707705",
+      "value_num": "2129.4271",
+      "value_raw": "2129.42707705",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 387,
+    "fields": {
+      "valid_from": "2019-08-30T10:54:00Z",
+      "valid_to": "2019-08-30T10:55:00Z",
+      "service_metric": 60,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 23,
+      "value": "17171",
+      "value_num": "17171.0000",
+      "value_raw": "17171",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 726,
+    "fields": {
+      "valid_from": "2019-09-02T15:17:00Z",
+      "valid_to": "2019-09-02T15:18:00Z",
+      "service_metric": 60,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 23,
+      "value": "875",
+      "value_num": "875.0000",
+      "value_raw": "875",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 2110,
+    "fields": {
+      "valid_from": "2019-09-05T08:50:00Z",
+      "valid_to": "2019-09-05T08:51:00Z",
+      "service_metric": 60,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 23,
+      "value": "6400",
+      "value_num": "6400.0000",
+      "value_raw": "6400",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 3836,
+    "fields": {
+      "valid_from": "2019-09-05T09:41:00Z",
+      "valid_to": "2019-09-05T09:42:00Z",
+      "service_metric": 60,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 23,
+      "value": "9446",
+      "value_num": "9446.0000",
+      "value_raw": "9446",
+      "samples_count": 1,
+      "data": {}
+    }
+  },
+  {
+    "model": "monitoring.metricvalue",
+    "pk": 6767,
+    "fields": {
+      "valid_from": "2019-09-09T07:27:00Z",
+      "valid_to": "2019-09-09T07:28:00Z",
+      "service_metric": 60,
+      "service": 4,
+      "event_type": null,
+      "resource": null,
+      "label": 23,
+      "value": "2131",
+      "value_num": "2131.0000",
+      "value_raw": "2131",
+      "samples_count": 1,
+      "data": {}
+    }
   }
 ]
