@@ -38,7 +38,7 @@ from geonode.utils import raw_sql
 from geonode.notifications_helper import send_notification
 from geonode.monitoring import MonitoringAppConfig as AppConf
 from geonode.monitoring.models import (Metric, MetricValue, RequestEvent, MonitoredResource,
-                                       ExceptionEvent, EventType, NotificationCheck,)
+                                       ExceptionEvent, EventType, NotificationCheck, BuiltIns)
 
 from geonode.monitoring.utils import generate_periods, align_period_start, align_period_end
 from geonode.monitoring.aggregation import (aggregate_past_periods, calculate_rate, calculate_percent,
@@ -457,9 +457,7 @@ class CollectorAPI(object):
                                   'samples_count': samples,
                                   'value_raw': value or 0,
                                   'value_num': value if isinstance(value, (int, float, long, Decimal,)) else None})
-            # log.debug(MetricValue.add(**metric_values))
-
-            print MetricValue.add(**metric_values)
+            log.debug(MetricValue.add(**metric_values))
 
     def process(self, service, data, valid_from, valid_to, *args, **kwargs):
         if service.is_hostgeonode:
@@ -544,8 +542,7 @@ class CollectorAPI(object):
             count_mdefaults['value_raw'] = count
             count_mdefaults['samples_count'] = count
 
-            print MetricValue.add('request.count',
-                                  **count_mdefaults)
+            log.debug(MetricValue.add('request.count', **count_mdefaults))
 
             paths = srequests.distinct('request_path') \
                 .values_list('request_path', flat=True)
@@ -557,7 +554,7 @@ class CollectorAPI(object):
                 count_mdefaults['value_raw'] = count
                 count_mdefaults['samples_count'] = count
 
-                print MetricValue.add('request.path', **count_mdefaults)
+                log.debug(MetricValue.add('request.path', **count_mdefaults))
 
             for mname, cname in (('request.ip', 'client_ip',),
                                  ('request.users', 'user_identifier',),
@@ -803,6 +800,8 @@ class CollectorAPI(object):
                    "or (mv.valid_from > TIMESTAMP %(valid_from)s AT TIME ZONE 'UTC' ",
                    "and mv.valid_to <= TIMESTAMP %(valid_to)s AT TIME ZONE 'UTC')) ",
                    'and m.name = %(metric_name)s']
+        if metric_name == 'uptime':
+            q_where = ['where', 'm.name = %(metric_name)s']
         q_group = ['ml.name']
         params.update({'metric_name': metric_name,
                        'valid_from': valid_from.strftime('%Y-%m-%d %H:%M:%S'),
@@ -827,7 +826,7 @@ class CollectorAPI(object):
         if group_by not in ('event_type', 'event_type_on_label',) and event_type is None:
             event_type = EventType.get(EventType.EVENT_ALL)
 
-        if event_type and metric_name not in ['uptime', ]:
+        if event_type and metric_name not in BuiltIns.host_metrics:
             q_where.append(' and mv.event_type_id = %(event_type)s ')
             params['event_type'] = event_type.id
 
