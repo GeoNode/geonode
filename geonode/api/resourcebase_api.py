@@ -51,7 +51,6 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
-from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
@@ -591,23 +590,27 @@ class CommonModelApi(ModelResource):
             if key in self.VALUES:
                 idx = self.VALUES.index(key)
                 del self.VALUES[idx]
-        objects_json = objects.values(*self.VALUES)
 
         # hack needed because dehydrate does not seem to work in CommonModelApi
-        for item in objects_json:
-            if 'site_url' not in item or len(item['site_url']) == 0:
-                item['site_url'] = settings.SITEURL
-            if item['thumbnail_url'] and len(item['thumbnail_url']) == 0:
-                item['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
-            if item['title'] and len(item['title']) == 0:
-                item['title'] = 'No title'
-            if 'owner__username' in item:
-                username = item['owner__username']
-                profiles = Profile.objects.filter(username=username)
-                if profiles:
-                    full_name = (profiles[0].get_full_name() or username)
-                    item['owner_name'] = full_name
-        return objects_json
+        formatted_objects = []
+        for obj in objects:
+            formatted_obj = model_to_dict(obj, fields=self.VALUES)
+            if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
+                formatted_obj['site_url'] = settings.SITEURL
+
+            if formatted_obj['thumbnail_url'] and len(formatted_obj['thumbnail_url']) == 0:
+                formatted_obj['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
+
+            formatted_obj['owner__username'] = obj.owner.username
+            formatted_obj['owner_name'] = obj.owner.get_full_name() or obj.owner.username
+
+            # replace thumbnail_url with curated_thumbs
+            if hasattr(obj, 'curatedthumbnail'):
+                formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+
+            formatted_objects.append(formatted_obj)
+
+        return formatted_objects
 
     def create_response(
             self,
