@@ -170,7 +170,7 @@ define(function (require, exports) {
         if (!form_data) {
             form_data = new FormData();
         }
-        // this should be generate from the permission widget
+        // this should be generated from the permission widget
         if (typeof permissionsString == 'undefined'){
             perm = {}
         }
