@@ -1808,6 +1808,122 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(resources[8]["type_label"], "Other")
         self.assertEqual(resources[8]["name"], "other")
 
+    def test_users_count_for_resource_endpoint(self):
+        # url
+        url = "%s?%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=31536000',
+            'group_by=resource_on_user'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"][0]["data"]
+        # 0
+        self.assertEqual(data[0]["metric_count"],  16)
+        self.assertEqual(data[0]["val"],  5)
+        self.assertEqual(data[0]["min"],  "1.0000")
+        self.assertEqual(data[0]["max"],  "2.0000")
+        self.assertEqual(data[0]["sum"],  "17.0000")
+        self.assertEqual(data[0]["resource"]["href"], "/")
+        self.assertEqual(data[0]["resource"]["type"], "url")
+        self.assertEqual(data[0]["resource"]["name"], "/")
+        self.assertEqual(data[0]["resource"]["id"], 1)
+        self.assertEqual(data[0]["samples_count"],  17)
+        # 1
+        self.assertEqual(data[1]["metric_count"], 3)
+        self.assertEqual(data[1]["val"], 2)
+        self.assertEqual(data[1]["min"], "1.0000")
+        self.assertEqual(data[1]["max"], "2.0000")
+        self.assertEqual(data[1]["sum"], "5.0000")
+        self.assertEqual(data[1]["resource"]["href"], "")
+        self.assertEqual(data[1]["resource"]["type"], "layer")
+        self.assertEqual(data[1]["resource"]["name"], "geonode:waterways")
+        self.assertEqual(data[1]["resource"]["id"], 5)
+        self.assertEqual(data[1]["samples_count"], 5)
+        # 2
+        self.assertEqual(data[2]["metric_count"], 2)
+        self.assertEqual(data[2]["val"], 1)
+        self.assertEqual(data[2]["min"], "1.0000")
+        self.assertEqual(data[2]["max"], "2.0000")
+        self.assertEqual(data[2]["sum"], "3.0000")
+        self.assertEqual(data[2]["resource"]["href"], "")
+        self.assertEqual(data[2]["resource"]["type"], "layer")
+        self.assertEqual(data[2]["resource"]["name"], "geonode:roads")
+        self.assertEqual(data[2]["resource"]["id"], 2)
+        self.assertEqual(data[2]["samples_count"], 3)
+        # 3
+        self.assertEqual(data[3]["metric_count"], 2)
+        self.assertEqual(data[3]["val"], 1)
+        self.assertEqual(data[3]["min"], "1.0000")
+        self.assertEqual(data[3]["max"], "3.0000")
+        self.assertEqual(data[3]["sum"], "4.0000")
+        self.assertEqual(data[3]["resource"]["href"], "")
+        self.assertEqual(data[3]["resource"]["type"], "layer")
+        self.assertEqual(data[3]["resource"]["name"], "geonode:railways")
+        self.assertEqual(data[3]["resource"]["id"], 3)
+        self.assertEqual(data[3]["samples_count"], 4)
+        # 4
+        self.assertEqual(data[4]["metric_count"], 1)
+        self.assertEqual(data[4]["val"], 1)
+        self.assertEqual(data[4]["min"], "1.0000")
+        self.assertEqual(data[4]["max"], "1.0000")
+        self.assertEqual(data[4]["sum"], "1.0000")
+        self.assertEqual(data[4]["resource"]["href"], "")
+        self.assertEqual(data[4]["resource"]["type"], "map")
+        self.assertEqual(data[4]["resource"]["name"], "San Francisco Transport Map")
+        self.assertEqual(data[4]["resource"]["id"], 4)
+        self.assertEqual(data[4]["samples_count"], 1)
+        # 5
+        self.assertEqual(data[5]["metric_count"], 1)
+        self.assertEqual(data[5]["val"], 1)
+        self.assertEqual(data[5]["min"], "1.0000")
+        self.assertEqual(data[5]["max"], "1.0000")
+        self.assertEqual(data[5]["sum"], "1.0000")
+        self.assertEqual(data[5]["resource"]["href"], "")
+        self.assertEqual(data[5]["resource"]["type"], "map")
+        self.assertEqual(data[5]["resource"]["name"], "Amsterdam Waterways Map")
+        self.assertEqual(data[5]["resource"]["id"], 6)
+        self.assertEqual(data[5]["samples_count"], 1)
+
+    def test_resources_count_endpoint(self):
+        # url
+        url = "%s?%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.count'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=31536000',
+            'group_by=count_on_resource'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"][0]["data"]
+        self.assertEqual(data[0]["metric_count"], 16)
+        self.assertEqual(data[0]["val"], 6)
+        self.assertEqual(data[0]["min"], "1.0000")
+        self.assertEqual(data[0]["max"], "4.0000")
+        self.assertEqual(data[0]["sum"], "31.0000")
+        self.assertEqual(data[0]["samples_count"], 31)
+
     def test_event_types_endpoint(self):
         url = reverse('monitoring:api_event_types')
         # Unauthorized
@@ -1887,6 +2003,292 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         # geoserver
         self.assertEqual(resources[19]["type_label"], "Geoserver event")
         self.assertEqual(resources[19]["name"], "geoserver")
+
+    def test_ows_service_enpoints(self):
+        # url
+        url = "%s?%s" % (
+            reverse('monitoring:api_event_types'),
+            'ows_service=true'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["status"], "ok")
+        self.assertFalse(out["errors"])
+        self.assertEqual(out["data"]["key"], "event_types")
+        resources = out["event_types"]
+        # check OWS
+        for r in resources:
+            self.assertIn("OWS", r["name"])
+        # OWS:TMS
+        self.assertEqual(resources[0]["type_label"], "TMS")
+        self.assertEqual(resources[0]["name"], "OWS:TMS")
+        # OWS:WMS-C
+        self.assertEqual(resources[1]["type_label"], "WMS-C")
+        self.assertEqual(resources[1]["name"], "OWS:WMS-C")
+        # OWS:WMTS
+        self.assertEqual(resources[2]["type_label"], "WMTS")
+        self.assertEqual(resources[2]["name"], "OWS:WMTS")
+        # OWS:WCS
+        self.assertEqual(resources[3]["type_label"], "WCS")
+        self.assertEqual(resources[3]["name"], "OWS:WCS")
+        # OWS:WFS
+        self.assertEqual(resources[4]["type_label"], "WFS")
+        self.assertEqual(resources[4]["name"], "OWS:WFS")
+        # OWS:WMS
+        self.assertEqual(resources[5]["type_label"], "WMS")
+        self.assertEqual(resources[5]["name"], "OWS:WMS")
+        # OWS:WPS
+        self.assertEqual(resources[6]["type_label"], "WPS")
+        self.assertEqual(resources[6]["name"], "OWS:WPS")
+        # OWS:ALL
+        self.assertEqual(resources[7]["type_label"], "Any OWS")
+        self.assertEqual(resources[7]["name"], "OWS:ALL")
+
+    def test_non_ows_events_enpoints(self):
+        # url
+        url = "%s?%s" % (
+            reverse('monitoring:api_event_types'),
+            'ows_service=false'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["status"], "ok")
+        self.assertFalse(out["errors"])
+        self.assertEqual(out["data"]["key"], "event_types")
+        resources = out["event_types"]
+        # check OWS
+        for r in resources:
+            self.assertNotIn("OWS", r["name"])
+        # other
+        self.assertEqual(resources[0]["type_label"], "Not OWS")
+        self.assertEqual(resources[0]["name"], "other")
+        # all
+        self.assertEqual(resources[1]["type_label"], "All")
+        self.assertEqual(resources[1]["name"], "all")
+        # create
+        self.assertEqual(resources[2]["type_label"], "Create")
+        self.assertEqual(resources[2]["name"], "create")
+        # upload
+        self.assertEqual(resources[3]["type_label"], "Upload")
+        self.assertEqual(resources[3]["name"], "upload")
+        # other
+        self.assertEqual(resources[4]["type_label"], "Change")
+        self.assertEqual(resources[4]["name"], "change")
+        # change_metadata
+        self.assertEqual(resources[5]["type_label"], "Change Metadata")
+        self.assertEqual(resources[5]["name"], "change_metadata")
+        # view_metadata
+        self.assertEqual(resources[6]["type_label"], "View Metadata")
+        self.assertEqual(resources[6]["name"], "view_metadata")
+        # view
+        self.assertEqual(resources[7]["type_label"], "View")
+        self.assertEqual(resources[7]["name"], "view")
+        # download
+        self.assertEqual(resources[8]["type_label"], "Download")
+        self.assertEqual(resources[8]["name"], "download")
+        # publish
+        self.assertEqual(resources[9]["type_label"], "Publish")
+        self.assertEqual(resources[9]["name"], "publish")
+        # remove
+        self.assertEqual(resources[10]["type_label"], "Remove")
+        self.assertEqual(resources[10]["name"], "remove")
+        # geoserver
+        self.assertEqual(resources[11]["type_label"], "Geoserver event")
+        self.assertEqual(resources[11]["name"], "geoserver")
+
+    def test_event_type_on_label_endpoint(self):
+        # url
+        url = "%s?%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=31536000',
+            'group_by=event_type_on_label'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"][0]["data"]
+        # 0
+        self.assertEqual(data[0]["samples_count"], 157)
+        self.assertEqual(data[0]["event_type"], "other")
+        self.assertEqual(data[0]["val"], 16)
+        self.assertEqual(data[0]["min"], "1.0000")
+        self.assertEqual(data[0]["max"], "21.0000")
+        self.assertEqual(data[0]["sum"], "157.0000")
+        self.assertEqual(data[0]["metric_count"], 38)
+        # 1
+        self.assertEqual(data[1]["samples_count"], 31)
+        self.assertEqual(data[1]["event_type"], "all")
+        self.assertEqual(data[1]["val"], 14)
+        self.assertEqual(data[1]["min"], "1.0000")
+        self.assertEqual(data[1]["max"], "3.0000")
+        self.assertEqual(data[1]["sum"], "31.0000")
+        self.assertEqual(data[1]["metric_count"], 25)
+        # 2
+        self.assertEqual(data[2]["samples_count"], 20)
+        self.assertEqual(data[2]["event_type"], "view")
+        self.assertEqual(data[2]["val"], 14)
+        self.assertEqual(data[2]["min"], "1.0000")
+        self.assertEqual(data[2]["max"], "2.0000")
+        self.assertEqual(data[2]["sum"], "20.0000")
+        self.assertEqual(data[2]["metric_count"], 19)
+        # 3
+        self.assertEqual(data[3]["samples_count"], 3)
+        self.assertEqual(data[3]["event_type"], "upload")
+        self.assertEqual(data[3]["val"], 2)
+        self.assertEqual(data[3]["min"], "1.0000")
+        self.assertEqual(data[3]["max"], "1.0000")
+        self.assertEqual(data[3]["sum"], "3.0000")
+        self.assertEqual(data[3]["metric_count"], 3)
+        # 4
+        self.assertEqual(data[4]["samples_count"], 2)
+        self.assertEqual(data[4]["event_type"], "view_metadata")
+        self.assertEqual(data[4]["val"], 2)
+        self.assertEqual(data[4]["min"], "1.0000")
+        self.assertEqual(data[4]["max"], "1.0000")
+        self.assertEqual(data[4]["sum"], "2.0000")
+        self.assertEqual(data[4]["metric_count"], 2)
+        # 5
+        self.assertEqual(data[5]["samples_count"], 5)
+        self.assertEqual(data[5]["event_type"], "create")
+        self.assertEqual(data[5]["val"], 2)
+        self.assertEqual(data[5]["min"], "1.0000")
+        self.assertEqual(data[5]["max"], "1.0000")
+        self.assertEqual(data[5]["sum"], "5.0000")
+        self.assertEqual(data[5]["metric_count"], 5)
+        # 6
+        self.assertEqual(data[6]["samples_count"], 1)
+        self.assertEqual(data[6]["event_type"], "download")
+        self.assertEqual(data[6]["val"], 1)
+        self.assertEqual(data[6]["min"], "1.0000")
+        self.assertEqual(data[6]["max"], "1.0000")
+        self.assertEqual(data[6]["sum"], "1.0000")
+        self.assertEqual(data[6]["metric_count"], 1)
+        # 7
+        self.assertEqual(data[7]["samples_count"], 1)
+        self.assertEqual(data[7]["event_type"], "change_metadata")
+        self.assertEqual(data[7]["val"], 1)
+        self.assertEqual(data[7]["min"], "1.0000")
+        self.assertEqual(data[7]["max"], "1.0000")
+        self.assertEqual(data[7]["sum"], "1.0000")
+        self.assertEqual(data[7]["metric_count"], 1)
+
+    def test_event_type_on_user_endpoint(self):
+        # url
+        url = "%s?%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.users'}),
+            'valid_from=2018-08-29T20:00:00.000Z&valid_to=2019-08-29T20:00:00.000Z&interval=31536000',
+            'group_by=event_type_on_user'
+        )
+        # Unauthorized
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        data = out["data"]["data"][0]["data"]
+        # 0
+        self.assertEqual(data[0]["samples_count"], 31)
+        self.assertEqual(data[0]["event_type"], "all")
+        self.assertEqual(data[0]["val"], 5)
+        self.assertEqual(data[0]["min"], "1.0000")
+        self.assertEqual(data[0]["max"], "3.0000")
+        self.assertEqual(data[0]["sum"], "31.0000")
+        self.assertEqual(data[0]["metric_count"], 25)
+        # 1
+        self.assertEqual(data[1]["samples_count"], 157)
+        self.assertEqual(data[1]["event_type"], "other")
+        self.assertEqual(data[1]["val"], 5)
+        self.assertEqual(data[1]["min"], "1.0000")
+        self.assertEqual(data[1]["max"], "21.0000")
+        self.assertEqual(data[1]["sum"], "157.0000")
+        self.assertEqual(data[1]["metric_count"], 38)
+        # 2
+        self.assertEqual(data[2]["samples_count"], 20)
+        self.assertEqual(data[2]["event_type"], "view")
+        self.assertEqual(data[2]["val"], 5)
+        self.assertEqual(data[2]["min"], "1.0000")
+        self.assertEqual(data[2]["max"], "2.0000")
+        self.assertEqual(data[2]["sum"], "20.0000")
+        self.assertEqual(data[2]["metric_count"], 19)
+        # 3
+        self.assertEqual(data[3]["samples_count"], 2)
+        self.assertEqual(data[3]["event_type"], "view_metadata")
+        self.assertEqual(data[3]["val"], 2)
+        self.assertEqual(data[3]["min"], "1.0000")
+        self.assertEqual(data[3]["max"], "1.0000")
+        self.assertEqual(data[3]["sum"], "2.0000")
+        self.assertEqual(data[3]["metric_count"], 2)
+        # 4
+        self.assertEqual(data[4]["samples_count"], 3)
+        self.assertEqual(data[4]["event_type"], "upload")
+        self.assertEqual(data[4]["val"], 2)
+        self.assertEqual(data[4]["min"], "1.0000")
+        self.assertEqual(data[4]["max"], "1.0000")
+        self.assertEqual(data[4]["sum"], "3.0000")
+        self.assertEqual(data[4]["metric_count"], 3)
+        # 5
+        self.assertEqual(data[5]["samples_count"], 5)
+        self.assertEqual(data[5]["event_type"], "create")
+        self.assertEqual(data[5]["val"], 2)
+        self.assertEqual(data[5]["min"], "1.0000")
+        self.assertEqual(data[5]["max"], "1.0000")
+        self.assertEqual(data[5]["sum"], "5.0000")
+        self.assertEqual(data[5]["metric_count"], 5)
+        # 6
+        self.assertEqual(data[6]["samples_count"], 1)
+        self.assertEqual(data[6]["event_type"], "download")
+        self.assertEqual(data[6]["val"], 1)
+        self.assertEqual(data[6]["min"], "1.0000")
+        self.assertEqual(data[6]["max"], "1.0000")
+        self.assertEqual(data[6]["sum"], "1.0000")
+        self.assertEqual(data[6]["metric_count"], 1)
+        # 7
+        self.assertEqual(data[7]["samples_count"], 1)
+        self.assertEqual(data[7]["event_type"], "change_metadata")
+        self.assertEqual(data[7]["val"], 1)
+        self.assertEqual(data[7]["min"], "1.0000")
+        self.assertEqual(data[7]["max"], "1.0000")
+        self.assertEqual(data[7]["sum"], "1.0000")
+        self.assertEqual(data[7]["metric_count"], 1)
 
     def test_unique_visitors_count_endpoints(self):
         # layer/upload
@@ -2146,16 +2548,16 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(data["axis_label"], "%")
         self.assertEqual(data["type"], "rate")
         d = data["data"][0]["data"]
-        self.assertEqual(d[0]["samples_count"], 3)
-        self.assertEqual(d[0]["val"], "20.3421000000000000")
+        self.assertEqual(d[0]["samples_count"], 2)
+        self.assertEqual(d[0]["val"], "17.6955000000000000")
         self.assertEqual(d[0]["min"], "14.3935")
-        self.assertEqual(d[0]["max"], "25.6353")
-        self.assertEqual(d[0]["sum"], "61.0263")
+        self.assertEqual(d[0]["max"], "20.9975")
+        self.assertEqual(d[0]["sum"], "35.3910")
         self.assertEqual(
             d[0]["label"],
             "9d013cdaef339aedf8794f6558aacf4eaf5eddfaee11b6316b05105ea5b1968a")
         self.assertEqual(d[0]["user"], "AnonymousUser")
-        self.assertEqual(d[0]["metric_count"], 3)
+        self.assertEqual(d[0]["metric_count"], 2)
 
     def test_hostgeonode_mem_endpoints(self):
         url = "%s?%s&%s" % (
@@ -2183,14 +2585,14 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(data["axis_label"], "%")
         self.assertEqual(data["type"], "rate")
         d = data["data"][0]["data"]
-        self.assertEqual(d[0]["samples_count"], 3)
-        self.assertEqual(d[0]["val"], "83.3176000000000000")
-        self.assertEqual(d[0]["min"], "75.1172")
+        self.assertEqual(d[0]["samples_count"], 2)
+        self.assertEqual(d[0]["val"], "87.4178000000000000")
+        self.assertEqual(d[0]["min"], "86.1237")
         self.assertEqual(d[0]["max"], "88.7119")
-        self.assertEqual(d[0]["sum"], "249.9528")
+        self.assertEqual(d[0]["sum"], "174.8356")
         self.assertEqual(d[0]["label"], "/layers/upload")
         self.assertEqual(d[0]["user"], None)
-        self.assertEqual(d[0]["metric_count"], 3)
+        self.assertEqual(d[0]["metric_count"], 2)
 
     def test_hostgeoserver_mem_endpoints(self):
         url = "%s?%s&%s" % (
@@ -2218,14 +2620,14 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(data["axis_label"], "%")
         self.assertEqual(data["type"], "rate")
         d = data["data"][0]["data"]
-        self.assertEqual(d[0]["samples_count"], 3)
-        self.assertEqual(d[0]["val"], "89.8485666666666667")
-        self.assertEqual(d[0]["min"], "81.1286")
+        self.assertEqual(d[0]["samples_count"], 2)
+        self.assertEqual(d[0]["val"], "94.2085500000000000")
+        self.assertEqual(d[0]["min"], "92.8219")
         self.assertEqual(d[0]["max"], "95.5952")
-        self.assertEqual(d[0]["sum"], "269.5457")
+        self.assertEqual(d[0]["sum"], "188.4171")
         self.assertEqual(d[0]["label"], "/layers/upload")
         self.assertEqual(d[0]["user"], None)
-        self.assertEqual(d[0]["metric_count"], 3)
+        self.assertEqual(d[0]["metric_count"], 2)
 
     def test_uptime_endpoints(self):
         url = reverse('monitoring:api_metric_data', args={'uptime'})
