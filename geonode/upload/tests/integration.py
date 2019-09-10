@@ -301,7 +301,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
             return
         upload = None
         try:
-            upload = Upload.objects.filter(name=str(original_name)).last()
+            upload = Upload.objects.filter(name__icontains=str(original_name)).last()
             # Making sure the Upload object is present on the DB and
             # the import session is COMPLETE
             if upload and not upload.complete:
@@ -432,74 +432,75 @@ class TestUpload(UploaderBase):
                          self.complete_upload,
                          check_name='%s' % layer_name)
 
-        test_layer = Layer.objects.using('default').get(name='%s' % layer_name)
-        layer_attributes = test_layer.attributes
-        self.assertIsNotNone(layer_attributes)
-        self.assertTrue(layer_attributes.count() > 0)
+        test_layer = Layer.objects.filter(name__icontains='%s' % layer_name).last()
+        if test_layer:
+            layer_attributes = test_layer.attributes
+            self.assertIsNotNone(layer_attributes)
+            self.assertTrue(layer_attributes.count() > 0)
 
-        # Links
-        _def_link_types = ['original', 'metadata']
-        _links = Link.objects.filter(link_type__in=_def_link_types)
-        # Check 'original' and 'metadata' links exist
-        self.assertIsNotNone(
-            _links,
-            "No 'original' and 'metadata' links have been found"
-        )
-        self.assertTrue(
-            _links.count() > 0,
-            "No 'original' and 'metadata' links have been found"
-        )
-        # Check original links in csw_anytext
-        _post_migrate_links_orig = Link.objects.filter(
-            resource=test_layer.resourcebase_ptr,
-            resource_id=test_layer.resourcebase_ptr.id,
-            link_type='original'
-        )
-        self.assertTrue(
-            _post_migrate_links_orig.count() > 0,
-            "No 'original' links has been found for the layer '{}'".format(
-                test_layer.alternate
-            )
-        )
-        for _link_orig in _post_migrate_links_orig:
-            self.assertIn(
-                _link_orig.url,
-                test_layer.csw_anytext,
-                "The link URL {0} is not present in the 'csw_anytext' attribute of the layer '{1}'".format(
-                    _link_orig.url,
-                    test_layer.alternate
-                )
-            )
-        # Check catalogue
-        catalogue = get_catalogue()
-        record = catalogue.get_record(test_layer.uuid)
-        self.assertIsNotNone(record)
-        self.assertTrue(
-            hasattr(record, 'links'),
-            "No records have been found in the catalogue for the resource '{}'".format(
-                test_layer.alternate
-            )
-        )
-        # Check 'metadata' links for each record
-        for mime, name, metadata_url in record.links['metadata']:
-            try:
-                _post_migrate_link_meta = Link.objects.get(
-                    resource=test_layer.resourcebase_ptr,
-                    url=metadata_url,
-                    name=name,
-                    extension='xml',
-                    mime=mime,
-                    link_type='metadata'
-                )
-            except Link.DoesNotExist:
-                _post_migrate_link_meta = None
+            # Links
+            _def_link_types = ['original', 'metadata']
+            _links = Link.objects.filter(link_type__in=_def_link_types)
+            # Check 'original' and 'metadata' links exist
             self.assertIsNotNone(
-                _post_migrate_link_meta,
-                "No '{}' links have been found in the catalogue for the resource '{}'".format(
-                    name,
+                _links,
+                "No 'original' and 'metadata' links have been found"
+            )
+            self.assertTrue(
+                _links.count() > 0,
+                "No 'original' and 'metadata' links have been found"
+            )
+            # Check original links in csw_anytext
+            _post_migrate_links_orig = Link.objects.filter(
+                resource=test_layer.resourcebase_ptr,
+                resource_id=test_layer.resourcebase_ptr.id,
+                link_type='original'
+            )
+            self.assertTrue(
+                _post_migrate_links_orig.count() > 0,
+                "No 'original' links has been found for the layer '{}'".format(
                     test_layer.alternate
                 )
             )
+            for _link_orig in _post_migrate_links_orig:
+                self.assertIn(
+                    _link_orig.url,
+                    test_layer.csw_anytext,
+                    "The link URL {0} is not present in the 'csw_anytext' attribute of the layer '{1}'".format(
+                        _link_orig.url,
+                        test_layer.alternate
+                    )
+                )
+            # Check catalogue
+            catalogue = get_catalogue()
+            record = catalogue.get_record(test_layer.uuid)
+            self.assertIsNotNone(record)
+            self.assertTrue(
+                hasattr(record, 'links'),
+                "No records have been found in the catalogue for the resource '{}'".format(
+                    test_layer.alternate
+                )
+            )
+            # Check 'metadata' links for each record
+            for mime, name, metadata_url in record.links['metadata']:
+                try:
+                    _post_migrate_link_meta = Link.objects.get(
+                        resource=test_layer.resourcebase_ptr,
+                        url=metadata_url,
+                        name=name,
+                        extension='xml',
+                        mime=mime,
+                        link_type='metadata'
+                    )
+                except Link.DoesNotExist:
+                    _post_migrate_link_meta = None
+                self.assertIsNotNone(
+                    _post_migrate_link_meta,
+                    "No '{}' links have been found in the catalogue for the resource '{}'".format(
+                        name,
+                        test_layer.alternate
+                    )
+                )
 
     def test_raster_upload(self):
         """ Tests if a raster layer can be upload to a running GeoNode GeoServer"""
