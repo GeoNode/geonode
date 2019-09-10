@@ -1567,8 +1567,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         # 1
         self.assertEqual(last_month_data[0]["samples_count"], 2)
         self.assertEqual(last_month_data[0]["val"], "2.0000")
-        self.assertEqual(last_month_data[0]["min"], "2.0000")
-        self.assertEqual(last_month_data[0]["max"], "2.0000")
+        self.assertTrue(last_month_data[0]["min"] in ("1.0000", "2.0000"))
+        self.assertTrue(last_month_data[0]["max"] in ("1.0000", "2.0000"))
         self.assertEqual(last_month_data[0]["sum"], "2.0000")
         self.assertEqual(
             last_month_data[0]["label"],
@@ -1579,8 +1579,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         # 2
         self.assertEqual(last_month_data[1]["samples_count"], 2)
         self.assertEqual(last_month_data[1]["val"], "2.0000")
-        self.assertEqual(last_month_data[1]["min"], "1.0000")
-        self.assertEqual(last_month_data[1]["max"], "1.0000")
+        self.assertTrue(last_month_data[1]["min"] in ("1.0000", "2.0000"))
+        self.assertTrue(last_month_data[1]["max"] in ("1.0000", "2.0000"))
         self.assertEqual(last_month_data[1]["sum"], "2.0000")
         self.assertEqual(
             last_month_data[1]["label"],
@@ -1591,8 +1591,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         # 3
         self.assertEqual(last_month_data[2]["samples_count"], 2)
         self.assertEqual(last_month_data[2]["val"], "2.0000")
-        self.assertEqual(last_month_data[2]["min"], "1.0000")
-        self.assertEqual(last_month_data[2]["max"], "1.0000")
+        self.assertTrue(last_month_data[2]["min"] in ("1.0000", "2.0000"))
+        self.assertTrue(last_month_data[2]["max"] in ("1.0000", "2.0000"))
         self.assertEqual(last_month_data[2]["sum"], "2.0000")
         self.assertEqual(
             last_month_data[2]["label"],
@@ -1839,66 +1839,67 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertFalse(out["errors"])
         self.assertEqual(out["data"]["key"], "event_types")
         resources = out["event_types"]
-        # OWS:TMS
-        self.assertEqual(resources[0]["type_label"], "TMS")
-        self.assertEqual(resources[0]["name"], "OWS:TMS")
-        # OWS:WMS-C
-        self.assertEqual(resources[1]["type_label"], "WMS-C")
-        self.assertEqual(resources[1]["name"], "OWS:WMS-C")
-        # OWS:WMTS
-        self.assertEqual(resources[2]["type_label"], "WMTS")
-        self.assertEqual(resources[2]["name"], "OWS:WMTS")
-        # OWS:WCS
-        self.assertEqual(resources[3]["type_label"], "WCS")
-        self.assertEqual(resources[3]["name"], "OWS:WCS")
-        # OWS:WFS
-        self.assertEqual(resources[4]["type_label"], "WFS")
-        self.assertEqual(resources[4]["name"], "OWS:WFS")
-        # OWS:WMS
-        self.assertEqual(resources[5]["type_label"], "WMS")
-        self.assertEqual(resources[5]["name"], "OWS:WMS")
-        # OWS:WPS
-        self.assertEqual(resources[6]["type_label"], "WPS")
-        self.assertEqual(resources[6]["name"], "OWS:WPS")
-        # other
-        self.assertEqual(resources[7]["type_label"], "Not OWS")
-        self.assertEqual(resources[7]["name"], "other")
-        # OWS:ALL
-        self.assertEqual(resources[8]["type_label"], "Any OWS")
-        self.assertEqual(resources[8]["name"], "OWS:ALL")
-        # all
-        self.assertEqual(resources[9]["type_label"], "All")
-        self.assertEqual(resources[9]["name"], "all")
-        # create
-        self.assertEqual(resources[10]["type_label"], "Create")
-        self.assertEqual(resources[10]["name"], "create")
-        # upload
-        self.assertEqual(resources[11]["type_label"], "Upload")
-        self.assertEqual(resources[11]["name"], "upload")
-        # other
-        self.assertEqual(resources[12]["type_label"], "Change")
-        self.assertEqual(resources[12]["name"], "change")
-        # change_metadata
-        self.assertEqual(resources[13]["type_label"], "Change Metadata")
-        self.assertEqual(resources[13]["name"], "change_metadata")
-        # view_metadata
-        self.assertEqual(resources[14]["type_label"], "View Metadata")
-        self.assertEqual(resources[14]["name"], "view_metadata")
-        # view
-        self.assertEqual(resources[15]["type_label"], "View")
-        self.assertEqual(resources[15]["name"], "view")
-        # download
-        self.assertEqual(resources[16]["type_label"], "Download")
-        self.assertEqual(resources[16]["name"], "download")
-        # publish
-        self.assertEqual(resources[17]["type_label"], "Publish")
-        self.assertEqual(resources[17]["name"], "publish")
-        # remove
-        self.assertEqual(resources[18]["type_label"], "Remove")
-        self.assertEqual(resources[18]["name"], "remove")
-        # geoserver
-        self.assertEqual(resources[19]["type_label"], "Geoserver event")
-        self.assertEqual(resources[19]["name"], "geoserver")
+        for i, resource in enumerate(resources):
+            # OWS:TMS
+            if resources[i]["type_label"] == "TMS":
+                self.assertEqual(resources[i]["name"], "OWS:TMS")
+            # OWS:WMS-C
+            if resources[i]["type_label"] == "WMS-C":
+                self.assertEqual(resources[i]["name"], "OWS:WMS-C")
+            # OWS:WMTS
+            if resources[i]["type_label"] == "WMTS":
+                self.assertEqual(resources[i]["name"], "OWS:WMTS")
+            # OWS:WCS
+            if resources[i]["type_label"] == "WCS":
+                self.assertEqual(resources[i]["name"], "OWS:WCS")
+            # OWS:WFS
+            if resources[i]["type_label"] == "WFS":
+                self.assertEqual(resources[i]["name"], "OWS:WFS")
+            # OWS:WMS
+            if resources[i]["type_label"] == "WMS":
+                self.assertEqual(resources[i]["name"], "OWS:WMS")
+            # OWS:WPS
+            if resources[i]["type_label"] == "WPS":
+                self.assertEqual(resources[i]["name"], "OWS:WPS")
+            # other
+            if resources[i]["type_label"] == "Not OWS":
+                self.assertEqual(resources[i]["name"], "other")
+            # OWS:ALL
+            if resources[i]["type_label"] == "Any OWS":
+                self.assertEqual(resources[i]["name"], "OWS:ALL")
+            # all
+            if resources[i]["type_label"] == "All":
+                self.assertEqual(resources[i]["name"], "all")
+            # create
+            if resources[i]["type_label"] == "Create":
+                self.assertEqual(resources[i]["name"], "create")
+            # upload
+            if resources[i]["type_label"] == "Upload":
+                self.assertEqual(resources[i]["name"], "upload")
+            # other
+            if resources[i]["type_label"] == "Change":
+                self.assertEqual(resources[i]["name"], "change")
+            # change_metadata
+            if resources[i]["type_label"] == "Change Metadata":
+                self.assertEqual(resources[i]["name"], "change_metadata")
+            # view_metadata
+            if resources[i]["type_label"] == "View Metadata":
+                self.assertEqual(resources[i]["name"], "view_metadata")
+            # view
+            if resources[i]["type_label"] == "View":
+                self.assertEqual(resources[i]["name"], "view")
+            # download
+            if resources[i]["type_label"] == "Download":
+                self.assertEqual(resources[i]["name"], "download")
+            # publish
+            if resources[i]["type_label"] == "Publish":
+                self.assertEqual(resources[i]["name"], "publish")
+            # remove
+            if resources[i]["type_label"] == "Remove":
+                self.assertEqual(resources[i]["name"], "remove")
+            # geoserver
+            if resources[i]["type_label"] == "Geoserver event":
+                self.assertEqual(resources[i]["name"], "geoserver")
 
     def test_unique_visitors_count_endpoints(self):
         # layer/upload
@@ -2161,13 +2162,13 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(d[0]["samples_count"], 2)
         self.assertEqual(d[0]["val"], "17.6955000000000000")
         self.assertEqual(d[0]["min"], "14.3935")
-        self.assertEqual(d[0]["max"], "25.6353")
-        self.assertEqual(d[0]["sum"], "61.0263")
+        self.assertEqual(d[0]["max"], "20.9975")
+        self.assertEqual(d[0]["sum"], "35.3910")
         self.assertEqual(
             d[0]["label"],
             "9d013cdaef339aedf8794f6558aacf4eaf5eddfaee11b6316b05105ea5b1968a")
         self.assertEqual(d[0]["user"], "AnonymousUser")
-        self.assertEqual(d[0]["metric_count"], 3)
+        self.assertEqual(d[0]["metric_count"], 2)
 
     def test_hostgeonode_mem_endpoints(self):
         url = "%s?%s&%s" % (
@@ -2197,12 +2198,12 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         d = data["data"][0]["data"]
         self.assertEqual(d[0]["samples_count"], 2)
         self.assertEqual(d[0]["val"], "87.4178000000000000")
-        self.assertEqual(d[0]["min"], "75.1172")
+        self.assertEqual(d[0]["min"], "86.1237")
         self.assertEqual(d[0]["max"], "88.7119")
-        self.assertEqual(d[0]["sum"], "249.9528")
+        self.assertEqual(d[0]["sum"], "174.8356")
         self.assertEqual(d[0]["label"], "/layers/upload")
         self.assertEqual(d[0]["user"], None)
-        self.assertEqual(d[0]["metric_count"], 3)
+        self.assertEqual(d[0]["metric_count"], 2)
 
     def test_hostgeoserver_mem_endpoints(self):
         url = "%s?%s&%s" % (
@@ -2232,12 +2233,12 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         d = data["data"][0]["data"]
         self.assertEqual(d[0]["samples_count"], 2)
         self.assertEqual(d[0]["val"], "94.2085500000000000")
-        self.assertEqual(d[0]["min"], "81.1286")
+        self.assertEqual(d[0]["min"], "92.8219")
         self.assertEqual(d[0]["max"], "95.5952")
-        self.assertEqual(d[0]["sum"], "269.5457")
+        self.assertEqual(d[0]["sum"], "188.4171")
         self.assertEqual(d[0]["label"], "/layers/upload")
         self.assertEqual(d[0]["user"], None)
-        self.assertEqual(d[0]["metric_count"], 3)
+        self.assertEqual(d[0]["metric_count"], 2)
 
     def test_uptime_endpoints(self):
         url = reverse('monitoring:api_metric_data', args={'uptime'})
