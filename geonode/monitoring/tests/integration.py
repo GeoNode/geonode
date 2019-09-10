@@ -31,12 +31,15 @@ import pytz
 import logging
 import os.path
 import xmljson
+import dj_database_url
+
 from decimal import Decimal  # noqa
 from importlib import import_module
 from defusedxml import lxml as dlxml
 
 from django.core import mail
 from django.conf import settings
+from django.db import connections
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from django.core.management import call_command
@@ -57,6 +60,7 @@ from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
 from geonode.documents.models import Document
+from geonode.monitoring.models import *  # noqa
 
 from geonode.tests.utils import Client
 from geonode.geoserver.helpers import ogc_server_settings
@@ -72,6 +76,20 @@ GEONODE_PASSWD = 'admin'
 GEONODE_URL = settings.SITEURL.rstrip('/')
 GEOSERVER_URL = ogc_server_settings.LOCATION
 GEOSERVER_USER, GEOSERVER_PASSWD = ogc_server_settings.credentials
+
+DB_HOST = settings.DATABASES['default']['HOST']
+DB_PORT = settings.DATABASES['default']['PORT']
+DB_NAME = settings.DATABASES['default']['NAME']
+DB_USER = settings.DATABASES['default']['USER']
+DB_PASSWORD = settings.DATABASES['default']['PASSWORD']
+DATASTORE_URL = 'postgis://{}:{}@{}:{}/{}'.format(
+    DB_USER,
+    DB_PASSWORD,
+    DB_HOST,
+    DB_PORT,
+    DB_NAME
+)
+postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=5)
 
 logging.getLogger('south').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
@@ -165,8 +183,6 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
             os.unlink('integration_settings.py')
 
     def setUp(self):
-        # super(MonitoringTestBase, self).setUp()
-
         # await startup
         cl = Client(
             GEONODE_URL, GEONODE_USER, GEONODE_PASSWD
@@ -185,30 +201,18 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
 
         self.client = TestClient(REMOTE_ADDR='127.0.0.1')
 
-        self._tempfiles = []
-        # createlayer must use postgis as a datastore
-        # set temporary settings to use a postgis datastore
-        # DB_HOST = DATABASES['default']['HOST']
-        # DB_PORT = DATABASES['default']['PORT']
-        # DB_NAME = DATABASES['default']['NAME']
-        # DB_USER = DATABASES['default']['USER']
-        # DB_PASSWORD = DATABASES['default']['PASSWORD']
-        # settings.DATASTORE_URL = 'postgis://{}:{}@{}:{}/{}'.format(
-        #     DB_USER,
-        #     DB_PASSWORD,
-        #     DB_HOST,
-        #     DB_PORT,
-        #     DB_NAME
-        # )
-        # postgis_db = dj_database_url.parse(
-        #     settings.DATASTORE_URL, conn_max_age=600)
-        # settings.DATABASES['datastore'] = postgis_db
-        # settings.OGC_SERVER['default']['DATASTORE'] = 'datastore'
+        settings.DATABASES['default']['NAME'] = DB_NAME
 
-        # upload(gisdata.DATA_DIR, console=None)
+        connections['default'].settings_dict['ATOMIC_REQUESTS'] = False
+        connections['default'].connect()
+
+        self._tempfiles = []
+
+    def _post_teardown(self):
+        pass
 
     def tearDown(self):
-        # super(MonitoringTestBase, self).setUp()
+        connections.databases['default']['ATOMIC_REQUESTS'] = False
 
         map(os.unlink, self._tempfiles)
 
@@ -216,6 +220,14 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
         Layer.objects.all().delete()
         Map.objects.all().delete()
         Document.objects.all().delete()
+
+        MetricValue.objects.all().delete()
+        ExceptionEvent.objects.all().delete()
+        RequestEvent.objects.all().delete()
+        MonitoredResource.objects.all().delete()
+        NotificationCheck.objects.all().delete()
+        Service.objects.all().delete()
+        Host.objects.all().delete()
 
         from django.conf import settings
         if settings.OGC_SERVER['default'].get(
@@ -2146,8 +2158,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(data["axis_label"], "%")
         self.assertEqual(data["type"], "rate")
         d = data["data"][0]["data"]
-        self.assertEqual(d[0]["samples_count"], 3)
-        self.assertEqual(d[0]["val"], "20.3421000000000000")
+        self.assertEqual(d[0]["samples_count"], 2)
+        self.assertEqual(d[0]["val"], "17.6955000000000000")
         self.assertEqual(d[0]["min"], "14.3935")
         self.assertEqual(d[0]["max"], "25.6353")
         self.assertEqual(d[0]["sum"], "61.0263")
@@ -2183,8 +2195,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(data["axis_label"], "%")
         self.assertEqual(data["type"], "rate")
         d = data["data"][0]["data"]
-        self.assertEqual(d[0]["samples_count"], 3)
-        self.assertEqual(d[0]["val"], "83.3176000000000000")
+        self.assertEqual(d[0]["samples_count"], 2)
+        self.assertEqual(d[0]["val"], "87.4178000000000000")
         self.assertEqual(d[0]["min"], "75.1172")
         self.assertEqual(d[0]["max"], "88.7119")
         self.assertEqual(d[0]["sum"], "249.9528")
@@ -2218,8 +2230,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(data["axis_label"], "%")
         self.assertEqual(data["type"], "rate")
         d = data["data"][0]["data"]
-        self.assertEqual(d[0]["samples_count"], 3)
-        self.assertEqual(d[0]["val"], "89.8485666666666667")
+        self.assertEqual(d[0]["samples_count"], 2)
+        self.assertEqual(d[0]["val"], "94.2085500000000000")
         self.assertEqual(d[0]["min"], "81.1286")
         self.assertEqual(d[0]["max"], "95.5952")
         self.assertEqual(d[0]["sum"], "269.5457")
