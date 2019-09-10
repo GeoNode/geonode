@@ -725,6 +725,19 @@ class CollectorAPI(object):
                                              'group_by': ['mr.id', 'mr.type', 'mr.name'],
                                              'grouper': ['resource', 'name', 'type', 'id', 'resource_id'],
                                              },
+                        # resource count
+                        'count_on_resource': {'select_only': [('count(distinct(mr.id)) as val, '
+                                                               'count(1) as metric_count, '
+                                                               'sum(samples_count) as samples_count, '
+                                                               'sum(mv.value_num), min(mv.value_num), '
+                                                               'max(mv.value_num)')],
+                                              'from': [('join monitoring_monitoredresource mr '
+                                                        'on (mv.resource_id = mr.id)')],
+                                              'where': ['and mr.id is not NULL'],
+                                              'order_by': ['val desc'],
+                                              'group_by': [],
+                                              'grouper': [],
+                                              },
                         'event_type': {'select_only': ['ev.name as event_type', 'count(1) as val',
                                                        'count(1) as metric_count',
                                                        'sum(samples_count) as samples_count',
@@ -738,6 +751,7 @@ class CollectorAPI(object):
                                        'group_by': ['ev.name'],
                                        'grouper': [],
                                        },
+                        # for each event the unique label count
                         'event_type_on_label': {'select_only': ['ev.name as event_type',
                                                                 'count(distinct(ml.name)) as val',
                                                                 'count(1) as metric_count',
@@ -752,6 +766,21 @@ class CollectorAPI(object):
                                                 'group_by': ['ev.name'],
                                                 'grouper': [],
                                                 },
+                        # for each event the unique user count
+                        'event_type_on_user': {'select_only': ['ev.name as event_type',
+                                                               'count(distinct(ml.user)) as val',
+                                                               'count(1) as metric_count',
+                                                               'sum(samples_count) as samples_count',
+                                                               'sum(mv.value_num), min(mv.value_num)',
+                                                               'max(mv.value_num)', ],
+                                               'from': ['join monitoring_eventtype ev on (ev.id = mv.event_type_id)',
+                                                        ('join monitoring_monitoredresource mr '
+                                                         'on (mv.resource_id = mr.id)')],
+                                               'where': [],
+                                               'order_by': ['val desc'],
+                                               'group_by': ['ev.name'],
+                                               'grouper': [],
+                                               },
                         # group by user: number of unique user
                         'user': {'select_only': [('count(distinct(ml.user)) as val, '
                                                   'count(1) as metric_count, sum(samples_count) as samples_count, '
@@ -822,7 +851,10 @@ class CollectorAPI(object):
                           '(ms.id = mv.service_id and ms.service_type_id = %(service_type_id)s ) ')
             params['service_type_id'] = service_type.id
 
-        if group_by not in ('event_type', 'event_type_on_label',) and event_type is None:
+        if event_type is None and group_by not in (
+                'event_type',
+                'event_type_on_label',
+                'event_type_on_user'):
             event_type = EventType.get(EventType.EVENT_ALL)
 
         if event_type and metric_name not in BuiltIns.host_metrics:
