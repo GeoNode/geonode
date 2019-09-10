@@ -506,9 +506,7 @@ class TestUpload(UploaderBase):
                          check_name='relief_san_andres')
 
         test_layer = Layer.objects.all().first()
-        layer_attributes = test_layer.attributes
-        self.assertIsNotNone(layer_attributes)
-        self.assertTrue(layer_attributes.count() > 0)
+        self.assertIsNotNone(test_layer)
 
     def test_zipped_upload(self):
         """Test uploading a zipped shapefile"""
