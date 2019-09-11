@@ -204,6 +204,9 @@
           }
         }
       );
+      {% else %}
+        addSelectUsers('.user-select', []);
+        addSelectGroups('.group-select', []);
       {% endif %}
     });
 
