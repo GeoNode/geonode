@@ -343,6 +343,122 @@ Event types starting with `OWS:` prefix mean they're related to OWS service.
 Event type `other` means request not related to OWS.
 This is also cumulative event type, and should be used as a baseline of all non-ows requests.
 
+In order to retrieve `OWS` only requests the `ows-service` *flag* (possible values are `True`, `true`, `False`, `false`, `0`, `1`) can be used:
+
+* `OWS` event types
+
+  ``GET /monitoring/api/event_types/?ows_service=true``
+
+  .. code-block:: json
+
+    {
+      "status": "ok",
+      "errors": {},
+      "data": {
+        "key": "event_types"
+      },
+      "event_types": [
+        {
+          "name": "OWS:TMS",
+          "type_label": "TMS"
+        },
+        {
+          "name": "OWS:WMS-C",
+          "type_label": "WMS-C"
+        },
+        {
+          "name": "OWS:WMTS",
+          "type_label": "WMTS"
+        },
+        {
+          "name": "OWS:WCS",
+          "type_label": "WCS"
+        },
+        {
+          "name": "OWS:WFS",
+          "type_label": "WFS"
+        },
+        {
+          "name": "OWS:WMS",
+          "type_label": "WMS"
+        },
+        {
+          "name": "OWS:WPS",
+          "type_label": "WPS"
+        },
+        {
+          "name": "OWS:ALL",
+          "type_label": "Any OWS"
+        }
+      ],
+      "success": true
+    }
+
+* `non-OWS` event types
+
+  ``GET /monitoring/api/event_types/?ows_service=false``
+
+  .. code-block:: json
+
+    {
+      "status": "ok",
+      "errors": {},
+      "data": {
+        "key": "event_types"
+      },
+      "event_types": [
+        {
+          "name": "other",
+          "type_label": "Not OWS"
+        },
+        {
+          "name": "all",
+          "type_label": "All"
+        },
+        {
+          "name": "create",
+          "type_label": "Create"
+        },
+        {
+          "name": "upload",
+          "type_label": "Upload"
+        },
+        {
+          "name": "change",
+          "type_label": "Change"
+        },
+        {
+          "name": "change_metadata",
+          "type_label": "Change Metadata"
+        },
+        {
+          "name": "view_metadata",
+          "type_label": "View Metadata"
+        },
+        {
+          "name": "view",
+          "type_label": "View"
+        },
+        {
+          "name": "download",
+          "type_label": "Download"
+        },
+        {
+          "name": "publish",
+          "type_label": "Publish"
+        },
+        {
+          "name": "remove",
+          "type_label": "Remove"
+        },
+        {
+          "name": "geoserver",
+          "type_label": "Geoserver event"
+        }
+      ],
+      "success": true
+    }
+
 Event type `all` means any request.
 
 Label
