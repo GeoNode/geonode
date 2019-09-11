@@ -35,50 +35,52 @@
     */
     for(var perm in data){
       if(data[perm] !== ''){
-        var perms_to_assign = [perm];
-        if(perm=='manage_resourcebase'){
-          perms_to_assign = ['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'];
+        var perms_to_assign = [];
+        var perm_users_found = false;
+        var perm_groups_found = false;
+        if(perm.endsWith("_users")) {
+           perms_to_assign = [perm.substring(0, perm.length - "_users".length)];
+           perm_users_found = true;
         }
-        var d_perms = '';
-        if (data[perm] instanceof Array) {
-          d_perms = data[perm][0];
-        } else {
-          d_perms = data[perm];
+        if(perm.endsWith("_groups")) {
+           perms_to_assign = [perm.substring(0, perm.length - "_groups".length)];
+           perm_groups_found = true;
         }
-        for (var i=0;i<d_perms.split(',').length;i++){
-          var user = d_perms.split(',')[i];
-          for(var j=0;j< perms_to_assign.length;j++){
-            if(permissions['users'].hasOwnProperty(user)){
-              permissions['users'][user].push(perms_to_assign[j]);
-            }else{
-              permissions['users'][user] = [perms_to_assign[j]];
-            }
-          }
+        if(perm.startsWith('manage_resourcebase')){
+           perms_to_assign = ['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'];
         }
-      }
-      if(data[perm] instanceof Array && data[perm].length == 2){
-        var perms_to_assign = [perm];
-        if(perm=='manage_resourcebase'){
-          perms_to_assign = ['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'];
-        }
-        var d_perms = '';
-        if (data[perm] instanceof Array) {
-          d_perms = data[perm][1];
-        } else {
-          d_perms = data[perm];
-        }
-        for (var i=0;i<d_perms.split(',').length;i++){
-          var group = d_perms.split(',')[i];
-          for(var j=0;j< perms_to_assign.length;j++){
-            if(permissions['groups'].hasOwnProperty(group)){
-              permissions['groups'][group].push(perms_to_assign[j]);
-            }else{
-              permissions['groups'][group] = [perms_to_assign[j]];
+        
+        if (perm_users_found || perm_groups_found) {
+          var perm_key = perm_users_found ? 'users' : 'groups';
+          var d_perms = data[perm];
+
+          if (d_perms instanceof Array) {
+            for (var i=0;i<d_perms.length;i++){
+              var perm_value = d_perms[i];
+              for(var j=0;j< perms_to_assign.length;j++){
+                if(permissions[perm_key].hasOwnProperty(perm_value)){
+                  permissions[perm_key][perm_value].push(perms_to_assign[j]);
+                }else{
+                  permissions[perm_key][perm_value] = [perms_to_assign[j]];
+                }
+              }
+            }             
+          } else {
+            for (var i=0;i<d_perms.split(',').length;i++){
+              var perm_value = d_perms.split(',')[i];
+              for(var j=0;j< perms_to_assign.length;j++){
+                if(permissions[perm_key].hasOwnProperty(perm_value)){
+                  permissions[perm_key][perm_value].push(perms_to_assign[j]);
+                }else{
+                  permissions[perm_key][perm_value] = [perms_to_assign[j]];
+                }
+              }
             }
           }
         }
       }
     }
+
     return permissions
   };
 
@@ -163,12 +165,8 @@
                   users[user_perms[i]].push(user);
                 }
               }
-              // $('#' + perm + '_users').val(users[perm].join());
-              $(users[perm]).each(function( index ) {
-                $('#' + perm + '_users').append(new Option(this, this));
-              });
+              addSelectUsers('#' + perm + '_users', users[perm]);
             }
-            addSelectUsers();
 
             /*
             * Compile the groups fields after receiving the current permissions status from the server
@@ -181,6 +179,7 @@
               change_layer_style: [],
               manage_resourcebase: []
             };
+
             var perms_groups = perms.groups;
             for (var group in perms_groups){
               if (group !== 'anonymous'){
@@ -198,24 +197,18 @@
                 }
               }
             }
+
             for (var perm in groups){
-              // $('#' + perm + '_groups').val(groups[perm].join());
-              $(groups[perm]).each(function( index ) {
-                $('#' + perm + '_groups').append(new Option(this, this));
-              });
+              addSelectGroups('#' + perm + '_groups', groups[perm]);
             }
-            addSelectGroups();
           }
         }
       );
-      {% else %}
-      addSelectUsers();
-      addSelectGroups();
       {% endif %}
     });
 
-    function addSelectUsers(){
-      $(".user-select").select2({
+    function addSelectUsers(id, default_perms){
+      $(id).select2({
         placeholder: '{% trans "Choose users..." %}',
         minimumInputLength: 1,
         multiple: true,
@@ -254,12 +247,19 @@
             };
           },
           cache: true
+        },
+        initSelection: function (element, callback) {
+          var data = [];
+          $(default_perms).each(function (index, perm) {
+            data.push({id: perm, text: perm});
+          });
+          callback(data);
         }
       });
     }
 
-    function addSelectGroups(){
-      $(".group-select").select2({
+    function addSelectGroups(id, default_perms){
+      $(id).select2({
         placeholder: '{% trans "Choose groups..." %}',
         minimumInputLength: 1,
         multiple: true,
@@ -295,6 +295,13 @@
             };
           },
           cache: true
+        },
+        initSelection: function (element, callback) {
+          var data = [];
+          $(default_perms).each(function (index, perm) {
+            data.push({id: perm, text: perm});
+          });
+          callback(data);
         }
       });
     }
