@@ -515,8 +515,7 @@ class CollectorAPI(object):
         """
         Processes requests information into metric values
         """
-        log.info("Processing batch of %s requests from %s to %s",
-                 requests.count(), valid_from, valid_to)
+        log.debug("Processing batch of %s requests from %s to %s", requests.count(), valid_from, valid_to)
         if not requests.count():
             return
         event_all = EventType.objects.get(name=EventType.EVENT_ALL)

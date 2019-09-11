@@ -70,7 +70,7 @@ geonode-oauth-toolkit==1.1.4.6
 
 # GeoNode org maintained apps.
 django-geoexplorer==4.0.43
-django-mapstore-adapter==1.0.6
+django-mapstore-adapter==1.0.7
 django-geonode-mapstore-client==1.4.0
 django-geonode-client==1.0.9
 geonode-user-messages==0.1.14
@@ -80,7 +80,7 @@ geonode-agon-ratings==0.3.8
 arcrest>=10.0
 geonode-dialogos==1.2
 geoserver-restconfig==1.0.3
-gn-gsimporter==1.0.10
+gn-gsimporter==1.0.12
 gisdata==0.5.4
 
 # haystack/elasticsearch

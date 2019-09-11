@@ -89,20 +89,6 @@ def geoserver_post_save(instance, sender, created, **kwargs):
         if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
             instance.set_dirty_state()
 
-        if instance.storeType != 'remoteStore' and created:
-            logger.info("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
-            try:
-                set_resource_default_links(instance, sender, prune=True)
-            except BaseException:
-                from django.db import connection
-                connection._rollback()
-                logger.warn("Failure Creating Default Resource Links for Layer [%s]" % (instance.alternate))
-            logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
-            try:
-                create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
-            except BaseException:
-                logger.warn("Failure Creating Thumbnail for Layer [%s]" % (instance.alternate))
-
 
 @on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_post_save_local(instance, *args, **kwargs):
@@ -376,6 +362,14 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # some thumbnail generators will update thumbnail_url.  If so, don't
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
     if gs_resource:
+        logger.info("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
+        try:
+            set_resource_default_links(instance, instance, prune=True)
+        except BaseException:
+            from django.db import connection
+            connection._rollback()
+            logger.warn("Failure Creating Default Resource Links for Layer [%s]" % (instance.alternate))
+
         if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
                 'thumbnail_url' in kwargs['update_fields']:
             logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))

@@ -31,12 +31,15 @@ import pytz
 import logging
 import os.path
 import xmljson
+import dj_database_url
+
 from decimal import Decimal  # noqa
 from importlib import import_module
 from defusedxml import lxml as dlxml
 
 from django.core import mail
 from django.conf import settings
+from django.db import connections
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from django.core.management import call_command
@@ -57,6 +60,7 @@ from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
 from geonode.documents.models import Document
+from geonode.monitoring.models import *  # noqa
 
 from geonode.tests.utils import Client
 from geonode.geoserver.helpers import ogc_server_settings
@@ -72,6 +76,20 @@ GEONODE_PASSWD = 'admin'
 GEONODE_URL = settings.SITEURL.rstrip('/')
 GEOSERVER_URL = ogc_server_settings.LOCATION
 GEOSERVER_USER, GEOSERVER_PASSWD = ogc_server_settings.credentials
+
+DB_HOST = settings.DATABASES['default']['HOST']
+DB_PORT = settings.DATABASES['default']['PORT']
+DB_NAME = settings.DATABASES['default']['NAME']
+DB_USER = settings.DATABASES['default']['USER']
+DB_PASSWORD = settings.DATABASES['default']['PASSWORD']
+DATASTORE_URL = 'postgis://{}:{}@{}:{}/{}'.format(
+    DB_USER,
+    DB_PASSWORD,
+    DB_HOST,
+    DB_PORT,
+    DB_NAME
+)
+postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=5)
 
 logging.getLogger('south').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
@@ -165,8 +183,6 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
             os.unlink('integration_settings.py')
 
     def setUp(self):
-        # super(MonitoringTestBase, self).setUp()
-
         # await startup
         cl = Client(
             GEONODE_URL, GEONODE_USER, GEONODE_PASSWD
@@ -185,30 +201,18 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
 
         self.client = TestClient(REMOTE_ADDR='127.0.0.1')
 
-        self._tempfiles = []
-        # createlayer must use postgis as a datastore
-        # set temporary settings to use a postgis datastore
-        # DB_HOST = DATABASES['default']['HOST']
-        # DB_PORT = DATABASES['default']['PORT']
-        # DB_NAME = DATABASES['default']['NAME']
-        # DB_USER = DATABASES['default']['USER']
-        # DB_PASSWORD = DATABASES['default']['PASSWORD']
-        # settings.DATASTORE_URL = 'postgis://{}:{}@{}:{}/{}'.format(
-        #     DB_USER,
-        #     DB_PASSWORD,
-        #     DB_HOST,
-        #     DB_PORT,
-        #     DB_NAME
-        # )
-        # postgis_db = dj_database_url.parse(
-        #     settings.DATASTORE_URL, conn_max_age=600)
-        # settings.DATABASES['datastore'] = postgis_db
-        # settings.OGC_SERVER['default']['DATASTORE'] = 'datastore'
+        settings.DATABASES['default']['NAME'] = DB_NAME
 
-        # upload(gisdata.DATA_DIR, console=None)
+        connections['default'].settings_dict['ATOMIC_REQUESTS'] = False
+        connections['default'].connect()
+
+        self._tempfiles = []
+
+    def _post_teardown(self):
+        pass
 
     def tearDown(self):
-        # super(MonitoringTestBase, self).setUp()
+        connections.databases['default']['ATOMIC_REQUESTS'] = False
 
         map(os.unlink, self._tempfiles)
 
@@ -216,6 +220,14 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
         Layer.objects.all().delete()
         Map.objects.all().delete()
         Document.objects.all().delete()
+
+        MetricValue.objects.all().delete()
+        ExceptionEvent.objects.all().delete()
+        RequestEvent.objects.all().delete()
+        MonitoredResource.objects.all().delete()
+        NotificationCheck.objects.all().delete()
+        Service.objects.all().delete()
+        Host.objects.all().delete()
 
         from django.conf import settings
         if settings.OGC_SERVER['default'].get(
@@ -1555,8 +1567,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         # 1
         self.assertEqual(last_month_data[0]["samples_count"], 2)
         self.assertEqual(last_month_data[0]["val"], "2.0000")
-        self.assertEqual(last_month_data[0]["min"], "2.0000")
-        self.assertEqual(last_month_data[0]["max"], "2.0000")
+        self.assertTrue(last_month_data[0]["min"] in ("1.0000", "2.0000"))
+        self.assertTrue(last_month_data[0]["max"] in ("1.0000", "2.0000"))
         self.assertEqual(last_month_data[0]["sum"], "2.0000")
         self.assertEqual(
             last_month_data[0]["label"],
@@ -1567,8 +1579,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         # 2
         self.assertEqual(last_month_data[1]["samples_count"], 2)
         self.assertEqual(last_month_data[1]["val"], "2.0000")
-        self.assertEqual(last_month_data[1]["min"], "1.0000")
-        self.assertEqual(last_month_data[1]["max"], "1.0000")
+        self.assertTrue(last_month_data[1]["min"] in ("1.0000", "2.0000"))
+        self.assertTrue(last_month_data[1]["max"] in ("1.0000", "2.0000"))
         self.assertEqual(last_month_data[1]["sum"], "2.0000")
         self.assertEqual(
             last_month_data[1]["label"],
@@ -1579,8 +1591,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         # 3
         self.assertEqual(last_month_data[2]["samples_count"], 2)
         self.assertEqual(last_month_data[2]["val"], "2.0000")
-        self.assertEqual(last_month_data[2]["min"], "1.0000")
-        self.assertEqual(last_month_data[2]["max"], "1.0000")
+        self.assertTrue(last_month_data[2]["min"] in ("1.0000", "2.0000"))
+        self.assertTrue(last_month_data[2]["max"] in ("1.0000", "2.0000"))
         self.assertEqual(last_month_data[2]["sum"], "2.0000")
         self.assertEqual(
             last_month_data[2]["label"],
@@ -1943,66 +1955,67 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertFalse(out["errors"])
         self.assertEqual(out["data"]["key"], "event_types")
         resources = out["event_types"]
-        # OWS:TMS
-        self.assertEqual(resources[0]["type_label"], "TMS")
-        self.assertEqual(resources[0]["name"], "OWS:TMS")
-        # OWS:WMS-C
-        self.assertEqual(resources[1]["type_label"], "WMS-C")
-        self.assertEqual(resources[1]["name"], "OWS:WMS-C")
-        # OWS:WMTS
-        self.assertEqual(resources[2]["type_label"], "WMTS")
-        self.assertEqual(resources[2]["name"], "OWS:WMTS")
-        # OWS:WCS
-        self.assertEqual(resources[3]["type_label"], "WCS")
-        self.assertEqual(resources[3]["name"], "OWS:WCS")
-        # OWS:WFS
-        self.assertEqual(resources[4]["type_label"], "WFS")
-        self.assertEqual(resources[4]["name"], "OWS:WFS")
-        # OWS:WMS
-        self.assertEqual(resources[5]["type_label"], "WMS")
-        self.assertEqual(resources[5]["name"], "OWS:WMS")
-        # OWS:WPS
-        self.assertEqual(resources[6]["type_label"], "WPS")
-        self.assertEqual(resources[6]["name"], "OWS:WPS")
-        # other
-        self.assertEqual(resources[7]["type_label"], "Not OWS")
-        self.assertEqual(resources[7]["name"], "other")
-        # OWS:ALL
-        self.assertEqual(resources[8]["type_label"], "Any OWS")
-        self.assertEqual(resources[8]["name"], "OWS:ALL")
-        # all
-        self.assertEqual(resources[9]["type_label"], "All")
-        self.assertEqual(resources[9]["name"], "all")
-        # create
-        self.assertEqual(resources[10]["type_label"], "Create")
-        self.assertEqual(resources[10]["name"], "create")
-        # upload
-        self.assertEqual(resources[11]["type_label"], "Upload")
-        self.assertEqual(resources[11]["name"], "upload")
-        # other
-        self.assertEqual(resources[12]["type_label"], "Change")
-        self.assertEqual(resources[12]["name"], "change")
-        # change_metadata
-        self.assertEqual(resources[13]["type_label"], "Change Metadata")
-        self.assertEqual(resources[13]["name"], "change_metadata")
-        # view_metadata
-        self.assertEqual(resources[14]["type_label"], "View Metadata")
-        self.assertEqual(resources[14]["name"], "view_metadata")
-        # view
-        self.assertEqual(resources[15]["type_label"], "View")
-        self.assertEqual(resources[15]["name"], "view")
-        # download
-        self.assertEqual(resources[16]["type_label"], "Download")
-        self.assertEqual(resources[16]["name"], "download")
-        # publish
-        self.assertEqual(resources[17]["type_label"], "Publish")
-        self.assertEqual(resources[17]["name"], "publish")
-        # remove
-        self.assertEqual(resources[18]["type_label"], "Remove")
-        self.assertEqual(resources[18]["name"], "remove")
-        # geoserver
-        self.assertEqual(resources[19]["type_label"], "Geoserver event")
-        self.assertEqual(resources[19]["name"], "geoserver")
+        for i, resource in enumerate(resources):
+            # OWS:TMS
+            if resources[i]["type_label"] == "TMS":
+                self.assertEqual(resources[i]["name"], "OWS:TMS")
+            # OWS:WMS-C
+            if resources[i]["type_label"] == "WMS-C":
+                self.assertEqual(resources[i]["name"], "OWS:WMS-C")
+            # OWS:WMTS
+            if resources[i]["type_label"] == "WMTS":
+                self.assertEqual(resources[i]["name"], "OWS:WMTS")
+            # OWS:WCS
+            if resources[i]["type_label"] == "WCS":
+                self.assertEqual(resources[i]["name"], "OWS:WCS")
+            # OWS:WFS
+            if resources[i]["type_label"] == "WFS":
+                self.assertEqual(resources[i]["name"], "OWS:WFS")
+            # OWS:WMS
+            if resources[i]["type_label"] == "WMS":
+                self.assertEqual(resources[i]["name"], "OWS:WMS")
+            # OWS:WPS
+            if resources[i]["type_label"] == "WPS":
+                self.assertEqual(resources[i]["name"], "OWS:WPS")
+            # other
+            if resources[i]["type_label"] == "Not OWS":
+                self.assertEqual(resources[i]["name"], "other")
+            # OWS:ALL
+            if resources[i]["type_label"] == "Any OWS":
+                self.assertEqual(resources[i]["name"], "OWS:ALL")
+            # all
+            if resources[i]["type_label"] == "All":
+                self.assertEqual(resources[i]["name"], "all")
+            # create
+            if resources[i]["type_label"] == "Create":
+                self.assertEqual(resources[i]["name"], "create")
+            # upload
+            if resources[i]["type_label"] == "Upload":
+                self.assertEqual(resources[i]["name"], "upload")
+            # other
+            if resources[i]["type_label"] == "Change":
+                self.assertEqual(resources[i]["name"], "change")
+            # change_metadata
+            if resources[i]["type_label"] == "Change Metadata":
+                self.assertEqual(resources[i]["name"], "change_metadata")
+            # view_metadata
+            if resources[i]["type_label"] == "View Metadata":
+                self.assertEqual(resources[i]["name"], "view_metadata")
+            # view
+            if resources[i]["type_label"] == "View":
+                self.assertEqual(resources[i]["name"], "view")
+            # download
+            if resources[i]["type_label"] == "Download":
+                self.assertEqual(resources[i]["name"], "download")
+            # publish
+            if resources[i]["type_label"] == "Publish":
+                self.assertEqual(resources[i]["name"], "publish")
+            # remove
+            if resources[i]["type_label"] == "Remove":
+                self.assertEqual(resources[i]["name"], "remove")
+            # geoserver
+            if resources[i]["type_label"] == "Geoserver event":
+                self.assertEqual(resources[i]["name"], "geoserver")
 
     def test_ows_service_enpoints(self):
         # url
