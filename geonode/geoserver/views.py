@@ -200,7 +200,6 @@ def layer_style_manage(request, layername):
             cat = gs_catalog
 
             # First update the layer style info from GS to GeoNode's DB
-            # The try/except is
             try:
                 set_styles(layer, cat)
             except AttributeError:

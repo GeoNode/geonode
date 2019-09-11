@@ -43,11 +43,6 @@
       </div>
 
       <div class="col-md-9">
-        <div class="row form-group">
-          <div class="col-xs-6 col-md-3">
-            <input type="text" class="js-searchlist form-control"  placeholder="&#xF002; Search" style="font-family:Arial, FontAwesome, sans-serif">
-          </div>
-        </div>
         <select multiple="multiple" id="style-select" name="style-select">
           {% for style in gs_styles %}
             {% if style.0 in layer_style_names %}
@@ -74,7 +69,10 @@
 {{ block.super }}
 <script type="text/javascript">
   $(function () {
-    $('#style-select').multiSelect({
+    $('#style-select').multiselect({
+      includeSelectAllOption: false,
+      buttonWidth: 550,
+      enableFiltering: true,
       afterSelect: function(values){
           $("#style-select :selected").each(function() {
               if(this.value === values[0]) {
