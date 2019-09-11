@@ -159,20 +159,23 @@ class MetricsFilters(CheckTypeForm):
     GROUP_BY_CHOICES = ((GROUP_BY_RESOURCE, "By resource",),)
     GROUP_BY_RESOURCE_ON_LABEL = 'resource_on_label'
     GROUP_BY_RESOURCE_ON_USER = 'resource_on_user'
+    GROUP_BY_COUNT_ON_RESOURCE = 'count_on_resource'
     GROUP_BY_LABEL = 'label'
     GROUP_BY_USER = 'user'
     GROUP_BY_USER_ON_LABEL = 'user_on_label'
     GROUP_BY_EVENT_TYPE = 'event_type'
     GROUP_BY_EVENT_TYPE_ON_LABEL = 'event_type_on_label'
+    GROUP_BY_EVENT_TYPE_ON_USER = 'event_type_on_user'
     GROUP_BY_CHOICES = ((GROUP_BY_RESOURCE, "By resource",),
                         (GROUP_BY_RESOURCE_ON_LABEL, "By resource on label",),
                         (GROUP_BY_RESOURCE_ON_USER, "By resource on user",),
+                        (GROUP_BY_COUNT_ON_RESOURCE, "By resource with count",),
                         (GROUP_BY_LABEL, "By label",),
                         (GROUP_BY_USER, "By user",),
                         (GROUP_BY_USER_ON_LABEL, "By user on label",),
                         (GROUP_BY_EVENT_TYPE, "By event type",),
                         (GROUP_BY_EVENT_TYPE_ON_LABEL, "By event type on label",),
-                        )
+                        (GROUP_BY_EVENT_TYPE_ON_USER, "By event type on user",),)
     service = forms.CharField(required=False)
     label = forms.CharField(required=False)
     user = forms.CharField(required=False)
@@ -225,6 +228,13 @@ class ResourcesFilterForm(LabelsFilterForm):
 
     def clean_resource_type(self):
         return self._check_type('resource_type')
+
+
+class EventTypesFilterForm(CheckTypeForm):
+    ows_service = forms.CharField(required=False)
+
+    def clean_ows_service(self):
+        return self._check_type('ows_service')
 
 
 class FilteredView(View):
@@ -363,11 +373,16 @@ class LabelsList(FilteredView):
 
 @view_decorator(superuser_protected, subclass=True)
 class EventTypeList(FilteredView):
-
+    filter_form = EventTypesFilterForm
     fields_map = (('name', 'name',), ('type_label', 'type_label',),)
     output_name = 'event_types'
 
     def get_queryset(self, **kwargs):
+        if "ows_service" in kwargs and kwargs["ows_service"] is not None:
+            if kwargs["ows_service"]:
+                return EventType.objects.filter(name__icontains="OWS")
+            else:
+                return EventType.objects.exclude(name__icontains="OWS")
         return EventType.objects.all()
 
     def get(self, request, *args, **kwargs):

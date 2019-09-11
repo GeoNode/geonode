@@ -60,7 +60,7 @@ Requests
     * get number of unique tracking ids for urls
 
       ``GET /monitoring/api/metric_data/request.users/?``
-      ``last=(x*86400)&interval=86400&group_by=resource_no_label&resource_type=url&event_type=other``
+      ``last=(x*86400)&interval=86400&group_by=resource_on_label&resource_type=url&event_type=other``
 
       .. code-block:: json
 
@@ -135,71 +135,125 @@ Requests
       ``GET /monitoring/api/metric_data/request.users/?``
       ``last=86400&interval=86400&group_by=event_type_on_label``
 
-    * to get number of unique tracking ids for specific resource type
+    * to get number of unique tracking ids for each event_type on a given resource type
 
       ``GET /monitoring/api/metric_data/request.users/?``
       ``last=86400&interval=86400&group_by=event_type_on_label&resource_type=url``
 
       .. code-block:: json
 
-          {
-            "data": {
-              "input_valid_from": "2018-07-11T17:54:41.467Z",
-              "input_valid_to": "2018-07-12T17:54:41.467Z",
-              "data": [
-                {
-                  "valid_from": "2018-07-11T17:54:41.467Z",
-                  "data": [
-                    {
-                      "samples_count": 5,
-                      "event_type": "all",
-                      "val": 2,
-                      "min": "1.0000",
-                      "max": "1.0000",
-                      "sum": "5.0000",
-                      "metric_count": 5
-                    },
-                    {
-                      "samples_count": 5,
-                      "event_type": "other",
-                      "val": 2,
-                      "min": "1.0000",
-                      "max": "1.0000",
-                      "sum": "5.0000",
-                      "metric_count": 5
-                    },
-                    {
-                      "samples_count": 5,
-                      "event_type": "view",
-                      "val": 2,
-                      "min": "1.0000",
-                      "max": "1.0000",
-                      "sum": "5.0000",
-                      "metric_count": 5
-                    }
-                  ],
-                  "valid_to": "2018-07-12T17:54:41.467Z"
-                }
-              ],
-              "metric": "request.users",
-              "interval": 86400.0,
-              "type": "value",
-              "axis_label": "Count",
-              "label": null
-            }
+        {
+          "data": {
+            "input_valid_from": "2018-07-11T17:54:41.467Z",
+            "input_valid_to": "2018-07-12T17:54:41.467Z",
+            "data": [
+              {
+                "valid_from": "2018-07-11T17:54:41.467Z",
+                "data": [
+                  {
+                    "samples_count": 5,
+                    "event_type": "all",
+                    "val": 2,
+                    "min": "1.0000",
+                    "max": "1.0000",
+                    "sum": "5.0000",
+                    "metric_count": 5
+                  },
+                  {
+                    "samples_count": 5,
+                    "event_type": "other",
+                    "val": 2,
+                    "min": "1.0000",
+                    "max": "1.0000",
+                    "sum": "5.0000",
+                    "metric_count": 5
+                  },
+                  {
+                    "samples_count": 5,
+                    "event_type": "view",
+                    "val": 2,
+                    "min": "1.0000",
+                    "max": "1.0000",
+                    "sum": "5.0000",
+                    "metric_count": 5
+                  }
+                ],
+                "valid_to": "2018-07-12T17:54:41.467Z"
+              }
+            ],
+            "metric": "request.users",
+            "interval": 86400.0,
+            "type": "value",
+            "axis_label": "Count",
+            "label": null
           }
+        }
+
+    * to get number of unique users for each event type on specific resource type
+
+      ``GET /monitoring/api/metric_data/request.users/?``
+      ``last=86400&interval=86400&group_by=event_type_on_user&resource_type=url``
+
+      .. code-block:: json
+
+        {
+          "data": {
+            "input_valid_from": "2018-07-11T17:54:41.467Z",
+            "input_valid_to": "2018-07-12T17:54:41.467Z",
+            "data": [
+              {
+                "valid_from": "2018-07-11T17:54:41.467Z",
+                "data": [
+                  {
+                    "samples_count": 5,
+                    "event_type": "all",
+                    "val": 2,
+                    "min": "1.0000",
+                    "max": "1.0000",
+                    "sum": "5.0000",
+                    "metric_count": 5
+                  },
+                  {
+                    "samples_count": 5,
+                    "event_type": "other",
+                    "val": 1,
+                    "min": "1.0000",
+                    "max": "1.0000",
+                    "sum": "5.0000",
+                    "metric_count": 5
+                  },
+                  {
+                    "samples_count": 5,
+                    "event_type": "view",
+                    "val": 1,
+                    "min": "1.0000",
+                    "max": "1.0000",
+                    "sum": "5.0000",
+                    "metric_count": 5
+                  }
+                ],
+                "valid_to": "2018-07-12T17:54:41.467Z"
+              }
+            ],
+            "metric": "request.users",
+            "interval": 86400.0,
+            "type": "value",
+            "axis_label": "Count",
+            "label": null
+          }
+        }
 
 4. total number of unique sessions per event_type and single resource: let me see what was the most visited map page in this day, or what was the most downloaded document, what was the most requested ows layer, etc.
 
     * list of most visited resources of `url` type
 
       ``GET /monitoring/api/metric_data/request.users/?``
-      ``last=86400&interval=86400&group_by=resource_no_label&resource_type=url``
+      ``last=86400&interval=86400&group_by=resource_on_label&resource_type=url``
 
     * list of unique tracking ids for each resource (can be narrowed down to specific resource type with `resource_type` values).
 
       ``GET /monitoring/api/metric_data/request.users/?``
-      ``last=86400&interval=86400&group_by=resource_no_label``
+      ``last=86400&interval=86400&group_by=resource_on_label``
 
       .. code-block:: json
 
@@ -500,3 +554,163 @@ Requests
           "label": null
         }
       }
+
+8. total number of unique users for each monitored resource.
+
+  ``GET /monitoring/api/metric_data/request.users/``
+  ``?last=31536000&interval=31536000&group_by=resource_on_user``
+
+  .. code-block:: json
+
+    {
+      "data": {
+        "input_valid_from": "2018-09-10T14:15:39.454Z",
+        "input_valid_to": "2019-09-10T14:15:39.454Z",
+        "data": [
+          {
+            "valid_from": "2018-09-10T14:15:39.454Z",
+            "data": [
+              {
+                "resource": {
+                  "href": "/",
+                  "type": "url",
+                  "name": "/",
+                  "id": 1
+                },
+                "metric_count": 36,
+                "val": 4,
+                "max": "2.0000",
+                "sum": "35.0000",
+                "min": "0.0000",
+                "samples_count": 35
+              },
+              {
+                "resource": {
+                  "href": "/maps/",
+                  "type": "url",
+                  "name": "/maps/",
+                  "id": 3
+                },
+                "metric_count": 3,
+                "val": 2,
+                "max": "1.0000",
+                "sum": "3.0000",
+                "min": "1.0000",
+                "samples_count": 3
+              },
+              {
+                "resource": {
+                  "href": "",
+                  "type": "layer",
+                  "name": "geonode:railways",
+                  "id": 4
+                },
+                "metric_count": 5,
+                "val": 2,
+                "max": "2.0000",
+                "sum": "3.0000",
+                "min": "0.0000",
+                "samples_count": 3
+              },
+              {
+                "resource": {
+                  "href": "/layers/",
+                  "type": "url",
+                  "name": "/layers/",
+                  "id": 2
+                },
+                "metric_count": 4,
+                "val": 1,
+                "max": "1.0000",
+                "sum": "4.0000",
+                "min": "1.0000",
+                "samples_count": 4
+              },
+              {
+                "resource": {
+                  "href": "/documents/2",
+                  "type": "document",
+                  "name": "test_doc_1.txt",
+                  "id": 5
+                },
+                "metric_count": 2,
+                "val": 1,
+                "max": "2.0000",
+                "sum": "4.0000",
+                "min": "2.0000",
+                "samples_count": 4
+              },
+              {
+                "resource": {
+                  "href": "/maps/3",
+                  "type": "map",
+                  "name": "test_map",
+                  "id": 6
+                },
+                "metric_count": 1,
+                "val": 1,
+                "max": "1.0000",
+                "sum": "1.0000",
+                "min": "1.0000",
+                "samples_count": 1
+              },
+              {
+                "resource": {
+                  "href": "",
+                  "type": "layer",
+                  "name": "geonode:waterways",
+                  "id": 7
+                },
+                "metric_count": 2,
+                "val": 1,
+                "max": "2.0000",
+                "sum": "2.0000",
+                "min": "0.0000",
+                "samples_count": 2
+              }
+            ],
+            "valid_to": "2019-09-10T14:15:39.454Z"
+          }
+        ],
+        "metric": "request.users",
+        "interval": 31536000,
+        "type": "value",
+        "axis_label": "Count",
+        "label": null
+      }
+    }
+
+9. total number of resource monitored in a given time range.
+
+  ``GET /monitoring/api/metric_data/request.users/``
+  ``?last=31536000&interval=31536000&group_by=count_on_resource``
+
+  .. code-block:: json
+
+    {
+      "data": {
+        "input_valid_from": "2018-09-10T14:20:27.335Z",
+        "input_valid_to": "2019-09-10T14:20:27.335Z",
+        "data": [
+          {
+            "valid_from": "2018-09-10T14:20:27.335Z",
+            "data": [
+              {
+                "samples_count": 52,
+                "val": 7,
+                "min": "0.0000",
+                "max": "2.0000",
+                "sum": "52.0000",
+                "metric_count": 53
+              }
+            ],
+            "valid_to": "2019-09-10T14:20:27.335Z"
+          }
+        ],
+        "metric": "request.users",
+        "interval": 31536000,
+        "type": "value",
+        "axis_label": "Count",
+        "label": null
+      }
+    }

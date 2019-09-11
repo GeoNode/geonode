@@ -337,6 +337,15 @@ class TypeChecks(object):
         except EventType.DoesNotExist:
             raise ValueError("Event Type {} doesn't exist".format(val))
 
+    @staticmethod
+    def ows_service_type(val):
+        if str(val).lower() in ("true", "1"):
+            return True
+        elif str(val).lower() in ("false", "0"):
+            return False
+        else:
+            raise ValueError("Invalid ows_service value {}".format(val))
+
 
 def dump(obj, additional_fields=tuple()):
     if hasattr(obj, '_meta'):

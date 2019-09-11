@@ -19,6 +19,7 @@
 #########################################################################
 
 from django.core.management.base import BaseCommand
+from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.catalogue.models import catalogue_post_save
 
@@ -29,6 +30,10 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import set_attributes_from_geoserver as set_attributes
 elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.gis_tools import set_attributes
+
+_names = ['Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV', 'GeoJSON', 'Excel', 'Legend',
+          'GeoTIFF', 'GZIP', 'Original Dataset', 'ESRI Shapefile', 'View in Google Earth',
+          'KML', 'KMZ']
 
 
 class Command(BaseCommand):
@@ -42,6 +47,14 @@ class Command(BaseCommand):
             dest='ignore_errors',
             default=False,
             help='Stop after any errors are encountered.'
+        )
+        parser.add_argument(
+            '-d',
+            '--remove-duplicates',
+            action='store_true',
+            dest='remove_duplicates',
+            default=True,
+            help='Remove duplicates first.'
         )
         parser.add_argument(
             '-f',
@@ -58,6 +71,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         ignore_errors = options.get('ignore_errors')
+        remove_duplicates = options.get('remove_duplicates')
         filter = options.get('filter')
         if not options.get('username'):
             username = None
@@ -79,6 +93,14 @@ class Command(BaseCommand):
                 # refresh metadata links
                 set_resource_default_links(layer, layer, prune=False)
 
+                if remove_duplicates:
+                    # remove duplicates
+                    for _n in _names:
+                        _links = Link.objects.filter(resource__id=layer.id, name__icontains=_n)
+                        while _links.count() > 1:
+                            _links.last().delete()
+                            print '.',
+
                 # refresh catalogue metadata records
                 catalogue_post_save(instance=layer, sender=layer.__class__)
             except BaseException as e:
@@ -88,3 +110,4 @@ class Command(BaseCommand):
                     print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
                 else:
                     raise e
+

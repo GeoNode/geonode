@@ -11,6 +11,7 @@ from geonode.monitoring.models import (
     RequestEvent,
     ExceptionEvent,
     MetricLabel,
+    MetricValue,
     MonitoredResource,
     NotificationCheck,
     MetricNotificationCheck,
@@ -70,6 +71,13 @@ class RequestEvent(admin.ModelAdmin):
 @admin.register(MetricLabel)
 class MetricLabelAdmin(admin.ModelAdmin):
     list_display = ('name',)
+
+
+@admin.register(MetricValue)
+class MetricValueAdmin(admin.ModelAdmin):
+    list_display = ('service_metric', 'service', 'event_type', 'resource', 'label',
+                    'value', 'value_num', 'value_raw', 'samples_count', 'data')
+    list_filter = ('service_metric', 'service', 'event_type')
 
 
 @admin.register(MonitoredResource)
