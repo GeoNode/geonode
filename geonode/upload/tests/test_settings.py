@@ -58,6 +58,11 @@ if 'geonode.security.middleware.SessionControlMiddleware' in MIDDLEWARE_CLASSES:
     _middleware.remove('geonode.security.middleware.SessionControlMiddleware')
     MIDDLEWARE_CLASSES = tuple(_middleware)
 
+# Django 1.11 ParallelTestSuite
+TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
+TEST_RUNNER_KEEPDB = os.environ.get('TEST_RUNNER_KEEPDB', 1)
+TEST_RUNNER_PARALLEL = os.environ.get('TEST_RUNNER_PARALLEL', 1)
+
 # Backend
 DATABASES = {
     'default': {
@@ -70,10 +75,9 @@ DATABASES = {
         'CONN_MAX_AGE': 5,
         'CONN_TOUT': 5,
         'OPTIONS': {
-            'connect_timeout': 5,
+            'connect_timeout': 5
         }
     },
-    # vector datastore for uploads
     'datastore': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'upload_test',
@@ -84,7 +88,7 @@ DATABASES = {
         'CONN_MAX_AGE': 5,
         'CONN_TOUT': 5,
         'OPTIONS': {
-            'connect_timeout': 5,
+            'connect_timeout': 5
         }
     }
 }
@@ -191,7 +195,7 @@ MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
 MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'local-geonode')
 
 # how long monitoring data should be stored
-MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 365)))
+MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 7)))
 
 # this will disable csrf check for notification config views,
 # use with caution - for dev purpose only
