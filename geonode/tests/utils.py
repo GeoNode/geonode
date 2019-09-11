@@ -23,6 +23,8 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 import os
 import copy
 import json
+import base64
+import pickle
 import urllib
 import urllib2
 import logging
@@ -37,6 +39,8 @@ from django.conf import settings
 from django.db.models import signals
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
+from django.contrib.auth import get_user_model
+from django.test.client import Client as DjangoTestClient
 
 from geonode.maps.models import Layer
 from geonode.geoserver.helpers import set_attributes
@@ -51,16 +55,24 @@ def upload_step(step=None):
     return step
 
 
-class Client(object):
+class Client(DjangoTestClient):
 
     """client for making http requests"""
 
-    def __init__(self, url, user, passwd):
+    def __init__(self, url, user, passwd, *args, **kwargs):
+        super(Client, self).__init__(*args)
+
         self.url = url
         self.user = user
         self.passwd = passwd
         self.csrf_token = None
+        self.response_cookies = None
         self.opener = self._init_url_opener()
+        self.u, _ = get_user_model().objects.get_or_create(username=self.user)
+        self.u.is_active = True
+        self.u.email = 'admin@geonode.org'
+        self.u.set_password(self.passwd)
+        self.u.save()
 
     def _init_url_opener(self):
         self.cookies = urllib2.HTTPCookieProcessor()
@@ -68,12 +80,49 @@ class Client(object):
         opener.add_handler(self.cookies)  # Add cookie handler
         return opener
 
+    def _login(self, user, backend=None):
+        from importlib import import_module
+        from django.http import HttpRequest
+        from django.contrib.auth import login
+        engine = import_module(settings.SESSION_ENGINE)
+
+        # Create a fake request to store login details.
+        request = HttpRequest()
+
+        request.session = engine.SessionStore()
+        login(request, user, backend)
+
+        # Save the session values.
+        request.session.save()
+        return request
+
     def make_request(self, path, data=None,
-                     ajax=False, debug=True):
+                     ajax=False, debug=True, force_login=False):
         url = path if path.startswith("http") else self.url + path
         if ajax:
-            url += '&ajax=true' if '?' in url else '?ajax=true'
+            url += '&force_ajax=true' if '?' in url else '?force_ajax=true'
         request = None
+        # Create a fake request to store login details.
+        _request = None
+        _session_id = None
+        if force_login:
+            session_cookie = settings.SESSION_COOKIE_NAME
+            for cookie in self.cookies.cookiejar:
+                if cookie.name == session_cookie:
+                    _session_id = cookie.value
+                    self.response_cookies += "; %s=%s" % (session_cookie, _session_id)
+                    # _request = self.force_login(self.u)
+
+                    # # Save the session values.
+                    # _request.session.save()
+                    # logger.info(_request.session)
+
+                    # # Set the cookie to represent the session.
+                    # logger.info(" -- session %s == %s " % (cookie.value, _request.session.session_key))
+                    # cookie.value = _request.session.session_key
+                    # cookie.expires = None
+                    # self.cookies.cookiejar.set_cookie(cookie)
+
         if data:
             items = []
             # wrap post parameters
@@ -82,16 +131,28 @@ class Client(object):
                     # add file
                     items.append(MultipartParam.from_file(name, value.name))
                 else:
+                    if name == 'csrfmiddlewaretoken' and _request and _request.META['CSRF_COOKIE']:
+                        value = _request.META['CSRF_COOKIE']
+                        self.csrf_token = value
+                        for cookie in self.cookies.cookiejar:
+                            if cookie.name == 'csrftoken':
+                                cookie.value = value
+                                self.cookies.cookiejar.set_cookie(cookie)
                     items.append(MultipartParam(name, value))
+                logger.debug(" MultipartParam: %s / %s: " % (name, value))
             datagen, headers = multipart_encode(items)
             request = urllib2.Request(url, datagen, headers)
         else:
             request = urllib2.Request(url=url)
 
+        if self.csrf_token:
+            request.add_header('X-CSRFToken', self.csrf_token)
+        if self.response_cookies:
+            request.add_header('cookie', self.response_cookies)
         if ajax:
             request.add_header('X_REQUESTED_WITH', 'XMLHttpRequest')
+
         try:
-            # return urllib2.urlopen(request)
             return self.opener.open(request)
         except urllib2.HTTPError as ex:
             if not debug:
@@ -104,18 +165,34 @@ class Client(object):
     def get(self, path, debug=True):
         return self.make_request(path, debug=debug)
 
+    def force_login(self, user, backend=None):
+        def get_backend():
+            from django.contrib.auth import load_backend
+            for backend_path in settings.AUTHENTICATION_BACKENDS:
+                backend = load_backend(backend_path)
+                if hasattr(backend, 'get_user'):
+                    return backend_path
+        if backend is None:
+            backend = get_backend()
+        user.backend = backend
+        return self._login(user, backend)
+
     def login(self):
         """ Method to login the GeoNode site"""
+        from django.contrib.auth import authenticate
+        assert authenticate(username=self.user, password=self.passwd)
+
         self.csrf_token = self.get_csrf_token()
         params = {'csrfmiddlewaretoken': self.csrf_token,
-                  'username': self.user,
+                  'login': self.user,
                   'next': '/',
                   'password': self.passwd}
-        self.make_request(
+        response = self.make_request(
             reverse('account_login'),
             data=params
         )
         self.csrf_token = self.get_csrf_token()
+        self.response_cookies = response.headers.get('Set-Cookie')
 
     def upload_file(self, _file):
         """ function that uploads a file, or a collection of files, to
@@ -123,12 +200,13 @@ class Client(object):
         if not self.csrf_token:
             self.login()
         spatial_files = ("dbf_file", "shx_file", "prj_file")
-
         base, ext = os.path.splitext(_file)
         params = {
             # make public since wms client doesn't do authentication
             'permissions': '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            'csrfmiddlewaretoken': self.csrf_token
+            'csrfmiddlewaretoken': self.csrf_token,
+            'time': 'true',
+            'charset': 'UTF-8'
         }
 
         # deal with shapefiles
@@ -140,21 +218,25 @@ class Client(object):
                 # allow for that
                 if os.path.exists(file_path):
                     params[spatial_file] = open(file_path, 'rb')
+        elif ext.lower() == '.tif':
+            file_path = base + ext
+            params['tif_file'] = open(file_path, 'rb')
 
         base_file = open(_file, 'rb')
         params['base_file'] = base_file
         resp = self.make_request(
             upload_step(),
             data=params,
-            ajax=True)
+            ajax=True,
+            force_login=True)
         data = resp.read()
         try:
             return resp, json.loads(data)
         except ValueError:
-            # raise ValueError(
-            #     'probably not json, status %s' %
-            #     resp.getcode(),
-            #     data)
+            logger.exception(ValueError(
+                'probably not json, status %s' %
+                resp.getcode(),
+                data))
             return resp, data
 
     def get_html(self, path, debug=True):
@@ -204,7 +286,6 @@ def get_web_page(url, username=None, password=None, login_url=None):
 
         with contextlib.closing(opener.open(login_url, encoded_params)) as f:
             f.read()
-
     elif username is not None:
         # Login using basic auth
 
@@ -297,8 +378,6 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
 
 
 if has_notifications:
-    import pickle
-    import base64
     from pinax.notifications.tests import get_backend_id
     from pinax.notifications.engine import send_all
     from pinax.notifications.models import NoticeQueueBatch
