@@ -12,20 +12,16 @@
   <h2 class="page-title">{% trans "Explore Layers" %}</h2>
 </div>
   {% with include_type_filter='true' %}
-  {% with header='Type' %}
-  {% with filter='type__in' %}
-  {% include "search/_search_content.html" %}
+    {% with header='Type' %}
+      {% with filter='type__in' %}
+        {% include "search/_search_content.html" %}
+      {% endwith %}
+    {% endwith %}
   {% endwith %}
-  {% endwith %}
-  {% endwith %}
-  {% include "_bulk_permissions_form.html" %}
 {% endblock %}
 
 {% block extra_script %}
 {{ block.super }}
-  {% if GEONODE_SECURITY_ENABLED %}
-    {% include "_permissions_form_js.html" %}
-  {% endif %}
   <script type="text/javascript">
       {% if HAYSTACK_SEARCH %}
           SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=layer'
@@ -34,8 +30,7 @@
       {% endif %}
     FILTER_TYPE = 'layer';
   </script>
-
   {% with include_spatial='true' %}
-  {% include 'search/search_scripts.html' %}
+    {% include 'search/search_scripts.html' %}
   {% endwith %}
 {% endblock extra_script %}

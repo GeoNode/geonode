@@ -165,12 +165,12 @@ def save_step_view(req, session):
     form = LayerUploadForm(req.POST, req.FILES)
     if form.is_valid():
         tempdir = tempfile.mkdtemp(dir=settings.FILE_UPLOAD_TEMP_DIR)
-        logger.info("valid_extensions: {}".format(form.cleaned_data["valid_extensions"]))
+        logger.debug("valid_extensions: {}".format(form.cleaned_data["valid_extensions"]))
         relevant_files = _select_relevant_files(
             form.cleaned_data["valid_extensions"],
             req.FILES.itervalues()
         )
-        logger.info("relevant_files: {}".format(relevant_files))
+        logger.debug("relevant_files: {}".format(relevant_files))
         _write_uploaded_files_to_disk(tempdir, relevant_files)
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
         name, ext = os.path.splitext(os.path.basename(base_file))
@@ -182,7 +182,7 @@ def save_step_view(req, session):
             scan_hint=scan_hint,
             charset=form.cleaned_data["charset"]
         )
-        logger.info("spatial_files: {}".format(spatial_files))
+        logger.debug("spatial_files: {}".format(spatial_files))
         import_session = save_step(
             req.user,
             name,
@@ -232,10 +232,6 @@ def save_step_view(req, session):
             user=req.user
         )
         Upload.objects.update_from_session(upload_session)
-        req.session[str(upload_session.import_session.id)] = upload_session
-        req.session.modified = True
-        _log('saved session : %s',
-             req.session[str(upload_session.import_session.id)])
         return next_step_response(req, upload_session, force_ajax=True)
     else:
         errors = []
@@ -594,10 +590,11 @@ def final_step_view(req, upload_session):
 
                 return _json_response
             except LayerNotReady:
+                force_ajax = '&force_ajax=true' if 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
                 return json_response({'status': 'pending',
                                       'success': True,
                                       'id': req.GET['id'],
-                                      'redirect_to': '/upload/final' + "?id=%s" % req.GET['id']})
+                                      'redirect_to': '/upload/final' + "?id=%s%s" % (req.GET['id'], force_ajax)})
     else:
         # url = reverse('layer_browse') + '?limit={}'.format(settings.CLIENT_RESULTS_LIMIT)
         url = "upload/layer_upload_invalid.html"
@@ -627,6 +624,9 @@ _steps = {
 @login_required
 def view(req, step):
     """Main uploader view"""
+    from django.contrib import auth
+    if not auth.get_user(req).is_authenticated():
+        return error_response(req, errors=["Not Authorized"])
     upload_session = None
     upload_id = req.GET.get('id', None)
 
@@ -639,8 +639,6 @@ def view(req, step):
                 user=req.user)
             session = upload_obj.get_session()
             if session:
-                req.session[upload_id] = session
-                req.session.modified = True
                 return next_step_response(req, session)
         step = 'save'
 
@@ -691,12 +689,6 @@ def view(req, step):
                         req.session.modified = True
                 except BaseException:
                     pass
-            else:
-                try:
-                    req.session[upload_id] = upload_session
-                    req.session.modified = True
-                except BaseException:
-                    traceback.print_exc()
         else:
             upload_session = _get_upload_session(req)
         if upload_session:
