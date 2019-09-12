@@ -33,53 +33,65 @@
     * Cycle through permissions to map the form structure perm = ['user1',',user2'] to
     * the geonode user = ['perm1','perm2'], the same for groups
     */
-    for(var perm in data){
-      if(data[perm] !== ''){
-        var perms_to_assign = [];
-        var perm_users_found = false;
-        var perm_groups_found = false;
-        if(perm.endsWith("_users")) {
-           perms_to_assign = [perm.substring(0, perm.length - "_users".length)];
-           perm_users_found = true;
-        }
-        if(perm.endsWith("_groups")) {
-           perms_to_assign = [perm.substring(0, perm.length - "_groups".length)];
-           perm_groups_found = true;
-        }
-        if(perm.startsWith('manage_resourcebase')){
-           perms_to_assign = ['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'];
-        }
-        
-        if (perm_users_found || perm_groups_found) {
-          var perm_key = perm_users_found ? 'users' : 'groups';
-          var d_perms = data[perm];
-
-          if (d_perms instanceof Array) {
-            for (var i=0;i<d_perms.length;i++){
-              var perm_value = d_perms[i];
-              for(var j=0;j< perms_to_assign.length;j++){
-                if(permissions[perm_key].hasOwnProperty(perm_value)){
-                  permissions[perm_key][perm_value].push(perms_to_assign[j]);
-                }else{
-                  permissions[perm_key][perm_value] = [perms_to_assign[j]];
-                }
+    var default_permissions = [
+      'view_resourcebase_users',
+      'view_resourcebase_groups',
+      'download_resourcebase_users',
+      'download_resourcebase_groups',
+      'change_resourcebase_metadata_users',
+      'change_resourcebase_metadata_groups',
+      'change_layer_data_users',
+      'change_layer_data_groups',
+      'change_layer_style_users',
+      'change_layer_style_groups',
+      'manage_resourcebase_users',
+      'manage_resourcebase_groups'
+    ];
+    $(default_permissions).each(function(index, perm) {
+      var perms_to_assign = [];
+      var perm_users_found = false;
+      var perm_groups_found = false;
+      if(perm.endsWith("_users")) {
+          perms_to_assign = [perm.substring(0, perm.length - "_users".length)];
+          perm_users_found = true;
+      }
+      if(perm.endsWith("_groups")) {
+          perms_to_assign = [perm.substring(0, perm.length - "_groups".length)];
+          perm_groups_found = true;
+      }
+      if(perm.startsWith('manage_resourcebase')){
+          perms_to_assign = ['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'];
+      }
+      
+      if (perm_users_found || perm_groups_found) {
+        var perm_key = perm_users_found ? 'users' : 'groups';
+        var d_perms = [];
+        $($('#' + perm).select2('data')).each(function (index, value) { d_perms.push(value.id); });
+        if (d_perms instanceof Array) {
+          for (var i=0;i<d_perms.length;i++){
+            var perm_value = d_perms[i];
+            for(var j=0;j< perms_to_assign.length;j++){
+              if(permissions[perm_key].hasOwnProperty(perm_value)){
+                permissions[perm_key][perm_value].push(perms_to_assign[j]);
+              }else{
+                permissions[perm_key][perm_value] = [perms_to_assign[j]];
               }
-            }             
-          } else {
-            for (var i=0;i<d_perms.split(',').length;i++){
-              var perm_value = d_perms.split(',')[i];
-              for(var j=0;j< perms_to_assign.length;j++){
-                if(permissions[perm_key].hasOwnProperty(perm_value)){
-                  permissions[perm_key][perm_value].push(perms_to_assign[j]);
-                }else{
-                  permissions[perm_key][perm_value] = [perms_to_assign[j]];
-                }
+            }
+          }             
+        } else {
+          for (var i=0;i<d_perms.split(',').length;i++){
+            var perm_value = d_perms.split(',')[i];
+            for(var j=0;j< perms_to_assign.length;j++){
+              if(permissions[perm_key].hasOwnProperty(perm_value)){
+                permissions[perm_key][perm_value].push(perms_to_assign[j]);
+              }else{
+                permissions[perm_key][perm_value] = [perms_to_assign[j]];
               }
             }
           }
         }
       }
-    }
+    });
 
     return permissions
   };
@@ -211,101 +223,156 @@
     });
 
     function addSelectUsers(id, default_perms){
-      $(id).select2({
-        placeholder: '{% trans "Choose users..." %}',
-        minimumInputLength: 1,
-        multiple: true,
-        width: 'copy',
-        containerCssClass: function(e) {
-          return $(e).attr('required') ? 'required' : '';
-        },
-        ajax: {
-          url: "{% url "account_ajax_lookup" %}",
-          dataType: "json",
-          delay: 250,
-          type: "POST",
-          data: function (params) {
-            this.data('term', params.term);
-            return {
-              query: params.term,
-              page: params.page || 1,
-              pageSize: 9
-            };
-          },
-          processResults: function (data, params) {
-            if (data.users.length)
-              return {
-                results: data.users.map(d => ({id: d.username, text: d.username})),
-                pagination: {
-                  // more: !!data.paging.next
-                  more: false
-                }
-              };
-            else
-              return {
-                results: [/* { id: this.$element.data('term'), text: this.$element.data('term') } */],
-                pagination: {
-                  more: false
-                }
-            };
-          },
-          cache: true
-        },
-        initSelection: function (element, callback) {
+      $.fn.select2.amd.require([
+        'select2/utils',
+        'select2/data/ajax',
+        'select2/data/minimumInputLength'
+      ],
+      function (Utils, AjaxAdapter, MinimumInputLength) {
+
+        function UsersAjaxAdapter($el, options) {
+          UsersAjaxAdapter.__super__.constructor.call(this, $el, options);
+        }
+
+        Utils.Extend(UsersAjaxAdapter, AjaxAdapter);
+
+        var initialValues = [];
+        $(default_perms).each(function (index, perm) {
+            initialValues.push({ id: perm, name: perm });
+        });
+
+        UsersAjaxAdapter.prototype.current = function (callback) {
           var data = [];
-          $(default_perms).each(function (index, perm) {
-            data.push({id: perm, text: perm});
-          });
+          UsersAjaxAdapter.__super__.current.call(this, function (d) { data = d });
+          _.each(initialValues, function (el) { data.push(el); })
           callback(data);
         }
+
+        UsersAjaxAdapter.prototype.unselect = function (data) {
+          initialValues = _.reject(initialValues, function (el) { return el.id == data.id });
+          UsersAjaxAdapter.__super__.unselect.call(this, data);
+        }
+
+        $(id).select2({
+          ajax: {
+            url: '{% url "account_ajax_lookup" %}',
+            dataType: 'json',
+            delay: 250,
+            type: "POST",
+            data: function (params) {
+              return {
+                query: params.term,
+                page: params.page || 1,
+                pageSize: 9
+              };
+            },
+            processResults: function (data, params) {
+              if (data.users.length)
+                return {
+                  results: data.users.map(d => ({ id: d.username, name: d.username })),
+                  pagination: {
+                    // more: !!data.paging.next
+                    more: false
+                  }
+                };
+              else
+                return {
+                  results: [],
+                  pagination: {
+                    more: false
+                  }
+                };
+            },
+            cache: false
+          },
+          placeholder: '{% trans "Choose users..." %}',
+          minimumInputLength: 1,
+          multiple: true,
+          width: 'copy',
+          containerCssClass: function (e) {
+            return $(e).attr('required') ? 'required' : '';
+          },
+          dataAdapter: Utils.Decorate(UsersAjaxAdapter, MinimumInputLength),
+          templateResult: function (item) { return (item.loading) ? item.text : item.name; },
+          templateSelection: function (item) { return item.name; }
+        });
       });
     }
 
     function addSelectGroups(id, default_perms){
-      $(id).select2({
-        placeholder: '{% trans "Choose groups..." %}',
-        minimumInputLength: 1,
-        multiple: true,
-        width: 'copy',
-        ajax: {
-          url: "{% url "account_ajax_lookup" %}",
-          dataType: "json",
-          delay: 250,
-          type: "POST",
-          data: function (params) {
-            this.data('term', params.term);
-            return {
-              query: params.term,
-              page: params.page || 1,
-              pageSize: 9
-            };
-          },
-          processResults: function (data, params) {
-            if (data.groups.length)
-              return {
-                results: data.groups.map(d => ({id: d.name, text: d.title})),
-                pagination: {
-                  // more: !!data.paging.next
-                  more: false
-                }
-              };
-            else
-              return {
-                results: [/* { id: this.$element.data('term'), text: this.$element.data('term') } */],
-                pagination: {
-                  more: false
-                }
-            };
-          },
-          cache: true
-        },
-        initSelection: function (element, callback) {
+      $.fn.select2.amd.require([
+        'select2/utils',
+        'select2/data/ajax',
+        'select2/data/minimumInputLength'
+      ],
+      function (Utils, AjaxAdapter, MinimumInputLength) {
+
+        function GroupsAjaxAdapter($el, options) {
+          GroupsAjaxAdapter.__super__.constructor.call(this, $el, options);
+        }
+
+        Utils.Extend(GroupsAjaxAdapter, AjaxAdapter);
+
+        var initialValues = [];
+        $(default_perms).each(function (index, perm) {
+            initialValues.push({ id: perm, name: perm });
+        });
+
+        GroupsAjaxAdapter.prototype.current = function (callback) {
           var data = [];
-          $(default_perms).each(function (index, perm) {
-            data.push({id: perm, text: perm});
-          });
+          GroupsAjaxAdapter.__super__.current.call(this, function (d) { data = d });
+          _.each(initialValues, function (el) { data.push(el); })
           callback(data);
         }
+
+        GroupsAjaxAdapter.prototype.unselect = function (data) {
+          initialValues = _.reject(initialValues, function (el) { return el.id == data.id });
+          GroupsAjaxAdapter.__super__.unselect.call(this, data);
+        }
+
+        $(id).select2({
+          ajax: {
+            url: '{% url "account_ajax_lookup" %}',
+            dataType: 'json',
+            delay: 250,
+            type: "POST",
+            data: function (params) {
+              return {
+                query: params.term,
+                page: params.page || 1,
+                pageSize: 9
+              };
+            },
+            processResults: function (data, params) {
+              if (data.groups.length)
+                return {
+                  results: data.groups.map(d => ({ id: d.name, name: d.title })),
+                  pagination: {
+                    // more: !!data.paging.next
+                    more: false
+                  }
+                };
+              else
+                return {
+                  results: [],
+                  pagination: {
+                    more: false
+                  }
+                };
+            },
+            cache: false
+          },
+          placeholder: '{% trans "Choose groups..." %}',
+          minimumInputLength: 1,
+          multiple: true,
+          width: 'copy',
+          containerCssClass: function (e) {
+            return $(e).attr('required') ? 'required' : '';
+          },
+          dataAdapter: Utils.Decorate(GroupsAjaxAdapter, MinimumInputLength),
+          templateResult: function (item) { return (item.loading) ? item.text : item.name; },
+          templateSelection: function (item) { return item.name; }
+        });
       });
     }
 
