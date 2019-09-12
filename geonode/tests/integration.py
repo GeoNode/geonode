@@ -220,7 +220,7 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             set_layer_style(saved_layer, saved_layer.alternate, sld)
 
             fixup_style(gs_catalog, saved_layer.alternate, None)
-            self.assertIsNone(get_sld_for(gs_catalog, saved_layer))
+            self.assertIsNotNone(get_sld_for(gs_catalog, saved_layer))
             _log("3. ------------ %s " % get_sld_for(gs_catalog, saved_layer))
 
             create_gs_thumbnail(saved_layer, overwrite=True)
