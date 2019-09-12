@@ -129,6 +129,18 @@ class FilesTests(GeoNodeBaseTestSupport):
                 path = os.path.join(basedir, '_%s' % f)
                 self.assertTrue(os.path.exists(path))
 
+        # Test the scan_file function with a raster spatial file takes SLD also.
+        file_names = ['109029_24.tif', '109029_24.sld']
+        with create_files(file_names) as tests:
+            spatial_files = scan_file(tests[0])
+            self.assertTrue(isinstance(spatial_files, SpatialFiles))
+
+            spatial_file = spatial_files[0]
+            self.assertTrue(spatial_file.file_type.matches('tif'))
+            self.assertEqual(len(spatial_file.auxillary_files), 0)
+            self.assertEqual(len(spatial_file.xml_files), 0)
+            self.assertEqual(len(spatial_file.sld_files), 1)
+
 
 class TimeFormFormTest(GeoNodeBaseTestSupport):
 
