@@ -32,7 +32,10 @@ module.exports = function(grunt) {
       },
       production: {
         options: {
-          paths: ['node_modules/bootstrap/less'],
+          paths: [
+            'geonode/less',
+            'node_modules/bootstrap/less'
+          ],
           yuicompress: true
         },
         files: [
@@ -81,7 +84,7 @@ module.exports = function(grunt) {
             'datatables/media/css/jquery.dataTables.min.css',
             'select2/dist/css/select2.min.css',
             'multi-select/dist/bundles/multi-select.css',
-            'jquery-ui/themes/base/*.css',
+            'jquery-ui/themes/base/*.css',    // WARNING: you need to build manually node_modules/jquery-ui
             'raty-js/lib/jquery.raty.css',
             'bootstrap/dist/css/bootstrap.min.css',
             'leaflet-fullscreen/dist/leaflet.fullscreen.css',
@@ -112,7 +115,7 @@ module.exports = function(grunt) {
             'select2/select2*.png',
             'select2/select2*.gif',
             'raty-js/lib/img/*.png',
-            'jquery-ui/themes/base/images/*',
+            'jquery-ui/themes/base/images/*',    // WARNING: you need to build manually node_modules/jquery-ui
             'leaflet-fullscreen/dist/*.png',
             'leaflet-opacity/lib/opacity/images/*',
             'leaflet-opacity/lib/jquery/images/*',
@@ -165,7 +168,7 @@ module.exports = function(grunt) {
 
             'jquery/dist/jquery.js',
             'jquery/dist/jquery.min.js',
-            'jquery-ui/dist/jquery-ui.js',
+            'jquery-ui/dist/jquery-ui.js',  // WARNING: you need to build manually node_modules/jquery-ui
             'jquery-waypoints/waypoints.js',
             'jquery-waypoints/waypoints.min.js',
             'jq-ajax-progress/src/jq-ajax-progress.js',
@@ -201,7 +204,7 @@ module.exports = function(grunt) {
     },
 
     replace: {
-      development: {
+      default: {
         src: ['lib/css/*.css'],
         overwrite: true,
         /*
@@ -343,7 +346,7 @@ module.exports = function(grunt) {
             'lib/js/fastselect.standalone.js',
             'lib/js/handlebars.js',
             'lib/js/json2.js',
-            'lib/js/jquery-ui.js',
+            'lib/js/jquery-ui.js',    // WARNING: you need to build manually node_modules/jquery-ui
             'lib/js/jquery.dataTables.js',
             'lib/js/jquery.raty.js',
             'lib/js/jquery.timeago.js',
@@ -370,16 +373,21 @@ module.exports = function(grunt) {
         }
       },
       production: {
+        options: {
+          beautify: false,
+          compress: true,
+          mangle: false
+        },
         files: {
           'lib/js/assets.min.js': [
             'lib/js/jquery.min.js',
 
+            'lib/js/moment-with-locales.min.js',
+            'lib/js/moment-timezone-with-data.min.js',
+
             'lib/js/angular.js',
             'lib/js/angular-cookies.js',
             'lib/js/angular-leaflet-directive.min.js',
-
-            'lib/js/moment-with-locales.min.js',
-            'lib/js/moment-timezone-with-data.min.js',
 
             'lib/js/bootstrap.min.js',
             'lib/js/bootstrap-datetimepicker.min.js',
@@ -387,7 +395,7 @@ module.exports = function(grunt) {
             'lib/js/bootstrap-select.min.js',
             'lib/js/bootstrap-multiselect.js',
             // 'lib/js/bootstrap3-wysihtml5.min.js',
-            'lib/js/bootstrap-table.min.js',
+            'lib/js/bootstrap-table.js',  // do not use .min here
             'lib/js/bootstrap-toggle.min.js',
             'lib/js/bootstrap-typeahead.js',
             'lib/js/bootstrap-treeview.min.js',
@@ -396,7 +404,7 @@ module.exports = function(grunt) {
             'lib/js/fastselect.standalone.min.js',
             'lib/js/handlebars.min.js',
             'lib/js/json2.js',
-            'lib/js/jquery-ui.js',
+            'lib/js/jquery-ui.js',    // WARNING: you need to build manually node_modules/jquery-ui
             'lib/js/jquery.dataTables.js',
             'lib/js/jquery.raty.js',
             'lib/js/jquery.timeago.js',
