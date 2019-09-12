@@ -1909,6 +1909,19 @@ def _render_thumbnail(req_body, width=240, height=180):
     try:
         req, content = http_client.post(
             url, data=data, headers=headers)
+        # Optimize the Thumbnail size and resolution
+        from PIL import Image
+        from io import BytesIO
+        content_data = BytesIO(content)
+        im = Image.open(content_data)
+        im_width, im_height = im.size
+        right = min(width, im_width)
+        bottom = min(height, im_height)
+        size = right, bottom
+        im.thumbnail(size, Image.ANTIALIAS)
+        imgByteArr = BytesIO()
+        im.save(imgByteArr, format='JPEG')
+        content = imgByteArr.getvalue()
     except BaseException as e:
         logger.warning('Error generating thumbnail')
         logger.exception(e)
