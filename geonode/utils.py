@@ -345,7 +345,7 @@ def bounds_to_zoom_level(bounds, width, height):
     latZoom = zoom(float(height), WORLD_DIM['height'], latFraction)
     lngZoom = zoom(float(width), WORLD_DIM['width'], lngFraction)
     ratio = float(max(width, height)) / float(min(width, height))
-    z_offset = 0 if ratio >= 1.5 else -1
+    z_offset = 0 if ratio >= 2 else -1
     zoom = int(max(latZoom, lngZoom) + z_offset)
     zoom = 0 if zoom > ZOOM_MAX else zoom
     return max(zoom, 0)
