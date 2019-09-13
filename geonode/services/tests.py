@@ -35,9 +35,14 @@ from . import enumerations, forms
 from .models import Service
 from .serviceprocessors import (base,
                                 handler,
-                                wms)
+                                wms,
+                                arcgis)
+from .serviceprocessors.arcgis import MapLayer
 from .serviceprocessors.wms import WebMapService
+
+from arcrest import MapService as ArcMapService
 from owslib.wms import WebMapService as OwsWebMapService
+from collections import namedtuple
 
 
 class ModuleFunctionsTestCase(StandardTestCase):
@@ -109,6 +114,271 @@ class ModuleFunctionsTestCase(StandardTestCase):
         phony_url = "http://fake"
         handler.get_service_handler(phony_url, service_type=enumerations.WMS)
         mock_wms_handler.assert_called_with(phony_url)
+
+    @mock.patch("arcrest.MapService",
+                autospec=True)
+    def test_get_service_handler_arcgis(self, mock_map_service):
+        mock_arcgis_service_contents = {
+            "currentVersion": 10.51,
+            "serviceDescription": "Droits petroliers et gaziers / Oil and Gas Rights",
+            "mapName": "Droits_petroliers_et_gaziers_Oil_and_Gas_Rights",
+            "description": "",
+            "copyrightText": "",
+            "supportsDynamicLayers": False,
+            "layers": [
+                {
+                    "id": 0,
+                    "name": "Droits pétroliers et gaziers / Oil and Gas Rights",
+                    "parentLayerId": -1,
+                    "defaultVisibility": True,
+                    "subLayerIds": None,
+                    "minScale": 0,
+                    "maxScale": 0
+                }
+            ],
+            "tables": [],
+            "spatialReference": {
+                "wkid": 4140,
+                "latestWkid": 4617
+            },
+            "singleFusedMapCache": False,
+            "initialExtent": {
+                "xmin": -144.97375000000002,
+                "ymin": 58.90551066699999,
+                "xmax": -57.55125000000002,
+                "ymax": 91.84630866699999,
+                "spatialReference": {
+                    "wkid": 4140,
+                    "latestWkid": 4617
+                }
+            },
+            "fullExtent": {
+                "xmin": -144.97375,
+                "ymin": 34.637024667000006,
+                "xmax": -57.55125,
+                "ymax": 91.84630866699999,
+                "spatialReference": {
+                    "wkid": 4140,
+                    "latestWkid": 4617
+                }
+            },
+            "minScale": 0,
+            "maxScale": 0,
+            "units": "esriDecimalDegrees",
+            "supportedImageFormatTypes": "PNG32,PNG24,PNG,JPG,DIB,TIFF,EMF,PS,PDF,GIF,SVG,SVGZ,BMP",
+            "documentInfo": {
+                "Title": "Droits petroliers et gaziers / Oil and Gas Rights",
+                "Author": "",
+                "Comments": "Droits petroliers et gaziers / Oil and Gas Rights",
+                "Subject": "Droits petroliers et gaziers / Oil and Gas Rights",
+                "Category": "",
+                "AntialiasingMode": "None",
+                "TextAntialiasingMode": "Force",
+                "Keywords": "Droits petroliers et gaziers,Oil and Gas Rights"
+            },
+            "capabilities": "Map,Query,Data",
+            "supportedQueryFormats": "JSON, AMF, geoJSON",
+            "exportTilesAllowed": False,
+            "supportsDatumTransformation": True,
+            "maxRecordCount": 1000,
+            "maxImageHeight": 2048,
+            "maxImageWidth": 2048,
+            "supportedExtensions": "FeatureServer, KmlServer, WFSServer, WMSServer"
+        }
+
+        mock_arcgis_service_json_struct = {
+            "supportsDynamicLayers": False,
+            "initialExtent": {
+                "xmin": -144.97375000000002,
+                "ymin": 58.90551066699999,
+                "ymax": 91.84630866699999,
+                "xmax": -57.55125000000002,
+                "spatialReference": {
+                    "wkid": 4140,
+                    "latestWkid": 4617
+                }
+            },
+            "documentInfo": {
+                "Category": "",
+                "Author": "",
+                "TextAntialiasingMode": "Force",
+                "Title": "Droits petroliers et gaziers / Oil and Gas Rights",
+                "Comments": "Droits petroliers et gaziers / Oil and Gas Rights",
+                "AntialiasingMode": "None",
+                "Keywords": "Droits petroliers et gaziers,Oil and Gas Rights",
+                "Subject": "Droits petroliers et gaziers / Oil and Gas Rights"
+            },
+            "spatialReference": {
+                "wkid": 4140,
+                "latestWkid": 4617
+            },
+            "description": "",
+            "layers": [
+                {
+                    "name": "Droits pétroliers et gaziers / Oil and Gas Rights",
+                    "maxScale": 0,
+                    "defaultVisibility": True,
+                    "parentLayerId": -1,
+                    "id": 0,
+                    "minScale": 0,
+                    "subLayerIds": None
+                }
+            ],
+            "tables": [],
+            "supportedImageFormatTypes": "PNG32,PNG24,PNG,JPG,DIB,TIFF,EMF,PS,PDF,GIF,SVG,SVGZ,BMP",
+            "capabilities": "Map,Query,Data",
+            "mapName": "Droits_petroliers_et_gaziers_Oil_and_Gas_Rights",
+            "currentVersion": 10.51,
+            "units": "esriDecimalDegrees",
+            "supportedQueryFormats": "JSON, AMF, geoJSON",
+            "maxRecordCount": 1000,
+            "exportTilesAllowed": False,
+            "maxImageHeight": 2048,
+            "supportedExtensions": "FeatureServer, KmlServer, WFSServer, WMSServer",
+            "fullExtent": {
+                "xmin": -144.97375,
+                "ymin": 34.637024667000006,
+                "ymax": 91.84630866699999,
+                "xmax": -57.55125,
+                "spatialReference": {
+                    "wkid": 4140,
+                    "latestWkid": 4617
+                }
+            },
+            "singleFusedMapCache": False,
+            "supportsDatumTransformation": True,
+            "maxImageWidth": 2048,
+            "maxScale": 0,
+            "copyrightText": "",
+            "minScale": 0,
+            "serviceDescription": "Droits petroliers et gaziers / Oil and Gas Rights"
+        }
+
+        phony_url = "http://fake"
+        mock_parsed_arcgis = mock.MagicMock(ArcMapService).return_value
+        (url, mock_parsed_arcgis) = mock.MagicMock(ArcMapService,
+                                                   return_value=(phony_url,
+                                                                 mock_parsed_arcgis)).return_value
+        mock_parsed_arcgis.url = phony_url
+        mock_parsed_arcgis._contents = mock_arcgis_service_contents
+        mock_parsed_arcgis._json_struct = mock_arcgis_service_json_struct
+
+        mock_map_service.return_value = (phony_url, mock_parsed_arcgis)
+
+        handler = arcgis.ArcImageServiceHandler(phony_url)
+        self.assertEquals(handler.url, phony_url)
+
+        LayerESRIExtent = namedtuple('LayerESRIExtent', 'spatialReference xmin ymin ymax xmax')
+        LayerESRIExtentSpatialReference = namedtuple('LayerESRIExtentSpatialReference', 'wkid latestWkid')
+
+        layer_meta = MapLayer(
+            id=0,
+            title=u'Droits pétroliers et gaziers / Oil and Gas Rights',
+            abstract=u'Droits pétroliers et gaziers / Oil and Gas Rights',
+            type=u'Feature Layer',
+            geometryType=u'esriGeometryPolygon',
+            copyrightText=u'',
+            extent=LayerESRIExtent(
+                LayerESRIExtentSpatialReference(4140, 4617),
+                -144.97375,
+                34.637024667000006,
+                91.84630866699999,
+                -57.55125),
+            fields=[
+                {
+                    u'alias': u'OBJECTID',
+                    u'domain': None,
+                    u'type': u'esriFieldTypeOID',
+                    u'name': u'OBJECTID'
+                },
+                {
+                    u'alias': u'Numéro du titre / Title Number',
+                    u'length': 16,
+                    u'type': u'esriFieldTypeString',
+                    u'name': u'LICENCE_NUMBER',
+                    u'domain': None
+                },
+                {
+                    u'alias': u'Superficie actuelle (ha) / Current Area (ha)',
+                    u'domain': None,
+                    u'type': u'esriFieldTypeDouble',
+                    u'name': u'CURRENT_AREA_HA'
+                },
+                {
+                    u'alias': u'Code du type de permis / Licence Type Code',
+                    u'length': 5,
+                    u'type': u'esriFieldTypeString',
+                    u'name': u'AGRMT_TYPE',
+                    u'domain': None
+                },
+                {
+                    u'alias': u'Datum',
+                    u'length': 8,
+                    u'type': u'esriFieldTypeString',
+                    u'name': u'DATUM',
+                    u'domain': None
+                },
+                {
+                    u'alias': u'Région (anglais) / Region (English)',
+                    u'length': 64,
+                    u'type': u'esriFieldTypeString',
+                    u'name': u'REGION_E',
+                    u'domain': None
+                },
+                {
+                    u'alias': u'Région (français) / Region (French)',
+                    u'length': 64,
+                    u'type': u'esriFieldTypeString',
+                    u'name': u'REGION_F',
+                    u'domain': None
+                },
+                {
+                    u'alias': u'Représentant / Representative',
+                    u'length': 50,
+                    u'type': u'esriFieldTypeString',
+                    u'name': u'COMPANY_NAME',
+                    u'domain': None
+                },
+                {
+                    u'alias': u"Date d'entrée en vigueur / Effective Date",
+                    u'length': 8,
+                    u'type': u'esriFieldTypeDate',
+                    u'name': u'LICENCE_ISSUE_DATE',
+                    u'domain': None
+                },
+                {
+                    u'alias': u"Date d'échéance / Expiry Date",
+                    u'length': 8,
+                    u'type': u'esriFieldTypeDate',
+                    u'name': u'LICENCE_EXPIRY_DATE',
+                    u'domain': None
+                },
+                {
+                    u'alias': u"Type d'accord (anglais) / Agreement Type (English)",
+                    u'length': 50,
+                    u'type': u'esriFieldTypeString',
+                    u'name': u'AGRMT_TYPE_E',
+                    u'domain': None
+                },
+                {
+                    u'alias': u"Type d'accord (français) / Agreement Type (French)",
+                    u'length': 50,
+                    u'type': u'esriFieldTypeString',
+                    u'name': u'AGRMT_TYPE_F',
+                    u'domain': None
+                },
+                {
+                    u'alias': u'Shape',
+                    u'domain': None,
+                    u'type': u'esriFieldTypeGeometry',
+                    u'name': u'SHAPE'
+                }
+            ],
+            minScale=0,
+            maxScale=0
+        )
+        resource_fields = handler._get_indexed_layer_fields(layer_meta)
+        self.assertEquals(resource_fields['alternate'], '0-droits-ptroliers-et-gaziers-oil-and-gas-rights')
 
 
 class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
