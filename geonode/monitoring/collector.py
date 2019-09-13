@@ -189,7 +189,6 @@ class CollectorAPI(object):
                                       .strftime("%Y-%m-%d %H:%M:%S")).replace(tzinfo=utc)
         valid_from = align_period_start(collected_at, service.check_interval)
         valid_to = align_period_end(collected_at, service.check_interval)
-
         mdefaults = {'valid_from': valid_from,
                      'valid_to': valid_to,
                      'resource': None,
@@ -483,14 +482,13 @@ class CollectorAPI(object):
 
     def set_error_values(self, requests, valid_from, valid_to,
                          service=None, resource=None, event_type=None):
-        with_errors = requests.filter(exceptions__isnull=False)
+        with_errors = requests.exclude(exceptions=None)
         if not with_errors.exists():
             return
 
         labels = ExceptionEvent.objects.filter(request__in=with_errors)\
                                        .distinct()\
                                        .values_list('error_type', flat=True)
-
         defaults = {'valid_from': valid_from,
                     'valid_to': valid_to,
                     'resource': resource,
@@ -637,8 +635,8 @@ class CollectorAPI(object):
             interval = timedelta(seconds=interval)
         metric = Metric.objects.get(name=metric_name)
         out = {'metric': metric.name,
-               'input_valid_from': valid_from,
-               'input_valid_to': valid_to,
+               'input_valid_from': valid_from.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+               'input_valid_to': valid_to.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
                'interval': interval.total_seconds(),
                'label': label.name if label else None,
                'type': metric.type,
@@ -656,8 +654,11 @@ class CollectorAPI(object):
                                           resource=resource,
                                           resource_type=resource_type,
                                           group_by=group_by)
-            out['data'].append(
-                {'valid_from': pstart, 'valid_to': pend, 'data': pdata})
+            out['data'].append({
+                'valid_from': pstart.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+                'valid_to': pend.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+                'data': pdata
+            })
         return out
 
     def get_aggregate_function(self, column_name, metric_name, service=None):
@@ -687,6 +688,7 @@ class CollectorAPI(object):
         """
         Returns metric values for metric within given time span
         """
+        utc = pytz.utc
         params = {}
         col = 'mv.value_num'
         agg_f = self.get_aggregate_function(col, metric_name, service)
@@ -831,9 +833,10 @@ class CollectorAPI(object):
         if metric_name == 'uptime':
             q_where = ['where', 'm.name = %(metric_name)s']
         q_group = ['ml.name']
+
         params.update({'metric_name': metric_name,
-                       'valid_from': valid_from.strftime('%Y-%m-%d %H:%M:%S'),
-                       'valid_to': valid_to.strftime('%Y-%m-%d %H:%M:%S')})
+                       'valid_from': valid_from.replace(tzinfo=utc).isoformat(),
+                       'valid_to': valid_to.replace(tzinfo=utc).isoformat()})
 
         q_order_by = ['val desc']
 
@@ -857,7 +860,9 @@ class CollectorAPI(object):
                 'event_type_on_user'):
             event_type = EventType.get(EventType.EVENT_ALL)
 
-        if event_type and metric_name not in BuiltIns.host_metrics:
+        exclude_ev_type = BuiltIns.host_metrics + ('response.error.count',)
+
+        if event_type and metric_name not in exclude_ev_type:
             q_where.append(' and mv.event_type_id = %(event_type)s ')
             params['event_type'] = event_type.id
 
