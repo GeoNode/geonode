@@ -4,7 +4,7 @@
   "description": "Builds static (JS, CSS, IMG) assets for GeoNode 2.0",
   "main": "gruntfile.js",
   "dependencies": {
-    "angular": "1.5.0",
+    "angular": "1.6.0",
     "angular-cookies": "1.4.0",
     "angular-leaflet-directive": "^0.10.0",
     "bootstrap": "3.4.0",
