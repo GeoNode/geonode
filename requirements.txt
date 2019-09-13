@@ -35,7 +35,7 @@ django-taggit==0.24.0
 django-mptt==0.9.1
 django-modeltranslation>=0.11,<0.13.4
 django-treebeard==4.3
-django-guardian<=1.4.9
+django-guardian<2.1.1
 django-downloadview<=1.9
 django-polymorphic==2.1.2
 django-tastypie<0.15.0
