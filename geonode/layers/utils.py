@@ -145,7 +145,7 @@ def get_files(filename):
     if not os.path.exists(filename):
         msg = ('Could not open %s. Make sure you are using a '
                'valid file' % filename)
-        logger.warn(msg)
+        logger.debug(msg)
         raise GeoNodeException(msg)
 
     base_name, extension = os.path.splitext(filename)

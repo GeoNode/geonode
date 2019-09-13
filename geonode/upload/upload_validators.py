@@ -300,7 +300,7 @@ def validate_raster(contents, allow_multiple=False):
                 if not allow_multiple or (
                     'properties' not in other_extensions and (
                         'sld' in other_extensions or 'xml' in other_extensions)):
-                    return valid_extensions
+                    return valid_extensions + other_extensions
                 else:
                     return ("zip-mosaic",)
         else:

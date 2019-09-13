@@ -1071,7 +1071,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
         logger.debug(tb)
         inDataSource = None
     if inDataSource is None:
-        logger.warning('Could not open %s' % (inShapefile))
+        logger.debug('Could not open %s' % (inShapefile))
         return False, None, None
     else:
         inLayer = inDataSource.GetLayer()

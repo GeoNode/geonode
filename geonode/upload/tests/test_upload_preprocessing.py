@@ -41,7 +41,7 @@ class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
         image_path = "another_fake_path.png"
         data = [
             files.SpatialFile(
-                base_file="fake_path.kml",
+                base_file=kml_path,
                 file_type=files.get_type("KML Ground Overlay"),
                 auxillary_files=[image_path],
                 sld_files=[],
