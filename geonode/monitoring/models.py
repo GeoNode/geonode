@@ -769,6 +769,7 @@ class RequestEvent(models.Model):
             event_type = EventType.get('OWS:{}'.format(event_type_name.upper()))
         else:
             event_type = EventType.get(EventType.EVENT_GEOSERVER)
+
         data = {'created': start_time,
                 'received': received,
                 'host': rd['host'],
@@ -971,7 +972,11 @@ class MetricValue(models.Model):
         if label and isinstance(label, tuple):
             label_name = label[0]
             label_user = label[1]
-        label, c = MetricLabel.objects.get_or_create(name=label_name or 'count')
+        try:
+            label, c = MetricLabel.objects.get_or_create(name=label_name or 'count')
+        except MetricLabel.MultipleObjectsReturned:
+            c = False
+            label = MetricLabel.objects.filter(name=label_name).first()
         if c and label_user:
             label.user = label_user
             label.save()
