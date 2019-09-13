@@ -207,24 +207,10 @@ def layer_style_manage(request, layername):
                     'Unable to set the default style.  Ensure Geoserver is running and that this layer exists.')
 
             gs_styles = []
-            for style in Style.objects.all():
-                sld_title = style.name
-                if style.sld_title:
-                    sld_title = style.sld_title
-                try:
-                    gs_sld = cat.get_style(style.name,
-                                           workspace=layer.workspace) or cat.get_style(style.name)
-                    # Temporary Hack to remove GeoServer temp styles from the list
-                    _match = re.match(r'\w{8}-\w{4}-\w{4}-\w{4}-\w{12}_(ms)_\d{13}', gs_sld.name)
-                    if gs_sld and not _match:
-                        sld_title = gs_sld.sld_title
-                        gs_styles.append((style.name, sld_title))
-                    else:
-                        style.delete()
-                except BaseException:
-                    tb = traceback.format_exc()
-                    logger.debug(tb)
-
+            # Temporary Hack to remove GeoServer temp styles from the list
+            Style.objects.filter(name__iregex=r'\w{8}-\w{4}-\w{4}-\w{4}-\w{12}_(ms)_\d{13}').delete()
+            for style in Style.objects.values('name', 'sld_title'):
+                gs_styles.append((style['name'], style['sld_title']))
             current_layer_styles = layer.styles.all()
             layer_styles = []
             for style in current_layer_styles:
