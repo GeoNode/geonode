@@ -27,6 +27,8 @@ import urllib2
 import zipfile
 import glob
 import fileinput
+import ssl
+
 from setuptools.command import easy_install
 
 from paver.easy import task, options, cmdopts, needs
@@ -49,6 +51,9 @@ assert sys.version_info >= (2, 6), \
 
 
 def grab(src, dest, name):
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
     download = True
     if not dest.exists():
         print 'Downloading %s' % name
@@ -65,9 +70,10 @@ def grab(src, dest, name):
                 print "Copying local file from %s" % str(src2)
                 shutil.copyfile(str(src2), str(dest))
         else:
-            urllib.urlretrieve(str(src), str(dest))
+            urllib.urlretrieve(str(src), str(dest), context=ctx)
 
-GEOSERVER_URL = "http://build.geonode.org/geoserver/latest/geoserver.war"
+#GEOSERVER_URL = "http://build.geonode.org/geoserver/latest/geoserver.war"
+GEOSERVER_URL = "https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-2.9.x.war"
 DATA_DIR_URL = "http://build.geonode.org/geoserver/latest/data.zip"
 JETTY_RUNNER_URL = ("http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/"
                     "8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar")

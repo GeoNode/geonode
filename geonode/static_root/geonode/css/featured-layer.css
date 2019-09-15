@@ -1,0 +1,45 @@
+.body-top{
+    /*margin: auto;*/
+    /*width: 90%;*/
+    /*border: 3px solid #73AD21;*/
+    /*padding: 10px;*/
+    padding-top: 3%;
+    padding-bottom: 0px;
+}
+
+.body-bottom{
+  /*margin: auto;
+  width: 90%;*/
+  padding-top: 0px;
+  /*align-items: center;*/
+}
+
+span.total-layers{
+  font-size: 20px;
+}
+
+h2.latest-layer{
+  border-bottom: 1px solid #DDD
+}
+
+.center-text{
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+h1.no-margin-top{
+  margin-top: 0px;
+  padding-top: 0px;
+  border-top: none;
+  font-size: 45px;
+}
+h4:target,
+h5:target,
+li:target{/*anchor offset*/
+  padding-top: 75px;
+}
+img#helpimg{
+  max-width: 630px;
+  display: block;
+  margin: 20px auto;
+}

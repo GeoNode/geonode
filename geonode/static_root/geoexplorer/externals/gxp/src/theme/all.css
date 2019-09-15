@@ -1,0 +1,607 @@
+div.commit-msg {
+    font-size: 14px;
+    font-weight: bold;
+}
+span.commit-datetime {
+    color: #888;
+}
+li.commit {
+    font-size: 12px;
+    border-bottom: 1px solid #E2EAEE;
+}
+li.commit div {
+    padding: 2px;
+}
+.ext-chrome input[type="checkbox"] {
+    margin-top: 1px;
+}
+
+.gxp-layerproperties-label {
+    line-height: 21px;
+}
+.gxp-annotations-tip {
+    white-space: normal !important;
+}
+
+.gxp-symbolgrid-swatch {
+    width: 50%;
+    margin: 0px auto;
+}
+.gxp-symbolgrid .x-treegrid-col {
+    border: none;
+}
+.x-tree-node .gxp-icon-symbolgrid-none {
+    background-image: none;
+    display: none;
+}
+.x-tree-node .gxp-icon-symbolgrid-point {
+    background-image: url(img/silk/bullet_orange.png);
+}
+.x-tree-node .gxp-icon-symbolgrid-line {
+    background-image: url(img/geosilk/line_orange.png);
+}
+.x-tree-node .gxp-icon-symbolgrid-polygon {
+    background-image: url(img/geosilk/shape_square_orange.png);
+}
+.x-tree-node .gxp-icon-symbolgrid-text {
+    background-image: url(img/silk/font.png);
+}
+
+.x-tree-node-leaf  .gx-tree-layer-icon {
+    background-image: url(img/geosilk/vector.png);
+}
+
+.x-tree-node-leaf  .gxp-tree-rasterlayer-icon {
+    background-image: url(img/silk/map.png);
+}
+
+/* position the zoom slider within map panel */
+.gx-zoomslider {
+    top: 90px;
+    left: 17px
+}
+
+/* Pan- and Zoom- Panel Styles*/
+
+.olControlPanPanel div {
+    background-image:url(http://extjs.cachefly.net/ext-3.4.0/resources/images/gray/panel/tool-sprites.gif);
+    height:15px;
+    width:15px;
+    /* workaround for button height in IE */
+    font-size:0px;
+}
+
+.olControlPanPanel .olControlPanNorthItemInactive {
+    background-position:15px -60px;
+    left:16px
+}
+.olControlPanPanel .olControlPanEastItemInactive {
+    background-position:15px -120px;
+    left: 30px;
+    top: 16px;
+}
+.olControlPanPanel .olControlPanSouthItemInactive {
+    background-position:15px -75px;
+    left: 16px;
+    top: 32px;
+}
+.olControlPanPanel .olControlPanWestItemInactive {
+    background-position:15px -105px;
+    left: 2px;
+    top: 16px;
+}
+
+.olControlZoomPanel {
+    left:21px;
+}
+
+.olControlZoomPanel div {
+    background-image:url(http://extjs.cachefly.net/ext-3.4.0/resources/images/gray/panel/tool-sprites.gif);
+    height:15px;
+    width:15px;
+    /* workaround for button height in IE */
+    font-size:0px;
+}
+
+.olControlZoomPanel .olControlZoomInItemInactive {
+    background-position:15px -240px;
+}
+
+.olControlZoomPanel .olControlZoomToMaxExtentItemInactive {
+    display: none;
+}
+
+.olControlZoomPanel .olControlZoomOutItemInactive {
+    background-position:15px -255px;
+    top: 123px;
+}
+
+.x-btn .add {
+    background-image: url(img/silk/add.png);
+}
+
+.x-btn .delete {
+    background-image: url(img/silk/delete.png);
+}
+
+.x-btn .duplicate {
+    background-image: url(img/silk/arrow_divide.png);
+}
+
+.x-btn .save {
+    background-image: url(img/accept.png);
+}
+
+.x-btn .cancel {
+    background-image: url(img/decline.png);
+}
+
+.x-btn .edit {
+    background-image: url(img/pencil.png);
+}
+
+.x-btn .process, .x-menu-item .process {
+    background-image: url(img/silk/cog.png);
+}
+
+.gxp-filterbuilder .x-toolbar {
+    background: transparent;
+    border: none !important;
+}
+
+/* gxp_embedmapdialog */
+.gxp-field-label {
+    font-weight: bold;
+    margin: 4px;
+    vertical-align: baseline;
+}
+.gxp-export-section {
+    padding: 10px 10px 5px 10px;
+    margin-bottom: 0;
+}
+
+/* gxp_timeline */
+.x-btn .gxp-icon-layer-switcher {
+    background-image: url(img/silk/layers.png);
+}
+.timeline-highlight-point-decorator {
+    background-color: #F46817;
+    width: 5px;
+}
+
+/* gxp_annotation */
+.x-btn .gxp-icon-note {
+    background-image: url(img/silk/note.png);
+}
+.x-menu-item .gxp-icon-addnote, .x-btn .gxp-icon-addnote {
+    background-image: url(img/silk/note_add.png);
+}
+.x-menu-item .gxp-icon-event, .x-btn .gxp-icon-event {
+    background-image: url(img/silk/calendar.png);
+}
+.x-menu-item .gxp-icon-point, .x-btn .gxp-icon-point {
+    background-image: url(img/silk/bullet_yellow.png);
+}
+.x-menu-item .gxp-icon-line, .x-btn .gxp-icon-line {
+    background-image: url(img/geosilk/line_yellow.png);
+}
+.x-menu-item .gxp-icon-polygon, .x-btn .gxp-icon-polygon {
+    background-image: url(img/geosilk/shape_square_yellow.png);
+}
+
+/* gxp_googleearth */
+.x-btn .gxp-icon-googleearth, .x-menu-item .gxp-icon-googleearth, .x-tree-node .gxp-icon-googleearth {
+    background-image: url(img/geosilk/google_earth.png);
+}
+
+/* gxp_legend */
+.x-btn .gxp-icon-legend, .x-menu-item .gxp-icon-legend, .x-tree-node .gxp-icon-legend {
+    background-image: url(img/silk/application_view_tile.png);
+}
+.gxp-legend-item {
+    margin: 0.5em 10px;
+}
+
+/* gxp_print */
+.x-btn .gxp-icon-print, .x-menu-item .gxp-icon-print, .x-tree-node .gxp-icon-print {
+    background-image: url(img/silk/printer.png);
+}
+
+/* gxp_wmsgetfeatureinfo */
+.x-btn .gxp-icon-getfeatureinfo, .x-menu-item .gxp-icon-getfeatureinfo, .x-tree-node .gxp-icon-getfeatureinfo {
+    background-image: url(img/silk/information.png);
+}
+
+/* gxp_featureeditor */
+.x-btn .gxp-icon-addfeature, .x-menu-item .gxp-icon-addfeature {
+    background-image: url(img/silk/pencil_add.png);
+}
+.x-btn .gxp-icon-editfeature, .x-menu-item .gxp-icon-editfeature {
+    background-image: url(img/silk/map_edit.png);
+}
+/* gxp_cataloguesearch */
+.x-action-col, .gxp-icon-addlayers {
+    background-image: url(img/silk/add.png);
+    width: 16px;
+    height: 16px;
+}
+/* gxp_addlayers */
+.x-btn .gxp-icon-addlayers, .x-menu-item .gxp-icon-addlayers, .x-tree-node .gxp-icon-addlayers {
+    background-image: url(img/silk/add.png);
+}
+.x-btn .gxp-icon-addserver {
+    background-image: url(img/silk/server_add.png);
+}
+
+/* gxp_panmap */
+.x-btn .gxp-icon-pan, .x-tree-node .gxp-icon-pan {
+    background-image: url(img/geosilk/pan.png);
+}
+
+/* gxp_mapproperties */
+.x-btn .gxp-icon-mapproperties, .x-menu-item .gxp-icon-mapproperties, .x-tree-node .gxp-icon-mapproperties {
+    background-image: url(img/geosilk/map_wrench.png);
+}
+
+/* gxp_layerproperties */
+.x-btn .gxp-icon-layerproperties, .x-menu-item .gxp-icon-layerproperties, .x-tree-node .gxp-icon-layerproperties {
+    background-image: url(img/silk/wrench.png);
+}
+
+/* gxp_removelayer */
+.x-btn .gxp-icon-removelayers, .x-menu-item .gxp-icon-removelayers, .x-tree-node .gxp-icon-removelayers {
+    background-image: url(img/silk/delete.png);
+}
+
+/* gxp_zoomtodataextent, gxp_zoomtoselectedfeatures, gxp_zoomtolayerextent */
+.x-btn .gxp-icon-zoom-to, .x-menu-item .gxp-icon-zoom-to, .x-tree-node .gxp-icon-zoom-to { 
+    background-image: url(img/silk/magnifier.png);
+}
+
+/* gxp_queryform */
+.x-btn .gxp-icon-find, .x-menu-item .gxp-icon-find { 
+    background-image: url(img/silk/find.png);
+}
+
+/* gxp_selectfeature */
+.x-btn .gxp-icon-selectfeature, .x-menu-item .gxp-icon-selectfeature { 
+    background-image: url(img/silk/cursor.png);
+}
+
+/* gxp_zoomtoextent */
+.x-btn .gxp-icon-zoomtoextent, .x-tree-node .gxp-icon-zoomtoextent { 
+    background-image: url(img/silk/arrow_inout.png);
+}
+
+/* gxp_navigationhistory */
+.x-btn .gxp-icon-zoom-previous, .x-tree-node .gxp-icon-zoom-previous {
+    background-image: url(img/silk/arrow_left.png);
+}
+.x-btn .gxp-icon-zoom-next, .x-tree-node .gxp-icon-zoom-next {
+    background-image: url(img/silk/arrow_right.png);
+}
+
+/* gxp_zoom */
+.x-btn .gxp-icon-zoom, .x-tree-node .gxp-icon-zoom {
+    background-image: url(img/silk/magnifier.png);
+}
+.x-btn .gxp-icon-zoom-in, .x-tree-node .gxp-icon-zoom-in {
+    background-image: url(img/silk/magnifier_zoom_in.png);
+}
+.x-btn .gxp-icon-zoom-out, .x-tree-node .gxp-icon-zoom-out {
+    background-image: url(img/silk/magnifier_zoom_out.png);
+}
+
+/* gxp_measure */
+.x-btn .gxp-icon-measure-length, .x-menu-item .gxp-icon-measure-length, .x-tree-node .gxp-icon-measure-length {
+    background-image: url(img/geosilk/ruler.png) !important;
+}
+.x-btn .gxp-icon-measure-area, .x-menu-item .gxp-icon-measure-area, .x-tree-node .gxp-icon-measure-area {
+   background-image: url(img/geosilk/ruler_square.png) !important;
+}
+
+/* gxp_styler */
+.x-btn .gxp-icon-palette, .x-menu-item .gxp-icon-palette, .x-tree-node .gxp-icon-palette {
+   background-image: url(img/silk/palette.png);
+}
+
+/* fixes textarea scrollbar issue in FF on OSX */
+.ext-gecko.ext-mac textarea.x-form-field {
+    padding: 1px 2px;
+}
+
+.x-tree-node img.gxp-folder, .x-tree-node-collapsed img.gxp-folder{
+    background: url(http://extjs.cachefly.net/ext-3.4.0/resources/images/default/tree/folder.gif);
+}
+
+.x-tree-node-expanded img.gxp-folder {
+    background: url(http://extjs.cachefly.net/ext-3.4.0/resources/images/default/tree/folder-open.gif);
+}
+
+/* gxp_layeruploadpanel */
+.x-btn .gxp-icon-filebrowse, .x-menu-item .gxp-icon-filebrowse { 
+    background-image: url(img/silk/folder.png);
+}
+
+/* ux.FileUploadField */
+.x-form-file-wrap {
+    position: relative;
+    height: 22px;
+}
+.x-form-file-wrap .x-form-file {
+    position: absolute;
+    right: 0;
+    -moz-opacity: 0;
+    filter:alpha(opacity=0);
+    opacity: 0;
+    z-index: 2;
+    height: 22px;
+}
+.x-form-file-wrap .x-form-file-btn {
+    position: absolute;
+    right: 0;
+    z-index: 1;
+}
+.x-form-file-wrap .x-form-file-text {
+    position: absolute;
+    left: 0;
+    z-index: 3;
+    color: #777;
+}
+/* gxp_scaleoverlay */
+div.map-overlay {
+    z-index: 1000;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
+div.map-overlay div.overlay-element {
+    display:inline;
+    float: left;
+    margin: 5px;
+}
+.overlay-scaleline {
+    bottom: 0px;
+    left: 0px;
+    margin-top: 0px;
+}
+/* gxp_playback */
+div.olMap div.gx-overlay-playback {
+    position: absolute;
+    z-index: 1000;
+    top: 22px;
+    left: 65px;
+}
+.gx-overlay-playback .x-toolbar {
+    background: none;
+    border: none;
+}
+.gx-overlay-playback .x-btn{
+    width:16px !important;height:16px !important;
+    background-repeat: no-repeat;
+}
+
+/* gxp_histogram */
+.gxp-histogram {
+    overflow: hidden;
+    position: relative;
+    border-bottom: 1px solid #BBB;
+}
+.gxp-histogram .bar {
+    position: absolute;
+    background-color: #BBB;
+    border-right: 1px solid #BBB; /* avoid gaps between bars */
+    height: 100%; /* so we don't need to set the height programmatially */
+}
+
+/* gxp_layermanager */
+.gxp-layermanager-tree .x-tree-node-icon {
+    display: none;
+}
+.gxp-layermanager-tree .x-tree-node-anchor {
+    font-weight: bold;
+}
+.gxp-layermanager-tree input + .x-tree-node-anchor {
+    font-weight: normal;
+}
+.gxp-layermanager-tree input[checked] + .x-tree-node-anchor {
+    font-weight: bold;
+}
+.gxp-layermanager-tree .legend img, .gxp-layermanager-tree .legend .x-panel {
+    padding-left: 48px;
+}
+.gxp-layermanager-tree .legendnode {
+    line-height: 0;
+}
+.gxp-layermanager-tree .legendnode:hover {
+    background-color: inherit;
+}
+.gxp-layermanager-tree .legendnode .x-tree-node-indent {
+    display: none;
+}
+.gxp-layermanager-tree .legendnode .x-tree-ec-icon {
+    display: none;
+}
+.gxp-layermanager-tree .legend label {
+    display: none;
+}
+.gxp-layermanager-tree .gx-legend-noimage {
+    display: none;
+}
+
+/* gxp_crumbpanel */
+.gxp-crumbpanel-header ul, li.gxp-crumb {
+    position: relative;
+}
+.gxp-crumb .x-tab-left {
+    padding-right: 19px;
+}
+.gxp-crumb-separator {
+    background-repeat: no-repeat;
+    display: block;
+    width: 12px;
+    height: 11px;
+    position: absolute;
+    top: -1px;
+    right: 1px;
+    z-index: 2;
+    font-size: 18px;
+}
+.gxp-crumb .x-tab-right {
+    padding-left: 0px;
+    background-image: none;
+}
+.gxp-crumb .x-tab-left, .gxp-crumb .x-tab-strip-inner {
+    background-image: none;
+}
+.gxp-crumb .x-tab-strip-text {
+    margin: 0 2px 0 2px;
+}
+.x-tab-strip-active .gxp-crumb-separator {
+    display: none;
+}
+.gxp-crumbpanel-header ul {
+    padding-bottom: 1px;
+    border-bottom: 0;
+}
+.gxp-crumbpanel-header {
+    padding-bottom: 0;
+}
+
+/** gx_playbacktoolbar**/
+.x-btn .gxp-icon-reset{
+    background-image:url('img/silk/control_start_blue.png')
+}
+.x-btn .gxp-icon-settings{
+    background-image:url('img/silk/control_equalizer_blue.png')
+}
+.x-btn .gxp-icon-next{
+    background-image:url('img/silk/control_end_blue.png')
+}
+.x-btn .gxp-icon-last{
+    background-image:url('img/silk/control_end_blue.png')
+}
+.x-btn .gxp-icon-play{
+    background-image:url('img/silk/control_play_blue.png')
+}
+.x-btn .gxp-icon-pause{
+    background-image:url('img/silk/control_pause_blue.png')
+}
+.x-btn .gxp-icon-stop{
+    background-image:url('img/silk/control_stop_blue.png')
+}
+.x-btn .gxp-icon-loop{
+    background-image:url('img/silk/control_repeat_blue.png')
+}
+.x-btn .gxp-icon-ffwd{
+    background-image:url('img/silk/control_fastforward_blue.png')
+}
+.x-btn-over .gxp-icon-reset{
+    background-image:url('img/silk/control_start.png')
+}
+.x-btn-over .gxp-icon-settings{
+    background-image:url('img/silk/control_equalizer.png')
+}
+.x-btn-over .gxp-icon-next{
+    background-image:url('img/silk/next_blue.png')
+}
+.x-btn-over .gxp-icon-last{
+    background-image:url('img/silk/control_end.png')
+}
+.x-btn-over .gxp-icon-play{
+    background-image:url('img/silk/control_play.png')
+}
+.x-btn-over .gxp-icon-pause{
+    background-image:url('img/silk/control_pause.png')
+}
+.x-btn-over .gxp-icon-stop{
+    background-image:url('img/silk/control_stop.png')
+}
+.x-btn-over .gxp-icon-loop{
+    background-image:url('img/silk/control_repeat.png')
+}
+.x-btn-over .gxp-icon-ffwd,.x-item-disabled .gxp-icon-ffwd{
+    background-image:url('img/silk/control_fastforward.png')
+}
+
+.gx_timeslider div.x-slider-thumb{
+    cursor: pointer;
+}
+.gx_timeslider div.x-slider-min-thumb{
+    background-image:url('img/silk/resultset_next.png');
+}
+.gx_timeslider div.x-slider-max-thumb{
+    background-image:url('img/silk/resultset_previous.png');
+}
+.gx_timeslider div.x-slider-tail-thumb{
+    background-image:url('img/silk/stop.png');
+    left:-14px;
+}
+
+
+
+.thumb-mapbox {
+    width: 128px;
+    height: 128px;
+    margin: 5px 5px 5px 5px;
+}
+.thumb-mapbox-natural-earth-1 {
+    background-image:url('img/thumbs/mapbox/natural-earth-1.jpg');
+}
+.thumb-mapbox-blue-marble-topo-bathy-jan {
+    background-image:url('img/thumbs/mapbox/blue-marble-topo-bathy-jan.jpg');
+}
+.thumb-mapbox-blue-marble-topo-bathy-jul-bw {
+    background-image:url('img/thumbs/mapbox/blue-marble-topo-bathy-jul-bw.jpg');
+}
+.thumb-mapbox-blue-marble-topo-bathy-jul {
+    background-image:url('img/thumbs/mapbox/blue-marble-topo-bathy-jul.jpg');
+}
+.thumb-mapbox-blue-marble-topo-jan {
+    background-image:url('img/thumbs/mapbox/blue-marble-topo-jan.jpg');
+}
+.thumb-mapbox-blue-marble-topo-jul-bw {
+    background-image:url('img/thumbs/mapbox/blue-marble-topo-jul-bw.jpg');
+}
+.thumb-mapbox-blue-marble-topo-jul {
+    background-image:url('img/thumbs/mapbox/blue-marble-topo-jul.jpg');
+}
+.thumb-mapbox-control-room {
+    background-image:url('img/thumbs/mapbox/control-room.png');
+}
+.thumb-mapbox-geography-class {
+    background-image:url('img/thumbs/mapbox/geography-class.jpg');
+}
+.thumb-mapbox-natural-earth-2 {
+    background-image:url('img/thumbs/mapbox/natural-earth-2.jpg');
+}
+.thumb-mapbox-natural-earth-hypso-bathy {
+    background-image:url('img/thumbs/mapbox/natural-earth-hypso-bathy.jpg');
+}
+.thumb-mapbox-natural-earth-hypso {
+    background-image:url('img/thumbs/mapbox/natural-earth-hypso.jpg');
+}
+.thumb-mapbox-world-bank-borders-ar {
+    background-image:url('img/thumbs/mapbox/world-bank-borders-ar.png');
+}
+.thumb-mapbox-world-bank-borders-en {
+    background-image:url('img/thumbs/mapbox/world-bank-borders-en.png');
+}
+.thumb-mapbox-world-bank-borders-es {
+    background-image:url('img/thumbs/mapbox/world-bank-borders-es.png');
+}
+.thumb-mapbox-world-bank-borders-fr {
+    background-image:url('img/thumbs/mapbox/world-bank-borders-fr.png');
+}
+.thumb-mapbox-world-bank-borders-zh {
+    background-image:url('img/thumbs/mapbox/world-bank-borders-zh.png');
+}
+.thumb-mapbox-world-dark {
+    background-image:url('img/thumbs/mapbox/world-dark.png');
+}
+.thumb-mapbox-world-light {
+    background-image:url('img/thumbs/mapbox/world-light.png');
+}
+.thumb-mapbox-world-print {
+    background-image:url('img/thumbs/mapbox/world-print.png');
+}

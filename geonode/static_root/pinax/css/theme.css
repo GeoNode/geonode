@@ -1,0 +1,19 @@
+body {
+  padding-top: 80px;
+  position: relative;
+}
+section {
+  padding-top: 60px;
+}
+.modal form {
+  margin-bottom: 0px;
+}
+#footer {
+  margin-top: 80px;
+}
+#footer p {
+  margin-bottom: 0;
+}
+#footer p.right {
+  float: right;
+}
