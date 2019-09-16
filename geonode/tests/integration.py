@@ -1110,6 +1110,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
 
 @override_settings(SITEURL='http://localhost:8002/')
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     """
     Tests GeoNode permissions and its integration with GeoServer
@@ -1120,7 +1121,6 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
         super(GeoNodeLiveTestSupport, self).setUp()
         settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
 
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_unpublished(self):
         """Test permissions on an unpublished layer
@@ -1349,6 +1349,7 @@ class GeoNodeMapPrintTest(GeoNodeLiveTestSupport):
 
 
 @override_settings(SITEURL='http://localhost:8005/')
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
     """
@@ -1360,7 +1361,6 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
         super(GeoNodeLiveTestSupport, self).setUp()
         settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
 
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_set_attributes_from_geoserver(self):
         """Test attributes syncronization
@@ -1407,6 +1407,7 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
 
 @override_settings(SITEURL='http://localhost:8006/')
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
 
     """
@@ -1418,7 +1419,6 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
         super(GeoNodeLiveTestSupport, self).setUp()
         settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
 
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_capabilities(self):
         """Test capabilities
@@ -1523,6 +1523,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
 
 
 @override_settings(SITEURL='http://localhost:8007/')
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 class LayersStylesApiInteractionTests(
         ResourceTestCaseMixin, GeoNodeLiveTestSupport):
     """Test Layers"""
@@ -1546,7 +1547,6 @@ class LayersStylesApiInteractionTests(
         all_public()
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_interaction(self):
         """Layer API interaction check."""
         layer_id = self.layer.id
@@ -1597,7 +1597,6 @@ class LayersStylesApiInteractionTests(
         self.assertEqual(obj, prev_obj)
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_style_interaction(self):
         """Style API interaction check."""
 
@@ -1658,7 +1657,6 @@ class LayersStylesApiInteractionTests(
         self.assertTrue('body' in obj and obj['body'])
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_add_delete_styles(self):
         """Style API Add/Delete interaction."""
         # Check styles count
