@@ -596,11 +596,6 @@ class CollectorAPI(object):
                 metric_defaults['event_type'] = evt
                 push_metric_values(rq, **metric_defaults)
 
-        # combined event types
-        for evt, rq in self.extract_special_event_types(requests):
-            metric_defaults['event_type'] = evt
-            push_metric_values(rq, **metric_defaults)
-
     def get_metrics_for(self, metric_name,
                         valid_from=None,
                         valid_to=None,
@@ -740,7 +735,7 @@ class CollectorAPI(object):
                                               'group_by': [],
                                               'grouper': [],
                                               },
-                        'event_type': {'select_only': ['ev.name as event_type', 'count(1) as val',
+                        'event_type': {'select_only': ['ev.name as event_type', 'sum(mv.value_num) as val',
                                                        'count(1) as metric_count',
                                                        'sum(samples_count) as samples_count',
                                                        'sum(mv.value_num), min(mv.value_num)',
