@@ -133,7 +133,7 @@ class Command(BaseCommand):
 
         last_check = local_tz.localize(since).astimezone(utc).replace(tzinfo=utc) if since else service.last_check
         _monitoring_ttl_max = 365 if force_check else settings.MONITORING_DATA_TTL
-        if not last_check or last_check > until or (until - last_check) > _monitoring_ttl_max:
+        if not last_check or last_check > until or (until - last_check) > timedelta(days=_monitoring_ttl_max):
             last_check = (until - _monitoring_ttl_max)
             service.last_check = last_check
 
