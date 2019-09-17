@@ -53,7 +53,7 @@ class Command(BaseCommand):
             '--remove-duplicates',
             action='store_true',
             dest='remove_duplicates',
-            default=True,
+            default=False,
             help='Remove duplicates first.'
         )
         parser.add_argument(
@@ -104,8 +104,8 @@ class Command(BaseCommand):
                 # refresh catalogue metadata records
                 catalogue_post_save(instance=layer, sender=layer.__class__)
             except BaseException as e:
-                # import traceback
-                # traceback.print_exc()
+                import traceback
+                traceback.print_exc()
                 if ignore_errors:
                     print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
                 else:
