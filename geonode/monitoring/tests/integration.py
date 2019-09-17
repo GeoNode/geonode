@@ -2580,3 +2580,102 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(len(dd), len(uptime_data))
         for ud in dd:
             self.assertIn(ud, uptime_data)
+
+    def test_hits_for_event_type_endpoint(self):
+        # test data
+        test_data = [
+            {'event_type': 'other',
+             'max': '24.0000',
+             'metric_count': 17,
+             'min': '1.0000',
+             'samples_count': 165,
+             'sum': '165.0000',
+             'val': '165.0000'},
+            {'event_type': 'all',
+             'max': '4.0000',
+             'metric_count': 16,
+             'min': '1.0000',
+             'samples_count': 31,
+             'sum': '31.0000',
+             'val': '31.0000'},
+            {'event_type': 'view',
+             'max': '4.0000',
+             'metric_count': 10,
+             'min': '1.0000',
+             'samples_count': 20,
+             'sum': '20.0000',
+             'val': '20.0000'},
+            {'event_type': 'create',
+             'max': '1.0000',
+             'metric_count': 5,
+             'min': '1.0000',
+             'samples_count': 5,
+             'sum': '5.0000',
+             'val': '5.0000'},
+            {'event_type': 'upload',
+             'max': '1.0000',
+             'metric_count': 3,
+             'min': '1.0000',
+             'samples_count': 3,
+             'sum': '3.0000',
+             'val': '3.0000'},
+            {'event_type': 'view_metadata',
+             'max': '1.0000',
+             'metric_count': 2,
+             'min': '1.0000',
+             'samples_count': 2,
+             'sum': '2.0000',
+             'val': '2.0000'},
+            {'event_type': 'change_metadata',
+             'max': '1.0000',
+             'metric_count': 1,
+             'min': '1.0000',
+             'samples_count': 1,
+             'sum': '1.0000',
+             'val': '1.0000'},
+            {'event_type': 'download',
+             'max': '1.0000',
+             'metric_count': 1,
+             'min': '1.0000',
+             'samples_count': 1,
+             'sum': '1.0000',
+             'val': '1.0000'},
+            {'event_type': 'OWS:ALL',
+             'max': '0.0000',
+             'metric_count': 17,
+             'min': '0.0000',
+             'samples_count': 0,
+             'sum': '0.0000',
+             'val': '0.0000'}
+        ]
+        # url
+        url = "%s?%s&%s" % (
+            reverse('monitoring:api_metric_data', args={'request.count'}),
+            'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000',
+            'group_by=event_type'
+        )
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        # Check data
+        data = out["data"]
+        self.assertEqual(data["metric"], "request.count")
+        self.assertEqual(data["interval"], 31536000)
+        self.assertEqual(data["label"], None)
+        self.assertEqual(data["axis_label"], "Count")
+        self.assertEqual(data["type"], "count")
+        self.assertEqual(out["data"]["input_valid_from"], '2018-09-11T20:00:00.000000Z')
+        self.assertEqual(out["data"]["input_valid_to"], '2019-09-11T20:00:00.000000Z')
+        dd = data["data"][0]["data"]
+        self.assertEqual(len(dd), len(test_data))
+        for d in dd:
+            self.assertIn(d, test_data)
