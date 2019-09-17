@@ -165,7 +165,7 @@ class GeoServerMonitorClient(object):
             except Exception as err:
                 log.debug("Cannot parse xml contents for %s: %s", href, err, exc_info=err)
                 data = bs(r.content)
-        if data and format != 'json':
+        if len(data) and format != 'json':
             return self.to_json(data, format)
         return data
 
@@ -181,7 +181,7 @@ class GeoServerMonitorClient(object):
 
     def to_json(self, data, from_format):
         h = getattr(self, '_from_{}'.format(from_format), None)
-        if not h or not data:
+        if not h or not len(data):
             raise ValueError(
                 "Cannot convert from {} - no handler".format(from_format))
         return h(data)
