@@ -37,8 +37,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-17 10:31+0200\n"
-"PO-Revision-Date: 2019-09-17 10:58+0200\n"
+"POT-Creation-Date: 2019-09-17 16:19+0000\n"
+"PO-Revision-Date: 2019-09-17 18:34+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Italian (http://www.transifex.com/geonode/geonode/language/"
 "it/)\n"
@@ -4193,10 +4193,9 @@ msgid "No resource"
 msgstr "Nessuna risorsa"
 
 #: geonode/monitoring/models.py:178
-#, fuzzy
 #| msgid "Resources"
 msgid "Resource base"
-msgstr "Risorse"
+msgstr "Resource base"
 
 #: geonode/monitoring/models.py:180
 msgid "Style"
@@ -4274,7 +4273,7 @@ msgstr "Non OWS"
 
 #: geonode/monitoring/models.py:355
 msgid "Any OWS"
-msgstr ""
+msgstr "Qualsiasi OWS"
 
 #: geonode/monitoring/models.py:359
 #: geonode/templates/pinax/notifications/notice_settings.html:51
@@ -4298,10 +4297,9 @@ msgid "Publish"
 msgstr "Pubblica"
 
 #: geonode/monitoring/models.py:366
-#, fuzzy
 #| msgid "GeoServer"
 msgid "Geoserver event"
-msgstr "GeoServer"
+msgstr "Geoserver event"
 
 #: geonode/monitoring/models.py:435
 msgid "List of resources affected"
@@ -6998,10 +6996,8 @@ msgid "Our partners"
 msgstr "I nostri partner"
 
 #: geonode/templates/index.html:345
-#, fuzzy
-#| msgid "Accepted"
 msgid "Accept"
-msgstr "Accettato"
+msgstr "Accetta"
 
 #: geonode/templates/index.html:346
 msgid "Reject"
@@ -7009,7 +7005,7 @@ msgstr "Rifiuta"
 
 #: geonode/templates/index.html:347
 msgid "Leave"
-msgstr ""
+msgstr "Lascia"
 
 #: geonode/templates/invitations/email/email_invite_message.html:2
 #: geonode/templates/invitations/email/email_invite_message.txt:3
@@ -7333,7 +7329,7 @@ msgstr "Hai ricevuto la seguente notifica da"
 
 #: geonode/templates/pinax/notifications/email_body.txt:8
 msgid "To change how you receive notifications, please go to"
-msgstr ""
+msgstr "Per modificare la modalità di ricezione delle notifiche, visitare"
 
 #: geonode/templates/pinax/notifications/email_subject.txt:1
 #, python-format
@@ -7483,6 +7479,14 @@ msgid ""
 "        </p>\n"
 "        "
 msgstr ""
+"\n"
+"        <p class=\"alert alert-warning\">\n"
+"            <span class=\"warning\">Nota</span>:\n"
+"            Non si dispone di un indirizzo e-mail verificato a cui gli "
+"avvisi possono essere inviati. <a href=\"%(email_url)s\">Aggiungerne uno</a> "
+"now.\n"
+"        </p>\n"
+"        "
 
 #: geonode/templates/pinax/notifications/notice_settings.html:26
 msgid "Notification Type"
@@ -7506,11 +7510,11 @@ msgstr "Richiesto lo scaricamento di una risorsa"
 #: geonode/templates/privacy-cookies.html:4
 #: geonode/templates/privacy-cookies.html:8
 msgid "Privacy &#038; Cookies Policy"
-msgstr ""
+msgstr "Privacy &#038; Cookies Policy"
 
 #: geonode/templates/privacy-cookies.html:10
 msgid "Privacy &#038; Cookies Policy."
-msgstr ""
+msgstr "Privacy &#038; Cookies Policy."
 
 #: geonode/templates/relationships/_list_connections.html:4
 #: geonode/templates/relationships/_manage_connections.html:5
