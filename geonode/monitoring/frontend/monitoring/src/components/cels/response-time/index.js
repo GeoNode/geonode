@@ -33,20 +33,27 @@ class ResponseTime extends React.Component {
   }
 
   render() {
+    let avgResponse = 0;
+    let minResponse = 0;
+    let maxResponse = 0;
     let latestResponse = 0;
     for (let i = this.props.data.length - 1; i >= 0; --i) {
       const response = this.props.data[i].time;
       if (response !== 0) {
-        latestResponse = response;
-        break;
+        minResponse = minResponse == 0 || response < minResponse ? response : minResponse;
+        maxResponse = response > maxResponse ? response : maxResponse;
+        if (latestResponse == 0) {
+          latestResponse = response;
+        }
       }
     }
+    avgResponse = (minResponse + maxResponse) / 2;
     return (
       <div style={styles.content}>
         <h4>Response Time</h4>
         Last Response Time: {latestResponse} ms<br />
-        Max Response Time: {this.props.max} ms<br />
-        Average Response Time: {this.props.average} ms<br />
+        Max Response Time: {maxResponse} ms<br />
+        Average Response Time: {avgResponse} ms<br />
         <LineChart
           width={500}
           height={300}
@@ -64,6 +71,5 @@ class ResponseTime extends React.Component {
     );
   }
 }
-
 
 export default ResponseTime;
