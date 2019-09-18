@@ -53,9 +53,6 @@ from multi_email_field.forms import MultiEmailField
 
 from django.db.models import Sum, F, Case, When, Max
 
-from geonode.utils import parse_datetime
-
-
 log = logging.getLogger(__name__)
 
 GEOIP_DB = None
@@ -639,6 +636,8 @@ class RequestEvent(models.Model):
 
     @classmethod
     def from_geonode(cls, service, request, response):
+        from geonode.utils import parse_datetime
+
         received = datetime.utcnow().replace(tzinfo=pytz.utc)
         rqmeta = getattr(request, '_monitoring', {})
         created = rqmeta.get('started', received)
@@ -718,6 +717,9 @@ class RequestEvent(models.Model):
         """
         Writes RequestEvent for data from audit log in GS
         """
+        from dateutil.tz import tzlocal
+        from geonode.utils import parse_datetime
+
         rd = request_data.get('org.geoserver.monitor.RequestData')
         if not rd:
             log.warning("No request data payload in %s", request_data)
@@ -752,7 +754,6 @@ class RequestEvent(models.Model):
         #         region = client_loc['region']
         #         city = client_loc['city']
 
-        from dateutil.tz import tzlocal
         utc = pytz.utc
         try:
             local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
@@ -895,7 +896,7 @@ class MetricLabel(models.Model):
         blank=True)
 
     def __str__(self):
-        return 'Metric Label: {}'.format(self.name)
+        return 'Metric Label: {}'.format(self.name.encode('ascii', 'ignore'))
 
 
 class MetricValue(models.Model):
