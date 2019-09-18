@@ -1176,7 +1176,7 @@ MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'True
 
 MONITORING_CONFIG = os.getenv("MONITORING_CONFIG", None)
 MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
-MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'local-geonode')
+MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'geonode')
 
 # how long monitoring data should be stored
 MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 7)))
