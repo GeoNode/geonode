@@ -1176,7 +1176,7 @@ MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'True
 
 MONITORING_CONFIG = os.getenv("MONITORING_CONFIG", None)
 MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
-MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'local-geonode')
+MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'geonode')
 
 # how long monitoring data should be stored
 MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 7)))
@@ -1191,6 +1191,31 @@ if MONITORING_ENABLED:
     if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
         MIDDLEWARE_CLASSES += \
             ('geonode.monitoring.middleware.MonitoringMiddleware',)
+
+# skip certain paths to not to mud stats too much
+MONITORING_SKIP_PATHS = ('/api/o/',
+                         '/monitoring/',
+                         '/admin',
+                         '/lang.js',
+                         '/jsi18n',
+                         STATIC_URL,
+                         MEDIA_URL,
+                         re.compile('^/[a-z]{2}/admin/'),
+                         )
+
+# configure aggregation of past data to control data resolution
+# list of data age, aggregation, in reverse order
+# for current data, 1 minute resolution
+# for data older than 1 day, 1-hour resolution
+# for data older than 2 weeks, 1 day resolution
+MONITORING_DATA_AGGREGATION = (
+    (timedelta(seconds=0), timedelta(minutes=1),),
+    (timedelta(days=1), timedelta(minutes=60),),
+    (timedelta(days=14), timedelta(days=1),),
+)
+USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'True'))
+GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
+# -- END Settings for MONITORING plugin
 
 CACHES = {
     # DUMMY CACHE FOR DEVELOPMENT
@@ -1753,33 +1778,6 @@ THESAURI = []
 
 # Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
-
-GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
-
-# skip certain paths to not to mud stats too much
-MONITORING_SKIP_PATHS = ('/api/o/',
-                         '/monitoring/',
-                         '/admin',
-                         '/lang.js',
-                         '/jsi18n',
-                         STATIC_URL,
-                         MEDIA_URL,
-                         re.compile('^/[a-z]{2}/admin/'),
-                         )
-
-# configure aggregation of past data to control data resolution
-# list of data age, aggregation, in reverse order
-# for current data, 1 minute resolution
-# for data older than 1 day, 1-hour resolution
-# for data older than 2 weeks, 1 day resolution
-MONITORING_DATA_AGGREGATION = (
-                               (timedelta(seconds=0), timedelta(minutes=1),),
-                               (timedelta(days=1), timedelta(minutes=60),),
-                               (timedelta(days=14), timedelta(days=1),),
-                               )
-
-# privacy settings
-USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))
 
 # If this option is enabled, Resources belonging to a Group won't be
 # visible by others

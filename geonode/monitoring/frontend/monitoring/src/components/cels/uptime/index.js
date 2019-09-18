@@ -68,7 +68,7 @@ class Uptime extends React.Component {
       if (data.length > 0) {
         if (data[0].data.length > 0) {
           const metric = data[0].data[0];
-          uptime = Math.floor(Number(metric.val) / 60 / 60 / 24);
+          uptime = Math.floor(Number(metric.max) / (60 * 60 * 24));
         }
       }
     }
