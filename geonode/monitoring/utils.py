@@ -31,14 +31,12 @@ from math import floor, ceil
 from urllib import urlencode
 from urlparse import urlsplit
 from bs4 import BeautifulSoup as bs
-from requests.auth import HTTPBasicAuth
 from datetime import datetime, timedelta
 from defusedxml import lxml as dlxml
 
 from django.conf import settings
 from django.db.models.fields.related import RelatedField
 
-from geonode.monitoring.models import RequestEvent, ExceptionEvent
 from geonode.settings import DATETIME_INPUT_FORMATS
 
 
@@ -54,6 +52,8 @@ class MonitoringHandler(logging.Handler):
         self.service = service
 
     def emit(self, record):
+        from geonode.monitoring.models import RequestEvent, ExceptionEvent
+
         exc_info = record.exc_info
         req = record.request
         resp = record.response
@@ -82,6 +82,8 @@ class RequestToMonitoringThread(threading.Thread):
         RequestToMonitoringThread.q.put(item)
 
     def run(self):
+        from geonode.monitoring.models import RequestEvent
+
         q = RequestToMonitoringThread.q
         while True:
             if not q.empty():
@@ -114,6 +116,8 @@ class GeoServerMonitorClient(object):
         """
         Returns list of requests from monitoring
         """
+        from requests.auth import HTTPBasicAuth
+
         rest_url = '{}rest/monitor/requests.html'.format(self.base_url)
         qargs = {}
         if since:
@@ -144,6 +148,8 @@ class GeoServerMonitorClient(object):
                 log.warning("Skipping payload for {}".format(href))
 
     def get_request(self, href, format=format):
+        from requests.auth import HTTPBasicAuth
+
         username = settings.OGC_SERVER['default']['USER']
         password = settings.OGC_SERVER['default']['PASSWORD']
         log.debug(" href: %s " % href)
@@ -165,7 +171,7 @@ class GeoServerMonitorClient(object):
             except Exception as err:
                 log.debug("Cannot parse xml contents for %s: %s", href, err, exc_info=err)
                 data = bs(r.content)
-        if data and format != 'json':
+        if len(data) and format != 'json':
             return self.to_json(data, format)
         return data
 
@@ -181,7 +187,7 @@ class GeoServerMonitorClient(object):
 
     def to_json(self, data, from_format):
         h = getattr(self, '_from_{}'.format(from_format), None)
-        if not h or not data:
+        if not h or not len(data):
             raise ValueError(
                 "Cannot convert from {} - no handler".format(from_format))
         return h(data)

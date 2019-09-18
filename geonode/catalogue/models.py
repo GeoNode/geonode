@@ -76,13 +76,23 @@ def catalogue_post_save(instance, sender, **kwargs):
 
         # Create the different metadata links with the available formats
         for mime, name, metadata_url in record.links['metadata']:
-            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                       url=metadata_url,
-                                       defaults=dict(name=name,
-                                                     extension='xml',
-                                                     mime=mime,
-                                                     link_type='metadata')
-                                       )
+            try:
+                Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                           url=metadata_url,
+                                           defaults=dict(name=name,
+                                                         extension='xml',
+                                                         mime=mime,
+                                                         link_type='metadata')
+                                           )
+            except Link.MultipleObjectsReturned:
+                _d = dict(name=name,
+                          extension='xml',
+                          mime=mime,
+                          link_type='metadata')
+                Link.objects.filter(resource=instance.resourcebase_ptr,
+                                    url=metadata_url,
+                                    extension='xml',
+                                    link_type='metadata').update(**_d)
 
         # generate an XML document (GeoNode's default is ISO)
         if instance.metadata_uploaded and instance.metadata_uploaded_preserve:

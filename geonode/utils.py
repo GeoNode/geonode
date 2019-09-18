@@ -1627,16 +1627,25 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                           width)
 
         for ext, name, mime, wms_url in links:
-            Link.objects.update_or_create(
-                resource=instance.resourcebase_ptr,
-                name=ugettext(name),
-                defaults=dict(
-                    extension=ext,
-                    url=wms_url,
-                    mime=mime,
-                    link_type='image',
+            try:
+                Link.objects.update_or_create(
+                    resource=instance.resourcebase_ptr,
+                    name=ugettext(name),
+                    defaults=dict(
+                        extension=ext,
+                        url=wms_url,
+                        mime=mime,
+                        link_type='image',
+                    )
                 )
-            )
+            except Link.MultipleObjectsReturned:
+                _d = dict(extension=ext,
+                          url=wms_url,
+                          mime=mime,
+                          link_type='image')
+                Link.objects.filter(resource=instance.resourcebase_ptr,
+                                    name=ugettext(name),
+                                    link_type='image').update(**_d)
 
         if instance.storeType == "dataStore":
             links = wfs_links(ogc_server_settings.public_url + 'ows?',
