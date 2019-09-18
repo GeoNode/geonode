@@ -108,6 +108,7 @@ export const getResponseData = (response) => {
   if (!response) {
     return [0, 0, 0];
   }
+  debugger;
   const rawData = response.data.data;
   const rawDataLength = rawData.length;
   if (rawDataLength > 0) {
