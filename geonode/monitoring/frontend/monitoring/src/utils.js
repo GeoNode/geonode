@@ -105,8 +105,9 @@ export const getResponseData = (response) => {
   let averageResponseTime = 0;
   let maxResponseTime = 0;
   let totalRequests = 0;
+
   if (!response) {
-    return [0, 0, 0];
+    return ["N/A", "N/A", "N/A"];
   }
 
   const rawData = response.data.data;
@@ -135,6 +136,10 @@ export const getResponseData = (response) => {
       totalRequests = metric.samples_count;
     }
   }
+
+  averageResponseTime = averageResponseTime > 0 ? averageResponseTime : "N/A";
+  maxResponseTime = maxResponseTime > 0 ? maxResponseTime : "N/A";
+  totalRequests = totalRequests > 0 ? totalRequests : "N/A";
   return [averageResponseTime, maxResponseTime, totalRequests];
 };
 
