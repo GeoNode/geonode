@@ -102,9 +102,9 @@ export const sequenceInterval = (interval) => {
 
 
 export const getResponseData = (response) => {
-  let averageResponseTime;
-  let maxResponseTime;
-  let totalRequests;
+  let averageResponseTime = 0;
+  let maxResponseTime = 0;
+  let totalRequests = 0;
   if (!response) {
     return [0, 0, 0];
   }
