@@ -24,7 +24,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-26 18:05+0200\n"
-"PO-Revision-Date: 2016-08-23 11:58+0000\n"
+"PO-Revision-Date: 2019-09-17 14:35+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
 "en/)\n"
@@ -33,6 +33,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.2.3\n"
 
 #: geonode/static/geonode/js/search/search.js:522
 msgid "Enter your text here ..."
@@ -69,16 +70,14 @@ msgid "Google Earth KML"
 msgstr "Google Earth KML"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:39
-#, fuzzy
 #| msgid "Google Earth KML"
 msgid "Google Earth KML with a GroundOverlay"
-msgstr "Google Earth KML"
+msgstr "Google Earth KML with a GroundOverlay"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:45
-#, fuzzy
 #| msgid "Google Earth KML"
 msgid "Google Earth KMZ"
-msgstr "Google Earth KML"
+msgstr "Google Earth KMZ"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:50
 msgid "GeoJSON"
@@ -146,30 +145,27 @@ msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr "MrSID-Multi-resolution Seamless Image Database"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:157
-#, fuzzy
 #| msgid "Metadata Links:"
 msgid "XML Metadata File"
-msgstr "Metadata Links:"
+msgstr "XML Metadata File"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:163
 msgid "Style Layer Descriptor"
 msgstr ""
 
 #: geonode/static/geonode/js/upload/FileTypes.js:169
-#, fuzzy
 #| msgid "JPEG2000"
 msgid "JPEG"
-msgstr "JPEG2000"
+msgstr "JPEG"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:174
 msgid "PNG"
 msgstr ""
 
 #: geonode/static/geonode/js/upload/FileTypes.js:179
-#, fuzzy
 #| msgid "GeoTIFF"
 msgid "GIF"
-msgstr "GeoTIFF"
+msgstr "GIF"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:332
 #: geonode/static/geonode/js/upload/LayerInfo.js:488
@@ -178,20 +174,18 @@ msgid "Unexpected Error"
 msgstr "Unexpected Error"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:370
-#, fuzzy
 #| msgid "Layer Info"
 msgid " Info"
-msgstr "Layer Info"
+msgstr " Info"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:371
 msgid "Edit Metadata"
 msgstr "Edit Metadata"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:372
-#, fuzzy
 #| msgid "Edit Metadata"
 msgid "Upload Metadata"
-msgstr "Edit Metadata"
+msgstr "Upload Metadata"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:373
 msgid "Upload SLD"
@@ -327,23 +321,20 @@ msgid "Available Layers"
 msgstr "Available Layers"
 
 #: geonode/templates/lang.js:40
-#, fuzzy
 #| msgid "Add Layers"
 msgid "Add feeds"
-msgstr "Add Layers"
+msgstr "Add feeds"
 
 #: geonode/templates/lang.js:41
 msgid "Flickr"
 msgstr ""
 
 #: geonode/templates/lang.js:42
-#, fuzzy
 #| msgid "Google Earth KML"
 msgid "Google Earth"
-msgstr "Google Earth KML"
+msgstr "Google Earth"
 
 #: geonode/templates/lang.js:43
-#, fuzzy
 #| msgid ""
 #| "Your map is ready to be published to the web!  Simply copy the following "
 #| "HTML to embed the map in your website:"
@@ -351,8 +342,8 @@ msgid ""
 "<p>Your map is ready to be published to the web! </p><p> Simply copy the "
 "following HTML to embed the map in your website: </p>"
 msgstr ""
-"Your map is ready to be published to the web!  Simply copy the following "
-"HTML to embed the map in your website:"
+"<p>Your map is ready to be published to the web! </p><p> Simply copy the "
+"following HTML to embed the map in your website: </p>"
 
 #: geonode/templates/lang.js:44 geonode/templates/lang.js:168
 msgid "Height"
@@ -371,10 +362,9 @@ msgid "About"
 msgstr ""
 
 #: geonode/templates/lang.js:48
-#, fuzzy
 #| msgid "About this Map"
 msgid "About us"
-msgstr "About this Map"
+msgstr "About us"
 
 #: geonode/templates/lang.js:49 geonode/templates/lang.js:169
 msgid "Large"
@@ -449,10 +439,9 @@ msgid "Copy"
 msgstr ""
 
 #: geonode/templates/lang.js:69
-#, fuzzy
 #| msgid "About this Map"
 msgid "About this Map View"
-msgstr "About this Map"
+msgstr "About this Map View"
 
 #: geonode/templates/lang.js:70
 msgid "Abstract (brief description)"
@@ -471,14 +460,13 @@ msgid "Mini"
 msgstr "Mini"
 
 #: geonode/templates/lang.js:75
-#, fuzzy
 #| msgid "Add Layers"
 msgid "Add Category"
-msgstr "Add Layers"
+msgstr "Add Category"
 
 #: geonode/templates/lang.js:76
 msgid " Add a new category to the layer tree"
-msgstr ""
+msgstr " Add a new category to the layer tree"
 
 #: geonode/templates/lang.js:77
 msgid " Rename Category"
@@ -489,10 +477,9 @@ msgid " Rename this category"
 msgstr ""
 
 #: geonode/templates/lang.js:79
-#, fuzzy
 #| msgid "Remove Layer"
 msgid " Remove Category"
-msgstr "Remove Layer"
+msgstr " Remove Category"
 
 #: geonode/templates/lang.js:80
 msgid " Remove this category and layers"
@@ -559,10 +546,9 @@ msgid "Small"
 msgstr "Small"
 
 #: geonode/templates/lang.js:100
-#, fuzzy
 #| msgid "Map Layers"
 msgid " Share Layer"
-msgstr "Map Layers"
+msgstr " Share Layer"
 
 #: geonode/templates/lang.js:101
 msgid ""
@@ -605,10 +591,9 @@ msgid "Unknown Map"
 msgstr "Unknown Map"
 
 #: geonode/templates/lang.js:109
-#, fuzzy
 #| msgid "Selected Layers"
 msgid "Unsupported Layers"
-msgstr "Selected Layers"
+msgstr "Unsupported Layers"
 
 #: geonode/templates/lang.js:110
 msgid "The following layers cannot be printed:"
@@ -655,22 +640,19 @@ msgid "Harvard Geospatial Library"
 msgstr ""
 
 #: geonode/templates/lang.js:121
-#, fuzzy
 #| msgid "Add Layers"
 msgid "Upload Layer"
-msgstr "Add Layers"
+msgstr "Upload Layer"
 
 #: geonode/templates/lang.js:122
-#, fuzzy
 #| msgid "Create Map"
 msgid "Create Layer"
-msgstr "Create Map"
+msgstr "Create Layer"
 
 #: geonode/templates/lang.js:123
-#, fuzzy
 #| msgid "Selected Layers"
 msgid "Rectify Layer"
-msgstr "Selected Layers"
+msgstr "Rectify Layer"
 
 #: geonode/templates/lang.js:124
 msgid "Submit a Map Service"
@@ -854,16 +836,14 @@ msgid "None"
 msgstr "None"
 
 #: geonode/templates/lang.js:239
-#, fuzzy
 #| msgid "Keywords:"
 msgid "Keyword"
-msgstr "Keywords:"
+msgstr "Keyword"
 
 #: geonode/templates/lang.js:241
-#, fuzzy
 #| msgid "Showing"
 msgid "Showing..."
-msgstr "Showing"
+msgstr "Showing..."
 
 #: geonode/templates/lang.js:242
 msgid "Loading..."
@@ -890,10 +870,9 @@ msgid "Source"
 msgstr ""
 
 #: geonode/templates/lang.js:249
-#, fuzzy
 #| msgid "Data"
 msgid "Data Type"
-msgstr "Data"
+msgstr "Data Type"
 
 #: geonode/templates/lang.js:251
 msgid "Date"
