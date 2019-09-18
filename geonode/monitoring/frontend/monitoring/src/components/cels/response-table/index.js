@@ -34,9 +34,9 @@ class ResponseTable extends React.Component {
   }
 
   render() {
-    const average = this.props.average ? `${this.props.average} ms` : 'N/A';
-    const max = this.props.max ? `${this.props.max} ms` : 'N/A';
-    const requests = this.props.requests || 0;
+    const average = this.props.average != undefined ? `${this.props.average} ms` : 'N/A';
+    const max = this.props.max != undefined ? `${this.props.max} ms` : 'N/A';
+    const requests = this.props.requests != undefined ? this.props.requests : 0;
     return (
       <div style={styles.content}>
         <h4>Average Response Time {average}</h4>

@@ -102,12 +102,14 @@ export const sequenceInterval = (interval) => {
 
 
 export const getResponseData = (response) => {
-  let averageResponseTime;
-  let maxResponseTime;
-  let totalRequests;
+  let averageResponseTime = 0;
+  let maxResponseTime = 0;
+  let totalRequests = 0;
+
   if (!response) {
-    return [0, 0, 0];
+    return ["N/A", "N/A", "N/A"];
   }
+
   const rawData = response.data.data;
   const rawDataLength = rawData.length;
   if (rawDataLength > 0) {
@@ -125,15 +127,19 @@ export const getResponseData = (response) => {
     const dataLength = data.data.length;
     if (dataLength > 0) {
       const metric = data.data[dataLength - 1];
-      maxResponseTime = Number(metric.max) > 1
+      maxResponseTime = Number(metric.max) >= 0
                           ? Math.floor(metric.max)
-                          : Number(metric.max.slice(0, 4));
-      averageResponseTime = Number(metric.val) > 1
+                          : Number(metric.max);
+      averageResponseTime = Number(metric.val) >= 0
                           ? Math.floor(metric.val)
-                          : Number(metric.val.slice(0, 4));
+                          : Number(metric.val);
       totalRequests = metric.samples_count;
     }
   }
+
+  averageResponseTime = averageResponseTime > 0 ? averageResponseTime : "N/A";
+  maxResponseTime = maxResponseTime > 0 ? maxResponseTime : "N/A";
+  totalRequests = totalRequests > 0 ? totalRequests : "N/A";
   return [averageResponseTime, maxResponseTime, totalRequests];
 };
 
