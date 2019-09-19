@@ -343,17 +343,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
 
-    # assert False, str(layer_bbox)
-    config = layer.attribute_config()
-
-    # Add required parameters for GXP lazy-loading
-    layer_bbox = layer.bbox[0:4]
-    bbox = layer_bbox[:]
-    bbox[0] = float(layer_bbox[0])
-    bbox[1] = float(layer_bbox[2])
-    bbox[2] = float(layer_bbox[1])
-    bbox[3] = float(layer_bbox[3])
-
     def decimal_encode(bbox):
         import decimal
         _bbox = []
@@ -361,7 +350,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             if isinstance(o, decimal.Decimal):
                 o = (str(o) for o in [o])
             _bbox.append(o)
-        # Must be in the form : [x0, x1, y0, y1
         return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
 
     def sld_definition(style):
@@ -380,11 +368,23 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         }
         return _sld
 
+    # assert False, str(layer_bbox)
+    config = layer.attribute_config()
+
     if hasattr(layer, 'srid'):
         config['crs'] = {
             'type': 'name',
             'properties': layer.srid
         }
+
+    # Add required parameters for GXP lazy-loading
+    layer_bbox = layer.bbox[0:4]
+    # Must be in the form xmin, ymin, xmax, ymax
+    bbox = [
+        float(layer_bbox[0]), float(layer_bbox[2]),
+        float(layer_bbox[1]), float(layer_bbox[3])
+    ]
+
     # Add required parameters for GXP lazy-loading
     attribution = "%s %s" % (layer.owner.first_name,
                              layer.owner.last_name) if layer.owner.first_name or layer.owner.last_name else str(
@@ -398,9 +398,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     config["wrapDateLine"] = True
     config["visibility"] = True
     config["srs"] = srs
-    config["bbox"] = decimal_encode(
-        bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
-                           target_srid=int(srs.split(":")[1]))[:4])
+    config["bbox"] = bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
+                                        target_srid=int(srs.split(":")[1]))[:4]
 
     config["capability"] = {
         "abstract": layer.abstract,
@@ -415,21 +414,20 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             },
             srs: {
                 "srs": srs,
-                "bbox": decimal_encode(
-                    bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
-                                       target_srid=srs_srid)[:4])
+                "bbox": bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
+                                           target_srid=srs_srid)[:4]
             },
             "EPSG:4326": {
                 "srs": "EPSG:4326",
                 "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
-                decimal_encode(bbox_to_projection(
-                    [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4])
+                bbox_to_projection(
+                    [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
             },
             "EPSG:900913": {
                 "srs": "EPSG:900913",
                 "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:900913' else
-                decimal_encode(bbox_to_projection(
-                    [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=3857)[:4])
+                bbox_to_projection(
+                    [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=3857)[:4]
             }
         },
         "srs": {
@@ -454,8 +452,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "prefix": layer.alternate.split(":")[0] if ":" in layer.alternate else "",
         "keywords": [k.name for k in layer.keywords.all()] if layer.keywords else [],
         "llbbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
-        decimal_encode(bbox_to_projection(
-            [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4])
+        bbox_to_projection(
+            [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
     }
 
     all_times = None
