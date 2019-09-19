@@ -85,9 +85,10 @@ class GroupUpdateForm(forms.ModelForm):
 class GroupMemberForm(forms.Form):
     user_identifiers = forms.CharField(
         label=_("User Identifiers"),
-        widget=forms.TextInput(
+        widget=forms.Select(
             attrs={
-                'class': 'user-select'
+                'class': 'user-select',
+                'style': 'width:300px'
             }
         )
     )
