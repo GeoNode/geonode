@@ -881,14 +881,14 @@ def add_layers_to_map_config(
                 "EPSG:4326": {
                     "srs": "EPSG:4326",
                     "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
-                    decimal_encode(bbox_to_projection(
-                        [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4])
+                    bbox_to_projection(
+                        [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
                 },
                 "EPSG:900913": {
                     "srs": "EPSG:900913",
                     "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:900913' else
-                    decimal_encode(bbox_to_projection(
-                        [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=3857)[:4])
+                    bbox_to_projection(
+                        [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=3857)[:4]
                 }
             },
             "srs": {
@@ -913,8 +913,8 @@ def add_layers_to_map_config(
             "prefix": layer.alternate.split(":")[0] if ":" in layer.alternate else "",
             "keywords": [k.name for k in layer.keywords.all()] if layer.keywords else [],
             "llbbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
-            decimal_encode(bbox_to_projection(
-                [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4])
+            bbox_to_projection(
+                [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
         }
 
         all_times = None
