@@ -749,6 +749,7 @@
     {% include 'request_download.html' %}
     {% if DISPLAY_SOCIAL %}
     {% autoescape off %}
+     <script type='text/javascript'>
      (function() {
        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
        po.src = 'https://apis.google.com/js/plusone.js';
@@ -1017,12 +1018,14 @@
 
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
+  <script type='text/javascript'>
         $(function() {
             if (sessionStorage.getItem("security_refresh_trigger")) {
                 sessionStorage.clear();
                 $("#security_refresh").trigger('click');
             }
         });
+  </script>
     {% endif %}
 
     {% if FAVORITE_ENABLED %}
