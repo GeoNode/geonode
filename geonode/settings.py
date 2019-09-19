@@ -1138,7 +1138,7 @@ TASTYPIE_DEFAULT_FORMATS = ['json']
 AUTO_GENERATE_AVATAR_SIZES = (
     20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240
 )
-AVATAR_GRAVATAR_SSL = os.getenv('AVATAR_GRAVATAR_SSL', False)
+AVATAR_GRAVATAR_SSL = ast.literal_eval(os.getenv('AVATAR_GRAVATAR_SSL', 'False'))
 
 # Number of results per page listed in the GeoNode search pages
 CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '20'))
