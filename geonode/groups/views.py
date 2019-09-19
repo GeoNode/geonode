@@ -24,18 +24,21 @@ from actstream.models import Action
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import Http404
-from django.http import HttpResponseForbidden
-from django.http import HttpResponseNotAllowed
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect
-from django.shortcuts import render
+from django.http import (
+    Http404,
+    HttpResponseForbidden,
+    HttpResponseNotAllowed,
+    HttpResponseRedirect)
+from django.contrib import messages
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+    render)
 from django.views.decorators.http import require_POST
-from django.views.generic import ListView
-from django.views.generic import CreateView
+from django.views.generic import ListView, CreateView
 from django.views.generic.edit import UpdateView
 from django.views.generic.detail import DetailView
+
 from geonode.decorators import view_decorator, superuser_only
 
 from . import forms
@@ -171,11 +174,15 @@ def group_members_add(request, slug):
     form = forms.GroupMemberForm(request.POST)
     if form.is_valid():
         for user in form.cleaned_data["user_identifiers"]:
-            group.join(
-                user,
-                role=GroupMember.MANAGER if form.cleaned_data[
-                    "manager_role"] else GroupMember.MEMBER
-            )
+            try:
+                group.join(
+                    user,
+                    role=GroupMember.MANAGER if form.cleaned_data[
+                        "manager_role"] else GroupMember.MEMBER
+                )
+            except BaseException as e:
+                messages.add_message(request, messages.ERROR, e)
+                return redirect("group_members", slug=group.slug)
     return redirect("group_detail", slug=group.slug)
 
 

@@ -2,6 +2,15 @@
 {% load i18n %}
 {% load bootstrap_tags %}
 
+{% block head %}
+{{ block.super }}
+<style>
+.select2-container--default .select2-search--inline .select2-search__field {
+  width: 300px !important;
+}
+</style>
+{% endblock head %}
+
 {% block sidebar %}
 <div class="row">
   <div class="col-md-12">
@@ -102,7 +111,7 @@
         <h3>{% trans "Add new members" %}</h3>
         <form method="POST" action="{% url "group_members_add" group.slug %}">
             {% csrf_token %}
-            <div id="member_form_container">
+            <div id="member_form_container"
                 {{ member_form|as_bootstrap }}<br/><br/>
             </div>
             <input type="submit" value="{% trans "Add Group Members" %}" class="btn btn-primary"/>
