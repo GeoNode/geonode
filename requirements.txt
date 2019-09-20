@@ -66,6 +66,7 @@ django-autocomplete-light==2.3.3 # pinned because >=2.3.4 throw an exception on 
 django-basic-authentication-decorator==0.9
 django-leaflet==0.24.0
 django-invitations<=1.9.2
+django-recaptcha==2.0.5
 geonode-oauth-toolkit==1.1.4.6
 
 # GeoNode org maintained apps.
