@@ -522,6 +522,9 @@
               <label class="checkbox">
                 <input type="checkbox" /> {% trans "Remember Me" %}
               </label>
+              <p>
+                <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+              </p>
             </div>
             <div class="modal-footer">
               <button type="submit" class="btn btn-primary btn-block">{% trans "Sign in" %}</button>
