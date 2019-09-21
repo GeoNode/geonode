@@ -28,6 +28,13 @@ ACCESS_TOKEN_EXPIRE_SECONDS
 
     When a user logs into GeoNode, if no ``ACCESS_TOKEN`` exists, a new one will be created with a default expiration time of ``ACCESS_TOKEN_EXPIRE_SECONDS`` seconds (1 day by default).
 
+ACCOUNT_ADAPTER
+---------------
+
+    | Default: ``geonode.people.adapters.LocalAccountAdapter``
+
+    Custom GeoNode People (Users) Account Adapter.
+
 ACCOUNT_APPROVAL_REQUIRED
 -------------------------
 
@@ -89,9 +96,20 @@ ACCOUNT_OPEN_SIGNUP
 -------------------
 
     | Default: ``True``
+    | Env: ``ACCOUNT_OPEN_SIGNUP``
 
     This is a `django-user-accounts setting <https://django-user-accounts.readthedocs.io/en/latest/settings.html>`__
     Whether or not people are allowed to self-register to GeoNode or not.
+
+ACCOUNT_SIGNUP_FORM_CLASS
+-------------------------
+
+    | Default: ``geonode.people.forms.AllauthReCaptchaSignupForm``
+    | Env: ``ACCOUNT_SIGNUP_FORM_CLASS``
+
+    Enabled only when the :ref:`recaptcha_enabled` option is ``True``.
+
+    Ref. to :ref:`recaptcha_enabled`
 
 ACTSTREAM_SETTINGS
 ------------------
@@ -1300,12 +1318,12 @@ PROXY_URL
 PYCSW
 -----
 
-  A dict with pycsw's configuration.  Of note are the sections
-  ``metadata:main`` to set CSW server metadata and ``metadata:inspire``
-  to set INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true``
-  will enable INSPIRE support.   Server level configurations can be overridden
-  in the ``server`` section.  See http://docs.pycsw.org/en/latest/configuration.html
-  for full pycsw configuration details.
+    A dict with pycsw's configuration.  Of note are the sections
+    ``metadata:main`` to set CSW server metadata and ``metadata:inspire``
+    to set INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true``
+    will enable INSPIRE support.   Server level configurations can be overridden
+    in the ``server`` section.  See http://docs.pycsw.org/en/latest/configuration.html
+    for full pycsw configuration details.
 
 R
 =
@@ -1316,6 +1334,73 @@ RABBITMQ_SIGNALS_BROKER_URL
     Default: ``amqp://localhost:5672``
 
     The Rabbitmq endpoint
+
+.. _recaptcha_enabled:
+
+RECAPTCHA_ENABLED
+-----------------
+
+    | Default: ``False``
+    | Env: ``RECAPTCHA_ENABLED``
+
+    Allows enabling reCaptcha field on signup form.
+    Valid Captcha Public and Private keys will be needed as specifice here https://pypi.org/project/django-recaptcha/#installation
+
+    More options will be available by enabling this setting:
+
+    * **ACCOUNT_SIGNUP_FORM_CLASS**
+
+        | Default: ``geonode.people.forms.AllauthReCaptchaSignupForm``
+        | Env: ``ACCOUNT_SIGNUP_FORM_CLASS``
+
+        Enabled only when the :ref:`recaptcha_enabled` option is ``True``.
+    
+    * **INSTALLED_APPS**
+    
+        The ``captcha`` must be present on ``INSTALLED_APPS``, otherwise you'll get an error.
+
+        When enabling the :ref:`recaptcha_enabled` option through the ``environment``, this setting will be automatically added by GeoNode as follows:
+
+        .. code:: python
+
+            if 'captcha' not in INSTALLED_APPS:
+                    INSTALLED_APPS += ('captcha',)        
+
+    * **RECAPTCHA_PUBLIC_KEY**
+
+        | Default: ``geonode_RECAPTCHA_PUBLIC_KEY``
+        | Env: ``RECAPTCHA_PUBLIC_KEY``
+
+        In order to generate reCaptcha keys, please see:
+
+        #. https://pypi.org/project/django-recaptcha/#installation
+        #. https://pypi.org/project/django-recaptcha/#local-development-and-functional-testing
+
+    * **RECAPTCHA_PRIVATE_KEY**
+
+        | Default: ``geonode_RECAPTCHA_PRIVATE_KEY``
+        | Env: ``RECAPTCHA_PRIVATE_KEY``
+
+        In order to generate reCaptcha keys, please see:
+
+        #. https://pypi.org/project/django-recaptcha/#installation
+        #. https://pypi.org/project/django-recaptcha/#local-development-and-functional-testing
+
+RECAPTCHA_PUBLIC_KEY
+--------------------
+
+    | Default: ``geonode_RECAPTCHA_PUBLIC_KEY``
+    | Env: ``RECAPTCHA_PUBLIC_KEY``
+
+    Ref. to :ref:`recaptcha_enabled`
+
+RECAPTCHA_PRIVATE_KEY
+---------------------
+
+    | Default: ``geonode_RECAPTCHA_PRIVATE_KEY``
+    | Env: ``RECAPTCHA_PRIVATE_KEY``
+
+    Ref. to :ref:`recaptcha_enabled`
 
 REDIS_SIGNALS_BROKER_URL
 ------------------------
