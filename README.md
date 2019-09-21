@@ -1,5 +1,6 @@
 ![GeoNode](docs/about/img/geonode-logo_for_readme.gif "GeoNode")
 ![OSGeo Project](https://www.osgeo.cn/qgis/_static/images/osgeoproject.png)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FGeoNode%2Fgeonode.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FGeoNode%2Fgeonode?ref=badge_shield)
 
 Table of Contents
 =================
@@ -168,3 +169,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
 with GeoNode. If not, see http://www.gnu.org/licenses.
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FGeoNode%2Fgeonode.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FGeoNode%2Fgeonode?ref=badge_large)
