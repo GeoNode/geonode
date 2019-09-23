@@ -557,12 +557,12 @@ def gs_slurp(
                     resources = cat.get_resources(stores=[store])
             else:
                 resources = cat.get_resources(workspaces=[workspace])
-
     elif store is not None:
         store = get_store(cat, store)
         resources = cat.get_resources(stores=[store])
     else:
         resources = cat.get_resources()
+
     if remove_deleted:
         resources_for_delete_compare = resources[:]
         workspace_for_delete_compare = workspace
@@ -579,7 +579,18 @@ def gs_slurp(
         resources = [k for k in resources if filter in k.name]
 
     # filter out layers depending on enabled, advertised status:
-    resources = [k for k in resources if k.enabled in ["true", True]]
+    _resources = []
+    for k in resources:
+        try:
+            if k.enabled in ["true", True]:
+                _resources.append(k)
+        except BaseException:
+            if ignore_errors:
+                continue
+            else:
+                raise
+    # resources = [k for k in resources if k.enabled in ["true", True]]
+    resources = _resources
     if skip_unadvertised:
         resources = [k for k in resources if k.advertised in ["true", True]]
 
