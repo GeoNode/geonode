@@ -93,6 +93,9 @@ class Command(BaseCommand):
                 # refresh metadata links
                 set_resource_default_links(layer, layer, prune=False)
 
+                # refresh catalogue metadata records
+                catalogue_post_save(instance=layer, sender=layer.__class__)
+
                 if remove_duplicates:
                     # remove duplicates
                     for _n in _names:
@@ -100,9 +103,6 @@ class Command(BaseCommand):
                         while _links.count() > 1:
                             _links.last().delete()
                             print '.',
-
-                # refresh catalogue metadata records
-                catalogue_post_save(instance=layer, sender=layer.__class__)
             except BaseException as e:
                 import traceback
                 traceback.print_exc()
@@ -110,4 +110,3 @@ class Command(BaseCommand):
                     print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
                 else:
                     raise e
-

@@ -110,6 +110,12 @@ Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address
                 _cnt = ResourceBase.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
                         F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
+                _cnt += ResourceBase.objects.filter(csw_anytext__icontains=source_address).update(
+                    csw_anytext=Func(
+                        F('csw_anytext'), Value(source_address), Value(target_address), function='replace'))
+                _cnt += ResourceBase.objects.filter(metadata_xml__icontains=source_address).update(
+                    metadata_xml=Func(
+                        F('metadata_xml'), Value(source_address), Value(target_address), function='replace'))
                 print "Updated %s ResourceBases" % _cnt
             finally:
                 # Reactivate GeoNode Signals
