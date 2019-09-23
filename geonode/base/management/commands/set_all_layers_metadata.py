@@ -33,7 +33,7 @@ elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
 
 _names = ['Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV', 'GeoJSON', 'Excel', 'Legend',
           'GeoTIFF', 'GZIP', 'Original Dataset', 'ESRI Shapefile', 'View in Google Earth',
-          'KML', 'KMZ']
+          'KML', 'KMZ', 'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO', 'ISO with XSL']
 
 
 class Command(BaseCommand):
@@ -96,7 +96,7 @@ class Command(BaseCommand):
                 if remove_duplicates:
                     # remove duplicates
                     for _n in _names:
-                        _links = Link.objects.filter(resource__id=layer.id, name__icontains=_n)
+                        _links = Link.objects.filter(resource__id=layer.id, name=_n)
                         while _links.count() > 1:
                             _links.last().delete()
                             print '.',
