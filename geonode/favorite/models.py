@@ -111,5 +111,8 @@ class Favorite(models.Model):
         unique_together = (('user', 'content_type', 'object_id'),)
 
     def __unicode__(self):
-        return "Favorite: {}, {}, {}".format(
-            self.content_object.title, self.content_type, self.user)
+        if self.content_object:
+            return "Favorite: {}, {}, {}".format(
+                self.content_object.title, self.content_type, self.user)
+        else:
+            return "Unknown"
