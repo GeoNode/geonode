@@ -97,8 +97,6 @@ class Upload(models.Model):
             self.session = None
         else:
             # Make sure we don't pickle UTF-8 chars
-            upload_session.user.first_name = u'{}'.format(upload_session.user.first_name).decode("utf-8", "replace")
-            upload_session.user.last_name = u'{}'.format(upload_session.user.last_name).decode("utf-8", "replace")
             unicode_session = pickle.dumps(upload_session)
             self.session = unicode_session.decode("utf-8", "replace")
         if self.upload_dir is None:
