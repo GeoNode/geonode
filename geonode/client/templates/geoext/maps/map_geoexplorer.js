@@ -174,12 +174,15 @@ Ext.onReady(function() {
                        map.projection in layer_bbox) {
                        bbox = layer_bbox[map.projection].bbox;
                        extent = OpenLayers.Bounds.fromArray(bbox);
+                       map.zoomToExtent(extent);
                     } else {
                        if (crs != map.projection) {
                            extent = OpenLayers.Bounds.fromArray(bbox);
                            extent = extent.clone().transform(crs, map.projection);
+                           map.zoomToExtent(extent);
                        } else {
                            extent = OpenLayers.Bounds.fromArray(bbox);
+                           map.zoomToExtent(extent);
                        }
                     }
                 }
