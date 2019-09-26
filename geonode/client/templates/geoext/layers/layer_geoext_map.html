@@ -153,7 +153,7 @@
                         if (bbox != undefined)
                         {
                             var extent = new OpenLayers.Bounds();
-                            var layer_bbox = layer.hasOwnProperty('bbox') ? layer.bbox : layer.capability.bbox;
+                            var layer_bbox = layer.hasOwnProperty('bbox') ? [bbox[0], bbox[2], bbox[1], bbox[3]] : layer.capability.bbox;
 
                             if (layer_bbox &&
                                         !Array.isArray(layer_bbox) &&
@@ -162,10 +162,10 @@
                                 extent = OpenLayers.Bounds.fromArray(bbox);
                             } else {
                                 if (crs != map.projection) {
-                                    extent = OpenLayers.Bounds.fromArray(bbox);
+                                    extent = OpenLayers.Bounds.fromArray([bbox[0], bbox[2], bbox[1], bbox[3]]);
                                     extent = extent.clone().transform(crs, map.projection);
                                 } else {
-                                    extent = OpenLayers.Bounds.fromArray(bbox);
+                                    extent = OpenLayers.Bounds.fromArray([bbox[0], bbox[2], bbox[1], bbox[3]]);
                                 }
                             }
 
