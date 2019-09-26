@@ -31,9 +31,10 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
 elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.gis_tools import set_attributes
 
-_names = ['Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV', 'GeoJSON', 'Excel', 'Legend',
-          'GeoTIFF', 'GZIP', 'Original Dataset', 'ESRI Shapefile', 'View in Google Earth',
-          'KML', 'KMZ', 'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO', 'ISO with XSL']
+_names = ['Zipped Shapefile', 'Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
+          'GeoJSON', 'Excel', 'Legend', 'GeoTIFF', 'GZIP', 'Original Dataset',
+          'ESRI Shapefile', 'View in Google Earth', 'KML', 'KMZ', 'Atom', 'DIF',
+          'Dublin Core', 'ebRIM', 'FGDC', 'ISO', 'ISO with XSL']
 
 
 class Command(BaseCommand):
