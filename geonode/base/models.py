@@ -1426,15 +1426,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
     Used to fill any additional fields after the save.
     Has to be called by the children
     """
-    # we need to remove stale links
-    for link in instance.link_set.all():
-        if link.name == "External Document":
-            if link.resource.doc_url != link.url:
-                link.delete()
-        else:
-            if urlsplit(settings.SITEURL).hostname not in link.url:
-                link.delete()
-
     try:
         # set default License if no specified
         if instance.license is None:
