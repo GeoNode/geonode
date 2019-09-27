@@ -237,11 +237,80 @@ def download(request, resourceid, sender=Layer):
                 os.makedirs(target_folder)
 
             # Copy all Layer related files into a temporary folder
-            for l in layer_files:
-                if storage.exists(l.file):
-                    geonode_layer_path = storage.path(l.file)
-                    base_filename, original_ext = os.path.splitext(geonode_layer_path)
-                    shutil.copy2(geonode_layer_path, target_folder)
+            layer_failes_found = False
+            if layer_files:
+                for l in layer_files:
+                    if storage.exists(l.file):
+                        geonode_layer_path = storage.path(l.file)
+                        base_filename, original_ext = os.path.splitext(geonode_layer_path)
+                        shutil.copy2(geonode_layer_path, target_folder)
+                        layer_failes_found = True
+
+            if not layer_failes_found:
+                from geonode.geoserver.ows import wcs_links, wfs_links
+                from geonode.geoserver.helpers import ogc_server_settings
+
+                srid = instance.srid if instance.srid else getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:4326')
+                ows_url = None
+                ows_ext = None
+                if instance.storeType == "dataStore":
+                    links = wfs_links(ogc_server_settings.public_url + 'ows?',
+                                      instance.alternate.encode('utf-8'),
+                                      bbox=None,
+                                      srid=srid)
+                    for ext, name, mime, wfs_url in links:
+                        if mime == 'SHAPE-ZIP':
+                            ows_url = wfs_url
+                            ows_ext = 'zip'
+                            break
+                elif instance.storeType == "coverageStore":
+                    links = wcs_links(ogc_server_settings.public_url + 'ows?',
+                                      instance.alternate.encode('utf-8'),
+                                      bbox=None,
+                                      srid=srid)
+                    for ext, name, mime, wcs_url in links:
+                        if mime == 'image/tiff':
+                            ows_url = wcs_url
+                            ows_ext = 'tif'
+                            break
+                if ows_url:
+                    # Dumping geotiff zip file
+                    zip_name = slugify(instance.name)
+                    zip_file = os.path.join(target_folder, "".join([zip_name, ".%s" % ows_ext]))
+                    zip_file = open(zip_file, "wb")
+                    try:
+                        # Collecting headers and cookies
+                        headers, access_token = get_headers(request, urlsplit(ows_url), ows_url)
+
+                        response, raw = http_client.get(
+                            ows_url,
+                            stream=True,
+                            headers=headers,
+                            timeout=TIMEOUT,
+                            user=request.user)
+                        raw.decode_content = True
+                        shutil.copyfileobj(raw, zip_file)
+                    except BaseException:
+                        traceback.print_exc()
+                        tb = traceback.format_exc()
+                        logger.debug(tb)
+                        return HttpResponse(
+                            json.dumps({
+                                'error': 'file_not_found'
+                            }),
+                            status=404,
+                            content_type="application/json"
+                        )
+                    finally:
+                        zip_file.close()
+                else:
+                    return HttpResponse(
+                        json.dumps({
+                            'error': 'file_not_found'
+                        }),
+                        status=404,
+                        content_type="application/json"
+                    )
 
             # Let's check for associated SLD files (if any)
             try:
