@@ -302,9 +302,9 @@ We will also perform several optimizations to:
     OpenJDK 64-Bit Server VM (build 25.212-b03, mixed mode)
 
   # Install Apache Tomcat 8
-  sudo wget http://www-us.apache.org/dist/tomcat/tomcat-8/v8.5.41/bin/apache-tomcat-8.5.41.tar.gz
-  sudo tar xzf apache-tomcat-8.5.41.tar.gz
-  sudo mv apache-tomcat-8.5.41 /usr/local/apache-tomcat8
+  sudo wget http://www-us.apache.org/dist/tomcat/tomcat-8/v8.5.46/bin/apache-tomcat-8.5.46.tar.gz
+  sudo tar xzf apache-tomcat-8.5.46.tar.gz
+  sudo mv apache-tomcat-8.5.46 /usr/local/apache-tomcat8
   sudo useradd -m -U -s /bin/false tomcat
   sudo usermod -a -G www-data tomcat
   sudo sed -i -e 's/xom-\*\.jar/xom-\*\.jar,bcprov\*\.jar/g' /usr/local/apache-tomcat8/conf/catalina.properties
