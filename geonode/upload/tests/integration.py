@@ -90,6 +90,8 @@ logger = logging.getLogger(__name__)
 # create test user if needed, delete all layers and set password
 u, created = Profile.objects.get_or_create(username=GEONODE_USER)
 if created:
+    u.first_name = "Jhònà"
+    u.last_name = "çénü"
     u.set_password(GEONODE_PASSWD)
     u.save()
 else:

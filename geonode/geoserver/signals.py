@@ -20,7 +20,7 @@
 
 import errno
 import logging
-
+from time import sleep
 from django.conf import settings
 from django.forms.models import model_to_dict
 
@@ -122,6 +122,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
     gs_resource = None
     values = None
+    _tries = 0
 
     # If the store in None then it's a new instance from an upload,
     # only in this case run the geoserver_upload method
@@ -141,30 +142,40 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                                                    # keywords=instance.keywords,
                                                                    charset=instance.charset)
 
-    gs_resource = gs_catalog.get_resource(
-        name=instance.name,
-        store=instance.store,
-        workspace=instance.workspace)
-    if not gs_resource:
-        gs_resource = gs_catalog.get_resource(name=instance.alternate)
+    def fetch_gs_resource(values, tries):
+        _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 5)
+        gs_resource = gs_catalog.get_resource(
+            name=instance.name,
+            store=instance.store,
+            workspace=instance.workspace)
+        if not gs_resource:
+            gs_resource = gs_catalog.get_resource(name=instance.alternate)
 
-    if gs_resource:
-        gs_resource.title = instance.title or ""
-        gs_resource.abstract = instance.abstract or ""
-        gs_resource.name = instance.name or ""
+        if gs_resource:
+            gs_resource.title = instance.title or ""
+            gs_resource.abstract = instance.abstract or ""
+            gs_resource.name = instance.name or ""
 
-        if not values:
-            values = dict(store=gs_resource.store.name,
-                          storeType=gs_resource.store.resource_type,
-                          alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
-                          title=gs_resource.title or gs_resource.store.name,
-                          abstract=gs_resource.abstract or '',
-                          owner=instance.owner)
-    else:
-        msg = "There isn't a geoserver resource for this layer: %s" % instance.name
-        logger.exception(msg)
-        # raise Exception(msg)
-        gs_resource = None
+            if not values:
+                values = dict(store=gs_resource.store.name,
+                              storeType=gs_resource.store.resource_type,
+                              alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
+                              title=gs_resource.title or gs_resource.store.name,
+                              abstract=gs_resource.abstract or '',
+                              owner=instance.owner)
+        else:
+            msg = "There isn't a geoserver resource for this layer: %s" % instance.name
+            logger.exception(msg)
+            if tries >= _max_tries:
+                raise GeoNodeException(msg)
+            gs_resource = None
+            sleep(3.00)
+
+        return (values, gs_resource)
+
+    while not gs_resource:
+        values, gs_resource = fetch_gs_resource(values, _tries)
+        _tries += 1
 
     # Get metadata links
     metadata_links = []
