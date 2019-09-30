@@ -1,3 +1,5 @@
+
+
 'use strict';
 
 (function(){
@@ -122,7 +124,11 @@
 
         if(this.getItemById(item.id) === null){
           this.getCart().items.push(item);
-          $cookies.putObject(item['uuid'], item);
+          var cookie_item={};
+          cookie_item['id'] = item.id
+          cookie_item['detail_url'] = item.detail_url
+          $cookies.putObject(item['uuid'], cookie_item);
+
         }
       }
 
