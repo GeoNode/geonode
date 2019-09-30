@@ -37,6 +37,8 @@ Check that your system is already up-to-date with the repository running the fol
 Packages Installation
 .....................
 
+.. note:: You don't need to install the **system packages** if you want to run the project using Docker
+
 We will use **example.org** as fictitious Domain Name.
 
 First, we are going to install all the **system packages** needed for the GeoNode setup. Login to the target machine and execute the following commands:
