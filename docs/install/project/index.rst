@@ -59,6 +59,8 @@ Create User ``geonode`` **if not present**:
 Packages Installation
 .....................
 
+.. note:: You don't need to install the **system packages** if you want to run the project using Docker
+
 First, we are going to install all the **system packages** needed for the GeoNode setup.
 
 .. code-block:: shell
@@ -99,7 +101,7 @@ Inside the project structure is possible to extend, replace or modify all geonod
 
 .. note:: You can call your geonode project whatever you like following the naming conventions for python packages (generally lower case with underscores (_). In the examples below, replace ``my_geonode`` with whatever you would like to name your project.
 
-See also the `README <https://github.com/GeoNode/geonode-project/blob/master/README.rst>`_ file on geonode-project repository
+See also the `README <https://github.com/GeoNode/geonode-project/blob/master/README.md>`_ file on geonode-project repository
 
 First of all we need to prepare a new Python Virtual Environment
 
@@ -126,7 +128,7 @@ Make an instance out of the ``Django Template``
 .. code-block:: shell
 
   mkvirtualenv my_geonode
-  pip install Django==1.11.21
+  pip install Django==1.11.24
   django-admin startproject --template=./geonode-project -e py,rst,json,yml,ini,env,sample -n Dockerfile my_geonode
 
   # Install the Python packages
@@ -135,9 +137,7 @@ Make an instance out of the ``Django Template``
   pip install -e . --upgrade --no-cache --no-cache-dir
 
   # Install GDAL Utilities for Python
-  GDAL_VERSION=`gdal-config --version`; \
-    PYGDAL_VERSION="$(pip install pygdal==$GDAL_VERSION 2>&1 | grep -oP '(?<=: )(.*)(?=\))' | grep -oh $GDAL_VERSION\.[0-9])"; \
-    pip install pygdal==$PYGDAL_VERSION
+  pip install pygdal=="`gdal-config --version`.*"
 
 Run GeoNode Project for the first time in DEBUG Mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -227,7 +227,7 @@ Make an instance out of the ``Django Template``
 .. code-block:: shell
 
   mkvirtualenv my_geonode
-  pip install Django==1.11.21
+  pip install Django==1.11.24
   django-admin startproject --template=./geonode-project -e py,rst,json,yml,ini,env,sample -n Dockerfile my_geonode
   cd /opt/geonode_custom/my_geonode
 
@@ -235,13 +235,13 @@ Modify the code and the templates and rebuild the Docker Containers
 
 .. code-block:: shell
 
-  docker-compose -f docker-compose.yml -f docker-compose.override.yml build --no-cache
+  docker-compose -f docker-compose.yml build --no-cache
 
 Finally, run the containers
 
 .. code-block:: shell
 
-  docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+  docker-compose -f docker-compose.yml up -d
 
 Deploy an instance of a geonode-project Django template 2.10.x with Docker on a domain
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -254,50 +254,19 @@ Stop the containers
 
   cd /opt/geonode_custom/my_geonode
 
-  docker-compose -f docker-compose.yml -f docker-compose.override.yml stop
+  docker-compose -f docker-compose.yml stop
 
 Edit the ``ENV`` override file in order to deploy on ``www.example.org``
-
-.. code-block:: shell
-
-  # Make a copy of docker-compose.override.yml
-  cp docker-compose.override.yml docker-compose.override.example-org.yml
 
 Replace everywhere ``localhost`` with ``www.example.org``
 
 .. code-block:: shell
 
-  vim docker-compose.override.example-org.yml
+  vim scripts/docker/env/production/*.env
 
 .. code-block:: shell
 
   # e.g.: :%s/localhost/www.example.org/g
-
-  version: '2.2'
-  services:
-
-    django:
-      build: .
-      # Loading the app is defined here to allow for
-      # autoreload on changes it is mounted on top of the
-      # old copy that docker added when creating the image
-      volumes:
-        - '.:/usr/src/my_geonode'
-      environment:
-        - DEBUG=False
-        - GEONODE_LB_HOST_IP=www.example.org
-        - GEONODE_LB_PORT=80
-        - SITEURL=http://www.example.org/
-        - ALLOWED_HOSTS=['www.example.org', ]
-        - GEOSERVER_PUBLIC_LOCATION=http://www.example.org/geoserver/
-        - GEOSERVER_WEB_UI_LOCATION=http://www.example.org/geoserver/
-
-    geoserver:
-      environment:
-        - GEONODE_LB_HOST_IP=localhost
-        - GEONODE_LB_PORT=80
-    #    - NGINX_BASE_URL=
-
 
 .. note:: It is possible to override here even more variables to customize the GeoNode instance. See the ``GeoNode Settings`` section in order to get a list of the available options.
 
