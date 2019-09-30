@@ -132,7 +132,7 @@ class Consumer(ConsumerMixin):
             _update_layer_data(body, self.last_message)
             self.last_message = json.loads(body)
         except BaseException:
-            logger.info("Could not encode message {!r}".format(body))
+            logger.debug("Could not encode message {!r}".format(body))
         message.ack()
         logger.debug("on_geoserver_catalog: finished")
         self._check_message_limit()
@@ -143,7 +143,7 @@ class Consumer(ConsumerMixin):
             _update_layer_data(body, self.last_message)
             self.last_message = json.loads(body)
         except BaseException:
-            logger.info("Could not encode message {!r}".format(body))
+            logger.debug("Could not encode message {!r}".format(body))
         message.ack()
         logger.debug("on_geoserver_data: finished")
         self._check_message_limit()
