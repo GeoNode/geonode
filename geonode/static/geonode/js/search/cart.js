@@ -1,5 +1,3 @@
-
-
 'use strict';
 
 (function(){
@@ -134,7 +132,6 @@
           cookie_item['id'] = item.id
           cookie_item['detail_url'] = item.detail_url
           $cookies.putObject(item['uuid'], cookie_item);
-
         }
       }
 
