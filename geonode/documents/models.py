@@ -183,7 +183,7 @@ def post_save_document(instance, *args, **kwargs):
     mime = mime_type_map.get(ext, 'text/plain')
     url = None
 
-    if instance.doc_file:
+    if instance.id and instance.doc_file:
         name = "Hosted Document"
         site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
         url = '%s%s' % (
