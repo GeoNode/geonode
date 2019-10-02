@@ -32,7 +32,7 @@ import sys
 from threading import local
 import time
 import uuid
-import base64
+# import base64
 import urllib
 from urlparse import urlsplit, urljoin
 
@@ -863,6 +863,14 @@ def set_attributes(
         for attribute in attribute_map:
             field, ftype, description, label, display_order = attribute
             if field is not None:
+                _attrs = Attribute.objects.filter(layer=layer,
+                                                  attribute=field,
+                                                  attribute_type=ftype,
+                                                  description=description,
+                                                  attribute_label=label,
+                                                  display_order=display_order)
+                if _attrs.count() > 1:
+                    _attrs.delete()
                 la, created = Attribute.objects.get_or_create(
                     layer=layer, attribute=field, attribute_type=ftype,
                     description=description, attribute_label=label,
@@ -906,7 +914,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     server_url = ogc_server_settings.LOCATION if layer.storeType != "remoteStore" else layer.remote_service.service_url
 
     if layer.storeType == "remoteStore" and layer.remote_service.ptype == "gxp_arcrestsource":
-        dft_url = server_url + ("%s?f=json" % layer.alternate)
+        dft_url = server_url + ("%s?f=json" % (layer.alternate or layer.typename))
         try:
             # The code below will fail if http_client cannot be imported
             req, body = http_client.get(dft_url, user=_user)
@@ -918,12 +926,13 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             logger.debug(tb)
             attribute_map = []
     elif layer.storeType in ["dataStore", "remoteStore", "wmsStore"]:
+        typename = layer.alternate.encode('utf-8') if layer.alternate else layer.typename.encode('utf-8')
         dft_url = re.sub(r"\/wms\/?$",
                          "/",
                          server_url) + "ows?" + urllib.urlencode({"service": "wfs",
                                                                   "version": "1.0.0",
                                                                   "request": "DescribeFeatureType",
-                                                                  "typename": layer.alternate.encode('utf-8'),
+                                                                  "typename": typename,
                                                                   })
         try:
             # The code below will fail if http_client cannot be imported or WFS not supported
@@ -944,7 +953,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 "request": "GetFeatureInfo",
                 "bbox": ','.join([str(x) for x in layer.bbox]),
                 "LAYERS": layer.alternate.encode('utf-8'),
-                "QUERY_LAYERS": layer.alternate.encode('utf-8'),
+                "QUERY_LAYERS": typename,
                 "feature_count": 1,
                 "width": 1,
                 "height": 1,
@@ -968,11 +977,12 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 attribute_map = []
 
     elif layer.storeType in ["coverageStore"]:
+        typename = layer.alternate.encode('utf-8') if layer.alternate else layer.typename.encode('utf-8')
         dc_url = server_url + "wcs?" + urllib.urlencode({
             "service": "wcs",
             "version": "1.1.0",
             "request": "DescribeCoverage",
-            "identifiers": layer.alternate.encode('utf-8')
+            "identifiers": typename
         })
         try:
             req, body = http_client.get(dc_url, user=_user)
@@ -999,7 +1009,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                         field,
                         ftype):
                     logger.debug("Generating layer attribute statistics")
-                    result = get_attribute_statistics(layer.alternate, field)
+                    result = get_attribute_statistics(layer.alternate or layer.typename, field)
                 else:
                     result = None
                 attribute_stats[layer.name][field] = result
@@ -1014,7 +1024,7 @@ def set_styles(layer, gs_catalog):
 
     gs_layer = gs_catalog.get_layer(layer.name)
     if not gs_layer:
-        gs_layer = gs_catalog.get_layer(layer.alternate)
+        gs_layer = gs_catalog.get_layer(layer.alternate or layer.typename)
 
     if gs_layer:
         default_style = None
@@ -1079,7 +1089,7 @@ def set_styles(layer, gs_catalog):
     Layer.objects.filter(id=layer.id).update(**to_update)
     layer.refresh_from_db()
     try:
-        set_geowebcache_invalidate_cache(layer.alternate)
+        set_geowebcache_invalidate_cache(layer.alternate or layer.typename)
     except BaseException as e:
         logger.exception(e)
 
@@ -1588,7 +1598,9 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
         method='POST',
         data=request,
         headers=headers,
-        user=_user)
+        user=_user,
+        timeout=5,
+        retries=1)
 
     exml = dlxml.fromstring(content)
 
@@ -1899,8 +1911,8 @@ def _render_thumbnail(req_body, width=240, height=180):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
     headers = {'Content-type': 'text/html'}
-    valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
-    headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+    # valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
+    # headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
     params = dict(width=width, height=height)
     url = url + "?" + urllib.urlencode(params)
 
@@ -1917,8 +1929,14 @@ def _render_thumbnail(req_body, width=240, height=180):
         data = data.encode('ASCII', 'ignore')
     data = unicode(data, errors='ignore').encode('UTF-8')
     try:
-        req, content = http_client.post(
-            url, data=data, headers=headers)
+        req, content = http_client.request(
+            url,
+            method='POST',
+            data=data,
+            timeout=60,
+            retries=2,
+            headers=headers,
+            user=_user)
         # Optimize the Thumbnail size and resolution
         from PIL import Image
         from io import BytesIO
@@ -1992,6 +2010,8 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             width = int(request_body['width'])
         if 'height' in request_body:
             height = int(request_body['height'])
+        if (float(width) / float(height)) > 1.3:
+            height = int(float(width) / 1.3)
         smurl = None
         if 'smurl' in request_body:
             smurl = request_body['smurl']
@@ -2005,15 +2025,17 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         elif 'layers' in request_body:
             layers = request_body['layers']
 
-            wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'ows'
-            wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.1'
-            wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png8'
+            ogc_server_location = request_body["ogc_server_location"] if "ogc_server_location" \
+                in request_body else ogc_server_settings.LOCATION
+            wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'wms'
+            wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.3.0'
+            wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png'
 
             params = {
                 'service': 'WMS',
                 'version': wms_version,
                 'request': 'GetMap',
-                'layers': layers,
+                'layers': layers.replace(' ', '+'),
                 'format': wms_format,
                 # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
             }
@@ -2022,12 +2044,19 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                 access_token = get_or_create_token(request.user)
                 if access_token and not access_token.is_expired():
                     params['access_token'] = access_token.token
+            elif not request:
+                from django.contrib.auth import get_user_model
+                _user, _password = ogc_server_settings.credentials
+                _u = get_user_model().objects.get(username=_user)
+                access_token = get_or_create_token(_u)
+                if access_token and not access_token.is_expired():
+                    params['access_token'] = access_token.token
 
             _p = "&".join("%s=%s" % item for item in params.items())
 
             import posixpath
             thumbnail_create_url = posixpath.join(
-                ogc_server_settings.LOCATION,
+                ogc_server_location,
                 wms_endpoint) + "?" + _p
 
         # Compute Bounds
@@ -2093,17 +2122,17 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                                                                       height=256, width=256,
                                                                       left=box[0], top=box[1])
                 xy_bounds = mercantile.xy_bounds(t.x, y, t.z)
+                bbox = ",".join([str(xy_bounds.left), str(xy_bounds.bottom),
+                                 str(xy_bounds.right), str(xy_bounds.top)])
                 params = {
                     'width': 256,
                     'height': 256,
                     'transparent': True,
-                    'bbox': ",".join([str(xy_bounds.left), str(xy_bounds.bottom),
-                                      str(xy_bounds.right), str(xy_bounds.top)]),
+                    'bbox': bbox,
                     'crs': 'EPSG:3857',
 
                 }
                 _p = "&".join("%s=%s" % item for item in params.items())
-
                 _img_request_template += \
                     _img_src_template.format(ogc_location=(thumbnail_create_url + '&' + _p),
                                              height=256, width=256,

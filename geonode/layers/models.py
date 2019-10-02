@@ -505,13 +505,17 @@ def _get_alternate_name(instance):
 
 def pre_save_layer(instance, sender, **kwargs):
     if kwargs.get('raw', False):
-        instance.owner = instance.resourcebase_ptr.owner
-        instance.uuid = instance.resourcebase_ptr.uuid
-        instance.bbox_x0 = instance.resourcebase_ptr.bbox_x0
-        instance.bbox_x1 = instance.resourcebase_ptr.bbox_x1
-        instance.bbox_y0 = instance.resourcebase_ptr.bbox_y0
-        instance.bbox_y1 = instance.resourcebase_ptr.bbox_y1
-        instance.srid = instance.resourcebase_ptr.srid
+        try:
+            _resourcebase_ptr = instance.resourcebase_ptr
+            instance.owner = _resourcebase_ptr.owner
+            instance.uuid = _resourcebase_ptr.uuid
+            instance.bbox_x0 = _resourcebase_ptr.bbox_x0
+            instance.bbox_x1 = _resourcebase_ptr.bbox_x1
+            instance.bbox_y0 = _resourcebase_ptr.bbox_y0
+            instance.bbox_y1 = _resourcebase_ptr.bbox_y1
+            instance.srid = _resourcebase_ptr.srid
+        except BaseException as e:
+            logger.exception(e)
 
     if instance.abstract == '' or instance.abstract is None:
         instance.abstract = unicode(_('No abstract provided'))
