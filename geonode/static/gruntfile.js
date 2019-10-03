@@ -1,9 +1,10 @@
 /*jshint esversion: 6 */
 
 module.exports = function(grunt) {
-  /* the config file config */
+  /* include the dependency definitions */
   let fileHandling = grunt.file.readJSON('static_dependencies.json');
 
+  /* rewirte the path from node_modules to lib/ */
   let assetsMinifiedJs = fileHandling["assets.min.js"].map (
     fileSegment => 'lib/js/' + fileSegment.substring(fileSegment.lastIndexOf('/')+1)
   );
