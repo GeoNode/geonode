@@ -215,54 +215,8 @@ module.exports = function(grunt) {
           mangle: false
         },
         files: {
-          'lib/js/assets.min.js': [
-            'lib/js/jquery.js',
-
-            'lib/js/moment-with-locales.min.js',
-            'lib/js/moment-timezone-with-data.min.js',
-
-            'lib/js/angular.js',
-            'lib/js/angular-cookies.js',
-            'lib/js/angular-leaflet-directive.min.js',
-
-            'lib/js/bootstrap.js',
-            'lib/js/bootstrap-datetimepicker.js',
-            'lib/js/bootstrap-tokenfield.js',
-            'lib/js/bootstrap-select.js',
-            'lib/js/bootstrap-multiselect.js',
-            'lib/js/bootstrap-table.js',
-            'lib/js/bootstrap-toggle.js',
-            'lib/js/bootstrap-typeahead.js',
-            'lib/js/bootstrap-treeview.js',
-
-            'lib/js/clipboard.js',
-            'lib/js/fastselect.standalone.js',
-            'lib/js/handlebars.js',
-            'lib/js/json2.js',
-            'lib/js/jquery-ui.js',
-            'lib/js/jquery.dataTables.js',
-            'lib/js/jquery.raty.js',
-            'lib/js/jquery.timeago.js',
-            'lib/js/jq-ajax-progress.min.js',
-            'lib/js/jquery.tree-multiselect.min.js',
-            'lib/js/multi-select.js',
-            'lib/js/select.js',
-            'lib/js/select2.full.js',
-            'lib/js/waypoints.js',
-            'lib/js/underscore.js',
-            'lib/js/ZeroClipboard.min.js'
-          ],
-          'lib/js/jquery.js': ['lib/js/jquery.js'],
-          'lib/js/require.js': ['lib/js/require.js'],
-          'lib/js/text.js': ['lib/js/text.js'],
-          'lib/js/underscore.js': ['lib/js/underscore.js'],
-          'lib/js/leaflet-plugins.min.js': [
-            'lib/js/Leaflet.fullscreen.min.js',
-            'lib/js/index.js',
-            'lib/js/leaflet-measure.js',
-            'lib/js/L.Control.Opacity.js',
-            'lib/js/easy-button.js'
-          ]
+          'lib/js/assets.min.js': assetsMinifiedJs,
+          'lib/js/leaflet-plugins.min.js': leafletPluginsMinifiedJs
         }
       },
       production: {
