@@ -74,21 +74,7 @@ module.exports = function(grunt) {
             flatten: true,
             cwd: 'node_modules',
             dest: 'lib/js',
-            src: [
-              'bootstrap/dist/js/bootstrap.js',
-              'bootstrap/js/affix.js',
-              'bootstrap/js/alert.js',
-              'bootstrap/js/button.js',
-              'bootstrap/js/carousel.js',
-              'bootstrap/js/collapse.js',
-              'bootstrap/js/dropdown.js',
-              'bootstrap/js/modal.js',
-              'bootstrap/js/popover.js',
-              'bootstrap/js/scrollspy.js',
-              'bootstrap/js/tab.js',
-              'bootstrap/js/tooltip.js',
-              'bootstrap/js/transition.js'
-            ]
+            src: fileHandling.concatBootstrap
         }]
       }
     },
