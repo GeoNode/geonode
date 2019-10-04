@@ -61,6 +61,7 @@ from geonode.layers import LayersAppConfig
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.base.enumerations import CHARSETS
+from geonode.layers import utils
 
 logger = logging.getLogger(__name__)
 
@@ -1306,3 +1307,35 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
                 settings.OGC_SERVER['default']['BACKEND']
             )
             _l.delete()
+
+
+class SetLayersPermissions(GeoNodeBaseTestSupport):
+
+    type = 'layer'
+
+    def setUp(self):
+        super(SetLayersPermissions, self).setUp()
+        create_layer_data()
+        self.username = 'test_username'
+        self.passwd = 'test_password'
+        self.user = get_user_model().objects.create(
+            username=self.username
+        )
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_assign_remove_permissions(self):
+        # Assing
+        layer = Layer.objects.all().first()
+        perm_spec = layer.get_all_level_info()
+        self.assertNotIn(self.user, perm_spec["users"])
+        utils.set_layers_permissions("write", None, [self.username], None, None)
+        layer_after = Layer.objects.get(name=layer.name)
+        perm_spec = layer_after.get_all_level_info()
+        for perm in utils.WRITE_PERMISSIONS:
+            self.assertIn(perm, perm_spec["users"][self.user])
+        # Remove
+        utils.set_layers_permissions("write", None, [self.username], None, True)
+        layer_after = Layer.objects.get(name=layer.name)
+        perm_spec = layer_after.get_all_level_info()
+        for perm in utils.WRITE_PERMISSIONS:
+            self.assertNotIn(perm, perm_spec["users"][self.user])
