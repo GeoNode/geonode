@@ -104,7 +104,7 @@ Since geonode needs a large number of different python libraries and packages, i
 .. code-block:: shell
 
   # Create the GeoNode Virtual Environment (first time only)
-  mkvirtualenv --no-site-packages geonode
+  virtualenv geonode
 
 At this point your command prompt shows a ``(geonode)`` prefix, this indicates that your virtualenv is active.
 

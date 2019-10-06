@@ -42,23 +42,42 @@ from django.core.files.storage import default_storage as storage
 from django.core.files import File
 from django.conf import settings
 from django.db import transaction
-from django.db.models import Q
 
 # Geonode functionality
 from geonode.maps.models import Map
 from geonode.base.auth import get_or_create_token
 from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.people.utils import get_valid_user
-from geonode.layers.models import Layer, UploadSession, LayerFile
+from geonode.layers.models import UploadSession, LayerFile
 from geonode.base.models import Link, SpatialRepresentationType,  \
     TopicCategory, Region, License, ResourceBase
-from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
+from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
 from geonode.layers.metadata import set_metadata
 from geonode.utils import (http_client,
                            check_ogc_backend,
                            unzip_file,
                            extract_tarfile,
                            bbox_to_projection)
+from django.contrib.auth.models import Group
+from django.db.models import Q
+
+READ_PERMISSIONS = [
+    'view_resourcebase'
+]
+WRITE_PERMISSIONS = [
+    'change_layer_data',
+    'change_layer_style',
+    'change_resourcebase_metadata'
+]
+DOWNLOAD_PERMISSIONS = [
+    'download_resourcebase'
+]
+OWNER_PERMISSIONS = [
+    'change_resourcebase',
+    'delete_resourcebase',
+    'change_resourcebase_permissions',
+    'publish_resourcebase'
+]
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
@@ -1114,3 +1133,165 @@ def delete_orphaned_layers():
                 os.remove(fn)
             except OSError:
                 logger.info('Could not delete file %s' % fn)
+
+
+def set_layers_permissions(permissions_name, resources_names=None,
+                           users_usernames=None, groups_names=None, delete_flag=None):
+    # Processing information
+    if not resources_names:
+        # If resources is None we consider all the existing layer
+        resources = Layer.objects.all()
+    else:
+        try:
+            resources = Layer.objects.filter(Q(title__in=resources_names) | Q(name__in=resources_names))
+        except Layer.DoesNotExist:
+            logger.warning(
+                'No resources have been found with these names: %s.' % (
+                    ", ".join(resources_names)
+                )
+            )
+    if not resources:
+        logger.warning("No resources have been found. No update operations have been executed.")
+    else:
+        # PERMISSIONS
+        if not permissions_name:
+            logger.error("No permissions have been provided.")
+        else:
+            permissions = []
+            if permissions_name.lower() in ('read', 'r'):
+                if not delete_flag:
+                    permissions = READ_PERMISSIONS
+                else:
+                    permissions = READ_PERMISSIONS + WRITE_PERMISSIONS \
+                                  + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
+            elif permissions_name.lower() in ('write', 'w'):
+                if not delete_flag:
+                    permissions = READ_PERMISSIONS + WRITE_PERMISSIONS
+                else:
+                    permissions = WRITE_PERMISSIONS
+            elif permissions_name.lower() in ('download', 'd'):
+                if not delete_flag:
+                    permissions = READ_PERMISSIONS + DOWNLOAD_PERMISSIONS
+                else:
+                    permissions = DOWNLOAD_PERMISSIONS
+            elif permissions_name.lower() in ('owner', 'o'):
+                if not delete_flag:
+                    permissions = READ_PERMISSIONS + WRITE_PERMISSIONS \
+                                  + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
+                else:
+                    permissions = OWNER_PERMISSIONS
+            if not permissions:
+                logger.error(
+                    "Permission must match one of these values: read (r), write (w), download (d), owner (o)."
+                )
+            else:
+                if not users_usernames and not groups_names:
+                    logger.error(
+                        "At least one user or one group must be provided."
+                    )
+                else:
+                    # USERS
+                    users = []
+                    if users_usernames:
+                        User = get_user_model()
+                        for username in users_usernames:
+                            try:
+                                user = User.objects.get(username=username)
+                                users.append(user)
+                            except User.DoesNotExist:
+                                logger.warning(
+                                    'The user {} does not exists. '
+                                    'It has been skipped.'.format(username)
+                                )
+                    # GROUPS
+                    groups = []
+                    if groups_names:
+                        for group_name in groups_names:
+                            try:
+                                group = Group.objects.get(name=group_name)
+                                groups.append(group)
+                            except Group.DoesNotExist:
+                                logger.warning(
+                                    'The group {} does not exists. '
+                                    'It has been skipped.'.format(group_name)
+                                )
+                    if not users and not groups:
+                        logger.error(
+                            'Neither users nor groups corresponding to the typed names have been found. '
+                            'No update operations have been executed.'
+                        )
+                    else:
+                        # RESOURCES
+                        for resource in resources:
+                            # Existing permissions on the resource
+                            perm_spec = resource.get_all_level_info()
+                            # self.stdout.write(
+                            #     "Initial permissions info for the resource %s:\n%s" % (resource.title, str(perm_spec))
+                            # )
+                            for u in users:
+                                uname = u.username
+                                # Add permissions
+                                if not delete_flag:
+                                    # Check the permission already exists
+                                    if uname not in perm_spec["users"]:
+                                        perm_spec["users"][uname] = permissions
+                                    else:
+                                        u_perms_list = perm_spec["users"][uname]
+                                        base_set = set(u_perms_list)
+                                        target_set = set(permissions)
+                                        perm_spec["users"][uname] = list(base_set | target_set)
+                                # Delete permissions
+                                else:
+                                    # Skip resource owner
+                                    if u != resource.owner:
+                                        uname = u
+                                        if uname in perm_spec["users"]:
+                                            u_perms_set = set()
+                                            for up in perm_spec["users"][uname]:
+                                                if up not in permissions:
+                                                    u_perms_set.add(up)
+                                            perm_spec["users"][uname] = list(u_perms_set)
+                                        else:
+                                            logger.warning(
+                                                "The user %s does not have "
+                                                "any permission on the layer %s. "
+                                                "It has been skipped." % (u, resource.title)
+                                            )
+                                    else:
+                                        logger.warning(
+                                            "Warning! - The user %s is the layer %s owner, "
+                                            "so its permissions can't be changed. "
+                                            "It has been skipped." % (u, resource.title)
+                                        )
+                            for g in groups:
+                                gname = g.name
+                                # Add permissions
+                                if not delete_flag:
+                                    # Check the permission already exists
+                                    if gname not in perm_spec["groups"]:
+                                        perm_spec["groups"][gname] = permissions
+                                    else:
+                                        g_perms_list = perm_spec["groups"][gname]
+                                        base_set = set(g_perms_list)
+                                        target_set = set(permissions)
+                                        perm_spec["groups"][gname] = list(base_set | target_set)
+                                # Delete permissions
+                                else:
+                                    if g in perm_spec["groups"]:
+                                        g_perms_set = set()
+                                        for gp in perm_spec["groups"][g]:
+                                            if gp not in permissions:
+                                                g_perms_set.add(gp)
+                                        perm_spec["groups"][g] = list(g_perms_set)
+                                    else:
+                                        logger.warning(
+                                            "The group %s does not have any permission on the layer %s. "
+                                            "It has been skipped." % (g, resource.title)
+                                        )
+                            # Set final permissions
+                            resource.set_permissions(perm_spec)
+                            # self.stdout.write(
+                            #     "Final permissions info for the resource %s:\n"
+                            #     "%s" % (resource.title, str(perm_spec))
+                            # )
+                        # self.stdout.write("Permissions successfully updated!")

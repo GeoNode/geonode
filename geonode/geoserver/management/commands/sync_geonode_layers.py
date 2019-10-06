@@ -29,7 +29,10 @@ from geonode.security.views import _perms_info_json
 from geonode.geoserver.helpers import set_attributes_from_geoserver
 
 
-def sync_geonode_layers(ignore_errors, filter, username, updatepermissions, updatethumbnails):
+def sync_geonode_layers(ignore_errors, filter, username,
+                        updatepermissions,
+                        updatethumbnails,
+                        updateattributes):
     layers = Layer.objects.all().order_by('name')
     if filter:
         layers = layers.filter(name__icontains=filter)
@@ -42,15 +45,16 @@ def sync_geonode_layers(ignore_errors, filter, username, updatepermissions, upda
         try:
             count += 1
             print 'Syncing layer %s/%s: %s' % (count, layers_count, layer.name)
-            if ast.literal_eval(updatepermissions):
+            if updatepermissions:
                 print 'Syncing permissions...'
                 # sync permissions in GeoFence
                 perm_spec = json.loads(_perms_info_json(layer))
                 # re-sync GeoFence security rules
                 layer.set_permissions(perm_spec)
+            if updateattributes:
                 # recalculate the layer statistics
                 set_attributes_from_geoserver(layer, overwrite=True)
-            if ast.literal_eval(updatethumbnails):
+            if updatethumbnails:
                 print 'Regenerating thumbnails...'
                 layer.save()
         except Exception:
@@ -60,6 +64,8 @@ def sync_geonode_layers(ignore_errors, filter, username, updatepermissions, upda
             if ignore_errors:
                 pass
             else:
+                import traceback
+                traceback.print_exc()
                 print 'Stopping process because --ignore-errors was not set and an error was found.'
                 return
     print 'There are %s layers which could not be updated because of errors' % len(layer_errors)
@@ -84,31 +90,41 @@ class Command(BaseCommand):
             '--filter',
             dest="filter",
             default=None,
-            help="Only update data the layers that match the given filter"),
+            help="Only update data the layers that match the given filter."),
         parser.add_argument(
             '-u',
             '--username',
             dest="username",
             default=None,
-            help="Only update data owned by the specified username")
+            help="Only update data owned by the specified username.")
         parser.add_argument(
             '--updatepermissions',
+            action='store_true',
             dest="updatepermissions",
-            default='True',
-            help="Update only the layer permissions. Does not regenerate styles and thumbnails")
+            default=False,
+            help="Update the layer permissions.")
         parser.add_argument(
             '--updatethumbnails',
+            action='store_true',
             dest="updatethumbnails",
-            default='True',
-            help="Update only the layer styles and thumbnails. Does not re-sync security rules.")
+            default=False,
+            help="Update the layer styles and thumbnails.")
+        parser.add_argument(
+            '--updateattributes',
+            action='store_true',
+            dest="updateattributes",
+            default=False,
+            help="Update the layer attributes.")
 
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
         updatepermissions = options.get('updatepermissions')
         updatethumbnails = options.get('updatethumbnails')
+        updateattributes = options.get('updateattributes')
         filter = options.get('filter')
         if not options.get('username'):
             username = None
         else:
             username = options.get('username')
-        sync_geonode_layers(ignore_errors, filter, username, updatepermissions, updatethumbnails)
+        sync_geonode_layers(ignore_errors, filter, username,
+                            updatepermissions, updatethumbnails, updateattributes)

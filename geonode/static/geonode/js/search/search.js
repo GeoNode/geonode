@@ -55,7 +55,7 @@
   module.load_group_categories = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         $http.get(GROUP_CATEGORIES_ENDPOINT, {params: params}).then(successCallback, errorCallback);
-        
+
         function successCallback(data) {
           //success code
           $rootScope.groupCategories = data.data.objects;
@@ -75,7 +75,7 @@
           params['title__icontains'] = $location.search()['title__icontains'];
         }
         $http.get(KEYWORDS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
-        
+
         function successCallback(data) {
           //success code
           debugger;
@@ -94,10 +94,11 @@
         };
     }
 
+
   module.load_h_keywords = function($http, $rootScope, $location){
     var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
     $http.get(H_KEYWORDS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
-        
+
     function successCallback(data) {
       //success code
       $('#treeview').treeview({
@@ -134,7 +135,7 @@
       params['title__icontains'] = $location.search()['title__icontains'];
     }
     $http.get(T_KEYWORDS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
-    
+
     function successCallback(data) {
       //success code
       if($location.search().hasOwnProperty('tkeywords__id__in')){
@@ -158,7 +159,7 @@
       params['title__icontains'] = $location.search()['title__icontains'];
     }
     $http.get(REGIONS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
-    
+
     function successCallback(data) {
         //success code
         if($location.search().hasOwnProperty('regions__name__in')){
@@ -179,7 +180,7 @@
     module.load_groups = function ($http, $rootScope, $location){
       var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
       $http.get(GROUPS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
-      
+
       function successCallback(data) {
         //success code
         $rootScope.groups = data.data.objects;
@@ -199,7 +200,7 @@
           params['title__icontains'] = $location.search()['title__icontains'];
       }
       $http.get(OWNERS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
-      
+
       function successCallback(data) {
         //success code
         if($location.search().hasOwnProperty('owner__username__in')){
@@ -355,7 +356,7 @@
     //Get data from apis and make them available to the page
     function query_api(data){
       $http.get(Configs.url, {params: data || {}}).then(successCallback, errorCallback);
-      
+
       function successCallback(data) {
         //success code
         setTimeout(function(){$('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();},0);
