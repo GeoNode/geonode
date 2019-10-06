@@ -263,8 +263,13 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     if srid and str(srid).startswith('EPSG:'):
         srid = srid[5:]
     if None not in [x0, x1, y0, y1]:
-        wkt = 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (
-            srid, x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+        wkt = 'SRID=%s;POLYGON((%f %f,%f %f,%f %f,%f %f,%f %f))' % (
+            srid,
+            float(x0), float(y0),
+            float(x0), float(y1),
+            float(x1), float(y1),
+            float(x1), float(y0),
+            float(x0), float(y0))
     else:
         wkt = 'SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'
     return wkt
@@ -1367,7 +1372,7 @@ class HttpClient(object):
             self.username = ogc_server_settings['USER'] if 'USER' in ogc_server_settings else 'admin'
             self.password = ogc_server_settings['PASSWORD'] if 'PASSWORD' in ogc_server_settings else 'geoserver'
 
-    def request(self, url, method='GET', data=None, headers={}, stream=False, timeout=None, user=None):
+    def request(self, url, method='GET', data=None, headers={}, stream=False, timeout=None, retries=None, user=None):
         if (user or self.username != 'admin') and \
         check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
             if connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
@@ -1391,9 +1396,9 @@ class HttpClient(object):
         content = None
         session = requests.Session()
         retry = Retry(
-            total=self.retries,
-            read=self.retries,
-            connect=self.retries,
+            total=retries or self.retries,
+            read=retries or self.retries,
+            connect=retries or self.retries,
             backoff_factor=self.backoff_factor,
             status_forcelist=self.status_forcelist,
         )
