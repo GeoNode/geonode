@@ -1408,7 +1408,7 @@ LEAFLET_CONFIG = {
     ],
     'PLUGINS': {
         'esri-leaflet': {
-            'js': 'lib/js/esri-leaflet.js',
+            'js': 'lib/js/leaflet.js',
             'auto-include': True,
         },
         'leaflet-fullscreen': {
@@ -1417,13 +1417,13 @@ LEAFLET_CONFIG = {
             'auto-include': True,
         },
         'leaflet-opacity': {
-            'css': 'lib/css/Control.Opacity.css',
-            'js': 'lib/js/Control.Opacity.js',
+            'css': 'lib/css/L.Control.Opacity.css',
+            'js': 'lib/js/L.Control.Opacity.js',
             'auto-include': True,
         },
         'leaflet-navbar': {
             'css': 'lib/css/Leaflet.NavBar.css',
-            'js': 'lib/js/Leaflet.NavBar.js',
+            'js': 'lib/js/index.js',
             'auto-include': True,
         },
         'leaflet-measure': {

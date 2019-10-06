@@ -38,15 +38,18 @@
     <link rel="shortcut icon" href="{% static 'geonode/img/favicon.ico' %}" />
 
     {% block head %}
+
       {% if DEBUG_STATIC %}
           <link href="{% static "lib/css/jquery.dataTables.css" %}?v={{ VERSION }}" rel="stylesheet" />
           <link href="{% static "lib/css/select2.css" %}?v={{ VERSION }}" rel="stylesheet"/>
-          <link href="{% static "lib/css/bootstrap.min.css" %}?v={{ VERSION }}" rel="stylesheet"/>
-          <link href="{% static "lib/css/jquery-ui.css" %}?v={{ VERSION }}" rel="stylesheet"/>
+          <link href="{% static "lib/css/bootstrap.css" %}?v={{ VERSION }}" rel="stylesheet"/>
+          <link href="{% static "lib/css/bootstrap-treeview.css" %}?v={{ VERSION }}" rel="stylesheet"/>
+          <link href="{% static "lib/css/jquery-ui.theme.css" %}?v={{ VERSION }}" rel="stylesheet"/>
+          <link href="{% static "lib/css/jquery-ui.structure.css" %}?v={{ VERSION }}" rel="stylesheet"/>
+          <link href="{% static "lib/css/bootstrap-treeview.css" %}?v={{ VERSION }}" rel="stylesheet"/>
       {% else %}
         <link href="{% static "lib/css/assets.min.css" %}?v={{ VERSION }}" rel="stylesheet"/>
       {% endif %}
-
       <link href="{% static "geonode/css/ext-compatibility.css" %}?v={{ VERSION }}" rel="stylesheet" />
       <link href="{% static "geonode/css/ux-all.css" %}?v={{ VERSION }}" rel="stylesheet" />
       <link href="{% static "geonode/css/base.css" %}?v={{ VERSION }}" rel="stylesheet" />
@@ -537,17 +540,20 @@
     <!-- End of Modal -->
 
     {% if DEBUG_STATIC %}
-    <script src="{% static "lib/js/jquery.min.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "lib/js/jquery.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "lib/js/jquery.dataTables.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "lib/js/bootstrap-treeview.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "lib/js/bootstrap-tokenfield.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "lib/js/fastselect.standalone.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "lib/js/select2.full.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "lib/js/jquery.timeago.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/jquery.ajaxprogress.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/jquery-ui.custom.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "lib/js/jq-ajax-progress.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "lib/js/jquery-ui.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "lib/js/jquery.raty.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/bootstrap.min.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/moment-with-locales.min.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/bootstrap-datetimepicker.min.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "lib/js/bootstrap.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "lib/js/moment-with-locales.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "lib/js/bootstrap-datetimepicker.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "lib/js/json2.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/select2.js" %}?v={{ VERSION }}"></script>
     <script src="{% static "lib/js/waypoints.js" %}?v={{ VERSION }}"></script>
     {% else %}
     <script src="{% static "lib/js/assets.min.js" %}?v={{ VERSION }}"></script>
