@@ -1,0 +1,120 @@
+{
+  "assets.min.css": [
+    "datatables/media/css/jquery.dataTables.css",
+    "select2/dist/css/select2.css",
+    "jquery-ui-dist/jquery-ui.theme.css",
+    "jquery-ui-dist/jquery-ui.structure.css",
+    "raty-js/lib/jquery.raty.css",
+    "bootstrap/dist/css/bootstrap.css",
+    "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css",
+    "bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css",
+    "bootstrap-select/dist/css/bootstrap-select.css",
+    "bootstrap-multiselect/dist/css/bootstrap-multiselect.css",
+    "bootstrap-table/dist/bootstrap-table.css",
+    "bootstrap-toggle/css/bootstrap-toggle.css",
+    "fastselect/dist/fastselect.css",
+    "patternfly-bootstrap-treeview/dist/bootstrap-treeview.css"
+  ],
+  "leaflet.plugins.min.css": [
+    "leaflet/dist/leaflet.css",
+    "leaflet-easybutton/src/easy-button.css",
+    "leaflet.locatecontrol/dist/L.Control.Locate.css",
+    "leaflet.pancontrol/src/L.Control.Pan.css",
+    "leaflet-fullscreen/dist/leaflet.fullscreen.css",
+    "leaflet.control.opacity/dist/L.Control.Opacity.css",
+    "leaflet-measure/dist/leaflet-measure.css",
+    "leaflet-navbar/Leaflet.NavBar.css"
+  ],
+  "other_dependencies": [
+    "jquery/dist/jquery.js",
+    "jquery-ui-dist/jquery-ui.js",
+    "angular/angular.js",
+    "bootstrap-select/dist/js/bootstrap-select.js",
+    "bootstrap-table/dist/bootstrap-table.js",
+    "bootstrap-toggle/js/bootstrap-toggle.js",
+    "clipboard/dist/clipboard.js",
+    "eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js",
+    "handlebars/dist/handlebars.js",
+    "jquery-waypoints/waypoints.js",
+    "requirejs/require.js",
+    "requirejs-text/text.js",
+    "requirejs/require.js"
+    ],
+  "assets.min.js": [
+    "jquery/dist/jquery.min.js",
+    "jquery-ui-dist/jquery-ui.min.js",
+
+    "moment/min/moment-with-locales.js",
+    "moment-timezone/builds/moment-timezone-with-data.js",
+
+    "bootstrap/dist/js/bootstrap.min.js",
+    "patternfly-bootstrap-treeview/dist/bootstrap-treeview.js",
+
+    "angular/angular.min.js",
+    "angular-cookies/angular-cookies.js",
+    "angular-leaflet-directive/dist/angular-leaflet-directive.js",
+
+    "eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js",
+    "bootstrap-tokenfield/dist/bootstrap-tokenfield.js",
+    "bootstrap-select/dist/js/bootstrap-select.js",
+    "bootstrap-multiselect/dist/js/bootstrap-multiselect.js",
+    "bootstrap-table/dist/bootstrap-table.js",
+    "bootstrap-toggle/js/bootstrap-toggle.js",
+    "bootstrap-typeahead/bootstrap-typeahead.js",
+    "tree-multiselect/dist/jquery.tree-multiselect.min.js",
+
+    "clipboard/dist/clipboard.min.js",
+    "fastselect/dist/fastselect.standalone.js",
+    "handlebars/dist/handlebars.min.js",
+    "json2/lib/JSON2/static/json2.js",
+    "datatables/media/js/jquery.dataTables.js",
+    "raty-js/lib/jquery.raty.js",
+    "timeago/jquery.timeago.js",
+    "jq-ajax-progress/src/jq-ajax-progress.js",
+
+    "select/dist/select.js",
+    "select2/dist/js/select2.full.js",
+    "jquery-waypoints/waypoints.js",
+    "underscore/underscore.js",
+    "zeroclipboard/dist/ZeroClipboard.js"
+  ],
+  "leaflet-plugins.min.js": [
+    "leaflet/dist/leaflet.js",
+    "leaflet-fullscreen/dist/Leaflet.fullscreen.min.js",
+    "leaflet-measure/dist/leaflet-measure.js",
+    "leaflet-navbar/index.js",
+    "leaflet-easybutton/src/easy-button.js",
+    "leaflet.control.opacity/dist/L.Control.Opacity.js",
+    "leaflet.locatecontrol/dist/L.Control.Locate.min.js",
+    "leaflet.pancontrol/src/L.Control.Pan.js"
+  ],
+  "concatBootstrap":[
+      "bootstrap/dist/js/bootstrap.js",
+      "bootstrap/js/affix.js",
+      "bootstrap/js/alert.js",
+      "bootstrap/js/button.js",
+      "bootstrap/js/carousel.js",
+      "bootstrap/js/collapse.js",
+      "bootstrap/js/dropdown.js",
+      "bootstrap/js/modal.js",
+      "bootstrap/js/popover.js",
+      "bootstrap/js/scrollspy.js",
+      "bootstrap/js/tab.js",
+      "bootstrap/js/tooltip.js",
+      "bootstrap/js/transition.js"
+    ],
+  "images": [
+      "raty-js/lib/images/*.png",
+      "jquery-ui-dist/images/*",
+      "leaflet/dist/images/*.png",
+      "leaflet-fullscreen/dist/*.png",
+      "leaflet.control.opacity/img/*",
+      "leaflet-measure/dist/assets/*",
+      "leaflet-navbar/img/*",
+      "leaflet.pancontrol/src/images/*",
+      "datatables/media/images/*.png",
+      "timeago/*.png",
+      "timeago/*.png",
+      "zeroclipboard/dist/ZeroClipboard.swf"
+    ]
+}
