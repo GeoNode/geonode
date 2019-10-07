@@ -105,6 +105,7 @@ mock<4.0.0
 python-dateutil==2.8.0
 pytz==2019.2
 requests==2.22.0
+requests-cache==0.5.2
 simplejson==3.16.0
 timeout-decorator==0.4.1
 
