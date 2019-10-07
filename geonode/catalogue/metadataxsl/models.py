@@ -49,14 +49,17 @@ def add_xsl_link(resourcebase):
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     url = urljoin(site_url, urlpath)
 
-    link, created = Link.objects.get_or_create(
-        resource=resourcebase,
-        url=url,
-        defaults=dict(name=ISO_XSL_NAME,
-                      extension='xml',
-                      mime='text/xml',
-                      link_type='metadata'))
-    return created
+    try:
+        link, created = Link.objects.get_or_create(
+            resource=resourcebase,
+            url=url,
+            defaults=dict(name=ISO_XSL_NAME,
+                          extension='xml',
+                          mime='text/xml',
+                          link_type='metadata'))
+        return created
+    except BaseException:
+        return False
 
 
 if 'geonode.catalogue' in settings.INSTALLED_APPS:

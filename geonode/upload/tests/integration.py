@@ -348,16 +348,28 @@ class UploaderBase(GeoNodeLiveTestSupport):
         self.assertTrue(resp.code, 200)
         if not isinstance(data, basestring):
             self.assertTrue(data['success'])
-            self.assertTrue(upload_step("srs") in data['redirect_to'])
-            resp, soup = self.client.get_html(data['redirect_to'])
-            # grab an h2 and find the name there as part of a message saying it's
-            # bad
-            h2 = soup.find_all(['h2'])[0]
-            self.assertTrue(str(h2).find(layer_name))
+            srs_step = upload_step("srs")
+            if "srs" in data['redirect_to']:
+                self.assertTrue(srs_step in data['redirect_to'])
+                resp, soup = self.client.get_html(data['redirect_to'])
+                # grab an h2 and find the name there as part of a message saying it's
+                # bad
+                h2 = soup.find_all(['h2'])[0]
+                self.assertTrue(str(h2).find(layer_name))
+
+    def check_upload_complete(self, layer_name, resp, data):
+        """ Makes sure that we got the correct response from an layer
+        that can't be uploaded"""
+        self.assertTrue(resp.code, 200)
+        if not isinstance(data, basestring):
+            self.assertTrue(data['success'])
+            final_step = upload_step("final")
+            if "final" in data['redirect_to']:
+                self.assertTrue(final_step in data['redirect_to'])
 
     def upload_folder_of_files(self, folder, final_check, session_ids=None):
 
-        mains = ('.tif', '.shp', '.zip')
+        mains = ('.tif', '.shp', '.zip', '.asc')
 
         def is_main(_file):
             _, ext = os.path.splitext(_file)
@@ -525,17 +537,34 @@ class TestUpload(UploaderBase):
         for f in glob.glob(fpath):
             zf.write(f, os.path.basename(f))
         zf.close()
-        self.upload_file(abspath, self.complete_upload,
+        self.upload_file(abspath,
+                         self.complete_upload,
                          check_name='san_andres_y_providencia_poi')
+
+    def test_ascii_grid_upload(self):
+        """ Tests the layers that ASCII grid files are uploaded along with aux"""
+        session_ids = []
+
+        PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+        thelayer_path = os.path.join(
+            PROJECT_ROOT,
+            'data/arc_sample')
+        self.upload_folder_of_files(
+            thelayer_path,
+            self.complete_raster_upload,
+            session_ids=session_ids)
 
     def test_invalid_layer_upload(self):
         """ Tests the layers that are invalid and should not be uploaded"""
         # this issue with this test is that the importer supports
         # shapefiles without an .prj
+        session_ids = []
+
         invalid_path = os.path.join(BAD_DATA)
         self.upload_folder_of_files(
             invalid_path,
-            self.check_invalid_projection)
+            self.check_invalid_projection,
+            session_ids=session_ids)
 
     def test_coherent_importer_session(self):
         """ Tests that the upload computes correctly next session IDs"""
@@ -553,7 +582,8 @@ class TestUpload(UploaderBase):
         invalid_path = os.path.join(BAD_DATA)
         self.upload_folder_of_files(
             invalid_path,
-            self.check_invalid_projection, session_ids=session_ids)
+            self.check_invalid_projection,
+            session_ids=session_ids)
 
         # Finally try to upload a good file anc check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')

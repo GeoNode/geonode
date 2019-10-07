@@ -127,12 +127,6 @@ class Service(ResourceBase):
         settings.AUTH_USER_MODEL,
         through='ServiceProfileRole'
     )
-    created = models.DateTimeField(
-        auto_now_add=True
-    )
-    last_updated = models.DateTimeField(
-        auto_now=True
-    )
     first_noanswer = models.DateTimeField(
         null=True,
         blank=True
