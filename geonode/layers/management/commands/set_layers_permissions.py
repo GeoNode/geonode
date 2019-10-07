@@ -38,6 +38,8 @@ class Command(BaseCommand):
     At least one permission must be typed.
     Multiple inputs can be typed with white space separator.
     To unset permissions use the '--delete (-d)' option.
+    To assign permissions to everyone (anonymous users), you will need to
+    add the following options: '-u AnonymousUser -g anonymous'
     """
 
     def create_parser(self, *args, **kwargs):
