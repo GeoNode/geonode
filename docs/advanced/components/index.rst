@@ -1021,4 +1021,84 @@ GeoFence Rules Storage Configuration
 
 By default GeoFence is configured to use a filesystem based DB stored on the GeoServer Data Dir ``<GEOSERVER_DATA_DIR/geofence``.
 
-* It is possible also to configure GeoFence in order to use an external PostgreSQL / PostGIS Database. In order to do that please refer to the official GeoFence documentation `here <https://github.com/geoserver/geofence/wiki/GeoFence-configuration>`_.
+* It is possible also to configure GeoFence in order to use an external PostgreSQL / PostGIS Database. For more details please refer to the official GeoFence documentation `here <https://github.com/geoserver/geofence/wiki/GeoFence-configuration>`_.
+
+1. Add ``Java Libraries`` to ``GeoServer``
+
+    .. code-block:: shell
+
+        wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/hibernate-spatial-postgis-1.1.3.1/hibernate-spatial-postgis-1.1.3.1.jar
+        wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/postgis-jdbc-1.3.3/postgis-jdbc-1.3.3.jar
+
+        cp hibernate-spatial-postgis-1.1.3.1.jar <GEOSERVER_WEBAPP_DIR>/WEB-INF/lib
+        cp postgis-jdbc-1.3.3.jar <GEOSERVER_WEBAPP_DIR>/WEB-INF/lib
+
+        restart geoserver
+
+2. Either create a DB with the updated schema here https://github.com/geoserver/geofence/blob/master/doc/setup/sql/002_create_schema_postgres.sql or enable the hbm2ddl auto creation through the configuration file (see step ``3``)
+
+    .. note:: Notice that "update" also creates the tables if they do not exist. In production, however, I would suggest to change it to "validate"
+
+    .. code-block:: shell
+
+        # If you want to create a new DB for GeoFence
+        sudo -u postgres createdb -O geonode geofence; \
+        sudo -u postgres psql -d geofence -c 'CREATE EXTENSION postgis;'; \
+        sudo -u postgres psql -d geofence -c 'GRANT ALL ON geometry_columns TO PUBLIC;'; \
+        sudo -u postgres psql -d geofence -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'; \
+        sudo -u postgres psql -d geofence -c 'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO geonode;'
+
+3. Add configuration similar to ``geofence-datasource-ovr.properties`` sample below (if loaded as GeoServer extension)
+
+    **<GEOSERVER_DATA_DIR>/geofence/geofence-datasource-ovr.properties**
+
+    .. code-block:: shell
+
+        # /* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+        #  * This code is licensed under the GPL 2.0 license, available at the root
+        #  * application directory.
+        #  */
+        #
+        geofenceVendorAdapter.databasePlatform=org.hibernatespatial.postgis.PostgisDialect
+        geofenceDataSource.driverClassName=org.postgresql.Driver
+        geofenceDataSource.url=jdbc:postgresql://localhost:5432/geofence
+        geofenceDataSource.username=postgres
+        geofenceDataSource.password=postgres
+        geofenceEntityManagerFactory.jpaPropertyMap[hibernate.default_schema]=public
+
+        ################################################################################
+        ## Other setup entries
+        ################################################################################
+        ## hbm2ddl.auto may assume one of these values:
+        ## - validate: validates the DB schema at startup against the internal model. May fail on oracle spatial.
+        ## - update: updates the schema, according to the internal model. Updating automatically the production DB is dangerous.
+        ## - create-drop: drop the existing schema and recreates it according to the internal model. REALLY DANGEROUS, YOU WILL LOSE YOUR DATA.
+        ## You may want not to redefine the property entirely, in order to leave the defult value (no action).
+
+        geofenceEntityManagerFactory.jpaPropertyMap[hibernate.hbm2ddl.auto]=update
+        geofenceEntityManagerFactory.jpaPropertyMap[javax.persistence.validation.mode]=none
+        geofenceEntityManagerFactory.jpaPropertyMap[hibernate.validator.apply_to_ddl]=false
+        geofenceEntityManagerFactory.jpaPropertyMap[hibernate.validator.autoregister_listeners]=false  
+
+        ##
+        ## ShowSQL is set to true in the configuration file; putting showsql=false in
+        ## this file, you can easily check that this override file has been properly applied.
+
+        # geofenceVendorAdapter.generateDdl=false
+        # geofenceVendorAdapter.showSql=false
+
+        ## Set to "true" in specific use cases
+        # workspaceConfigOpts.showDefaultGroups=false
+
+
+
+        ################################################################################
+        ## Disable second level cache.
+        ## This is needed in a geofence-clustered environment.
+
+        #geofenceEntityManagerFactory.jpaPropertyMap[hibernate.cache.use_second_level_cache]=false
+
+        ################################################################################
+        ## Use external ehcache configuration file.
+        ## Useful to change cache settings, for example diskStore path.
+        #geofenceEntityManagerFactory.jpaPropertyMap[hibernate.cache.provider_configuration_file_resource_path]=file:/path/to/geofence-ehcache-override.xml
