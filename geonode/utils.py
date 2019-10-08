@@ -34,7 +34,6 @@ import tarfile
 import weakref
 import datetime
 import requests
-# import requests_cache
 import tempfile
 import urlparse
 import traceback
@@ -86,7 +85,6 @@ SIGN_CHARACTER = '$'
 SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')
 
 requests.packages.urllib3.disable_warnings()
-# requests_cache.install_cache('http_client_cache')
 
 signalnames = [
     'class_prepared',
