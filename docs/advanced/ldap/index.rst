@@ -1,8 +1,0 @@
-Library Dependencies
-====================
-
-Installation
-============
-
-Configure
-=========
