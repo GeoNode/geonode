@@ -25,15 +25,6 @@ Social Login
 
     social/index
 
-LDAP Configuration
-==================
-
-.. toctree::
-    :caption: LDAP Configuration
-    :maxdepth: 3
-
-    ldap/index
-
 GeoNode Django Contrib Apps
 ===========================
 
