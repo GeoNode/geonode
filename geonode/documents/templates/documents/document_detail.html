@@ -43,7 +43,6 @@
       <p><a href="{{ resource.doc_url }}" target="_blank">{% trans "Download the" %} {{ resource }} {% trans "document" %}.</a> <small>({% trans 'External Resource' %})</small></p>
       {%  endif %}
     {%  endif %}
-
     <div class="documents-actions">
       {% include "_actions.html" %}
     </div>
@@ -230,31 +229,24 @@
         <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Document Permissions" %}</a></p>
       </li>
       {% include "_permissions_form.html" %}
-      {% endif %}
-
+      {% endif %
       {% include "base/_resourcebase_contact_snippet.html" %}
 
     </ul>
   </div>
 </div>
 {% endblock %}
-
 {% block extra_script %}
 {{ block.super }}
 {% if DISPLAY_SOCIAL %}
     {% include 'facebook_sdk.html' %}
-{% endif %}
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user resource "document" %}
     {% else %}
         {% overall_rating resource "document" as the_doc_rating %}
-    {% endif %}
     {% include 'rating.html' %}
     {% include 'request_download.html' %}
-    {% endif %}
     {% include "_permissions_form_js.html" %}
-
     {% if FAVORITE_ENABLED %}
     {% include "favorite/_favorite_js.html" %}
-    {% endif %}
 {% endblock extra_script %}
