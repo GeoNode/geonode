@@ -238,13 +238,15 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
 
 def get_sld_for(gs_catalog, layer):
     _max_retries, _tries = getattr(ogc_server_settings, "MAX_RETRIES", 5), 0
-    gs_layer, _default_style = None, None
+    gs_layer, _default_style, name = None, None, None
     gs_catalog._cache.clear()
 
-    while not _default_style or _tries < _max_retries:
-        logger.info('Trying getting a default style for this layer')
+    while not _default_style and _tries < _max_retries:
         gs_layer = gs_catalog.get_layer(layer.name)
         _default_style = gs_layer.default_style
+        if _default_style:
+            break
+        logger.info('Trying getting a default style for this layer')
         _tries += 1
         time.sleep(3)
 
@@ -254,6 +256,8 @@ def get_sld_for(gs_catalog, layer):
             Consider increasing OGC_SERVER MAX_RETRIES value.''
         """
         raise GeoNodeException(msg)
+    else:
+        logger.info('Got the default style for this layer')
 
     # Detect geometry type if it is a FeatureType
     res = gs_layer.resource if gs_layer else None
