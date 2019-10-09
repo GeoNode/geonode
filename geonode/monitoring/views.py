@@ -528,7 +528,11 @@ class BeaconView(View):
                'timestamp': datetime.utcnow().replace(tzinfo=pytz.utc)}
         return json_response(out)
 
-
+class topicCategory(View):
+    def get(request, kwargs):
+        service = kwargs.get('')
+        if noto service:
+            data =[] 
 def index(request):
     if auth.get_user(request).is_superuser:
         return render(request, 'monitoring/index.html')
