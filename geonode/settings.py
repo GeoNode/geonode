@@ -999,10 +999,6 @@ SOCIAL_ORIGINS = [{
     "label": "Twitter",
     "url": "https://twitter.com/share?url={url}&hashtags={hashtags}",
     "css_class": "tw"
-}, {
-    "label": "Google +",
-    "url": "https://plus.google.com/share?url={url}",
-    "css_class": "gp"
 }]
 
 # CKAN Query String Parameters names pulled from
