@@ -1,50 +1,5 @@
 [
     {
-      "pk": 1,
-      "model": "auth.group",
-      "fields": {
-        "name": "bar",
-        "permissions": []
-      }
-    },
-    {
-        "fields": {
-            "access": "private",
-            "description": "Registered Members",
-            "slug": "registered-members",
-            "last_modified": "2019-09-09 15:45:34",
-            "created": "2019-09-09 15:45:34",
-            "group": 2,
-            "title": "Registered Members"
-        },
-        "model": "groups.groupprofile",
-        "pk": 1
-    },
-    {
-        "fields": {
-            "access": "public",
-            "description": "baz",
-            "logo": "people_peoplegroup/cactuar_1.jpg",
-            "slug": "bar",
-            "last_modified": "2011-06-09 15:45:34",
-            "created": "2011-06-09 15:45:34",
-            "group": 1,
-            "title": "bar"
-        },
-        "model": "groups.groupprofile",
-        "pk": 2
-    },
-    {
-        "fields": {
-            "group": 2,
-            "joined": "2012-02-28 14:47:22",
-            "role": "manager",
-            "user": 1
-        },
-        "model": "groups.groupmember",
-        "pk": 1
-    },
-    {
         "fields": {
             "date_joined": "2011-06-09 15:15:27",
             "email": "ad@m.in",
