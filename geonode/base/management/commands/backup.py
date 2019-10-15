@@ -93,39 +93,30 @@ class Command(BaseCommand):
         print "Dumping 'GeoServer Catalog ["+url+"]' into '"+geoserver_bk_file+"'."
         data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
                            'options': {'option': ['BK_BEST_EFFORT=true']}}}
-        headers = {'Content-type': 'application/json'}
+        headers = {
+            'Accept': 'text/plain',
+            'Content-type': 'application/json'
+        }
         r = requests.post(url + 'rest/br/backup/', data=json.dumps(data),
                           headers=headers, auth=HTTPBasicAuth(user, passwd))
         error_backup = 'Could not successfully backup GeoServer ' + \
                        'catalog [{}rest/br/backup/]: {} - {}'
-
-        if (r.status_code > 201):
-
+        if r.status_code in (200, 201, 406):
             try:
-                gs_backup = r.json()
-            except ValueError:
-                raise ValueError(error_backup.format(url, r.status_code, r.text))
-
-            gs_bk_exec_id = gs_backup['backup']['execution']['id']
-            r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
-                             auth=HTTPBasicAuth(user, passwd),
-                             timeout=10)
-            if (r.status_code == 200):
-
-                try:
+                r = requests.get(url + 'rest/br/backup.json',
+                                 auth=HTTPBasicAuth(user, passwd),
+                                 timeout=10)
+                if (r.status_code == 200):
                     gs_backup = r.json()
-                except ValueError:
-                    raise ValueError(error_backup.format(url, r.status_code, r.text))
+                    _url = gs_backup['backups']['backup'][len(gs_backup['backups']['backup']) - 1]['href']
+                    r = requests.get(_url,
+                                     auth=HTTPBasicAuth(user, passwd),
+                                     timeout=10)
+                    if (r.status_code == 200):
+                        gs_backup = r.json()
 
-                gs_bk_progress = gs_backup['backup']['execution']['progress']
-                print gs_bk_progress
-
-            raise ValueError(error_backup.format(url, r.status_code, r.text))
-
-        else:
-
-            try:
-                gs_backup = r.json()
+                if (r.status_code != 200):
+                    raise ValueError(error_backup.format(_url, r.status_code, r.text))
             except ValueError:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
