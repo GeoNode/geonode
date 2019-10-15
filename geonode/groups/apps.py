@@ -18,29 +18,27 @@
 #
 #########################################################################
 import logging
+from . import init_registered_members_groupprofile
+from django.apps import AppConfig
+from geonode.groups.conf import settings
+
+try:
+    from django.db.models.signals import post_migrate
+except BaseException:
+    # OR for Django 2.0+
+    from django.db.backends.signals import post_migrate
 
 logger = logging.getLogger(__name__)
 
-default_app_config = 'geonode.groups.apps.GroupsAppConfig'
+
+def post_migration_callback(sender, **kwargs):
+    if settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
+        logger.debug("Invoking 'init_registered_members_groupprofile'")
+        init_registered_members_groupprofile()
 
 
-def init_registered_members_groupprofile():
-    from .conf import settings
-    from .models import GroupProfile
-    from django.contrib.auth import get_user_model
+class GroupsAppConfig(AppConfig):
+    name = 'geonode.groups'
 
-    group_name = settings.REGISTERED_MEMBERS_GROUP_NAME
-    logger.debug("Creating %s default Group Profile" % group_name)
-    groupprofile, created = GroupProfile.objects.get_or_create(
-        slug=group_name)
-    if created:
-        groupprofile.slug = group_name
-        groupprofile.title = "Registered Members"
-        groupprofile.access = "private"
-        groupprofile.save()
-
-    User = get_user_model()
-    for _u in User.objects.filter(is_active=True):
-        if not _u.is_anonymous and _u != User.get_anonymous() and \
-        not groupprofile.user_is_member(_u):
-            groupprofile.join(_u)
+    def ready(self):
+        post_migrate.connect(post_migration_callback, sender=self)

@@ -216,10 +216,18 @@ AUTH_EXEMPT_URLS
     ``AUTH_EXEMPT_URLS = ('/maps',)`` will allow unauthenticated users to
     browse maps.
 
+AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME
+---------------------------------------------------------------
+
+    | Default: ``False``
+    | Env: ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME``
+
+    Auto assign users to a default "Registered Users" private group after activation.
+
 AUTO_GENERATE_AVATAR_SIZES
 --------------------------
 
-    Default: ``20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240``
+    | Default: ``20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240``
 
     An iterable of integers representing the sizes of avatars to generate on upload. This can save rendering time later on if you pre-generate the resized versions.
 

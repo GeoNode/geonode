@@ -6627,8 +6627,8 @@ msgstr ""
 "geospaziali e mappe."
 
 #: geonode/templates/index.html:24
-msgid "http://docs.geonode.org/en/2.10.x/usage"
-msgstr "http://docs.geonode.org/en/2.10.x/usage"
+msgid "http://docs.geonode.org/en/2.10.x/usage/index.html"
+msgstr "http://docs.geonode.org/en/2.10.x/usage/index.html"
 
 #: geonode/templates/index.html:25
 msgid "Get Started &raquo;"

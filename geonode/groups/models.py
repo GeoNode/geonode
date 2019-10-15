@@ -23,6 +23,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.db.models import signals
@@ -150,22 +151,28 @@ class GroupProfile(models.Model):
         Returns a queryset of the group's managers.
         """
         return get_user_model().objects.filter(
-            id__in=self.member_queryset().filter(
+            Q(id__in=self.member_queryset().filter(
                 role='manager').values_list(
                 "user",
-                flat=True))
+                flat=True)))
 
     def user_is_member(self, user):
         if not user.is_authenticated():
             return False
+        elif user.is_superuser:
+            return True
         return user.id in self.member_queryset().values_list("user", flat=True)
 
     def user_is_role(self, user, role):
         if not user.is_authenticated():
             return False
+        elif user.is_superuser:
+            return True
         return self.member_queryset().filter(user=user, role=role).exists()
 
     def can_view(self, user):
+        if user.is_superuser and user.is_authenticated():
+            return True
         if self.access == "private":
             return user.is_authenticated() and self.user_is_member(user)
         else:
