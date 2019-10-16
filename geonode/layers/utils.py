@@ -974,6 +974,8 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                                 ]
                             if 'crs' in request_body and 'srid' not in request_body:
                                 request_body['srid'] = request_body['crs']
+                            if instance.default_style:
+                                request_body['styles'] = instance.default_style.name
                         elif instance.alternate:
                             request_body['layers'] = instance.alternate
 

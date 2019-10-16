@@ -2024,6 +2024,9 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             thumbnail_create_url = request_body['thumbnail_create_url']
         elif 'layers' in request_body:
             layers = request_body['layers']
+            styles = ''
+            if 'styles' in request_body:
+                styles = request_body['styles']
 
             ogc_server_location = request_body["ogc_server_location"] if "ogc_server_location" \
                 in request_body else ogc_server_settings.LOCATION
@@ -2036,6 +2039,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                 'version': wms_version,
                 'request': 'GetMap',
                 'layers': layers.replace(' ', '+'),
+                'styles': styles,
                 'format': wms_format,
                 # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
             }
