@@ -484,7 +484,9 @@
               <div class="col-sm-3">
                 <i class="fa fa-photo fa-3x"></i>
                 <h4>{% trans "Thumbnail" %}</h4>
-                <a class="btn btn-default btn-block btn-xs" href="#" id="set_thumbnail">{% trans "Set" %}</a>
+                {% if resource.storeType != "remoteStore" %}
+                  <a class="btn btn-default btn-block btn-xs" href="#" id="set_thumbnail">{% trans "Set" %}</a>
+                {% endif %}
                 <a class="btn btn-default btn-block btn-xs" href="{% url "thumbnail_upload" resource.resourcebase_ptr.id %}">{% trans "Upload" %}</a>
               </div>
               {% endif %}
@@ -496,7 +498,9 @@
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                 {% endif %}
                 {% if "change_layer_data" in layer_perms and OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
-                <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}&storeType={{resource.storeType}}">{% trans "Edit data" %}</a>
+                  {% if layer_type != "raster" %}
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}&storeType={{resource.storeType}}">{% trans "Edit data" %}</a>
+                  {% endif %}
                 {% endif %}
                 {% if "delete_resourcebase" in perms_list %}
                 <a class="btn btn-danger btn-block btn-xs" href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove" %}</a>
@@ -747,16 +751,6 @@
     {% endif %}
     {% include 'rating.html' %}
     {% include 'request_download.html' %}
-    {% if DISPLAY_SOCIAL %}
-    {% autoescape off %}
-     <script type='text/javascript'>
-     (function() {
-       var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-       po.src = 'https://apis.google.com/js/plusone.js';
-       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-     })();
-     {% endautoescape %}
-    {% endif %}
        $("#comment_submit_btn").click(function(event) {
             $.ajax({
               type: "POST",
