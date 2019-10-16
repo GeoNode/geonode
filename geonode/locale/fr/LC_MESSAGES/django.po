@@ -6704,8 +6704,8 @@ msgid "home"
 msgstr "Si vous avez des questions concernant le logiciel ou des services s'y rapportant, joignez-nous sur notre <a href=\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users\">mailing list</a>"
 
 #: geonode/templates/index.html:23
-msgid "http://docs.geonode.org/en/2.10.x/usage"
-msgstr ""
+msgid "http://docs.geonode.org/en/2.10.x/usage/index.html"
+msgstr "http://docs.geonode.org/en/2.10.x/usage/index.html"
 
 #: geonode/templates/index.html:23
 msgid "Get Started &raquo;"
