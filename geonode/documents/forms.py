@@ -30,6 +30,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.forms import HiddenInput
 from modeltranslation.forms import TranslationModelForm
+from django.utils.translation import ugettext_lazy as _
 
 from geonode.documents.models import (
     Document,
