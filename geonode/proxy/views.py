@@ -229,6 +229,13 @@ def download(request, resourceid, sender=Layer):
                               permission_msg=_not_permitted)
 
     if isinstance(instance, Layer):
+        # Create Target Folder
+        dirpath = tempfile.mkdtemp()
+        dir_time_suffix = get_dir_time_suffix()
+        target_folder = os.path.join(dirpath, dir_time_suffix)
+        if not os.path.exists(target_folder):
+            os.makedirs(target_folder)
+
         layer_files = []
         try:
             upload_session = instance.get_upload_session()
@@ -237,13 +244,6 @@ def download(request, resourceid, sender=Layer):
                     item for idx, item in enumerate(LayerFile.objects.filter(upload_session=upload_session))]
 
                 if layer_files:
-                    # Create Target Folder
-                    dirpath = tempfile.mkdtemp()
-                    dir_time_suffix = get_dir_time_suffix()
-                    target_folder = os.path.join(dirpath, dir_time_suffix)
-                    if not os.path.exists(target_folder):
-                        os.makedirs(target_folder)
-
                     # Copy all Layer related files into a temporary folder
                     for l in layer_files:
                         if storage.exists(l.file):
@@ -259,15 +259,17 @@ def download(request, resourceid, sender=Layer):
                                         'error_message': _no_files_found
                                     },
                                     request=request), status=404)
-                else:
-                    return HttpResponse(
-                        loader.render_to_string(
-                            '401.html',
-                            context={
-                                'error_title': _("No files found."),
-                                'error_message': _no_files_found
-                            },
-                            request=request), status=404)
+
+            # Check we can access the original files
+            if not layer_files:
+                return HttpResponse(
+                    loader.render_to_string(
+                        '401.html',
+                        context={
+                            'error_title': _("No files found."),
+                            'error_message': _no_files_found
+                        },
+                        request=request), status=404)
 
             # Let's check for associated SLD files (if any)
             try:
@@ -297,7 +299,6 @@ def download(request, resourceid, sender=Layer):
                         traceback.print_exc()
                         tb = traceback.format_exc()
                         logger.debug(tb)
-
             except BaseException:
                 traceback.print_exc()
                 tb = traceback.format_exc()
