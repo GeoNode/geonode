@@ -39,8 +39,8 @@ def original_link_available(context, resourceid):
                               permission='base.download_resourcebase',
                               permission_msg=_not_permitted)
 
+    layer_files = []
     if isinstance(instance, Layer):
-        layer_files = []
         try:
             upload_session = instance.get_upload_session()
             if upload_session:
@@ -51,9 +51,9 @@ def original_link_available(context, resourceid):
                     for l in layer_files:
                         if not storage.exists(l.file):
                             return False
-                else:
-                    return False
         except BaseException:
             return False
+    if layer_files:
         return True
-    return False
+    else:
+        return False
