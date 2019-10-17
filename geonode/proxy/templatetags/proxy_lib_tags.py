@@ -18,8 +18,12 @@
 #
 #########################################################################
 from django import template
+from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.core.files.storage import default_storage as storage
+
+from urlparse import urljoin
 
 from geonode.utils import resolve_object
 from geonode.layers.models import Layer, LayerFile
@@ -28,7 +32,7 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def original_link_available(context, resourceid):
+def original_link_available(context, resourceid, url):
 
     _not_permitted = _("You are not permitted to save or edit this resource.")
 
@@ -38,6 +42,10 @@ def original_link_available(context, resourceid):
                               {'pk': resourceid},
                               permission='base.download_resourcebase',
                               permission_msg=_not_permitted)
+
+    download_url = urljoin(settings.SITEURL, reverse("download", args={resourceid}))
+    if url != download_url:
+        return True
 
     layer_files = []
     if isinstance(instance, Layer):
