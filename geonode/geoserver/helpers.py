@@ -2026,7 +2026,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             layers = request_body['layers']
             styles = ''
             if 'styles' in request_body:
-                styles = request_body['styles']
+                styles = request_body['styles'].encode('utf-8')
 
             ogc_server_location = request_body["ogc_server_location"] if "ogc_server_location" \
                 in request_body else ogc_server_settings.LOCATION
@@ -2145,7 +2145,8 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         image = _render_thumbnail(_img_request_template, width=width, height=height)
     except BaseException as e:
         logger.warning('Error generating thumbnail')
-        logger.exception(e.message)
+        logger.warning(e.message)
+        logger.warning(repr(err))
         image = None
 
     return image
