@@ -216,10 +216,18 @@ AUTH_EXEMPT_URLS
     ``AUTH_EXEMPT_URLS = ('/maps',)`` will allow unauthenticated users to
     browse maps.
 
+AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME
+---------------------------------------------------------------
+
+    | Default: ``False``
+    | Env: ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME``
+
+    Auto assign users to a default "Registered Users" private group after activation.
+
 AUTO_GENERATE_AVATAR_SIZES
 --------------------------
 
-    Default: ``20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240``
+    | Default: ``20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240``
 
     An iterable of integers representing the sizes of avatars to generate on upload. This can save rendering time later on if you pre-generate the resized versions.
 
@@ -1097,11 +1105,55 @@ NOTIFICATION_ENABLED
 O
 =
 
+OAUTH2_API_KEY
+--------------
+
+    | Default: ``None``
+    | Env: ``OAUTH2_API_KEY``
+
+    In order to protect oauth2 REST endpoints, used by GeoServer to fetch user roles and infos, you should set this key and configure the ``geonode REST role service`` accordingly. Keep it secret!
+
+    .. warning:: If not set, the endpoint can be accessed by users without authorization.
+
 OAUTH2_PROVIDER
 ---------------
 
-    Django OAuth Toolkit provides a support layer for Django REST Framework.
-    For settings visit: `OAuth Toolkit settings <https://django-oauth-toolkit.readthedocs.io/en/latest/rest-framework/getting_started.html>`__
+    Ref.: `OAuth Toolkit settings <https://django-oauth-toolkit.readthedocs.io/en/latest/settings.html>`__
+
+OAUTH2_PROVIDER_APPLICATION_MODEL
+---------------------------------
+
+    | Default: ``oauth2_provider.Application``
+
+    Ref.: `OAuth Toolkit settings <https://django-oauth-toolkit.readthedocs.io/en/latest/settings.html>`__
+
+OAUTH2_PROVIDER_ACCESS_TOKEN_MODEL
+----------------------------------
+
+    | Default: ``oauth2_provider.AccessToken``
+
+    Ref.: `OAuth Toolkit settings <https://django-oauth-toolkit.readthedocs.io/en/latest/settings.html>`__
+
+OAUTH2_PROVIDER_ID_TOKEN_MODEL
+------------------------------
+
+    | Default: ``oauth2_provider.IDToken``
+
+    Ref.: `OAuth Toolkit settings <https://django-oauth-toolkit.readthedocs.io/en/latest/settings.html>`__
+
+OAUTH2_PROVIDER_GRANT_MODEL
+---------------------------
+
+    | Default: ``oauth2_provider.Grant``
+
+    Ref.: `OAuth Toolkit settings <https://django-oauth-toolkit.readthedocs.io/en/latest/settings.html>`__
+
+OAUTH2_PROVIDER_REFRESH_TOKEN_MODEL
+-----------------------------------
+
+    | Default: ``oauth2_provider.RefreshToken``
+
+    Ref.: `OAuth Toolkit settings <https://django-oauth-toolkit.readthedocs.io/en/latest/settings.html>`__
 
 OGC_SERVER_DEFAULT_PASSWORD
 ---------------------------
@@ -1117,7 +1169,7 @@ OGC_SERVER_DEFAULT_USER
     | Default: ``admin``
     | Env: ``GEOSERVER_ADMIN_USER``
 
-    The geoserver user.
+    The GeoServer user.
 
 OGC_SERVER
 ----------

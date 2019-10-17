@@ -33,7 +33,6 @@ from django.conf import settings
 
 from taggit.managers import TaggableManager
 
-from geonode.decorators import on_ogc_backend
 from geonode.base.enumerations import COUNTRIES
 from geonode.base.auth import (get_or_create_token,
                                delete_old_tokens,
@@ -41,8 +40,6 @@ from geonode.base.auth import (get_or_create_token,
                                remove_session_token)
 from geonode.groups.models import GroupProfile
 # from geonode.notifications_helper import send_notification
-
-from geonode import geoserver
 
 from allauth.account.signals import user_signed_up
 from allauth.socialaccount.signals import social_account_added
@@ -251,7 +248,6 @@ user_signed_up.connect(
 signals.post_save.connect(profile_post_save, sender=Profile)
 
 
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def do_login(sender, user, request, **kwargs):
     """
     Take action on user login. Generate a new user access_token to be shared
@@ -269,8 +265,14 @@ def do_login(sender, user, request, **kwargs):
 
         set_session_token(request.session, token)
 
+        from geonode.groups.conf import settings as groups_settings
+        if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
+            group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+            groupprofile = GroupProfile.objects.filter(slug=group_name).first()
+            if groupprofile and not groupprofile.user_is_member(user):
+                groupprofile.join(user)
 
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
+
 def do_logout(sender, user, request, **kwargs):
     if 'access_token' in request.session:
         try:
