@@ -8,6 +8,7 @@
 {% load base_tags %}
 {% load guardian_tags %}
 {% load client_lib_tags %}
+{% load proxy_lib_tags %}
 
 {% block title %}{{ resource.title|default:resource.alternate }} — {{ block.super }}{% endblock %}
 
@@ -291,7 +292,7 @@
                         <li class="active">
                             <ul>
                               {% for link in links %}
-                              <li><a href="{{ link.url }}" target="_blank">{% trans link.name %}</a></li>
+                                <li><a href="{{ link.url }}" target="_blank">{% trans link.name %}</a></li>
                               {% endfor %}
                             </ul>
                         </li>
@@ -399,14 +400,22 @@
 
                       <!-- DOWNLOAD FILTER - END -->
 
-                      <li>
-                          <h4>{% trans "Pick your download format:" %}</h4>
-                          <ul>
-                            {% for link in links_download %}
+                      <h4>{% trans "Pick your download format:" %}</h4>
+                      <ul>
+                        {% for link in links_download %}
+                          {% if link.name == 'Original Dataset' %}
+                            {% original_link_available resource.id as original_dwn_link_available %}
+                            {% if original_dwn_link_available %}
                             <li><a href="{{ link.url }}" target="_blank" id="{{ link.name | slugify }}" class="urls">{% trans link.name %}</a></li>
-                            {% endfor %}
-                          </ul>
-                      </li>
+                            {% else %}
+                            <!-- Hide the link instead. Uncomment the lines below to present a warning to the users. -->
+                            <!-- li><a href="javascript:thumbnailFeedbacks('{% trans "No data available for this resource. Please contact a system administrator or a manager." %}', '{% trans "Warning" %}');" id="{{ link.name | slugify }}" class="urls">{% trans link.name %}</a></li -->
+                            {% endif %}
+                          {% else %}
+                            <li><a href="{{ link.url }}" target="_blank" id="{{ link.name | slugify }}" class="urls">{% trans link.name %}</a></li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
                     </div>
                 {% endif %}
                 </div>
@@ -1012,14 +1021,14 @@
 
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
-  <script type='text/javascript'>
-        $(function() {
-            if (sessionStorage.getItem("security_refresh_trigger")) {
-                sessionStorage.clear();
-                $("#security_refresh").trigger('click');
-            }
-        });
-  </script>
+      <script type='text/javascript'>
+            $(function() {
+                if (sessionStorage.getItem("security_refresh_trigger")) {
+                    sessionStorage.clear();
+                    $("#security_refresh").trigger('click');
+                }
+            });
+      </script>
     {% endif %}
 
     {% if FAVORITE_ENABLED %}

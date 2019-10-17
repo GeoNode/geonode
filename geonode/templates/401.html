@@ -11,20 +11,22 @@
         {% endif %}
       </h3>
     </div>
-    <p>
     {% if error_message %}
+    <p>
       {{ error_message }}
+    </p>
     {% else %}
+    <p>
       {% blocktrans %}
           You are not allowed to perform this operation.
       {% endblocktrans %}
-    {% endif %}
     </p>
     <p>
-    {% if not request.user.is_anonymous %}
-    {% blocktrans %}Please verify that you are logged in as the correct user.{%endblocktrans%}
-    {% else %}
-    {% blocktrans %}Please login or register and retry.{% endblocktrans %}
-    {% endif %}
+      {% if not request.user.is_anonymous %}
+      {% blocktrans %}Please verify that you are logged in as the correct user.{%endblocktrans%}
+      {% else %}
+      {% blocktrans %}Please login or register and retry.{% endblocktrans %}
+      {% endif %}
     </p>
+    {% endif %}
 {% endblock %}
