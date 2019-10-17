@@ -854,7 +854,7 @@
         attribute_data_schema = $("#attribute_list li.selected a").attr('data-schema');
         if(attribute_list == null || operator_list == null || single_value_input == "" ||  logical_operator_dropdown == null){
           if($("#missing-values").length == 0) {
-            $( "#query-filter-tools" ).after( "<p id='missing-values'> Select all values from menus.</p>" );
+            $("#query-filter-tools").after( "<p id='missing-values'> Select all values from menus.</p>" );
           }
         } else {
             if($("#missing-values").length !== 0) {
@@ -863,7 +863,7 @@
             // validation that user enters a string for a string attribute or a number for a number attribute
             var single_value_input = '';
             try {
-                single_value_input = ($('#single_value').select2('data').text).trim();
+                single_value_input = ($('#single_value').select2('data')[0].text).trim();
             } catch (err) {
                 single_value_input = '';
             }
@@ -872,7 +872,7 @@
               if($("#wrong-data-type").length !== 0) {
                   $('#wrong-data-type').empty();
               }
-              $( "#query-filter-tools" ).after( "<p id='wrong-data-type'> You entered a string. Not a number.</p>" );
+              $("#query-filter-tools").after( "<p id='wrong-data-type'> You entered a string. Not a number.</p>" );
             } else {
               $( "p" ).remove( "#wrong-data-type" );
               // check of single_value_input; string or number
