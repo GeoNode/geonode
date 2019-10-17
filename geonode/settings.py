@@ -1186,7 +1186,7 @@ if RECAPTCHA_ENABLED:
     RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY", 'geonode_RECAPTCHA_PRIVATE_KEY')
 
 # Settings for MONITORING plugin
-MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'True'))
+MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'False'))
 
 MONITORING_CONFIG = os.getenv("MONITORING_CONFIG", None)
 MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
@@ -1227,7 +1227,7 @@ MONITORING_DATA_AGGREGATION = (
     (timedelta(days=1), timedelta(minutes=60),),
     (timedelta(days=14), timedelta(days=1),),
 )
-USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'True'))
+USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))
 GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
 # -- END Settings for MONITORING plugin
 
