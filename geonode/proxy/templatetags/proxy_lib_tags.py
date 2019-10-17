@@ -23,7 +23,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.core.files.storage import default_storage as storage
 
-from urlparse import urljoin
+from urlparse import urlsplit, urljoin
 
 from geonode.utils import resolve_object
 from geonode.layers.models import Layer, LayerFile
@@ -44,7 +44,8 @@ def original_link_available(context, resourceid, url):
                               permission_msg=_not_permitted)
 
     download_url = urljoin(settings.SITEURL, reverse("download", args={resourceid}))
-    if url != download_url:
+    if urlsplit(url).netloc != urlsplit(download_url).netloc or \
+    urlsplit(url).path != urlsplit(download_url).path:
         return True
 
     layer_files = []
