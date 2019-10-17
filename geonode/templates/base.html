@@ -209,6 +209,20 @@
         var staticUrl = '{% static '' %}';
     </script>
 
+    <script type="text/javascript">
+      function thumbnailFeedbacks(data, status) {
+        try {
+          $("#_thumbnail_feedbacks").find('.modal-title').text(status);
+          $("#_thumbnail_feedbacks").find('.modal-body').text(data);
+          $("#_thumbnail_feedbacks").modal("show");
+        } catch (err) {
+          console.log(err);
+        } finally {
+          return true;
+        }
+      }
+    </script>
+
   </head>
 
   <body class="{% block body_class %}{% endblock %}">
