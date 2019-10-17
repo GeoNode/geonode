@@ -1952,7 +1952,7 @@ def _render_thumbnail(req_body, width=240, height=180):
         content = imgByteArr.getvalue()
     except BaseException as e:
         logger.warning('Error generating thumbnail')
-        logger.exception(e)
+        logger.exception(e.message)
         return
 
     return content
@@ -2145,7 +2145,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         image = _render_thumbnail(_img_request_template, width=width, height=height)
     except BaseException as e:
         logger.warning('Error generating thumbnail')
-        logger.exception(e)
+        logger.exception(e.message)
         image = None
 
     return image
