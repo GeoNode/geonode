@@ -1531,8 +1531,20 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
                 "type": "empty",
                 "visibility": False,
                 "args": ["Empty Background", {"visibility": False}]
-            }
+           }
         ]
+
+    if BING_API_KEY:
+        BASEMAP = {
+            "type": "bing",
+            "title": "Bing Aerial",
+            "name": "AerialWithLabels",
+            "source": "bing",
+            "group": "background",
+            "apiKey": "{{apiKey}}",
+            "visibility": False
+        }
+        DEFAULT_MS2_BACKGROUNDS = [BASEMAP,] + DEFAULT_MS2_BACKGROUNDS
 
     MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
 
