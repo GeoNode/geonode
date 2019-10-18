@@ -632,17 +632,6 @@ DEFAULT_WORKSPACE
 
     The standard GeoServer workspace.
 
-DELAYED_SECURITY_INTERVAL
--------------------------
-
-    | Default: ``60``
-    | Env: ``DELAYED_SECURITY_INTERVAL``
-
-    This setting only works when ``DELAYED_SECURITY_SIGNALS`` has been activated and the Celery worker is running.
-    It defines the time interval in seconds for the Celery task to check if there are resources to be synchronized.
-
-    For more details see ``DELAYED_SECURITY_SIGNALS``
-
 DELAYED_SECURITY_SIGNALS
 ------------------------
 
@@ -655,7 +644,7 @@ DELAYED_SECURITY_SIGNALS
     either:
 
     a. A Celery Worker is running and it is able to execute the ``geonode.security.tasks.synch_guardian`` periodic task;
-       notice that the task will be executed every ``DELAYED_SECURITY_INTERVAL`` seconds.
+       notice that the task will be executed at regular intervals, based on the interval value defined in the corresponding PeriodicTask model.
 
     b. A periodic ``cron`` job runs the ``sync_security_rules`` management command, or either it is manually executed from the Django shell.
 
@@ -1406,9 +1395,9 @@ RECAPTCHA_ENABLED
         | Env: ``ACCOUNT_SIGNUP_FORM_CLASS``
 
         Enabled only when the :ref:`recaptcha_enabled` option is ``True``.
-    
+
     * **INSTALLED_APPS**
-    
+
         The ``captcha`` must be present on ``INSTALLED_APPS``, otherwise you'll get an error.
 
         When enabling the :ref:`recaptcha_enabled` option through the ``environment``, this setting will be automatically added by GeoNode as follows:
@@ -1416,7 +1405,7 @@ RECAPTCHA_ENABLED
         .. code:: python
 
             if 'captcha' not in INSTALLED_APPS:
-                    INSTALLED_APPS += ('captcha',)        
+                    INSTALLED_APPS += ('captcha',)
 
     * **RECAPTCHA_PUBLIC_KEY**
 
