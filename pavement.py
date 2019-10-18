@@ -971,7 +971,7 @@ def run_tests(options):
                 call_task('test_integration',
                           options={'name': 'geonode.geoserver.integration.tests'})
         elif integration_csw_tests:
-            call_task('test_integration', options={'name': 'geonode.tests.csw'})
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.csw'})
 
         if integration_bdd_tests:
             call_task('test_bdd', options={'local': local})
