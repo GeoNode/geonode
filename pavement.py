@@ -854,6 +854,7 @@ def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
+    prefix = options.get('prefix')
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
     if _backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS:
         call_task('stop_geoserver')
@@ -906,13 +907,25 @@ def test_integration(options):
 
         info("Running the tests now...")
         if name == 'geonode.geoserver.integration.tests':
-            sh(('%s python -W ignore manage.py test %s'
-                ' %s --noinput %s' % (settings, 'geonode.upload.tests.integration', _keepdb, live_server_option)))
-            sh(('%s python -W ignore manage.py test %s'
-                ' %s --noinput %s' % (settings, 'geonode.monitoring.tests.integration', _keepdb, live_server_option)))
+            sh(('%s %s manage.py test %s'
+                ' %s --noinput %s' % (settings,
+                                      prefix,
+                                      'geonode.upload.tests.integration',
+                                      _keepdb,
+                                      live_server_option)))
+            sh(('%s %s manage.py test %s'
+                ' %s --noinput %s' % (settings,
+                                      prefix,
+                                      'geonode.monitoring.tests.integration',
+                                      _keepdb,
+                                      live_server_option)))
         else:
-            sh(('%s python -W ignore manage.py test %s'
-                ' %s --noinput %s' % (settings, name, _keepdb, live_server_option)))
+            sh(('%s %s manage.py test %s'
+                ' %s --noinput %s' % (settings,
+                                      prefix,
+                                      name,
+                                      _keepdb,
+                                      live_server_option)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -950,7 +963,7 @@ def run_tests(options):
         call_task('test', options={'prefix': prefix})
     else:
         if integration_tests:
-            call_task('test_integration')
+            call_task('test_integration', options={'prefix': prefix})
 
             # only start if using Geoserver backend
             _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
