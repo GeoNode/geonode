@@ -14,9 +14,11 @@
       <input type="text" name="email" id="id_email" value="{{ form.email.value }}" class="form-control" placeholder="{% trans 'Email' %}">
   </div>
   <div class="form-group">
+    {% if not success_message %}
     {% for error in form.email.errors %}
       <div class="alert alert-danger">{{ error }}</div>
     {% endfor %}
+    {% endif %}
     {% if error_message %}
         <div class="alert alert-warning">{{ error_message }}</div>
     {% endif %}
