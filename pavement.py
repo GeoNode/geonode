@@ -954,7 +954,7 @@ def run_tests(options):
     if options.get('coverage'):
         prefix = 'coverage run --branch --source=geonode \
             --omit="*/management/*,*/__init__*,*/views*,*/signals*,*/tasks*,*/test*,*/wsgi*,*/middleware*,*/search_indexes*,\
-                */migrations*,*/context_processors*,geonode/qgis_server/*,geonode/upload/*,geonode/monitoring/*"'
+                */migrations*,*/context_processors*,geonode/qgis_server/*,version.py"'
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
