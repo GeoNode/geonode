@@ -304,9 +304,9 @@ We will also perform several optimizations to:
     OpenJDK 64-Bit Server VM (build 25.212-b03, mixed mode)
 
   # Install Apache Tomcat 8
-  sudo wget http://www-us.apache.org/dist/tomcat/tomcat-8/v8.5.46/bin/apache-tomcat-8.5.46.tar.gz
-  sudo tar xzf apache-tomcat-8.5.46.tar.gz
-  sudo mv apache-tomcat-8.5.46 /usr/local/apache-tomcat8
+  sudo wget http://www-us.apache.org/dist/tomcat/tomcat-8/v8.5.47/bin/apache-tomcat-8.5.47.tar.gz
+  sudo tar xzf apache-tomcat-8.5.47.tar.gz
+  sudo mv apache-tomcat-8.5.47 /usr/local/apache-tomcat8
   sudo useradd -m -U -s /bin/false tomcat
   sudo usermod -a -G www-data tomcat
   sudo sed -i -e 's/xom-\*\.jar/xom-\*\.jar,bcprov\*\.jar/g' /usr/local/apache-tomcat8/conf/catalina.properties
@@ -673,8 +673,7 @@ Serving {“geonode”, “geoserver”} via NGINX
     gzip_min_length 1100;
     gzip_comp_level 6;
     gzip_proxied any;
-    gzip_types video/mp4 text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript image/jpeg;
-
+    gzip_types video/mp4 text/plain application/javascript application/x-javascript text/javascript text/xml text/css image/jpeg;
     ##
     # Virtual Host Configs
     ##
