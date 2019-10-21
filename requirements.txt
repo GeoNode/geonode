@@ -2,7 +2,7 @@
 Pillow==6.2.0
 lxml==4.4.1
 defusedxml==0.6.0
-psycopg2==2.8.3
+psycopg2==2.8.4
 Django==1.11.25
 
 # Other
