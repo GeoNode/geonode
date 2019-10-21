@@ -2,17 +2,29 @@
 
 ## [2.10.1](https://github.com/GeoNode/geonode/tree/2.10.1) (2019-10-28)
 
- - **[Implemented enhancements](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+label%3Afeature+milestone%3A2.10.1)**
+ - **[Implemented Features](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1+label%3Afeature)**
 
- - **[Security fixes](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1+label%3Asecurity+)**
+ - **[Dependencies Updates](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+label%3Adependencies+milestone%3A2.10.1)**
 
- - **[New Docs](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+new-docs+milestone%3A2.10.1)**
+ - **[Updated Doccumentations](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1+label%3Adocs)**
 
- - **[Fixed Critical Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+label%3Ablocker+milestone%3A2.10.1)**
+ - **[Updated Doccumentations Pull Requests](https://github.com/GeoNode/geonode/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+label%3Adocs+milestone%3A2.10.1)**
 
- - **[Fixed Major Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1+label%3Amajor)**
+ - **[Fixed Security Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1+label%3Asecurity)**
 
- - **[Closed Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1)**
+ - **[Fixed Security Pull Requests](https://github.com/GeoNode/geonode/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+label%3Asecurity+milestone%3A2.10.1+)**
+
+ - **[Resolved Regressions](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1+label%3Aregression)**
+
+ - **[Fixed Critical Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1+label%3Ablocker)**
+
+ - **[Fixed Major Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1+label%3Amajor)**
+
+ - **[Fixed Minor Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1+label%3Aminor)**
+
+ - **[Updated Translations](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1+label%3Atranslations)**
+
+ - **[All Closed Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1)**
 
 ## [Full Changelog](https://github.com/GeoNode/geonode/compare/2.10...2.10.1)
 
