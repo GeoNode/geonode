@@ -1,16 +1,16 @@
 Geonode auth via LDAP
 =====================
 
-This package provides utilities for using LDAP as an authentication and 
+This package provides utilities for using LDAP as an authentication and
 authorization backend for geonode.
 
-The `django_auth_ldap <https://django-auth-ldap.readthedocs.io/en/latest/>`_ package is a very capable way to add LDAP integration 
-with django projects. It provides a lot of flexibility in mapping LDAP users to 
+The `django_auth_ldap <https://django-auth-ldap.readthedocs.io/en/latest/>`_ package is a very capable way to add LDAP integration
+with django projects. It provides a lot of flexibility in mapping LDAP users to
 geonode users and is able to manage user authentication.
 
-However, in order to provide full support for mapping LDAP groups with 
-geonode's and enforce group permissions on resources, a custom geonode 
-authentication backend  is required. This contrib package provides such a 
+However, in order to provide full support for mapping LDAP groups with
+geonode's and enforce group permissions on resources, a custom geonode
+authentication backend  is required. This contrib package provides such a
 backend, based on `django_auth_ldap <https://django-auth-ldap.readthedocs.io/en/latest/>`_.
 
 
@@ -292,3 +292,306 @@ and the ``/opt/geonode/my-geonode/.env`` is something similar to the following o
         harakiri-verbose = true
         vacuum = true
         thunder-lock = true
+
+.. _centralized-monitoring:
+
+Geonode Logstash for centralized monitoring/analytics
+=====================================================
+
+This contrib app, along with the GeoNode internal monitoring app, lets administrators
+to configure a service for sending metrics data to a **centralized server**
+which comes with `Logstash <https://www.elastic.co/products/logstash>`_.
+
+So it will be possible to visualize stats and charts about one or more GeoNode instances outside the application.
+Having a server configured with the `ELK stack <https://www.elastic.co/what-is/elk-stack>`_,
+it is possible to visualize those information on a Kibana dashboard for example.
+
+If you manage more than one GeoNode instances, that server can receive data from
+many GeoNode(s) so it can make available both *single-instance dashboards*
+(referred to individual instances) and *global dashboards*
+(stats calculated on the whole set of instances).
+
+.. warning:: The centralized monitoring service cannot be active if the settings
+variables :ref:`user-analytics` and :ref:`monitoring-enabled` are set to `False`.
+
+Overview
+--------
+
+By default, GeoNode will send data to the centralized server every **3600 seconds**
+(1 hour) so, if enabled, the monitoring app will collect 1-hour-aggregated data.
+This time interval can be configured, see the next paragraphs to know how.
+
+Formatted and compressed data will be sent on a **TCP** connection (on the `443` standard port by default)
+through a **scheduled celery task** which basically logs information
+via `python-logstash-async <https://pypi.org/project/python-logstash-async/>`_.
+
+.. warning:: This feature requires `python-logstash-async <https://pypi.org/project/python-logstash-async/>`_.
+
+.. _events-formats:
+
+Data and events formats
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Each time the centralized monitoring service is called, 4 types of *JSON* formatted events are sent to the server:
+
+1. Instance overview
+
+  .. code-block:: json
+
+    {
+      "format_version": "1.0",
+      "instance": {
+        "name": geonode instance HOSTNAME,
+        "ip": geonode instance IP
+      },
+      "time": {
+        "startTime": UTC now - 1 hour (default)
+        "endTime": UTC now
+      },
+      "hits": total number of requests,
+      "unique_visits": total number of unique sessions,
+      "unique_visitors": total number of unique users,
+      "registered_users": total number of registered users at the end time,
+      "layers": total number of layers at the end time,
+      "documents": total number of documents at the end time,
+      "maps": total number of maps at the end time,
+      "errors": total number of errors
+    }
+
+2. Resources details
+
+  .. code-block:: json
+
+    {
+      "format_version": "1.0",
+      "instance": {
+        "name": geonode instance HOSTNAME,
+        "ip": geonode instance IP
+      },
+      "time": {
+        "startTime": UTC now - 1 hour (default)
+        "endTime": UTC now
+      },
+      "resources": [
+        …
+        {
+            "type": resource type,
+            "name": resource name,
+            "url": resource URL,
+            "hits": total number of requests about this resource,
+            "unique_visits": total number of unique sessions about this resource,
+            "unique_visitors": total number of unique users about this resource,
+            "downloads": total number of resource downloads,
+            "ogcHits": total number of OGC service requests about this resource,
+            "publications": total number of publication events
+        },
+        …
+      ]
+    }
+
+3. Countries details
+
+  .. code-block:: json
+
+    {
+      "format_version": "1.0",
+      "instance": {
+        "name": geonode instance HOSTNAME,
+        "ip": geonode instance IP
+      },
+      "time": {
+        "startTime": UTC now - 1 hour (default)
+        "endTime": UTC now
+      },
+      "countries": [
+        …
+        {
+            "name": country name,
+            "hits": total number of requests about the country
+        },
+        …
+      ]
+    }
+
+4. UA (User Agent) Familie details
+
+  .. code-block:: json
+
+    {
+      "format_version": "1.0",
+      "instance": {
+        "name": geonode instance HOSTNAME,
+        "ip": geonode instance IP
+      },
+      "time": {
+        "startTime": UTC now - 1 day
+        "endTime": UTC now
+      },
+      "ua_families": [
+        …
+        {
+            "name": UA family name
+            "hits": total number of requests about the UA family
+        },
+        …
+      ]
+    }
+
+These messages will be `gzip <https://docs.python.org/2/library/zlib.html>`_
+compressed in order to improve transport performances and they should be parsed
+by a `logstash filter <https://www.elastic.co/guide/en/logstash/current/plugins-codecs-gzip_lines.html>`_
+on the server side (see :ref:`logstash-input`).
+
+Configuration
+-------------
+
+The centralized monitoring service is disabled by default because it needs
+the internal monitoring to be active and service-specific configurations.
+
+GeoNode configuration
+~~~~~~~~~~~~~~~~~~~~~
+
+| On the GeoNode side, all needed configurations can be set up from the Django admin interface.
+| If enabled, the **GEONODE LOGSTASH** section will show the **Centralized servers** feature:
+
+.. image:: img/centralized_server_admin_ui.png
+    :alt: Centralized Servers from admin UI
+
+Let's add one:
+
+.. image:: img/add_centralized_server.png
+    :alt: Centralized Server set up
+
+The **Host** IP address and the **Port** number are mandatory as well as the
+time **Interval** (3600 seconds by default) which defines the service
+invocation polling (so the time range on which data should be aggregated).
+
+.. note:: Once the service configured, the user can test the configuration by clicking on **Test connection**.
+          It will test the connection with the centralized server without saving the configuration.
+
+Other settings come with a default value:
+
+* **Db path** --> the local SQLite database to cache events between emitting and transmission to the Logstash server (log events are cached even across process restarts and crashes);
+* **Socket timeout** --> timeout in seconds for TCP connections;
+* **Queue check interval** --> interval in seconds to check the internal queue for new messages to be cached in the database;
+* **Queue events flush interval** --> interval in seconds to send cached events from the database to Logstash;
+* **Queue events flush count** --> count of cached events to send from the database to Logstash;
+* **Queue events batch size** --> maximum number of events to be sent to Logstash in one batch;
+* **Logstash db timeout** --> timeout in seconds to 'connect' the SQLite database.
+
+To better understand what these variables mean, it is recommended to read the `python-logstash-async options for the asynchronous processing and formatting <https://python-logstash-async.readthedocs.io/en/stable/config.html#options-for-the-asynchronous-processing-and-formatting>`_.
+
+Other three read-only fields will be visible:
+
+* **Last successful deliver** --> timestamp of the last successful deliver (if exists);
+* **Next scheduled deliver** --> timestamp of the next scheduled deliver;
+* **Last failed deliver** --> timestamp of the last failed deliver (if exists).
+
+.. _logstash-input:
+
+Logstash configuration
+~~~~~~~~~~~~~~~~~~~~~~
+
+| On the server side, a proper Logstash configuration should be set up.
+| Some events formats contain arrays (see :ref:`events-formats`) so Logstash should
+  be able to retrieve a single event for each element of the array.
+  The `Split filter plugin <https://www.elastic.co/guide/en/logstash/current/plugins-filters-split.html#plugins-filters-split>`_
+  helps to correctly parse those messages.
+| As mentioned above, events messages will be gzip compressed so the
+  `Gzip_lines codec plugin <https://www.elastic.co/guide/en/logstash/current/plugins-codecs-gzip_lines.html#plugins-codecs-gzip_lines>`_
+  should be installed along with Logstash and the "gzip_lines" codec should be used for the `tcp` input.
+
+An example of the logstash configuration:
+
+.. code-block:: json
+
+  input {
+    tcp {
+      port => <logstash_port_number>
+      codec => "gzip_lines"
+    }
+  }
+
+  filter {
+    json {
+      source => "message"
+    }
+    if [format_version] == "1.0" {
+      if [countries] {
+        split {
+          field => "countries"
+        }
+      }
+      if [resources] {
+        split {
+          field => "resources"
+        }
+      }
+      if [ua_families] {
+        split {
+          field => "ua_families"
+        }
+      }
+      mutate {
+        remove_field => "message"
+      }
+    }
+    geoip {
+      source => "[instance][ip]"
+    }
+  }
+
+  output {
+    elasticsearch {
+      hosts => "elasticsearch:<elastic_port_number>"
+      index => "logstash-%{[instance][name]}-%{+YYYY.MM.dd}"
+      user => "elastic"
+      password => "changeme"
+    }
+    stdout { codec => rubydebug }
+  }
+
+Usage
+-----
+
+When saving the service configuration, if monitoring enabled, GeoNode will create/update a celery
+`Periodic Task <https://docs.celeryproject.org/en/v4.2.1/userguide/periodic-tasks.html#periodic-tasks>`_
+which will be executed at regular intervals based on the *interval* configured.
+
+You can check this behaviour on the *Periodic Tasks* section of the admin UI:
+
+.. image:: img/periodic_tasks_section.png
+    :alt: Periodic tasks section
+
+The *dispatch-metrics-task* task:
+
+.. image:: img/dispatch_metrics_task.png
+    :alt: Dispatch metrics task
+
+The task details:
+
+.. image:: img/dispatch_metrics_task_details.png
+    :alt: Dispatch metrics task details
+
+.. warning:: When disabling monitoring is a **good practice** to disable the corresponding Periodic Task too.
+
+Management command
+~~~~~~~~~~~~~~~~~~
+
+| In addition to the scheduled task, this contrib app makes also available the
+  **dispatch_metrics** command to manually send metrics to the server.
+| Obviously the time interval considered will start at the last successful
+  delivery and will finish at the current time.
+
+When the monitoring plugin is enabled (:ref:`user-analytics` and :ref:`monitoring-enabled` are set to `True`)
+and a :ref:`centralized-monitoring` configured, Geonode sends (hourly by default) metrics data
+to an external server (which comes with Logstash) for stats visualization and analysis.
+
+The command can be launched using the ``manage.py`` script.
+No options are required.
+
+.. code-block:: shell
+
+  $ DJANGO_SETTINGS_MODULE=<your_settings_module> python manage.py dispatch_metrics
+
+Possible exceptions raised during the execution will be reported to GeoNode log.
