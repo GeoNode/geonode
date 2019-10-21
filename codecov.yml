@@ -26,11 +26,12 @@ comment:
   require_changes: no
 
 ignore:
-  - */management/*
+  - */__init__*
   - */test*
   - */wsgi*
-  - */middleware*
+  - */version*
+  - */migrations*
+  - */search_indexes*
+  - */management/*
   - */context_processors*
   - geonode/qgis_server/*
-  - geonode/contrib/*
-  - geonode/upload/*
