@@ -237,30 +237,48 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
 
 
 def get_sld_for(gs_catalog, layer):
-    # GeoServer sometimes fails to associate a style with the data, so
-    # for now we default to using a point style.(it works for lines and
-    # polygons, hope this doesn't happen for rasters  though)
+    name = None
     gs_layer = None
-    _default_style = None
-    try:
-        _default_style = layer.default_style
-    except BaseException:
-        traceback.print_exc()
-        pass
+    gs_style = None
+    _default_style = layer.default_style if layer else None
 
-    try:
-        gs_catalog._cache.clear()
-        gs_layer = gs_catalog.get_layer(layer.name)
-    except BaseException:
-        traceback.print_exc()
     if _default_style is None:
+        _max_retries, _tries = getattr(ogc_server_settings, "MAX_RETRIES", 5), 0
         try:
-            name = gs_layer.default_style.name if gs_layer.default_style is not None else "raster"
+            gs_layer = gs_catalog.get_layer(layer.name)
+            if gs_layer.default_style:
+                gs_style = gs_layer.default_style.sld_body
+                set_layer_style(layer,
+                                layer.alternate,
+                                gs_style)
+            name = gs_layer.default_style.name
         except BaseException:
-            traceback.print_exc()
             name = None
+        while not name and _tries < _max_retries:
+            try:
+                gs_layer = gs_catalog.get_layer(layer.name)
+                if gs_layer.default_style:
+                    gs_style = gs_layer.default_style.sld_body
+                    set_layer_style(layer,
+                                    layer.alternate,
+                                    gs_style)
+                name = gs_layer.default_style.name
+                if name:
+                    break
+            except BaseException:
+                name = None
+            _tries += 1
+            time.sleep(3)
     else:
         name = _default_style.name
+        gs_style = _default_style.sld_body
+
+    if not name:
+        msg = """
+            GeoServer didn't return a default style for this layer.
+            Consider increasing OGC_SERVER MAX_RETRIES value.''
+        """
+        raise GeoNodeException(msg)
 
     # Detect geometry type if it is a FeatureType
     res = gs_layer.resource if gs_layer else None
@@ -289,7 +307,7 @@ def get_sld_for(gs_catalog, layer):
             bg=bg,
             mark=mark)
     else:
-        return None
+        return gs_style
 
 
 def fixup_style(cat, resource, style):
