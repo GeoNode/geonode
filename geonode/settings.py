@@ -314,6 +314,7 @@ GEONODE_INTERNAL_APPS = (
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
+    'geonode.monitoring',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -355,7 +356,6 @@ INSTALLED_APPS = (
     'mptt',
     'storages',
     'floppyforms',
-    'django_celery_beat',
 
     # Theme
     'django_forms_bootstrap',
@@ -382,7 +382,12 @@ INSTALLED_APPS = (
 
     # GeoNode
     'geonode',
-) + GEONODE_APPS
+)
+
+if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
+    INSTALLED_APPS += ('django_celery_beat',)
+
+INSTALLED_APPS += GEONODE_APPS
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -1207,29 +1212,29 @@ if MONITORING_ENABLED:
         MIDDLEWARE_CLASSES += \
             ('geonode.monitoring.middleware.MonitoringMiddleware',)
 
-# skip certain paths to not to mud stats too much
-MONITORING_SKIP_PATHS = ('/api/o/',
-                         '/monitoring/',
-                         '/admin',
-                         '/lang.js',
-                         '/jsi18n',
-                         STATIC_URL,
-                         MEDIA_URL,
-                         re.compile('^/[a-z]{2}/admin/'),
-                         )
+    # skip certain paths to not to mud stats too much
+    MONITORING_SKIP_PATHS = ('/api/o/',
+                            '/monitoring/',
+                            '/admin',
+                            '/lang.js',
+                            '/jsi18n',
+                            STATIC_URL,
+                            MEDIA_URL,
+                            re.compile('^/[a-z]{2}/admin/'),
+                            )
 
-# configure aggregation of past data to control data resolution
-# list of data age, aggregation, in reverse order
-# for current data, 1 minute resolution
-# for data older than 1 day, 1-hour resolution
-# for data older than 2 weeks, 1 day resolution
-MONITORING_DATA_AGGREGATION = (
-    (timedelta(seconds=0), timedelta(minutes=1),),
-    (timedelta(days=1), timedelta(minutes=60),),
-    (timedelta(days=14), timedelta(days=1),),
-)
-USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))
-GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
+    # configure aggregation of past data to control data resolution
+    # list of data age, aggregation, in reverse order
+    # for current data, 1 minute resolution
+    # for data older than 1 day, 1-hour resolution
+    # for data older than 2 weeks, 1 day resolution
+    MONITORING_DATA_AGGREGATION = (
+        (timedelta(seconds=0), timedelta(minutes=1),),
+        (timedelta(days=1), timedelta(minutes=60),),
+        (timedelta(days=14), timedelta(days=1),),
+    )
+    USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))
+    GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
 # -- END Settings for MONITORING plugin
 
 CACHES = {
