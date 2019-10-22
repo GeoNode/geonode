@@ -1233,8 +1233,9 @@ if MONITORING_ENABLED:
         (timedelta(days=1), timedelta(minutes=60),),
         (timedelta(days=14), timedelta(days=1),),
     )
-    USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))
-    GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
+
+USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))
+GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
 # -- END Settings for MONITORING plugin
 
 CACHES = {
