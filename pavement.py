@@ -415,7 +415,8 @@ def sync(options):
     sh("%s python -W ignore manage.py loaddata sample_admin.json" % settings)
     sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" % settings)
     sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" % settings)
-    sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/django_celery_beat.json" % settings)
+    if 'django_celery_beat' in INSTALLED_APPS:
+        sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/django_celery_beat.json" % settings)
     sh("%s python -W ignore manage.py set_all_layers_alternate" % settings)
 
 
@@ -617,12 +618,16 @@ def start_django(options):
         # "notifications.events",
         # "geonode.layer.viewer"
     ]
-    sh('%s celery -A geonode.celery_app:app worker -Q %s -B -E -l INFO %s %s' % (
-        settings,
-        ",".join(celery_queues),
-        '--scheduler django_celery_beat.schedulers:DatabaseScheduler',
-        foreground
-    ))
+    if 'django_celery_beat' not in INSTALLED_APPS:
+        sh('%s celery -A geonode.celery_app:app worker -Q %s -B -E -l INFO %s' %
+        (settings, ",".join(celery_queues), foreground))
+    else:
+        sh('%s celery -A geonode.celery_app:app worker -Q %s -B -E -l INFO %s %s' % (
+            settings,
+            ",".join(celery_queues),
+            '--scheduler django_celery_beat.schedulers:DatabaseScheduler',
+            foreground
+        ))
 
     if ASYNC_SIGNALS:
         sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
