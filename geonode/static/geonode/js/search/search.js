@@ -134,7 +134,9 @@
     if ($location.search().hasOwnProperty('title__icontains')){
       params['title__icontains'] = $location.search()['title__icontains'];
     }
-    $http.get(T_KEYWORDS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
+    if (enable_thesauri){
+      $http.get(T_KEYWORDS_ENDPOINT, {params: params}).then(successCallback, errorCallback);
+    }
 
     function successCallback(data) {
       //success code
