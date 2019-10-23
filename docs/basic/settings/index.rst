@@ -284,6 +284,48 @@ AWS_STORAGE_BUCKET_NAME
 B
 =
 
+BING_API_KEY
+------------
+
+    | Default: ``None``
+    | Env: ``BING_API_KEY``
+
+    This property allows to enable a Bing Aerial background.
+
+    If using ``mapstore`` client library, make sure the ``MAPSTORE_BASELAYERS`` include the following:
+
+    .. code-block:: python
+    
+        if BING_API_KEY:
+            BASEMAP = {
+                "type": "bing",
+                "title": "Bing Aerial",
+                "name": "AerialWithLabels",
+                "source": "bing",
+                "group": "background",
+                "apiKey": "{{apiKey}}",
+                "visibility": False
+            }
+            DEFAULT_MS2_BACKGROUNDS = [BASEMAP,] + DEFAULT_MS2_BACKGROUNDS
+
+    If using ``geoext`` client library, make sure the ``MAP_BASELAYERS`` include the following:
+
+    .. code-block:: python
+
+        if BING_API_KEY:
+            BASEMAP = {
+                'source': {
+                    'ptype': 'gxp_bingsource',
+                    'apiKey': BING_API_KEY
+                },
+                'name': 'AerialWithLabels',
+                'fixed': True,
+                'visibility': True,
+                'group': 'background'
+            }
+            MAP_BASELAYERS.append(BASEMAP)
+
+
 BROKER_HEARTBEAT
 ----------------
 
@@ -632,17 +674,6 @@ DEFAULT_WORKSPACE
 
     The standard GeoServer workspace.
 
-DELAYED_SECURITY_INTERVAL
--------------------------
-
-    | Default: ``60``
-    | Env: ``DELAYED_SECURITY_INTERVAL``
-
-    This setting only works when ``DELAYED_SECURITY_SIGNALS`` has been activated and the Celery worker is running.
-    It defines the time interval in seconds for the Celery task to check if there are resources to be synchronized.
-
-    For more details see ``DELAYED_SECURITY_SIGNALS``
-
 DELAYED_SECURITY_SIGNALS
 ------------------------
 
@@ -655,7 +686,7 @@ DELAYED_SECURITY_SIGNALS
     either:
 
     a. A Celery Worker is running and it is able to execute the ``geonode.security.tasks.synch_guardian`` periodic task;
-       notice that the task will be executed every ``DELAYED_SECURITY_INTERVAL`` seconds.
+       notice that the task will be executed at regular intervals, based on the interval value defined in the corresponding PeriodicTask model.
 
     b. A periodic ``cron`` job runs the ``sync_security_rules`` management command, or either it is manually executed from the Django shell.
 
@@ -819,10 +850,12 @@ GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY
 
     Default:  ``"mapstore"``
 
-    The library to use for display preview images of layers.  The library choices are:
+    The library to use for display preview images of layers. The library choices are:
 
-     ``"leaflet"``
+     ``"mapstore"``
      ``"geoext"``
+     ``"leaflet"``
+     ``"react"``
 
 GEONODE_EXCHANGE
 ----------------
@@ -970,6 +1003,98 @@ MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS
     | Env: ``MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS``
 
     Enables cross origin requests for geonode-client.
+
+MAPSTORE_BASELAYERS
+-------------------
+
+    | Default::
+
+        [
+            {
+                "type": "osm",
+                "title": "Open Street Map",
+                "name": "mapnik",
+                "source": "osm",
+                "group": "background",
+                "visibility": True
+            }, {
+                "type": "tileprovider",
+                "title": "OpenTopoMap",
+                "provider": "OpenTopoMap",
+                "name": "OpenTopoMap",
+                "source": "OpenTopoMap",
+                "group": "background",
+                "visibility": False
+            }, {
+                "type": "wms",
+                "title": "Sentinel-2 cloudless - https://s2maps.eu",
+                "format": "image/png8",
+                "id": "s2cloudless",
+                "name": "s2cloudless:s2cloudless",
+                "url": "https://maps.geo-solutions.it/geoserver/wms",
+                "group": "background",
+                "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
+                "visibility": False
+           }, {
+                "source": "ol",
+                "group": "background",
+                "id": "none",
+                "name": "empty",
+                "title": "Empty Background",
+                "type": "empty",
+                "visibility": False,
+                "args": ["Empty Background", {"visibility": False}]
+           }
+        ]
+    
+    | Env: ``MAPSTORE_BASELAYERS``
+
+    Allows to specify which backgrounds MapStore should use. The parameter ``visibility`` for a layer, specifies which one is the default one.
+
+    A sample configuration using the Bing background witouhg OpenStreetMap, could be the following one:
+
+    .. code-block:: python
+
+        [
+            {
+                "type": "bing",
+                "title": "Bing Aerial",
+                "name": "AerialWithLabels",
+                "source": "bing",
+                "group": "background",
+                "apiKey": "{{apiKey}}",
+                "visibility": True
+            }, {
+                "type": "tileprovider",
+                "title": "OpenTopoMap",
+                "provider": "OpenTopoMap",
+                "name": "OpenTopoMap",
+                "source": "OpenTopoMap",
+                "group": "background",
+                "visibility": False
+            }, {
+                "type": "wms",
+                "title": "Sentinel-2 cloudless - https://s2maps.eu",
+                "format": "image/png8",
+                "id": "s2cloudless",
+                "name": "s2cloudless:s2cloudless",
+                "url": "https://maps.geo-solutions.it/geoserver/wms",
+                "group": "background",
+                "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
+                "visibility": False
+           }, {
+                "source": "ol",
+                "group": "background",
+                "id": "none",
+                "name": "empty",
+                "title": "Empty Background",
+                "type": "empty",
+                "visibility": False,
+                "args": ["Empty Background", {"visibility": False}]
+           }
+        ]
+    
+    .. warning:: To use a Bing background, you need to correctly set and provide a valid ``BING_API_KEY``
 
 MAX_DOCUMENT_SIZE
 -----------------
@@ -1406,9 +1531,9 @@ RECAPTCHA_ENABLED
         | Env: ``ACCOUNT_SIGNUP_FORM_CLASS``
 
         Enabled only when the :ref:`recaptcha_enabled` option is ``True``.
-    
+
     * **INSTALLED_APPS**
-    
+
         The ``captcha`` must be present on ``INSTALLED_APPS``, otherwise you'll get an error.
 
         When enabling the :ref:`recaptcha_enabled` option through the ``environment``, this setting will be automatically added by GeoNode as follows:
@@ -1416,7 +1541,7 @@ RECAPTCHA_ENABLED
         .. code:: python
 
             if 'captcha' not in INSTALLED_APPS:
-                    INSTALLED_APPS += ('captcha',)        
+                    INSTALLED_APPS += ('captcha',)
 
     * **RECAPTCHA_PUBLIC_KEY**
 

@@ -415,6 +415,8 @@ def sync(options):
     sh("%s python -W ignore manage.py loaddata sample_admin.json" % settings)
     sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" % settings)
     sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" % settings)
+    if 'django_celery_beat' in INSTALLED_APPS:
+        sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/django_celery_beat.json" % settings)
     sh("%s python -W ignore manage.py set_all_layers_alternate" % settings)
 
 
@@ -616,8 +618,16 @@ def start_django(options):
         # "notifications.events",
         # "geonode.layer.viewer"
     ]
-    sh('%s celery -A geonode.celery_app:app worker -Q %s -B -E -l INFO %s' %
-       (settings, ",".join(celery_queues), foreground))
+    if 'django_celery_beat' not in INSTALLED_APPS:
+        sh('%s celery -A geonode.celery_app:app worker -Q %s -B -E -l INFO %s' %
+        (settings, ",".join(celery_queues), foreground))
+    else:
+        sh('%s celery -A geonode.celery_app:app worker -Q %s -B -E -l INFO %s %s' % (
+            settings,
+            ",".join(celery_queues),
+            '--scheduler django_celery_beat.schedulers:DatabaseScheduler',
+            foreground
+        ))
 
     if ASYNC_SIGNALS:
         sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
@@ -854,6 +864,7 @@ def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
+    prefix = options.get('prefix')
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
     if _backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS:
         call_task('stop_geoserver')
@@ -906,13 +917,25 @@ def test_integration(options):
 
         info("Running the tests now...")
         if name == 'geonode.geoserver.integration.tests':
-            sh(('%s python -W ignore manage.py test %s'
-                ' %s --noinput %s' % (settings, 'geonode.upload.tests.integration', _keepdb, live_server_option)))
-            sh(('%s python -W ignore manage.py test %s'
-                ' %s --noinput %s' % (settings, 'geonode.monitoring.tests.integration', _keepdb, live_server_option)))
+            sh(('%s %s manage.py test %s'
+                ' %s --noinput %s' % (settings,
+                                      prefix,
+                                      'geonode.upload.tests.integration',
+                                      _keepdb,
+                                      live_server_option)))
+            sh(('%s %s manage.py test %s'
+                ' %s --noinput %s' % (settings,
+                                      prefix,
+                                      'geonode.monitoring.tests.integration',
+                                      _keepdb,
+                                      live_server_option)))
         else:
-            sh(('%s python -W ignore manage.py test %s'
-                ' %s --noinput %s' % (settings, name, _keepdb, live_server_option)))
+            sh(('%s %s manage.py test %s'
+                ' %s --noinput %s' % (settings,
+                                      prefix,
+                                      name,
+                                      _keepdb,
+                                      live_server_option)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -940,8 +963,8 @@ def run_tests(options):
     """
     if options.get('coverage'):
         prefix = 'coverage run --branch --source=geonode \
-            --omit="*/management/*,*/__init__*,*/views*,*/signals*,*/tasks*,*/test*,*/wsgi*,*/middleware*,*/search_indexes*,\
-                */migrations*,*/context_processors*,geonode/qgis_server/*,geonode/upload/*,geonode/monitoring/*"'
+--omit="*/__init__*,*/test*,*/wsgi*,*/version*,*/migrations*,\
+*/search_indexes*,*/management/*,*/context_processors*,*/qgis_server/*"'
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
@@ -950,7 +973,7 @@ def run_tests(options):
         call_task('test', options={'prefix': prefix})
     else:
         if integration_tests:
-            call_task('test_integration')
+            call_task('test_integration', options={'prefix': prefix})
 
             # only start if using Geoserver backend
             _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
@@ -958,7 +981,7 @@ def run_tests(options):
                 call_task('test_integration',
                           options={'name': 'geonode.geoserver.integration.tests'})
         elif integration_csw_tests:
-            call_task('test_integration', options={'name': 'geonode.tests.csw'})
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.csw'})
 
         if integration_bdd_tests:
             call_task('test_bdd', options={'local': local})
