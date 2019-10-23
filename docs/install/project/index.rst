@@ -264,7 +264,7 @@ Replace everywhere ``localhost`` with ``www.example.org``
 
 .. code-block:: shell
 
-  vim scripts/docker/env/production/*.env
+  vim .env
 
 .. code-block:: shell
 
