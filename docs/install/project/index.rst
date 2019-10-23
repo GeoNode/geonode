@@ -189,7 +189,7 @@ GeoNode Project.
 
 **Be careful** to use the **new** paths and names everywhere:
 
-* Everytime you'll find the keyword ``goenode``, you'll need to use your geonode custom name instead (in this example ``my_geonode``).
+* Everytime you'll find the keyword ``geonode``, you'll need to use your geonode custom name instead (in this example ``my_geonode``).
 
 * Everytime you'll find paths pointing to ``/opt/geonode/``, you'll need to update them to point to your custom project instead (in this example ``/opt/geonode_custom/my_geonode``).
 
