@@ -977,6 +977,10 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         elif instance.alternate:
                             request_body['layers'] = instance.alternate
 
+                        if hasattr(instance, 'default_style'):
+                            if instance.default_style:
+                                request_body['styles'] = instance.default_style.name
+
                         try:
                             image = _prepare_thumbnail_body_from_opts(request_body)
                         except BaseException:
@@ -993,6 +997,10 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         if None not in instance.bbox:
                             params['bbox'] = instance.bbox_string
                             params['crs'] = instance.srid
+
+                        if hasattr(instance, 'default_style'):
+                            if instance.default_style:
+                                params['styles'] = instance.default_style.name
 
                         for _p in params.keys():
                             if _p.lower() not in thumbnail_create_url.lower():
