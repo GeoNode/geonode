@@ -36,10 +36,19 @@ from django.test.utils import override_settings
 from guardian.shortcuts import assign_perm, remove_perm
 
 from geonode import geoserver
+from geonode import GeoNodeException
 from geonode.decorators import on_ogc_backend
-from geonode.geoserver.helpers import OGC_Servers_Handler, extract_name_from_sld
+
+from geonode.layers.models import Layer, Style
 from geonode.layers.populate_layers_data import create_layer_data
-from geonode.layers.models import Layer
+from geonode.layers.utils import create_gs_thumbnail_geonode
+from geonode.geoserver.helpers import (
+    gs_catalog,
+    get_sld_for,
+    OGC_Servers_Handler,
+    extract_name_from_sld,
+    create_gs_thumbnail,
+    _prepare_thumbnail_body_from_opts)
 
 import logging
 logger = logging.getLogger(__name__)
@@ -974,6 +983,23 @@ class UtilsTests(GeoNodeBaseTestSupport):
         height = 512
         width = 512
 
+        # Default Style (expect exception since we are offline)
+        style = None
+        with self.assertRaises(GeoNodeException):
+            style = get_sld_for(gs_catalog, instance)
+        self.assertIsNone(style)
+        style = gs_catalog.get_style("line")
+        self.assertIsNotNone(style)
+        instance.default_style, _ = Style.objects.get_or_create(
+            name=style.name,
+            defaults=dict(
+                sld_title=style.sld_title,
+                sld_body=style.sld_body
+            )
+        )
+        self.assertIsNotNone(instance.default_style)
+        self.assertIsNotNone(instance.default_style.name)
+
         # WMS Links
         wms_links = wms_links(ogc_settings.public_url + 'wms?',
                               instance.alternate.encode('utf-8'),
@@ -1020,6 +1046,33 @@ class UtilsTests(GeoNodeBaseTestSupport):
             self.assertTrue(wcs_url in _link[3])
             logger.debug('%s --> %s' % (identifier, _link[3]))
             self.assertTrue(identifier in _link[3])
+
+        # Thumbnails Generation Default
+        create_gs_thumbnail(instance, overwrite=True)
+        self.assertIsNotNone(instance.get_thumbnail_url())
+
+        # Thumbnails Generation Through "remote url"
+        create_gs_thumbnail_geonode(instance, overwrite=True, check_bbox=True)
+
+        # Thumbnails Generation Through "image"
+        request_body = {
+            'width': width,
+            'height': height,
+            'layers': instance.alternate
+        }
+        if hasattr(instance, 'default_style'):
+            if instance.default_style:
+                request_body['styles'] = instance.default_style.name
+        self.assertIsNotNone(request_body['styles'])
+
+        try:
+            image = _prepare_thumbnail_body_from_opts(request_body)
+        except BaseException as e:
+            logger.exception(e)
+            image = None
+        # We are offline here, the layer does not exists in GeoServer
+        # - we expect the image is None
+        self.assertIsNone(image)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_importer_configuration(self):
