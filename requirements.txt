@@ -60,7 +60,7 @@ dj-pagination==2.4.0
 pinax-notifications==5.0.3
 django-celery-monitor<=1.1.2
 django-celery-beat==1.5.0
-django-floppyforms<=1.7.0
+django-floppyforms<1.9.0
 django-forms-bootstrap<=3.1.0
 django-activity-stream==0.8.0
 django-autocomplete-light==2.3.3 # pinned because >=2.3.4 throw an exception on startup
