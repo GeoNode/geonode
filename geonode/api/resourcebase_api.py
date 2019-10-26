@@ -606,7 +606,10 @@ class CommonModelApi(ModelResource):
 
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):
-                formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+                if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+                else:
+                    formatted_obj['thumbnail_url'] = ''
 
             formatted_objects.append(formatted_obj)
 
@@ -992,7 +995,10 @@ class MapResource(CommonModelApi):
 
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):
-                formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+                if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+                else:
+                    formatted_obj['thumbnail_url'] = ''
 
             formatted_objects.append(formatted_obj)
         return formatted_objects
@@ -1046,7 +1052,10 @@ class DocumentResource(CommonModelApi):
 
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):
-                formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+                if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+                else:
+                    formatted_obj['thumbnail_url'] = ''
 
             formatted_objects.append(formatted_obj)
         return formatted_objects
