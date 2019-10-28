@@ -135,21 +135,32 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
     service_typename = alternate.split(":", 1)
-
     if Service.objects.filter(name=service_typename[0]).exists():
         service = Service.objects.filter(name=service_typename[0])
+        query = {
+            'alternate': service_typename[1] if service[0].method != "C" else alternate
+        }
+        if len(service_typename) > 1:
+            query['store'] = service_typename[0]
         return resolve_object(
             request,
             Layer,
-            {
-                'alternate': service_typename[1] if service[0].method != "C" else alternate},
+            query,
             permission=permission,
             permission_msg=msg,
             **kwargs)
     else:
+        if len(service_typename) > 1 and ':' in service_typename[1]:
+            query = {
+                'store': service_typename[0],
+                'alternate': service_typename[1]
+            }
+        else:
+            query = {'alternate': alternate}
+
         return resolve_object(request,
                               Layer,
-                              {'alternate': alternate},
+                              query,
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
@@ -403,6 +414,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     config["capability"] = {
         "abstract": layer.abstract,
+        "store": layer.store,
         "name": layer.alternate,
         "title": layer.title,
         "queryable": True,
