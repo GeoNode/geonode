@@ -499,7 +499,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
                             msg_prefix='',
                             html=False)
         self.assertContains(response,
-                            '<a href="/layers/geonode:CA">CA</a>',
+                            '<a href="/layers/:geonode:CA">CA</a>',
                             count=0,
                             status_code=200,
                             msg_prefix='',
@@ -535,7 +535,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
             self.assertEqual(200, response.status_code)
             _log(response)
             self.assertContains(response,
-                                '<a href="/layers/geonode:CA">geonode:CA</a>',
+                                '<a href="/layers/:geonode:CA">geonode:CA</a>',
                                 count=2,
                                 status_code=200,
                                 msg_prefix='',
