@@ -135,7 +135,7 @@ Make an instance out of the ``Django Template``
   # Install the Python packages
   cd /opt/geonode_custom/my_geonode
   pip install -r requirements.txt --upgrade --no-cache --no-cache-dir
-  pip install -e . --upgrade --no-cache --no-cache-dir
+  pip install -e .
 
   # Install GDAL Utilities for Python
   pip install pygdal=="`gdal-config --version`.*"
