@@ -1052,20 +1052,35 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
             return
         for layer in instance.layers:
             if layer.local:
-                local_layers.append(layer.name)
                 # Compute Bounds
-                _l = Layer.objects.get(alternate=layer.name)
+                if layer.store:
+                    _l = Layer.objects.get(
+                        store=layer.store,
+                        alternate=layer.name)
+                else:
+                    _l = Layer.objects.get(
+                        alternate=layer.name)
                 wgs84_bbox = bbox_to_projection(_l.bbox)
                 local_bboxes.append(wgs84_bbox)
+                if _l.storeType != "remoteStore":
+                    local_layers.append(_l.alternate)
         layers = ",".join(local_layers).encode('utf-8')
     else:
-        layers = instance.alternate.encode('utf-8')
         # Compute Bounds
-        _ll = Layer.objects.filter(alternate=layers)
+        if instance.store:
+            _ll = Layer.objects.filter(
+                store=instance.store,
+                alternate=instance.alternate.encode('utf-8'))
+        else:
+            _ll = Layer.objects.filter(
+                alternate=instance.alternate.encode('utf-8'))
         for _l in _ll:
             if _l.name == instance.name:
                 wgs84_bbox = bbox_to_projection(_l.bbox)
                 local_bboxes.append(wgs84_bbox)
+                if _l.storeType != "remoteStore":
+                    local_layers.append(_l.alternate)
+        layers = ",".join(local_layers).encode('utf-8')
 
     if local_bboxes:
         for _bbox in local_bboxes:

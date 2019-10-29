@@ -413,7 +413,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
     ``save_map`` if map should be saved (default: True)
     """
     layer_cfg = dict(layer)
-    for k in ["format", "name", "opacity", "styles", "transparent",
+    for k in ["format", "store", "name", "opacity", "styles", "transparent",
               "fixed", "group", "visibility", "source", "getFeatureInfo"]:
         if k in layer_cfg:
             del layer_cfg[k]
@@ -452,6 +452,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
         stack_order=ordering,
         format=layer.get("format", None),
         name=layer.get("name", None),
+        store=layer.get("store", None),
         opacity=layer.get("opacity", 1),
         styles=styles,
         transparent=layer.get("transparent", False),

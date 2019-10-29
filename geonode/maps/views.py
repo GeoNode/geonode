@@ -863,6 +863,7 @@ def add_layers_to_map_config(
                                target_srid=int(srs.split(":")[1]))[:4])
         config["capability"] = {
             "abstract": layer.abstract,
+            "store": layer.store,
             "name": layer.alternate,
             "title": layer.title,
             "queryable": True,
