@@ -219,10 +219,19 @@ AUTH_EXEMPT_URLS
 AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME
 ---------------------------------------------------------------
 
-    | Default: ``False``
+    | Default: ``True``
     | Env: ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME``
 
-    Auto assign users to a default "Registered Users" private group after activation.
+    Auto assign users to a default ``REGISTERED_MEMBERS_GROUP_NAME`` private group after ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT``.
+
+AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT
+-------------------------------------------------------------
+
+    | Default: ``activation``
+    | Env: ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT``
+    | Options: ``"registration" | "activation" | "login"``
+
+    Auto assign users to a default ``REGISTERED_MEMBERS_GROUP_NAME`` private group after {"registration" | "activation" | "login"}.
 
 AUTO_GENERATE_AVATAR_SIZES
 --------------------------
@@ -1585,6 +1594,22 @@ REDIS_SIGNALS_BROKER_URL
     Default: ``redis://localhost:6379/0``
 
     The Redis endpoint.
+
+REGISTERED_MEMBERS_GROUP_NAME
+-----------------------------
+
+    | Default: ``registered-members``
+    | Env: ``REGISTERED_MEMBERS_GROUP_NAME``
+
+    Used by ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME`` settings.
+
+REGISTERED_MEMBERS_GROUP_TITLE
+------------------------------
+
+    | Default: ``Registered Members``
+    | Env: ``REGISTERED_MEMBERS_GROUP_TITLE``
+
+    Used by ``AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME`` settings.
 
 REGISTRATION_OPEN
 -----------------
