@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -31,6 +32,8 @@ from django.utils.timezone import now
 
 from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group
+
+logger = logging.getLogger(__name__)
 
 
 class GroupCategory(models.Model):
@@ -185,7 +188,17 @@ class GroupProfile(models.Model):
         if created:
             user.groups.add(self.group)
         else:
-            raise ValueError("The invited user \"{0}\" is already a member".format(user.username))
+            logger.warning("The invited user \"{0}\" is already a member".format(user.username))
+
+    def leave(self, user, **kwargs):
+        if user == user.get_anonymous():
+            raise ValueError("The invited user cannot be anonymous")
+        member, created = GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
+        if not created:
+            user.groups.remove(self.group)
+            member.delete()
+        else:
+            logger.warning("The invited user \"{0}\" is not a member".format(user.username))
 
     @models.permalink
     def get_absolute_url(self):
