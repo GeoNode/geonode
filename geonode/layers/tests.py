@@ -265,7 +265,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(
             lyr.keyword_list(), [
-                u'&lt;IMGSRC=&#39;javascript:true;&#39;&gt;Science', u'Europe&lt;script&gt;true;&lt;/script&gt;',
+                u'&lt;IMG SRC=&#39;javascript:true;&#39;&gt;Science', u'Europe&lt;script&gt;true;&lt;/script&gt;',
                 u'here', u'keywords', u'land_&lt;script&gt;true;&lt;/script&gt;covering', u'populartag', u'saving',
                 u'ß', u'ä', u'ö', u'ü', u'論語'])
 
