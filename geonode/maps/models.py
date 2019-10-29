@@ -207,9 +207,7 @@ class Map(ResourceBase, GXPMapBase):
         layers = [l for l in conf["map"]["layers"]]
         layer_names = set([l.alternate for l in self.local_layers])
 
-        for layer in self.layer_set.all():
-            layer.delete()
-
+        self.layer_set.all().delete()
         self.keywords.add(*conf['map'].get('keywords', []))
 
         for ordering, layer in enumerate(layers):
@@ -438,6 +436,8 @@ class MapLayer(models.Model, GXPLayerBase):
     name = models.TextField(_('name'), null=True)
     # The name of the layer to load.
 
+    store = models.TextField(_('store'), null=True)
+
     # The interpretation of this name depends on the source of the layer (Google
     # has a fixed set of names, WMS services publish a list of available layers
     # in their capabilities documents, etc.)
@@ -502,11 +502,11 @@ class MapLayer(models.Model, GXPLayerBase):
         if Layer.objects.filter(alternate=self.name).exists():
             try:
                 if self.local:
-                    layer = Layer.objects.get(alternate=self.name)
+                    layer = Layer.objects.get(store=self.store, alternate=self.name)
                 else:
                     layer = Layer.objects.get(
                         alternate=self.name,
-                        service__base_url=self.ows_url)
+                        remote_service__base_url=self.ows_url)
                 attribute_cfg = layer.attribute_config()
                 if "getFeatureInfo" in attribute_cfg:
                     cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
@@ -534,7 +534,7 @@ class MapLayer(models.Model, GXPLayerBase):
     @property
     def layer_title(self):
         if self.local:
-            title = Layer.objects.get(alternate=self.name).title
+            title = Layer.objects.get(store=self.store, alternate=self.name).title
         else:
             title = self.name
         return title
@@ -542,7 +542,7 @@ class MapLayer(models.Model, GXPLayerBase):
     @property
     def local_link(self):
         if self.local:
-            layer = Layer.objects.get(alternate=self.name)
+            layer = Layer.objects.get(store=self.store, alternate=self.name)
             link = "<a href=\"%s\">%s</a>" % (
                 layer.get_absolute_url(), layer.title)
         else:
