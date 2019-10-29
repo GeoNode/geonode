@@ -130,7 +130,7 @@ At this point your command prompt shows a ``(geonode)`` prefix, this indicates t
   # Install the Python packages
   cd /opt/geonode
   pip install -r requirements.txt --upgrade --no-cache --no-cache-dir
-  pip install -e . --upgrade --no-cache --no-cache-dir
+  pip install -e .
 
   # Install GDAL Utilities for Python
   pip install pygdal=="`gdal-config --version`.*"
