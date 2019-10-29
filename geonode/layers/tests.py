@@ -269,7 +269,6 @@ class LayersTest(GeoNodeBaseTestSupport):
                 u'here', u'keywords', u'land_&lt;script&gt;true;&lt;/script&gt;covering', u'populartag', u'saving',
                 u'ß', u'ä', u'ö', u'ü', u'論語'])
 
-
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('layer_detail', args=(lyr.alternate,)))
         self.failUnlessEqual(response.status_code, 200)
