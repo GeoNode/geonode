@@ -254,8 +254,10 @@ class Layer(ResourceBase):
         return base_files.get(), list_col
 
     def get_absolute_url(self):
-        # return reverse('layer_detail', args=(self.service_typename,))
-        return reverse('layer_detail', args=(self.alternate,))
+        return reverse(
+            'layer_detail',
+            args=("%s:%s" % (self.store, self.alternate),)
+        )
 
     def attribute_config(self):
         # Get custom attribute sort order and labels if any
