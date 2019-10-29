@@ -258,6 +258,18 @@ class LayersTest(GeoNodeBaseTestSupport):
                 u'here', u'keywords', u'populartag', u'saving',
                 u'ß', u'ä', u'ö', u'ü', u'論語'])
 
+        # Test input escape
+        lyr.keywords.add(*["Europe<script>true;</script>",
+                           "land_<script>true;</script>covering",
+                           "<IMG SRC='javascript:true;'>Science"])
+
+        self.assertEqual(
+            lyr.keyword_list(), [
+                u'&lt;IMGSRC=&#39;javascript:true;&#39;&gt;Science', u'Europe&lt;script&gt;true;&lt;/script&gt;',
+                u'here', u'keywords', u'land_&lt;script&gt;true;&lt;/script&gt;covering', u'populartag', u'saving',
+                u'ß', u'ä', u'ö', u'ü', u'論語'])
+
+
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('layer_detail', args=(lyr.alternate,)))
         self.failUnlessEqual(response.status_code, 200)
@@ -277,7 +289,13 @@ class LayersTest(GeoNodeBaseTestSupport):
             {"text": u"ä", "href": "a", "id": 10},
             {"text": u"ö", "href": "o", "id": 7},
             {"text": u"ü", "href": "u", "id": 8},
-            {"text": u"論語", "href": "lun-yu", "id": 6}
+            {"text": u"論語", "href": "lun-yu", "id": 6},
+            {"text": u"Europe&lt;script&gt;true;&lt;/script&gt;",
+                "href": "u'europeltscriptgttrueltscriptgt", "id": 12},
+            {"text": u"land_&lt;script&gt;true;&lt;/script&gt;covering",
+                "href": "u'land_ltscriptgttrueltscriptgtcovering", "id": 13},
+            {"text": u"&lt;IMGSRC=&#39;javascript:true;&#39;&gt;Science",
+                "href": "u'ltimgsrc39javascripttrue39gtscience", "id": 11},
         ]))
 
     def test_layer_links(self):
