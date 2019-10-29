@@ -385,7 +385,6 @@ class _HierarchicalTagManager(_TaggableManager):
         for new_tag in str_tags - set(t.name for t in existing):
             if new_tag:
                 new_tag = escape(new_tag)
-                new_tag = "".join(new_tag.split())
                 tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
 
         for tag in tag_objs:
