@@ -413,15 +413,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         """
         sampletxt = os.path.join(gisdata.VECTOR_DATA,
                                  'points_epsg2249_no_prj.dbf')
-        try:
+        with self.\
+        assertRaisesRegexp(Exception, "You are attempting to replace a vector layer with an unknown format."):
             file_upload(sampletxt)
-        except GeoNodeException:
-            pass
-        except Exception:
-            raise
-            # msg = ('Was expecting a %s, got %s instead.' %
-            #        (GeoNodeException, type(e)))
-            # assert e is GeoNodeException, msg
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_layer_upload_metadata(self):
@@ -1025,25 +1019,19 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     response_dict['errors']:
                 pass
             else:
-                self.assertEquals(response.status_code, 200)
-                self.assertEquals(response_dict['success'], True)
-                # Get a Layer object for the newly created layer.
-                new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
+                self.assertEquals(response.status_code, 400)
+                self.assertEquals(response_dict['success'], False)
 
-                # Test the replaced layer metadata is equal to the original layer
-                self.assertEqual(vector_layer.name, new_vector_layer.name)
-                self.assertEqual(vector_layer.title, new_vector_layer.title)
-                self.assertEqual(vector_layer.alternate, new_vector_layer.alternate)
-
-                # Test the replaced layer bbox is indeed different from the original layer
-                self.assertNotEqual(vector_layer.bbox_x0, new_vector_layer.bbox_x0)
-                self.assertNotEqual(vector_layer.bbox_x1, new_vector_layer.bbox_x1)
-                self.assertNotEqual(vector_layer.bbox_y0, new_vector_layer.bbox_y0)
-                self.assertNotEqual(vector_layer.bbox_y1, new_vector_layer.bbox_y1)
-
-                # test an invalid user without layer replace permission
-                self.client.logout()
-                self.client.login(username='norman', password='norman')
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                # test replace a vector with an updated version of the vector file
+                new_vector_file = os.path.join(
+                    gisdata.VECTOR_DATA,
+                    'san_andres_y_providencia_administrative.shp')
+                layer_path, __ = os.path.splitext(new_vector_file)
+                layer_base = open(layer_path + '.shp', 'rb')
+                layer_dbf = open(layer_path + '.dbf', 'rb')
+                layer_shx = open(layer_path + '.shx', 'rb')
+                layer_prj = open(layer_path + '.prj', 'rb')
 
                 response = self.client.post(
                     vector_replace_url,
@@ -1051,9 +1039,44 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                      'dbf_file': layer_dbf,
                      'shx_file': layer_shx,
                      'prj_file': layer_prj,
+                     'charset': 'UTF-8',
                      'permissions': json.dumps(post_permissions)
-                     })
-                self.assertTrue(response.status_code in (401, 403))
+                    })
+                response_dict = json.loads(response.content)
+
+                if not response_dict['success'] and 'unknown encoding' in \
+                        response_dict['errors']:
+                    pass
+                else:
+                    self.assertEquals(response.status_code, 200)
+                    self.assertEquals(response_dict['success'], True)
+                    # Get a Layer object for the newly created layer.
+                    new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
+
+                    # Test the replaced layer metadata is equal to the original layer
+                    self.assertEqual(vector_layer.name, new_vector_layer.name)
+                    self.assertEqual(vector_layer.title, new_vector_layer.title)
+                    self.assertEqual(vector_layer.alternate, new_vector_layer.alternate)
+
+                    # Test the replaced layer bbox is indeed different from the original layer
+                    self.assertEqual(vector_layer.bbox_x0, new_vector_layer.bbox_x0)
+                    self.assertEqual(vector_layer.bbox_x1, new_vector_layer.bbox_x1)
+                    self.assertEqual(vector_layer.bbox_y0, new_vector_layer.bbox_y0)
+                    self.assertEqual(vector_layer.bbox_y1, new_vector_layer.bbox_y1)
+
+                    # test an invalid user without layer replace permission
+                    self.client.logout()
+                    self.client.login(username='norman', password='norman')
+
+                    response = self.client.post(
+                        vector_replace_url,
+                        {'base_file': layer_base,
+                         'dbf_file': layer_dbf,
+                         'shx_file': layer_shx,
+                         'prj_file': layer_prj,
+                         'permissions': json.dumps(post_permissions)
+                        })
+                    self.assertTrue(response.status_code in (401, 403))
         finally:
             # Clean up and completely delete the layer
             try:

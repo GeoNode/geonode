@@ -22,6 +22,7 @@ import os
 import json
 import logging
 import zipfile
+import tempfile
 import traceback
 
 from osgeo import ogr
@@ -504,24 +505,34 @@ def _get_time_dimensions(layer, upload_session):
     return att_list
 
 
+def _fixup_base_file(absolute_base_file, tempdir=None):
+    if not tempdir:
+        tempdir = tempfile.mkdtemp()
+    if not os.path.isfile(absolute_base_file):
+        tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
+        for f in tmp_files:
+            if zipfile.is_zipfile(os.path.join(tempdir, f)):
+                absolute_base_file = unzip_file(os.path.join(tempdir, f), '.shp', tempdir=tempdir)
+                absolute_base_file = os.path.join(tempdir,
+                                                  absolute_base_file)
+    elif zipfile.is_zipfile(absolute_base_file):
+        absolute_base_file = unzip_file(absolute_base_file,
+                                        '.shp', tempdir=tempdir)
+        absolute_base_file = os.path.join(tempdir,
+                                          absolute_base_file)
+    if os.path.exists(absolute_base_file):
+        return absolute_base_file
+    else:
+        raise Exception(_('File does not exist: %s' % absolute_base_file))
+
+
 def _get_layer_values(layer, upload_session, expand=0):
     layer_values = []
     if upload_session:
-        absolute_base_file = upload_session.base_file[0].base_file
-        tempdir = upload_session.tempdir
+        absolute_base_file = _fixup_base_file(
+            upload_session.base_file[0].base_file,
+            upload_session.tempdir)
 
-        if not os.path.isfile(absolute_base_file):
-            tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
-            for f in tmp_files:
-                if zipfile.is_zipfile(os.path.join(tempdir, f)):
-                    absolute_base_file = unzip_file(os.path.join(tempdir, f), '.shp', tempdir=tempdir)
-                    absolute_base_file = os.path.join(tempdir,
-                                                      absolute_base_file)
-        elif zipfile.is_zipfile(absolute_base_file):
-            absolute_base_file = unzip_file(upload_session.base_file[0].base_file,
-                                            '.shp', tempdir=tempdir)
-            absolute_base_file = os.path.join(tempdir,
-                                              absolute_base_file)
         inDataSource = ogr.Open(absolute_base_file)
         lyr = inDataSource.GetLayer(str(layer.name))
         limit = 100

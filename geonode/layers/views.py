@@ -61,41 +61,59 @@ from django.forms.models import inlineformset_factory
 from django.db import transaction
 from django.db.models import F
 from django.forms.utils import ErrorList
-from geonode.services.models import Service
-from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
+
 from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm
-from geonode.layers.models import Layer, Attribute, UploadSession
-from geonode.base.enumerations import CHARSETS
-from geonode.base.models import TopicCategory
-from geonode.groups.models import GroupProfile
-
-from geonode.utils import (resolve_object,
-                           default_map_config,
-                           check_ogc_backend,
-                           llbbox_to_mercator,
-                           bbox_to_projection,
-                           GXPLayer,
-                           GXPMap)
-from geonode.layers.utils import file_upload, is_raster, is_vector
-from geonode.people.forms import ProfileForm, PocForm
-from geonode.security.views import _perms_info_json
-from geonode.documents.models import get_related_documents
-from geonode.utils import build_social_links
 from geonode.base.views import batch_modify
-from geonode.base.models import Thesaurus
+from geonode.base.models import (
+    Thesaurus,
+    TopicCategory)
+from geonode.base.enumerations import CHARSETS
+
+from geonode.layers.forms import (
+    LayerForm,
+    LayerUploadForm,
+    NewLayerUploadForm,
+    LayerAttributeForm)
+from geonode.layers.models import (
+    Layer,
+    Attribute,
+    UploadSession)
+from geonode.layers.utils import (
+    file_upload,
+    is_raster,
+    is_vector)
+
 from geonode.maps.models import Map
+from geonode.services.models import Service
 from geonode.monitoring import register_event
-from geonode.geoserver.helpers import (gs_catalog,
-                                       ogc_server_settings,
-                                       set_layer_style)  # cascading_delete
+from geonode.groups.models import GroupProfile
+from geonode.security.views import _perms_info_json
+from geonode.people.forms import ProfileForm, PocForm
+from geonode.documents.models import get_related_documents
+
+from geonode.utils import (
+    resolve_object,
+    default_map_config,
+    check_ogc_backend,
+    llbbox_to_mercator,
+    bbox_to_projection,
+    build_social_links,
+    GXPLayer,
+    GXPMap)
+
 from .tasks import delete_layer
+
+from geonode.geoserver.helpers import (ogc_server_settings,
+                                       set_layer_style)  # cascading_delete
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import (_render_thumbnail,
-                                           _prepare_thumbnail_body_from_opts)
+                                           _prepare_thumbnail_body_from_opts,
+                                           gs_catalog)
 if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.models import QGISServerLayer
+
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
@@ -1292,6 +1310,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 
                     saved_layer = file_upload(
                         base_file,
+                        layer=layer,
                         title=layer.title,
                         abstract=layer.abstract,
                         is_approved=layer.is_approved,
@@ -1307,15 +1326,15 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         overwrite=True,
                         charset=form.cleaned_data["charset"],
                     )
+
                     out['success'] = True
                     out['url'] = reverse(
                         'layer_detail', args=[
                             saved_layer.service_typename])
             except BaseException as e:
                 logger.exception(e)
-                tb = traceback.format_exc()
                 out['success'] = False
-                out['errors'] = str(tb)
+                out['errors'] = str(e)
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
