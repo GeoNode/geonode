@@ -41,6 +41,7 @@ from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils.timezone import now
+from django.utils.html import escape
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -383,6 +384,7 @@ class _HierarchicalTagManager(_TaggableManager):
         tag_objs.update(existing)
         for new_tag in str_tags - set(t.name for t in existing):
             if new_tag:
+                new_tag = escape(new_tag)
                 tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
 
         for tag in tag_objs:
