@@ -30,7 +30,7 @@ class MultiThesauriWidget(forms.MultiWidget):
         for el in settings.THESAURI:
             cleaned_name = el['name'].replace("-", " ").replace("_", " ").title()
             widget_list.append(
-                autocomplete_light.MultipleChoiceWidget(
+                autocomplete_light.widgets.MultipleChoiceWidget(
                     'thesaurus_' + el['name'],
                     attrs={'placeholder': '%s - Start typing for suggestions' % cleaned_name},
                     extra_context={'thesauri_title': cleaned_name}))
