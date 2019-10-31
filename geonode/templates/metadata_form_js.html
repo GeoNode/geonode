@@ -595,10 +595,18 @@
                                 errors += "</ul>";
                                 $("#preview_errorDialog .modal-body").html(errors);
                             } else {
-                                $("#preview_errorDialog .modal-body").html(xhr.responseText);
+                                if (xhr.responseText.indexOf('<!DOCTYPE html>') >= 0) {
+                                    $("#preview_errorDialog .modal-body").html("Unknown Error Occurred.");
+                                } else {
+                                    $("#preview_errorDialog .modal-body").html(xhr.responseText);
+                                }
                             }
                         } catch(err) {
-                            $("#preview_errorDialog .modal-body").html(xhr.responseText);
+                            if (xhr.responseText.indexOf('<!DOCTYPE html>') >= 0) {
+                                $("#preview_errorDialog .modal-body").html(err);
+                            } else {
+                                $("#preview_errorDialog .modal-body").html(xhr.responseText);
+                            }
                         }
                         $('#preview_errorDialog').modal();
                         metadata_update_done = false;
