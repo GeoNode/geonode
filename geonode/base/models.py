@@ -422,30 +422,6 @@ class Thesaurus(models.Model):
         verbose_name_plural = 'Thesauri'
 
 
-class ThesaurusKeyword(models.Model):
-    """
-    Loadable thesaurus containing keywords in different languages
-    """
-    # read from the RDF file
-    about = models.CharField(max_length=255, null=True, blank=True)
-    # read from the RDF file
-    alt_label = models.CharField(
-        max_length=255,
-        default='',
-        null=True,
-        blank=True)
-
-    thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus')
-
-    def __unicode__(self):
-        return u"{0}".format(self.alt_label)
-
-    class Meta:
-        ordering = ("alt_label",)
-        verbose_name_plural = 'Thesaurus Keywords'
-        unique_together = (("thesaurus", "alt_label"),)
-
-
 class ThesaurusKeywordLabel(models.Model):
     """
     Loadable thesaurus containing keywords in different languages
@@ -466,6 +442,34 @@ class ThesaurusKeywordLabel(models.Model):
         ordering = ("keyword", "lang")
         verbose_name_plural = 'Labels'
         unique_together = (("keyword", "lang"),)
+
+
+class ThesaurusKeyword(models.Model):
+    """
+    Loadable thesaurus containing keywords in different languages
+    """
+    # read from the RDF file
+    about = models.CharField(max_length=255, null=True, blank=True)
+    # read from the RDF file
+    alt_label = models.CharField(
+        max_length=255,
+        default='',
+        null=True,
+        blank=True)
+
+    thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus')
+
+    def __unicode__(self):
+        return u"{0}".format(self.alt_label)
+
+    @property
+    def labels(self):
+        return ThesaurusKeywordLabel.objects.filter(keyword=self)
+
+    class Meta:
+        ordering = ("alt_label",)
+        verbose_name_plural = 'Thesaurus Keywords'
+        unique_together = (("thesaurus", "alt_label"),)
 
 
 class ResourceBaseManager(PolymorphicManager):
