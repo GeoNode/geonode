@@ -126,12 +126,9 @@ def geoserver_upload(
 
     # Get the helper files if they exist
     files = get_files(base_file)
-
     data = files
-
     if 'shp' not in files:
         data = base_file
-
     try:
         store, gs_resource = create_store_and_resource(name,
                                                        data,
@@ -180,7 +177,6 @@ def geoserver_upload(
     assert gs_resource.name == name
 
     # Step 6. Make sure our data always has a valid projection
-    # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 6. Making sure [%s] has a valid projection' % name)
     _native_bbox = None
     try:
@@ -210,7 +206,6 @@ def geoserver_upload(
                 logger.exception('Error occurred while trying to force BBOX on resource', e)
 
     # Step 7. Create the style and assign it to the created resource
-    # FIXME: Put this in gsconfig.py
     logger.info('>>> Step 7. Creating style for [%s]' % name)
     cat.save(gs_resource)
     publishing = cat.get_layer(name) or gs_resource
@@ -282,9 +277,8 @@ def geoserver_upload(
                 e.args = (msg,)
                 logger.exception(e)
 
-    # Step 10. Create the Django record for the layer
-    logger.info('>>> Step 10. Creating Django record for [%s]', name)
-    # FIXME: Do this inside the layer object
+    # Step 8. Create the Django record for the layer
+    logger.info('>>> Step 8. Creating Django record for [%s]', name)
     alternate = workspace.name + ':' + gs_resource.name
     layer_uuid = str(uuid.uuid1())
 
