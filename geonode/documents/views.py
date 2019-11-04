@@ -21,6 +21,7 @@
 import os
 import json
 import logging
+import traceback
 from itertools import chain
 
 from guardian.shortcuts import get_perms
@@ -43,8 +44,10 @@ from django.forms.utils import ErrorList
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
-from geonode.base.forms import CategoryForm
-from geonode.base.models import TopicCategory
+from geonode.base.forms import CategoryForm, TKeywordForm
+from geonode.base.models import (
+    Thesaurus,
+    TopicCategory)
 from geonode.documents.models import Document, get_related_resources
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
@@ -371,11 +374,41 @@ def document_metadata(
             category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
                 request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
                 request.POST["category_choice_field"] else None)
+            tkeywords_form = TKeywordForm(
+                prefix="tkeywords",
+                initial={'tkeywords': request.POST.getlist('tkeywords-tkeywords')})
         else:
             document_form = DocumentForm(instance=document, prefix="resource")
             category_form = CategoryForm(
                 prefix="category_choice_field",
                 initial=topic_category.id if topic_category else None)
+
+            # Keywords from THESAURUS management
+            doc_tkeywords = document.tkeywords.all()
+            tkeywords_list = ''
+            lang = 'en'  # TODO: use user's language
+            if doc_tkeywords and len(doc_tkeywords) > 0:
+                tkeywords_ids = doc_tkeywords.values_list('id', flat=True)
+                if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+                    el = settings.THESAURUS
+                    thesaurus_name = el['name']
+                    try:
+                        t = Thesaurus.objects.get(identifier=thesaurus_name)
+                        for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
+                            tkl = tk.keyword.filter(lang=lang)
+                            if len(tkl) > 0:
+                                tkl_ids = ",".join(
+                                    map(str, tkl.values_list('id', flat=True)))
+                                tkeywords_list += "," + \
+                                    tkl_ids if len(
+                                        tkeywords_list) > 0 else tkl_ids
+                    except BaseException:
+                        tb = traceback.format_exc()
+                        logger.error(tb)
+
+            tkeywords_form = TKeywordForm(
+                prefix="tkeywords",
+                initial={'tkeywords': tkeywords_list})
 
         if request.method == "POST" and document_form.is_valid(
         ) and category_form.is_valid():
@@ -430,12 +463,10 @@ def document_metadata(
             if new_poc is not None and new_author is not None:
                 document.poc = new_poc
                 document.metadata_author = new_author
-            if new_keywords:
-                document.keywords.clear()
-                document.keywords.add(*new_keywords)
-            if new_regions:
-                document.regions.clear()
-                document.regions.add(*new_regions)
+            document.keywords.clear()
+            document.keywords.add(*new_keywords)
+            document.regions.clear()
+            document.regions.add(*new_regions)
             document.category = new_category
             document.save()
             document_form.save_many2many()
@@ -451,6 +482,38 @@ def document_metadata(
 
             message = document.id
 
+            try:
+                # Keywords from THESAURUS management
+                tkeywords_to_add = []
+                tkeywords_cleaned = tkeywords_form.clean()
+                if tkeywords_cleaned and len(tkeywords_cleaned) > 0:
+                    tkeywords_ids = []
+                    for i, val in enumerate(tkeywords_cleaned):
+                        try:
+                            cleaned_data = [value for key, value in tkeywords_cleaned[i].items(
+                            ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
+                            tkeywords_ids.extend(map(int, cleaned_data[0]))
+                        except BaseException:
+                            pass
+
+                    if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+                        el = settings.THESAURUS
+                        thesaurus_name = el['name']
+                        try:
+                            t = Thesaurus.objects.get(
+                                identifier=thesaurus_name)
+                            for tk in t.thesaurus.all():
+                                tkl = tk.keyword.filter(pk__in=tkeywords_ids)
+                                if len(tkl) > 0:
+                                    tkeywords_to_add.append(tkl[0].keyword_id)
+                            document.tkeywords.clear()
+                            document.tkeywords.add(*tkeywords_to_add)
+                        except BaseException:
+                            tb = traceback.format_exc()
+                            logger.error(tb)
+            except BaseException:
+                tb = traceback.format_exc()
+                logger.error(tb)
             return HttpResponse(json.dumps({'message': message}))
 
         # - POST Request Ends here -
@@ -505,6 +568,7 @@ def document_metadata(
             "poc_form": poc_form,
             "author_form": author_form,
             "category_form": category_form,
+            "tkeywords_form": tkeywords_form,
             "metadata_author_groups": metadata_author_groups,
             "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
             "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
