@@ -301,6 +301,9 @@ class TKeywordForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(TKeywordForm, self).__init__(*args, **kwargs)
         initial_arguments = kwargs.get('initial', None)
+        if initial_arguments and 'tkeywords' in initial_arguments and \
+        isinstance(initial_arguments['tkeywords'], basestring):
+            initial_arguments['tkeywords'] = initial_arguments['tkeywords'].split(',')
         self.data = initial_arguments
 
     def clean(self):

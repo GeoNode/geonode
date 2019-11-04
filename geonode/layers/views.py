@@ -87,6 +87,7 @@ from geonode.layers.utils import (
 from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.monitoring import register_event
+from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm, PocForm
@@ -1097,14 +1098,12 @@ def layer_metadata(
                 layer.metadata_author = new_author
 
         new_keywords = layer_form.cleaned_data['keywords']
-        if new_keywords is not None:
-            layer.keywords.clear()
-            layer.keywords.add(*new_keywords)
-
         new_regions = [x.strip() for x in layer_form.cleaned_data['regions']]
-        if new_regions is not None:
-            layer.regions.clear()
-            layer.regions.add(*new_regions)
+
+        layer.keywords.clear()
+        layer.keywords.add(*new_keywords)
+        layer.regions.clear()
+        layer.regions.add(*new_regions)
         layer.category = new_category
         layer.save()
 
@@ -1112,6 +1111,7 @@ def layer_metadata(
         if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:
             up_sessions.update(user=layer.owner)
 
+        register_event(request, EventType.EVENT_CHANGE_METADATA, layer)
         if not ajax:
             return HttpResponseRedirect(
                 reverse(
@@ -1146,19 +1146,17 @@ def layer_metadata(
                             tkl = tk.keyword.filter(pk__in=tkeywords_ids)
                             if len(tkl) > 0:
                                 tkeywords_to_add.append(tkl[0].keyword_id)
+                        layer.tkeywords.clear()
+                        layer.tkeywords.add(*tkeywords_to_add)
                     except BaseException:
                         tb = traceback.format_exc()
                         logger.error(tb)
-
-            layer.tkeywords.add(*tkeywords_to_add)
-            register_event(request, 'change_metadata', layer)
         except BaseException:
             tb = traceback.format_exc()
             logger.error(tb)
 
         return HttpResponse(json.dumps({'message': message}))
 
-    register_event(request, 'view_metadata', layer)
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
             layer_form.fields['is_published'].widget.attrs.update(
@@ -1209,6 +1207,7 @@ def layer_metadata(
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 
+    register_event(request, 'view_metadata', layer)
     return render(request, template, context={
         "resource": layer,
         "layer": layer,
