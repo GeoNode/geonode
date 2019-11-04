@@ -55,17 +55,20 @@
         </a>
         {% if not forloop.last %},{% endif %}
       {% endfor %}
-      {% if resource.tkeywords.count > 0 %}
-        {% get_current_language as LANGUAGE_CODE %}
-        {% for keyword in resource.tkeywords.all %}
-          <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?tkeywords__id__in={{ keyword.id }}">
-            {% for label in keyword.labels %}
-            {% if label.lang == LANGUAGE_CODE %}
-            {{ label }}
-            {% endif %}
-            {% endfor %}
-          </a>
-        {% endfor %}
+      {% if THESAURI_FILTERS %}
+        {% if resource.tkeywords.count > 0 %}
+          {% get_current_language as LANGUAGE_CODE %}
+          {% for keyword in resource.tkeywords.all %}
+            <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?tkeywords__id__in={{ keyword.id }}">
+              {% for label in keyword.labels %}
+                {% if forloop.first %},{% endif %}
+                {% if label.lang == LANGUAGE_CODE %}
+                  {{ label }}
+                {% endif %}
+              {% endfor %}
+            </a>
+          {% endfor %}
+        {% endif %}
       {% endif %}
       </dd>
     {% endif %}
