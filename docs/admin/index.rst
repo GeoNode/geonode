@@ -48,3 +48,11 @@ GeoNode Async Signals
     :maxdepth: 3
 
     async/index
+
+GeoNode add a thesaurus
+=======================
+
+.. toctree::
+    :maxdepth: 3
+
+    thesaurus/index
