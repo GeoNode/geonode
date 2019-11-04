@@ -177,12 +177,12 @@ msgid "Category is required."
 msgstr "Category is required."
 
 #: geonode/base/forms.py:292
-msgid "Keywords from Thesauri"
-msgstr "Keywords from Thesauri"
+msgid "Keywords from Thesaurus"
+msgstr "Keywords from Thesaurus"
 
 #: geonode/base/forms.py:294
-msgid "List of keywords from Thesauri"
-msgstr "List of keywords from Thesauri"
+msgid "List of keywords from Thesaurus"
+msgstr "List of keywords from Thesaurus"
 
 #: geonode/base/forms.py:325 geonode/base/models.py:539
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:10

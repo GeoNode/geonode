@@ -46,16 +46,31 @@
     <dd>{{ resource.display_type }}</dd>
     {% endif %}
 
-    {% if resource.keywords.count > 0 %}
+    {% if resource.keywords.count > 0 or resource.tkeywords.count > 0 %}
     <dt>{% trans "Keywords" %}</dt>
-    <dd itemprop="keywords">
+      <dd itemprop="keywords">
       {% for keyword in resource.keywords.all %}
-  <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?keywords__slug__in={{ keyword.slug }}" >
+        <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?keywords__slug__in={{ keyword.slug }}" >
           {{ keyword.name }}
         </a>
         {% if not forloop.last %},{% endif %}
       {% endfor %}
-    </dd>
+      {% if THESAURI_FILTERS %}
+        {% if resource.tkeywords.count > 0 %}
+          {% get_current_language as LANGUAGE_CODE %}
+          {% for keyword in resource.tkeywords.all %}
+            <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?tkeywords__id__in={{ keyword.id }}">
+              {% for label in keyword.labels %}
+                {% if forloop.first %},{% endif %}
+                {% if label.lang == LANGUAGE_CODE %}
+                  {{ label }}
+                {% endif %}
+              {% endfor %}
+            </a>
+          {% endfor %}
+        {% endif %}
+      {% endif %}
+      </dd>
     {% endif %}
 
     {% if resource.category %}

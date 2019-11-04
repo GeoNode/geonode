@@ -1,7 +1,205 @@
-{% extends "layouts/panels.html" %}
+{% load static from staticfiles %}
 {% load floppyforms %}
 {% load i18n %}
+<!--<link href="{% static "lib/css/bootstrap-select.css" %}?v={{ VERSION }}" rel="stylesheet" />-->
+<script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
+<style>
+/* general panel styles */
+#mdeditor_form .panel-group .panel{
+  overflow: visible;
+}
+/* date fields proper sizes */
+#mdeditor_form .input-group.date {
+  width: 100%;
+}
 
+/* resizable text-areas */
+#mdeditor_form textarea {
+  resize: vertical;
+  height: 120px;
+}
+
+/* question mark (info) distance fom label*/
+form #mdeditor_form label{
+  margin-right: 0.3em;
+}
+/* regions */
+#regions_multiselect_container .fstElement {
+  width: 100%;
+}
+#regions_multiselect_container .fstChoiceItem {
+  background-color: #2c689c;
+  border: #2c689c;
+}
+
+#mdeditor_form .mandatory-hint,#mdeditor_form .advanced-hint {
+  cursor: pointer;
+}
+
+/* publishing checkboxes */
+#mdeditor_form #id_resource-metadata_uploaded_preserve,
+#mdeditor_form #id_resource-is_approved,
+#mdeditor_form #id_resource-is_published,
+#mdeditor_form #id_resource-featured  {
+  float: right;
+}
+
+/* mosaiking checkboxes */
+#mdeditor_form #id_resource-is_mosaic,
+#mdeditor_form #id_resource-has_time,
+#mdeditor_form #id_resource-has_elevation  {
+  float: right;
+}
+
+/* keywords */
+#mdeditor_form .tokenfield.form-control {
+  height: auto;
+}
+
+#mdeditor_form .thesauri_keywords label {
+  display: block;
+}
+#mdeditor_form span.autocomplete-light-widget {
+  width: 100%;
+}
+</style>
+<style>
+/* metadata edit workflow wizard */
+.wizard--progress {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  color: #2c689c;
+}
+.wizard--progress > li {
+  position: relative;
+  display: table-cell;
+  text-align: center;
+  font-size: 0.8em;
+}
+.wizard--progress > li:hover {
+  cursor: pointer;
+}
+.wizard--progress > li:before {
+  transition: background 0.5s ease 0.1s;
+  box-shadow: 5px 5px 5px rgba(0,0,0,.5);
+  content: attr(data-step);
+  display: block;
+  margin: 0 auto;
+  background: #DFE3E4;
+  width: 3em;
+  height: 3em;
+  text-align: center;
+  margin-bottom: 0.25em;
+  line-height: 3em;
+  border-radius: 100%;
+  position: relative;
+  z-index: 1000;
+}
+.wizard--progress > li:after {
+  transition: background 1s ease, width 1s ease;
+  width: 0px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,.5);
+  content: '';
+  position: absolute;
+  display: block;
+  background: #DFE3E4;
+  height: 0.5em;
+  top: 1.25em;
+  left: 50%;
+  margin-left: 1.5em\9;
+  z-index: -1;
+}
+
+.wizard--progress > li:last-child:after {
+  display: none;
+}
+.wizard--progress > li.is-complete {
+  color: #333333;
+}
+.wizard--progress > li.is-complete:before, .wizard--progress > li.is-complete:after {
+  color: #FFF;
+  background: #333333;
+}
+.wizard--progress > li.is-complete:before {
+  z-index: 1;
+}
+.wizard--progress > li.is-complete:after {
+  transition: background 1s ease, width 1s ease;
+  z-index: 0;
+  width: 100%;
+}
+.wizard--progress > li a {
+  color: #2c689c;
+}
+.wizard--progress > li.is-active {
+  color: #2c689c;
+}
+.wizard--progress > li.is-active:before {
+  color: #FFF;
+  background: #2c689c;
+}
+
+.wizard--progress > li.is-complete a {
+  color: #000;
+}
+
+/**
+ * Needed for IE8
+ */
+.wizard--progress__last:after {
+  display: none !important;
+}
+
+/**
+ * Size Extensions
+ */
+.wizard--progress--medium {
+  font-size: 1.5em;
+}
+
+.wizard--progress--large {
+  font-size: 2em;
+}
+.wizard--progress > li:before {
+    text-decoration: none;
+}
+.wizard--progress li:hover a{
+  text-decoration: underline;
+}
+.wizard--progress a, .wizard--progress a:hover:before {
+  text-decoration: none;
+}
+
+</style>
+
+<style>
+/* draggable table */
+span.grippy {
+  content: '....';
+  width: 15px;
+  height: 26px;
+  display: inline-block;
+  overflow: hidden;
+  line-height: 5px;
+  padding: 3px 4px;
+  cursor: move;
+  vertical-align: middle;
+
+  font-size: 12px;
+  font-family: sans-serif;
+  letter-spacing: 2px;
+  color: #cccccc;
+  text-shadow: 1px 0 1px black;
+}
+span.grippy::after {
+  content: '.. .. .. ..';
+}
+</style>
+<button class="btn btn-success metadata-edit-done" id="btn_upd_md_done" type="submit" style="float:right; opacity: 0;" >{% trans "Done!" %}</button>
 {% block body_outer %}
 <ul id="md_tabs" class="nav nav-tabs">
   <li id="metadata_edit_tab" class="active">
@@ -69,11 +267,14 @@
                                 </div>
                                 <div class="col-lg-5">
                                     <div class="col-lg-12">
+                                        <span><label for="{{ document_form.date_type|id }}">{{ document_form.keywords.label }}</label></span>
                                         {{ document_form.keywords }}
                                     </div>
+                                    {% if THESAURI_FILTERS %}
                                     <div class="col-lg-12 thesauri_keywords">
                                         {{ tkeywords_form }}
                                     </div>
+                                    {% endif %}
                                     <div class="col-lg-6 col-xs-12">
                                         <span><label for="{{ document_form.date_type|id }}">{{ document_form.date_type.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
