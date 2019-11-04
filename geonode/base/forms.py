@@ -17,8 +17,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from fields import MultiThesauriField
-from widgets import MultiThesauriWidget
+
+import logging
+import traceback
+
+from .fields import MultiThesauriField
 
 from autocomplete_light.widgets import ChoiceWidget
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
@@ -47,6 +50,8 @@ from geonode.people.models import Profile
 from geonode.base.enumerations import ALL_LANGUAGES
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+
+logger = logging.getLogger(__name__)
 
 
 def get_tree_data():
@@ -289,20 +294,27 @@ class CategoryForm(forms.Form):
 
 class TKeywordForm(forms.Form):
     tkeywords = MultiThesauriField(
-        label=_("Keywords from Thesauri"),
+        label=_("Keywords from Thesaurus"),
         required=False,
-        help_text=_("List of keywords from Thesauri"),
-        widget=MultiThesauriWidget())
+        help_text=_("List of keywords from Thesaurus"))
+
+    def __init__(self, *args, **kwargs):
+        super(TKeywordForm, self).__init__(*args, **kwargs)
+        initial_arguments = kwargs.get('initial', None)
+        if initial_arguments and 'tkeywords' in initial_arguments and \
+        isinstance(initial_arguments['tkeywords'], basestring):
+            initial_arguments['tkeywords'] = initial_arguments['tkeywords'].split(',')
+        self.data = initial_arguments
 
     def clean(self):
         cleaned_data = None
         if self.data:
             try:
-                cleaned_data = [{key: self.data.getlist(key)} for key, value in self.data.items(
-                ) if 'tkeywords-tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
+                cleaned_data = [{key: self.data.get(key)} for key, value in self.data.items(
+                ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
             except BaseException:
-                pass
-
+                tb = traceback.format_exc()
+                logger.exception(tb)
         return cleaned_data
 
 

@@ -170,11 +170,11 @@ msgid "Category is required."
 msgstr "الفئة مطلوبة."
 
 #: geonode/base/forms.py:288
-msgid "Keywords from Thesauri"
+msgid "Keywords from Thesaurus"
 msgstr "كلمات رئيسية من قاموس المرادفات"
 
 #: geonode/base/forms.py:290
-msgid "List of keywords from Thesauri"
+msgid "List of keywords from Thesaurus"
 msgstr "قائمة الكلمات الرئيسية من قاموس المرادفات"
 
 #: geonode/base/forms.py:321 geonode/base/models.py:537

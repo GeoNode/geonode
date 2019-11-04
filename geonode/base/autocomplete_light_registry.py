@@ -83,16 +83,15 @@ class ThesaurusKeywordLabelAutocomplete(AutocompleteModelBase):
         return super(ThesaurusKeywordLabelAutocomplete, self).choices_for_request()
 
 
-if hasattr(settings, 'THESAURI'):
-    for thesaurus in settings.THESAURI:
+if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+    thesaurus = settings.THESAURUS
+    tname = thesaurus['name']
+    ac_name = 'thesaurus_' + tname
 
-        tname = thesaurus['name']
-        ac_name = 'thesaurus_' + tname
+    logger.debug('Registering thesaurus autocomplete for {}: {}'.format(tname, ac_name))
 
-        logger.debug('Registering thesaurus autocomplete for {}: {}'.format(tname, ac_name))
-
-        register(
-            ThesaurusKeywordLabelAutocomplete,
-            name=ac_name,
-            choices=ThesaurusKeywordLabel.objects.filter(Q(keyword__thesaurus__identifier=tname))
-        )
+    register(
+        ThesaurusKeywordLabelAutocomplete,
+        name=ac_name,
+        choices=ThesaurusKeywordLabel.objects.filter(Q(keyword__thesaurus__identifier=tname))
+    )
