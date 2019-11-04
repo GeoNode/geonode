@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2019 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import base64
@@ -940,7 +939,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         # Testing OWS endpoints
         from urlparse import urljoin
         from django.core.urlresolvers import reverse
-        from .ows import _wcs_get_capabilities, _wfs_get_capabilities, _wms_get_capabilities
+        from ..ows import _wcs_get_capabilities, _wfs_get_capabilities, _wms_get_capabilities
         wcs = _wcs_get_capabilities()
         logger.debug(wcs)
         self.assertIsNotNone(wcs)
