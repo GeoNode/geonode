@@ -20,7 +20,7 @@ celery==4.2.1
 kombu==4.6.5
 boto<=2.49.0
 six<1.11.0 # https://github.com/benjaminp/six/issues/210
-tqdm==4.36.1
+tqdm==4.37.0
 Deprecated==1.2.6
 wrapt==1.11.2
 
@@ -136,5 +136,5 @@ pytest-bdd==3.2.1
 splinter==0.11.0
 pytest-splinter==2.0.1
 pytest-django==3.6.0
-setuptools==41.5.1
+setuptools==41.6.0
 Twisted==19.7.0

@@ -33,14 +33,14 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-26 08:27+0400\n"
-"PO-Revision-Date: 2019-07-26 18:21+0400\n"
+"PO-Revision-Date: 2019-10-31 19:09+0300\n"
 "Last-Translator: Sylvain POULAIN <sylvain.poulain@giscan.com>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.2.4\n"
 "Language: fr\n"
 
 #: geonode/base/__init__.py:27
@@ -185,11 +185,11 @@ msgid "Category is required."
 msgstr "Une catégorie est requise."
 
 #: geonode/base/forms.py:288
-msgid "Keywords from Thesauri"
+msgid "Keywords from Thesaurus"
 msgstr "Mots-clés du Thésaurus"
 
 #: geonode/base/forms.py:290
-msgid "List of keywords from Thesauri"
+msgid "List of keywords from Thesaurus"
 msgstr "Liste des mots-clés du Thésaurus"
 
 #: geonode/base/forms.py:321 geonode/base/models.py:537
@@ -1456,7 +1456,7 @@ msgstr "Style"
 #: geonode/people/templates/people/profile_detail.html:161
 #: geonode/templates/500.html:278 geonode/templates/base.html:253
 msgid "Admin"
-msgstr "Amministration"
+msgstr "Administration"
 
 #: geonode/contrib/monitoring/models.py:174
 #: geonode/contrib/monitoring/models.py:300
@@ -1695,13 +1695,11 @@ msgstr ""
 
 #: geonode/contrib/worldmap/gazetteer/models.py:22
 msgid "Start Date"
-msgstr ""
+msgstr "Date de début"
 
 #: geonode/contrib/worldmap/gazetteer/models.py:23
-#, fuzzy
-#| msgid "Date"
 msgid "End Date"
-msgstr "Date"
+msgstr "Date de fin"
 
 #: geonode/contrib/worldmap/gazetteer/models.py:24
 msgid "Julian Date Start"
@@ -2230,10 +2228,8 @@ msgstr "documents"
 
 #: geonode/documents/templates/documents/document_detail.html:41
 #: geonode/documents/templates/documents/document_detail.html:43
-#, fuzzy
-#| msgid "Download Style"
 msgid "Download the"
-msgstr "Télécharger le Style"
+msgstr "Télécharger le "
 
 #: geonode/documents/templates/documents/document_detail.html:41
 #: geonode/documents/templates/documents/document_detail.html:43
@@ -4784,10 +4780,8 @@ msgid "Download Failed"
 msgstr "Téléchargement échoué"
 
 #: geonode/maps/templates/maps/map_list.html:5
-#, fuzzy
-#| msgid "GeoExplorer"
 msgid "maps explore"
-msgstr "GeoExplorer"
+msgstr "Explorer les cartes"
 
 #: geonode/maps/templates/maps/map_metadata.html:20
 #, fuzzy, python-format
@@ -5057,10 +5051,8 @@ msgid "All contents"
 msgstr "Tous les contenus"
 
 #: geonode/people/templates/people/_profile_list_item.html:18
-#, fuzzy
-#| msgid "Organization"
 msgid "No Organization Info"
-msgstr "Organisation"
+msgstr "Aucune informtion sur l'organisation"
 
 #: geonode/people/templates/people/forgot_username_form.html:6
 msgid "Forgot Username"
@@ -5080,10 +5072,8 @@ msgid "Profile of "
 msgstr "Profil de "
 
 #: geonode/people/templates/people/profile_detail.html:20
-#, fuzzy
-#| msgid "GeoExplorer"
 msgid "people explore"
-msgstr "GeoExplorer"
+msgstr "Explorer les utilisateurs"
 
 #: geonode/people/templates/people/profile_detail.html:71
 #: geonode/people/templates/people/profile_detail.html:77
@@ -5199,10 +5189,8 @@ msgid "Resources"
 msgstr "Ressources"
 
 #: geonode/people/templates/people/profile_edit.html:5
-#, fuzzy
-#| msgid "Invite people"
 msgid "edit people"
-msgstr "Inviter une personne"
+msgstr "Modifier un utilisateur"
 
 #: geonode/people/templates/people/profile_edit.html:10
 msgid "Edit Your Profile"
@@ -6969,10 +6957,8 @@ msgid "that you wish to join her/his group(s) through this link"
 msgstr "que vous souhaitez rejoindre son / ses groupe (s) via ce lien"
 
 #: geonode/templates/invitations/email/email_invite_message.txt:13
-#, fuzzy
-#| msgid "The following groups:"
 msgid "is a member of the following group(s)"
-msgstr "Les groupes suivants:"
+msgstr "est membre des groupes suivants"
 
 #: geonode/templates/metadata_base.html:149
 msgid "Updating Metadata..."

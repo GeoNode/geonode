@@ -30,12 +30,13 @@ def init_registered_members_groupprofile():
     from django.contrib.auth import get_user_model
 
     group_name = settings.REGISTERED_MEMBERS_GROUP_NAME
+    group_title = settings.REGISTERED_MEMBERS_GROUP_TITLE
     logger.debug("Creating %s default Group Profile" % group_name)
     groupprofile, created = GroupProfile.objects.get_or_create(
         slug=group_name)
     if created:
         groupprofile.slug = group_name
-        groupprofile.title = "Registered Members"
+        groupprofile.title = group_title
         groupprofile.access = "private"
         groupprofile.save()
 
