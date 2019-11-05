@@ -1358,6 +1358,8 @@ class MenuPlaceholder(models.Model):
         blank=False,
         unique=True
     )
+    def __unicode__(self):
+        return u"{0}".format(self.name)
 
     def __str__(self):
         return self.name
@@ -1378,6 +1380,9 @@ class Menu(models.Model):
     order = models.IntegerField(
         null=False,
     )
+
+    def __unicode__(self):
+        return u"{0}".format(self.title)
 
     def __str__(self):
         return self.title
@@ -1412,6 +1417,9 @@ class MenuItem(models.Model):
         blank=False
     )
 
+    def __unicode__(self):
+        return u"{0}".format(self.title)
+    
     def __str__(self):
         return self.title
 
