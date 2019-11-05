@@ -1358,6 +1358,7 @@ class MenuPlaceholder(models.Model):
         blank=False,
         unique=True
     )
+
     def __unicode__(self):
         return u"{0}".format(self.name)
 
@@ -1419,7 +1420,7 @@ class MenuItem(models.Model):
 
     def __unicode__(self):
         return u"{0}".format(self.title)
-    
+
     def __str__(self):
         return self.title
 
