@@ -423,16 +423,17 @@ class CollectorAPI(object):
                 values = requests.distinct(
                     column_name).values_list(column_name, flat=True)
             for v in values:
-                value = v
-                if is_user_metric:
-                    value = v[0]
-                rqs = requests.filter(**{column_name: value})
-                row = rqs.aggregate(
-                    value=models.Count(column_name),
-                    samples=models.Count(column_name)
-                )
-                row['label'] = v
-                q.append(row)
+                if v is not None:
+                    value = v
+                    if is_user_metric:
+                        value = v[0]
+                    rqs = requests.filter(**{column_name: value})
+                    row = rqs.aggregate(
+                        value=models.Count(column_name),
+                        samples=models.Count(column_name)
+                    )
+                    row['label'] = v
+                    q.append(row)
             q.sort(key=_key)
             q.reverse()
 
@@ -947,7 +948,11 @@ class CollectorAPI(object):
                             except Resolver404:
                                 t['href'] = ""
                 row[tcol] = t
-            return row
+            # Avoid Count label for countries
+            # (it has been already fixed in "set_metric_values"
+            # but the following line avoid showing the label in case of existing dirty db)
+            if not (metric_name == "request.country" and row["label"] == "count"):
+                return row
 
         return [postproc(row) for row in raw_sql(q, params)]
 
