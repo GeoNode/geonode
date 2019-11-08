@@ -2679,3 +2679,33 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(len(dd), len(test_data))
         for d in dd:
             self.assertIn(d, test_data)
+
+    def test_countries_endpoint(self):
+        # url
+        url = "%s?%s" % (
+            reverse('monitoring:api_metric_data', args={'request.country'}),
+            'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'
+        )
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        self.client.login_user(self.user)
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        self.assertEqual(out["error"], "unauthorized_request")
+        # Authorized
+        self.client.login_user(self.admin)
+        self.assertTrue(get_user(self.client).is_authenticated())
+        response = self.client.get(url)
+        out = json.loads(response.content)
+        # Check data
+        data = out["data"]
+        self.assertEqual(data["metric"], "request.country")
+        self.assertEqual(data["interval"], 31536000)
+        self.assertEqual(data["label"], None)
+        self.assertEqual(data["axis_label"], "Count")
+        self.assertEqual(data["type"], "value")
+        self.assertEqual(out["data"]["input_valid_from"], '2018-09-11T20:00:00.000000Z')
+        self.assertEqual(out["data"]["input_valid_to"], '2019-09-11T20:00:00.000000Z')
+        dd = data["data"][0]["data"]
+        self.assertIsNone(dd[0])
