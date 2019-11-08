@@ -309,6 +309,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
         if not settings.FREETEXT_KEYWORDS_READONLY:
             try:
+                # AF: Warning - this won't allow people to have empty keywords on GeoNode
                 if len(instance.keyword_list()) == 0 and gs_resource.keywords:
                     for keyword in gs_resource.keywords:
                         if keyword not in instance.keyword_list():
