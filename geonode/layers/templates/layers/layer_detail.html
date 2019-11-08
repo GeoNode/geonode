@@ -763,36 +763,38 @@
     {% endif %}
     {% include 'rating.html' %}
     {% include 'request_download.html' %}
-       $("#comment_submit_btn").click(function(event) {
-            $.ajax({
-              type: "POST",
-              url: $("#form_post_comment").attr('action'),
-              data: $("#form_post_comment").serialize(),
-              success: function() {
-                $('#form_post_comment_div').modal().find('form')[0].reset();
-                $('#form_post_comment_div').modal('hide');
-                $('#comments_section').load(window.location.pathname + ' #comments_section',
-                		function(){$(this).children().unwrap()})
-              }
-            });
-            return false;
-          });
 
-    {% if resource.get_legend.link_type == 'json' %}
-    $.getJSON('{{ resource.get_legend_url }}', function (data) {
-        var legend = data.layers[0].legend;
-        var items = [];
-        $.each(legend, function (key, dvalue) {
-            items.push('<li><img src="data:image/png;base64,' + dvalue.imageData + '">'+dvalue.label+'</li>');
+    <script type="text/javascript">
+      $("#comment_submit_btn").click(function(event) {
+          $.ajax({
+            type: "POST",
+            url: $("#form_post_comment").attr('action'),
+            data: $("#form_post_comment").serialize(),
+            success: function() {
+              $('#form_post_comment_div').modal().find('form')[0].reset();
+              $('#form_post_comment_div').modal('hide');
+              $('#comments_section').load(window.location.pathname + ' #comments_section',
+                  function(){$(this).children().unwrap()})
+            }
+          });
+          return false;
         });
 
-        $('<ul/>', {
-            'class': 'arcgis-legend',
-            html: items.join('')
+        {% if resource.get_legend.link_type == 'json' %}
+        $.getJSON('{{ resource.get_legend_url }}', function (data) {
+            var legend = data.layers[0].legend;
+            var items = [];
+            $.each(legend, function (key, dvalue) {
+                items.push('<li><img src="data:image/png;base64,' + dvalue.imageData + '">'+dvalue.label+'</li>');
+            });
 
-        }).appendTo('#legend_placeholder');
-    });
-    {% endif %}
+            $('<ul/>', {
+                'class': 'arcgis-legend',
+                html: items.join('')
+
+            }).appendTo('#legend_placeholder');
+        });
+        {% endif %}
     </script>
 
     {% block thumbnail_script %}
