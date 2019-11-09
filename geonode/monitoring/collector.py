@@ -948,13 +948,18 @@ class CollectorAPI(object):
                             except Resolver404:
                                 t['href'] = ""
                 row[tcol] = t
+            return row
+
+        def check_row(r):
+            is_ok = True
             # Avoid Count label for countries
             # (it has been already fixed in "set_metric_values"
             # but the following line avoid showing the label in case of existing dirty db)
-            if not (metric_name == "request.country" and row["label"] == "count"):
-                return row
+            if metric_name == "request.country" and r["label"] == "count":
+                is_ok = False
+            return is_ok
 
-        return [postproc(row) for row in raw_sql(q, params)]
+        return [postproc(row) for row in raw_sql(q, params) if check_row(row)]
 
     def aggregate_past_periods(self, metric_data_q=None, periods=None, **kwargs):
         """
