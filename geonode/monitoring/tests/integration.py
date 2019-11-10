@@ -2708,4 +2708,4 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["data"]["input_valid_from"], '2018-09-11T20:00:00.000000Z')
         self.assertEqual(out["data"]["input_valid_to"], '2019-09-11T20:00:00.000000Z')
         dd = data["data"][0]["data"]
-        self.assertIsNone(dd[0])
+        self.assertEqual(len(dd), 0)
