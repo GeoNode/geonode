@@ -170,13 +170,17 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
             **kwargs)
     else:
         if len(service_typename) > 1 and ':' in service_typename[1]:
-            query = {
-                'store': service_typename[0],
-                'alternate': service_typename[1]
-            }
+            if service_typename[0]:
+                query = {
+                    'store': service_typename[0],
+                    'alternate': service_typename[1]
+                }
+            else:
+                query = {
+                    'alternate': service_typename[1]
+                }
         else:
             query = {'alternate': alternate}
-
         return resolve_object(request,
                               Layer,
                               query,
