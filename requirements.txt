@@ -135,6 +135,6 @@ pytest==4.6.6
 pytest-bdd==3.2.1
 splinter==0.11.0
 pytest-splinter==2.0.1
-pytest-django==3.6.0
+pytest-django==3.7.0
 setuptools==41.6.0
 Twisted==19.7.0
