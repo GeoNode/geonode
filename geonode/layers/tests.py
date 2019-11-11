@@ -273,6 +273,9 @@ class LayersTest(GeoNodeBaseTestSupport):
         response = self.client.get(reverse('layer_detail', args=(lyr.alternate,)))
         self.failUnlessEqual(response.status_code, 200)
 
+        response = self.client.get(reverse('layer_detail', args=(":%s" % lyr.alternate,)))
+        self.failUnlessEqual(response.status_code, 200)
+
         response = self.client.get(reverse('layer_metadata', args=(lyr.alternate,)))
         self.failUnlessEqual(response.status_code, 200)
 
