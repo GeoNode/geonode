@@ -1,6 +1,6 @@
 # Change Log
 
-## [2.10.1](https://github.com/GeoNode/geonode/tree/2.10.1) (2019-10-28)
+## [2.10.1](https://github.com/GeoNode/geonode/tree/2.10.1) (2019-11-12)
 
  - **[Implemented Features](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1+label%3Afeature)**
 
@@ -28,6 +28,74 @@
 
 ## [Full Changelog](https://github.com/GeoNode/geonode/compare/2.10...2.10.1)
 
+<li> 2019-11-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/cf38e9f3c99b7ffa44c5c5027ea654d54c5c3290" target="blank"> Bump urllib3 from 1.25.6 to 1.25.7</a></li> 
+<li> 2019-11-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/0c5c400bef8a842456cb4fd628dffbb3d07248f5" target="blank"> Bump deprecated from 1.2.6 to 1.2.7</a></li> 
+<li> 2019-11-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/d423179a71a5e043c1e4f42df56445ee63b37ba0" target="blank"> Bump sqlalchemy from 1.3.10 to 1.3.11</a></li> 
+<li> 2019-11-11: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/061f627ca8ea4137a1516900cc93d4d907b7bb7b" target="blank"> Bump pytest-django from 3.6.0 to 3.7.0</a></li> 
+<li> 2019-11-11: afabiani <a href="http://github.com/geonode/geonode/commit/0e37af02269101729cc3e409bd4977e79bc1c1a1" target="blank"> [Fixes #5223] Layer details broken if no store identified</a></li> 
+<li> 2019-11-11: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/d1da8ca5a9af24784d07ab8681e9c07087ed44da" target="blank"> Bump tqdm from 4.37.0 to 4.38.0</a></li> 
+<li> 2019-11-11: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/283f497c7359b7f1c24cd31dadeb997a9d9806c5" target="blank"> Bump amqp from 2.5.1 to 2.5.2</a></li> 
+<li> 2019-11-11: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/35eb680dcfbbc5bc2259644083f3281b20238109" target="blank"> Bump django-geonode-mapstore-client from 1.4.5 to 1.4.6</a></li> 
+<li> 2019-11-11: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/6d31b96d200650652f242309b9c166ae681aa282" target="blank"> Bump django-mapstore-adapter from 1.0.11 to 1.0.12</a></li> 
+<li> 2019-11-11: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/41accba57643d3ad487722ff88e19f5d9608fc30" target="blank"> Bump twisted from 19.7.0 to 19.10.0</a></li> 
+<li> 2019-11-11: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/27bfe3b2348de0b91c3c8469ddcd7eb4fcbf67bf" target="blank"> Bump kombu from 4.6.5 to 4.6.6</a></li> 
+<li> 2019-11-09: Florian Hoedt <a href="http://github.com/geonode/geonode/commit/f2a3d709714887a252c2d8748ba13c64c21acdc4" target="blank"> added unicode tests for Menu, MenuItem and MenuPlaceholder</a></li> 
+<li> 2019-11-08: Alessio Fabiani <a href="http://github.com/geonode/geonode/commit/e49cf46e55dafca22c26a10953025229001cc450" target="blank"> Revert "Bump amqp from 2.5.1 to 2.5.2"</a></li> 
+<li> 2019-11-08: gioscarda <a href="http://github.com/geonode/geonode/commit/4bfce88c32d2267aa0e0139fe6804f17712c8306" target="blank"> [Fixes #5214] Fix regression on monitoring countries endpoint</a></li> 
+<li> 2019-11-08: afabiani <a href="http://github.com/geonode/geonode/commit/763c5ef085f5010f714711ddececb64fdfa6810e" target="blank"> [Fixes #5209] MapStore client critical slow-down with latest Chrome updates</a></li> 
+<li> 2019-11-08: afabiani <a href="http://github.com/geonode/geonode/commit/2e3a117540b9b63855459fb14f892a106d7d8f16" target="blank"> [Hardening] layer_detail typo</a></li> 
+<li> 2019-11-08: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/d78f6b213da2ec91d3c27e509ced6dfd5a58ebf0" target="blank"> Bump amqp from 2.5.1 to 2.5.2</a></li> 
+<li> 2019-11-08: gioscarda <a href="http://github.com/geonode/geonode/commit/c3485492c6918fc71f401879608f3df503ccae31" target="blank"> [Fixes #5203] avoid count label in countries, add missing flags</a></li> 
+<li> 2019-11-06: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/9b36abf56b1ca8c5296dc1351027d5d2dc639938" target="blank"> Update six requirement from <1.11.0 to <1.14.0</a></li> 
+<li> 2019-11-06: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/9a6626836bb43fe73431b45b8a42a6ab78cb8092" target="blank"> Bump psutil from 5.6.4 to 5.6.5</a></li> 
+<li> 2019-11-05: Florian Hoedt <a href="http://github.com/geonode/geonode/commit/1049179634edb7aaf5262f75451c3702f4adf409" target="blank"> fixed pep8 errors</a></li> 
+<li> 2019-11-05: Florian Hoedt <a href="http://github.com/geonode/geonode/commit/60929576a1bb0b45202b7f02905214f8d3af7bf4" target="blank"> fixes #5197</a></li> 
+<li> 2019-11-04: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/cc244c0ba35bd1ea71153c6b28819f11cc8cdaa3" target="blank"> Bump psutil from 5.6.3 to 5.6.4</a></li> 
+<li> 2019-11-04: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/31c4d6312ca5a890e5218cbd1cccda7933c81c3b" target="blank"> Bump django from 1.11.25 to 1.11.26</a></li> 
+<li> 2019-11-04: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/068ad9b820e15426785c984002d1428efac8450d" target="blank"> Bump python-dateutil from 2.8.0 to 2.8.1</a></li> 
+<li> 2019-11-04: afabiani <a href="http://github.com/geonode/geonode/commit/e473fa75859d999e13311d7abf286f987d97a846" target="blank">  - _resourcebase_info_panel is showing the tkeywords only if THESAURUS is enabled and adding commas between words</a></li> 
+<li> 2019-11-04: afabiani <a href="http://github.com/geonode/geonode/commit/bccca80ee5849fe9ea2166a2f5d2a5569aa2b4ee" target="blank"> [Fixes #5181] Wrong words in French translation</a></li> 
+<li> 2019-10-31: Fanevanjanahary <a href="http://github.com/geonode/geonode/commit/7cee43ce1063ee8f8e0a79523e81c167929c36dd" target="blank"> Changed wrong words in French version</a></li> 
+<li> 2019-11-04: afabiani <a href="http://github.com/geonode/geonode/commit/d2fa2b0669e67009604544b609692f4895d55405" target="blank">  - Fixes "field" rendering error when Thesauri have been enabled</a></li> 
+<li> 2019-11-01: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/b792f1e7913358c17166d4d6f858b90ca8a31071" target="blank"> Bump tqdm from 4.36.1 to 4.37.0</a></li> 
+<li> 2019-11-01: Toni Schönbuchner <a href="http://github.com/geonode/geonode/commit/9ef6bc45998a2d312ce3a719fdcf29092d6d0b28" target="blank"> [Fixes #5172] Add fix for import thesaurus</a></li> 
+<li> 2019-11-01: Toni Schönbuchner <a href="http://github.com/geonode/geonode/commit/a4cf6a67869471fb6cf59cc03be48e0e06aa357d" target="blank"> [Fixes #5172] Add docs for thesaurus</a></li> 
+<li> 2019-10-31: afabiani <a href="http://github.com/geonode/geonode/commit/42c3eeca00898f752efe9976ec590508791ff000" target="blank"> [Fixes #5158] Update thesaurus management command and fix autocomplete</a></li> 
+<li> 2019-10-30: afabiani <a href="http://github.com/geonode/geonode/commit/a305f3218d57bbc15cea7a5cba531b401b74b5bf" target="blank"> [Fixes #4661] Replace Layer functionality incomplete/broken</a></li> 
+<li> 2019-09-05: capooti <a href="http://github.com/geonode/geonode/commit/8c2c3363ea464b293809edaa46656b9aec709e35" target="blank"> Mitigates possibilities for error #2932</a></li> 
+<li> 2019-10-30: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/321f972000100797798346f6a69ddcf9a896e1c8" target="blank"> Bump setuptools from 41.5.1 to 41.6.0</a></li> 
+<li> 2019-10-30: Toni Schönbuchner <a href="http://github.com/geonode/geonode/commit/0c9bab560835ff7181ed1134093ca2a0ad446446" target="blank"> [Fixes #5105] Error when using THESAURI</a></li> 
+<li> 2019-10-29: afabiani <a href="http://github.com/geonode/geonode/commit/7f0ad22a4c16fa01469e40f561cd373e4c31ec52" target="blank"> [Docs] Cleaning up misleading instructions</a></li> 
+<li> 2019-10-29: afabiani <a href="http://github.com/geonode/geonode/commit/f0073e84298a8bce5b716d7888b0920a72c58760" target="blank"> [Fixes #5136] Assignment of users to member groups should be done at activation time</a></li> 
+<li> 2019-10-29: capooti <a href="http://github.com/geonode/geonode/commit/58b6e14b766b1e260c7e4f58f9ffeb706fc54155" target="blank"> [Implements #5149] Add documentation for migrating GeoNode from 2.4 to 2.10.1</a></li> 
+<li> 2019-10-29: Alessio Fabiani <a href="http://github.com/geonode/geonode/commit/5a8476e0b2f95ae4fa9aa204e4cca08ba87353df" target="blank"> [Fixes #5117] Publishing layers of two remote services with same (#5135)</a></li> 
+<li> 2019-10-29: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/8d261cc3abb3d78fd17fdad7a054e4391ff3d278" target="blank"> Bump setuptools from 41.5.0 to 41.5.1 (#5139)</a></li> 
+<li> 2019-10-29: Toni Schönbuchner <a href="http://github.com/geonode/geonode/commit/010aa1f5d781233237cc75df31a8bfae2f21499a" target="blank"> [Fixes #5138] Fix assertation error</a></li> 
+<li> 2019-10-29: Toni Schönbuchner <a href="http://github.com/geonode/geonode/commit/04dc9b7044629e6ff5897d9adc7b7cd2c2957b8d" target="blank"> [Fixes #5138] Fix blank space</a></li> 
+<li> 2019-10-29: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/38dfa27c1f7dd6a589396db77f72a94fc243ceaf" target="blank"> Bump flake8 from 3.7.8 to 3.7.9</a></li> 
+<li> 2019-10-29: Toni Schönbuchner <a href="http://github.com/geonode/geonode/commit/95d4993bc5dab28d21e9eb712be29888cefe9ce5" target="blank"> [Fixes #5138] Fix Flake8</a></li> 
+<li> 2019-10-29: Toni Schönbuchner <a href="http://github.com/geonode/geonode/commit/fdd2c85fe7723795069f27fca3e5bd9890433c90" target="blank"> [Fixes #5138] Escape Hierarchical-tags</a></li> 
+<li> 2019-10-29: Toni Schönbuchner <a href="http://github.com/geonode/geonode/commit/7bab9e1234f36a4201b024c85220fd351bc32228" target="blank"> [Fixes #5137] Striptags for service resources</a></li> 
+<li> 2019-10-28: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/367220a2bcbfef6217539025a24b4ec951ffbcc1" target="blank"> Bump setuptools from 41.4.0 to 41.5.0</a></li> 
+<li> 2019-10-28: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/c9a9e738dd5789389b4bdcf41a142282244496f0" target="blank"> Bump decorator from 4.4.0 to 4.4.1</a></li> 
+<li> 2019-10-28: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/2de1a63d5341b7d75231f9e6a1a935bf30299072" target="blank"> Update django-modeltranslation requirement</a></li> 
+<li> 2019-10-25: capooti <a href="http://github.com/geonode/geonode/commit/7de17f048aa34caab64093de9779a81c264c2bcd" target="blank"> [Fixes #5121] ResourceBase API returns an error if a curated thumbnail img file is not existing anymore</a></li> 
+<li> 2019-10-25: Alessio Fabiani <a href="http://github.com/geonode/geonode/commit/9f4009ccff7c65874d2624580c3951c564a8da78" target="blank"> [Fixes #4827] Line layer uploaded to GeoNode is rendered as point layer (#5116)</a></li> 
+<li> 2019-10-24: Alessio Fabiani <a href="http://github.com/geonode/geonode/commit/6015531af9bf0fe6d4f182b6210b81113527be68" target="blank"> [Fixes #4827] Line layer uploaded to GeoNode is rendered as point layer (#5092)</a></li> 
+<li> 2019-10-24: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/5ed36dc33d2a2d8da7228566ef41e3f235a7f9fd" target="blank"> Update django-floppyforms requirement from <=1.7.0 to <1.9.0</a></li> 
+<li> 2019-10-23: capooti <a href="http://github.com/geonode/geonode/commit/01b511d19cf95b4aff692ca26cef824f464b0b7b" target="blank"> Enable thesauri api load only if a thesauri is defined</a></li> 
+<li> 2019-10-23: afabiani <a href="http://github.com/geonode/geonode/commit/83b805fa98446c91974441d7a9c47fa877bfee32" target="blank"> [Documentation] Fixed .env docker description for geonode-project</a></li> 
+<li> 2019-10-23: afabiani <a href="http://github.com/geonode/geonode/commit/fef9d1631e16742ce95ff7c83d8aab08a8035eb4" target="blank"> [Documentation] Fixed typo goenode to geonode</a></li> 
+<li> 2019-10-22: Alessio Fabiani <a href="http://github.com/geonode/geonode/commit/b2709d7128c7cc4867a4788ea7e5f0fdd22b83e3" target="blank"> Update settings.py</a></li> 
+<li> 2019-10-22: afabiani <a href="http://github.com/geonode/geonode/commit/f1a329c946dc21c61fbb5fffada2f0ae20e251be" target="blank"> [Fixes #5096] Disabling geonode.monitoring causes model exceptions on views</a></li> 
+<li> 2019-10-22: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/bedd1172a63b3c211ecb0fd1c6a6c41954d32cfe" target="blank"> Bump pillow from 6.2.0 to 6.2.1</a></li> 
+<li> 2019-10-22: Florian Hoedt <a href="http://github.com/geonode/geonode/commit/c3ab4da3df18ebe92503c9e679f876edc93e72c1" target="blank"> Update index.html</a></li> 
+<li> 2019-10-21: afabiani <a href="http://github.com/geonode/geonode/commit/ebf16f4ae29e3bb2e2a393c780072b7b352afc64" target="blank"> [Testing] Code Coverage / CHANGELOG updates</a></li> 
+<li> 2019-10-21: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/a36afcc8af06a3ed0a6a85ecebef2697899b81b8" target="blank"> Bump python-slugify from 3.0.6 to 4.0.0</a></li> 
+<li> 2019-10-21: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/35bf8a730200aba471373393d869f89a690f6a05" target="blank"> Bump psycopg2 from 2.8.3 to 2.8.4</a></li> 
+<li> 2019-10-21: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/fab32b6c15d0b5ab0b9ade3858f09905618688ee" target="blank"> Bump django-celery-beat from 1.1.1 to 1.5.0</a></li> 
+<li> 2019-10-21: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/ee8a56181d842802b30f1dc3e32de943351a4771" target="blank"> Bump django-leaflet from 0.24.0 to 0.25.0</a></li> 
+<li> 2019-10-21: afabiani <a href="http://github.com/geonode/geonode/commit/9e63d26c46b0571d07cc6922d5780f60e53de906" target="blank"> [Testing] Code Coverage</a></li> 
 <li> 2019-10-21: afabiani <a href="http://github.com/geonode/geonode/commit/3c810432938aa7a54d82c1f558f63000ae7b4fbb" target="blank"> [Testing] Code Coverage</a></li> 
 <li> 2019-10-19: Toni <a href="http://github.com/geonode/geonode/commit/0bb703c93dc2f4b8ef289b31e75c00b7736d48f1" target="blank"> [Fixes #5073] Added blank line</a></li> 
 <li> 2019-10-19: Toni <a href="http://github.com/geonode/geonode/commit/17cc5c767a4df811539e47395db0bbfd4e6fde03" target="blank"> [Fixes #5073] Update install docs</a></li> 
@@ -298,8 +366,7 @@
 <li> 2019-06-25: Alessio Fabiani <a href="http://github.com/geonode/geonode/commit/b97e0a10b99d18961a6afccc9e85fa7869bffb55" target="blank"> Try spcgeonode with mapstore2 and postgis</a></li> 
 <li> 2019-06-10: afabiani <a href="http://github.com/geonode/geonode/commit/91b7ebab4a59f738e3f68551b2aa022f9ce9b63f" target="blank"> [SPCgeonode] GeoServer 2.14.3</a></li> 
 <li> 2019-06-10: afabiani <a href="http://github.com/geonode/geonode/commit/c4a29c3a518eee8f404af8e2c03d10495487c548" target="blank"> - Fix travis</a></li> 
-<li> 2019-03-08: Francesco Frassinelli <a href="http://github.com/geonode/geonode/commit/ced835ebccd6e49fbb98fcbba86ba4b52d20b216" target="blank"> Test standard docker setup with geonode-selenium</a></li> 
-
+<li> 2019-03-08: Francesco Frassinelli <a href="http://github.com/geonode/geonode/commit/ced835ebccd6e49fbb98fcbba86ba4b52d20b216" target="blank"> Test standard docker setup with geonode-selenium</a></li>
 
 ## [2.10](https://github.com/GeoNode/geonode/tree/2.10.0-release) (2019-07-10)
 
