@@ -45,7 +45,7 @@ def get_version(version=None):
     if git_changeset:
         if version[3] == 'unstable':
             sub += '.dev%s' % git_changeset
-        else:
+        elif version[3] != 'final':
             sub += '.build%s' % git_changeset
     return main + sub
 
