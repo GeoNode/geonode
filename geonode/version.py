@@ -39,7 +39,7 @@ def get_version(version=None):
     parts = 2 if version[2] == 0 else 3
     main = '.'.join(str(x) for x in version[:parts])
     sub = ''
-    if version[3] != 'final':
+    if version[3] not in ('unstable', 'final'):
         mapping = {'beta': 'b', 'rc': 'rc'}
         sub = mapping[version[3]] + str(version[4])
     if git_changeset:
