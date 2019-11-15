@@ -241,8 +241,6 @@ def geoserver_upload(
         if style is None:
             try:
                 style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
-                overwrite = style or False
-                cat.create_style(name, sld, overwrite=overwrite, raw=True, workspace=settings.DEFAULT_WORKSPACE)
             except BaseException:
                 try:
                     style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
