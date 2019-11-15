@@ -110,7 +110,7 @@ class Command(BaseCommand):
                         'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
                         '{alternate}&STYLE={style_name}' + \
                         '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
-                    if not layer.get_legend_url(style_name=layer.default_style.name):
+                    if layer.default_style and not layer.get_legend_url(style_name=layer.default_style.name):
                         Link.objects.update_or_create(
                             resource=layer.resourcebase_ptr,
                             name='Legend',
