@@ -40,7 +40,7 @@ django-downloadview<=1.9
 django-polymorphic==2.1.2
 django-tastypie<0.15.0
 oauthlib==3.1.0
-pyopenssl==19.0.0
+pyopenssl==19.1.0
 
 # geopython dependencies
 pyproj>=1.9.5,<2.2.3.0
