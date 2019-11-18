@@ -83,7 +83,7 @@ class Host(models.Model):
     ip = models.GenericIPAddressField(null=False, blank=False)
     active = models.BooleanField(null=False, blank=False, default=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return 'Host: {} ({})'.format(self.name, self.ip)
 
 
@@ -109,7 +109,7 @@ class ServiceType(models.Model):
         null=False,
         choices=TYPES)
 
-    def __str__(self):
+    def __unicode__(self):
         return 'Service Type: {}'.format(self.name)
 
     @property
@@ -136,7 +136,7 @@ class Service(models.Model):
     notes = models.TextField(null=True, blank=True)
     url = models.URLField(null=True, blank=True, default='')
 
-    def __str__(self):
+    def __unicode__(self):
         return 'Service: {}@{}'.format(self.name, self.host.name)
 
     def get_metrics(self):
@@ -191,7 +191,7 @@ class MonitoredResource(models.Model):
     class Meta:
         unique_together = (('name', 'type',),)
 
-    def __str__(self):
+    def __unicode__(self):
         return 'Monitored Resource: {} {}'.format(self.name, self.type)
 
     @classmethod
@@ -282,7 +282,7 @@ class Metric(models.Model):
     def get_aggregate_name(self):
         return self.AGGREGATE_MAP[self.type]
 
-    def __str__(self):
+    def __unicode__(self):
         return "Metric: {}".format(self.name)
 
     @property
@@ -320,7 +320,7 @@ class ServiceTypeMetric(models.Model):
     service_type = models.ForeignKey(ServiceType, related_name='metric')
     metric = models.ForeignKey(Metric, related_name='service_type')
 
-    def __str__(self):
+    def __unicode__(self):
         return '{} - {}'.format(self.service_type, self.metric)
 
 
@@ -367,7 +367,7 @@ class EventType(models.Model):
                             null=False,
                             blank=False)
 
-    def __str__(self):
+    def __unicode__(self):
         return 'Event Type: {}'.format(self.name)
 
     @classmethod
@@ -895,7 +895,7 @@ class MetricLabel(models.Model):
         null=True,
         blank=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return 'Metric Label: {}'.format(self.name.encode('ascii', 'ignore'))
 
 
@@ -938,7 +938,7 @@ class MetricValue(models.Model):
              'event_type',
              ))
 
-    def __str__(self):
+    def __unicode__(self):
         metric = self.service_metric.metric.name
         if self.label:
             _l = self.label.name
@@ -1118,7 +1118,7 @@ class NotificationCheck(models.Model):
         blank=False,
         help_text=_("Is it active"))
 
-    def __str__(self):
+    def __unicode__(self):
         return "Notification Check #{}: {}".format(self.id, self.name)
 
     @property
@@ -1550,7 +1550,7 @@ class MetricNotificationCheck(models.Model):
         null=True,
         related_name='metric_check')
 
-    def __str__(self):
+    def __unicode__(self):
         indicator = []
         if self.min_value is not None:
             indicator.append("value above {}".format(self.min_value))
@@ -1596,7 +1596,7 @@ class MetricNotificationCheck(models.Model):
 
             self.valid_from, self.valid_to = metric.valid_from, metric.valid_to
 
-        def __str__(self):
+        def __unicode__(self):
             return "MetricValueError({}: metric {} misses {} check: {})".format(self.severity,
                                                                                 self.metric,
                                                                                 self.check,
