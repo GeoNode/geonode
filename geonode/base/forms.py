@@ -525,6 +525,32 @@ class BatchEditForm(forms.Form):
     keywords = forms.CharField(required=False)
 
 
+class BatchPermissionsForm(forms.Form):
+    group = forms.ModelChoiceField(
+        queryset=Group.objects.all(),
+        required=False)
+    user = forms.ModelChoiceField(
+        queryset=get_user_model().objects.all(),
+        required=False)
+    permission_type = forms.MultipleChoiceField(
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+        choices=(
+            ('r', 'Read'),
+            ('w', 'Write'),
+            ('d', 'Download'),
+        ),
+    )
+    mode = forms.ChoiceField(
+        required=True,
+        widget=forms.RadioSelect,
+        choices=(
+            ('set', 'Set'),
+            ('unset', 'Unset'),
+        ),
+    )
+
+
 class CuratedThumbnailForm(ModelForm):
 
     class Meta:

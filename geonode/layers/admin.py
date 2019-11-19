@@ -21,7 +21,7 @@
 from django.contrib import admin
 
 from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
-from geonode.base.admin import metadata_batch_edit
+from geonode.base.admin import metadata_batch_edit, set_batch_permissions
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
 
@@ -60,7 +60,7 @@ class LayerAdmin(MediaTranslationAdmin):
     readonly_fields = ('uuid', 'alternate', 'workspace')
     inlines = [AttributeInline]
     form = LayerAdminForm
-    actions = [metadata_batch_edit]
+    actions = [metadata_batch_edit, set_batch_permissions]
 
 
 class AttributeAdmin(admin.ModelAdmin):

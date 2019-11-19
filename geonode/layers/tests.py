@@ -959,6 +959,9 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertIn('change_layer_data', perms['users'][user])
 
     def test_batch_edit(self):
+        """
+        Test batch editing of metadata fields.
+        """
         Model = Layer
         view = 'layer_batch_metadata'
         resources = Model.objects.all()[:3]
@@ -1043,6 +1046,50 @@ class LayersTest(GeoNodeBaseTestSupport):
         for resource in resources:
             for word in resource.keywords.all():
                 self.assertTrue(word.name in keywords.split(','))
+
+    def test_batch_permissions(self):
+        """
+        Test batch editing of test_batch_permissions.
+        """
+        Model = Layer
+        view = 'layer_batch_permissions'
+        resources = Model.objects.all()[:3]
+        ids = ','.join([str(element.pk) for element in resources])
+        # test non-admin access
+        self.client.login(username="bobby", password="bob")
+        response = self.client.get(reverse(view, args=(ids,)))
+        self.assertTrue(response.status_code in (401, 403))
+        # test group permissions
+        group = Group.objects.first()
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={
+                'group': group.pk,
+                'permission_type': ('r', ),
+                'mode': 'set'
+            },
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            perm_spec = resource.get_all_level_info()
+            self.assertTrue(group in perm_spec["groups"])
+        # test user permissions
+        user = get_user_model().objects.first()
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={
+                'user': user.pk,
+                'permission_type': ('r', ),
+                'mode': 'set'
+            },
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            perm_spec = resource.get_all_level_info()
+            self.assertTrue(user in perm_spec["users"])
 
 
 class UnpublishedObjectTests(GeoNodeBaseTestSupport):

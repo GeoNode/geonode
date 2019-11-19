@@ -31,6 +31,7 @@ from django.db.models import Q
 from celery.exceptions import TimeoutError
 
 from django.contrib.gis.geos import GEOSGeometry
+from django.core.exceptions import PermissionDenied
 from django.template.response import TemplateResponse
 from requests import Request
 from itertools import chain
@@ -63,7 +64,7 @@ from django.db.models import F
 from django.forms.utils import ErrorList
 
 from geonode.base.auth import get_or_create_token
-from geonode.base.forms import CategoryForm, TKeywordForm
+from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm
 from geonode.base.views import batch_modify
 from geonode.base.models import (
     Thesaurus,
@@ -82,7 +83,8 @@ from geonode.layers.models import (
 from geonode.layers.utils import (
     file_upload,
     is_raster,
-    is_vector)
+    is_vector,
+    set_layers_permissions)
 
 from geonode.maps.models import Map
 from geonode.services.models import Service
@@ -1609,6 +1611,80 @@ def layer_sld_edit(
 @login_required
 def layer_batch_metadata(request, ids):
     return batch_modify(request, ids, 'Layer')
+
+
+def batch_permissions(request, ids, model):
+    Resource = None
+    if model == 'Layer':
+        Resource = Layer
+    if not Resource or not request.user.is_superuser:
+        raise PermissionDenied
+
+    template = 'base/batch_permissions.html'
+
+    if "cancel" in request.POST:
+        return HttpResponseRedirect(
+            '/admin/{model}s/{model}/'.format(model=model.lower())
+        )
+
+    if request.method == 'POST':
+        form = BatchPermissionsForm(request.POST)
+        if form.is_valid():
+            _data = form.cleaned_data
+            resources_names = []
+            for resource in Resource.objects.filter(id__in=ids.split(',')):
+                resources_names.append(resource.name)
+            users_usernames = [_data['user'].username, ] if _data['user'] else None
+            groups_names = [_data['group'].name, ] if _data['group'] else None
+            if users_usernames and 'AnonymousUser' in users_usernames and \
+            (not groups_names or 'anonymous' not in groups_names):
+                if not groups_names:
+                    groups_names = []
+                groups_names.append('anonymous')
+            if groups_names and 'anonymous' in groups_names and \
+            (not users_usernames or 'AnonymousUser' not in users_usernames):
+                if not users_usernames:
+                    users_usernames = []
+                users_usernames.append('AnonymousUser')
+            delete_flag = _data['mode'] == 'unset'
+            permissions_names = _data['permission_type']
+            if permissions_names:
+                for permissions_name in permissions_names:
+                    set_layers_permissions(
+                        permissions_name, resources_names, users_usernames, groups_names, delete_flag
+                    )
+            return HttpResponseRedirect(
+                '/admin/{model}s/{model}/'.format(model=model.lower())
+            )
+        return render(
+            request,
+            template,
+            context={
+                'form': form,
+                'ids': ids,
+                'model': model,
+            }
+        )
+
+    form = BatchPermissionsForm(
+        {
+            'permission_type': ('r', ),
+            'mode': 'set'
+        })
+    return render(
+        request,
+        template,
+        context={
+            'form': form,
+            'ids': ids,
+            'model': model,
+        }
+    )
+
+
+@login_required
+def layer_batch_permissions(request, ids):
+    return batch_permissions(request, ids, 'Layer')
 
 
 def layer_view_counter(layer_id, viewer):

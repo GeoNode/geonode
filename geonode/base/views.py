@@ -44,6 +44,12 @@ def batch_modify(request, ids, model):
     if model == 'Map':
         Resource = Map
     template = 'base/batch_edit.html'
+
+    if "cancel" in request.POST:
+        return HttpResponseRedirect(
+            '/admin/{model}s/{model}/'.format(model=model.lower())
+        )
+
     if request.method == 'POST':
         form = BatchEditForm(request.POST)
         if form.is_valid():
@@ -75,6 +81,7 @@ def batch_modify(request, ids, model):
                 'model': model,
             }
         )
+
     form = BatchEditForm()
     return render(
         request,

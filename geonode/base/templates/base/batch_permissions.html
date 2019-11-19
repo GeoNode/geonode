@@ -3,15 +3,15 @@
 {% load staticfiles %}
 {% load bootstrap_tags %}
 
-{% block title %} {% trans "Batch Edit" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Set Permissions" %} - {{ block.super }} {% endblock %}
 
-{% block body_class %}{% trans "batch edit" %}{% endblock %}
+{% block body_class %}{% trans "set permissions" %}{% endblock %}
 
 {% block body %}
 <div class="page-header">
-  <h2 class="page-title">{% trans "Batch Edit" %}</h2>
+  <h2 class="page-title">{% trans "Set Permissions" %}</h2>
 </div>
-<form action="/{{ model|lower }}s/metadata/batch/{{ ids }}/" method="post">
+<form action="/{{ model|lower }}s/permissions/batch/{{ ids }}/" method="post">
   {% csrf_token %}
   {{ form|as_bootstrap }}
   <div>
