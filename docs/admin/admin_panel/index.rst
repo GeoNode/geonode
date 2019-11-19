@@ -693,6 +693,16 @@ By clicking over one Layer link, it will show a detail page allowing you to modi
 
 .. note:: It is strongly recommended to always use the GeoNode :guilabel:`Metadata Wizard` or :guilabel:`Metadata Advanced` tools in order to edit the metadata info.
 
+The ``Permissions`` can be changed also for multiple Layers at once throguh the :guilabel:`Set layers permissions` action.
+
+.. figure:: img/set_layers_permissions_action.png
+    :align: center
+
+By clicking over one Layer link, it will show a detail page allowing you to modify the permissions for the selected resources.
+
+.. figure:: img/set_layers_permissions_form.png
+    :align: center
+
 Manage the maps using the admin panel
 =====================================
 
