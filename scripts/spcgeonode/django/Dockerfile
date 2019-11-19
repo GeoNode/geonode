@@ -30,7 +30,7 @@ RUN echo "Updating apt-get" && \
 
 # Install python dependencies
 RUN echo "Geonode python dependencies"
-RUN pip install celery==4.1.0 # see https://github.com/GeoNode/geonode/pull/3714
+RUN pip install more-itertools==5.0.0 celery==4.1.0 # see https://github.com/GeoNode/geonode/pull/3714
 
 # Install geonode dependencies
 ADD requirements.txt /requirements.txt
