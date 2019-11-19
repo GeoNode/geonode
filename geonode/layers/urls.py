@@ -69,6 +69,8 @@ urlpatterns = [
         views.layer_feature_catalogue, name='layer_feature_catalogue'),
     url(r'^metadata/batch/(?P<ids>[^/]*)/$',
         views.layer_batch_metadata, name='layer_batch_metadata'),
+    url(r'^permissions/batch/(?P<ids>[^/]*)/$',
+        views.layer_batch_permissions, name='layer_batch_permissions'),
 ]
 
 # -- Deprecated url routes for Geoserver authentication -- remove after GeoNode 2.1

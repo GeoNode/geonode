@@ -62,6 +62,16 @@ def metadata_batch_edit(modeladmin, request, queryset):
 metadata_batch_edit.short_description = 'Metadata batch edit'
 
 
+def set_batch_permissions(modeladmin, request, queryset):
+    ids = ','.join([str(element.pk) for element in queryset])
+    resource = queryset[0].class_name.lower()
+    return HttpResponseRedirect(
+        '/{}s/permissions/batch/{}/'.format(resource, ids))
+
+
+set_batch_permissions.short_description = 'Set permissions'
+
+
 class MediaTranslationAdmin(TranslationAdmin):
     class Media:
         js = (
