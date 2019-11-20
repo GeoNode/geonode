@@ -1768,13 +1768,13 @@ AWS_QUERYSTRING_AUTH = False
 
 if S3_STATIC_ENABLED:
     STATICFILES_LOCATION = 'static'
-    STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     STATIC_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN,
                                      STATICFILES_LOCATION)
 
 if S3_MEDIA_ENABLED:
     MEDIAFILES_LOCATION = 'media'
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
 
 # Require users to authenticate before using Geonode
