@@ -17,10 +17,10 @@ set +e
 # We run the command
 if [ "$LETSENCRYPT_MODE" == "staging" ]; then
     printf "\nTrying to get STAGING certificate\n"
-    certbot --config-dir "/spcgeonode-certificates/$LETSENCRYPT_MODE" certonly --webroot -w "/spcgeonode-certificates" -d "$HTTPS_HOST" -m "$ADMIN_EMAIL" --agree-tos --non-interactive --staging
+    certbot --config-dir "/spcgeonode-certificates/$LETSENCRYPT_MODE" certonly --webroot -w "/spcgeonode-certificates" -d "$HTTPS_HOST" -m "$ADMIN_EMAIL" --agree-tos --non-interactive --staging --server https://acme-v02.api.letsencrypt.org/directory
 elif [ "$LETSENCRYPT_MODE" == "production" ]; then
     printf "\nTrying to get PRODUCTION certificate\n"
-    certbot --config-dir "/spcgeonode-certificates/$LETSENCRYPT_MODE" certonly --webroot -w "/spcgeonode-certificates" -d "$HTTPS_HOST" -m "$ADMIN_EMAIL" --agree-tos --non-interactive
+    certbot --config-dir "/spcgeonode-certificates/$LETSENCRYPT_MODE" certonly --webroot -w "/spcgeonode-certificates" -d "$HTTPS_HOST" -m "$ADMIN_EMAIL" --agree-tos --non-interactive --server https://acme-v02.api.letsencrypt.org/directory
 else
     printf "\nNot trying to get certificate (simulating failure, because LETSENCRYPT_MODE variable was neither staging nor production\n"
     /bin/false
@@ -45,5 +45,5 @@ echo "-----------------------------------------------------"
 echo "FINISHED LETSENCRYPT ENTRYPOINT ---------------------"
 echo "-----------------------------------------------------"
 
-# Run the CMD 
+# Run the CMD
 exec "$@"

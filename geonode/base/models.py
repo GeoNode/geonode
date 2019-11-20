@@ -1107,12 +1107,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         if legend.count() > 0:
             if not style_name:
-                return legend[0].url
+                return legend.first().url
             else:
                 for _legend in legend:
                     if style_name in _legend.url:
                         return _legend.url
-        return legend.url
+        return None
 
     def get_ows_url(self):
         """Return URL for OGC WMS server None if it does not exist.

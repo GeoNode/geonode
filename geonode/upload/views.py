@@ -196,9 +196,10 @@ def save_step_view(req, session):
             time_presentation=form.cleaned_data['time_presentation'],
             time_presentation_res=form.cleaned_data['time_presentation_res'],
             time_presentation_default_value=form.cleaned_data['time_presentation_default_value'],
-            time_presentation_reference_value=form.cleaned_data['time_presentation_reference_value']
+            time_presentation_reference_value=form.cleaned_data['time_presentation_reference_value'],
+            charset_encoding=form.cleaned_data["charset"]
         )
-
+        import_session.tasks[0].set_charset(form.cleaned_data["charset"])
         sld = None
         if spatial_files[0].sld_files:
             sld = spatial_files[0].sld_files[0]

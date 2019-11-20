@@ -580,7 +580,7 @@
       <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
       {% if resource.default_style %}
       {% for style in resource.styles.all %}
-          {% if resource.default_style == style %}
+          {% if resource.default_style == style or resource.default_style.name == style.name or resource.default_style.sld_title == style.sld_title %}
               {% for legend in resource.get_legend %}
                   {% with "STYLE="|add:style.name as style_name %}
                   {% if legend.link_type == 'image' and style_name in legend.url %}

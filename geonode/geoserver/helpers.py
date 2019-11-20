@@ -1511,7 +1511,7 @@ class OGC_Server(object):
     def netloc(self):
         return urlsplit(self.LOCATION).netloc
 
-    def __str__(self):
+    def __unicode__(self):
         return self.alias
 
 
