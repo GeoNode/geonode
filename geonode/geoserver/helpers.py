@@ -385,6 +385,9 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
 
 
 def cascading_delete(cat, layer_name):
+    if not cat:
+        return
+
     resource = None
     try:
         if layer_name.find(':') != -1 and len(layer_name.split(':')) == 2:
@@ -1889,8 +1892,13 @@ _csw = None
 _user, _password = ogc_server_settings.credentials
 
 url = ogc_server_settings.rest
-gs_catalog = Catalog(url, _user, _password)
-gs_uploader = Client(url, _user, _password)
+if sys.argv[1:2] == ['test'] and \
+'integration' not in sys.argv[2:3]:
+    gs_catalog = None
+    gs_uploader = None
+else:
+    gs_catalog = Catalog(url, _user, _password)
+    gs_uploader = Client(url, _user, _password)
 
 _punc = re.compile(r"[\.:]")  # regex for punctuation that confuses restconfig
 _foregrounds = [

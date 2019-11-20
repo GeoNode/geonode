@@ -46,7 +46,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.auth import get_user_model
 # from guardian.shortcuts import assign_perm
-from geonode.base.populate_test_data import reconnect_signals, all_public
+from geonode.base.populate_test_data import all_public
 from tastypie.test import ResourceTestCaseMixin
 
 from geonode.qgis_server.models import QGISServerLayer
@@ -83,10 +83,6 @@ logger = logging.getLogger(__name__)
 
 def _log(msg, *args):
     logger.debug(msg, *args)
-
-
-# Reconnect post_save signals that is disconnected by populate_test_data
-reconnect_signals()
 
 
 def zip_dir(basedir, archivename):
