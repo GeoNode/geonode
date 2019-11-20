@@ -945,6 +945,9 @@ def upload(incoming, user=None, overwrite=False,
 def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                      check_bbox=False, ogc_client=None, overwrite=False,
                      width=240, height=200):
+    if sys.argv[1:2] == ['test'] and \
+    'integration' not in sys.argv[2:3]:
+        return
     thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
     if not os.path.exists(thumbnail_dir):
         os.makedirs(thumbnail_dir)
