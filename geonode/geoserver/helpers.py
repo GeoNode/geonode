@@ -555,11 +555,9 @@ def gs_slurp(
     """
     if console is None:
         console = open(os.devnull, 'w')
-
     if verbosity > 0:
         print >> console, "Inspecting the available layers in GeoServer ..."
-
-    cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
+    cat = gs_catalog
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
         if workspace is None:
@@ -819,7 +817,7 @@ def gs_slurp(
 
 
 def get_stores(store_type=None):
-    cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
+    cat = gs_catalog
     stores = cat.get_stores()
     store_list = []
     for store in stores:
@@ -1497,13 +1495,6 @@ class OGC_Server(object):
         return urljoin(location, 'ows')
 
     @property
-    def internal_rest(self):
-        """
-        The internal REST endpoint for the server.
-        """
-        return urljoin(self.LOCATION, 'rest')
-
-    @property
     def hostname(self):
         return urlsplit(self.LOCATION).hostname
 
@@ -1889,7 +1880,9 @@ _csw = None
 _user, _password = ogc_server_settings.credentials
 
 url = ogc_server_settings.rest
-gs_catalog = Catalog(url, _user, _password)
+gs_catalog = Catalog(url, _user, _password,
+                     retries=ogc_server_settings.MAX_RETRIES,
+                     backoff_factor=ogc_server_settings.BACKOFF_FACTOR)
 gs_uploader = Client(url, _user, _password)
 
 _punc = re.compile(r"[\.:]")  # regex for punctuation that confuses restconfig

@@ -157,9 +157,9 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
     """
     service_typename = alternate.split(":", 1)
     if Service.objects.filter(name=service_typename[0]).exists():
-        service = Service.objects.filter(name=service_typename[0])
+        # service = Service.objects.filter(name=service_typename[0])
         query = {
-            'alternate': service_typename[1] if service[0].method != "C" else alternate
+            'alternate': service_typename[1]
         }
         if len(service_typename) > 1:
             query['store'] = service_typename[0]
