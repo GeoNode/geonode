@@ -30,7 +30,6 @@ django-appconf==1.0.3
 django-filter==1.1.0
 django-imagekit==4.0.2
 django-jsonfield<1.3.2
-django-jsonfield-compat<=0.4.4
 django-taggit==0.24.0
 django-mptt==0.9.1
 django-modeltranslation>=0.11,<0.15.0
