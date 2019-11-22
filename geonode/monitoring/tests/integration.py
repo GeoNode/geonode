@@ -196,7 +196,11 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
                 pass
 
         self.catalog = Catalog(
-            GEOSERVER_URL + 'rest', GEOSERVER_USER, GEOSERVER_PASSWD
+            GEOSERVER_URL + 'rest',
+            GEOSERVER_USER,
+            GEOSERVER_PASSWD,
+            retries=ogc_server_settings.MAX_RETRIES,
+            backoff_factor=ogc_server_settings.BACKOFF_FACTOR
         )
 
         self.client = TestClient(REMOTE_ADDR='127.0.0.1')

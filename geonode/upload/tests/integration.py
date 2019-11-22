@@ -149,7 +149,11 @@ class UploaderBase(GeoNodeLiveTestSupport):
             GEONODE_URL, GEONODE_USER, GEONODE_PASSWD
         )
         self.catalog = Catalog(
-            GEOSERVER_URL + 'rest', GEOSERVER_USER, GEOSERVER_PASSWD
+            GEOSERVER_URL + 'rest',
+            GEOSERVER_USER,
+            GEOSERVER_PASSWD,
+            retries=ogc_server_settings.MAX_RETRIES,
+            backoff_factor=ogc_server_settings.BACKOFF_FACTOR
         )
 
         settings.DATABASES['default']['NAME'] = DB_NAME
