@@ -21,14 +21,22 @@
 
 import logging
 
+from urllib import quote
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from geoserver.catalog import Catalog
 from six.moves.urllib.parse import urlencode, urlparse, urljoin, parse_qs, urlunparse
-from urllib import quote
+
+from geonode import geoserver
+from geonode.utils import check_ogc_backend
 
 from .. import enumerations
 from .. import models
+
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    from geonode.geoserver.helpers import gs_catalog as catalog
+else:
+    catalog = None
 
 logger = logging.getLogger(__name__)
 
@@ -80,16 +88,8 @@ def get_proxified_ows_url(url, version=None, proxy_base=None):
 
 def get_geoserver_cascading_workspace(create=True):
     """Return the geoserver workspace used for cascaded services
-
     The workspace can be created it if needed.
-
     """
-
-    catalog = Catalog(
-        service_url=settings.OGC_SERVER["default"]["LOCATION"] + "rest",
-        username=settings.OGC_SERVER["default"]["USER"],
-        password=settings.OGC_SERVER["default"]["PASSWORD"]
-    )
     name = getattr(settings, "CASCADE_WORKSPACE", "cascaded-services")
     workspace = catalog.get_workspace(name)
     if workspace is None and create:
