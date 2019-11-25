@@ -6837,6 +6837,7 @@ div#user_messages {
   }
   to {
     opacity: 0;
+    visibility: hidden;
   }
 }
 @-webkit-keyframes msgDisappear {
@@ -6845,6 +6846,7 @@ div#user_messages {
   }
   to {
     opacity: 0;
+    visibility: hidden;
   }
 }
 body {
