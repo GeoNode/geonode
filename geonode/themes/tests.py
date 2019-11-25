@@ -60,12 +60,24 @@ class ThemeLibraryTest(GeoNodeBaseTestSupport):
         self.assertNotContains(response, "welcome_3")
         self.assertContains(response, "welcome_2")
 
+        # Playing a bit with colors
+        theme_3.search_bg_color = "#000001"
+        theme_3.search_title_color = "#000002"
+        theme_3.search_link_color = "#000003"
+        theme_3.footer_text_color = "#000004"
+        theme_3.footer_href_color = "#000005"
+
         # Enabling that theme afterwards should replace the welcome text
         theme_3.is_enabled = True
         theme_3.save()
         response = self.client.get('/')
         self.assertNotContains(response, "welcome_2")
         self.assertContains(response, "welcome_3")
+        self.assertContains(response, "background: %s;" % theme_3.search_bg_color)
+        self.assertContains(response, "color: %s;" % theme_3.search_title_color)
+        self.assertContains(response, "color: %s;" % theme_3.search_link_color)
+        self.assertContains(response, "color: %s;" % theme_3.footer_text_color)
+        self.assertContains(response, "color: %s;" % theme_3.footer_href_color)
 
         # We should have only one active theme
         active_themes = GeoNodeThemeCustomization.objects.filter(is_enabled=True)

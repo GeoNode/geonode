@@ -182,12 +182,35 @@
         }
         {% endif %}
 
+        {% if custom_theme.search_bg_color or custom_theme.search_title_color %}
+        .home .big-search {
+          background: {{ custom_theme.search_bg_color }};
+          color: {{ custom_theme.search_title_color }};
+          padding-bottom: 3em;
+          padding-top: 1em;
+        }
+        .home .big-search .btn-default {
+          background: transparent;
+          border: none;
+          color: {{ custom_theme.search_link_color }};
+        }
+        {% endif %}
+
         {% if custom_theme.copyright_color %}
         .footer-copyright {
           background-color: {{ custom_theme.copyright_color }};
         }
         {% endif %}
 
+        {% if custom_theme.footer_text_color or custom_theme.footer_href_color %}
+        footer {
+          color: {{ custom_theme.footer_text_color }};
+          padding: 1.5em;
+        }
+        footer a {
+          color: {{ custom_theme.footer_href_color }};
+        }
+        {% endif %}
       </style>
       {% block extra_head %}
       {% endblock %}
