@@ -28,6 +28,7 @@ from urlparse import urljoin
 
 import requests
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.gdal import CoordTransform, SpatialReference
 from django.contrib.gis.geos import GEOSGeometry, Point
 from django.core.exceptions import ImproperlyConfigured
@@ -962,3 +963,17 @@ def delete_orphaned_qgis_server_caches():
                 shutil.rmtree(path)
             except OSError:
                 print 'Could not delete file %s' % path
+
+
+def get_model_path(instance):
+    """Get a Django model instance's app label and name.
+
+    :param instance: An instance of a Django model
+    :type instance: django.db.models.Model
+    """
+
+    model_type = ContentType.objects.get_for_model(instance)
+    return "{app_label}.{model_name}".format(
+        app_label=model_type.app_label,
+        model_name=model_type.model
+    )
