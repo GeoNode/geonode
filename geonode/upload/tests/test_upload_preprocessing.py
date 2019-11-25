@@ -22,7 +22,10 @@
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-import mock
+try:
+    import unittest.mock as mock
+except ImportError:
+    import mock
 import os.path
 
 from geonode.upload import files

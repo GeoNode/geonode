@@ -26,7 +26,10 @@ from unittest import TestCase as StandardTestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
-import mock
+try:
+    import unittest.mock as mock
+except ImportError:
+    import mock
 from owslib.map.wms111 import ContentMetadata
 
 from geonode.services.utils import test_resource_table_status
