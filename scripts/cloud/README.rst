@@ -12,8 +12,8 @@ Requirements
  - download geonode.pem from web interface
  - export AWS_ACCESS_KEY_ID='blahblah'
  - export AWS_SECRET_ACCESS_KEY='blebleble'
-* boto (http://code.google.com/p/boto/)
- - easy_install boto 
+* boto3 (https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
+ - pip install  boto3
 * fabric (http://docs.fabfile.org/0.9.3/)
  - easy_install fabric
 
