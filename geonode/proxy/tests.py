@@ -26,7 +26,10 @@ Replace these with more appropriate tests for your application.
 """
 import json
 
-from mock import MagicMock
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
 
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
