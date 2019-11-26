@@ -331,7 +331,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
-            self.assertEquals(len(links), 5)
+            self.assertEquals(len(links), 4)
 
         lyr = Layer.objects.filter(storeType="coverageStore").first()
         self.assertEquals(lyr.storeType, "coverageStore")
