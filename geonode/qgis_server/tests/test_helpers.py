@@ -38,10 +38,12 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 
 from geonode import qgis_server
+from geonode.base.models import Region
 from geonode.decorators import on_ogc_backend
 from geonode.layers.utils import file_upload
-from geonode.qgis_server.helpers import validate_django_settings, \
-    transform_layer_bbox, qgis_server_endpoint, tile_url_format, tile_url, \
+from geonode.qgis_server.helpers import get_model_path, \
+    validate_django_settings, transform_layer_bbox, \
+    qgis_server_endpoint, tile_url_format, tile_url, \
     style_get_url, style_add_url, style_list, style_set_default_url, \
     style_remove_url
 
@@ -296,3 +298,9 @@ class HelperTest(GeoNodeBaseTestSupport):
 
         # cleanup
         uploaded.delete()
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_get_model_path(self):
+        region = Region.objects.first()
+        model_path = get_model_path(region)
+        self.assertEqual(model_path, 'base.region')
