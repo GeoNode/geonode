@@ -67,6 +67,7 @@ class GeonodeThemCustomizationForm(forms.ModelForm):
             'cookie_law_info_showagain_background': forms.TextInput(attrs={'type': 'color'}),
             'cookie_law_info_showagain_border': forms.TextInput(attrs={'type': 'color'}),
             'cookie_law_info_text': forms.TextInput(attrs={'type': 'color'}),
+            'footer_bg_color': forms.TextInput(attrs={'type': 'color'}),
             'footer_text_color': forms.TextInput(attrs={'type': 'color'}),
             'footer_href_color': forms.TextInput(attrs={'type': 'color'}),
         }

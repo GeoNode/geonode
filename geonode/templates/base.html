@@ -50,8 +50,6 @@
       {% else %}
         <link href="{% static "lib/css/assets.min.css" %}?v={{ VERSION }}" rel="stylesheet"/>
       {% endif %}
-      <link href="{% static "geonode/css/ext-compatibility.css" %}?v={{ VERSION }}" rel="stylesheet" />
-      <link href="{% static "geonode/css/ux-all.css" %}?v={{ VERSION }}" rel="stylesheet" />
       <link href="{% static "geonode/css/base.css" %}?v={{ VERSION }}" rel="stylesheet" />
 
       <link rel='stylesheet' id='cookie-law-info-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-public.css" %}?v={{ VERSION }}" type='text/css' media='all' />
@@ -66,6 +64,12 @@
           {% if custom_theme.body_text_color %}
           color: {{ custom_theme.body_text_color }};
           {% endif %}
+        }
+
+        .home #partners {
+          background: {{ custom_theme.body_color }};
+          padding: 2em 0;
+          text-align: center;
         }
         {% endif %}
 
@@ -149,7 +153,10 @@
 
         {% if custom_theme.jumbotron_text_color %}
         .home .jumbotron p {
-          color: {{ custom_theme.jumbotron_text_color }}
+          color: {{ custom_theme.jumbotron_text_color }};
+          font-weight: normal;
+          font-size: xx-large;
+          font-family: 'Open Sans','Helvetica Neue',Arial,sans-serif;
         }
         {% endif %}
 
@@ -202,8 +209,9 @@
         }
         {% endif %}
 
-        {% if custom_theme.footer_text_color or custom_theme.footer_href_color %}
+        {% if custom_theme.footer_bg_color or custom_theme.footer_text_color or custom_theme.footer_href_color %}
         footer {
+          background-color: {{ custom_theme.footer_bg_color }};
           color: {{ custom_theme.footer_text_color }};
           padding: 1.5em;
         }
