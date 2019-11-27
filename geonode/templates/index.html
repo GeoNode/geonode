@@ -295,21 +295,17 @@
       			</div>
 			</div>
 			<div ng-app="featured" ng-if="featured.length > 0" ng-cloak class="row">
-				<div class="container text-center">
-					<h2>{% trans "Featured Datasets" %}</h2>
-					<div class="row">
-						{% verbatim %}
-						<div>
-							<div ng-repeat="item in featured | limitTo:4">
-								<div class="col-md-3">
-									<a href="{{ item.detail_url }}"><img ng-src="{{ item.thumbnail_url }}" /></a>
-									<h4>{{ item.title | limitTo: 20 }}{{item.title.length > 20 ? '...' : ''}}</h4>
-								</div>
-							</div>
-						</div>
-						{% endverbatim %}
-					</div>
-				</div>
+			 	<div class="container text-center">
+			 		<h2>{% trans "Featured Datasets" %}</h2>
+			 		<div class="row">
+			 			{% verbatim %}
+			 			<div ng-repeat="item in featured" class="col-xs-6 col-sm-6 col-md-3">
+			 				<a href="{{ item.detail_url }}"><img ng-src="{{ item.thumbnail_url }}" style="width: 240px;" /></a>
+			 				<h4>{{ item.title | limitTo: 20 }}{{item.title.length > 20 ? '...' : ''}}</h4>
+			 			</div>
+			 			{% endverbatim %}
+			 		</div>
+			 	</div>
 			</div>
 		  </div>
       </section>
