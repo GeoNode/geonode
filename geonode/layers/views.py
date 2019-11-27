@@ -490,47 +490,87 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
     }
 
+    granules = None
     all_times = None
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.views import get_capabilities
-        workspace, layername = layer.alternate.split(
-            ":") if ":" in layer.alternate else (None, layer.alternate)
-        # WARNING Please make sure to have enabled DJANGO CACHE as per
-        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-        wms_capabilities_resp = get_capabilities(
-            request, layer.id, tolerant=True)
-        if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
-            wms_capabilities = wms_capabilities_resp.getvalue()
-            if wms_capabilities:
-                from defusedxml import lxml as dlxml
-                namespaces = {'wms': 'http://www.opengis.net/wms',
-                              'xlink': 'http://www.w3.org/1999/xlink',
-                              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+    all_granules = None
+    filter = None
 
-                e = dlxml.fromstring(wms_capabilities)
-                for atype in e.findall(
-                        "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
-                    dim_name = atype.get('name')
-                    if dim_name:
-                        dim_name = str(dim_name).lower()
-                        if dim_name == 'time':
-                            dim_values = atype.text
-                            if dim_values:
-                                all_times = dim_values.split(",")
-                                break
-        if all_times:
-            config["capability"]["dimensions"] = {
-                "time": {
-                    "name": "time",
-                    "units": "ISO8601",
-                    "unitsymbol": None,
-                    "nearestVal": False,
-                    "multipleVal": False,
-                    "current": False,
-                    "default": "current",
-                    "values": all_times
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+        if layer.has_time:
+            from geonode.geoserver.views import get_capabilities
+            workspace, layername = layer.alternate.split(
+                ":") if ":" in layer.alternate else (None, layer.alternate)
+            # WARNING Please make sure to have enabled DJANGO CACHE as per
+            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+            wms_capabilities_resp = get_capabilities(
+                request, layer.id, tolerant=True)
+            if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
+                wms_capabilities = wms_capabilities_resp.getvalue()
+                if wms_capabilities:
+                    from defusedxml import lxml as dlxml
+                    namespaces = {'wms': 'http://www.opengis.net/wms',
+                                  'xlink': 'http://www.w3.org/1999/xlink',
+                                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+
+                    e = dlxml.fromstring(wms_capabilities)
+                    for atype in e.findall(
+                            "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
+                        dim_name = atype.get('name')
+                        if dim_name:
+                            dim_name = str(dim_name).lower()
+                            if dim_name == 'time':
+                                dim_values = atype.text
+                                if dim_values:
+                                    all_times = dim_values.split(",")
+                                    break
+            if all_times:
+                config["capability"]["dimensions"] = {
+                    "time": {
+                        "name": "time",
+                        "units": "ISO8601",
+                        "unitsymbol": None,
+                        "nearestVal": False,
+                        "multipleVal": False,
+                        "current": False,
+                        "default": "current",
+                        "values": all_times
+                    }
                 }
-            }
+        if layer.is_mosaic:
+            try:
+                cat = gs_catalog
+                cat._cache.clear()
+                store = cat.get_store(layer.name)
+                coverages = cat.mosaic_coverages(store)
+                try:
+                    if request.GET["filter"]:
+                        filter = request.GET["filter"]
+                except BaseException:
+                    pass
+
+                offset = 10 * (request.page - 1)
+                granules = cat.mosaic_granules(
+                    coverages['coverages']['coverage'][0]['name'],
+                    store,
+                    limit=10,
+                    offset=offset,
+                    filter=filter)
+                all_granules = cat.mosaic_granules(
+                    coverages['coverages']['coverage'][0]['name'], store, filter=filter)
+            except BaseException:
+                granules = {"features": []}
+                all_granules = {"features": []}
+
+    group = None
+    if layer.group:
+        try:
+            group = GroupProfile.objects.get(slug=layer.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
+    # a flag to be used for qgis server
+    show_popup = False
+    if 'show_popup' in request.GET and request.GET["show_popup"]:
+        show_popup = True
 
     if layer.storeType == "remoteStore":
         service = layer.remote_service
@@ -572,76 +612,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
-
-    granules = None
-    all_granules = None
-    all_times = None
-    filter = None
-    if layer.is_mosaic:
-        try:
-            cat = gs_catalog
-            cat._cache.clear()
-            store = cat.get_store(layer.name)
-            coverages = cat.mosaic_coverages(store)
-
-            filter = None
-            try:
-                if request.GET["filter"]:
-                    filter = request.GET["filter"]
-            except BaseException:
-                pass
-
-            offset = 10 * (request.page - 1)
-            granules = cat.mosaic_granules(
-                coverages['coverages']['coverage'][0]['name'],
-                store,
-                limit=10,
-                offset=offset,
-                filter=filter)
-            all_granules = cat.mosaic_granules(
-                coverages['coverages']['coverage'][0]['name'], store, filter=filter)
-        except BaseException:
-            granules = {"features": []}
-            all_granules = {"features": []}
-
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.views import get_capabilities
-        workspace, layername = layer.alternate.split(
-            ":") if ":" in layer.alternate else (None, layer.alternate)
-        # WARNING Please make sure to have enabled DJANGO CACHE as per
-        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-        wms_capabilities_resp = get_capabilities(
-            request, layer.id, tolerant=True)
-        if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
-            wms_capabilities = wms_capabilities_resp.getvalue()
-            if wms_capabilities:
-                from defusedxml import lxml as dlxml
-                namespaces = {'wms': 'http://www.opengis.net/wms',
-                              'xlink': 'http://www.w3.org/1999/xlink',
-                              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-
-                e = dlxml.fromstring(wms_capabilities)
-                for atype in e.findall(
-                        "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
-                    dim_name = atype.get('name')
-                    if dim_name:
-                        dim_name = str(dim_name).lower()
-                        if dim_name == 'time':
-                            dim_values = atype.text
-                            if dim_values:
-                                all_times = dim_values.split(",")
-                                break
-
-    group = None
-    if layer.group:
-        try:
-            group = GroupProfile.objects.get(slug=layer.group.name)
-        except GroupProfile.DoesNotExist:
-            group = None
-    # a flag to be used for qgis server
-    show_popup = False
-    if 'show_popup' in request.GET and request.GET["show_popup"]:
-        show_popup = True
 
     context_dict = {
         'resource': layer,
