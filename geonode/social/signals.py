@@ -54,7 +54,7 @@ if "relationships" in settings.INSTALLED_APPS:
 ratings = None
 if "ratings" in settings.INSTALLED_APPS:
     ratings = True
-    from agon_ratings.models import Rating
+    from pinax.ratings.models import Rating
 
 
 def activity_post_modify_object(sender, instance, created=None, **kwargs):

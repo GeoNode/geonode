@@ -363,7 +363,7 @@ INSTALLED_APPS = (
     # Social
     'avatar',
     'dialogos',
-    'agon_ratings',
+    'pinax.ratings',
     'announcements',
     'actstream',
     'user_messages',
@@ -701,8 +701,8 @@ DEFAULT_SEARCH_SIZE = int(os.getenv('DEFAULT_SEARCH_SIZE', '10'))
 # Settings for third party apps
 #
 
-# Agon Ratings
-AGON_RATINGS_CATEGORY_CHOICES = {
+# Pinax Ratings
+PINAX_RATINGS_CATEGORY_CHOICES = {
     "maps.Map": {
         "map": "How good is this map?"
     },

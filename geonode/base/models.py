@@ -47,7 +47,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
-from agon_ratings.models import OverallRating
+from pinax.ratings.models import OverallRating
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 

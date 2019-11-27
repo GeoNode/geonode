@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from agon_ratings.models import OverallRating
+from pinax.ratings.models import OverallRating
 from dialogos.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg

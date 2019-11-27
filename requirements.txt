@@ -58,6 +58,7 @@ numpy==1.16.*
 dj-database-url==0.5.0
 dj-pagination==2.4.0
 pinax-notifications==5.0.3
+pinax-ratings==3.0.3
 django-celery-monitor<=1.1.2
 django-celery-beat==1.5.0
 django-floppyforms<1.9.0
@@ -78,7 +79,6 @@ django-geonode-client==1.0.9
 geonode-user-messages==0.1.14
 geonode-avatar==2.1.8
 geonode-announcements==1.0.13
-geonode-agon-ratings==0.3.8
 arcrest>=10.0
 geonode-dialogos==3.0
 geoserver-restconfig==1.0.5
