@@ -1133,7 +1133,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     else:
         try:
             for key in list_col.keys():
-                qry = u"ALTER TABLE {} RENAME COLUMN \"".format(inLayer.GetName())
+                qry = u"ALTER TABLE \"{}\" RENAME COLUMN \"".format(inLayer.GetName())
                 qry = qry + key.decode(charset) + u"\" TO \"{}\"".format(list_col[key])
                 inDataSource.ExecuteSQL(qry.encode(charset))
         except UnicodeDecodeError:
@@ -1586,6 +1586,11 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 gs_resource = gs_catalog.get_resource(
                     name=instance.name,
                     workspace=instance.workspace)
+                if not gs_resource:
+                    gs_resource = gs_catalog.get_resource(
+                        name=instance.name,
+                        store=instance.store,
+                        workspace=instance.workspace)
                 if not gs_resource:
                     gs_resource = gs_catalog.get_resource(name=instance.name)
                 bbox = gs_resource.native_bbox
