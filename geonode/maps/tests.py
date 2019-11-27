@@ -26,10 +26,7 @@ from defusedxml import lxml as dlxml
 
 from django.core.urlresolvers import reverse
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 
 from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating

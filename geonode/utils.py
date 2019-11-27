@@ -67,10 +67,7 @@ from geonode.base.auth import (extend_token,
                                get_token_from_auth_header,
                                get_token_object_from_session)
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""

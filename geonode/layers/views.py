@@ -52,10 +52,7 @@ from django.views.decorators.http import require_http_methods
 
 from geonode import geoserver, qgis_server
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 from django.utils.html import escape
 from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
