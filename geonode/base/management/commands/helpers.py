@@ -26,10 +26,7 @@ import ConfigParser
 import os
 import sys
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 
 MEDIA_ROOT = 'uploaded'
 STATIC_ROOT = 'static_root'
