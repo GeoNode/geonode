@@ -89,11 +89,8 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
         """
         Try creating a layer.
         """
-        internal_apps_tests = os.environ.get('TEST_RUN_INTERNAL_APPS', None)
-        if not internal_apps_tests:
-            internal_apps_tests = settings.internal_apps_tests
-
-        if internal_apps_tests and not internal_apps_tests:
+        if hasattr(settings, 'internal_apps_tests') \
+                and settings.internal_apps_tests is True:
             layer_name = 'point_layer'
             layer_title = 'A layer for points'
 
@@ -142,11 +139,8 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
         """
         Try creating a layer with attributes.
         """
-        internal_apps_tests = os.environ.get('TEST_RUN_INTERNAL_APPS', None)
-        if not internal_apps_tests:
-            internal_apps_tests = settings.internal_apps_tests
-
-        if internal_apps_tests and not internal_apps_tests:
+        if hasattr(settings, 'internal_apps_tests') \
+                and settings.internal_apps_tests is True:
             attributes = """
             {
               "field_str": "string",
