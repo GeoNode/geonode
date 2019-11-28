@@ -233,6 +233,8 @@ AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT
 
     Auto assign users to a default ``REGISTERED_MEMBERS_GROUP_NAME`` private group after {"registration" | "activation" | "login"}.
 
+    Notice that whenever ``ACCOUNT_EMAIL_VERIFICATION == True`` and ``ACCOUNT_APPROVAL_REQUIRED == False``, users will be able to register and they became ``active`` already, even if they won't be able to login until the email has been verified.
+
 AUTO_GENERATE_AVATAR_SIZES
 --------------------------
 
@@ -368,11 +370,6 @@ CACHES
     A dictionary containing the settings for all caches to be used with Django.
     This is a `Django setting <https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CACHES>`__
 
-CACHE_TIME
-----------
-
-    | Default: ``0``
-    | Env: ``CACHE_TIME``
 
 CASCADE_WORKSPACE
 -----------------
