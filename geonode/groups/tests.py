@@ -93,24 +93,15 @@ class SmokeTest(GeoNodeBaseTestSupport):
         norman = get_user_model().objects.get(username="norman")
         admin = get_user_model().objects.get(username='admin')
 
-        # Make sure norman is not a member until login
+        # Make sure norman is a member by default (active and created)
         groupprofile = GroupProfile.objects.filter(
             slug=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).first()
-        self.assertFalse(groupprofile.user_is_member(norman))
-        self.assertTrue(self.client.login(username="norman", password="norman"))
-        self.assertFalse(groupprofile.user_is_member(norman))
-
-        norman.is_active = True
-        norman.save()
-        # The first time the signal won't be triggered
-        self.assertFalse(groupprofile.user_is_member(norman))
+        self.assertTrue(groupprofile.user_is_member(norman))
 
         norman.is_active = False
         norman.save()
-        norman.is_active = True
-        norman.save()
         # the signal is triggered when a user "becomes" active
-        self.assertTrue(groupprofile.user_is_member(norman))
+        self.assertFalse(groupprofile.user_is_member(norman))
 
         # Ensure anonymous is not in the managers queryset
         self.assertFalse(groupprofile.user_is_member(anonymous))
