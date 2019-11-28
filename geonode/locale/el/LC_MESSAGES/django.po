@@ -181,11 +181,11 @@ msgid "Category is required."
 msgstr "Απαιτείται Κατηγορία."
 
 #: geonode/base/forms.py:288
-msgid "Keywords from Thesauri"
+msgid "Keywords from Thesaurus"
 msgstr "Λέξεις Κλειδιά από Λεξικό"
 
 #: geonode/base/forms.py:290
-msgid "List of keywords from Thesauri"
+msgid "List of keywords from Thesaurus"
 msgstr "Λίστα λέξεων κλειδιών από Λεξικό"
 
 #: geonode/base/forms.py:321 geonode/base/models.py:537
@@ -1182,8 +1182,8 @@ msgstr ""
 #: geonode/contrib/geosites/site_template/templates/site_index.html:14
 #: geonode/contrib/geosites/templates/master_index.html:15
 #: geonode/templates/index.html:23
-msgid "http://docs.geonode.org/en/2.10.x/usage"
-msgstr ""
+msgid "http://docs.geonode.org/en/2.10.x/usage/index.html"
+msgstr "http://docs.geonode.org/en/2.10.x/usage/index.html"
 
 #: geonode/contrib/geosites/site_template/templates/site_index.html:15
 #: geonode/contrib/geosites/templates/master_index.html:16

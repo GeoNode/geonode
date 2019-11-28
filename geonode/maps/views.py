@@ -21,6 +21,7 @@
 import math
 import logging
 import urlparse
+import traceback
 from itertools import chain
 
 from guardian.shortcuts import get_perms
@@ -36,12 +37,7 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
 
-try:
-    # Django >= 1.7
-    import json
-except ImportError:
-    # Django <= 1.6 backwards compatibility
-    from django.utils import simplejson as json
+import json
 from django.utils.html import strip_tags
 from django.db.models import F
 from django.views.decorators.clickjacking import (xframe_options_exempt,
@@ -63,8 +59,10 @@ from geonode.utils import (DEFAULT_TITLE,
                            check_ogc_backend)
 from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
-from geonode.base.forms import CategoryForm
-from geonode.base.models import TopicCategory
+from geonode.base.forms import CategoryForm, TKeywordForm
+from geonode.base.models import (
+    Thesaurus,
+    TopicCategory)
 from geonode import geoserver, qgis_server
 from geonode.groups.models import GroupProfile
 from geonode.documents.models import get_related_documents
@@ -206,11 +204,41 @@ def map_metadata(
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
+        tkeywords_form = TKeywordForm(
+            prefix="tkeywords",
+            initial={'tkeywords': request.POST.getlist('tkeywords-tkeywords')})
     else:
         map_form = MapForm(instance=map_obj, prefix="resource")
         category_form = CategoryForm(
             prefix="category_choice_field",
             initial=topic_category.id if topic_category else None)
+
+        # Keywords from THESAURUS management
+        map_tkeywords = map_obj.tkeywords.all()
+        tkeywords_list = ''
+        lang = 'en'  # TODO: use user's language
+        if map_tkeywords and len(map_tkeywords) > 0:
+            tkeywords_ids = map_tkeywords.values_list('id', flat=True)
+            if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+                el = settings.THESAURUS
+                thesaurus_name = el['name']
+                try:
+                    t = Thesaurus.objects.get(identifier=thesaurus_name)
+                    for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
+                        tkl = tk.keyword.filter(lang=lang)
+                        if len(tkl) > 0:
+                            tkl_ids = ",".join(
+                                map(str, tkl.values_list('id', flat=True)))
+                            tkeywords_list += "," + \
+                                tkl_ids if len(
+                                    tkeywords_list) > 0 else tkl_ids
+                except BaseException:
+                    tb = traceback.format_exc()
+                    logger.error(tb)
+
+        tkeywords_form = TKeywordForm(
+            prefix="tkeywords",
+            initial={'tkeywords': tkeywords_list})
 
     if request.method == "POST" and map_form.is_valid(
     ) and category_form.is_valid():
@@ -252,12 +280,10 @@ def map_metadata(
             map_obj.metadata_author = new_author
         map_obj.title = new_title
         map_obj.abstract = new_abstract
-        if new_keywords:
-            map_obj.keywords.clear()
-            map_obj.keywords.add(*new_keywords)
-        if new_regions:
-            map_obj.regions.clear()
-            map_obj.regions.add(*new_regions)
+        map_obj.keywords.clear()
+        map_obj.keywords.add(*new_keywords)
+        map_obj.regions.clear()
+        map_obj.regions.add(*new_regions)
         map_obj.category = new_category
         map_obj.save()
 
@@ -271,6 +297,39 @@ def map_metadata(
                     )))
 
         message = map_obj.id
+
+        try:
+            # Keywords from THESAURUS management
+            tkeywords_to_add = []
+            tkeywords_cleaned = tkeywords_form.clean()
+            if tkeywords_cleaned and len(tkeywords_cleaned) > 0:
+                tkeywords_ids = []
+                for i, val in enumerate(tkeywords_cleaned):
+                    try:
+                        cleaned_data = [value for key, value in tkeywords_cleaned[i].items(
+                        ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
+                        tkeywords_ids.extend(map(int, cleaned_data[0]))
+                    except BaseException:
+                        pass
+
+                if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+                    el = settings.THESAURUS
+                    thesaurus_name = el['name']
+                    try:
+                        t = Thesaurus.objects.get(
+                            identifier=thesaurus_name)
+                        for tk in t.thesaurus.all():
+                            tkl = tk.keyword.filter(pk__in=tkeywords_ids)
+                            if len(tkl) > 0:
+                                tkeywords_to_add.append(tkl[0].keyword_id)
+                        map_obj.tkeywords.clear()
+                        map_obj.tkeywords.add(*tkeywords_to_add)
+                    except BaseException:
+                        tb = traceback.format_exc()
+                        logger.error(tb)
+        except BaseException:
+            tb = traceback.format_exc()
+            logger.error(tb)
 
         return HttpResponse(json.dumps({'message': message}))
 
@@ -342,6 +401,7 @@ def map_metadata(
         "poc_form": poc_form,
         "author_form": author_form,
         "category_form": category_form,
+        "tkeywords_form": tkeywords_form,
         "layers": layers,
         "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'geoext'),
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
@@ -863,6 +923,7 @@ def add_layers_to_map_config(
                                target_srid=int(srs.split(":")[1]))[:4])
         config["capability"] = {
             "abstract": layer.abstract,
+            "store": layer.store,
             "name": layer.alternate,
             "title": layer.title,
             "queryable": True,
@@ -919,45 +980,45 @@ def add_layers_to_map_config(
 
         all_times = None
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            from geonode.geoserver.views import get_capabilities
-            workspace, layername = layer.alternate.split(
-                ":") if ":" in layer.alternate else (None, layer.alternate)
-            # WARNING Please make sure to have enabled DJANGO CACHE as per
-            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-            wms_capabilities_resp = get_capabilities(
-                request, layer.id, tolerant=True)
-            if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
-                wms_capabilities = wms_capabilities_resp.getvalue()
-                if wms_capabilities:
-                    from defusedxml import lxml as dlxml
-                    namespaces = {'wms': 'http://www.opengis.net/wms',
-                                  'xlink': 'http://www.w3.org/1999/xlink',
-                                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-
-                    e = dlxml.fromstring(wms_capabilities)
-                    for atype in e.findall(
-                            "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
-                        dim_name = atype.get('name')
-                        if dim_name:
-                            dim_name = str(dim_name).lower()
-                            if dim_name == 'time':
-                                dim_values = atype.text
-                                if dim_values:
-                                    all_times = dim_values.split(",")
-                                    break
-            if all_times:
-                config["capability"]["dimensions"] = {
-                    "time": {
-                        "name": "time",
-                        "units": "ISO8601",
-                        "unitsymbol": None,
-                        "nearestVal": False,
-                        "multipleVal": False,
-                        "current": False,
-                        "default": "current",
-                        "values": all_times
+            if layer.has_time:
+                from geonode.geoserver.views import get_capabilities
+                workspace, layername = layer.alternate.split(
+                    ":") if ":" in layer.alternate else (None, layer.alternate)
+                # WARNING Please make sure to have enabled DJANGO CACHE as per
+                # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+                wms_capabilities_resp = get_capabilities(
+                    request, layer.id, tolerant=True)
+                if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
+                    wms_capabilities = wms_capabilities_resp.getvalue()
+                    if wms_capabilities:
+                        from defusedxml import lxml as dlxml
+                        namespaces = {'wms': 'http://www.opengis.net/wms',
+                                      'xlink': 'http://www.w3.org/1999/xlink',
+                                      'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+                        e = dlxml.fromstring(wms_capabilities)
+                        for atype in e.findall(
+                                "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
+                            dim_name = atype.get('name')
+                            if dim_name:
+                                dim_name = str(dim_name).lower()
+                                if dim_name == 'time':
+                                    dim_values = atype.text
+                                    if dim_values:
+                                        all_times = dim_values.split(",")
+                                        break
+                if all_times:
+                    config["capability"]["dimensions"] = {
+                        "time": {
+                            "name": "time",
+                            "units": "ISO8601",
+                            "unitsymbol": None,
+                            "nearestVal": False,
+                            "multipleVal": False,
+                            "current": False,
+                            "default": "current",
+                            "values": all_times
+                        }
                     }
-                }
 
         if layer.storeType == "remoteStore":
             service = layer.remote_service

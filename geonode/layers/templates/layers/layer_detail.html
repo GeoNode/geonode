@@ -8,6 +8,7 @@
 {% load base_tags %}
 {% load guardian_tags %}
 {% load client_lib_tags %}
+{% load proxy_lib_tags %}
 
 {% block title %}{{ resource.title|default:resource.alternate }} — {{ block.super }}{% endblock %}
 
@@ -291,7 +292,7 @@
                         <li class="active">
                             <ul>
                               {% for link in links %}
-                              <li><a href="{{ link.url }}" target="_blank">{% trans link.name %}</a></li>
+                                <li><a href="{{ link.url }}" target="_blank">{% trans link.name %}</a></li>
                               {% endfor %}
                             </ul>
                         </li>
@@ -399,14 +400,22 @@
 
                       <!-- DOWNLOAD FILTER - END -->
 
-                      <li>
-                          <h4>{% trans "Pick your download format:" %}</h4>
-                          <ul>
-                            {% for link in links_download %}
+                      <h4>{% trans "Pick your download format:" %}</h4>
+                      <ul>
+                        {% for link in links_download %}
+                          {% if link.name == 'Original Dataset' %}
+                            {% original_link_available resource.id link.url as original_dwn_link_available %}
+                            {% if original_dwn_link_available %}
                             <li><a href="{{ link.url }}" target="_blank" id="{{ link.name | slugify }}" class="urls">{% trans link.name %}</a></li>
-                            {% endfor %}
-                          </ul>
-                      </li>
+                            {% else %}
+                            <!-- Hide the link instead. Uncomment the lines below to present a warning to the users. -->
+                            <!-- li><a href="javascript:thumbnailFeedbacks('{% trans "No data available for this resource. Please contact a system administrator or a manager." %}', '{% trans "Warning" %}');" id="{{ link.name | slugify }}" class="urls">{% trans link.name %}</a></li -->
+                            {% endif %}
+                          {% else %}
+                            <li><a href="{{ link.url }}" target="_blank" id="{{ link.name | slugify }}" class="urls">{% trans link.name %}</a></li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
                     </div>
                 {% endif %}
                 </div>
@@ -457,19 +466,19 @@
               {% endif %}
               {% if GEOSERVER_BASE_URL and not resource.service %}
                 {% if "change_layer_style" in layer_perms %}
-                <div class="col-sm-3">
-                  <i class="fa fa-tint fa-3x"></i>
-                  <h4>{% trans "Styles" %}</h4>
-                  {% if preview == 'geoext' or preview == 'react' or preview == 'leaflet' %}
-                    <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
-                  {% else %}
-                    <a class="btn btn-default btn-block btn-xs style-edit" href="{% url "layer_sld_edit" resource.service_typename %}">{% trans "Edit" %}</a>
-                  {% endif %}
                   {% if resource.storeType != "remoteStore" %}
-                  <a class="btn btn-default btn-block btn-xs" href="{% url "layer_sld_upload" resource.service_typename %}">{% trans "Upload" %}</a>
-                  <a class="btn btn-default btn-block btn-xs" href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
+                  <div class="col-sm-3">
+                    <i class="fa fa-tint fa-3x"></i>
+                    <h4>{% trans "Styles" %}</h4>
+                    {% if preview == 'geoext' or preview == 'react' or preview == 'leaflet' %}
+                      <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
+                    {% else %}
+                      <a class="btn btn-default btn-block btn-xs style-edit" href="{% url "layer_sld_edit" resource.service_typename %}">{% trans "Edit" %}</a>
+                    {% endif %}
+                    <a class="btn btn-default btn-block btn-xs" href="{% url "layer_sld_upload" resource.service_typename %}">{% trans "Upload" %}</a>
+                    <a class="btn btn-default btn-block btn-xs" href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
+                  </div>
                   {% endif %}
-                </div>
                 {% endif %}
               {% elif OGC_SERVER.default.BACKEND == 'geonode.qgis_server' and not resource.service %}
                 {% if "change_layer_style" in layer_perms and preview == 'leaflet' %}
@@ -498,7 +507,7 @@
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                 {% endif %}
                 {% if "change_layer_data" in layer_perms and OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
-                  {% if layer_type != "raster" %}
+                  {% if layer_type != "raster" and resource.storeType != "remoteStore" %}
                   <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}&storeType={{resource.storeType}}">{% trans "Edit data" %}</a>
                   {% endif %}
                 {% endif %}
@@ -571,7 +580,7 @@
       <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
       {% if resource.default_style %}
       {% for style in resource.styles.all %}
-          {% if resource.default_style == style %}
+          {% if resource.default_style == style or resource.default_style.name == style.name or resource.default_style.sld_title == style.sld_title %}
               {% for legend in resource.get_legend %}
                   {% with "STYLE="|add:style.name as style_name %}
                   {% if legend.link_type == 'image' and style_name in legend.url %}
@@ -642,6 +651,7 @@
     </li>
     {% endif %}
 
+    {% if OGC_SERVER.default.BACKEND == 'geonode.geoserver' and resource.storeType != "remoteStore" %}
     <li class="list-group-item">
       <h4>{% trans "Styles" %}</h4>
        <p>{% trans "The following styles are associated with this layer. Choose a style to view it in the preview map." %}</p>
@@ -677,9 +687,19 @@
         {% endif %}
       </ul>
     </li>
+    {% endif %}
+
+    {% if resource.storeType == "remoteStore" %}
+    <li class="list-group-item">
+      <h4>{% trans "External service layer" %}</h4>
+      <div>{% trans "Source" %}: <a href="/services/{{resource.remote_service.id}}">{{ resource.remote_service.title }}</a>
+      </div>
+      <div>{% trans "Type" %}: {{ resource.remote_service.type }}</div>
+    </li>
+    {% endif %}
 
     {% if OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
-        {% if "change_resourcebase" in perms_list %}
+      {% if "change_resourcebase" in perms_list and resource.storeType != "remoteStore" %}
         <li class="list-group-item">
           <h4>{% trans "Refresh Attributes and Statistics of this layer" %}</h4>
           <p>{% trans "Click the button below to allow GeoNode refreshing the list of available Layer Attributes. If the option 'WPS_ENABLED' has been also set on the backend, it will recalculate their statistics too." %}</p>
@@ -690,28 +710,20 @@
           <p>{% trans "Click the button below to wipe the tile-cache of this layer." %}</p>
             <a href="#" class="btn btn-primary btn-block" data-dismiss="modal" id="tiledlayer_refresh">{% trans "Empty Tiled-Layer Cache" %}</a>
         </li>
-        {% endif %}
+      {% endif %}
     {% endif %}
 
     {% if GEONODE_SECURITY_ENABLED %}
-    {% if "change_resourcebase_permissions" in perms_list %}
-    <li class="list-group-item">
-      <h4>{% trans "Permissions" %}</h4>
-      <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
-      <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Layer Permissions" %}</a></p>
-      {% if USE_GEOSERVER and DELAYED_SECURITY_SIGNALS %}
-        <a href="#" class="btn btn-primary btn-block" data-dismiss="modal" id="security_refresh">{% trans "Sync permissions immediately" %}</a>
+      {% if "change_resourcebase_permissions" in perms_list %}
+        <li class="list-group-item">
+          <h4>{% trans "Permissions" %}</h4>
+          <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
+          <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Layer Permissions" %}</a></p>
+          {% if USE_GEOSERVER and DELAYED_SECURITY_SIGNALS %}
+            <a href="#" class="btn btn-primary btn-block" data-dismiss="modal" id="security_refresh">{% trans "Sync permissions immediately" %}</a>
+          {% endif %}
+        </li>
       {% endif %}
-    </li>
-    {% endif %}
-    {% endif %}
-
-    {% if resource.storeType == "remoteStore" %}
-    <li class="list-group-item">
-            <h4>{% trans "External service layer" %}</h4>
-            <div>{% trans "Source" %}: <a href="/services/{{resource.service.id}}">{{ resource.service.title }}</a></div>
-            <div>{% trans "Type" %}: {{ resource.service.type }}</div>
-    </li>
     {% endif %}
 
     {% include "base/_resourcebase_contact_snippet.html" %}
@@ -751,36 +763,38 @@
     {% endif %}
     {% include 'rating.html' %}
     {% include 'request_download.html' %}
-       $("#comment_submit_btn").click(function(event) {
-            $.ajax({
-              type: "POST",
-              url: $("#form_post_comment").attr('action'),
-              data: $("#form_post_comment").serialize(),
-              success: function() {
-                $('#form_post_comment_div').modal().find('form')[0].reset();
-                $('#form_post_comment_div').modal('hide');
-                $('#comments_section').load(window.location.pathname + ' #comments_section',
-                		function(){$(this).children().unwrap()})
-              }
-            });
-            return false;
-          });
 
-    {% if resource.get_legend.link_type == 'json' %}
-    $.getJSON('{{ resource.get_legend_url }}', function (data) {
-        var legend = data.layers[0].legend;
-        var items = [];
-        $.each(legend, function (key, dvalue) {
-            items.push('<li><img src="data:image/png;base64,' + dvalue.imageData + '">'+dvalue.label+'</li>');
+    <script type="text/javascript">
+      $("#comment_submit_btn").click(function(event) {
+          $.ajax({
+            type: "POST",
+            url: $("#form_post_comment").attr('action'),
+            data: $("#form_post_comment").serialize(),
+            success: function() {
+              $('#form_post_comment_div').modal().find('form')[0].reset();
+              $('#form_post_comment_div').modal('hide');
+              $('#comments_section').load(window.location.pathname + ' #comments_section',
+                  function(){$(this).children().unwrap()})
+            }
+          });
+          return false;
         });
 
-        $('<ul/>', {
-            'class': 'arcgis-legend',
-            html: items.join('')
+        {% if resource.get_legend.link_type == 'json' %}
+        $.getJSON('{{ resource.get_legend_url }}', function (data) {
+            var legend = data.layers[0].legend;
+            var items = [];
+            $.each(legend, function (key, dvalue) {
+                items.push('<li><img src="data:image/png;base64,' + dvalue.imageData + '">'+dvalue.label+'</li>');
+            });
 
-        }).appendTo('#legend_placeholder');
-    });
-    {% endif %}
+            $('<ul/>', {
+                'class': 'arcgis-legend',
+                html: items.join('')
+
+            }).appendTo('#legend_placeholder');
+        });
+        {% endif %}
     </script>
 
     {% block thumbnail_script %}
@@ -845,7 +859,7 @@
         attribute_data_schema = $("#attribute_list li.selected a").attr('data-schema');
         if(attribute_list == null || operator_list == null || single_value_input == "" ||  logical_operator_dropdown == null){
           if($("#missing-values").length == 0) {
-            $( "#query-filter-tools" ).after( "<p id='missing-values'> Select all values from menus.</p>" );
+            $("#query-filter-tools").after( "<p id='missing-values'> Select all values from menus.</p>" );
           }
         } else {
             if($("#missing-values").length !== 0) {
@@ -854,7 +868,7 @@
             // validation that user enters a string for a string attribute or a number for a number attribute
             var single_value_input = '';
             try {
-                single_value_input = ($('#single_value').select2('data').text).trim();
+                single_value_input = ($('#single_value').select2('data')[0].text).trim();
             } catch (err) {
                 single_value_input = '';
             }
@@ -863,7 +877,7 @@
               if($("#wrong-data-type").length !== 0) {
                   $('#wrong-data-type').empty();
               }
-              $( "#query-filter-tools" ).after( "<p id='wrong-data-type'> You entered a string. Not a number.</p>" );
+              $("#query-filter-tools").after( "<p id='wrong-data-type'> You entered a string. Not a number.</p>" );
             } else {
               $( "p" ).remove( "#wrong-data-type" );
               // check of single_value_input; string or number
@@ -1012,14 +1026,14 @@
 
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
-  <script type='text/javascript'>
-        $(function() {
-            if (sessionStorage.getItem("security_refresh_trigger")) {
-                sessionStorage.clear();
-                $("#security_refresh").trigger('click');
-            }
-        });
-  </script>
+      <script type='text/javascript'>
+            $(function() {
+                if (sessionStorage.getItem("security_refresh_trigger")) {
+                    sessionStorage.clear();
+                    $("#security_refresh").trigger('click');
+                }
+            });
+      </script>
     {% endif %}
 
     {% if FAVORITE_ENABLED %}

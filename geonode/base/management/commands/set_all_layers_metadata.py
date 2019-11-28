@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from geonode.geoserver.helpers import ogc_server_settings
 from django.core.management.base import BaseCommand
 from geonode.base.models import Link
 from geonode.layers.models import Layer
@@ -104,6 +105,21 @@ class Command(BaseCommand):
                         while _links.count() > 1:
                             _links.last().delete()
                             print '.',
+                    # fixup Legend links
+                    legend_url_template = ogc_server_settings.PUBLIC_LOCATION + \
+                        'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+                        '{alternate}&STYLE={style_name}' + \
+                        '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+                    if layer.default_style and not layer.get_legend_url(style_name=layer.default_style.name):
+                        Link.objects.update_or_create(
+                            resource=layer.resourcebase_ptr,
+                            name='Legend',
+                            extension='png',
+                            url=legend_url_template.format(
+                                alternate=layer.alternate,
+                                style_name=layer.default_style.name),
+                            mime='image/png',
+                            link_type='image')
             except BaseException as e:
                 import traceback
                 traceback.print_exc()

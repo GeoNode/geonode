@@ -1,0 +1,56 @@
+[
+    {
+        "fields": {
+            "date_joined": "2011-06-09 15:15:27",
+            "email": "ad@m.in",
+            "first_name": "admin",
+            "groups": [],
+            "is_active": true,
+            "is_staff": true,
+            "is_superuser": true,
+            "last_login": "2011-06-09 15:45:34",
+            "last_name": "",
+            "password": "pbkdf2_sha256$30000$rjuGt0Obn8on$cxF75frIOSaitNklLZ0IJ/VonUW0fwEFVF96o0M+lGc=",
+            "user_permissions": [],
+            "username": "admin"
+        },
+        "model": "people.profile",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "date_joined": "2011-06-09 15:46:03",
+            "email": "",
+            "first_name": "Norman",
+            "groups": [],
+            "is_active": true,
+            "is_staff": false,
+            "is_superuser": false,
+            "last_login": "2011-06-09 15:46:03",
+            "last_name": "Normandy",
+            "password": "sha1$b0022$1592757da52adeed741051a203fe2d65b6798e83",
+            "user_permissions": [],
+            "username": "norman"
+        },
+        "model": "people.profile",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "date_joined": "2011-06-09 15:46:03",
+            "email": "",
+            "first_name": "Test",
+            "groups": [],
+            "is_active": true,
+            "is_staff": false,
+            "is_superuser": false,
+            "last_login": "2011-06-09 15:46:03",
+            "last_name": "User",
+            "password": "sha1$b0022$1592757da52adeed741051a203fe2d65b6798e83",
+            "user_permissions": [],
+            "username": "test_user"
+        },
+        "model": "people.profile",
+        "pk": 3
+    }
+]

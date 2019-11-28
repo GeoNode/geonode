@@ -314,6 +314,7 @@ GEONODE_INTERNAL_APPS = (
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
+    'geonode.monitoring',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -381,7 +382,12 @@ INSTALLED_APPS = (
 
     # GeoNode
     'geonode',
-) + GEONODE_APPS
+)
+
+if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
+    INSTALLED_APPS += ('django_celery_beat',)
+
+INSTALLED_APPS += GEONODE_APPS
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -1186,7 +1192,7 @@ if RECAPTCHA_ENABLED:
     RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY", 'geonode_RECAPTCHA_PRIVATE_KEY')
 
 # Settings for MONITORING plugin
-MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'True'))
+MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'False'))
 
 MONITORING_CONFIG = os.getenv("MONITORING_CONFIG", None)
 MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
@@ -1206,28 +1212,29 @@ if MONITORING_ENABLED:
         MIDDLEWARE_CLASSES += \
             ('geonode.monitoring.middleware.MonitoringMiddleware',)
 
-# skip certain paths to not to mud stats too much
-MONITORING_SKIP_PATHS = ('/api/o/',
-                         '/monitoring/',
-                         '/admin',
-                         '/lang.js',
-                         '/jsi18n',
-                         STATIC_URL,
-                         MEDIA_URL,
-                         re.compile('^/[a-z]{2}/admin/'),
-                         )
+    # skip certain paths to not to mud stats too much
+    MONITORING_SKIP_PATHS = ('/api/o/',
+                            '/monitoring/',
+                            '/admin',
+                            '/lang.js',
+                            '/jsi18n',
+                            STATIC_URL,
+                            MEDIA_URL,
+                            re.compile('^/[a-z]{2}/admin/'),
+                            )
 
-# configure aggregation of past data to control data resolution
-# list of data age, aggregation, in reverse order
-# for current data, 1 minute resolution
-# for data older than 1 day, 1-hour resolution
-# for data older than 2 weeks, 1 day resolution
-MONITORING_DATA_AGGREGATION = (
-    (timedelta(seconds=0), timedelta(minutes=1),),
-    (timedelta(days=1), timedelta(minutes=60),),
-    (timedelta(days=14), timedelta(days=1),),
-)
-USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'True'))
+    # configure aggregation of past data to control data resolution
+    # list of data age, aggregation, in reverse order
+    # for current data, 1 minute resolution
+    # for data older than 1 day, 1-hour resolution
+    # for data older than 2 weeks, 1 day resolution
+    MONITORING_DATA_AGGREGATION = (
+        (timedelta(seconds=0), timedelta(minutes=1),),
+        (timedelta(days=1), timedelta(minutes=60),),
+        (timedelta(days=14), timedelta(days=1),),
+    )
+
+USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))
 GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
 # -- END Settings for MONITORING plugin
 
@@ -1531,8 +1538,20 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
                 "type": "empty",
                 "visibility": False,
                 "args": ["Empty Background", {"visibility": False}]
-            }
+           }
         ]
+
+    if BING_API_KEY:
+        BASEMAP = {
+            "type": "bing",
+            "title": "Bing Aerial",
+            "name": "AerialWithLabels",
+            "source": "bing",
+            "group": "background",
+            "apiKey": "{{apiKey}}",
+            "visibility": False
+        }
+        DEFAULT_MS2_BACKGROUNDS = [BASEMAP,] + DEFAULT_MS2_BACKGROUNDS
 
     MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
 
@@ -1703,15 +1722,8 @@ if USE_GEOSERVER:
 # }
 
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
-DELAYED_SECURITY_INTERVAL = int(os.getenv('DELAYED_SECURITY_INTERVAL', 60))
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = TIME_ZONE
-CELERY_BEAT_SCHEDULE = {
-    'delayed-security-sync-task': {
-        'task': 'geonode.security.tasks.synch_guardian',
-        'schedule': timedelta(seconds=DELAYED_SECURITY_INTERVAL),
-    }
-}
 
 # Half a day is enough
 CELERY_TASK_RESULT_EXPIRES = 43200
@@ -1756,13 +1768,13 @@ AWS_QUERYSTRING_AUTH = False
 
 if S3_STATIC_ENABLED:
     STATICFILES_LOCATION = 'static'
-    STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     STATIC_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN,
                                      STATICFILES_LOCATION)
 
 if S3_MEDIA_ENABLED:
     MEDIAFILES_LOCATION = 'media'
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
 
 # Require users to authenticate before using Geonode
@@ -1784,11 +1796,10 @@ if os.name == 'nt':
             from django.contrib.gis.geos import GEOSGeometry  # flake8: noqa
 
 # Keywords thesauri
-# e.g. THESAURI = [{'name':'inspire_themes', 'required':True, 'filter':True}, {'name':'inspire_concepts', 'filter':True}, ]
+# e.g. THESAURUS = {'name':'inspire_themes', 'required':True, 'filter':True}
 # Required: (boolean, optional, default false) mandatory while editing metadata (not implemented yet)
 # Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
-# THESAURI = [{'name':'inspire_themes', 'required':False, 'filter':True}]
-THESAURI = []
+# THESAURUS = {'name': 'inspire_themes', 'required': True, 'filter': True}
 
 # Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))

@@ -15,7 +15,7 @@
   {% csrf_token %}
   {{ form|as_bootstrap }}
   <div>
-    <a href="" class="btn btn-default">{% trans "Cancel" %}</a>
+    <input class="btn" type="submit" name="cancel" value="{% trans "Cancel" %}" />
     <input class="btn btn-primary" type="submit" value="{% trans "Submit" %}" />
   </div>
 </form>

@@ -26,13 +26,21 @@ from django.conf import settings
 
 from geonode.base.models import Thesaurus
 
-logger = logging.getLogger("geonode.base.fields")
+from .widgets import MultiThesaurusWidget
+
+logger = logging.getLogger(__name__)
 
 
 class MultiThesauriField(forms.MultiValueField):
-    def __init__(self, label=None, required=True, help_text=None, widget=None):
-        fields_list = []
-        for el in settings.THESAURI:
+
+    widget = MultiThesaurusWidget()
+
+    def __init__(self, *args, **kwargs):
+        super(MultiThesauriField, self).__init__(*args, **kwargs)
+        self.require_all_fields = kwargs.pop('require_all_fields', True)
+
+        if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+            el = settings.THESAURUS
             choices_list = []
             thesaurus_name = el['name']
             try:
@@ -40,16 +48,16 @@ class MultiThesauriField(forms.MultiValueField):
                 for tk in t.thesaurus.all():
                     tkl = tk.keyword.filter(lang='en')
                     choices_list.append((tkl[0].id, tkl[0].label))
-                fields_list.append(forms.MultipleChoiceField(choices=tuple(choices_list)))
+                self.fields += (forms.MultipleChoiceField(choices=tuple(choices_list)), )
             except BaseException:
                 tb = traceback.format_exc()
-                logger.error(tb)
+                logger.exception(tb)
 
-        fields = tuple(fields_list)
-
-        super(MultiThesauriField, self).__init__(fields, required, widget, label)
-
-    def compress(self, data_list):
-        if data_list:
-            return '%s' % (data_list[0])
-        return None
+        for f in self.fields:
+            f.error_messages.setdefault('incomplete',
+                                        self.error_messages['incomplete'])
+            if self.require_all_fields:
+                # Set 'required' to False on the individual fields, because the
+                # required validation will be handled by MultiValueField, not
+                # by those individual fields.
+                f.required = False

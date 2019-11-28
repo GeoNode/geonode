@@ -21,10 +21,7 @@ from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 from lxml import etree
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 import logging
 import traceback
 import requests

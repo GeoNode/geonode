@@ -135,7 +135,7 @@ Make an instance out of the ``Django Template``
   # Install the Python packages
   cd /opt/geonode_custom/my_geonode
   pip install -r requirements.txt --upgrade --no-cache --no-cache-dir
-  pip install -e . --upgrade --no-cache --no-cache-dir
+  pip install -e .
 
   # Install GDAL Utilities for Python
   pip install pygdal=="`gdal-config --version`.*"
@@ -189,7 +189,7 @@ GeoNode Project.
 
 **Be careful** to use the **new** paths and names everywhere:
 
-* Everytime you'll find the keyword ``goenode``, you'll need to use your geonode custom name instead (in this example ``my_geonode``).
+* Everytime you'll find the keyword ``geonode``, you'll need to use your geonode custom name instead (in this example ``my_geonode``).
 
 * Everytime you'll find paths pointing to ``/opt/geonode/``, you'll need to update them to point to your custom project instead (in this example ``/opt/geonode_custom/my_geonode``).
 
@@ -264,7 +264,7 @@ Replace everywhere ``localhost`` with ``www.example.org``
 
 .. code-block:: shell
 
-  vim scripts/docker/env/production/*.env
+  vim .env
 
 .. code-block:: shell
 
@@ -447,7 +447,7 @@ with following content
         branch_name: master
         virtualenv_dir: /home/geo/.venvs
         site_url: http://mygeonode.org/
-        geoserver_url: https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-2.15.2.war
+        geoserver_url: https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-2.15.3.war
         pg_max_connections: 100
         pg_shared_buffers: 128MB
         tomcat_xms: 1024M

@@ -47,17 +47,21 @@ Explain which could be future evolutions.
 
 ## Feedback
 
+Update this section with relevant feedbacks, if any.
+
 ## Voting
 
 Project Steering Committee:
 
 * Alessio Fabiani:
 * Francesco Bartoli:
-* Olivier Dalang:
 * Paolo Corti:
 * Simone Dalmasso:
+* Toni Schoenbuchner:
 
 ## Links
+
+Remove unused links below.
 
 * [Email Discussion]()
 * [Pull Request]()

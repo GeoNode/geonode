@@ -18,35 +18,20 @@
 #
 #########################################################################
 
-from django import forms
 from django.conf import settings
+from autocomplete_light.widgets import MultipleChoiceWidget
 
-import autocomplete_light
 
+class MultiThesaurusWidget(MultipleChoiceWidget):
 
-class MultiThesauriWidget(forms.MultiWidget):
     def __init__(self, attrs=None):
-        widget_list = []
-        for el in settings.THESAURI:
+        if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+            el = settings.THESAURUS
+            widget_name = el['name']
             cleaned_name = el['name'].replace("-", " ").replace("_", " ").title()
-            widget_list.append(
-                autocomplete_light.MultipleChoiceWidget(
-                    'thesaurus_' + el['name'],
-                    attrs={'placeholder': '%s - Start typing for suggestions' % cleaned_name},
-                    extra_context={'thesauri_title': cleaned_name}))
-        widgets = tuple(widget_list)
-
-        super(MultiThesauriWidget, self).__init__(widgets, attrs)
-
-    def decompress(self, value):
-        if value:
-            return [map(int, value.split(','))]
-        return [None, None, None]
-
-    def compress(self, data_list):
-        if data_list:
-            return '%s' % (data_list[0])
-        return None
-
-    def format_output(self, rendered_widgets):
-        return u'\n'.join(rendered_widgets)
+            super(MultiThesaurusWidget, self).__init__(
+                'thesaurus_' + widget_name,
+                attrs={'placeholder': '%s - Start typing for suggestions' % cleaned_name},
+                extra_context={'thesauri_title': cleaned_name})
+        else:
+            super(MultiThesaurusWidget, self).__init__([], attrs)

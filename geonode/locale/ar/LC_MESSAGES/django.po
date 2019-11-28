@@ -170,11 +170,11 @@ msgid "Category is required."
 msgstr "الفئة مطلوبة."
 
 #: geonode/base/forms.py:288
-msgid "Keywords from Thesauri"
+msgid "Keywords from Thesaurus"
 msgstr "كلمات رئيسية من قاموس المرادفات"
 
 #: geonode/base/forms.py:290
-msgid "List of keywords from Thesauri"
+msgid "List of keywords from Thesaurus"
 msgstr "قائمة الكلمات الرئيسية من قاموس المرادفات"
 
 #: geonode/base/forms.py:321 geonode/base/models.py:537
@@ -6266,8 +6266,8 @@ msgid "GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr "GeoNode هو منصة مفتوحة المصدر لتبادل البيانات الجغرافية والخرائط."
 
 #: geonode/templates/index.html:23
-msgid "http://docs.geonode.org/en/2.10.x/usage"
-msgstr "http://docs.geonode.org/en/2.10.x/usage"
+msgid "http://docs.geonode.org/en/2.10.x/usage/index.html"
+msgstr "http://docs.geonode.org/en/2.10.x/usage/index.html"
 
 #: geonode/templates/index.html:23
 msgid "Get Started &raquo;"

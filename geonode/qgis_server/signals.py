@@ -36,7 +36,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.decorators import on_ogc_backend
 from geonode.qgis_server.gis_tools import set_attributes
-from geonode.qgis_server.helpers import create_qgis_project
+from geonode.qgis_server.helpers import create_qgis_project, get_model_path
 from geonode.qgis_server.models import QGISServerLayer, QGISServerMap
 from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
 from geonode.qgis_server.xml_utilities import update_xml
@@ -187,7 +187,10 @@ def qgis_server_post_save(instance, sender, **kwargs):
     # Create thumbnail
     overwrite = getattr(instance, 'overwrite', False)
     create_qgis_server_thumbnail.delay(
-        instance, overwrite=overwrite)
+        get_model_path(instance),
+        instance.id,
+        overwrite=overwrite
+    )
 
     # Attributes
     set_attributes(instance)
@@ -378,7 +381,10 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
 
     # Generate map thumbnail
     create_qgis_server_thumbnail.delay(
-        instance, overwrite=True)
+        get_model_path(instance),
+        instance.id,
+        overwrite=True
+    )
 
 
 @on_ogc_backend(qgis_server.BACKEND_PACKAGE)

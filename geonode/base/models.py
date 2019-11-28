@@ -41,6 +41,7 @@ from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils.timezone import now
+from django.utils.html import escape
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -383,6 +384,7 @@ class _HierarchicalTagManager(_TaggableManager):
         tag_objs.update(existing)
         for new_tag in str_tags - set(t.name for t in existing):
             if new_tag:
+                new_tag = escape(new_tag)
                 tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
 
         for tag in tag_objs:
@@ -420,30 +422,6 @@ class Thesaurus(models.Model):
         verbose_name_plural = 'Thesauri'
 
 
-class ThesaurusKeyword(models.Model):
-    """
-    Loadable thesaurus containing keywords in different languages
-    """
-    # read from the RDF file
-    about = models.CharField(max_length=255, null=True, blank=True)
-    # read from the RDF file
-    alt_label = models.CharField(
-        max_length=255,
-        default='',
-        null=True,
-        blank=True)
-
-    thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus')
-
-    def __unicode__(self):
-        return u"{0}".format(self.alt_label)
-
-    class Meta:
-        ordering = ("alt_label",)
-        verbose_name_plural = 'Thesaurus Keywords'
-        unique_together = (("thesaurus", "alt_label"),)
-
-
 class ThesaurusKeywordLabel(models.Model):
     """
     Loadable thesaurus containing keywords in different languages
@@ -464,6 +442,34 @@ class ThesaurusKeywordLabel(models.Model):
         ordering = ("keyword", "lang")
         verbose_name_plural = 'Labels'
         unique_together = (("keyword", "lang"),)
+
+
+class ThesaurusKeyword(models.Model):
+    """
+    Loadable thesaurus containing keywords in different languages
+    """
+    # read from the RDF file
+    about = models.CharField(max_length=255, null=True, blank=True)
+    # read from the RDF file
+    alt_label = models.CharField(
+        max_length=255,
+        default='',
+        null=True,
+        blank=True)
+
+    thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus')
+
+    def __unicode__(self):
+        return u"{0}".format(self.alt_label)
+
+    @property
+    def labels(self):
+        return ThesaurusKeywordLabel.objects.filter(keyword=self)
+
+    class Meta:
+        ordering = ("alt_label",)
+        verbose_name_plural = 'Thesaurus Keywords'
+        unique_together = (("thesaurus", "alt_label"),)
 
 
 class ResourceBaseManager(PolymorphicManager):
@@ -1101,12 +1107,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         if legend.count() > 0:
             if not style_name:
-                return legend[0].url
+                return legend.first().url
             else:
                 for _legend in legend:
                     if style_name in _legend.url:
                         return _legend.url
-        return legend.url
+        return None
 
     def get_ows_url(self):
         """Return URL for OGC WMS server None if it does not exist.
@@ -1353,6 +1359,9 @@ class MenuPlaceholder(models.Model):
         unique=True
     )
 
+    def __unicode__(self):
+        return u"{0}".format(self.name)
+
     def __str__(self):
         return self.name
 
@@ -1372,6 +1381,9 @@ class Menu(models.Model):
     order = models.IntegerField(
         null=False,
     )
+
+    def __unicode__(self):
+        return u"{0}".format(self.title)
 
     def __str__(self):
         return self.title
@@ -1405,6 +1417,9 @@ class MenuItem(models.Model):
         null=False,
         blank=False
     )
+
+    def __unicode__(self):
+        return u"{0}".format(self.title)
 
     def __str__(self):
         return self.title

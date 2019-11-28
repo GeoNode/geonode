@@ -17,7 +17,7 @@ services:
       - ./scripts/docker/env/${SET_DOCKER_ENV}/db.env
 
   geoserver:
-    image: geonode/geoserver:2.15.2
+    image: geonode/geoserver:2.15.3
     restart: unless-stopped
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     stdin_open: true
@@ -71,7 +71,7 @@ services:
       - statics:/mnt/volumes/statics
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.15.2
+    image: geonode/geoserver_data:2.15.3
     restart: on-failure
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     labels:

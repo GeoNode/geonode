@@ -237,30 +237,48 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
 
 
 def get_sld_for(gs_catalog, layer):
-    # GeoServer sometimes fails to associate a style with the data, so
-    # for now we default to using a point style.(it works for lines and
-    # polygons, hope this doesn't happen for rasters  though)
+    name = None
     gs_layer = None
-    _default_style = None
-    try:
-        _default_style = layer.default_style
-    except BaseException:
-        traceback.print_exc()
-        pass
+    gs_style = None
+    _default_style = layer.default_style if layer else None
 
-    try:
-        gs_catalog._cache.clear()
-        gs_layer = gs_catalog.get_layer(layer.name)
-    except BaseException:
-        traceback.print_exc()
     if _default_style is None:
+        _max_retries, _tries = getattr(ogc_server_settings, "MAX_RETRIES", 5), 0
         try:
-            name = gs_layer.default_style.name if gs_layer.default_style is not None else "raster"
+            gs_layer = gs_catalog.get_layer(layer.name)
+            if gs_layer.default_style:
+                gs_style = gs_layer.default_style.sld_body
+                set_layer_style(layer,
+                                layer.alternate,
+                                gs_style)
+            name = gs_layer.default_style.name
         except BaseException:
-            traceback.print_exc()
             name = None
+        while not name and _tries < _max_retries:
+            try:
+                gs_layer = gs_catalog.get_layer(layer.name)
+                if gs_layer.default_style:
+                    gs_style = gs_layer.default_style.sld_body
+                    set_layer_style(layer,
+                                    layer.alternate,
+                                    gs_style)
+                name = gs_layer.default_style.name
+                if name:
+                    break
+            except BaseException:
+                name = None
+            _tries += 1
+            time.sleep(3)
     else:
         name = _default_style.name
+        gs_style = _default_style.sld_body
+
+    if not name:
+        msg = """
+            GeoServer didn't return a default style for this layer.
+            Consider increasing OGC_SERVER MAX_RETRIES value.''
+        """
+        raise GeoNodeException(msg)
 
     # Detect geometry type if it is a FeatureType
     res = gs_layer.resource if gs_layer else None
@@ -289,7 +307,7 @@ def get_sld_for(gs_catalog, layer):
             bg=bg,
             mark=mark)
     else:
-        return None
+        return gs_style
 
 
 def fixup_style(cat, resource, style):
@@ -537,11 +555,9 @@ def gs_slurp(
     """
     if console is None:
         console = open(os.devnull, 'w')
-
     if verbosity > 0:
         print >> console, "Inspecting the available layers in GeoServer ..."
-
-    cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
+    cat = gs_catalog
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
         if workspace is None:
@@ -801,7 +817,7 @@ def gs_slurp(
 
 
 def get_stores(store_type=None):
-    cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
+    cat = gs_catalog
     stores = cat.get_stores()
     store_list = []
     for store in stores:
@@ -1479,13 +1495,6 @@ class OGC_Server(object):
         return urljoin(location, 'ows')
 
     @property
-    def internal_rest(self):
-        """
-        The internal REST endpoint for the server.
-        """
-        return urljoin(self.LOCATION, 'rest')
-
-    @property
     def hostname(self):
         return urlsplit(self.LOCATION).hostname
 
@@ -1493,7 +1502,7 @@ class OGC_Server(object):
     def netloc(self):
         return urlsplit(self.LOCATION).netloc
 
-    def __str__(self):
+    def __unicode__(self):
         return self.alias
 
 
@@ -1871,7 +1880,9 @@ _csw = None
 _user, _password = ogc_server_settings.credentials
 
 url = ogc_server_settings.rest
-gs_catalog = Catalog(url, _user, _password)
+gs_catalog = Catalog(url, _user, _password,
+                     retries=ogc_server_settings.MAX_RETRIES,
+                     backoff_factor=ogc_server_settings.BACKOFF_FACTOR)
 gs_uploader = Client(url, _user, _password)
 
 _punc = re.compile(r"[\.:]")  # regex for punctuation that confuses restconfig
@@ -2024,6 +2035,9 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             thumbnail_create_url = request_body['thumbnail_create_url']
         elif 'layers' in request_body:
             layers = request_body['layers']
+            styles = ''
+            if 'styles' in request_body:
+                styles = request_body['styles']
 
             ogc_server_location = request_body["ogc_server_location"] if "ogc_server_location" \
                 in request_body else ogc_server_settings.LOCATION
@@ -2036,6 +2050,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                 'version': wms_version,
                 'request': 'GetMap',
                 'layers': layers.replace(' ', '+'),
+                'styles': styles,
                 'format': wms_format,
                 # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
             }

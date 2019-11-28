@@ -91,7 +91,7 @@ class Command(BaseCommand):
             raise CommandError("ConceptScheme not found in file")
 
         title = scheme.find('dc:title', ns).text
-        descr = scheme.find('dc:description', ns).text
+        descr = scheme.find('dc:description', ns).text if scheme.find('dc:description', ns) else title
         date_issued = scheme.find('dcterms:issued', ns).text
 
         print 'Thesaurus "{}" issued on {}'.format(title, date_issued)

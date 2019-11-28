@@ -1,0 +1,22 @@
+{% extends "geonode_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load bootstrap_tags %}
+
+{% block title %} {% trans "Set Permissions" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}{% trans "set permissions" %}{% endblock %}
+
+{% block body %}
+<div class="page-header">
+  <h2 class="page-title">{% trans "Set Permissions" %}</h2>
+</div>
+<form action="/{{ model|lower }}s/permissions/batch/{{ ids }}/" method="post">
+  {% csrf_token %}
+  {{ form|as_bootstrap }}
+  <div>
+    <input class="btn" type="submit" name="cancel" value="{% trans "Cancel" %}" />
+    <input class="btn btn-primary" type="submit" value="{% trans "Submit" %}" />
+  </div>
+</form>
+{% endblock %}

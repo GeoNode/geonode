@@ -25,23 +25,30 @@
 import re
 import os
 import glob
+import string
 import sys
+import json
 import logging
 import tarfile
 
-from osgeo import gdal, osr
-from urlparse import urlparse
-from zipfile import ZipFile, is_zipfile
+from itertools import islice
 from datetime import datetime
+from urlparse import urlparse
+from osgeo import gdal, osr, ogr
+from zipfile import ZipFile, is_zipfile
+from random import choice
 
 # Django functionality
+from django.conf import settings
+from django.db.models import Q
+from django.db import transaction
+from django.core.files import File
+from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import default_storage as storage
-from django.core.files import File
-from django.conf import settings
-from django.db import transaction
+from django.utils.translation import ugettext as _
 
 # Geonode functionality
 from geonode.maps.models import Map
@@ -53,13 +60,12 @@ from geonode.base.models import Link, SpatialRepresentationType,  \
     TopicCategory, Region, License, ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
 from geonode.layers.metadata import set_metadata
+from geonode.upload.utils import _fixup_base_file
 from geonode.utils import (http_client,
                            check_ogc_backend,
                            unzip_file,
                            extract_tarfile,
                            bbox_to_projection)
-from django.contrib.auth.models import Group
-from django.db.models import Q
 
 READ_PERMISSIONS = [
     'view_resourcebase'
@@ -298,10 +304,10 @@ def get_valid_name(layer_name):
     """
     name = _clean_string(layer_name)
     proposed_name = name
-    count = 1
     while Layer.objects.filter(name=proposed_name).exists():
-        proposed_name = "%s_%d" % (name, count)
-        count = count + 1
+        possible_chars = string.ascii_lowercase + string.digits
+        suffix = "".join([choice(possible_chars) for i in range(4)])
+        proposed_name = '%s_%s' % (name, suffix)
         logger.warning('Requested name already used; adjusting name '
                        '[%s] => [%s]', layer_name, proposed_name)
     else:
@@ -444,6 +450,8 @@ def get_bbox(filename):
 
 
 def file_upload(filename,
+                layer=None,
+                gtype=None,
                 name=None,
                 user=None,
                 title=None,
@@ -478,7 +486,60 @@ def file_upload(filename,
     upload_session = UploadSession.objects.create(user=theuser)
 
     # Get all the files uploaded with the layer
-    files = get_files(filename)
+    if os.path.exists(filename):
+        files = get_files(filename)
+    else:
+        raise Exception(
+            _("You are attempting to replace a vector layer with an unknown format."))
+
+    # We are going to replace an existing Layer...
+    if layer and overwrite:
+        if layer.is_vector() and is_raster(filename):
+            raise Exception(_(
+                "You are attempting to replace a vector layer with a raster."))
+        elif (not layer.is_vector()) and is_vector(filename):
+            raise Exception(_(
+                "You are attempting to replace a raster layer with a vector."))
+
+        if layer.is_vector():
+            absolute_base_file = None
+            try:
+                if 'shp' in files and os.path.exists(files['shp']):
+                    absolute_base_file = _fixup_base_file(files['shp'])
+                elif 'zip' in files and os.path.exists(files['zip']):
+                    absolute_base_file = _fixup_base_file(files['zip'])
+            except BaseException:
+                absolute_base_file = None
+
+            if not absolute_base_file or \
+            os.path.splitext(absolute_base_file)[1].lower() != '.shp':
+                raise Exception(
+                    _("You are attempting to replace a vector layer with an unknown format."))
+            else:
+                try:
+                    gtype = layer.gtype if not gtype else gtype
+                    inDataSource = ogr.Open(absolute_base_file)
+                    lyr = inDataSource.GetLayer(str(layer.name))
+                    if not lyr:
+                        raise Exception(
+                            _("You are attempting to replace a vector layer with an incompatible source."))
+                    limit = 1
+                    schema_is_compliant = False
+                    for feat in islice(lyr, 0, limit):
+                        _ff = json.loads(feat.ExportToJson())
+                        if not gtype:
+                            raise Exception(
+                                _("Local GeoNode layer has no geometry type."))
+                        if _ff["geometry"]["type"] in gtype or \
+                        gtype in _ff["geometry"]["type"]:
+                            schema_is_compliant = True
+                            break
+                    if not schema_is_compliant:
+                        raise Exception(
+                            _("You are attempting to replace a vector layer with an incompatible schema."))
+                except BaseException as e:
+                    raise Exception(
+                        _("Some error occurred while trying to access the uploaded schema: %s" % str(e)))
 
     # Set a default title that looks nice ...
     if title is None:
@@ -565,7 +626,6 @@ def file_upload(filename,
             xml_file = f.read()
 
         defaults['metadata_uploaded'] = True
-
         defaults['metadata_uploaded_preserve'] = metadata_uploaded_preserve
 
         # get model properties from XML
@@ -573,7 +633,6 @@ def file_upload(filename,
 
         if defaults['metadata_uploaded_preserve']:
             defaults['metadata_xml'] = xml_file
-
             defaults['uuid'] = identifier
 
         for key, value in vals.items():
@@ -632,27 +691,17 @@ def file_upload(filename,
     if not created and overwrite:
         # update with new information
         defaults['upload_session'] = upload_session
-
         defaults['title'] = defaults.get('title', None) or layer.title
-
         defaults['abstract'] = defaults.get('abstract', None) or layer.abstract
-
         defaults['bbox_x0'] = defaults.get('bbox_x0', None) or layer.bbox_x0
-
         defaults['bbox_x1'] = defaults.get('bbox_x1', None) or layer.bbox_x1
-
         defaults['bbox_y0'] = defaults.get('bbox_y0', None) or layer.bbox_y0
-
         defaults['bbox_y1'] = defaults.get('bbox_y1', None) or layer.bbox_y1
-
         defaults['is_approved'] = defaults.get(
             'is_approved', is_approved) or layer.is_approved
-
         defaults['is_published'] = defaults.get(
             'is_published', is_published) or layer.is_published
-
         defaults['license'] = defaults.get('license', None) or layer.license
-
         defaults['category'] = defaults.get('category', None) or layer.category
 
         try:
@@ -977,6 +1026,10 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         elif instance.alternate:
                             request_body['layers'] = instance.alternate
 
+                        if hasattr(instance, 'default_style'):
+                            if instance.default_style:
+                                request_body['styles'] = instance.default_style.name
+
                         try:
                             image = _prepare_thumbnail_body_from_opts(request_body)
                         except BaseException:
@@ -993,6 +1046,10 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         if None not in instance.bbox:
                             params['bbox'] = instance.bbox_string
                             params['crs'] = instance.srid
+
+                        if hasattr(instance, 'default_style'):
+                            if instance.default_style:
+                                params['styles'] = instance.default_style.name
 
                         for _p in params.keys():
                             if _p.lower() not in thumbnail_create_url.lower():
@@ -1044,20 +1101,35 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
             return
         for layer in instance.layers:
             if layer.local:
-                local_layers.append(layer.name)
                 # Compute Bounds
-                _l = Layer.objects.get(alternate=layer.name)
+                if layer.store:
+                    _l = Layer.objects.get(
+                        store=layer.store,
+                        alternate=layer.name)
+                else:
+                    _l = Layer.objects.get(
+                        alternate=layer.name)
                 wgs84_bbox = bbox_to_projection(_l.bbox)
                 local_bboxes.append(wgs84_bbox)
+                if _l.storeType != "remoteStore":
+                    local_layers.append(_l.alternate)
         layers = ",".join(local_layers).encode('utf-8')
     else:
-        layers = instance.alternate.encode('utf-8')
         # Compute Bounds
-        _ll = Layer.objects.filter(alternate=layers)
+        if instance.store:
+            _ll = Layer.objects.filter(
+                store=instance.store,
+                alternate=instance.alternate.encode('utf-8'))
+        else:
+            _ll = Layer.objects.filter(
+                alternate=instance.alternate.encode('utf-8'))
         for _l in _ll:
             if _l.name == instance.name:
                 wgs84_bbox = bbox_to_projection(_l.bbox)
                 local_bboxes.append(wgs84_bbox)
+                if _l.storeType != "remoteStore":
+                    local_layers.append(_l.alternate)
+        layers = ",".join(local_layers).encode('utf-8')
 
     if local_bboxes:
         for _bbox in local_bboxes:

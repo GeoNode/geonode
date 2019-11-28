@@ -31,6 +31,7 @@ from django.db.models import Q
 from celery.exceptions import TimeoutError
 
 from django.contrib.gis.geos import GEOSGeometry
+from django.core.exceptions import PermissionDenied
 from django.template.response import TemplateResponse
 from requests import Request
 from itertools import chain
@@ -51,51 +52,68 @@ from django.views.decorators.http import require_http_methods
 
 from geonode import geoserver, qgis_server
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 from django.utils.html import escape
 from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
 from django.db import transaction
 from django.db.models import F
 from django.forms.utils import ErrorList
-from geonode.services.models import Service
-from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
-from geonode.base.auth import get_or_create_token
-from geonode.base.forms import CategoryForm, TKeywordForm
-from geonode.layers.models import Layer, Attribute, UploadSession
-from geonode.base.enumerations import CHARSETS
-from geonode.base.models import TopicCategory
-from geonode.groups.models import GroupProfile
 
-from geonode.utils import (resolve_object,
-                           default_map_config,
-                           check_ogc_backend,
-                           llbbox_to_mercator,
-                           bbox_to_projection,
-                           GXPLayer,
-                           GXPMap)
-from geonode.layers.utils import file_upload, is_raster, is_vector
-from geonode.people.forms import ProfileForm, PocForm
-from geonode.security.views import _perms_info_json
-from geonode.documents.models import get_related_documents
-from geonode.utils import build_social_links
+from geonode.base.auth import get_or_create_token
+from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm
 from geonode.base.views import batch_modify
-from geonode.base.models import Thesaurus
+from geonode.base.models import (
+    Thesaurus,
+    TopicCategory)
+from geonode.base.enumerations import CHARSETS
+
+from geonode.layers.forms import (
+    LayerForm,
+    LayerUploadForm,
+    NewLayerUploadForm,
+    LayerAttributeForm)
+from geonode.layers.models import (
+    Layer,
+    Attribute,
+    UploadSession)
+from geonode.layers.utils import (
+    file_upload,
+    is_raster,
+    is_vector,
+    set_layers_permissions)
+
 from geonode.maps.models import Map
+from geonode.services.models import Service
 from geonode.monitoring import register_event
-from geonode.geoserver.helpers import (gs_catalog,
-                                       ogc_server_settings,
-                                       set_layer_style)  # cascading_delete
+from geonode.monitoring.models import EventType
+from geonode.groups.models import GroupProfile
+from geonode.security.views import _perms_info_json
+from geonode.people.forms import ProfileForm, PocForm
+from geonode.documents.models import get_related_documents
+
+from geonode.utils import (
+    resolve_object,
+    default_map_config,
+    check_ogc_backend,
+    llbbox_to_mercator,
+    bbox_to_projection,
+    build_social_links,
+    GXPLayer,
+    GXPMap)
+
 from .tasks import delete_layer
+
+from geonode.geoserver.helpers import (ogc_server_settings,
+                                       set_layer_style)  # cascading_delete
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import (_render_thumbnail,
-                                           _prepare_thumbnail_body_from_opts)
+                                           _prepare_thumbnail_body_from_opts,
+                                           gs_catalog)
 if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.models import QGISServerLayer
+
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
@@ -135,21 +153,36 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
     service_typename = alternate.split(":", 1)
-
     if Service.objects.filter(name=service_typename[0]).exists():
-        service = Service.objects.filter(name=service_typename[0])
+        # service = Service.objects.filter(name=service_typename[0])
+        query = {
+            'alternate': service_typename[1]
+        }
+        if len(service_typename) > 1:
+            query['store'] = service_typename[0]
         return resolve_object(
             request,
             Layer,
-            {
-                'alternate': service_typename[1] if service[0].method != "C" else alternate},
+            query,
             permission=permission,
             permission_msg=msg,
             **kwargs)
     else:
+        if len(service_typename) > 1 and ':' in service_typename[1]:
+            if service_typename[0]:
+                query = {
+                    'store': service_typename[0],
+                    'alternate': service_typename[1]
+                }
+            else:
+                query = {
+                    'alternate': service_typename[1]
+                }
+        else:
+            query = {'alternate': alternate}
         return resolve_object(request,
                               Layer,
-                              {'alternate': alternate},
+                              query,
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
@@ -403,6 +436,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     config["capability"] = {
         "abstract": layer.abstract,
+        "store": layer.store,
         "name": layer.alternate,
         "title": layer.title,
         "queryable": True,
@@ -456,47 +490,87 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
     }
 
+    granules = None
     all_times = None
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.views import get_capabilities
-        workspace, layername = layer.alternate.split(
-            ":") if ":" in layer.alternate else (None, layer.alternate)
-        # WARNING Please make sure to have enabled DJANGO CACHE as per
-        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-        wms_capabilities_resp = get_capabilities(
-            request, layer.id, tolerant=True)
-        if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
-            wms_capabilities = wms_capabilities_resp.getvalue()
-            if wms_capabilities:
-                from defusedxml import lxml as dlxml
-                namespaces = {'wms': 'http://www.opengis.net/wms',
-                              'xlink': 'http://www.w3.org/1999/xlink',
-                              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+    all_granules = None
+    filter = None
 
-                e = dlxml.fromstring(wms_capabilities)
-                for atype in e.findall(
-                        "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
-                    dim_name = atype.get('name')
-                    if dim_name:
-                        dim_name = str(dim_name).lower()
-                        if dim_name == 'time':
-                            dim_values = atype.text
-                            if dim_values:
-                                all_times = dim_values.split(",")
-                                break
-        if all_times:
-            config["capability"]["dimensions"] = {
-                "time": {
-                    "name": "time",
-                    "units": "ISO8601",
-                    "unitsymbol": None,
-                    "nearestVal": False,
-                    "multipleVal": False,
-                    "current": False,
-                    "default": "current",
-                    "values": all_times
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+        if layer.has_time:
+            from geonode.geoserver.views import get_capabilities
+            workspace, layername = layer.alternate.split(
+                ":") if ":" in layer.alternate else (None, layer.alternate)
+            # WARNING Please make sure to have enabled DJANGO CACHE as per
+            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+            wms_capabilities_resp = get_capabilities(
+                request, layer.id, tolerant=True)
+            if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
+                wms_capabilities = wms_capabilities_resp.getvalue()
+                if wms_capabilities:
+                    from defusedxml import lxml as dlxml
+                    namespaces = {'wms': 'http://www.opengis.net/wms',
+                                  'xlink': 'http://www.w3.org/1999/xlink',
+                                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+
+                    e = dlxml.fromstring(wms_capabilities)
+                    for atype in e.findall(
+                            "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
+                        dim_name = atype.get('name')
+                        if dim_name:
+                            dim_name = str(dim_name).lower()
+                            if dim_name == 'time':
+                                dim_values = atype.text
+                                if dim_values:
+                                    all_times = dim_values.split(",")
+                                    break
+            if all_times:
+                config["capability"]["dimensions"] = {
+                    "time": {
+                        "name": "time",
+                        "units": "ISO8601",
+                        "unitsymbol": None,
+                        "nearestVal": False,
+                        "multipleVal": False,
+                        "current": False,
+                        "default": "current",
+                        "values": all_times
+                    }
                 }
-            }
+        if layer.is_mosaic:
+            try:
+                cat = gs_catalog
+                cat._cache.clear()
+                store = cat.get_store(layer.name)
+                coverages = cat.mosaic_coverages(store)
+                try:
+                    if request.GET["filter"]:
+                        filter = request.GET["filter"]
+                except BaseException:
+                    pass
+
+                offset = 10 * (request.page - 1)
+                granules = cat.mosaic_granules(
+                    coverages['coverages']['coverage'][0]['name'],
+                    store,
+                    limit=10,
+                    offset=offset,
+                    filter=filter)
+                all_granules = cat.mosaic_granules(
+                    coverages['coverages']['coverage'][0]['name'], store, filter=filter)
+            except BaseException:
+                granules = {"features": []}
+                all_granules = {"features": []}
+
+    group = None
+    if layer.group:
+        try:
+            group = GroupProfile.objects.get(slug=layer.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
+    # a flag to be used for qgis server
+    show_popup = False
+    if 'show_popup' in request.GET and request.GET["show_popup"]:
+        show_popup = True
 
     if layer.storeType == "remoteStore":
         service = layer.remote_service
@@ -538,76 +612,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
-
-    granules = None
-    all_granules = None
-    all_times = None
-    filter = None
-    if layer.is_mosaic:
-        try:
-            cat = gs_catalog
-            cat._cache.clear()
-            store = cat.get_store(layer.name)
-            coverages = cat.mosaic_coverages(store)
-
-            filter = None
-            try:
-                if request.GET["filter"]:
-                    filter = request.GET["filter"]
-            except BaseException:
-                pass
-
-            offset = 10 * (request.page - 1)
-            granules = cat.mosaic_granules(
-                coverages['coverages']['coverage'][0]['name'],
-                store,
-                limit=10,
-                offset=offset,
-                filter=filter)
-            all_granules = cat.mosaic_granules(
-                coverages['coverages']['coverage'][0]['name'], store, filter=filter)
-        except BaseException:
-            granules = {"features": []}
-            all_granules = {"features": []}
-
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.views import get_capabilities
-        workspace, layername = layer.alternate.split(
-            ":") if ":" in layer.alternate else (None, layer.alternate)
-        # WARNING Please make sure to have enabled DJANGO CACHE as per
-        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-        wms_capabilities_resp = get_capabilities(
-            request, layer.id, tolerant=True)
-        if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
-            wms_capabilities = wms_capabilities_resp.getvalue()
-            if wms_capabilities:
-                from defusedxml import lxml as dlxml
-                namespaces = {'wms': 'http://www.opengis.net/wms',
-                              'xlink': 'http://www.w3.org/1999/xlink',
-                              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-
-                e = dlxml.fromstring(wms_capabilities)
-                for atype in e.findall(
-                        "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
-                    dim_name = atype.get('name')
-                    if dim_name:
-                        dim_name = str(dim_name).lower()
-                        if dim_name == 'time':
-                            dim_values = atype.text
-                            if dim_values:
-                                all_times = dim_values.split(",")
-                                break
-
-    group = None
-    if layer.group:
-        try:
-            group = GroupProfile.objects.get(slug=layer.group.name)
-        except GroupProfile.DoesNotExist:
-            group = None
-    # a flag to be used for qgis server
-    show_popup = False
-    if 'show_popup' in request.GET and request.GET["show_popup"]:
-        show_popup = True
 
     context_dict = {
         'resource': layer,
@@ -937,7 +941,6 @@ def layer_metadata(
         la for la in default_map_config(request)[1] if la.ows_url is None]
 
     if request.method == "POST":
-
         if layer.metadata_uploaded_preserve:  # layer metadata cannot be edited
             out = {
                 'success': False,
@@ -967,8 +970,8 @@ def layer_metadata(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
         tkeywords_form = TKeywordForm(
-            request.POST,
-            prefix="tkeywords")
+            prefix="tkeywords",
+            initial={'tkeywords': request.POST.getlist('tkeywords-tkeywords')})
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
@@ -979,35 +982,35 @@ def layer_metadata(
             prefix="category_choice_field",
             initial=topic_category.id if topic_category else None)
 
-        # Keywords from THESAURI management
+        # Keywords from THESAURUS management
         layer_tkeywords = layer.tkeywords.all()
         tkeywords_list = ''
         lang = 'en'  # TODO: use user's language
         if layer_tkeywords and len(layer_tkeywords) > 0:
             tkeywords_ids = layer_tkeywords.values_list('id', flat=True)
-            if hasattr(settings, 'THESAURI'):
-                for el in settings.THESAURI:
-                    thesaurus_name = el['name']
-                    try:
-                        t = Thesaurus.objects.get(identifier=thesaurus_name)
-                        for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
-                            tkl = tk.keyword.filter(lang=lang)
-                            if len(tkl) > 0:
-                                tkl_ids = ",".join(
-                                    map(str, tkl.values_list('id', flat=True)))
-                                tkeywords_list += "," + \
-                                    tkl_ids if len(
-                                        tkeywords_list) > 0 else tkl_ids
-                    except BaseException:
-                        tb = traceback.format_exc()
-                        logger.error(tb)
+            if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+                el = settings.THESAURUS
+                thesaurus_name = el['name']
+                try:
+                    t = Thesaurus.objects.get(identifier=thesaurus_name)
+                    for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
+                        tkl = tk.keyword.filter(lang=lang)
+                        if len(tkl) > 0:
+                            tkl_ids = ",".join(
+                                map(str, tkl.values_list('id', flat=True)))
+                            tkeywords_list += "," + \
+                                tkl_ids if len(
+                                    tkeywords_list) > 0 else tkl_ids
+                except BaseException:
+                    tb = traceback.format_exc()
+                    logger.error(tb)
 
         tkeywords_form = TKeywordForm(
             prefix="tkeywords",
             initial={'tkeywords': tkeywords_list})
 
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
-    ) and category_form.is_valid() and tkeywords_form.is_valid():
+    ) and category_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']
         new_author = layer_form.cleaned_data['metadata_author']
 
@@ -1068,13 +1071,13 @@ def layer_metadata(
                 layer.metadata_author = new_author
 
         new_keywords = layer_form.cleaned_data['keywords']
-        if new_keywords is not None:
-            layer.keywords.clear()
-            layer.keywords.add(*new_keywords)
-
         new_regions = [x.strip() for x in layer_form.cleaned_data['regions']]
-        if new_regions is not None:
-            layer.regions.clear()
+
+        layer.keywords.clear()
+        if new_keywords:
+            layer.keywords.add(*new_keywords)
+        layer.regions.clear()
+        if new_regions:
             layer.regions.add(*new_regions)
         layer.category = new_category
         layer.save()
@@ -1083,6 +1086,7 @@ def layer_metadata(
         if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:
             up_sessions.update(user=layer.owner)
 
+        register_event(request, EventType.EVENT_CHANGE_METADATA, layer)
         if not ajax:
             return HttpResponseRedirect(
                 reverse(
@@ -1094,7 +1098,7 @@ def layer_metadata(
         message = layer.alternate
 
         try:
-            # Keywords from THESAURI management
+            # Keywords from THESAURUS management
             tkeywords_to_add = []
             tkeywords_cleaned = tkeywords_form.clean()
             if tkeywords_cleaned and len(tkeywords_cleaned) > 0:
@@ -1102,34 +1106,32 @@ def layer_metadata(
                 for i, val in enumerate(tkeywords_cleaned):
                     try:
                         cleaned_data = [value for key, value in tkeywords_cleaned[i].items(
-                        ) if 'tkeywords-tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
+                        ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
                         tkeywords_ids.extend(map(int, cleaned_data[0]))
                     except BaseException:
                         pass
 
-                if hasattr(settings, 'THESAURI'):
-                    for el in settings.THESAURI:
-                        thesaurus_name = el['name']
-                        try:
-                            t = Thesaurus.objects.get(
-                                identifier=thesaurus_name)
-                            for tk in t.thesaurus.all():
-                                tkl = tk.keyword.filter(pk__in=tkeywords_ids)
-                                if len(tkl) > 0:
-                                    tkeywords_to_add.append(tkl[0].keyword_id)
-                        except BaseException:
-                            tb = traceback.format_exc()
-                            logger.error(tb)
-
-            layer.tkeywords.add(*tkeywords_to_add)
-            register_event(request, 'change_metadata', layer)
+                if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+                    el = settings.THESAURUS
+                    thesaurus_name = el['name']
+                    try:
+                        t = Thesaurus.objects.get(
+                            identifier=thesaurus_name)
+                        for tk in t.thesaurus.all():
+                            tkl = tk.keyword.filter(pk__in=tkeywords_ids)
+                            if len(tkl) > 0:
+                                tkeywords_to_add.append(tkl[0].keyword_id)
+                        layer.tkeywords.clear()
+                        layer.tkeywords.add(*tkeywords_to_add)
+                    except BaseException:
+                        tb = traceback.format_exc()
+                        logger.error(tb)
         except BaseException:
             tb = traceback.format_exc()
             logger.error(tb)
 
         return HttpResponse(json.dumps({'message': message}))
 
-    register_event(request, 'view_metadata', layer)
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
             layer_form.fields['is_published'].widget.attrs.update(
@@ -1180,6 +1182,7 @@ def layer_metadata(
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 
+    register_event(request, 'view_metadata', layer)
     return render(request, template, context={
         "resource": layer,
         "layer": layer,
@@ -1280,6 +1283,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 
                     saved_layer = file_upload(
                         base_file,
+                        layer=layer,
                         title=layer.title,
                         abstract=layer.abstract,
                         is_approved=layer.is_approved,
@@ -1295,15 +1299,15 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         overwrite=True,
                         charset=form.cleaned_data["charset"],
                     )
+
                     out['success'] = True
                     out['url'] = reverse(
                         'layer_detail', args=[
                             saved_layer.service_typename])
             except BaseException as e:
                 logger.exception(e)
-                tb = traceback.format_exc()
                 out['success'] = False
-                out['errors'] = str(tb)
+                out['errors'] = str(e)
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
@@ -1574,6 +1578,80 @@ def layer_sld_edit(
 @login_required
 def layer_batch_metadata(request, ids):
     return batch_modify(request, ids, 'Layer')
+
+
+def batch_permissions(request, ids, model):
+    Resource = None
+    if model == 'Layer':
+        Resource = Layer
+    if not Resource or not request.user.is_superuser:
+        raise PermissionDenied
+
+    template = 'base/batch_permissions.html'
+
+    if "cancel" in request.POST:
+        return HttpResponseRedirect(
+            '/admin/{model}s/{model}/'.format(model=model.lower())
+        )
+
+    if request.method == 'POST':
+        form = BatchPermissionsForm(request.POST)
+        if form.is_valid():
+            _data = form.cleaned_data
+            resources_names = []
+            for resource in Resource.objects.filter(id__in=ids.split(',')):
+                resources_names.append(resource.name)
+            users_usernames = [_data['user'].username, ] if _data['user'] else None
+            groups_names = [_data['group'].name, ] if _data['group'] else None
+            if users_usernames and 'AnonymousUser' in users_usernames and \
+            (not groups_names or 'anonymous' not in groups_names):
+                if not groups_names:
+                    groups_names = []
+                groups_names.append('anonymous')
+            if groups_names and 'anonymous' in groups_names and \
+            (not users_usernames or 'AnonymousUser' not in users_usernames):
+                if not users_usernames:
+                    users_usernames = []
+                users_usernames.append('AnonymousUser')
+            delete_flag = _data['mode'] == 'unset'
+            permissions_names = _data['permission_type']
+            if permissions_names:
+                for permissions_name in permissions_names:
+                    set_layers_permissions(
+                        permissions_name, resources_names, users_usernames, groups_names, delete_flag
+                    )
+            return HttpResponseRedirect(
+                '/admin/{model}s/{model}/'.format(model=model.lower())
+            )
+        return render(
+            request,
+            template,
+            context={
+                'form': form,
+                'ids': ids,
+                'model': model,
+            }
+        )
+
+    form = BatchPermissionsForm(
+        {
+            'permission_type': ('r', ),
+            'mode': 'set'
+        })
+    return render(
+        request,
+        template,
+        context={
+            'form': form,
+            'ids': ids,
+            'model': model,
+        }
+    )
+
+
+@login_required
+def layer_batch_permissions(request, ids):
+    return batch_permissions(request, ids, 'Layer')
 
 
 def layer_view_counter(layer_id, viewer):

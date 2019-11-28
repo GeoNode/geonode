@@ -6837,6 +6837,7 @@ div#user_messages {
   }
   to {
     opacity: 0;
+    visibility: hidden;
   }
 }
 @-webkit-keyframes msgDisappear {
@@ -6845,6 +6846,7 @@ div#user_messages {
   }
   to {
     opacity: 0;
+    visibility: hidden;
   }
 }
 body {
@@ -7095,6 +7097,11 @@ article.tab-pane {
 		color: white;*/
   padding: 1em 0;
 }
+.home #datasets .container .text-center .row {
+  display: flex;
+  display: -webkit-flex;
+  flex-wrap: wrap;
+}
 .home #datasets p {
   font-size: 12px;
 }
@@ -7125,12 +7132,15 @@ article.tab-pane {
   padding: 2em 0;
   text-align: center;
 }
+.home #showcase .row {
+  margin: 0px;
+}
 .home #showcase .col-md-3 {
   padding: 2em 1em;
 }
 .home #showcase .col-md-3 img {
-  height: 180px;
-  width: 100%;
+  max-height: 180px;
+  width: auto;
 }
 .home #showcase p {
   font-size: 18px;

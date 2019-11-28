@@ -26,7 +26,10 @@ from unittest import TestCase as StandardTestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
-import mock
+try:
+    import unittest.mock as mock
+except ImportError:
+    import mock
 from owslib.map.wms111 import ContentMetadata
 
 from geonode.services.utils import test_resource_table_status
@@ -47,7 +50,7 @@ from collections import namedtuple
 
 class ModuleFunctionsTestCase(StandardTestCase):
 
-    @mock.patch("geonode.services.serviceprocessors.base.Catalog",
+    @mock.patch("geonode.services.serviceprocessors.base.catalog",
                 autospec=True)
     @mock.patch("geonode.services.serviceprocessors.base.settings",
                 autospec=True)
@@ -62,20 +65,14 @@ class ModuleFunctionsTestCase(StandardTestCase):
         }
         mock_settings.CASCADE_WORKSPACE = "something"
         phony_workspace = "fake"
-        cat = mock_catalog.return_value
+        cat = mock_catalog
         cat.get_workspace.return_value = phony_workspace
         result = base.get_geoserver_cascading_workspace(
             create=False)
         self.assertEqual(result, phony_workspace)
-        mock_catalog.assert_called_with(
-            service_url=mock_settings.OGC_SERVER[
-                "default"]["LOCATION"] + "rest",
-            username=mock_settings.OGC_SERVER["default"]["USER"],
-            password=mock_settings.OGC_SERVER["default"]["PASSWORD"]
-        )
         cat.get_workspace.assert_called_with(mock_settings.CASCADE_WORKSPACE)
 
-    @mock.patch("geonode.services.serviceprocessors.base.Catalog",
+    @mock.patch("geonode.services.serviceprocessors.base.catalog",
                 autospec=True)
     @mock.patch("geonode.services.serviceprocessors.base.settings",
                 autospec=True)
@@ -90,18 +87,12 @@ class ModuleFunctionsTestCase(StandardTestCase):
         }
         mock_settings.CASCADE_WORKSPACE = "something"
         phony_workspace = "fake"
-        cat = mock_catalog.return_value
+        cat = mock_catalog
         cat.get_workspace.return_value = None
         cat.create_workspace.return_value = phony_workspace
         result = base.get_geoserver_cascading_workspace(
             create=True)
         self.assertEqual(result, phony_workspace)
-        mock_catalog.assert_called_with(
-            service_url=mock_settings.OGC_SERVER[
-                "default"]["LOCATION"] + "rest",
-            username=mock_settings.OGC_SERVER["default"]["USER"],
-            password=mock_settings.OGC_SERVER["default"]["PASSWORD"]
-        )
         cat.get_workspace.assert_called_with(mock_settings.CASCADE_WORKSPACE)
         cat.create_workspace.assert_called_with(
             mock_settings.CASCADE_WORKSPACE,

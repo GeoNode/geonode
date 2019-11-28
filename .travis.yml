@@ -172,7 +172,7 @@ matrix:
 branches:
   only:
     - master
-    - 2.20.x
+    - 2.10.1
     - 2.10.x
     - 2.8.x
     - 2.6.x
@@ -221,7 +221,7 @@ install:
       export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");
       export PATH=$JAVA_HOME'bin/java':$PATH;
       pip install -r requirements.txt --upgrade;
-      pip install -e . --upgrade;
+      pip install -e .;
       pip install pygdal==`gdal-config --version`.*;
       pip install codecov;
     fi

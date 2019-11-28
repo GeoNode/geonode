@@ -851,7 +851,7 @@ def set_thumbnail(request, layername):
     bbox = [float(s) for s in bbox]
 
     # Give thumbnail creation to celery tasks, and exit.
-    create_qgis_server_thumbnail.delay(layer, overwrite=True, bbox=bbox)
+    create_qgis_server_thumbnail.delay('layers.layer', layer.id, overwrite=True, bbox=bbox)
     retval = {
         'success': True
     }

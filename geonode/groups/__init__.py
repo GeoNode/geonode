@@ -17,3 +17,31 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
+
+logger = logging.getLogger(__name__)
+
+default_app_config = 'geonode.groups.apps.GroupsAppConfig'
+
+
+def init_registered_members_groupprofile():
+    from .conf import settings
+    from .models import GroupProfile
+    from django.contrib.auth import get_user_model
+
+    group_name = settings.REGISTERED_MEMBERS_GROUP_NAME
+    group_title = settings.REGISTERED_MEMBERS_GROUP_TITLE
+    logger.debug("Creating %s default Group Profile" % group_name)
+    groupprofile, created = GroupProfile.objects.get_or_create(
+        slug=group_name)
+    if created:
+        groupprofile.slug = group_name
+        groupprofile.title = group_title
+        groupprofile.access = "private"
+        groupprofile.save()
+
+    User = get_user_model()
+    for _u in User.objects.filter(is_active=True):
+        if not _u.is_anonymous and _u != User.get_anonymous() and \
+        not groupprofile.user_is_member(_u):
+            groupprofile.join(_u)

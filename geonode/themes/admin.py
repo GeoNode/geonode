@@ -46,6 +46,9 @@ class GeonodeThemCustomizationForm(forms.ModelForm):
             'jumbotron_color': forms.TextInput(attrs={'type': 'color'}),
             'jumbotron_title_color': forms.TextInput(attrs={'type': 'color'}),
             'jumbotron_text_color': forms.TextInput(attrs={'type': 'color'}),
+            'search_bg_color': forms.TextInput(attrs={'type': 'color'}),
+            'search_title_color': forms.TextInput(attrs={'type': 'color'}),
+            'search_link_color': forms.TextInput(attrs={'type': 'color'}),
             'copyright_color': forms.TextInput(attrs={'type': 'color'}),
             'cookie_law_info_background': forms.TextInput(attrs={'type': 'color'}),
             'cookie_law_info_border': forms.TextInput(attrs={'type': 'color'}),
@@ -64,6 +67,9 @@ class GeonodeThemCustomizationForm(forms.ModelForm):
             'cookie_law_info_showagain_background': forms.TextInput(attrs={'type': 'color'}),
             'cookie_law_info_showagain_border': forms.TextInput(attrs={'type': 'color'}),
             'cookie_law_info_text': forms.TextInput(attrs={'type': 'color'}),
+            'footer_bg_color': forms.TextInput(attrs={'type': 'color'}),
+            'footer_text_color': forms.TextInput(attrs={'type': 'color'}),
+            'footer_href_color': forms.TextInput(attrs={'type': 'color'}),
         }
         fields = '__all__'
 

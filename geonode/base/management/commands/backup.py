@@ -18,10 +18,7 @@
 #
 #########################################################################
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 import os
 import time
 import shutil

@@ -17,12 +17,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.db.models import signals
@@ -30,6 +32,8 @@ from django.utils.timezone import now
 
 from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group
+
+logger = logging.getLogger(__name__)
 
 
 class GroupCategory(models.Model):
@@ -40,7 +44,7 @@ class GroupCategory(models.Model):
     class Meta:
         verbose_name_plural = _('Group Categories')
 
-    def __str__(self):
+    def __unicode__(self):
         return 'Category: {}'.format(self.name.encode('utf-8'))
 
     def get_absolute_url(self):
@@ -150,22 +154,28 @@ class GroupProfile(models.Model):
         Returns a queryset of the group's managers.
         """
         return get_user_model().objects.filter(
-            id__in=self.member_queryset().filter(
+            Q(id__in=self.member_queryset().filter(
                 role='manager').values_list(
                 "user",
-                flat=True))
+                flat=True)))
 
     def user_is_member(self, user):
         if not user.is_authenticated():
             return False
+        elif user.is_superuser:
+            return True
         return user.id in self.member_queryset().values_list("user", flat=True)
 
     def user_is_role(self, user, role):
         if not user.is_authenticated():
             return False
+        elif user.is_superuser:
+            return True
         return self.member_queryset().filter(user=user, role=role).exists()
 
     def can_view(self, user):
+        if user.is_superuser and user.is_authenticated():
+            return True
         if self.access == "private":
             return user.is_authenticated() and self.user_is_member(user)
         else:
@@ -178,7 +188,17 @@ class GroupProfile(models.Model):
         if created:
             user.groups.add(self.group)
         else:
-            raise ValueError("The invited user \"{0}\" is already a member".format(user.username))
+            logger.warning("The invited user \"{0}\" is already a member".format(user.username))
+
+    def leave(self, user, **kwargs):
+        if user == user.get_anonymous():
+            raise ValueError("The invited user cannot be anonymous")
+        member, created = GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
+        if not created:
+            user.groups.remove(self.group)
+            member.delete()
+        else:
+            logger.warning("The invited user \"{0}\" is not a member".format(user.username))
 
     @models.permalink
     def get_absolute_url(self):

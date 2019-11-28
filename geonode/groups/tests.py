@@ -36,6 +36,7 @@ from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.security.views import _perms_info_json
+from geonode.groups.conf import settings as groups_settings
 
 logger = logging.getLogger(__name__)
 
@@ -59,12 +60,74 @@ class SmokeTest(GeoNodeBaseTestSupport):
         self.bar = GroupProfile.objects.get(slug='bar')
         self.anonymous_user = get_anonymous_user()
 
+    def test_registered_group_exists(self):
+        """
+        Ensures that a default group and grouprofile 'registered-users' has been
+        created at initialization time.
+        """
+        self.assertTrue(
+            groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME)
+        group = Group.objects.filter(
+            name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).first()
+        groupprofile = GroupProfile.objects.filter(
+            slug=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).first()
+        self.assertTrue(group)
+        self.assertTrue(groupprofile)
+        self.assertEquals(groupprofile.group, group)
+        self.assertEquals(group.groupprofile, groupprofile)
+
+    def test_users_belongs_registered_group(self):
+        """
+        1. Ensures that a superuser is manager of a group despite the actual membership.
+
+        2. Ensures that any user on the system, except "AnonymousUser" belongs to
+           groups_settings.REGISTERED_MEMBERS_GROUP_NAME.
+        """
+        self.assertEquals(
+            groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME, True)
+
+        self.assertEquals(
+            groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT, 'activation')
+
+        anonymous = get_user_model().objects.get(username="AnonymousUser")
+        norman = get_user_model().objects.get(username="norman")
+        admin = get_user_model().objects.get(username='admin')
+
+        # Make sure norman is not a member until login
+        groupprofile = GroupProfile.objects.filter(
+            slug=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).first()
+        self.assertFalse(groupprofile.user_is_member(norman))
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+        self.assertFalse(groupprofile.user_is_member(norman))
+
+        norman.is_active = True
+        norman.save()
+        # The first time the signal won't be triggered
+        self.assertFalse(groupprofile.user_is_member(norman))
+
+        norman.is_active = False
+        norman.save()
+        norman.is_active = True
+        norman.save()
+        # the signal is triggered when a user "becomes" active
+        self.assertTrue(groupprofile.user_is_member(norman))
+
+        # Ensure anonymous is not in the managers queryset
+        self.assertFalse(groupprofile.user_is_member(anonymous))
+
+        # Ensure norman is not in the managers queryset
+        self.assertTrue(norman not in groupprofile.get_managers())
+
+        # Ensure admin is in the managers queryset
+        self.assertTrue(groupprofile.user_is_member(admin))
+        self.assertTrue(groupprofile.user_is_role(admin, 'manager'))
+        self.assertFalse(admin in groupprofile.get_managers())
+
     def test_group_permissions_extend_to_user(self):
         """
         Ensures that when a user is in a group, the group permissions
         extend to the user.
         """
-
         layer = Layer.objects.all()[0]
         # Set the default permissions
         layer.set_default_permissions()
@@ -453,7 +516,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
                             msg_prefix='',
                             html=False)
         self.assertContains(response,
-                            '<a href="/layers/geonode:CA">CA</a>',
+                            '<a href="/layers/:geonode:CA">CA</a>',
                             count=0,
                             status_code=200,
                             msg_prefix='',
@@ -489,7 +552,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
             self.assertEqual(200, response.status_code)
             _log(response)
             self.assertContains(response,
-                                '<a href="/layers/geonode:CA">geonode:CA</a>',
+                                '<a href="/layers/:geonode:CA">geonode:CA</a>',
                                 count=2,
                                 status_code=200,
                                 msg_prefix='',

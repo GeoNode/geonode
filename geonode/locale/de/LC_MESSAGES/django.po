@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-20 11:56+0200\n"
-"PO-Revision-Date: 2019-05-22 11:57+0200\n"
+"PO-Revision-Date: 2019-10-16 10:42+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/de/)\n"
 "Language: de\n"
@@ -36,7 +36,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.2.1\n"
 "X-Poedit-Bookmarks: 952,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: geonode/base/__init__.py:27
@@ -178,11 +178,11 @@ msgid "Category is required."
 msgstr "Kategorie erforderlich."
 
 #: geonode/base/forms.py:288
-msgid "Keywords from Thesauri"
+msgid "Keywords from Thesaurus"
 msgstr "Schlüsselwörter des Thesauri"
 
 #: geonode/base/forms.py:290
-msgid "List of keywords from Thesauri"
+msgid "List of keywords from Thesaurus"
 msgstr "Liste an Schlüsselwörter des Thesauri"
 
 #: geonode/base/forms.py:321 geonode/base/models.py:537
@@ -773,7 +773,7 @@ msgstr "QML Stil hochladen"
 #: geonode/maps/templates/maps/map_list.html:10 geonode/maps/templates/maps/map_metadata_advanced.html:16
 #: geonode/templates/500.html:172 geonode/templates/base.html:251 geonode/templates/base.html:417
 msgid "Explore Maps"
-msgstr "Karten erforschen"
+msgstr "Karten erkunden"
 
 #: geonode/client/templates/leaflet/maps/map_edit.html:8
 #: geonode/client/templates/leaflet/maps/map_view.html:8
@@ -951,7 +951,7 @@ msgstr "Ebene erzeugen"
 #: geonode/layers/templates/upload/layer_upload_base.html:161
 #: geonode/layers/templates/upload/layer_upload_metadata_base.html:10
 msgid "Explore Layers"
-msgstr "Ebenen erforschen"
+msgstr "Ebenen erkunden"
 
 #: geonode/contrib/createlayer/templates/createlayer/layer_create.html:20
 msgid "Create an empty layer"
@@ -1084,8 +1084,8 @@ msgstr "GeoNode ist eine Open-Source-Plattform zur Veröffentlichung von Geodate
 
 #: geonode/contrib/geosites/site_template/templates/site_index.html:14
 #: geonode/contrib/geosites/templates/master_index.html:15 geonode/templates/index.html:23
-msgid "http://docs.geonode.org/en/2.10.x/usage"
-msgstr "http://docs.geonode.org/en/2.10.x/usage"
+msgid "http://docs.geonode.org/en/2.10.x/usage/index.html"
+msgstr "http://docs.geonode.org/en/2.10.x/usage/index.html"
 
 #: geonode/contrib/geosites/site_template/templates/site_index.html:15
 #: geonode/contrib/geosites/templates/master_index.html:16 geonode/templates/index.html:23
@@ -2198,7 +2198,7 @@ msgstr "Ein Dokument wurde bewertet"
 
 #: geonode/documents/forms.py:90 geonode/documents/forms.py:171
 msgid "Link to"
-msgstr "Link zu"
+msgstr "Verknüpfen mit"
 
 #: geonode/documents/forms.py:136 geonode/documents/forms.py:205
 msgid "Document must be a file or url."
@@ -2542,7 +2542,7 @@ msgstr "Hochladen"
 
 #: geonode/documents/templates/documents/document_upload_base.html:15
 msgid "Allowed document types"
-msgstr "Erlaubte Dokumente typen"
+msgstr "Zulässige Datentypen"
 
 #: geonode/documents/templates/layouts/doc_panels.html:14 geonode/layers/templates/layouts/panels.html:213
 #: geonode/maps/templates/layouts/map_panels.html:14

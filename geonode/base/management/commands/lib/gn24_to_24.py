@@ -20,10 +20,7 @@
 
 import re
 import datetime
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 from django.utils import timezone
 
 

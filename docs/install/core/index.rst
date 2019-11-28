@@ -130,7 +130,7 @@ At this point your command prompt shows a ``(geonode)`` prefix, this indicates t
   # Install the Python packages
   cd /opt/geonode
   pip install -r requirements.txt --upgrade --no-cache --no-cache-dir
-  pip install -e . --upgrade --no-cache --no-cache-dir
+  pip install -e .
 
   # Install GDAL Utilities for Python
   pip install pygdal=="`gdal-config --version`.*"
@@ -304,9 +304,9 @@ We will also perform several optimizations to:
     OpenJDK 64-Bit Server VM (build 25.212-b03, mixed mode)
 
   # Install Apache Tomcat 8
-  sudo wget http://www-us.apache.org/dist/tomcat/tomcat-8/v8.5.46/bin/apache-tomcat-8.5.46.tar.gz
-  sudo tar xzf apache-tomcat-8.5.46.tar.gz
-  sudo mv apache-tomcat-8.5.46 /usr/local/apache-tomcat8
+  sudo wget http://www-us.apache.org/dist/tomcat/tomcat-8/v8.5.47/bin/apache-tomcat-8.5.47.tar.gz
+  sudo tar xzf apache-tomcat-8.5.47.tar.gz
+  sudo mv apache-tomcat-8.5.47 /usr/local/apache-tomcat8
   sudo useradd -m -U -s /bin/false tomcat
   sudo usermod -a -G www-data tomcat
   sudo sed -i -e 's/xom-\*\.jar/xom-\*\.jar,bcprov\*\.jar/g' /usr/local/apache-tomcat8/conf/catalina.properties
@@ -381,8 +381,8 @@ Let's externalize the ``GEOSERVER_DATA_DIR`` and ``logs``
   sudo chmod -Rf 775 /opt/data/logs
 
   # Download and extract the default GEOSERVER_DATA_DIR
-  sudo wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/data-2.15.2.zip
-  sudo unzip data-2.15.2.zip -d /opt/data/
+  sudo wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/data-2.15.3.zip
+  sudo unzip data-2.15.3.zip -d /opt/data/
 
   sudo mv /opt/data/data/ /opt/data/geoserver_data
   sudo chown -Rf tomcat:www-data /opt/data/geoserver_data
@@ -397,8 +397,8 @@ Let's externalize the ``GEOSERVER_DATA_DIR`` and ``logs``
   sudo chmod -Rf 775 /opt/data/gwc_cache_dir
 
   # Download and install GeoServer
-  sudo wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-2.15.2.war
-  sudo mv geoserver-2.15.2.war /usr/local/apache-tomcat8/webapps/geoserver.war
+  sudo wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-2.15.3.war
+  sudo mv geoserver-2.15.3.war /usr/local/apache-tomcat8/webapps/geoserver.war
 
 Let's now configure the ``JAVA_OPTS``, i.e. the parameters to run the Servlet Container, like heap memory, garbage collector and so on.
 
@@ -673,8 +673,8 @@ Serving {“geonode”, “geoserver”} via NGINX
     gzip_min_length 1100;
     gzip_comp_level 6;
     gzip_proxied any;
-    gzip_types video/mp4 text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript image/jpeg;
-
+    gzip_types video/mp4 text/plain application/javascript application/x-javascript text/javascript text/xml text/css image/jpeg;
+    
     ##
     # Virtual Host Configs
     ##
@@ -1250,10 +1250,10 @@ Update the GeoServer instance inside the GeoServer Container
 .. code-block:: shell
 
   cd /usr/local/tomcat/
-  wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-.2.15.2.war
+  wget --no-check-certificate https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-.2.15.3.war
   mkdir tmp/geoserver
   cd tmp/geoserver/
-  unzip /usr/local/tomcat/geoserver-2.15.2.war
+  unzip /usr/local/tomcat/geoserver-2.15.3.war
   rm -Rf data
   cp -Rf /usr/local/tomcat/webapps/geoserver/data/ .
   cd /usr/local/tomcat/
@@ -1298,7 +1298,7 @@ It is possible to let docker show which containers are currently running (add ``
   CONTAINER ID        IMAGE                      COMMAND                  CREATED             STATUS              PORTS                NAMES
   3b232931f820        geonode/nginx:production    "nginx -g 'daemon of…"   26 minutes ago      Up 26 minutes       0.0.0.0:80->80/tcp   nginx4geonode
   ff7002ae6e91        geonode/geonode:latest     "/usr/src/app/entryp…"   26 minutes ago      Up 26 minutes       8000/tcp             django4geonode
-  2f155e5043be        geonode/geoserver:2.15.2   "/usr/local/tomcat/t…"   26 minutes ago      Up 26 minutes       8080/tcp             geoserver4geonode
+  2f155e5043be        geonode/geoserver:2.15.3   "/usr/local/tomcat/t…"   26 minutes ago      Up 26 minutes       8080/tcp             geoserver4geonode
   97f1668a01b1        geonode_celery             "/usr/src/app/entryp…"   26 minutes ago      Up 26 minutes       8000/tcp             geonode_celery_1
   1b623598b1bd        geonode/postgis:10         "docker-entrypoint.s…"   About an hour ago   Up 26 minutes       5432/tcp             db4geonode
 

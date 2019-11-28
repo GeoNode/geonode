@@ -67,10 +67,7 @@ from geonode.base.auth import (extend_token,
                                get_token_from_auth_header,
                                get_token_object_from_session)
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
@@ -413,7 +410,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
     ``save_map`` if map should be saved (default: True)
     """
     layer_cfg = dict(layer)
-    for k in ["format", "name", "opacity", "styles", "transparent",
+    for k in ["format", "store", "name", "opacity", "styles", "transparent",
               "fixed", "group", "visibility", "source", "getFeatureInfo"]:
         if k in layer_cfg:
             del layer_cfg[k]
@@ -452,6 +449,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
         stack_order=ordering,
         format=layer.get("format", None),
         name=layer.get("name", None),
+        store=layer.get("store", None),
         opacity=layer.get("opacity", 1),
         styles=styles,
         transparent=layer.get("transparent", False),
@@ -1135,7 +1133,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     else:
         try:
             for key in list_col.keys():
-                qry = u"ALTER TABLE {} RENAME COLUMN \"".format(inLayer.GetName())
+                qry = u"ALTER TABLE \"{}\" RENAME COLUMN \"".format(inLayer.GetName())
                 qry = qry + key.decode(charset) + u"\" TO \"{}\"".format(list_col[key])
                 inDataSource.ExecuteSQL(qry.encode(charset))
         except UnicodeDecodeError:
@@ -1588,6 +1586,11 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 gs_resource = gs_catalog.get_resource(
                     name=instance.name,
                     workspace=instance.workspace)
+                if not gs_resource:
+                    gs_resource = gs_catalog.get_resource(
+                        name=instance.name,
+                        store=instance.store,
+                        workspace=instance.workspace)
                 if not gs_resource:
                     gs_resource = gs_catalog.get_resource(name=instance.name)
                 bbox = gs_resource.native_bbox

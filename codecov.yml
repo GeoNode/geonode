@@ -5,7 +5,7 @@ codecov:
 coverage:
   precision: 2
   round: down
-  range: "70...100"
+  range: "60...100"
 
   status:
     project: yes
@@ -24,13 +24,3 @@ comment:
   layout: "header, diff"
   behavior: default
   require_changes: no
-
-ignore:
-  - */management/*
-  - */test*
-  - */wsgi*
-  - */middleware*
-  - */context_processors*
-  - geonode/qgis_server/*
-  - geonode/contrib/*
-  - geonode/upload/*

@@ -50,8 +50,6 @@
       {% else %}
         <link href="{% static "lib/css/assets.min.css" %}?v={{ VERSION }}" rel="stylesheet"/>
       {% endif %}
-      <link href="{% static "geonode/css/ext-compatibility.css" %}?v={{ VERSION }}" rel="stylesheet" />
-      <link href="{% static "geonode/css/ux-all.css" %}?v={{ VERSION }}" rel="stylesheet" />
       <link href="{% static "geonode/css/base.css" %}?v={{ VERSION }}" rel="stylesheet" />
 
       <link rel='stylesheet' id='cookie-law-info-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-public.css" %}?v={{ VERSION }}" type='text/css' media='all' />
@@ -66,6 +64,12 @@
           {% if custom_theme.body_text_color %}
           color: {{ custom_theme.body_text_color }};
           {% endif %}
+        }
+
+        .home #partners {
+          background: {{ custom_theme.body_color }};
+          padding: 2em 0;
+          text-align: center;
         }
         {% endif %}
 
@@ -149,7 +153,10 @@
 
         {% if custom_theme.jumbotron_text_color %}
         .home .jumbotron p {
-          color: {{ custom_theme.jumbotron_text_color }}
+          color: {{ custom_theme.jumbotron_text_color }};
+          font-weight: normal;
+          font-size: xx-large;
+          font-family: 'Open Sans','Helvetica Neue',Arial,sans-serif;
         }
         {% endif %}
 
@@ -182,12 +189,36 @@
         }
         {% endif %}
 
+        {% if custom_theme.search_bg_color or custom_theme.search_title_color %}
+        .home .big-search {
+          background: {{ custom_theme.search_bg_color }};
+          color: {{ custom_theme.search_title_color }};
+          padding-bottom: 3em;
+          padding-top: 1em;
+        }
+        .home .big-search .btn-default {
+          background: transparent;
+          border: none;
+          color: {{ custom_theme.search_link_color }};
+        }
+        {% endif %}
+
         {% if custom_theme.copyright_color %}
         .footer-copyright {
           background-color: {{ custom_theme.copyright_color }};
         }
         {% endif %}
 
+        {% if custom_theme.footer_bg_color or custom_theme.footer_text_color or custom_theme.footer_href_color %}
+        footer {
+          background-color: {{ custom_theme.footer_bg_color }};
+          color: {{ custom_theme.footer_text_color }};
+          padding: 1.5em;
+        }
+        footer a {
+          color: {{ custom_theme.footer_href_color }};
+        }
+        {% endif %}
       </style>
       {% block extra_head %}
       {% endblock %}
@@ -207,6 +238,20 @@
     <script>
         var siteUrl = '{{ SITEURL }}'.replace(/\/?$/, '/');
         var staticUrl = '{% static '' %}';
+    </script>
+
+    <script type="text/javascript">
+      function thumbnailFeedbacks(data, status) {
+        try {
+          $("#_thumbnail_feedbacks").find('.modal-title').text(status);
+          $("#_thumbnail_feedbacks").find('.modal-body').text(data);
+          $("#_thumbnail_feedbacks").modal("show");
+        } catch (err) {
+          console.log(err);
+        } finally {
+          return true;
+        }
+      }
     </script>
 
   </head>

@@ -1,10 +1,24 @@
-[   {
+[
+    {
       "pk": 1,
       "model": "auth.group",
       "fields": {
         "name": "bar",
         "permissions": []
       }
+    },
+    {
+        "fields": {
+            "access": "private",
+            "description": "Registered Members",
+            "slug": "registered-members",
+            "last_modified": "2019-09-09 15:45:34",
+            "created": "2019-09-09 15:45:34",
+            "group": 2,
+            "title": "Registered Members"
+        },
+        "model": "groups.groupprofile",
+        "pk": 1
     },
     {
         "fields": {
@@ -18,11 +32,11 @@
             "title": "bar"
         },
         "model": "groups.groupprofile",
-        "pk": 1
+        "pk": 2
     },
     {
         "fields": {
-            "group": 1,
+            "group": 2,
             "joined": "2012-02-28 14:47:22",
             "role": "manager",
             "user": 1

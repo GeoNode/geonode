@@ -17,10 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 
 
 class GeoExtHookSet(object):

@@ -128,7 +128,7 @@ class TypeFilteredResource(ModelResource):
 
         orm_filters = super(TypeFilteredResource, self).build_filters(filters)
 
-        if 'type' in filters and filters['type'] in FILTER_TYPES.keys():
+        if 'type' in filters and filters['type'] in list(FILTER_TYPES.keys()):
             self.type_filter = FILTER_TYPES[filters['type']]
         else:
             self.type_filter = None
@@ -356,7 +356,7 @@ class GroupResource(ModelResource):
     resource_counts = fields.CharField()
 
     class Meta:
-        queryset = Group.objects.all()
+        queryset = Group.objects.exclude(groupprofile=None)
         resource_name = 'groups'
         allowed_methods = ['get']
         filtering = {
@@ -364,6 +364,26 @@ class GroupResource(ModelResource):
             'group_profile': ALL_WITH_RELATIONS,
         }
         ordering = ['name', 'last_modified']
+
+    def apply_filters(self, request, applicable_filters):
+        user = request.user
+        semi_filtered = super(
+            GroupResource,
+            self).apply_filters(
+            request,
+            applicable_filters)
+
+        filtered = semi_filtered
+        if not user.is_authenticated() or user.is_anonymous:
+            filtered = semi_filtered.exclude(groupprofile__access='private')
+        elif not user.is_superuser:
+            groups_member_of = user.group_list_all()
+            filtered = semi_filtered.filter(
+                Q(groupprofile__in=groups_member_of) |
+                ~Q(groupprofile__access='private')
+            )
+
+        return filtered
 
     def dehydrate(self, bundle):
         """Provide additional resource counts"""
@@ -406,6 +426,7 @@ class ProfileResource(TypeFilteredResource):
 
         if 'name__icontains' in filters:
             orm_filters['username__icontains'] = filters['name__icontains']
+
         return orm_filters
 
     def apply_filters(self, request, applicable_filters):
@@ -577,7 +598,7 @@ class QGISStyleResource(ModelResource):
             filters, **kwargs)
         # Convert layer__ filters into layer_styles__layer__
         updated_filters = {}
-        for key, value in filters.iteritems():
+        for key, value in filters.items():
             key = key.replace('layer__', 'layer_styles__layer__')
             updated_filters[key] = value
         return updated_filters
@@ -741,7 +762,7 @@ class GeoserverStyleResource(ModelResource):
             filters, **kwargs)
         # Convert layer__ filters into layer_styles__layer__
         updated_filters = {}
-        for key, value in filters.iteritems():
+        for key, value in filters.items():
             key = key.replace('layer__', 'layer_default_style__')
             updated_filters[key] = value
         return updated_filters

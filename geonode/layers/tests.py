@@ -258,8 +258,22 @@ class LayersTest(GeoNodeBaseTestSupport):
                 u'here', u'keywords', u'populartag', u'saving',
                 u'ß', u'ä', u'ö', u'ü', u'論語'])
 
+        # Test input escape
+        lyr.keywords.add(*["Europe<script>true;</script>",
+                           "land_<script>true;</script>covering",
+                           "<IMG SRC='javascript:true;'>Science"])
+
+        self.assertEqual(
+            lyr.keyword_list(), [
+                u'&lt;IMG SRC=&#39;javascript:true;&#39;&gt;Science', u'Europe&lt;script&gt;true;&lt;/script&gt;',
+                u'here', u'keywords', u'land_&lt;script&gt;true;&lt;/script&gt;covering', u'populartag', u'saving',
+                u'ß', u'ä', u'ö', u'ü', u'論語'])
+
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('layer_detail', args=(lyr.alternate,)))
+        self.failUnlessEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('layer_detail', args=(":%s" % lyr.alternate,)))
         self.failUnlessEqual(response.status_code, 200)
 
         response = self.client.get(reverse('layer_metadata', args=(lyr.alternate,)))
@@ -277,7 +291,13 @@ class LayersTest(GeoNodeBaseTestSupport):
             {"text": u"ä", "href": "a", "id": 10},
             {"text": u"ö", "href": "o", "id": 7},
             {"text": u"ü", "href": "u", "id": 8},
-            {"text": u"論語", "href": "lun-yu", "id": 6}
+            {"text": u"論語", "href": "lun-yu", "id": 6},
+            {"text": u"Europe&lt;script&gt;true;&lt;/script&gt;",
+                "href": "u'europeltscriptgttrueltscriptgt", "id": 12},
+            {"text": u"land_&lt;script&gt;true;&lt;/script&gt;covering",
+                "href": "u'land_ltscriptgttrueltscriptgtcovering", "id": 13},
+            {"text": u"&lt;IMGSRC=&#39;javascript:true;&#39;&gt;Science",
+                "href": "u'ltimgsrc39javascripttrue39gtscience", "id": 11},
         ]))
 
     def test_layer_links(self):
@@ -343,7 +363,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
-            self.assertEquals(len(links), 9)
+            self.assertEquals(len(links), 8)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
@@ -756,8 +776,8 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEquals(get_valid_name("blug"), "blug")
         self.assertEquals(get_valid_name("<-->"), "_")
         self.assertEquals(get_valid_name("<ab>"), "_ab_")
-        self.assertEquals(get_valid_name("CA"), "CA_1")
-        self.assertEquals(get_valid_name("CA"), "CA_1")
+        self.assertNotEquals(get_valid_name("CA"), "CA_1")
+        self.assertNotEquals(get_valid_name("CA"), "CA_1")
 
     def test_get_valid_layer_name(self):
         self.assertEquals(get_valid_layer_name("blug", False), "blug")
@@ -769,13 +789,13 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEquals(get_valid_layer_name("<-->", False), "_")
         self.assertEquals(get_valid_layer_name("<-->", True), "<-->")
 
-        self.assertEquals(get_valid_layer_name("CA", False), "CA_1")
-        self.assertEquals(get_valid_layer_name("CA", False), "CA_1")
+        self.assertNotEquals(get_valid_layer_name("CA", False), "CA_1")
+        self.assertNotEquals(get_valid_layer_name("CA", False), "CA_1")
         self.assertEquals(get_valid_layer_name("CA", True), "CA")
         self.assertEquals(get_valid_layer_name("CA", True), "CA")
 
         layer = Layer.objects.get(name="CA")
-        self.assertEquals(get_valid_layer_name(layer, False), "CA_1")
+        self.assertNotEquals(get_valid_layer_name(layer, False), "CA_1")
         self.assertEquals(get_valid_layer_name(layer, True), "CA")
 
         self.assertRaises(GeoNodeException, get_valid_layer_name, 12, False)
@@ -939,6 +959,9 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertIn('change_layer_data', perms['users'][user])
 
     def test_batch_edit(self):
+        """
+        Test batch editing of metadata fields.
+        """
         Model = Layer
         view = 'layer_batch_metadata'
         resources = Model.objects.all()[:3]
@@ -1023,6 +1046,50 @@ class LayersTest(GeoNodeBaseTestSupport):
         for resource in resources:
             for word in resource.keywords.all():
                 self.assertTrue(word.name in keywords.split(','))
+
+    def test_batch_permissions(self):
+        """
+        Test batch editing of test_batch_permissions.
+        """
+        Model = Layer
+        view = 'layer_batch_permissions'
+        resources = Model.objects.all()[:3]
+        ids = ','.join([str(element.pk) for element in resources])
+        # test non-admin access
+        self.client.login(username="bobby", password="bob")
+        response = self.client.get(reverse(view, args=(ids,)))
+        self.assertTrue(response.status_code in (401, 403))
+        # test group permissions
+        group = Group.objects.first()
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={
+                'group': group.pk,
+                'permission_type': ('r', ),
+                'mode': 'set'
+            },
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            perm_spec = resource.get_all_level_info()
+            self.assertTrue(group in perm_spec["groups"])
+        # test user permissions
+        user = get_user_model().objects.first()
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={
+                'user': user.pk,
+                'permission_type': ('r', ),
+                'mode': 'set'
+            },
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            perm_spec = resource.get_all_level_info()
+            self.assertTrue(user in perm_spec["users"])
 
 
 class UnpublishedObjectTests(GeoNodeBaseTestSupport):

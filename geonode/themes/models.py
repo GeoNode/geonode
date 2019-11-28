@@ -84,6 +84,9 @@ class GeoNodeThemeCustomization(models.Model):
     jumbotron_color = models.CharField(max_length=10, default="#2c689c")
     jumbotron_title_color = models.CharField(max_length=10, default="#ffffff")
     jumbotron_text_color = models.CharField(max_length=10, default="#ffffff")
+    search_bg_color = models.CharField(max_length=10, default="#333333")
+    search_title_color = models.CharField(max_length=10, default="#ffffff")
+    search_link_color = models.CharField(max_length=10, default="#ff8f31")
     contactus = models.BooleanField(default=False, verbose_name="Enable contact us box")
     contact_name = models.CharField(max_length=255, null=True, blank=True)
     contact_position = models.CharField(max_length=255, null=True, blank=True)
@@ -101,6 +104,9 @@ class GeoNodeThemeCustomization(models.Model):
     partners = models.ManyToManyField(Partner, related_name="partners", blank=True)
     copyright = models.TextField(null=True, blank=True)
     copyright_color = models.CharField(max_length=10, default="#2c689c")
+    footer_bg_color = models.CharField(max_length=10, default="#333333")
+    footer_text_color = models.CharField(max_length=10, default="#ffffff")
+    footer_href_color = models.CharField(max_length=10, default="#ff8f31")
 
     # Cookies Law Info Bar
     cookie_law_info_bar_enabled = models.BooleanField(default=True, verbose_name="Cookies Law Info Bar")

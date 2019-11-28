@@ -20,7 +20,6 @@
 
 import os
 import re
-import json
 import shutil
 import logging
 import tempfile
@@ -35,6 +34,7 @@ from django.http import HttpResponse
 from django.http.request import validate_host
 from django.views.generic import View
 from django.views.decorators.csrf import requires_csrf_token
+from django.template import loader
 from distutils.version import StrictVersion
 from django.utils.translation import ugettext as _
 from django.core.files.storage import default_storage as storage
@@ -218,30 +218,58 @@ def proxy(request, url=None, response_callback=None,
 
 def download(request, resourceid, sender=Layer):
 
+    _not_authorized = _("You are not authorized to download this resource.")
+    _not_permitted = _("You are not permitted to save or edit this resource.")
+    _no_files_found = _("No files have been found for this resource. Please, contact a system administrator.")
+
     instance = resolve_object(request,
                               sender,
                               {'pk': resourceid},
                               permission='base.download_resourcebase',
-                              permission_msg=_("You are not permitted to save or edit this resource."))
+                              permission_msg=_not_permitted)
 
     if isinstance(instance, Layer):
+        # Create Target Folder
+        dirpath = tempfile.mkdtemp()
+        dir_time_suffix = get_dir_time_suffix()
+        target_folder = os.path.join(dirpath, dir_time_suffix)
+        if not os.path.exists(target_folder):
+            os.makedirs(target_folder)
+
+        layer_files = []
         try:
             upload_session = instance.get_upload_session()
-            layer_files = [item for idx, item in enumerate(LayerFile.objects.filter(upload_session=upload_session))]
+            if upload_session:
+                layer_files = [
+                    item for idx, item in enumerate(LayerFile.objects.filter(upload_session=upload_session))]
 
-            # Create Target Folder
-            dirpath = tempfile.mkdtemp()
-            dir_time_suffix = get_dir_time_suffix()
-            target_folder = os.path.join(dirpath, dir_time_suffix)
-            if not os.path.exists(target_folder):
-                os.makedirs(target_folder)
+                if layer_files:
+                    # Copy all Layer related files into a temporary folder
+                    for l in layer_files:
+                        if storage.exists(l.file):
+                            geonode_layer_path = storage.path(l.file)
+                            base_filename, original_ext = os.path.splitext(geonode_layer_path)
+                            shutil.copy2(geonode_layer_path, target_folder)
+                        else:
+                            return HttpResponse(
+                                loader.render_to_string(
+                                    '401.html',
+                                    context={
+                                        'error_title': _("No files found."),
+                                        'error_message': _no_files_found
+                                    },
+                                    request=request), status=404)
 
-            # Copy all Layer related files into a temporary folder
-            for l in layer_files:
-                if storage.exists(l.file):
-                    geonode_layer_path = storage.path(l.file)
-                    base_filename, original_ext = os.path.splitext(geonode_layer_path)
-                    shutil.copy2(geonode_layer_path, target_folder)
+            # Check we can access the original files
+            if not layer_files:
+                return HttpResponse(
+                    loader.render_to_string(
+                        '401.html',
+                        context={
+                            'error_title': _("No files found."),
+                            'error_message': _no_files_found
+                        },
+                        request=request), status=404)
 
             # Let's check for associated SLD files (if any)
             try:
@@ -271,7 +299,6 @@ def download(request, resourceid, sender=Layer):
                         traceback.print_exc()
                         tb = traceback.format_exc()
                         logger.debug(tb)
-
             except BaseException:
                 traceback.print_exc()
                 tb = traceback.format_exc()
@@ -337,20 +364,21 @@ def download(request, resourceid, sender=Layer):
             tb = traceback.format_exc()
             logger.debug(tb)
             return HttpResponse(
-                json.dumps({
-                    'error': 'file_not_found'
-                }),
-                status=404,
-                content_type="application/json"
-            )
-
+                loader.render_to_string(
+                    '401.html',
+                    context={
+                        'error_title': _("No files found."),
+                        'error_message': _no_files_found
+                    },
+                    request=request), status=404)
     return HttpResponse(
-        json.dumps({
-            'error': 'unauthorized_request'
-        }),
-        status=403,
-        content_type="application/json"
-    )
+        loader.render_to_string(
+            '401.html',
+            context={
+                'error_title': _("Not Authorized"),
+                'error_message': _not_authorized
+            },
+            request=request), status=403)
 
 
 class OWSListView(View):

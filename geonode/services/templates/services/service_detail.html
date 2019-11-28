@@ -41,15 +41,15 @@
                 {% endfor %}
                 {% for service in services %}
                     <tr>
-                        <td><a href='{%  url "service_detail" service.id %}'>{{service.title}}</a></td>
-                        <td>{{service.abstract}}</td>
+                        <td><a href='{%  url "service_detail" service.id %}'>{{service.title|striptags}}</a></td>
+                        <td>{{service.abstract|striptags}}</td>
                     </tr>
                 {% endfor %}
                 {% for layer in layers %}
                     {% if layer.group != "background" %}
                         <tr>
-                            <td><a href='{{ layer.get_absolute_url }}'>{{layer.title}}</a></td>
-                            <td>{{layer.abstract}}</td>
+                            <td><a href='{{ layer.get_absolute_url }}'>{{layer.title|striptags}}</a></td>
+                            <td>{{layer.abstract|striptags}}</td>
                         </tr>
                     {% endif %}
                 {% endfor %}

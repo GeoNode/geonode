@@ -423,16 +423,17 @@ class CollectorAPI(object):
                 values = requests.distinct(
                     column_name).values_list(column_name, flat=True)
             for v in values:
-                value = v
-                if is_user_metric:
-                    value = v[0]
-                rqs = requests.filter(**{column_name: value})
-                row = rqs.aggregate(
-                    value=models.Count(column_name),
-                    samples=models.Count(column_name)
-                )
-                row['label'] = v
-                q.append(row)
+                if v is not None:
+                    value = v
+                    if is_user_metric:
+                        value = v[0]
+                    rqs = requests.filter(**{column_name: value})
+                    row = rqs.aggregate(
+                        value=models.Count(column_name),
+                        samples=models.Count(column_name)
+                    )
+                    row['label'] = v
+                    q.append(row)
             q.sort(key=_key)
             q.reverse()
 
@@ -949,7 +950,16 @@ class CollectorAPI(object):
                 row[tcol] = t
             return row
 
-        return [postproc(row) for row in raw_sql(q, params)]
+        def check_row(r):
+            is_ok = True
+            # Avoid Count label for countries
+            # (it has been already fixed in "set_metric_values"
+            # but the following line avoid showing the label in case of existing dirty db)
+            if metric_name == "request.country" and r["label"] == "count":
+                is_ok = False
+            return is_ok
+
+        return [postproc(row) for row in raw_sql(q, params) if check_row(row)]
 
     def aggregate_past_periods(self, metric_data_q=None, periods=None, **kwargs):
         """
