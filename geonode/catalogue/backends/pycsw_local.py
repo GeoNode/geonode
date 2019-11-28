@@ -21,7 +21,7 @@
 import os
 from defusedxml import lxml as dlxml
 from django.conf import settings
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 from owslib.iso import MD_Metadata
 from pycsw import server
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
@@ -102,7 +102,7 @@ class CatalogueBackend(GenericCatalogueBackend):
                 [MD_Metadata(x) for x in e.findall('//{http://www.isotc211.org/2005/gmd}MD_Metadata')]
 
             # build results into JSON for API
-            results = [self.catalogue.metadatarecord2dict(doc) for v, doc in self.catalogue.records.iteritems()]
+            results = [self.catalogue.metadatarecord2dict(doc) for v, doc in self.catalogue.records.items()]
 
             result = {'rows': results,
                       'total': e.find('{http://www.opengis.net/cat/csw/2.0.2}SearchResults').attrib.get(
@@ -126,9 +126,9 @@ class CatalogueBackend(GenericCatalogueBackend):
             mdict['server'].update(settings.PYCSW['CONFIGURATION']['server'])
         config = SafeConfigParser()
 
-        for section, options in mdict.iteritems():
+        for section, options in mdict.items():
             config.add_section(section)
-            for option, value in options.iteritems():
+            for option, value in options.items():
                 config.set(section, option, value)
 
         # fake HTTP environment variable

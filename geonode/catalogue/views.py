@@ -170,7 +170,7 @@ def csw_global_dispatch(request):
                   'gco': 'http://www.isotc211.org/2005/gco',
                   'gmi': 'http://www.isotc211.org/2005/gmi'}
 
-        for prefix, uri in spaces.iteritems():
+        for prefix, uri in spaces.items():
             ET.register_namespace(prefix, uri)
 
         if access_token and not access_token.is_expired():
@@ -247,12 +247,9 @@ def data_json(request):
 
 # transforms a row sql query into a two dimension array
 def dictfetchall(cursor):
-    """Returns all rows from a cursor as a dict"""
-    desc = cursor.description
-    return [
-        dict(zip([col[0] for col in desc], row))
-        for row in cursor.fetchall()
-    ]
+    """Generate all rows from a cursor as a dict"""
+    for row in cursor.fetchall():
+        yield {col[0]: row for col in cursor.description}
 
 
 # choose separators
@@ -263,8 +260,7 @@ def get_CSV_spec_char():
 # format value to unicode str without ';' char
 def fst(value):
     chrs = get_CSV_spec_char()
-    return unicode(value).replace(chrs["separator"],
-                                  ',').replace('\\n', ' ').replace('\r\n', ' ')
+    return str(value).replace(chrs["separator"], ',').replace('\\n', ' ').replace('\r\n', ' ')
 
 
 # from a resource object, build the corresponding metadata dict
@@ -283,8 +279,7 @@ def get_keywords(resource):
     cursor.execute(
         "SELECT a.*,b.* FROM taggit_taggeditem as a,taggit_tag"
         " as b WHERE a.object_id = %s AND a.tag_id=b.id", [resource.id])
-    struct_kw = dictfetchall(cursor)
-    for x in struct_kw:
+    for x in dictfetchall(cursor):
         content += fst(x['name']) + ', '
     return content[:-2]
 
@@ -395,11 +390,11 @@ def csw_render_extra_format_html(request, layeruuid, resname):
         extra_res_md['atrributes'] = ''
         for attr in layer.attribute_set.all():
             extra_res_md['atrributes'] += '<tr>'
-            extra_res_md['atrributes'] += '<td>' + unicode(
+            extra_res_md['atrributes'] += '<td>' + str(
                 attr.attribute) + '</td>'
-            extra_res_md['atrributes'] += '<td>' + unicode(
+            extra_res_md['atrributes'] += '<td>' + str(
                 attr.attribute_label) + '</td>'
-            extra_res_md['atrributes'] += '<td>' + unicode(
+            extra_res_md['atrributes'] += '<td>' + str(
                 attr.description) + '</td>'
             extra_res_md['atrributes'] += '</tr>'
 
