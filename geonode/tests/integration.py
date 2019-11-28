@@ -651,6 +651,34 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             if uploaded:
                 uploaded.delete()
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    def test_layer_zip_with_spaces(self):
+        """Test uploading a layer with non UTF-8 attributes names"""
+        uploaded = None
+        PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+        thelayer_path = os.path.join(
+            PROJECT_ROOT,
+            'data/UNESCO Global Geoparks')
+        thelayer_zip = os.path.join(
+            PROJECT_ROOT,
+            'data/',
+            'UNESCO Global Geoparks.zip')
+        try:
+            if os.path.exists(thelayer_zip):
+                os.remove(thelayer_zip)
+            if os.path.exists(thelayer_path) and not os.path.exists(thelayer_zip):
+                zip_dir(thelayer_path, thelayer_zip)
+                if os.path.exists(thelayer_zip):
+                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='UTF-8')
+                    self.assertEquals(uploaded.title, 'Unesco Global Geoparks')
+                    self.assertEquals(len(uploaded.keyword_list()), 2)
+                    self.assertEquals(uploaded.constraints_other, None)
+        finally:
+            # Clean up and completely delete the layer
+            if uploaded:
+                uploaded.delete()
+
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_shapefile(self):
         """Test Uploading a good shapefile
