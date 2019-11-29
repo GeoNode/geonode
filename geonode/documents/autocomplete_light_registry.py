@@ -20,7 +20,7 @@
 
 from autocomplete_light.registry import register
 from autocomplete_light.autocomplete.shortcuts import AutocompleteModelTemplate
-from models import Document
+from .models import Document
 
 
 class DocumentAutocomplete(AutocompleteModelTemplate):
