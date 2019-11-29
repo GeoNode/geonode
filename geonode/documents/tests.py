@@ -26,7 +26,7 @@ when you run "manage.py test".
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
-import StringIO
+import io
 import json
 
 import gisdata
@@ -65,8 +65,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
     def setUp(self):
         super(DocumentsTest, self).setUp()
         create_models('map')
-        self.imgfile = StringIO.StringIO(
-            'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
+        self.imgfile = io.BytesIO(
+            b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
             '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
         self.anonymous_user = get_anonymous_user()
 
@@ -84,7 +84,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             owner=superuser,
             title='theimg')
         c.set_default_permissions()
-        self.assertEquals(Document.objects.get(pk=c.id).title, 'theimg')
+        self.assertEqual(Document.objects.get(pk=c.id).title, 'theimg')
 
     def test_create_document_with_rel(self):
         """Tests the creation of a document with no a map related"""
@@ -107,9 +107,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             content_type=ctype,
             object_id=m.id)
 
-        self.assertEquals(Document.objects.get(pk=c.id).title, 'theimg')
-        self.assertEquals(DocumentResourceLink.objects.get(pk=_d.id).object_id,
-                          m.id)
+        self.assertEqual(Document.objects.get(pk=c.id).title, 'theimg')
+        self.assertEqual(DocumentResourceLink.objects.get(pk=_d.id).object_id, m.id)
 
     def test_create_document_url(self):
         """Tests creating an external document instead of a file."""
@@ -120,8 +119,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                                     title="GeoNode Map",
                                     )
         doc = Document.objects.get(pk=c.id)
-        self.assertEquals(doc.title, "GeoNode Map")
-        self.assertEquals(doc.extension, "pdf")
+        self.assertEqual(doc.title, "GeoNode Map")
+        self.assertEqual(doc.extension, "pdf")
 
     def test_create_document_url_view(self):
         """
@@ -212,14 +211,14 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         d.set_default_permissions()
 
         response = self.client.get(reverse('document_detail', args=(str(d.id),)))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_document_metadata_details(self):
         d = Document.objects.all().first()
         d.set_default_permissions()
 
         response = self.client.get(reverse('document_metadata_detail', args=(str(d.id),)))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Approved", count=1, status_code=200, msg_prefix='', html=False)
         self.assertContains(response, "Published", count=1, status_code=200, msg_prefix='', html=False)
         self.assertContains(response, "Featured", count=1, status_code=200, msg_prefix='', html=False)
@@ -230,7 +229,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         d.group = group
         d.save()
         response = self.client.get(reverse('document_metadata_detail', args=(str(d.id),)))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, "<dt>Group</dt>", count=1, status_code=200, msg_prefix='', html=False)
         d.group = None
         d.save()
@@ -262,7 +261,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                 'type': 'map',
                 'permissions': '{"users":{"AnonymousUser": ["view_resourcebase"]}}'},
             follow=True)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     # Permissions Tests
 
@@ -284,7 +283,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the document owner) were removed
         current_perms = document.get_all_level_info()
-        self.assertEqual(len(current_perms['users'].keys()), 2)
+        self.assertEqual(len(current_perms['users']), 2)
 
         # Test that the User permissions specified in the perm_spec were
         # applied properly
@@ -317,7 +316,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                 'resource_permissions', args=(
                     invalid_document_id,)), data=json.dumps(
                 self.perm_spec), content_type="application/json")
-        self.assertEquals(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
         # Test that GET returns permissions
         response = self.client.get(reverse('resource_permissions', args=(document_id,)))
@@ -331,27 +330,27 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             reverse('resource_permissions', args=(document_id,)),
             data=json.dumps(self.perm_spec),
             content_type="application/json")
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
 
         # Next Test with a user that does NOT have the proper perms
         logged_in = self.client.login(username='bobby', password='bob')
-        self.assertEquals(logged_in, True)
+        self.assertEqual(logged_in, True)
         response = self.client.post(
             reverse('resource_permissions', args=(document_id,)),
             data=json.dumps(self.perm_spec),
             content_type="application/json")
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
 
         # Login as a user with the proper permission and test the endpoint
         logged_in = self.client.login(username='admin', password='admin')
-        self.assertEquals(logged_in, True)
+        self.assertEqual(logged_in, True)
         response = self.client.post(
             reverse('resource_permissions', args=(document_id,)),
             data=json.dumps(self.perm_spec),
             content_type="application/json")
 
         # Test that the method returns 200
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_batch_edit(self):
         Model = Document
@@ -369,37 +368,37 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             reverse(view, args=(ids,)),
             data={'group': group.pk},
         )
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertEquals(resource.group, group)
+            self.assertEqual(resource.group, group)
         # test owner change
         owner = get_user_model().objects.first()
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'owner': owner.pk},
         )
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertEquals(resource.owner, owner)
+            self.assertEqual(resource.owner, owner)
         # test license change
         license = License.objects.first()
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'license': license.pk},
         )
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertEquals(resource.license, license)
+            self.assertEqual(resource.license, license)
         # test regions change
         region = Region.objects.first()
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'region': region.pk},
         )
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             if resource.regions.all():
@@ -411,30 +410,29 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             reverse(view, args=(ids,)),
             data={'date': date},
         )
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             today = date.today()
             todoc = resource.date.today()
-            self.assertEquals((today.day, today.month, today.year),
-                              (todoc.day, todoc.month, todoc.year))
+            self.assertEqual((today.day, today.month, today.year), (todoc.day, todoc.month, todoc.year))
         # test language change
         language = 'eng'
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'language': language},
         )
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
-            self.assertEquals(resource.language, language)
+            self.assertEqual(resource.language, language)
         # test keywords change
         keywords = 'some,thing,new'
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'keywords': keywords},
         )
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             for word in resource.keywords.all():
@@ -563,8 +561,8 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
         create_models('map')
         create_models('layer')
 
-        self.test_file = StringIO.StringIO(
-            'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
+        self.test_file = io.BytesIO(
+            b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
             '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
         )
 
@@ -573,16 +571,18 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
         f = SimpleUploadedFile(
             'test_img_file.gif',
             self.test_file.read(),
-            'image/gif')
+            'image/gif'
+        )
 
         superuser = get_user_model().objects.get(pk=2)
 
         d = Document.objects.create(
             doc_file=f,
             owner=superuser,
-            title='theimg')
+            title='theimg'
+        )
 
-        self.assertEquals(Document.objects.get(pk=d.id).title, 'theimg')
+        self.assertEqual(Document.objects.get(pk=d.id).title, 'theimg')
 
         maps = list(Map.objects.all())
         layers = list(Layer.objects.all())
@@ -604,7 +604,7 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
                 content_type=ct.id,
                 object_id=resource.id
             )
-            self.assertEquals(_d.object_id, resource.id)
+            self.assertEqual(_d.object_id, resource.id)
 
         # update document links
 
@@ -622,7 +622,7 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
                 content_type=ct.id,
                 object_id=resource.id
             )
-            self.assertEquals(_d.object_id, resource.id)
+            self.assertEqual(_d.object_id, resource.id)
 
         for resource in maps:
             ct = ContentType.objects.get_for_model(resource)

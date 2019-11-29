@@ -151,7 +151,7 @@ def document_detail(request, docid):
                 if exif:
                     context_dict['exif_data'] = exif
             except BaseException:
-                print "Exif extraction failed."
+                print("Exif extraction failed.")
 
         if request.user.is_authenticated():
             if getattr(settings, 'FAVORITE_ENABLED', False):
@@ -241,7 +241,7 @@ class DocumentUploadView(CreateView):
                     bbox = exif_metadata.get('bbox', None)
                     abstract = exif_metadata.get('abstract', None)
             except BaseException:
-                print "Exif extraction failed."
+                print("Exif extraction failed.")
 
         if abstract:
             self.object.abstract = abstract
@@ -273,7 +273,7 @@ class DocumentUploadView(CreateView):
                     build_slack_message_document(
                         "document_new", self.object))
             except BaseException:
-                print "Could not send slack message for new document."
+                print("Could not send slack message for new document.")
 
         register_event(self.request, EventType.EVENT_UPLOAD, self.object)
 
@@ -490,9 +490,10 @@ def document_metadata(
                     tkeywords_ids = []
                     for i, val in enumerate(tkeywords_cleaned):
                         try:
-                            cleaned_data = [value for key, value in tkeywords_cleaned[i].items(
-                            ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
-                            tkeywords_ids.extend(map(int, cleaned_data[0]))
+                            for key, value in tkeywords_cleaned[i].items():
+                                if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower():
+                                    tkeywords_ids.extend(map(int, value))
+                                    break
                         except BaseException:
                             pass
 
