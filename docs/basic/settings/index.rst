@@ -1203,7 +1203,6 @@ MONITORING_SKIP_PATHS
             '/api/o/',
             '/monitoring/',
             '/admin',
-            '/lang.js',
             '/jsi18n',
             STATIC_URL,
             MEDIA_URL,

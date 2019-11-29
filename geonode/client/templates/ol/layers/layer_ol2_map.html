@@ -1,6 +1,7 @@
-<link rel="stylesheet" href="http://dev.openlayers.org/releases/OpenLayers-2.13.1/theme/default/style.css" type="text/css">
-<script src="http://dev.openlayers.org/releases/OpenLayers-2.13.1/OpenLayers.js" type="text/javascript"></script>
-<script src="http://dev.openlayers.org/releases/OpenLayers-2.13.1/lib/OpenLayers/Layer/ArcGISCache.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="{% url "proxy" %}?url=http://dev.openlayers.org/releases/OpenLayers-2.13.1/theme/default/style.css" type="text/css">
+<script src="{% url "proxy" %}?url=http://dev.openlayers.org/releases/OpenLayers-2.13.1/OpenLayers.js" type="text/javascript"></script>
+<script src="{% url "proxy" %}?url=http://dev.openlayers.org/releases/OpenLayers-2.13.1/lib/OpenLayers/Layer/ArcGISCache.js" type="text/javascript"></script>
 
 <style>
     .olControlAttribution {
