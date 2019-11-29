@@ -30,7 +30,11 @@ from geonode.utils import fixup_shp_columnnames
 from geoserver.resource import FeatureType, Coverage
 from django.utils.translation import ugettext as _
 
-from UserList import UserList
+try:
+    from collections import UserList
+except ImportError:
+    # Python 2 compatibility
+    from UserList import UserList
 import zipfile
 import os
 import re
@@ -225,7 +229,7 @@ def _find_file_type(file_names, extension):
     """
     Returns files that end with the given extension from a list of file names.
     """
-    return filter(lambda f: f.lower().endswith(extension), file_names)
+    return [f for f in file_names if f.lower().endswith(extension)]
 
 
 def clean_macosx_dir(file_names):
