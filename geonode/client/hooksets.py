@@ -74,7 +74,7 @@ class GeoExtHookSet(object):
         if not context:
             context = {}
 
-        if isinstance(conf, basestring):
+        if isinstance(conf, str):
             conf = json.loads(conf)
         return conf
 
