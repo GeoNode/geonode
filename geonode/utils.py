@@ -23,19 +23,18 @@ import re
 import six
 import ast
 import copy
+import json
 import time
 import base64
 import logging
 import select
 import shutil
 import string
-import urllib
 import tarfile
 import weakref
 import datetime
 import requests
 import tempfile
-import urlparse
 import traceback
 import subprocess
 
@@ -67,7 +66,33 @@ from geonode.base.auth import (extend_token,
                                get_token_from_auth_header,
                                get_token_object_from_session)
 
-import json
+try:
+    from urllib import (
+        unquote,
+        urlencode,
+    )
+    from urlparse import (
+        urljoin,
+        urlparse,
+        urlsplit,
+        parse_qs,
+        parse_qsl,
+        ParseResult,
+        SplitResult
+    )
+except ImportError:
+    # Python 3 fallback
+    from urllib.parse import (
+        urljoin,
+        unquote,
+        urlparse,
+        urlsplit,
+        urlencode,
+        parse_qs,
+        parse_qsl,
+        ParseResult,
+        SplitResult
+    )
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
@@ -171,7 +196,7 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     access_token = None
-    site_url = urlparse.urlsplit(settings.SITEURL)
+    site_url = urlsplit(settings.SITEURL)
     allowed_hosts += [url.hostname]
     # We want to convert HTTP_AUTH into a Beraer Token only when hitting the local GeoServer
     if site_url.hostname in allowed_hosts:
@@ -658,19 +683,19 @@ class GXPLayerBase(object):
             '''
             urls = []
             for name, server in settings.OGC_SERVER.iteritems():
-                url = urlparse.urlsplit(server['PUBLIC_LOCATION'])
+                url = urlsplit(server['PUBLIC_LOCATION'])
                 urls.append(url.netloc)
 
-            my_url = urlparse.urlsplit(self.ows_url)
+            my_url = urlsplit(self.ows_url)
 
             if str(access_token) and my_url.netloc in urls:
-                request_params = urlparse.parse_qs(my_url.query)
+                request_params = parse_qs(my_url.query)
                 if 'access_token' in request_params:
                     del request_params['access_token']
                 # request_params['access_token'] = [access_token]
-                encoded_params = urllib.urlencode(request_params, doseq=True)
+                encoded_params = urlencode(request_params, doseq=True)
 
-                parsed_url = urlparse.SplitResult(
+                parsed_url = SplitResult(
                     my_url.scheme,
                     my_url.netloc,
                     my_url.path,
@@ -927,7 +952,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
     if content_type is None:
         content_type = "application/json"
     if errors:
-        if isinstance(errors, basestring):
+        if isinstance(errors, str):
             errors = [errors]
         body = {
             'success': False,
@@ -960,7 +985,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
     if status is None:
         status = 200
 
-    if not isinstance(body, basestring):
+    if not isinstance(body, str):
         body = json.dumps(body, cls=DjangoJSONEncoder)
     return HttpResponse(body, content_type=content_type, status=status)
 
@@ -991,7 +1016,7 @@ def format_urls(a, values):
     for i in a:
         j = i.copy()
         try:
-            j['url'] = unicode(j['url']).format(**values)
+            j['url'] = str(j['url']).format(**values)
         except KeyError:
             j['url'] = None
         b.append(j)
@@ -1375,7 +1400,7 @@ class HttpClient(object):
         check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
             if connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
                 try:
-                    if user and isinstance(user, basestring):
+                    if user and isinstance(user, str):
                         user = get_user_model().objects.get(username=user)
                     _u = user or get_user_model().objects.get(username=self.username)
                     access_token = get_or_create_token(_u)
@@ -1405,12 +1430,12 @@ class HttpClient(object):
             pool_maxsize=self.pool_maxsize,
             pool_connections=self.pool_connections
         )
-        session.mount("{scheme}://".format(scheme=urlparse.urlsplit(url).scheme), adapter)
+        session.mount("{scheme}://".format(scheme=urlsplit(url).scheme), adapter)
         session.verify = False
         action = getattr(session, method.lower(), None)
         if action:
             response = action(
-                url=urllib.unquote(url).decode('utf8'),
+                url=unquote(url).decode('utf8'),
                 data=data,
                 headers=headers,
                 timeout=timeout or self.timeout,
@@ -1554,7 +1579,6 @@ def slugify_zh(text, separator='_'):
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
     from geonode.base.models import Link
-    from urlparse import urljoin
     from django.core.urlresolvers import reverse
     from django.utils.translation import ugettext
 
@@ -1998,3 +2022,45 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 link_type='image',
             )
         )
+
+
+def add_url_params(url, params):
+    """ Add GET params to provided URL being aware of existing.
+
+    :param url: string of target URL
+    :param params: dict containing requested params to be added
+    :return: string with updated URL
+
+    >> url = 'http://stackoverflow.com/test?answers=true'
+    >> new_params = {'answers': False, 'data': ['some','values']}
+    >> add_url_params(url, new_params)
+    'http://stackoverflow.com/test?data=some&data=values&answers=false'
+    """
+    # Unquoting URL first so we don't loose existing args
+    url = unquote(url)
+    # Extracting url info
+    parsed_url = urlparse(url)
+    # Extracting URL arguments from parsed URL
+    get_args = parsed_url.query
+    # Converting URL arguments to dict
+    parsed_get_args = dict(parse_qsl(get_args))
+    # Merging URL arguments dict with new params
+    parsed_get_args.update(params)
+
+    # Bool and Dict values should be converted to json-friendly values
+    # you may throw this part away if you don't like it :)
+    parsed_get_args.update(
+        {k: json.dumps(v) for k, v in parsed_get_args.items()
+         if isinstance(v, (bool, dict))}
+    )
+
+    # Converting URL argument to proper query string
+    encoded_get_args = urlencode(parsed_get_args, doseq=True)
+    # Creating new parsed result object based on provided with new
+    # URL arguments. Same thing happens inside of urlparse.
+    new_url = ParseResult(
+        parsed_url.scheme, parsed_url.netloc, parsed_url.path,
+        parsed_url.params, encoded_get_args, parsed_url.fragment
+    ).geturl()
+
+    return new_url
