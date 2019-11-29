@@ -1,5 +1,3 @@
-{% load i18n %}
-
 if (window.GeoExt && GeoExt.Lang) {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
 }
@@ -294,6 +292,3 @@ if (window.GeoNode && GeoNode.BatchDownloadWidget) {
         windowMessageText: gettext("Please wait")
     });
 }
-
-{% block extra_lang %}
-{% endblock %}

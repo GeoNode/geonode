@@ -25,7 +25,7 @@ import subprocess
 
 def get_version(version=None):
     "Returns a PEP 386-compliant version number from VERSION."
-    if version is None:
+    if version is None or not isinstance(version, list):
         from geonode import __version__ as version
     else:
         assert len(version) == 5
@@ -48,6 +48,12 @@ def get_version(version=None):
         elif version[3] != 'final':
             sub += '.build%s' % git_changeset
     return main + sub
+
+
+def version(request, version=None):
+    from django.http import HttpResponse
+    _v = get_version(version=version)
+    return HttpResponse(_v)
 
 
 def get_git_changeset():
