@@ -78,6 +78,15 @@ urlpatterns = [
     url(r'^privacy_cookies/$',
         TemplateView.as_view(template_name='privacy-cookies.html'),
         name='privacy-cookies'),
+
+    # Meta
+    url(r'^jsi18n/$', javascript_catalog,
+        js_info_dict, name='javascript-catalog'),
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
+        name='sitemap'),
+    url(r'^robots\.txt$', TemplateView.as_view(
+        template_name='robots.txt'), name='robots'),
+    url(r'(.*version\.txt)$', version.version, name='version'),
 ]
 
 urlpatterns += [
@@ -137,15 +146,6 @@ urlpatterns += [
         r'^account/moderation_sent/(?P<inactive_user>[^/]*)$',
         geonode.views.moderator_contacted,
         name='moderator_contacted'),
-
-    # Meta
-    url(r'^jsi18n/$', javascript_catalog,
-        js_info_dict, name='javascript-catalog'),
-    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
-        name='sitemap'),
-    url(r'^robots\.txt$', TemplateView.as_view(
-        template_name='robots.txt'), name='robots'),
-    url(r'version\.txt$', version.version, name='version'),
 
     # url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^autocomplete/', include('autocomplete_light.urls')),
