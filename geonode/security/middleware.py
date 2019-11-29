@@ -37,7 +37,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         reverse('forgot_username'),
         reverse('help'),
         reverse('javascript-catalog'),
-        reverse('lang'),
         reverse('layer_acls'),
         reverse('layer_acls_dep'),
         reverse('layer_resolve_user'),
@@ -52,7 +51,6 @@ else:
         reverse('forgot_username'),
         reverse('help'),
         reverse('javascript-catalog'),
-        reverse('lang'),
         '/account/(?!.*(?:signup))',
         # block unauthenticated users from creating new accounts.
         '/static/*',

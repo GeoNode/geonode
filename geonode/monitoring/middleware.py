@@ -35,7 +35,6 @@ FILTER_URLS = (settings.MEDIA_URL,
                '/gs/',
                '/api/',
                '/security/',
-               '/lang.js',
                '/jsi18n/',
                '/h_keywords_api',
                '/admin/jsi18n/',)
