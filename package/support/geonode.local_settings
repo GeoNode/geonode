@@ -133,14 +133,6 @@ OGC_SERVER = {
     }
 }
 
-# WARNING: Map Editing is affected by this. GeoExt Configuration is cached for 5 minutes
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-#         'LOCATION': '/var/tmp/django_cache',
-#     }
-# }
-
 # If you want to enable Mosaics use the following configuration
 UPLOADER = {
     'BACKEND': 'geonode.rest',

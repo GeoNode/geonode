@@ -1,13 +1,13 @@
 {% load client_lib_tags %}
 {% load static from staticfiles %}
 
-<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/GeoExt/resources/css/geoext-all.css" %}?v={{ VERSION }}" />
-<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/GeoExt/resources/css/gxtheme-gray.css" %}?v={{ VERSION }}">
-<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/theme/ux/colorpicker/color-picker.ux.css" %}?v={{ VERSION }}" />
-<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/PrintPreview/resources/css/printpreview.css" %}?v={{ VERSION }}" />
-<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/openlayers/theme/default/style.css" %}?v={{ VERSION }}" />
-<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/gxp/src/theme/all.css" %}?v={{ VERSION }}" />
-<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/theme/app/geoexplorer.css" %}?v={{ VERSION }}" />
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/GeoExt/resources/css/geoext-all.css" %}" />
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/GeoExt/resources/css/gxtheme-gray.css" %}">
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/theme/ux/colorpicker/color-picker.ux.css" %}" />
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/PrintPreview/resources/css/printpreview.css" %}" />
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/openlayers/theme/default/style.css" %}" />
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/externals/gxp/src/theme/all.css" %}" />
+<link rel="stylesheet" type="text/css" href="{% static "geoexplorer/theme/app/geoexplorer.css" %}" />
 <!--[if IE]><link rel="stylesheet" type="text/css" href="{% static "geoexplorer/theme/app/ie.css" %}"/><![endif]-->
 <script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/SingleFile.js"></script>
 <script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/BaseTypes/Class.js"></script>
@@ -323,7 +323,7 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?key={% google_api_key %}" type="text/javascript"></script>
 
-<script src="{% static "geoexplorer/script/GeoExplorer-debug.js.js" %}?v={{ VERSION }}" type="text/javascript"></script>
+<script src="{% static "geoexplorer/script/GeoExplorer-debug.js.js" %}" type="text/javascript"></script>
 
 <style>
     .olImageLoadError {
