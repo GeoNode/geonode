@@ -37,7 +37,6 @@ from requests import Request
 from itertools import chain
 from six import string_types
 from owslib.wfs import WebFeatureService
-from owslib.feature.schema import get_schema
 
 from guardian.shortcuts import get_perms
 from django.contrib import messages
@@ -403,13 +402,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # assert False, str(layer_bbox)
     config = layer.attribute_config()
-
     if hasattr(layer, 'srid'):
         config['crs'] = {
             'type': 'name',
             'properties': layer.srid
         }
-
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox[0:4]
     # Must be in the form xmin, ymin, xmax, ymax
@@ -494,7 +491,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     all_times = None
     all_granules = None
     filter = None
-
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         if layer.has_time:
             from geonode.geoserver.views import get_capabilities
@@ -594,11 +590,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             ows_url=layer.ows_url,
             layer_params=json.dumps(config)
         )
-
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
     layer.view_count_up(request.user)
-
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(
         sender=Layer,
@@ -606,7 +600,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             settings,
             'DEFAULT_MAP_CRS',
             'EPSG:3857'))
-
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config(request)[1] if la.ows_url is None]
 
@@ -662,7 +655,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
         except BaseException:
             pass
-
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
             Q(name__in=settings.DOWNLOAD_FORMATS_VECTOR) |
@@ -683,7 +675,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         if item.url and access_token and 'access_token' not in item.url:
             params = {'access_token': access_token}
             item.url = Request('GET', item.url, params=params).prepare().url
-
     if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
         context_dict["links"] = links_view
     if request.user.has_perm(
@@ -696,20 +687,10 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             links = layer.link_set.download().filter(
                 name__in=settings.DOWNLOAD_FORMATS_RASTER)
         context_dict["links_download"] = links_download
-
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
     layers_names = layer.alternate
-    try:
-        if settings.DEFAULT_WORKSPACE and settings.DEFAULT_WORKSPACE in layers_names:
-            workspace, name = layers_names.split(':', 1)
-        else:
-            name = layers_names
-    except BaseException:
-        logger.error("Can not identify workspace type and layername")
-
     context_dict["layer_name"] = json.dumps(layers_names)
-
     try:
         # get type of layer (raster or vector)
         if layer.storeType == 'coverageStore':
@@ -719,49 +700,17 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                 context_dict["layer_type"] = "vector_time"
             else:
                 context_dict["layer_type"] = "vector"
-
-            location = "{location}{service}".format(** {
-                'location': settings.OGC_SERVER['default']['LOCATION'],
-                'service': 'wms',
-            })
-            # get schema for specific layer
-            username = settings.OGC_SERVER['default']['USER']
-            password = settings.OGC_SERVER['default']['PASSWORD']
-            schema = get_schema(
-                location,
-                name,
-                username=username,
-                password=password)
-
-            # get the name of the column which holds the geometry
-            if 'the_geom' in schema['properties']:
-                schema['properties'].pop('the_geom', None)
-            elif 'geom' in schema['properties']:
-                schema['properties'].pop("geom", None)
-
-            # filter the schema dict based on the values of layers_attributes
-            layer_attributes_schema = []
-            for key in schema['properties'].keys():
-                layer_attributes_schema.append(key)
-
-            filtered_attributes = layer_attributes_schema
-            context_dict["schema"] = schema
-            context_dict["filtered_attributes"] = filtered_attributes
-
     except BaseException:
         logger.error(
             "Possible error with OWSLib. Turning all available properties to string")
-
     # maps owned by user needed to fill the "add to existing map section" in template
     if request.user.is_authenticated():
         context_dict["maps"] = Map.objects.filter(owner=request.user)
-
         if getattr(settings, 'FAVORITE_ENABLED', False):
             from geonode.favorite.utils import get_favorite_info
             context_dict["favorite_info"] = get_favorite_info(request.user, layer)
 
     register_event(request, 'view', layer)
-
     return TemplateResponse(
         request, template, context=context_dict)
 
