@@ -21,7 +21,6 @@
 import os
 from defusedxml import lxml as dlxml
 from django.conf import settings
-from configparser import SafeConfigParser
 from owslib.iso import MD_Metadata
 from pycsw import server
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
@@ -124,18 +123,12 @@ class CatalogueBackend(GenericCatalogueBackend):
         if 'server' in settings.PYCSW['CONFIGURATION']:
             # override server system defaults with user specified directives
             mdict['server'].update(settings.PYCSW['CONFIGURATION']['server'])
-        config = SafeConfigParser()
-
-        for section, options in mdict.items():
-            config.add_section(section)
-            for option, value in options.items():
-                config.set(section, option, value)
 
         # fake HTTP environment variable
         os.environ['QUERY_STRING'] = ''
 
         # init pycsw
-        csw = server.Csw(config, version='2.0.2')
+        csw = server.Csw(mdict, version='2.0.2')
 
         # fake HTTP method
         csw.requesttype = 'GET'
