@@ -19,7 +19,7 @@
 #########################################################################
 
 from django.core.urlresolvers import reverse
-import models
+from . import models
 
 
 def get_favorite_info(user, content_object):
