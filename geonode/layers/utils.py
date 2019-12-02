@@ -22,6 +22,7 @@
 """
 
 # Standard Modules
+from __future__ import print_function
 import re
 import os
 import glob
@@ -33,10 +34,14 @@ import tarfile
 
 from itertools import islice
 from datetime import datetime
-from urlparse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
 from osgeo import gdal, osr, ogr
 from zipfile import ZipFile, is_zipfile
 from random import choice
+from six import string_types, reraise as raise_
 
 # Django functionality
 from django.conf import settings
@@ -180,13 +185,13 @@ def get_files(filename):
     if extension.lower() == '.shp':
         required_extensions = dict(
             shp='.[sS][hH][pP]', dbf='.[dD][bB][fF]', shx='.[sS][hH][xX]')
-        for ext, pattern in required_extensions.iteritems():
+        for ext, pattern in required_extensions.items():
             matches = glob.glob(glob_name + pattern)
             if len(matches) == 0:
                 msg = ('Expected helper file %s does not exist; a Shapefile '
                        'requires helper files with the following extensions: '
                        '%s') % (base_name + "." + ext,
-                                required_extensions.keys())
+                                list(required_extensions.keys()))
                 raise GeoNodeException(msg)
             elif len(matches) > 1:
                 msg = ('Multiple helper files for %s exist; they need to be '
@@ -322,7 +327,7 @@ def get_valid_layer_name(layer, overwrite):
     # The first thing we do is get the layer name string
     if isinstance(layer, Layer):
         layer_name = layer.name
-    elif isinstance(layer, basestring):
+    elif isinstance(layer, string_types):
         layer_name = str(layer)
     else:
         msg = ('You must pass either a filename or a GeoNode layer object')
@@ -808,7 +813,7 @@ def upload(incoming, user=None, overwrite=False,
        It catches GeoNodeExceptions and gives a report per file
     """
     if verbosity > 1:
-        print >> console, "Verifying that GeoNode is running ..."
+        print("Verifying that GeoNode is running ...", file=console)
 
     if console is None:
         console = open(os.devnull, 'w')
@@ -845,7 +850,7 @@ def upload(incoming, user=None, overwrite=False,
     number = len(potential_files)
     if verbosity > 1:
         msg = "Found %d potential layers." % number
-        print >> console, msg
+        print(msg, file=console)
 
     if (number > 1) and (name is not None):
         msg = 'Failed to process.  Cannot specify name with multiple imports.'
@@ -870,7 +875,7 @@ def upload(incoming, user=None, overwrite=False,
                 msg = ('Stopping process because '
                        '--overwrite was not set '
                        'and a layer with this name already exists.')
-                print >> sys.stderr, msg
+                print(msg, file=sys.stderr)
         else:
             save_it = True
 
@@ -923,9 +928,9 @@ def upload(incoming, user=None, overwrite=False,
                         msg = ('Stopping process because '
                                '--ignore-errors was not set '
                                'and an error was found.')
-                        print >> sys.stderr, msg
+                        print(msg, file=sys.stderr)
                         msg = 'Failed to process %s' % filename
-                        raise Exception(msg, e), None, sys.exc_info()[2]
+                        raise_(Exception, e, sys.exc_info()[2])
 
         msg = "[%s] Layer for '%s' (%d/%d)" % (status, filename, i + 1, number)
         info = {'file': filename, 'status': status}
@@ -938,7 +943,7 @@ def upload(incoming, user=None, overwrite=False,
 
         output.append(info)
         if verbosity > 0:
-            print >> console, msg
+            print(msg, file=console)
     return output
 
 
@@ -1013,7 +1018,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                             request_body = {key: value for (key, value) in
                                             [(lambda p: (p.split("=")[0], p.split("=")[1]))(p) for p in params]}
                             # request_body['thumbnail_create_url'] = thumbnail_create_url
-                            if 'bbox' in request_body and isinstance(request_body['bbox'], basestring):
+                            if 'bbox' in request_body and isinstance(request_body['bbox'], string_types):
                                 request_body['bbox'] = [str(coord) for coord in request_body['bbox'].split(",")]
                                 request_body['bbox'] = [
                                     request_body['bbox'][0],

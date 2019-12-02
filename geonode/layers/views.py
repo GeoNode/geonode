@@ -26,9 +26,14 @@ import base64
 import traceback
 from types import TracebackType
 import decimal
-import cPickle as pickle
+import pickle
 from django.db.models import Q
 from celery.exceptions import TimeoutError
+try:
+    from urllib.parse import quote
+except ImportError:
+    # Python 2 compatibility
+    from urllib import quote
 
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
@@ -346,11 +351,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
         _keys = ['info', 'errors']
         for _k in _keys:
             if _k in out:
-                if isinstance(out[_k], unicode) or isinstance(
-                        out[_k], str):
+                if isinstance(out[_k], string_types):
                     out[_k] = out[_k].decode(layer_charset).encode("utf-8")
                 elif isinstance(out[_k], dict):
-                    for key, value in out[_k].iteritems():
+                    for key, value in out[_k].items():
                         try:
                             item = out[_k][key]
                             # Ref issue #4241
@@ -385,7 +389,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
 
     def sld_definition(style):
-        from urllib import quote
         _sld = {
             "title": style.sld_title or style.name,
             "legend": {
@@ -722,7 +725,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     data_dict = json.loads(request.POST.get('json_data'))
     layername = data_dict['layer_name']
     filtered_attributes = ''
-    if not isinstance(data_dict['filtered_attributes'], basestring):
+    if not isinstance(data_dict['filtered_attributes'], string_types):
         filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
     name = layername if ':' not in layername else layername.split(':')[1]
     location = "{location}{service}".format(** {
@@ -756,7 +759,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
         # in the dictionary (if doesn't exist) together with the value
         from collections import Iterable
         for i in range(len(decoded_features)):
-            for key, value in decoded_features[i]['properties'].iteritems():
+            for key, value in decoded_features[i]['properties'].items():
                 if value != '' and isinstance(value, (string_types, int, float)) and (
                         (isinstance(value, Iterable) and '/load_layer_data' not in value) or value):
                     properties[key].append(value)

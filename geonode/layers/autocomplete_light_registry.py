@@ -20,7 +20,7 @@
 
 from autocomplete_light.registry import register
 from autocomplete_light.autocomplete.shortcuts import AutocompleteModelTemplate
-from models import Layer
+from .models import Layer
 from guardian.shortcuts import get_objects_for_user
 
 from django.conf import settings
