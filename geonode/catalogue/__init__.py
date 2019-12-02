@@ -49,11 +49,12 @@ def load_backend(backend_name):
         try:
             available_backends = [f for f in os.listdir(backend_dir) if os.path.isdir(os.path.join(backend_dir, f)) and
                                   not f.startswith('.')]
+            available_backends.sort()
         except EnvironmentError:
             available_backends = []
 
         if backend_name not in available_backends:
-            backend_reprs = map(repr, sorted(available_backends))
+            backend_reprs = list(map(repr, available_backends))
             error_msg = ("%r isn't an available catalogue backend.\n"
                          "Try using geonode.catalogue.backends.BACKEND"
                          ", where BACKEND is one of:\n    %s\nError was: %s" %

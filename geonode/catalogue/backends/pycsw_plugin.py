@@ -80,8 +80,7 @@ class GeoNodeRepository(Repository):
         for tname in self.context.model['typenames']:
             for qname in self.context.model['typenames'][tname]['queryables']:
                 self.queryables[qname] = {}
-                items = self.context.model['typenames'][tname]['queryables'][qname].items(
-                )
+                items = list(self.context.model['typenames'][tname]['queryables'][qname].items())
 
                 for qkey, qvalue in items:
                     self.queryables[qname][qkey] = qvalue
@@ -94,8 +93,8 @@ class GeoNodeRepository(Repository):
         self.queryables['_all'].update(self.context.md_core_model['mappings'])
 
         if 'Harvest' in self.context.model['operations'] and 'Transaction' in self.context.model['operations']:
-            self.context.model['operations']['Harvest']['parameters']['ResourceType']['values'] = GEONODE_SERVICE_TYPES.keys()  # noqa
-            self.context.model['operations']['Transaction']['parameters']['TransactionSchemas']['values'] = GEONODE_SERVICE_TYPES.keys()  # noqa
+            self.context.model['operations']['Harvest']['parameters']['ResourceType']['values'] = list(GEONODE_SERVICE_TYPES.keys())  # noqa
+            self.context.model['operations']['Transaction']['parameters']['TransactionSchemas']['values'] = list(GEONODE_SERVICE_TYPES.keys())  # noqa
 
     def dataset(self):
         """
