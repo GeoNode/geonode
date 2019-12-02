@@ -12,6 +12,9 @@
 
 {{ block.super }}
 
+<!-- Required to make select2 fields work for autocomplete -->
+{{ document_form.media }} 
+
 <div class="page-header">
   <a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
   <h2 class="page-title">{% trans "Edit Metadata" %}</h2>
@@ -48,8 +51,14 @@
           <input type="submit" id="btn_upd_md_up" class="btn btn-primary" value="{% trans "Update" %}"/>
         </div>
       {% csrf_token %}
+      <!-- Added in the thesuarus field here since saving the form without it causes the thesuarus keywords to be removed. 
+           Unfortunately this needs to appear at the top (or the bottom) of the form since tkeywords_form is a complete other django form. 
+           There might be a better way to solve this.-->
       <div class="form-controls">
         {{ document_form|as_bootstrap }}
+        {% if THESAURI_FILTERS %}
+          {{ tkeywords_form }}
+        {% endif %}
       </div>
 
 

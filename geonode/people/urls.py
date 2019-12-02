@@ -20,6 +20,7 @@
 
 from django.conf.urls import url
 from django.views.generic import TemplateView
+from .views import ProfileAutocomplete
 from . import views
 
 urlpatterns = [  # 'geonode.people.views',
@@ -31,4 +32,6 @@ urlpatterns = [  # 'geonode.people.views',
     url(r"^profile/(?P<username>[^/]*)/$",
         views.profile_detail, name="profile_detail"),
     url(r'^forgotname', views.forgot_username, name='forgot_username'),
+    url(r'^autocomplete/$',
+        ProfileAutocomplete.as_view(), name='autocomplete_profile'),
 ]

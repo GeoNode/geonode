@@ -24,12 +24,17 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
+from django.conf import settings
+
+from guardian.shortcuts import get_objects_for_user
+from dal import views, autocomplete
 
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
 from geonode.utils import resolve_object
+from geonode.security.utils import get_visible_resources
 from .forms import BatchEditForm
 from .forms import CuratedThumbnailForm
 
@@ -131,3 +136,86 @@ def thumbnail_upload(
         'resource': res,
         'form': form
     })
+
+
+class SimpleSelect2View(autocomplete.Select2QuerySetView):
+    """ Generic select2 view for autocompletes
+        Params:
+            model: model to perform the autocomplete query on
+            filter_arg: property to filter with ie. name__icontains
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(views.BaseQuerySetView, self).__init__(*args, **kwargs)
+        if not hasattr(self, 'filter_arg'):
+            raise AttributeError("SimpleSelect2View missing required 'filter_arg' argument")
+
+    def get_queryset(self):
+        qs = super(views.BaseQuerySetView, self).get_queryset()
+
+        if self.q:
+            qs = qs.filter(**{self.filter_arg: self.q})
+        return qs
+
+
+class ResourceBaseAutocomplete(autocomplete.Select2QuerySetView):
+    """ Base resource autocomplete - searches all the resources by title
+        returns any visible resources in this queryset for autocomplete
+    """
+
+    def get_queryset(self):
+        request = self.request
+
+        permitted = get_objects_for_user(request.user, 'base.view_resourcebase')
+        qs = ResourceBase.objects.all().filter(id__in=permitted)
+
+        if self.q:
+            qs = qs.filter(title__icontains=self.q).order_by('title')
+
+        return get_visible_resources(
+            qs,
+            request.user if request else None,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)[:100]
+
+
+class RegionAutocomplete(SimpleSelect2View):
+
+    model = Region
+    filter_arg = 'name__icontains'
+
+
+class HierarchicalKeywordAutocomplete(SimpleSelect2View):
+
+    model = HierarchicalKeyword
+    filter_arg = 'slug__icontains'
+
+
+class ThesaurusKeywordLabelAutocomplete(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        thesaurus = settings.THESAURUS
+        tname = thesaurus['name']
+        lang = 'en'
+
+        # Filters thesaurus results based on thesaurus name and language
+        qs = ThesaurusKeywordLabel.objects.all().filter(
+            keyword__thesaurus__identifier=tname,
+            lang=lang
+        )
+
+        if self.q:
+            qs = qs.filter(label__icontains=self.q)
+
+        return qs
+
+    # Overides the get results method to return custom json to frontend
+    def get_results(self, context):
+        return [
+            {
+                'id': self.get_result_value(result.keyword),
+                'text': self.get_result_label(result),
+                'selected_text': self.get_selected_result_label(result),
+            } for result in context['object_list']
+        ]

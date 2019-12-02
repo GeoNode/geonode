@@ -12,6 +12,9 @@
 
 {{ block.super }}
 
+<!-- Required to make select2 fields work for autocomplete -->
+{{ layer_form.media }}
+
 <div class="page-header">
   <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
   <h2 class="page-title">{% trans "Edit Metadata" %}</h2>
@@ -23,6 +26,7 @@
         Editing details for {{ layer_title }}
       {% endblocktrans %}
     </p>
+       
     <form id="metadata_update" class="form-horizontal" action="{% url "layer_metadata" layer.service_typename %}" method="POST">
       {% if layer.metadata_uploaded_preserve %}
         <p class="bg-warning">{% blocktrans %}Note: this layer's orginal metadata was populated and preserved by importing a metadata XML file.
@@ -52,9 +56,9 @@
           {% if not attribute_form.is_valid %}
             <li>{% trans "Attributes" %}</li>
             {% for field in attribute_form %}
-            {% if field.errors %}
-            <li>{{ field.errors }}</li>
-            {% endif %}
+              {% if field.errors %}
+              <li>{{ field.errors }}</li>
+              {% endif %}
             {% endfor %}
           {% endif %}
           {% if category_form.errors %}
@@ -71,8 +75,14 @@
         {% endif %}
 
         {% csrf_token %}
+        <!-- Added in the thesuarus field here since saving the form without it causes the thesuarus keywords to be removed. 
+             Unfortunately this needs to appear at the bottom of the form since tkeywords_form is a complete other django form. 
+             There might be a better way to solve this. -->
         <div class="col-md-6 form-controls">
           {{ layer_form|as_bootstrap }}
+          {% if THESAURI_FILTERS %}
+            {{ tkeywords_form }}
+          {% endif %}
         </div>
         <div class="row">
           <div class="col-md-12">

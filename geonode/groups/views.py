@@ -38,8 +38,12 @@ from django.views.decorators.http import require_POST
 from django.views.generic import ListView, CreateView
 from django.views.generic.edit import UpdateView
 from django.views.generic.detail import DetailView
+from django.db.models import Q
 
 from geonode.decorators import view_decorator, superuser_only
+from geonode.base.views import SimpleSelect2View
+
+from dal import autocomplete
 
 from . import forms
 from . import models
@@ -298,3 +302,28 @@ class GroupActivityView(ListView):
         action_list.extend(context['action_list_comments'])
         context['action_list'] = sorted(action_list, key=getKey, reverse=True)
         return context
+
+
+class GroupProfileAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        request = self.request
+        user = request.user
+        qs = models.GroupProfile.objects.all()
+
+        if self.q:
+            qs = qs.filter(title__icontains=self.q)
+
+        if not user.is_authenticated() or user.is_anonymous:
+            qs = qs.exclude(access='private')
+        elif not user.is_superuser:
+            groups_member_of = user.group_list_all()
+            qs = qs.filter(
+                Q(self__in=groups_member_of) |
+                ~Q(groupprofile__access='private'))
+
+        return qs
+
+
+class GroupCategoryAutocomplete(SimpleSelect2View):
+    model = models.GroupCategory
+    filter_arg = 'name__icontains'

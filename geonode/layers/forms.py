@@ -22,7 +22,6 @@ from geonode.base.forms import ResourceBaseForm
 import os
 import tempfile
 import zipfile
-from autocomplete_light.registry import autodiscover
 
 from django import forms
 
@@ -32,8 +31,6 @@ from geonode.utils import check_ogc_backend
 import json
 from geonode.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
-
-autodiscover()  # flake8: noqa
 
 
 class JSONField(forms.CharField):

@@ -1511,3 +1511,60 @@ form-inline {
   color: @red-dark;
   font-style: italic;
 }
+
+/** Autocomplete styling **/
+.autocomplete-input #text_search_input, .autocomplete-input #region_search_input {
+  width: 100%;
+}
+
+.autocomplete-input .ac-results {
+  position: absolute;
+  border: 1px solid #eeeeee;
+  border-top: none;
+  width: 210px;
+  margin-top: 0px;
+  z-index: 10;
+}
+
+.autocomplete-input .ac-results .result-wrapper {
+  border-bottom: 1px solid #eeeeee;
+  padding: 3px;
+  background-color: white;
+}
+
+.autocomplete-input .ac-results .result-wrapper:hover {
+background-color: #eeeeee;
+opacity: 1;
+}
+
+.autocomplete-input .ac-results .result-wrapper:last-child {
+border-bottom: none;
+}
+
+.autocomplete-input .ac-results .result-wrapper .ac-result {
+border: none;
+text-decoration: none;
+color: black;
+padding: 0px;
+}
+
+/** Autocomplete for thesaurus field in advanced metadata edit views
+  There should be a better way to do this!
+**/
+#metadata_update .select2-container {
+width: 100% !important;
+}
+
+#metadata_update .select2-selection {
+min-height: 42px !important;
+height: auto !important;
+}
+
+#metadata_update .select2-container--default .select2-selection--single .select2-selection__arrow {
+top: 8px !important;
+}
+
+#metadata_update .form-group {
+margin-right: 0px;
+margin-left: 0px;
+}
