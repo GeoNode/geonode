@@ -20,9 +20,15 @@
 
 import math
 import logging
-import urlparse
+try:
+    from urllib.parse import quote, urlsplit
+except ImportError:
+    # Python 2 compatibility
+    from urllib import quote
+    from urlparse import urlsplit
 import traceback
 from itertools import chain
+from six import string_types
 
 from guardian.shortcuts import get_perms
 
@@ -713,7 +719,7 @@ def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
 
 
 def clean_config(conf):
-    if isinstance(conf, basestring):
+    if isinstance(conf, string_types):
         config = json.loads(conf)
         config_extras = [
             "tools",
@@ -884,7 +890,6 @@ def add_layers_to_map_config(
             return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
 
         def sld_definition(style):
-            from urllib import quote
             _sld = {
                 "title": style.sld_title or style.name,
                 "legend": {
@@ -1038,9 +1043,9 @@ def add_layers_to_map_config(
                                 source_params=json.dumps(source_params)
                                 )
         else:
-            ogc_server_url = urlparse.urlsplit(
+            ogc_server_url = urlsplit(
                 ogc_server_settings.PUBLIC_LOCATION).netloc
-            layer_url = urlparse.urlsplit(layer.ows_url).netloc
+            layer_url = urlsplit(layer.ows_url).netloc
 
             access_token = request.session['access_token'] if request and 'access_token' in request.session else None
             if access_token and ogc_server_url == layer_url and 'access_token' not in layer.ows_url:
@@ -1268,7 +1273,7 @@ def snapshot_config(snapshot, map_obj, request):
 
     # Match up the layer with it's source
     def snapsource_lookup(source, sources):
-        for k, v in sources.iteritems():
+        for k, v in sources.items():
             if v.get("id") == source.get("id"):
                 return k
         return None
@@ -1360,7 +1365,7 @@ def snapshot_create(request):
     """
     conf = request.body
 
-    if isinstance(conf, basestring):
+    if isinstance(conf, string_types):
         config = json.loads(conf)
         snapshot = MapSnapshot.objects.create(
             config=clean_config(conf),

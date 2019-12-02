@@ -42,7 +42,11 @@ from geonode.utils import default_map_config, forward_mercator, \
     llbbox_to_mercator, check_ogc_backend
 from geonode import geoserver, qgis_server
 
-import urlparse
+try:
+    from urllib.parse import urlsplit
+except ImportError:
+    # Python 2 compatibility
+    from urlparse import urlsplit
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
@@ -154,9 +158,9 @@ class MapCreateView(CreateView):
                         service = layer.remote_service
                         # Probably not a good idea to send the access token to every remote service.
                         # This should never match, so no access token should be sent to remote services.
-                        ogc_server_url = urlparse.urlsplit(
+                        ogc_server_url = urlsplit(
                             ogc_server_settings.PUBLIC_LOCATION).netloc
-                        service_url = urlparse.urlsplit(
+                        service_url = urlsplit(
                             service.base_url).netloc
 
                         if access_token and ogc_server_url == service_url and \
@@ -176,9 +180,9 @@ class MapCreateView(CreateView):
                                                   "name": service.name,
                                                   "title": "[R] %s" % service.title}))
                     else:
-                        ogc_server_url = urlparse.urlsplit(
+                        ogc_server_url = urlsplit(
                             ogc_server_settings.PUBLIC_LOCATION).netloc
-                        layer_url = urlparse.urlsplit(layer.ows_url).netloc
+                        layer_url = urlsplit(layer.ows_url).netloc
 
                         if access_token and ogc_server_url == layer_url and \
                                 'access_token' not in layer.ows_url:
