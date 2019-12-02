@@ -201,7 +201,9 @@ install:
       tar zxf geckodriver.tar.gz -C bin;
       export PATH=$PATH:$PWD/bin;
     fi
-  - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
+  - if [ "$TEST_RUN_SELENIUM" = "True" ] && [ "$SPCGEONODE" == "True" ]; then
+      :;
+    elif [ "$TEST_RUN_SELENIUM" = "True" ]; then
       pip install -r geonode-selenium/requirements.txt;
       wget https://download.osgeo.org/geotiff/samples/spot/chicago/UTM2GTIF.TIF -P geonode-selenium/data;
       wget https://download.osgeo.org/geotiff/samples/made_up/ntf_nord.tif -P geonode-selenium/data;
