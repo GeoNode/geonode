@@ -117,8 +117,6 @@ class CatalogueBackend(GenericCatalogueBackend):
         HTTP-less CSW
         """
 
-        # serialize pycsw settings into SafeConfigParser
-        # object for interaction with pycsw
         mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
         if 'server' in settings.PYCSW['CONFIGURATION']:
             # override server system defaults with user specified directives

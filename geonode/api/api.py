@@ -128,7 +128,7 @@ class TypeFilteredResource(ModelResource):
 
         orm_filters = super(TypeFilteredResource, self).build_filters(filters)
 
-        if 'type' in filters and filters['type'] in list(FILTER_TYPES.keys()):
+        if 'type' in filters and filters['type'] in FILTER_TYPES.keys():
             self.type_filter = FILTER_TYPES[filters['type']]
         else:
             self.type_filter = None
