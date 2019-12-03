@@ -1580,7 +1580,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             }, {
                 "type": "wms",
                 "title": "Sentinel-2 cloudless - https://s2maps.eu",
-                "format": "image/png8",
+                "format": "image/jpeg",
                 "id": "s2cloudless",
                 "name": "s2cloudless:s2cloudless",
                 "url": "https://maps.geo-solutions.it/geoserver/wms",
