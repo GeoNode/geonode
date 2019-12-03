@@ -17,11 +17,22 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from __future__ import print_function
+
 from collections import namedtuple, defaultdict
 import datetime
 from decimal import Decimal
 import errno
-from itertools import cycle, izip
+from itertools import cycle
+try:
+    from itertools import izip as zip
+except ImportError:
+    pass
+from six import (
+    string_types,
+    text_type,
+    reraise as raise_
+)
 import json
 import logging
 import traceback
@@ -33,8 +44,11 @@ from threading import local
 import time
 import uuid
 # import base64
-import urllib
-from urlparse import urlsplit, urljoin
+try:
+    from urllib.parse import urlencode, urlsplit, urljoin
+except ImportError:
+    from urllib import urlencode
+    from urlparse import urlsplit, urljoin
 
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
@@ -300,7 +314,7 @@ def get_sld_for(gs_catalog, layer):
     # layers we should use that rather than guessing based on the auto-detected
     # style.
     if name in _style_templates:
-        fg, bg, mark = _style_contexts.next()
+        fg, bg, mark = next(_style_contexts)
         return _style_templates[name] % dict(
             name=layer.name,
             fg=fg,
@@ -556,7 +570,7 @@ def gs_slurp(
     if console is None:
         console = open(os.devnull, 'w')
     if verbosity > 0:
-        print >> console, "Inspecting the available layers in GeoServer ..."
+        print("Inspecting the available layers in GeoServer ...", file=console)
     cat = gs_catalog
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
@@ -623,7 +637,7 @@ def gs_slurp(
     number = len(resources)
     if verbosity > 0:
         msg = "Found %d layers, starting processing" % number
-        print >> console, msg
+        print(msg, file=console)
     output = {
         'stats': {
             'failed': 0,
@@ -646,7 +660,7 @@ def gs_slurp(
                 "storeType": the_store.resource_type,
                 "alternate": "%s:%s" % (workspace.name.encode('utf-8'), resource.name.encode('utf-8')),
                 "title": resource.title or 'No title provided',
-                "abstract": resource.abstract or unicode(_('No abstract provided')).encode('utf-8'),
+                "abstract": resource.abstract or u"{}".format(_('No abstract provided')).encode('utf-8'),
                 "owner": owner,
                 "uuid": str(uuid.uuid4())
             })
@@ -686,10 +700,12 @@ def gs_slurp(
             else:
                 if verbosity > 0:
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
-                    print >> sys.stderr, msg
-                raise Exception(
-                    'Failed to process %s' %
-                    resource.name.encode('utf-8'), e), None, sys.exc_info()[2]
+                    print(msg, file=sys.stderr)
+                raise_(
+                    Exception,
+                    Exception("Failed to process {}".format(resource.name.encode('utf-8')), e),
+                    sys.exc_info()[2]
+                )
         else:
             if created:
                 if not permissions:
@@ -712,7 +728,7 @@ def gs_slurp(
             info['error'] = error
         output['layers'].append(info)
         if verbosity > 0:
-            print >> console, msg
+            print(msg, file=console)
 
     if remove_deleted:
         q = Layer.objects.filter()
@@ -767,7 +783,7 @@ def gs_slurp(
         if verbosity > 0:
             msg = "\nFound %d layers to delete, starting processing" % number_deleted if number_deleted > 0 else \
                 "\nFound %d layers to delete" % number_deleted
-            print >> console, msg
+            print(msg, file=console)
 
         for i, layer in enumerate(deleted_layers):
             logger.debug(
@@ -807,7 +823,7 @@ def gs_slurp(
                 info['error'] = error
             output['deleted_layers'].append(info)
             if verbosity > 0:
-                print >> console, msg
+                print(msg, file=console)
 
     finish = datetime.datetime.now(timezone.get_current_timezone())
     td = finish - start
@@ -944,11 +960,11 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         typename = layer.alternate.encode('utf-8') if layer.alternate else layer.typename.encode('utf-8')
         dft_url = re.sub(r"\/wms\/?$",
                          "/",
-                         server_url) + "ows?" + urllib.urlencode({"service": "wfs",
-                                                                  "version": "1.0.0",
-                                                                  "request": "DescribeFeatureType",
-                                                                  "typename": typename,
-                                                                  })
+                         server_url) + "ows?" + urlencode({"service": "wfs",
+                                                           "version": "1.0.0",
+                                                           "request": "DescribeFeatureType",
+                                                           "typename": typename,
+                                                          })
         try:
             # The code below will fail if http_client cannot be imported or WFS not supported
             req, body = http_client.get(dft_url, user=_user)
@@ -962,7 +978,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             logger.debug(tb)
             attribute_map = []
             # Try WMS instead
-            dft_url = server_url + "?" + urllib.urlencode({
+            dft_url = server_url + "?" + urlencode({
                 "service": "wms",
                 "version": "1.0.0",
                 "request": "GetFeatureInfo",
@@ -992,7 +1008,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 attribute_map = []
     elif layer.storeType in ["coverageStore"]:
         typename = layer.alternate.encode('utf-8') if layer.alternate else layer.typename.encode('utf-8')
-        dc_url = server_url + "wcs?" + urllib.urlencode({
+        dc_url = server_url + "wcs?" + urlencode({
             "service": "wcs",
             "version": "1.1.0",
             "request": "DescribeCoverage",
@@ -1315,7 +1331,7 @@ def create_geoserver_db_featurestore(
              'Test while idle': 'true',
              'host': db['HOST'],
              'port': db['PORT'] if isinstance(
-                 db['PORT'], basestring) else str(db['PORT']) or '5432',
+                 db['PORT'], string_types) else str(db['PORT']) or '5432',
              'database': db['NAME'],
              'user': db['USER'],
              'passwd': db['PASSWORD'],
@@ -1392,7 +1408,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
 def get_store(cat, name, workspace=None):
     # Make sure workspace is a workspace object and not a string.
     # If the workspace does not exist, continue as if no workspace had been defined.
-    if isinstance(workspace, basestring):
+    if isinstance(workspace, string_types):
         workspace = cat.get_workspace(workspace)
 
     if workspace is None:
@@ -1897,7 +1913,7 @@ _backgrounds = [
     "#008888",
     "#880088"]
 _marks = ["square", "circle", "cross", "x", "triangle"]
-_style_contexts = izip(cycle(_foregrounds), cycle(_backgrounds), cycle(_marks))
+_style_contexts = zip(cycle(_foregrounds), cycle(_backgrounds), cycle(_marks))
 _default_style_names = ["point", "line", "polygon", "raster"]
 _esri_types = {
     "esriFieldTypeDouble": "xsd:double",
@@ -1921,7 +1937,7 @@ def _render_thumbnail(req_body, width=240, height=180):
     # valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
     # headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
     params = dict(width=width, height=height)
-    url = url + "?" + urllib.urlencode(params)
+    url += "?" + urlencode(params)
 
     # @todo annoying but not critical
     # openlayers controls posted back contain a bad character. this seems
@@ -1929,12 +1945,12 @@ def _render_thumbnail(req_body, width=240, height=180):
     # to a unicode en-dash but is not uncoded properly during transmission
     # 'ignore' the error for now as controls are not being rendered...
     data = spec
-    if isinstance(data, unicode):
+    if isinstance(data, text_type):
         # make sure any stored bad values are wiped out
         # don't use keyword for errors - 2.6 compat
         # though unicode accepts them (as seen below)
         data = data.encode('ASCII', 'ignore')
-    data = unicode(data, errors='ignore').encode('UTF-8')
+    data = u"{}".format(data).encode('utf-8')
     try:
         req, content = http_client.request(
             url,
@@ -1975,7 +1991,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         width = 240
         height = 200
 
-        if isinstance(request_body, basestring):
+        if isinstance(request_body, string_types):
             try:
                 request_body = json.loads(request_body)
             except BaseException:

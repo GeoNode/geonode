@@ -124,34 +124,34 @@ class Command(BaseCommand):
             execute_signals=True)
 
         if verbosity > 1:
-            print "\nDetailed report of failures:"
+            print("\nDetailed report of failures:")
             for dict_ in output['layers']:
                 if dict_['status'] == 'failed':
-                    print "\n\n", dict_['name'], "\n================"
+                    print("\n\n", dict_['name'], "\n================")
                     traceback.print_exception(dict_['exception_type'],
                                               dict_['error'],
                                               dict_['traceback'])
             if remove_deleted:
-                print "Detailed report of layers to be deleted from GeoNode that failed:"
+                print("Detailed report of layers to be deleted from GeoNode that failed:")
                 for dict_ in output['deleted_layers']:
                     if dict_['status'] == 'delete_failed':
-                        print "\n\n", dict_['name'], "\n================"
+                        print("\n\n", dict_['name'], "\n================")
                         traceback.print_exception(dict_['exception_type'],
                                                   dict_['error'],
                                                   dict_['traceback'])
 
         if verbosity > 0:
-            print "\n\nFinished processing %d layers in %s seconds.\n" % (
-                len(output['layers']), round(output['stats']['duration_sec'], 2))
-            print "%d Created layers" % output['stats']['created']
-            print "%d Updated layers" % output['stats']['updated']
-            print "%d Failed layers" % output['stats']['failed']
+            print("\n\nFinished processing {} layers in {} seconds.\n".format(
+                len(output['layers']), round(output['stats']['duration_sec'], 2)))
+            print("{} Created layers".format(output['stats']['created'])
+            print("{} Updated layers".format(output['stats']['updated'])
+            print("{} Failed layers".format(output['stats']['failed'])
             try:
                 duration_layer = round(
                     output['stats']['duration_sec'] * 1.0 / len(output['layers']), 2)
             except ZeroDivisionError:
                 duration_layer = 0
             if len(output) > 0:
-                print "%f seconds per layer" % duration_layer
+                print("{} seconds per layer".format(duration_layer)
             if remove_deleted:
-                print "\n%d Deleted layers" % output['stats']['deleted']
+                print("\n{} Deleted layers".format(output['stats']['deleted'])
