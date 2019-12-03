@@ -23,6 +23,7 @@ import pytz
 from datetime import datetime, timedelta
 from decimal import Decimal
 from itertools import chain
+from six import string_types, integer_types
 
 from django.conf import settings
 from django.db import models
@@ -161,7 +162,7 @@ class CollectorAPI(object):
             if metric_name is None:
                 continue
             value = metric_data['value']
-            if isinstance(value, (str, unicode,)):
+            if isinstance(value, string_types):
                 value = value.replace(',', '.')
             mdata = {'value': value,
                      'value_raw': value,
@@ -201,7 +202,7 @@ class CollectorAPI(object):
                                    service=service)\
             .delete()
 
-        for ifname, ifdata in data['data']['network'].iteritems():
+        for ifname, ifdata in data['data']['network'].items():
             for tx_label, tx_value in ifdata['traffic'].items():
                 mdata = {'value': tx_value,
                          'value_raw': tx_value,
@@ -456,7 +457,7 @@ class CollectorAPI(object):
                                   'label': label,
                                   'samples_count': samples,
                                   'value_raw': value or 0,
-                                  'value_num': value if isinstance(value, (int, float, long, Decimal,)) else None})
+                                  'value_num': value if isinstance(value, integer_types + (float, Decimal,)) else None})
             log.debug(MetricValue.add(**metric_values))
 
     def process(self, service, data, valid_from, valid_to, *args, **kwargs):

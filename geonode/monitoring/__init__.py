@@ -22,7 +22,7 @@ import logging
 from django.utils.translation import ugettext_noop as _
 from django.conf import settings
 from functools import wraps
-import types
+from six import string_types
 
 from geonode.notifications_helper import NotificationsAppConfigBase, has_notifications
 from django.db.models.signals import post_migrate
@@ -89,7 +89,7 @@ def register_event(request, event_type, resource):
     if not settings.MONITORING_ENABLED:
         return
     from geonode.base.models import ResourceBase
-    if isinstance(resource, types.StringTypes):
+    if isinstance(resource, string_types):
         resource_type = 'url'
         resource_name = request.path
         resource_id = None

@@ -20,7 +20,7 @@
 
 import os
 import pytz
-import Queue
+import queue
 import logging
 import xmljson
 import requests
@@ -28,8 +28,13 @@ import threading
 import traceback
 
 from math import floor, ceil
-from urllib import urlencode
-from urlparse import urlsplit
+try:
+    from urllib.parse import urlencode
+    from urllib.parse import urlsplit
+except ImportError:
+    # Python 2 compatibility
+    from urllib import urlencode
+    from urlparse import urlsplit
 from bs4 import BeautifulSoup as bs
 from datetime import datetime, timedelta
 from defusedxml import lxml as dlxml
@@ -71,7 +76,7 @@ class MonitoringHandler(logging.Handler):
 
 
 class RequestToMonitoringThread(threading.Thread):
-    q = Queue.Queue()
+    q = queue.Queue()
 
     def __init__(self, service, *args, **kwargs):
         super(RequestToMonitoringThread, self).__init__(*args, **kwargs)

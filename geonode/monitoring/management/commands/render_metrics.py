@@ -26,6 +26,7 @@ import argparse
 import timeout_decorator
 
 from datetime import datetime, timedelta
+from six import string_types
 
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext_noop as _
@@ -90,7 +91,7 @@ class Command(BaseCommand):
         label = options['label']
         if not metric_names:
             raise CommandError("No metric name")
-        if isinstance(metric_names, types.StringTypes):
+        if isinstance(metric_names, string_types):
             metric_names = [metric_names]
         for m in metric_names:
             #def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None, label=None, resource=None):
