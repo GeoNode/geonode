@@ -20,7 +20,7 @@
 
 from autocomplete_light.registry import register
 from autocomplete_light.autocomplete.shortcuts import AutocompleteModelTemplate
-from models import Map
+from .models import Map
 
 
 class MapAutocomplete(AutocompleteModelTemplate):
