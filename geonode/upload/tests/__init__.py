@@ -46,7 +46,7 @@ def create_files(names, zipped=False):
             except IOError:
                 # windows fails at writing special characters
                 # need to do something better here
-                print "Test does not work in Windows"
+                print("Test does not work in Windows")
     if zipped:
         basefile = os.path.join(tmpdir, 'files.zip')
         zf = zipfile.ZipFile(basefile, 'w')
@@ -92,8 +92,8 @@ class FilesTests(GeoNodeBaseTestSupport):
         """
         exts = ('.shp', '.shx', '.sld', '.xml', '.prj', '.dbf')
 
-        with create_files(map(lambda s: 'san_andres_y_providencia_location{0}'.format(s), exts)) as tests:
-            shp = filter(lambda s: s.endswith('.shp'), tests)[0]
+        with create_files(['san_andres_y_providencia_location{0}'.format(s) for s in exts]) as tests:
+            shp = [s for s in tests if s.endswith('.shp')][0]
             spatial_files = scan_file(shp)
             self.assertTrue(isinstance(spatial_files, SpatialFiles))
 
@@ -103,10 +103,10 @@ class FilesTests(GeoNodeBaseTestSupport):
             self.assertEqual(len(spatial_file.auxillary_files), 3)
             self.assertEqual(len(spatial_file.xml_files), 1)
             self.assertTrue(
-                all(map(lambda s: s.endswith('xml'), spatial_file.xml_files)))
+                all(s.endswith('xml') for s in spatial_file.xml_files))
             self.assertEqual(len(spatial_file.sld_files), 1)
             self.assertTrue(
-                all(map(lambda s: s.endswith('sld'), spatial_file.sld_files)))
+                all(s.endswith('sld') for s in spatial_file.sld_files))
 
         # Test the scan_file function with a zipped spatial file that needs to
         # be renamed.
@@ -122,7 +122,7 @@ class FilesTests(GeoNodeBaseTestSupport):
             self.assertEqual(len(spatial_file.xml_files), 1)
             self.assertEqual(len(spatial_file.sld_files), 1)
             self.assertTrue(
-                all(map(lambda s: s.endswith('xml'), spatial_file.xml_files)))
+                all(s.endswith('xml') for s in spatial_file.xml_files))
 
             basedir = os.path.dirname(spatial_file.base_file)
             for f in file_names:

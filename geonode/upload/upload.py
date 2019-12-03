@@ -40,6 +40,7 @@ import shutil
 import uuid
 import zipfile
 import traceback
+from six import string_types
 
 from django.conf import settings
 from django.db.models import Max
@@ -176,7 +177,7 @@ def upload(
 
     if user is None:
         user = get_default_user()
-    if isinstance(user, basestring):
+    if isinstance(user, string_types):
         user = get_user_model().objects.get(username=user)
     import_session = save_step(
         user,
@@ -221,8 +222,8 @@ def upload(
 def _get_next_id():
     # importer tracks ids by autoincrement but is prone to corruption
     # which potentially may reset the id - hopefully prevent this...
-    upload_next_id = Upload.objects.all().aggregate(
-        Max('import_id')).values()[0]
+    upload_next_id = list(Upload.objects.all().aggregate(
+        Max('import_id')).values())[0]
     upload_next_id = upload_next_id if upload_next_id else 0
     # next_id = next_id + 1 if next_id else 1
     importer_sessions = gs_uploader.get_sessions()
