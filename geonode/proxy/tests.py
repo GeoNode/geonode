@@ -137,7 +137,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         # ... all should be good
         response = self.client.get(reverse('download', args=(layer.id,)))
         # Espected 404 since there are no files available for this layer
-        self.failUnlessEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
         data = response.content
         self.assertTrue(
             "No files have been found for this resource. Please, contact a system administrator." in data)
