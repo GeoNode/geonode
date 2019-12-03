@@ -83,6 +83,9 @@ class Style(models.Model, PermissionLevelMixin):
     def __unicode__(self):
         return u"%s" % self.name
 
+    def __str__(self):
+        return self.__unicode__().encode('utf-8')
+
     def absolute_url(self):
         if self.sld_url:
             if self.sld_url.startswith(
@@ -279,6 +282,9 @@ class Layer(ResourceBase):
         # else:
         #     return "Unamed Layer"
 
+    def __str__(self):
+        return self.__unicode__().encode('utf-8')
+
     class Meta:
         # custom permissions,
         # change and delete are standard in django-guardian
@@ -337,11 +343,15 @@ class UploadSession(models.Model):
         return self.processed and self.errors is None
 
     def __unicode__(self):
+        _s = "[Upload session-id: {}]".format(self.id)
         try:
-            _s = '[Upload session-id: {}] - {}'.format(self.id, self.resource.title)
+            _s += " - {}".format(self.resource.title)
         except BaseException:
-            _s = '[Upload session-id: {}]'.format(self.id)
+            pass
         return u"{0}".format(_s)
+
+    def __str__(self):
+        return self.__unicode__().encode('utf-8')
 
 
 class LayerFile(models.Model):
@@ -520,7 +530,7 @@ def pre_save_layer(instance, sender, **kwargs):
             logger.exception(e)
 
     if instance.abstract == '' or instance.abstract is None:
-        instance.abstract = unicode(_('No abstract provided'))
+        instance.abstract = u'No abstract provided'
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 

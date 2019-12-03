@@ -184,12 +184,12 @@ class Command(BaseCommand):
         if len(keywords) == 1 and keywords[0] == '':
             keywords = []
         else:
-            keywords = map(str.strip, keywords)
+            keywords = [k.strip() for k in keywords]
         regions = options.get('regions').split(',')
         if len(regions) == 1 and regions[0] == '':
             regions = []
         else:
-            regions = map(str.strip, regions)
+            regions = [r.strip() for r in regions]
         start = datetime.datetime.now(timezone.get_current_timezone())
         output = []
 
@@ -230,21 +230,21 @@ class Command(BaseCommand):
         duration_rounded = round(duration, 2)
 
         if verbosity > 1:
-            print "\nDetailed report of failures:"
+            print("\nDetailed report of failures:")
             for dict_ in output:
                 if dict_['status'] == 'failed':
-                    print "\n\n", dict_['file'], "\n================"
+                    print("\n\n", dict_['file'], "\n================")
                     traceback.print_exception(dict_['exception_type'],
                                               dict_['error'],
                                               dict_['traceback'])
 
         if verbosity > 0:
-            print "\n\nFinished processing %d layers in %s seconds.\n" % (
-                len(output), duration_rounded)
-            print "%d Created layers" % len(created)
-            print "%d Updated layers" % len(updated)
-            print "%d Skipped layers" % len(skipped)
-            print "%d Failed layers" % len(failed)
+            print("\n\nFinished processing {} layers in {} seconds.\n".format(
+                len(output), duration_rounded))
+            print("{} Created layers".format(len(created)))
+            print("{} Updated layers".format(len(updated)))
+            print("{} Skipped layers".format(len(skipped)))
+            print("{} Failed layers".format(len(failed)))
 
             if len(output) > 0:
-                print "%f seconds per layer" % (duration * 1.0 / len(output))
+                print("{} seconds per layer".format(duration * 1.0 / len(output)))
