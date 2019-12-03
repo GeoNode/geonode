@@ -137,24 +137,6 @@ ADMIN_MODERATE_UPLOADS
     A ``Group Manager`` *can* approve the resource, but he cannot publish it whenever the setting ``RESOURCE_PUBLISHING`` is set to ``True``.
     Otherwise, if ``RESOURCE_PUBLISHING`` is set to ``False``, the resource becomes accessible as soon as it is approved.
 
-AGON_RATINGS_CATEGORY_CHOICES
------------------------------
-
-    Default::
-
-        {
-            "maps.Map": {
-                "map": "How good is this map?"
-                },
-            "layers.Layer": {
-                "layer": "How good is this layer?"
-                },
-            "documents.Document": {
-            "document": "How good is this document?"
-            }
-        }
-
-
 ALLOWED_DOCUMENT_TYPES
 ----------------------
 
@@ -1473,6 +1455,23 @@ PINAX_NOTIFICATIONS_QUEUE_ALL
 
     By default, calling notification.send will send the notification immediately, however, if you set this setting to True, then the default behavior of the send method will be to queue messages in the database for sending via the emit_notices command.
     This is a `pinax notification setting: <https://django-notification.readthedocs.io/en/latest/settings.html#pinax-notifications-queue-all>`__
+
+PINAX_RATINGS_CATEGORY_CHOICES
+------------------------------
+
+    Default::
+
+        {
+            "maps.Map": {
+                "map": "How good is this map?"
+                },
+            "layers.Layer": {
+                "layer": "How good is this layer?"
+                },
+            "documents.Document": {
+            "document": "How good is this document?"
+            }
+        }
 
 PROXY_ALLOWED_HOSTS
 -------------------

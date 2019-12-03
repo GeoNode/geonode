@@ -20,7 +20,7 @@
 
 from django import template
 
-from agon_ratings.models import Rating
+from pinax.ratings.models import Rating
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model

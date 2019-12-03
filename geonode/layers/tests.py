@@ -40,7 +40,7 @@ from django.conf import settings
 
 from django.db.models import Count
 from django.contrib.auth import get_user_model
-from agon_ratings.models import OverallRating
+from pinax.ratings.models import OverallRating
 
 from django.test.utils import override_settings
 

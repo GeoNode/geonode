@@ -36,7 +36,7 @@ import uuid
 import urllib
 from urlparse import urlsplit, urljoin
 
-from agon_ratings.models import OverallRating
+from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 from dialogos.models import Comment
 from django.conf import settings

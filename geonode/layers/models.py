@@ -31,7 +31,7 @@ from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
 from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
 from geonode.people.utils import get_valid_user
-from agon_ratings.models import OverallRating
+from pinax.ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.utils import remove_object_permissions
