@@ -22,6 +22,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 import json
 import logging
+from six import string_types
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -73,8 +74,8 @@ class SmokeTest(GeoNodeBaseTestSupport):
             slug=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).first()
         self.assertTrue(group)
         self.assertTrue(groupprofile)
-        self.assertEquals(groupprofile.group, group)
-        self.assertEquals(group.groupprofile, groupprofile)
+        self.assertEqual(groupprofile.group, group)
+        self.assertEqual(group.groupprofile, groupprofile)
 
     def test_users_belongs_registered_group(self):
         """
@@ -83,10 +84,10 @@ class SmokeTest(GeoNodeBaseTestSupport):
         2. Ensures that any user on the system, except "AnonymousUser" belongs to
            groups_settings.REGISTERED_MEMBERS_GROUP_NAME.
         """
-        self.assertEquals(
+        self.assertEqual(
             groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME, True)
 
-        self.assertEquals(
+        self.assertEqual(
             groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT, 'activation')
 
         anonymous = get_user_model().objects.get(username="AnonymousUser")
@@ -261,8 +262,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
 
-            if isinstance(permissions, unicode) or isinstance(
-                    permissions, str):
+            if isinstance(permissions, string_types):
                 permissions = json.loads(permissions)
 
             # Ensure the groups value is empty by default
@@ -274,9 +274,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
                 expected_permissions.setdefault(
                     u'anonymous', []).append(u'view_resourcebase')
 
-            self.assertItemsEqual(
-                permissions.get('groups'),
-                expected_permissions)
+            self.assertItemsEqual(permissions.get('groups'), expected_permissions)
 
             permissions = {
                 'groups': {
@@ -306,8 +304,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
 
-            if isinstance(permissions, unicode) or isinstance(
-                    permissions, str):
+            if isinstance(permissions, string_types):
                 permissions = json.loads(permissions)
 
             # Make sure the bar group now has write permissions
@@ -337,8 +334,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
 
-            if isinstance(permissions, unicode) or isinstance(
-                    permissions, str):
+            if isinstance(permissions, string_types):
                 permissions = json.loads(permissions)
 
             # Assert the bar group no longer has permissions
@@ -574,8 +570,8 @@ class MembershipTest(GeoNodeBaseTestSupport):
         normal = get_user_model().objects.get(username="norman")
         group = GroupProfile.objects.get(slug="bar")
 
-        self.assert_(not group.user_is_member(anon))
-        self.assert_(not group.user_is_member(normal))
+        self.assertFalse(group.user_is_member(anon))
+        self.assertFalse(group.user_is_member(normal))
 
     def test_group_add_member(self):
         """
@@ -586,7 +582,7 @@ class MembershipTest(GeoNodeBaseTestSupport):
         normal = get_user_model().objects.get(username="norman")
         group = GroupProfile.objects.get(slug="bar")
         group.join(normal)
-        self.assert_(group.user_is_member(normal))
+        self.assertTrue(group.user_is_member(normal))
         self.assertRaises(ValueError, lambda: group.join(anon))
 
     def test_profile_is_member_of_group(self):
