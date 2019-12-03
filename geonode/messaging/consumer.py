@@ -32,10 +32,16 @@ from geonode.layers.views import layer_view_counter
 from geonode.layers.models import Layer
 from geonode.geoserver.helpers import gs_slurp
 
-from queues import queue_email_events, queue_geoserver_events,\
-    queue_notifications_events, queue_all_events,\
-    queue_geoserver_catalog, queue_geoserver_data,\
-    queue_geoserver, queue_layer_viewers
+from .queues import (
+    queue_email_events,
+    queue_geoserver_events,
+    queue_notifications_events,
+    queue_all_events,
+    queue_geoserver_catalog,
+    queue_geoserver_data,
+    queue_geoserver,
+    queue_layer_viewers
+)
 
 logger = logging.getLogger(__package__)
 

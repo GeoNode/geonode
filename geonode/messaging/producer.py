@@ -26,8 +26,12 @@ import traceback
 from decorator import decorator
 from kombu import BrokerConnection
 from kombu.common import maybe_declare
-from queues import queue_email_events, queue_geoserver_events,\
-    queue_notifications_events, queue_layer_viewers
+from .queues import (
+    queue_email_events,
+    queue_geoserver_events,
+    queue_notifications_events,
+    queue_layer_viewers
+)
 
 from . import (url,
                producers,
