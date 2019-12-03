@@ -31,7 +31,7 @@ from django.shortcuts import render
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-import models
+from . import models
 
 
 @login_required
