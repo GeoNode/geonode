@@ -163,32 +163,8 @@
             $(this).text(changeTxt.reverse()[0]);
             $("#preview_map, #preview_image").toggle(1000);
             $("#set_thumbnail").toggle();
-
-            // $("#preview_image_src").attr('src', $("#preview_image_src").attr('src')+'?'+Math.random());
-            src = $('#preview_image_src').attr('src');
-               // check for existing ? and remove if found
-               queryPos = src.indexOf('?');
-               if(queryPos != -1) {
-                  src = src.substring(0, queryPos);
-               }
-               $('#preview_image_src').attr('src', src + '?' + Math.random());
+            $('#preview_image_src').attr('src', '{{ layer_form.thumbnail_url.value }}');
         });
-
-        /*function readURL(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-
-                reader.onload = function (e) {
-                    $('#preview_image_src').attr('src', e.target.result);
-                }
-
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        $("#imgInp").change(function(){
-            readURL(this);
-        });*/
     });
 
     $(document).ready(function() {

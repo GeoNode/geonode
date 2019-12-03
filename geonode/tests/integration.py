@@ -1266,7 +1266,6 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
         )
         try:
             self.client.login(username='norman', password='norman')
-
             thumbnail_url = saved_layer.get_thumbnail_url()
             self.assertNotEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
         finally:

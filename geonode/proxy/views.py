@@ -37,7 +37,7 @@ from django.views.decorators.csrf import requires_csrf_token
 from django.template import loader
 from distutils.version import StrictVersion
 from django.utils.translation import ugettext as _
-from django.core.files.storage import default_storage as storage
+from django.core.files.storage import FileSystemStorage
 
 from geonode.base.models import Link
 from geonode.layers.models import Layer, LayerFile
@@ -58,6 +58,8 @@ TIMEOUT = 300
 LINK_TYPES = [L for L in _LT if L.startswith("OGC:")]
 
 logger = logging.getLogger(__name__)
+
+storage = FileSystemStorage()
 
 ows_regexp = re.compile(
     r"^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
@@ -242,7 +244,6 @@ def download(request, resourceid, sender=Layer):
             if upload_session:
                 layer_files = [
                     item for idx, item in enumerate(LayerFile.objects.filter(upload_session=upload_session))]
-
                 if layer_files:
                     # Copy all Layer related files into a temporary folder
                     for l in layer_files:

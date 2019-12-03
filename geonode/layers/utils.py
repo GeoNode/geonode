@@ -945,16 +945,21 @@ def upload(incoming, user=None, overwrite=False,
 def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                      check_bbox=False, ogc_client=None, overwrite=False,
                      width=240, height=200):
-    thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
-    if not os.path.exists(thumbnail_dir):
-        os.makedirs(thumbnail_dir)
     thumbnail_name = None
     if isinstance(instance, Layer):
         thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
     elif isinstance(instance, Map):
         thumbnail_name = 'map-%s-thumb.png' % instance.uuid
-    thumbnail_path = os.path.join(thumbnail_dir, thumbnail_name)
-    if overwrite or not storage.exists(thumbnail_path):
+    _thumb_exists = False
+    try:
+        _thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
+        _thumbnail_path = os.path.join(_thumbnail_dir, thumbnail_name)
+        _thumb_exists = storage.exists(_thumbnail_path)
+    except BaseException:
+        _thumbnail_dir = os.path.join(settings.STATIC_ROOT, 'thumbs')
+        _thumbnail_path = os.path.join(_thumbnail_dir, thumbnail_name)
+        _thumb_exists = storage.exists(_thumbnail_path)
+    if overwrite or not _thumb_exists:
         BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
         if not thumbnail_create_url:

@@ -1765,8 +1765,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         # Thumbnail link
         logger.info(" -- Resource Links[Thumbnail link]...")
-        from django.contrib.staticfiles.templatetags import staticfiles
-        if instance.get_thumbnail_url() == staticfiles.static(settings.MISSING_THUMBNAIL):
+        if os.path.splitext(settings.MISSING_THUMBNAIL)[0] in instance.get_thumbnail_url():
             from geonode.geoserver.helpers import create_gs_thumbnail
             create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
         else:
