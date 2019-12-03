@@ -22,11 +22,16 @@ from __future__ import print_function
 import logging
 import types
 import pytz
-from urlparse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    # Python 2 compatibility
+    from urlparse import urlparse
 
 from socket import gethostbyname
 from datetime import datetime, timedelta
 from decimal import Decimal
+from six import text_type
 
 from django import forms
 from django.db import models
@@ -347,7 +352,7 @@ class EventType(models.Model):
     EVENT_OTHER = 'other'  # non-ows event
     EVENT_ALL = 'all'  # all events - baseline: ows + non-ows
 
-    EVENT_TYPES = zip(['OWS:{}'.format(ows) for ows in _ows_types], _ows_types) + \
+    EVENT_TYPES = list(zip(['OWS:{}'.format(ows) for ows in _ows_types], _ows_types)) + \
         [(EVENT_OTHER, _("Not OWS"))] +\
         [(EVENT_OWS, _("Any OWS"))] +\
         [(EVENT_ALL, _("All"))] +\
@@ -409,7 +414,7 @@ class EventType(models.Model):
 
 class RequestEvent(models.Model):
     _methods = 'get post head options put delete'.upper().split(' ')
-    METHODS = zip(_methods, _methods)
+    METHODS = list(zip(_methods, _methods))
     created = models.DateTimeField(db_index=True, null=False)
     received = models.DateTimeField(db_index=True, null=False)
     service = models.ForeignKey(Service)
@@ -827,7 +832,7 @@ class ExceptionEvent(models.Model):
     def add_error(cls, from_service, error_type, stack_trace,
                   request=None, created=None, message=None):
         received = datetime.utcnow().replace(tzinfo=pytz.utc)
-        if not isinstance(error_type, (str,)):
+        if not isinstance(error_type, str):
             _cls = error_type.__class__
             error_type = '{}.{}'.format(_cls.__module__, _cls.__name__)
         if not message:
@@ -942,7 +947,7 @@ class MetricValue(models.Model):
         metric = self.service_metric.metric.name
         if self.label:
             _l = self.label.name
-            if isinstance(_l, unicode):
+            if isinstance(_l, text_type):
                 _l = _l.encode('utf-8')
             metric = '{} [{}]'.format(metric, _l)
         if self.resource and self.resource.type:
@@ -1196,8 +1201,7 @@ class NotificationCheck(models.Model):
 
     @classmethod
     def get_steps(cls, min_, max_, thresholds):
-        if isinstance(thresholds, (int, int,
-                                   float, Decimal,)):
+        if isinstance(thresholds, (int, float, Decimal,)):
             if min_ is None or max_ is None:
                 raise ValueError(
                     "Cannot use numeric threshold if one of min/max is None")

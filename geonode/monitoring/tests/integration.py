@@ -218,7 +218,8 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
     def tearDown(self):
         connections.databases['default']['ATOMIC_REQUESTS'] = False
 
-        map(os.unlink, self._tempfiles)
+        for temp_file in self._tempfiles:
+            os.unlink(temp_file)
 
         # Cleanup
         Layer.objects.all().delete()
@@ -311,7 +312,7 @@ class RequestsTestCase(MonitoringTestBase):
         rq = RequestEvent.objects.get()
         self.assertTrue(rq.response_time > 0)
         self.assertEqual(
-            list(rq.resources.all().values_list('name', 'type')), [(_l.alternate, u'layer',)])
+            list(rq.resources.all().values_list('name', 'type')), [(_l.alternate, 'layer',)])
         self.assertEqual(rq.request_method, 'GET')
 
     def test_gn_error(self):
@@ -767,7 +768,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
                 'monitoring:api_user_notification_config', args=(nc.id,))
             nc_form = nc.get_user_form()
             self.assertTrue(nc_form)
-            self.assertTrue(nc_form.fields.keys())
+            self.assertTrue(len(nc_form.fields.keys()) > 0)
             vals = [1000000, 100000]
             data = {'emails': []}
             data['emails'] = '\n'.join(data['emails'])

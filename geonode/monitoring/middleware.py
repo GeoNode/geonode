@@ -21,7 +21,7 @@
 import logging
 import pytz
 import hashlib
-import types
+from six import string_types
 
 from datetime import datetime
 from django.conf import settings
@@ -74,7 +74,7 @@ class MonitoringMiddleware(object):
         current = request.path
 
         for skip_url in settings.MONITORING_SKIP_PATHS:
-            if isinstance(skip_url, types.StringTypes):
+            if isinstance(skip_url, string_types):
                 if current.startswith(skip_url):
                     return False
             elif hasattr(skip_url, 'match'):

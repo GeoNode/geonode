@@ -97,7 +97,7 @@ class Command(BaseCommand):
                                until=options['until'],
                                force_check=options['force_check'],
                                format=options['format'])
-            except Exception, err:
+            except Exception as err:
                 log.error("Cannot collect from %s: %s", s, err, exc_info=err)
                 if options['halt_on_errors']:
                     raise
