@@ -648,13 +648,13 @@ def gs_slurp(
                 "title": resource.title or 'No title provided',
                 "abstract": resource.abstract or unicode(_('No abstract provided')).encode('utf-8'),
                 "owner": owner,
-                "uuid": str(uuid.uuid4()),
-                "bbox_x0": Decimal(resource.native_bbox[0]),
-                "bbox_x1": Decimal(resource.native_bbox[1]),
-                "bbox_y0": Decimal(resource.native_bbox[2]),
-                "bbox_y1": Decimal(resource.native_bbox[3]),
-                "srid": resource.projection
+                "uuid": str(uuid.uuid4())
             })
+            layer.bbox_x0 = Decimal(resource.native_bbox[0])
+            layer.bbox_x1 = Decimal(resource.native_bbox[1])
+            layer.bbox_y0 = Decimal(resource.native_bbox[2])
+            layer.bbox_y1 = Decimal(resource.native_bbox[3])
+            layer.srid = resource.projection
 
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))
@@ -928,7 +928,6 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     """
     attribute_map = []
     server_url = ogc_server_settings.LOCATION if layer.storeType != "remoteStore" else layer.remote_service.service_url
-
     if layer.storeType == "remoteStore" and layer.remote_service.ptype == "gxp_arcrestsource":
         dft_url = server_url + ("%s?f=json" % (layer.alternate or layer.typename))
         try:
@@ -991,7 +990,6 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 tb = traceback.format_exc()
                 logger.debug(tb)
                 attribute_map = []
-
     elif layer.storeType in ["coverageStore"]:
         typename = layer.alternate.encode('utf-8') if layer.alternate else layer.typename.encode('utf-8')
         dc_url = server_url + "wcs?" + urllib.urlencode({
@@ -1010,7 +1008,6 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-
     # Get attribute statistics & package for call to really_set_attributes()
     attribute_stats = defaultdict(dict)
     # Add new layer attributes if they don't already exist
@@ -1029,7 +1026,6 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 else:
                     result = None
                 attribute_stats[layer.name][field] = result
-
     set_attributes(
         layer, attribute_map, overwrite=overwrite, attribute_stats=attribute_stats
     )

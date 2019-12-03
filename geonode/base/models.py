@@ -18,14 +18,13 @@
 #
 #########################################################################
 
-import math
 import os
 import re
+import glob
+import math
+import uuid
 import logging
 import traceback
-
-from pyproj import transform, Proj
-from urlparse import urlsplit, urljoin
 
 from django.db import models
 from django.core import serializers
@@ -51,17 +50,29 @@ from pinax.ratings.models import OverallRating
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
-from geonode.base.enumerations import ALL_LANGUAGES, \
-    HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
-    DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
-from geonode.utils import bbox_to_wkt
-from geonode.utils import forward_mercator
+from geonode.base.enumerations import (
+    LINK_TYPES,
+    ALL_LANGUAGES,
+    HIERARCHY_LEVELS,
+    UPDATE_FREQUENCIES,
+    DEFAULT_SUPPLEMENTAL_INFORMATION)
+from geonode.utils import (
+    add_url_params,
+    bbox_to_wkt,
+    forward_mercator)
 from geonode.security.models import PermissionLevelMixin
 from taggit.managers import TaggableManager, _TaggableManager
 from taggit.models import TagBase, ItemBase
 from treebeard.mp_tree import MP_Node
 
 from geonode.people.enumerations import ROLE_VALUES
+
+from pyproj import transform, Proj
+try:  # python2
+    from urlparse import urlparse, urlsplit, urljoin
+except ImportError:
+    # Python 3 fallback
+    from urllib.parse import urlparse, urlsplit, urljoin
 
 logger = logging.getLogger(__name__)
 
@@ -1130,15 +1141,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
            It could be a local one if it exists, a remote one (WMS GetImage) for example
            or a 'Missing Thumbnail' one.
         """
+        _thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
         local_thumbnails = self.link_set.filter(name='Thumbnail')
-        if local_thumbnails.count() > 0:
-            return local_thumbnails[0].url
-
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
-        if remote_thumbnails.count() > 0:
-            return remote_thumbnails[0].url
-
-        return staticfiles.static(settings.MISSING_THUMBNAIL)
+        if local_thumbnails.count() > 0:
+            _thumbnail_url = add_url_params(
+                local_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
+        elif remote_thumbnails.count() > 0:
+            _thumbnail_url = add_url_params(
+                remote_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
+        return _thumbnail_url
 
     def has_thumbnail(self):
         """Determine if the thumbnail object exists and an image exists"""
@@ -1148,16 +1160,27 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
         upload_path = os.path.join('thumbs/', filename)
-
         try:
-
-            if storage.exists(upload_path):
-                # Delete if exists otherwise the (FileSystemStorage) implementation
-                # will create a new file with a unique name
-                storage.delete(os.path.join(upload_path))
+            for _thumb in glob.glob(storage.path('thumbs/%s*' % os.path.splitext(filename)[0])):
+                try:
+                    os.remove(_thumb)
+                except BaseException:
+                    pass
 
             actual_name = storage.save(upload_path, ContentFile(image))
             url = storage.url(actual_name)
+            _url = urlparse(url)
+            _upload_path = os.path.join('thumbs/', os.path.basename(_url.path))
+            if upload_path != _upload_path:
+                if storage.exists(_upload_path):
+                    storage.delete(_upload_path)
+                try:
+                    os.rename(
+                        storage.path(upload_path),
+                        storage.path(_upload_path)
+                    )
+                except BaseException as e:
+                    logger.exception(e)
 
             # check whether it is an URI or not
             parsed = urlsplit(url)
@@ -1440,6 +1463,18 @@ class CuratedThumbnail(models.Model):
                                    processors=[ResizeToFill(240, 180)],
                                    format='PNG',
                                    options={'quality': 60})
+
+    @property
+    def thumbnail_url(self):
+        try:
+            upload_path = storage.path(self.img_thumbnail.name)
+            actual_name = os.path.basename(storage.url(upload_path))
+            _upload_path = os.path.join(os.path.dirname(upload_path), actual_name)
+            if not os.path.exists(_upload_path):
+                os.rename(upload_path, _upload_path)
+        except BaseException as e:
+            logger.exception(e)
+        return self.img_thumbnail.url
 
 
 def resourcebase_post_save(instance, *args, **kwargs):

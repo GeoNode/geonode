@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+import os
+
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.models import (
     ResourceBase, MenuPlaceholder, Menu, MenuItem
@@ -34,7 +36,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
     def test_initial_behavior(self):
         self.assertFalse(self.rb.has_thumbnail())
         missing = self.rb.get_thumbnail_url()
-        self.assertEquals('/static/geonode/img/missing_thumb.png', missing)
+        self.assertTrue('missing_thumb' in os.path.splitext(missing)[0])
 
 
 class RenderMenuTagTest(GeoNodeBaseTestSupport):
