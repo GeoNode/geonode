@@ -20,10 +20,13 @@
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-import StringIO
+import io
 import json
 import os
-import urlparse
+try:
+    from urllib.parse import urlsplit, urlunsplit
+except ImportError:
+    from urlparse import urlsplit, urlunsplit
 import zipfile
 from imghdr import what
 
@@ -90,7 +93,7 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
             reverse('qgis_server:download-zip', kwargs=params))
         self.assertEqual(response.status_code, 200)
         try:
-            f = StringIO.StringIO(response.content)
+            f = io.StringIO(response.content)
             zipped_file = zipfile.ZipFile(f, 'r')
 
             for one_file in zipped_file.namelist():
@@ -522,7 +525,7 @@ class QGISServerStyleManagerTest(GeoNodeBaseTestSupport):
         }
         actual_default_style_retval = json.loads(response.content)
 
-        for key, value in expected_default_style_retval.iteritems():
+        for key, value in expected_default_style_retval.items():
             self.assertEqual(actual_default_style_retval[key], value)
 
         layer.delete()
@@ -551,8 +554,8 @@ class ThumbnailGenerationTest(GeoNodeBaseTestSupport):
         remote_thumbnail_url = remote_thumbnail_link.url
 
         # Replace url's basename, we want to access it using django client
-        parse_result = urlparse.urlsplit(remote_thumbnail_url)
-        remote_thumbnail_url = urlparse.urlunsplit(
+        parse_result = urlsplit(remote_thumbnail_url)
+        remote_thumbnail_url = urlunsplit(
             ('', '', parse_result.path, parse_result.query, ''))
 
         response = self.client.get(remote_thumbnail_url)
@@ -623,8 +626,8 @@ class ThumbnailGenerationTest(GeoNodeBaseTestSupport):
         remote_thumbnail_url = remote_thumbnail_link.url
 
         # Replace url's basename, we want to access it using django client
-        parse_result = urlparse.urlsplit(remote_thumbnail_url)
-        remote_thumbnail_url = urlparse.urlunsplit(
+        parse_result = urlsplit(remote_thumbnail_url)
+        remote_thumbnail_url = urlunsplit(
             ('', '', parse_result.path, parse_result.query, ''))
 
         response = self.client.get(remote_thumbnail_url)
