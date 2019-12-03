@@ -260,7 +260,9 @@ def get_CSV_spec_char():
 # format value to unicode str without ';' char
 def fst(value):
     chrs = get_CSV_spec_char()
-    return str(value).replace(chrs["separator"], ',').replace('\\n', ' ').replace('\r\n', ' ')
+    result = u"{}".format(value)
+    result = result.replace(chrs["separator"], ',').replace('\\n', ' ').replace('\r\n', ' ')
+    return result
 
 
 # from a resource object, build the corresponding metadata dict
@@ -389,14 +391,10 @@ def csw_render_extra_format_html(request, layeruuid, resname):
         layer = Layer.objects.get(resourcebase_ptr_id=resource.id)
         extra_res_md['atrributes'] = ''
         for attr in layer.attribute_set.all():
-            extra_res_md['atrributes'] += '<tr>'
-            extra_res_md['atrributes'] += '<td>' + str(
-                attr.attribute) + '</td>'
-            extra_res_md['atrributes'] += '<td>' + str(
-                attr.attribute_label) + '</td>'
-            extra_res_md['atrributes'] += '<td>' + str(
-                attr.description) + '</td>'
-            extra_res_md['atrributes'] += '</tr>'
+            s = u"<tr><td>{}</td><td>{}</td><td>{}</td></tr>".format(
+                attr.attribute, attr.attribute_label, attr.description
+            )
+            extra_res_md['atrributes'] += s
 
     pocr = ContactRole.objects.get(
         resource_id=resource.id, role='pointOfContact')
