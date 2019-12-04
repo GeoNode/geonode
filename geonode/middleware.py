@@ -33,8 +33,8 @@ class PrintProxyMiddleware(object):
 
 
 def print_map(request):
-    from proxy.views import proxy
-    from layers.models import Layer
+    from .proxy.views import proxy
+    from .layers.models import Layer
 
     permissions = {}
     params = json.loads(request.body)
