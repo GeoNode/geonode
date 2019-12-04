@@ -26,10 +26,7 @@ import ConfigParser
 import os
 import sys
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 
 MEDIA_ROOT       = 'uploaded'
 STATIC_ROOT      = 'static_root'
@@ -61,9 +58,9 @@ def get_db_conn():
 
 
 def patch_db():
-   """Apply patch to GeoNode DB"""
-   conn   = get_db_conn()
-   curs   = conn.cursor()
+    """Apply patch to GeoNode DB"""
+    conn   = get_db_conn()
+    curs   = conn.cursor()
 
     try:
         curs.execute("ALTER TABLE base_contactrole ALTER COLUMN resource_id DROP NOT NULL;")
@@ -81,9 +78,9 @@ def patch_db():
 
 
 def cleanup_db():
-   """Remove spurious records from GeoNode DB"""
-   conn   = get_db_conn()
-   curs   = conn.cursor()
+    """Remove spurious records from GeoNode DB"""
+    conn   = get_db_conn()
+    curs   = conn.cursor()
 
     try:
         curs.execute("DELETE FROM base_contactrole WHERE resource_id is NULL;")

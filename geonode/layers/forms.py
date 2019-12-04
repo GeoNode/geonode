@@ -29,10 +29,7 @@ from django import forms
 from geonode import geoserver, qgis_server
 from geonode.utils import check_ogc_backend
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 from geonode.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
 

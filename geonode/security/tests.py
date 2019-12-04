@@ -204,15 +204,27 @@ class SecurityViewsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'uuid': test_layer.uuid
         }
         resp = self.client.post(reverse('attributes_sats_refresh'), data)
-        self.assertHttpOK(resp)
-        self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
+        if resp.status_code == 200:
+            self.assertHttpOK(resp)
+            self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
 
-        from geonode.geoserver.helpers import set_attributes_from_geoserver
-        test_layer.attribute_set.all().delete()
-        test_layer.save()
+            from geonode.geoserver.helpers import set_attributes_from_geoserver
+            test_layer.attribute_set.all().delete()
+            test_layer.save()
 
-        set_attributes_from_geoserver(test_layer, overwrite=True)
-        self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
+            set_attributes_from_geoserver(test_layer, overwrite=True)
+            self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
+
+            # Remove permissions to anonymous users and try to refresh attributes again
+            test_layer.set_permissions({'users': {'AnonymousUser': []}})
+            test_layer.attribute_set.all().delete()
+            test_layer.save()
+
+            set_attributes_from_geoserver(test_layer, overwrite=True)
+            self.assertEquals(layer_attributes.count(), test_layer.attributes.count())
+        else:
+            # If GeoServer is unreachable, this view now returns a 302 error
+            self.assertEqual(resp.status_code, 302)
 
         # Remove permissions to anonymous users and try to refresh attributes again
         test_layer.set_permissions({'users': {'AnonymousUser': []}})

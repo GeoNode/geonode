@@ -32,6 +32,7 @@ from django.contrib.sitemaps.views import sitemap
 
 import geonode.proxy.urls
 from . import views
+from . import version
 
 from geonode.api.urls import api
 from geonode.api.views import verify_token, user_info, roles, users, admin_role
@@ -77,6 +78,15 @@ urlpatterns = [
     url(r'^privacy_cookies/$',
         TemplateView.as_view(template_name='privacy-cookies.html'),
         name='privacy-cookies'),
+
+    # Meta
+    url(r'^jsi18n/$', javascript_catalog,
+        js_info_dict, name='javascript-catalog'),
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
+        name='sitemap'),
+    url(r'^robots\.txt$', TemplateView.as_view(
+        template_name='robots.txt'), name='robots'),
+    url(r'(.*version\.txt)$', version.version, name='version'),
 ]
 
 urlpatterns += [
@@ -117,7 +127,6 @@ urlpatterns += [
         'geonode.invitations.urls', namespace='geonode.invitations')),
     url(r'^people/', include('geonode.people.urls')),
     url(r'^avatar/', include('avatar.urls')),
-    # (r'^comments/', include('dialogos.urls')),
     url(r'^comments/', include('dialogos.urls')),
     url(r'^ratings/', include('agon_ratings.urls')),
     url(r'^activity/', include('actstream.urls')),
@@ -137,17 +146,6 @@ urlpatterns += [
         r'^account/moderation_sent/(?P<inactive_user>[^/]*)$',
         geonode.views.moderator_contacted,
         name='moderator_contacted'),
-
-    # Meta
-    url(r'^lang\.js$', TemplateView.as_view(template_name='lang.js', content_type='text/javascript'),
-        name='lang'),
-
-    url(r'^jsi18n/$', javascript_catalog,
-        js_info_dict, name='javascript-catalog'),
-    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
-        name='sitemap'),
-    url(r'^robots\.txt$', TemplateView.as_view(
-        template_name='robots.txt'), name='robots'),
 
     # url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^autocomplete/', include('autocomplete_light.urls')),

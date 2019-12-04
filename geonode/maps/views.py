@@ -37,12 +37,7 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
 
-try:
-    # Django >= 1.7
-    import json
-except ImportError:
-    # Django <= 1.6 backwards compatibility
-    from django.utils import simplejson as json
+import json
 from django.utils.html import strip_tags
 from django.db.models import F
 from django.views.decorators.clickjacking import (xframe_options_exempt,
@@ -985,45 +980,45 @@ def add_layers_to_map_config(
 
         all_times = None
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            from geonode.geoserver.views import get_capabilities
-            workspace, layername = layer.alternate.split(
-                ":") if ":" in layer.alternate else (None, layer.alternate)
-            # WARNING Please make sure to have enabled DJANGO CACHE as per
-            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-            wms_capabilities_resp = get_capabilities(
-                request, layer.id, tolerant=True)
-            if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
-                wms_capabilities = wms_capabilities_resp.getvalue()
-                if wms_capabilities:
-                    from defusedxml import lxml as dlxml
-                    namespaces = {'wms': 'http://www.opengis.net/wms',
-                                  'xlink': 'http://www.w3.org/1999/xlink',
-                                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-
-                    e = dlxml.fromstring(wms_capabilities)
-                    for atype in e.findall(
-                            "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
-                        dim_name = atype.get('name')
-                        if dim_name:
-                            dim_name = str(dim_name).lower()
-                            if dim_name == 'time':
-                                dim_values = atype.text
-                                if dim_values:
-                                    all_times = dim_values.split(",")
-                                    break
-            if all_times:
-                config["capability"]["dimensions"] = {
-                    "time": {
-                        "name": "time",
-                        "units": "ISO8601",
-                        "unitsymbol": None,
-                        "nearestVal": False,
-                        "multipleVal": False,
-                        "current": False,
-                        "default": "current",
-                        "values": all_times
+            if layer.has_time:
+                from geonode.geoserver.views import get_capabilities
+                workspace, layername = layer.alternate.split(
+                    ":") if ":" in layer.alternate else (None, layer.alternate)
+                # WARNING Please make sure to have enabled DJANGO CACHE as per
+                # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+                wms_capabilities_resp = get_capabilities(
+                    request, layer.id, tolerant=True)
+                if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
+                    wms_capabilities = wms_capabilities_resp.getvalue()
+                    if wms_capabilities:
+                        from defusedxml import lxml as dlxml
+                        namespaces = {'wms': 'http://www.opengis.net/wms',
+                                      'xlink': 'http://www.w3.org/1999/xlink',
+                                      'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+                        e = dlxml.fromstring(wms_capabilities)
+                        for atype in e.findall(
+                                "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
+                            dim_name = atype.get('name')
+                            if dim_name:
+                                dim_name = str(dim_name).lower()
+                                if dim_name == 'time':
+                                    dim_values = atype.text
+                                    if dim_values:
+                                        all_times = dim_values.split(",")
+                                        break
+                if all_times:
+                    config["capability"]["dimensions"] = {
+                        "time": {
+                            "name": "time",
+                            "units": "ISO8601",
+                            "unitsymbol": None,
+                            "nearestVal": False,
+                            "multipleVal": False,
+                            "current": False,
+                            "default": "current",
+                            "values": all_times
+                        }
                     }
-                }
 
         if layer.storeType == "remoteStore":
             service = layer.remote_service

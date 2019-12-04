@@ -24,10 +24,7 @@ import uuid
 from django.conf import settings
 from django.db import models
 from django.db.models import signals
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist

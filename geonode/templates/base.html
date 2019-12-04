@@ -40,22 +40,20 @@
     {% block head %}
 
       {% if DEBUG_STATIC %}
-          <link href="{% static "lib/css/jquery.dataTables.css" %}?v={{ VERSION }}" rel="stylesheet" />
-          <link href="{% static "lib/css/select2.css" %}?v={{ VERSION }}" rel="stylesheet"/>
-          <link href="{% static "lib/css/bootstrap.css" %}?v={{ VERSION }}" rel="stylesheet"/>
-          <link href="{% static "lib/css/bootstrap-treeview.css" %}?v={{ VERSION }}" rel="stylesheet"/>
-          <link href="{% static "lib/css/jquery-ui.theme.css" %}?v={{ VERSION }}" rel="stylesheet"/>
-          <link href="{% static "lib/css/jquery-ui.structure.css" %}?v={{ VERSION }}" rel="stylesheet"/>
-          <link href="{% static "lib/css/bootstrap-treeview.css" %}?v={{ VERSION }}" rel="stylesheet"/>
+          <link href="{% static "lib/css/jquery.dataTables.css" %}" rel="stylesheet" />
+          <link href="{% static "lib/css/select2.css" %}" rel="stylesheet"/>
+          <link href="{% static "lib/css/bootstrap.css" %}" rel="stylesheet"/>
+          <link href="{% static "lib/css/bootstrap-treeview.css" %}" rel="stylesheet"/>
+          <link href="{% static "lib/css/jquery-ui.theme.css" %}" rel="stylesheet"/>
+          <link href="{% static "lib/css/jquery-ui.structure.css" %}" rel="stylesheet"/>
+          <link href="{% static "lib/css/bootstrap-treeview.css" %}" rel="stylesheet"/>
       {% else %}
-        <link href="{% static "lib/css/assets.min.css" %}?v={{ VERSION }}" rel="stylesheet"/>
+        <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
       {% endif %}
-      <link href="{% static "geonode/css/ext-compatibility.css" %}?v={{ VERSION }}" rel="stylesheet" />
-      <link href="{% static "geonode/css/ux-all.css" %}?v={{ VERSION }}" rel="stylesheet" />
-      <link href="{% static "geonode/css/base.css" %}?v={{ VERSION }}" rel="stylesheet" />
+      <link href="{% static "geonode/css/base.css" %}" rel="stylesheet" />
 
-      <link rel='stylesheet' id='cookie-law-info-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-public.css" %}?v={{ VERSION }}" type='text/css' media='all' />
-      <link rel='stylesheet' id='cookie-law-info-gdpr-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-gdpr.css" %}?v={{ VERSION }}" type='text/css' media='all' />
+      <link rel='stylesheet' id='cookie-law-info-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-public.css" %}" type='text/css' media='all' />
+      <link rel='stylesheet' id='cookie-law-info-gdpr-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-gdpr.css" %}" type='text/css' media='all' />
 
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
       <style type="text/css">
@@ -66,6 +64,12 @@
           {% if custom_theme.body_text_color %}
           color: {{ custom_theme.body_text_color }};
           {% endif %}
+        }
+
+        .home #partners {
+          background: {{ custom_theme.body_color }};
+          padding: 2em 0;
+          text-align: center;
         }
         {% endif %}
 
@@ -149,7 +153,10 @@
 
         {% if custom_theme.jumbotron_text_color %}
         .home .jumbotron p {
-          color: {{ custom_theme.jumbotron_text_color }}
+          color: {{ custom_theme.jumbotron_text_color }};
+          font-weight: normal;
+          font-size: xx-large;
+          font-family: 'Open Sans','Helvetica Neue',Arial,sans-serif;
         }
         {% endif %}
 
@@ -182,12 +189,36 @@
         }
         {% endif %}
 
+        {% if custom_theme.search_bg_color or custom_theme.search_title_color %}
+        .home .big-search {
+          background: {{ custom_theme.search_bg_color }};
+          color: {{ custom_theme.search_title_color }};
+          padding-bottom: 3em;
+          padding-top: 1em;
+        }
+        .home .big-search .btn-default {
+          background: transparent;
+          border: none;
+          color: {{ custom_theme.search_link_color }};
+        }
+        {% endif %}
+
         {% if custom_theme.copyright_color %}
         .footer-copyright {
           background-color: {{ custom_theme.copyright_color }};
         }
         {% endif %}
 
+        {% if custom_theme.footer_bg_color or custom_theme.footer_text_color or custom_theme.footer_href_color %}
+        footer {
+          background-color: {{ custom_theme.footer_bg_color }};
+          color: {{ custom_theme.footer_text_color }};
+          padding: 1.5em;
+        }
+        footer a {
+          color: {{ custom_theme.footer_href_color }};
+        }
+        {% endif %}
       </style>
       {% block extra_head %}
       {% endblock %}
@@ -554,26 +585,26 @@
     <!-- End of Modal -->
 
     {% if DEBUG_STATIC %}
-    <script src="{% static "lib/js/jquery.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/jquery.dataTables.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/bootstrap-treeview.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/bootstrap-tokenfield.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/fastselect.standalone.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/select2.full.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/jquery.timeago.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/jq-ajax-progress.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/jquery-ui.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/jquery.raty.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/bootstrap.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/moment-with-locales.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/bootstrap-datetimepicker.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/json2.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "lib/js/waypoints.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "lib/js/jquery.js" %}"></script>
+    <script src="{% static "lib/js/jquery.dataTables.js" %}"></script>
+    <script src="{% static "lib/js/bootstrap-treeview.js" %}"></script>
+    <script src="{% static "lib/js/bootstrap-tokenfield.js" %}"></script>
+    <script src="{% static "lib/js/fastselect.standalone.js" %}"></script>
+    <script src="{% static "lib/js/select2.full.js" %}"></script>
+    <script src="{% static "lib/js/jquery.timeago.js" %}"></script>
+    <script src="{% static "lib/js/jq-ajax-progress.js" %}"></script>
+    <script src="{% static "lib/js/jquery-ui.js" %}"></script>
+    <script src="{% static "lib/js/jquery.raty.js" %}"></script>
+    <script src="{% static "lib/js/bootstrap.js" %}"></script>
+    <script src="{% static "lib/js/moment-with-locales.js" %}"></script>
+    <script src="{% static "lib/js/bootstrap-datetimepicker.js" %}"></script>
+    <script src="{% static "lib/js/json2.js" %}"></script>
+    <script src="{% static "lib/js/waypoints.js" %}"></script>
     {% else %}
-    <script src="{% static "lib/js/assets.min.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "lib/js/assets.min.js" %}"></script>
     {% endif %}
-    <script src="{% static "geonode/js/utils/utils.js" %}?v={{ VERSION }}"></script>
-    <script src="{% static "geonode/js/base/base.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "geonode/js/utils/utils.js" %}"></script>
+    <script src="{% static "geonode/js/base/base.js" %}"></script>
     {% include 'autocomplete_light/static.html' %}
     <script type="text/javascript" src="{% url "javascript-catalog" %}"></script>
     {% block extra_script %}{% endblock extra_script %}
@@ -613,7 +644,6 @@
             }
         };
     </script>
-    <script type="text/javascript" src="{% url "lang" %}"></script>
 
     <div class="modal fade" style="width: 100%; height: 100%;" id="_resource_uploading" data-backdrop="static" data-keyboard="false" aria-hidden="true">
         <div class="modal-dialog">

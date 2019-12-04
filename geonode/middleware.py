@@ -18,10 +18,7 @@
 #
 #########################################################################
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 from django.http import HttpResponse
 
 from geonode.geoserver.helpers import ogc_server_settings

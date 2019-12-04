@@ -7,12 +7,6 @@
 
 {% block body_class %}data documents upload{% endblock body_class %}
 
-{% block head %}
-    {% include "geoext/ext_header.html" %}
-    {% include "geoext/app_header.html" %}
-    {{ block.super }}
-{% endblock %}
-
 {% block body_outer %}
   <div class="page-header">
     <a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
@@ -79,7 +73,7 @@
 
 {% block extra_script %}
     {{ block.super }}
-    <script data-main="{% static 'geonode/js/upload/main' %}"
+    <script data-main="{% static 'geonode/js/upload/main.js' %}"
       src="{% static 'lib/js/require.js' %}">
     </script>
     <script type="text/javascript">

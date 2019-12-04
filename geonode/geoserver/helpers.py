@@ -555,11 +555,9 @@ def gs_slurp(
     """
     if console is None:
         console = open(os.devnull, 'w')
-
     if verbosity > 0:
         print >> console, "Inspecting the available layers in GeoServer ..."
-
-    cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
+    cat = gs_catalog
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
         if workspace is None:
@@ -650,13 +648,13 @@ def gs_slurp(
                 "title": resource.title or 'No title provided',
                 "abstract": resource.abstract or unicode(_('No abstract provided')).encode('utf-8'),
                 "owner": owner,
-                "uuid": str(uuid.uuid4()),
-                "bbox_x0": Decimal(resource.native_bbox[0]),
-                "bbox_x1": Decimal(resource.native_bbox[1]),
-                "bbox_y0": Decimal(resource.native_bbox[2]),
-                "bbox_y1": Decimal(resource.native_bbox[3]),
-                "srid": resource.projection
+                "uuid": str(uuid.uuid4())
             })
+            layer.bbox_x0 = Decimal(resource.native_bbox[0])
+            layer.bbox_x1 = Decimal(resource.native_bbox[1])
+            layer.bbox_y0 = Decimal(resource.native_bbox[2])
+            layer.bbox_y1 = Decimal(resource.native_bbox[3])
+            layer.srid = resource.projection
 
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))
@@ -819,7 +817,7 @@ def gs_slurp(
 
 
 def get_stores(store_type=None):
-    cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
+    cat = gs_catalog
     stores = cat.get_stores()
     store_list = []
     for store in stores:
@@ -930,7 +928,6 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     """
     attribute_map = []
     server_url = ogc_server_settings.LOCATION if layer.storeType != "remoteStore" else layer.remote_service.service_url
-
     if layer.storeType == "remoteStore" and layer.remote_service.ptype == "gxp_arcrestsource":
         dft_url = server_url + ("%s?f=json" % (layer.alternate or layer.typename))
         try:
@@ -993,7 +990,6 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 tb = traceback.format_exc()
                 logger.debug(tb)
                 attribute_map = []
-
     elif layer.storeType in ["coverageStore"]:
         typename = layer.alternate.encode('utf-8') if layer.alternate else layer.typename.encode('utf-8')
         dc_url = server_url + "wcs?" + urllib.urlencode({
@@ -1012,7 +1008,6 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-
     # Get attribute statistics & package for call to really_set_attributes()
     attribute_stats = defaultdict(dict)
     # Add new layer attributes if they don't already exist
@@ -1031,7 +1026,6 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 else:
                     result = None
                 attribute_stats[layer.name][field] = result
-
     set_attributes(
         layer, attribute_map, overwrite=overwrite, attribute_stats=attribute_stats
     )
@@ -1497,13 +1491,6 @@ class OGC_Server(object):
         return urljoin(location, 'ows')
 
     @property
-    def internal_rest(self):
-        """
-        The internal REST endpoint for the server.
-        """
-        return urljoin(self.LOCATION, 'rest')
-
-    @property
     def hostname(self):
         return urlsplit(self.LOCATION).hostname
 
@@ -1889,7 +1876,9 @@ _csw = None
 _user, _password = ogc_server_settings.credentials
 
 url = ogc_server_settings.rest
-gs_catalog = Catalog(url, _user, _password)
+gs_catalog = Catalog(url, _user, _password,
+                     retries=ogc_server_settings.MAX_RETRIES,
+                     backoff_factor=ogc_server_settings.BACKOFF_FACTOR)
 gs_uploader = Client(url, _user, _password)
 
 _punc = re.compile(r"[\.:]")  # regex for punctuation that confuses restconfig

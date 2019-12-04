@@ -2,9 +2,9 @@
 {% load static from staticfiles %}
 
 {% if DEBUG_STATIC %}
-<script src="{% static "lib/js/angular.js" %}?v={{ VERSION }}"></script>
+<script src="{% static "lib/js/angular.js" %}"></script>
 <script src="{% static "lib/js/angular-cookies.js" %}"></script>
-<script src="{% static "lib/js/angular-leaflet-directive.js" %}?v={{ VERSION }}"></script>
+<script src="{% static "lib/js/angular-leaflet-directive.js" %}"></script>
 {% endif %}
 
 {% if include_spatial == 'true' %}
@@ -17,8 +17,8 @@
 {% include 'search/_spatial_tags.html' %}
 
 {% endif %}
-<script src="{% static "geonode/js/search/explore.js" %}?v={{ VERSION }}"></script>
-<script src="{% static "geonode/js/search/search.js" %}?v={{ VERSION }}"></script>
+<script src="{% static "geonode/js/search/explore.js" %}"></script>
+<script src="{% static "geonode/js/search/search.js" %}"></script>
 <script src="{% static "geonode/js/search/cart.js" %}"></script>
 <script type="text/javascript">
   $("body").attr('ng-controller', 'geonode_search_controller');

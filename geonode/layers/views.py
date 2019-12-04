@@ -37,7 +37,6 @@ from requests import Request
 from itertools import chain
 from six import string_types
 from owslib.wfs import WebFeatureService
-from owslib.feature.schema import get_schema
 
 from guardian.shortcuts import get_perms
 from django.contrib import messages
@@ -52,10 +51,7 @@ from django.views.decorators.http import require_http_methods
 
 from geonode import geoserver, qgis_server
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
+import json
 from django.utils.html import escape
 from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
@@ -157,9 +153,9 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
     """
     service_typename = alternate.split(":", 1)
     if Service.objects.filter(name=service_typename[0]).exists():
-        service = Service.objects.filter(name=service_typename[0])
+        # service = Service.objects.filter(name=service_typename[0])
         query = {
-            'alternate': service_typename[1] if service[0].method != "C" else alternate
+            'alternate': service_typename[1]
         }
         if len(service_typename) > 1:
             query['store'] = service_typename[0]
@@ -406,13 +402,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # assert False, str(layer_bbox)
     config = layer.attribute_config()
-
     if hasattr(layer, 'srid'):
         config['crs'] = {
             'type': 'name',
             'properties': layer.srid
         }
-
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox[0:4]
     # Must be in the form xmin, ymin, xmax, ymax
@@ -493,47 +487,86 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
     }
 
+    granules = None
     all_times = None
+    all_granules = None
+    filter = None
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.views import get_capabilities
-        workspace, layername = layer.alternate.split(
-            ":") if ":" in layer.alternate else (None, layer.alternate)
-        # WARNING Please make sure to have enabled DJANGO CACHE as per
-        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-        wms_capabilities_resp = get_capabilities(
-            request, layer.id, tolerant=True)
-        if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
-            wms_capabilities = wms_capabilities_resp.getvalue()
-            if wms_capabilities:
-                from defusedxml import lxml as dlxml
-                namespaces = {'wms': 'http://www.opengis.net/wms',
-                              'xlink': 'http://www.w3.org/1999/xlink',
-                              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+        if layer.has_time:
+            from geonode.geoserver.views import get_capabilities
+            workspace, layername = layer.alternate.split(
+                ":") if ":" in layer.alternate else (None, layer.alternate)
+            # WARNING Please make sure to have enabled DJANGO CACHE as per
+            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+            wms_capabilities_resp = get_capabilities(
+                request, layer.id, tolerant=True)
+            if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
+                wms_capabilities = wms_capabilities_resp.getvalue()
+                if wms_capabilities:
+                    from defusedxml import lxml as dlxml
+                    namespaces = {'wms': 'http://www.opengis.net/wms',
+                                  'xlink': 'http://www.w3.org/1999/xlink',
+                                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
 
-                e = dlxml.fromstring(wms_capabilities)
-                for atype in e.findall(
-                        "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
-                    dim_name = atype.get('name')
-                    if dim_name:
-                        dim_name = str(dim_name).lower()
-                        if dim_name == 'time':
-                            dim_values = atype.text
-                            if dim_values:
-                                all_times = dim_values.split(",")
-                                break
-        if all_times:
-            config["capability"]["dimensions"] = {
-                "time": {
-                    "name": "time",
-                    "units": "ISO8601",
-                    "unitsymbol": None,
-                    "nearestVal": False,
-                    "multipleVal": False,
-                    "current": False,
-                    "default": "current",
-                    "values": all_times
+                    e = dlxml.fromstring(wms_capabilities)
+                    for atype in e.findall(
+                            "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
+                        dim_name = atype.get('name')
+                        if dim_name:
+                            dim_name = str(dim_name).lower()
+                            if dim_name == 'time':
+                                dim_values = atype.text
+                                if dim_values:
+                                    all_times = dim_values.split(",")
+                                    break
+            if all_times:
+                config["capability"]["dimensions"] = {
+                    "time": {
+                        "name": "time",
+                        "units": "ISO8601",
+                        "unitsymbol": None,
+                        "nearestVal": False,
+                        "multipleVal": False,
+                        "current": False,
+                        "default": "current",
+                        "values": all_times
+                    }
                 }
-            }
+        if layer.is_mosaic:
+            try:
+                cat = gs_catalog
+                cat._cache.clear()
+                store = cat.get_store(layer.name)
+                coverages = cat.mosaic_coverages(store)
+                try:
+                    if request.GET["filter"]:
+                        filter = request.GET["filter"]
+                except BaseException:
+                    pass
+
+                offset = 10 * (request.page - 1)
+                granules = cat.mosaic_granules(
+                    coverages['coverages']['coverage'][0]['name'],
+                    store,
+                    limit=10,
+                    offset=offset,
+                    filter=filter)
+                all_granules = cat.mosaic_granules(
+                    coverages['coverages']['coverage'][0]['name'], store, filter=filter)
+            except BaseException:
+                granules = {"features": []}
+                all_granules = {"features": []}
+
+    group = None
+    if layer.group:
+        try:
+            group = GroupProfile.objects.get(slug=layer.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
+    # a flag to be used for qgis server
+    show_popup = False
+    if 'show_popup' in request.GET and request.GET["show_popup"]:
+        show_popup = True
 
     if layer.storeType == "remoteStore":
         service = layer.remote_service
@@ -557,11 +590,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             ows_url=layer.ows_url,
             layer_params=json.dumps(config)
         )
-
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
     layer.view_count_up(request.user)
-
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(
         sender=Layer,
@@ -569,82 +600,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             settings,
             'DEFAULT_MAP_CRS',
             'EPSG:3857'))
-
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config(request)[1] if la.ows_url is None]
 
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
-
-    granules = None
-    all_granules = None
-    all_times = None
-    filter = None
-    if layer.is_mosaic:
-        try:
-            cat = gs_catalog
-            cat._cache.clear()
-            store = cat.get_store(layer.name)
-            coverages = cat.mosaic_coverages(store)
-
-            filter = None
-            try:
-                if request.GET["filter"]:
-                    filter = request.GET["filter"]
-            except BaseException:
-                pass
-
-            offset = 10 * (request.page - 1)
-            granules = cat.mosaic_granules(
-                coverages['coverages']['coverage'][0]['name'],
-                store,
-                limit=10,
-                offset=offset,
-                filter=filter)
-            all_granules = cat.mosaic_granules(
-                coverages['coverages']['coverage'][0]['name'], store, filter=filter)
-        except BaseException:
-            granules = {"features": []}
-            all_granules = {"features": []}
-
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.views import get_capabilities
-        workspace, layername = layer.alternate.split(
-            ":") if ":" in layer.alternate else (None, layer.alternate)
-        # WARNING Please make sure to have enabled DJANGO CACHE as per
-        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-        wms_capabilities_resp = get_capabilities(
-            request, layer.id, tolerant=True)
-        if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
-            wms_capabilities = wms_capabilities_resp.getvalue()
-            if wms_capabilities:
-                from defusedxml import lxml as dlxml
-                namespaces = {'wms': 'http://www.opengis.net/wms',
-                              'xlink': 'http://www.w3.org/1999/xlink',
-                              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-
-                e = dlxml.fromstring(wms_capabilities)
-                for atype in e.findall(
-                        "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
-                    dim_name = atype.get('name')
-                    if dim_name:
-                        dim_name = str(dim_name).lower()
-                        if dim_name == 'time':
-                            dim_values = atype.text
-                            if dim_values:
-                                all_times = dim_values.split(",")
-                                break
-
-    group = None
-    if layer.group:
-        try:
-            group = GroupProfile.objects.get(slug=layer.group.name)
-        except GroupProfile.DoesNotExist:
-            group = None
-    # a flag to be used for qgis server
-    show_popup = False
-    if 'show_popup' in request.GET and request.GET["show_popup"]:
-        show_popup = True
 
     context_dict = {
         'resource': layer,
@@ -695,7 +655,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
         except BaseException:
             pass
-
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
             Q(name__in=settings.DOWNLOAD_FORMATS_VECTOR) |
@@ -716,7 +675,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         if item.url and access_token and 'access_token' not in item.url:
             params = {'access_token': access_token}
             item.url = Request('GET', item.url, params=params).prepare().url
-
     if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
         context_dict["links"] = links_view
     if request.user.has_perm(
@@ -729,20 +687,10 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             links = layer.link_set.download().filter(
                 name__in=settings.DOWNLOAD_FORMATS_RASTER)
         context_dict["links_download"] = links_download
-
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
     layers_names = layer.alternate
-    try:
-        if settings.DEFAULT_WORKSPACE and settings.DEFAULT_WORKSPACE in layers_names:
-            workspace, name = layers_names.split(':', 1)
-        else:
-            name = layers_names
-    except BaseException:
-        logger.error("Can not identify workspace type and layername")
-
     context_dict["layer_name"] = json.dumps(layers_names)
-
     try:
         # get type of layer (raster or vector)
         if layer.storeType == 'coverageStore':
@@ -752,49 +700,17 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                 context_dict["layer_type"] = "vector_time"
             else:
                 context_dict["layer_type"] = "vector"
-
-            location = "{location}{service}".format(** {
-                'location': settings.OGC_SERVER['default']['LOCATION'],
-                'service': 'wms',
-            })
-            # get schema for specific layer
-            username = settings.OGC_SERVER['default']['USER']
-            password = settings.OGC_SERVER['default']['PASSWORD']
-            schema = get_schema(
-                location,
-                name,
-                username=username,
-                password=password)
-
-            # get the name of the column which holds the geometry
-            if 'the_geom' in schema['properties']:
-                schema['properties'].pop('the_geom', None)
-            elif 'geom' in schema['properties']:
-                schema['properties'].pop("geom", None)
-
-            # filter the schema dict based on the values of layers_attributes
-            layer_attributes_schema = []
-            for key in schema['properties'].keys():
-                layer_attributes_schema.append(key)
-
-            filtered_attributes = layer_attributes_schema
-            context_dict["schema"] = schema
-            context_dict["filtered_attributes"] = filtered_attributes
-
     except BaseException:
         logger.error(
             "Possible error with OWSLib. Turning all available properties to string")
-
     # maps owned by user needed to fill the "add to existing map section" in template
     if request.user.is_authenticated():
         context_dict["maps"] = Map.objects.filter(owner=request.user)
-
         if getattr(settings, 'FAVORITE_ENABLED', False):
             from geonode.favorite.utils import get_favorite_info
             context_dict["favorite_info"] = get_favorite_info(request.user, layer)
 
     register_event(request, 'view', layer)
-
     return TemplateResponse(
         request, template, context=context_dict)
 
