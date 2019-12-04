@@ -18,7 +18,10 @@
 #
 #########################################################################
 
-import helpers
+try:
+    import helpers
+except ImportError:
+    from . import helpers
 
 from django.db.models import Func, F, Value
 from django.core.management.base import BaseCommand, CommandError
@@ -67,22 +70,22 @@ class Command(BaseCommand):
         if not target_address or len(target_address) == 0:
             raise CommandError("Target Address '--target-address' is mandatory")
 
-        print "This will change all Maps, Layers, \
-Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address)
-        print "The operation may take some time, depending on the amount of Layer on GeoNode."
+        print("This will change all Maps, Layers, \
+Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address))
+        print("The operation may take some time, depending on the amount of Layer on GeoNode.")
         message = 'You want to proceed?'
 
         if force_exec or helpers.confirm(prompt=message, resp=False):
             try:
                 # Deactivate GeoNode Signals
-                print "Deactivating GeoNode Signals..."
+                print("Deactivating GeoNode Signals...")
                 designals()
-                print "...done!"
+                print("...done!")
 
                 _cnt = Map.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
                         F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
-                print "Updated %s Maps" % _cnt
+                print("Updated %s Maps" % _cnt)
 
                 _cnt = MapLayer.objects.filter(ows_url__icontains=source_address).update(
                     ows_url=Func(
@@ -90,22 +93,22 @@ Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address
                 MapLayer.objects.filter(layer_params__icontains=source_address).update(
                     layer_params=Func(
                         F('layer_params'),Value(source_address),Value(target_address),function='replace'))
-                print "Updated %s MapLayers" % _cnt
+                print("Updated %s MapLayers" % _cnt)
 
                 _cnt = Layer.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
                         F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
-                print "Updated %s Layers" % _cnt
+                print("Updated %s Layers" % _cnt)
 
                 _cnt = Style.objects.filter(sld_url__icontains=source_address).update(
                     sld_url=Func(
                         F('sld_url'),Value(source_address),Value(target_address),function='replace'))
-                print "Updated %s Styles" % _cnt
+                print("Updated %s Styles" % _cnt)
 
                 _cnt = Link.objects.filter(url__icontains=source_address).update(
                     url=Func(
                         F('url'),Value(source_address),Value(target_address),function='replace'))
-                print "Updated %s Links" % _cnt
+                print("Updated %s Links" % _cnt)
 
                 _cnt = ResourceBase.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
@@ -116,9 +119,9 @@ Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address
                 _cnt += ResourceBase.objects.filter(metadata_xml__icontains=source_address).update(
                     metadata_xml=Func(
                         F('metadata_xml'), Value(source_address), Value(target_address), function='replace'))
-                print "Updated %s ResourceBases" % _cnt
+                print("Updated %s ResourceBases" % _cnt)
             finally:
                 # Reactivate GeoNode Signals
-                print "Reactivating GeoNode Signals..."
+                print("Reactivating GeoNode Signals...")
                 resignals()
-                print "...done!"
+                print("...done!")

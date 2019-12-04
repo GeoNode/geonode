@@ -115,7 +115,7 @@ class TreeWidget(TaggitWidget):
     input_type = 'text'
 
     def render(self, name, value, attrs=None):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             vals = value
         elif value:
             vals = ','.join([i.tag.name for i in value])
@@ -132,7 +132,7 @@ class TreeWidget(TaggitWidget):
             '<span class="input-group-addon" id="treeview-toggle"><i class="fa fa-folder"></i></span>')
         output.append('</span></div>')
 
-        return mark_safe(u'\n'.join(output))
+        return mark_safe('\n'.join(output))
 
 
 class RegionsMultipleChoiceField(forms.MultipleChoiceField):
@@ -211,7 +211,7 @@ class RegionsSelect(forms.Select):
         # Normalize to strings.
         def _region_id_from_choice(choice):
             if isinstance(choice, int) or \
-            (isinstance(choice, basestring) and choice.isdigit()):
+            (isinstance(choice, str) and choice.isdigit()):
                 return int(choice)
             else:
                 return choice.id
@@ -223,7 +223,7 @@ class RegionsSelect(forms.Select):
         for option_value, option_label in self.choices:
             if not isinstance(
                     option_label, (list, tuple)) and isinstance(
-                    option_label, basestring):
+                    option_label, str):
                 output.append(
                     self.render_option_value(
                         selected_choices,
@@ -234,7 +234,7 @@ class RegionsSelect(forms.Select):
         for option_value, option_label in self.choices:
             if isinstance(
                     option_label, (list, tuple)) and not isinstance(
-                    option_label, basestring):
+                    option_label, str):
                 output.append(
                     format_html(
                         '<optgroup label="{}">',
@@ -242,10 +242,10 @@ class RegionsSelect(forms.Select):
                 for option in option_label:
                     if isinstance(
                             option, (list, tuple)) and not isinstance(
-                            option, basestring):
+                            option, str):
                         if isinstance(
                                 option[1][0], (list, tuple)) and not isinstance(
-                                option[1][0], basestring):
+                                option[1][0], str):
                             for option_child in option[1][0]:
                                 output.append(
                                     self.render_option_value(
@@ -302,7 +302,7 @@ class TKeywordForm(forms.Form):
         super(TKeywordForm, self).__init__(*args, **kwargs)
         initial_arguments = kwargs.get('initial', None)
         if initial_arguments and 'tkeywords' in initial_arguments and \
-        isinstance(initial_arguments['tkeywords'], basestring):
+        isinstance(initial_arguments['tkeywords'], str):
             initial_arguments['tkeywords'] = initial_arguments['tkeywords'].split(',')
         self.data = initial_arguments
 
@@ -413,8 +413,15 @@ class ResourceBaseForm(TranslationModelForm):
                         'data-html': 'true'})
 
     def clean_keywords(self):
-        import urllib
-        import HTMLParser
+        try:
+            import urllib.parse
+        except ImportError:  # python2 compatible
+            import urllib
+
+        try:  # python2 compatible
+            from HTMLParser import HTMLParser
+        except ImportError:
+            from html.parser import HTMLParser
 
         def unicode_escape(unistr):
             """
@@ -422,12 +429,20 @@ class ResourceBaseForm(TranslationModelForm):
             Takes a unicode string as an argument
             Returns a unicode string
             """
-            import htmlentitydefs
+            try:  # python2 compatible
+                import htmlentitydefs
+            except ImportError:
+                import html.entities
             escaped = ""
             for char in unistr:
-                if ord(char) in htmlentitydefs.codepoint2name:
-                    name = htmlentitydefs.codepoint2name.get(ord(char))
-                    escaped += '&%s;' % name if 'nbsp' not in name else ' '
+                try:  # python2 compatible
+                    if ord(char) in htmlentitydefs.codepoint2name:
+                        name = htmlentitydefs.codepoint2name.get(ord(char))
+                        escaped += '&%s;' % name if 'nbsp' not in name else ' '
+                except NameError:
+                    if ord(char) in html.entities.codepoint2name:
+                        name = html.entities.codepoint2name.get(ord(char))
+                        escaped += '&%s;' % name if 'nbsp' not in name else ' '
                 else:
                     escaped += char
             return escaped
@@ -435,10 +450,13 @@ class ResourceBaseForm(TranslationModelForm):
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
-            _k = urllib.unquote(('%s' % k)).split(",")
-            if not isinstance(_k, basestring):
+            try:  # python2 compatible
+                _k = urllib.unquote(('%s' % k)).split(",")
+            except AttributeError:
+                _k = urllib.parse.unquote(('%s' % k)).split(",")
+            if not isinstance(_k, str):
                 for _kk in [x.strip() for x in _k]:
-                    _kk = HTMLParser.HTMLParser().unescape(unicode_escape(_kk))
+                    _kk = HTMLParser().unescape(unicode_escape(_kk))
                     # Simulate JS Unescape
                     _kk = _kk.replace('%u', r'\u').decode('unicode-escape') if '%u' in _kk else _kk
                     _hk = HierarchicalKeyword.objects.filter(name__contains='%s' % _kk.strip())
