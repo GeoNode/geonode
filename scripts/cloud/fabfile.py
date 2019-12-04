@@ -248,7 +248,7 @@ def cleanup_temp():
 
 def copy_keys():
     sudo('rm -f ~/.ssh/*%s.pem' % (KEY_BASE))
-    put(('%s*%s*' % (KEY_PATH, KEY_BASE)), '/home/ubuntu/.ssh/', mode=0400)
+    put(('%s*%s*' % (KEY_PATH, KEY_BASE)), '/home/ubuntu/.ssh/', mode=0o400)
     pass
 
 def install_ec2_tools():
@@ -278,7 +278,7 @@ def build_geonode_ami():
     ami_id = output.split('\t')[1]
     if MAKE_PUBLIC:
         sudo("ec2-modify-image-attribute -l -a all -K ~/.ssh/pk-*.pem -C ~/.ssh/cert-*.pem %s" % (ami_id))
-    print "AMI %s Ready for Use" % (ami_id)
+    print("AMI %s Ready for Use" % (ami_id))
 
 def install_sample_data():
     run('geonode loaddata sample_admin.json')

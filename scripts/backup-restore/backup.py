@@ -21,7 +21,7 @@
 import traceback
 import os, sys
 import shutil
-import helpers
+from . import helpers
 
 from django.conf import settings
 from django.core.management import call_command
@@ -43,7 +43,7 @@ def backup_full():
 
       # Dump Fixtures
       for app_name, dump_name in zip(helpers.app_names, helpers.dump_names):
-         print "Dumping '"+app_name+"' into '"+dump_name+".json'."
+         print("Dumping '"+app_name+"' into '"+dump_name+".json'.")
          output = open(os.path.join(target_folder,dump_name+'.json'),'w') # Point stdout at a file for dumping data to.
          call_command('dumpdata',app_name,format='json',indent=2,natural=True,stdout=output)
          output.close()
@@ -55,7 +55,7 @@ def backup_full():
          os.makedirs(media_folder)
 
       copy_tree(media_root, media_folder)
-      print "Saved Media Files from '"+media_root+"'."
+      print("Saved Media Files from '"+media_root+"'.")
 
       # Store Static Root
       static_root = settings.STATIC_ROOT
@@ -64,7 +64,7 @@ def backup_full():
          os.makedirs(static_folder)
 
       copy_tree(static_root, static_folder)
-      print "Saved Static Root from '"+static_root+"'."
+      print("Saved Static Root from '"+static_root+"'.")
 
       # Store Static Folders
       static_folders = settings.STATICFILES_DIRS
@@ -78,7 +78,7 @@ def backup_full():
             os.makedirs(static_folder)
 
          copy_tree(static_files_folder, static_folder)
-         print "Saved Static Files from '"+static_files_folder+"'."
+         print("Saved Static Files from '"+static_files_folder+"'.")
 
       # Store Template Folders
       template_folders = []
@@ -99,7 +99,7 @@ def backup_full():
             os.makedirs(template_folder)
 
          copy_tree(template_files_folder, template_folder)
-         print "Saved Template Files from '"+template_files_folder+"'."
+         print("Saved Template Files from '"+template_files_folder+"'.")
 
       # Store Locale Folders
       locale_folders = settings.LOCALE_PATHS
@@ -113,7 +113,7 @@ def backup_full():
             os.makedirs(locale_folder)
 
          copy_tree(locale_files_folder, locale_folder)
-         print "Saved Locale Files from '"+locale_files_folder+"'."
+         print("Saved Locale Files from '"+locale_files_folder+"'.")
 
       # Create Final ZIP Archive
       zip_dir(target_folder, os.path.join('backup', dir_time_suffix+'.zip'))
@@ -121,9 +121,9 @@ def backup_full():
       # Cleanup Temp Folder
       shutil.rmtree(target_folder)
 
-      print "Backup Finished. Archive generated '"+os.path.join('backup', dir_time_suffix+'.zip')+"'."
+      print("Backup Finished. Archive generated '"+os.path.join('backup', dir_time_suffix+'.zip')+"'.")
 
-   except Exception, err:
+   except Exception as err:
       pass
 
    traceback.print_exc()
