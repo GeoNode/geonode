@@ -28,7 +28,7 @@ from django.conf import settings
 from django.db.models import Q
 from geonode.security.utils import get_visible_resources
 
-from models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
+from .models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
 
 logger = logging.getLogger(__name__)
 
