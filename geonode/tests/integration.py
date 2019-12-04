@@ -25,16 +25,20 @@ import timeout_decorator
 import os
 import json
 import datetime
-import urllib2
+try:
+    from urllib.request import urlopen, Request
+    from urllib.parse import urljoin
+except ImportError:
+    from urllib2 import urlopen, Request
+    from urlparse import urljoin
 import time
 import logging
 
-from StringIO import StringIO
+from io import BytesIO
 import gisdata
 from decimal import Decimal
 from defusedxml import lxml as dlxml
 from lxml import etree
-from urlparse import urljoin
 
 from django.conf import settings
 from django.test.utils import override_settings
@@ -169,7 +173,7 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             from requests.auth import HTTPBasicAuth
             r = requests.get(url + 'gwc/rest/seed/%s.json' % saved_layer.alternate,
                              auth=HTTPBasicAuth(user, passwd))
-            self.assertEquals(r.status_code, 200)
+            self.assertEqual(r.status_code, 200)
             o = json.loads(r.text)
             self.assertTrue('long-array-array' in o)
 
@@ -215,7 +219,7 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             saved_layer.set_default_permissions()
             url = reverse('layer_metadata', args=[saved_layer.service_typename])
             resp = self.client.get(url)
-            self.assertEquals(resp.status_code, 200)
+            self.assertEqual(resp.status_code, 200)
         finally:
             # Clean up and completely delete the layer
             saved_layer.delete()
@@ -398,8 +402,8 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         """
         sampletxt = os.path.join(gisdata.VECTOR_DATA,
                                  'points_epsg2249_no_prj.dbf')
-        with self.\
-        assertRaisesRegexp(Exception, "You are attempting to replace a vector layer with an unknown format."):
+        with self.assertRaisesRegex(Exception, "You are attempting to replace "
+                                    "a vector layer with an unknown format."):
             file_upload(sampletxt)
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -562,9 +566,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     date.replace(tzinfo=timezone.get_current_timezone())
                     today = date.today()
                     todoc = uploaded.date.today()
-                    self.assertEquals((today.day, today.month, today.year),
-                                      (todoc.day, todoc.month, todoc.year),
-                                      'Expected specific date from uploaded layer XML metadata')
+                    self.assertEqual((today.day, today.month, today.year),
+                                     (todoc.day, todoc.month, todoc.year),
+                                     "Expected specific date from uploaded layer XML metadata")
 
                     # Set
                     from geonode.layers.metadata import set_metadata
@@ -605,9 +609,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 zip_dir(thelayer_path, thelayer_zip)
                 if os.path.exists(thelayer_zip):
                     uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258')
-                    self.assertEquals(uploaded.title, 'Zhejiang Yangcan Yanyu')
-                    self.assertEquals(len(uploaded.keyword_list()), 2)
-                    self.assertEquals(uploaded.constraints_other, None)
+                    self.assertEqual(uploaded.title, 'Zhejiang Yangcan Yanyu')
+                    self.assertEqual(len(uploaded.keyword_list()), 2)
+                    self.assertEqual(uploaded.constraints_other, None)
         finally:
             # Clean up and completely delete the layer
             if uploaded:
@@ -628,9 +632,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 zip_dir(thelayer_path, thelayer_zip)
                 if os.path.exists(thelayer_zip):
                     uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258')
-                    self.assertEquals(uploaded.title, 'Ming Female 1')
-                    self.assertEquals(len(uploaded.keyword_list()), 2)
-                    self.assertEquals(uploaded.constraints_other, None)
+                    self.assertEqual(uploaded.title, 'Ming Female 1')
+                    self.assertEqual(len(uploaded.keyword_list()), 2)
+                    self.assertEqual(uploaded.constraints_other, None)
         finally:
             # Clean up and completely delete the layer
             if uploaded:
@@ -656,9 +660,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 zip_dir(thelayer_path, thelayer_zip)
                 if os.path.exists(thelayer_zip):
                     uploaded = file_upload(thelayer_zip, overwrite=True, charset='UTF-8')
-                    self.assertEquals(uploaded.title, 'Unesco Global Geoparks')
-                    self.assertEquals(len(uploaded.keyword_list()), 2)
-                    self.assertEquals(uploaded.constraints_other, None)
+                    self.assertEqual(uploaded.title, 'Unesco Global Geoparks')
+                    self.assertEqual(len(uploaded.keyword_list()), 2)
+                    self.assertEqual(uploaded.constraints_other, None)
         finally:
             # Clean up and completely delete the layer
             if uploaded:
@@ -948,7 +952,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             uploaded.set_default_permissions()
             self.client.login(username='norman', password='norman')
             resp = self.client.get(uploaded.get_absolute_url())
-            self.assertEquals(resp.status_code, 200)
+            self.assertEqual(resp.status_code, 200)
         finally:
             # Clean up and completely delete the layers
             uploaded.delete()
@@ -976,16 +980,16 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 'layer_replace', args=[
                     raster_layer.service_typename])
             response = self.client.get(raster_replace_url)
-            self.assertEquals(response.status_code, 200)
-            self.assertEquals(response.context['is_featuretype'], False)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context['is_featuretype'], False)
 
             # test the program can determine the original layer in vector type
             vector_replace_url = reverse(
                 'layer_replace', args=[
                     vector_layer.service_typename])
             response = self.client.get(vector_replace_url)
-            self.assertEquals(response.status_code, 200)
-            self.assertEquals(response.context['is_featuretype'], True)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context['is_featuretype'], True)
 
             # test replace a vector with a raster
             post_permissions = {
@@ -1003,9 +1007,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             response = self.client.post(
                 vector_replace_url, post_data)
             # TODO: This should really return a 400 series error with the json dict
-            self.assertEquals(response.status_code, 400)
+            self.assertEqual(response.status_code, 400)
             response_dict = json.loads(response.content)
-            self.assertEquals(response_dict['success'], False)
+            self.assertEqual(response_dict['success'], False)
 
             # test replace a vector with a different vector
             new_vector_file = os.path.join(
@@ -1032,8 +1036,8 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     response_dict['errors']:
                 pass
             else:
-                self.assertEquals(response.status_code, 400)
-                self.assertEquals(response_dict['success'], False)
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response_dict['success'], False)
 
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                 # test replace a vector with an updated version of the vector file
@@ -1061,8 +1065,8 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                         response_dict['errors']:
                     pass
                 else:
-                    self.assertEquals(response.status_code, 200)
-                    self.assertEquals(response_dict['success'], True)
+                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(response_dict['success'], True)
                     # Get a Layer object for the newly created layer.
                     new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
 
@@ -1180,8 +1184,8 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                 'service=wms&version=1.3.0&request=GetCapabilities'
             url = urljoin(geoserver_base_url, get_capabilities_url)
             str_to_check = '<Name>geonode:san_andres_y_providencia_highway</Name>'
-            request = urllib2.Request(url)
-            response = urllib2.urlopen(request)
+            request = Request(url)
+            response = urlopen(request)
 
             # by default the uploaded layer is published
             self.assertTrue(layer.is_published, True)
@@ -1207,8 +1211,8 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                 self.assertEqual(layer.is_published, False)
 
                 # check the layer is not in GetCapabilities
-                request = urllib2.Request(url)
-                response = urllib2.urlopen(request)
+                request = Request(url)
+                response = urlopen(request)
 
                 # now test with published layer
                 layer = Layer.objects.get(pk=layer.pk)
@@ -1218,8 +1222,8 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                 # we need some time to have the service up and running
                 time.sleep(20)
 
-                request = urllib2.Request(url)
-                response = urllib2.urlopen(request)
+                request = Request(url)
+                response = urlopen(request)
                 self.assertTrue(any(str_to_check in s for s in response.readlines()))
             finally:
                 # Clean up and completely delete the layer
@@ -1283,7 +1287,7 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
             thumbnail_url = map_obj.get_thumbnail_url()
 
             if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-                self.assertEquals(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+                self.assertEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
         finally:
             # Cleanup
             saved_layer.delete()
@@ -1324,11 +1328,11 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
             # tests if everything is synced properly
             for attribute in layer.attribute_set.all():
-                self.assertEquals(
+                self.assertEqual(
                     attribute.attribute_label,
                     '%s_label' % attribute.attribute
                 )
-                self.assertEquals(
+                self.assertEqual(
                     attribute.description,
                     '%s_description' % attribute.attribute
                 )
@@ -1338,10 +1342,10 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
             self.assertTrue(len(links) > 7)
 
             original_data_links = [ll for ll in links if 'original' == ll.link_type]
-            self.assertEquals(len(original_data_links), 1)
+            self.assertEqual(len(original_data_links), 1)
 
             resp = self.client.get(original_data_links[0].url)
-            self.assertEquals(resp.status_code, 200)
+            self.assertEqual(resp.status_code, 200)
         finally:
             # Clean up and completely delete the layers
             layer.delete()
@@ -1412,9 +1416,9 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             layernodes = rootdoc.findall('./[wms:Name]', namespaces)
             layernode = layernodes[0]
 
-            self.assertEquals(1, len(layernodes))
-            self.assertEquals(layernode.find('wms:Name', namespaces).text,
-                              '%s:%s' % ('geonode', layer1.name))
+            self.assertEqual(1, len(layernodes))
+            self.assertEqual(layernode.find('wms:Name', namespaces).text,
+                             "geonode:{}".format(layer1.name))
 
             # 1. test capabilities_user
             url = reverse('capabilities_user', args=[norman.username])
@@ -1424,7 +1428,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             layernodes = rootdoc.findall('./[wms:Name]', namespaces)
 
             # norman has 2 layers
-            self.assertEquals(1, len(layernodes))
+            self.assertEqual(1, len(layernodes))
 
             # the norman two layers are named layer1 and layer2
             count = 0
@@ -1433,7 +1437,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
                     count += 1
                 elif layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer2.name):
                     count += 1
-            self.assertEquals(1, count)
+            self.assertEqual(1, count)
 
             # 2. test capabilities_category
             url = reverse('capabilities_category', args=[category.identifier])
@@ -1443,7 +1447,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             layernodes = rootdoc.findall('./[wms:Name]', namespaces)
 
             # category is in two layers
-            self.assertEquals(1, len(layernodes))
+            self.assertEqual(1, len(layernodes))
 
             # the layers for category are named layer1 and layer3
             count = 0
@@ -1452,7 +1456,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
                     count += 1
                 elif layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer3.name):
                     count += 1
-            self.assertEquals(1, count)
+            self.assertEqual(1, count)
 
             # 3. test for a map
             # TODO
@@ -1641,7 +1645,7 @@ class LayersStylesApiInteractionTests(
         style_body = obj['body']
 
         if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            style_stream = StringIO(style_body)
+            style_stream = BytesIO(style_body)
             # Add virtual filename
             style_stream.name = 'style.qml'
             data = {
