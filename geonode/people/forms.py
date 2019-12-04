@@ -72,7 +72,7 @@ class ProfileChangeForm(UserChangeForm):
 class ForgotUsernameForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
                                                                maxlength=75)),
-                             label=_(u'Email Address'))
+                             label=_('Email Address'))
 
 
 class RoleForm(forms.ModelForm):
