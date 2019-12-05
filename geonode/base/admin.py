@@ -26,7 +26,7 @@ from django.template.response import TemplateResponse
 
 try:
     from StringIO import StringIO
-except ModuleNotFoundError:
+except ImportError:
     from io import StringIO
 
 from autocomplete_light.forms import ModelForm

@@ -414,11 +414,13 @@ class ResourceBaseForm(TranslationModelForm):
 
     def clean_keywords(self):
         # import urllib.request, urllib.parse, urllib.error
-        import urllib.request, urllib.parse, urllib.error
+        import urllib.request
+        import urllib.parse
+        import urllib.error
 
         try:
             import HTMLParser
-        except ModuleNotFoundError:
+        except ImportError:
             import html.parser
 
         def unicode_escape(unistr):
@@ -443,7 +445,10 @@ class ResourceBaseForm(TranslationModelForm):
             _k = urllib.parse.unquote(('%s' % k)).split(",")
             if not isinstance(_k, str):
                 for _kk in [x.strip() for x in _k]:
-                    _kk = html.parser.HTMLParser().unescape(unicode_escape(_kk))
+                    try:
+                        _kk = HTMLParser.HTMLParser().unescape(unicode_escape(_kk))
+                    except NameError:
+                        _kk = html.parser.HTMLParser().unescape(unicode_escape(_kk))
                     # Simulate JS Unescape
                     _kk = _kk.replace('%u', r'\u').decode('unicode-escape') if '%u' in _kk else _kk
                     _hk = HierarchicalKeyword.objects.filter(name__contains='%s' % _kk.strip())
