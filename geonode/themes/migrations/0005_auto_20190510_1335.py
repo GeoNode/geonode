@@ -15,36 +15,36 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='navbar_dropdown_menu',
-            field=models.CharField(default=b'#2c689c', max_length=10),
+            field=models.CharField(default='#2c689c', max_length=10),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='navbar_dropdown_menu_divider',
-            field=models.CharField(default=b'#204d74', max_length=10),
+            field=models.CharField(default='#204d74', max_length=10),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='navbar_dropdown_menu_hover',
-            field=models.CharField(default=b'#204d74', max_length=10),
+            field=models.CharField(default='#204d74', max_length=10),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='navbar_dropdown_menu_text',
-            field=models.CharField(default=b'#ffffff', max_length=10),
+            field=models.CharField(default='#ffffff', max_length=10),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='navbar_text_color',
-            field=models.CharField(default=b'#ffffff', max_length=10),
+            field=models.CharField(default='#ffffff', max_length=10),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='navbar_text_hover',
-            field=models.CharField(default=b'#2c689c', max_length=10),
+            field=models.CharField(default='#2c689c', max_length=10),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='navbar_text_hover_focus',
-            field=models.CharField(default=b'#2c689c', max_length=10),
+            field=models.CharField(default='#2c689c', max_length=10),
         ),
     ]

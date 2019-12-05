@@ -15,21 +15,21 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='cookie_law_info_data_controller',
-            field=models.TextField(default=b'#DATA_CONTROLLER'),
+            field=models.TextField(default='#DATA_CONTROLLER'),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='cookie_law_info_data_controller_address',
-            field=models.TextField(default=b'#DATA_CONTROLLER_ADDRESS'),
+            field=models.TextField(default='#DATA_CONTROLLER_ADDRESS'),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='cookie_law_info_data_controller_email',
-            field=models.TextField(default=b'#DATA_CONTROLLER_EMAIL'),
+            field=models.TextField(default='#DATA_CONTROLLER_EMAIL'),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='cookie_law_info_data_controller_phone',
-            field=models.TextField(default=b'#DATA_CONTROLLER_PHONE'),
+            field=models.TextField(default='#DATA_CONTROLLER_PHONE'),
         ),
     ]

@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='CuratedThumbnail',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('img', models.ImageField(upload_to=b'curated_thumbs')),
+                ('img', models.ImageField(upload_to='curated_thumbs')),
                 ('resource', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='base.ResourceBase')),
             ],
         ),

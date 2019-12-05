@@ -50,6 +50,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='region',
             name='srid',
-            field=models.CharField(default=b'EPSG:4326', max_length=255),
+            field=models.CharField(default='EPSG:4326', max_length=255),
         ),
     ]

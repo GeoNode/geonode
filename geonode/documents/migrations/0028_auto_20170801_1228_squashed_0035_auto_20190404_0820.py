@@ -8,7 +8,7 @@ import django.db.models.manager
 
 class Migration(migrations.Migration):
 
-    replaces = [(b'documents', '0028_auto_20170801_1228'), (b'documents', '0029_auto_20180301_1947'), (b'documents', '0030_auto_20180302_0430'), (b'documents', '0031_auto_20180409_1238'), (b'documents', '0032_auto_20180412_0822'), (b'documents', '0033_auto_20180414_2120'), (b'documents', '0034_auto_20190329_1652'), (b'documents', '0035_auto_20190404_0820')]
+    replaces = [('documents', '0028_auto_20170801_1228'), ('documents', '0029_auto_20180301_1947'), ('documents', '0030_auto_20180302_0430'), ('documents', '0031_auto_20180409_1238'), ('documents', '0032_auto_20180412_0822'), ('documents', '0033_auto_20180414_2120'), ('documents', '0034_auto_20190329_1652'), ('documents', '0035_auto_20190404_0820')]
 
     dependencies = [
         ('documents', '27_drop_resource_columns_from_document_table'),

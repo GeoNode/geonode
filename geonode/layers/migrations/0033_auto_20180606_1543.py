@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='layer',
             name='time_regex',
-            field=models.CharField(blank=True, choices=[(b'[0-9]{8}', 'YYYYMMDD'), (b'[0-9]{8}T[0-9]{6}', "YYYYMMDD'T'hhmmss"), (b'[0-9]{8}T[0-9]{6}Z', "YYYYMMDD'T'hhmmss'Z'")], max_length=128, null=True, verbose_name='Time regex'),
+            field=models.CharField(blank=True, choices=[('[0-9]{8}', 'YYYYMMDD'), ('[0-9]{8}T[0-9]{6}', "YYYYMMDD'T'hhmmss"), ('[0-9]{8}T[0-9]{6}Z', "YYYYMMDD'T'hhmmss'Z'")], max_length=128, null=True, verbose_name='Time regex'),
         ),
         migrations.AlterField(
             model_name='layer',

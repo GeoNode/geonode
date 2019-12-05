@@ -15,26 +15,26 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='footer_href_color',
-            field=models.CharField(default=b'#ff8f31', max_length=10),
+            field=models.CharField(default='#ff8f31', max_length=10),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='footer_text_color',
-            field=models.CharField(default=b'#ffffff', max_length=10),
+            field=models.CharField(default='#ffffff', max_length=10),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='search_bg_color',
-            field=models.CharField(default=b'#333333', max_length=10),
+            field=models.CharField(default='#333333', max_length=10),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='search_link_color',
-            field=models.CharField(default=b'#ff8f31', max_length=10),
+            field=models.CharField(default='#ff8f31', max_length=10),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='search_title_color',
-            field=models.CharField(default=b'#ffffff', max_length=10),
+            field=models.CharField(default='#ffffff', max_length=10),
         ),
     ]
