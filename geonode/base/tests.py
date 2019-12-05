@@ -19,9 +19,6 @@
 #########################################################################
 
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
 import os
 
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -29,6 +26,9 @@ from geonode.base.models import (
     ResourceBase, MenuPlaceholder, Menu, MenuItem
 )
 from django.template import Template, Context
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 class ThumbnailTests(GeoNodeBaseTestSupport):

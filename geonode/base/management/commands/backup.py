@@ -27,7 +27,7 @@ import re
 try: 
     import helpers
     from helpers import Config
-except ModuleNotFoundError:
+except ImportError:
     from . import helpers
     from .helpers import Config
 
