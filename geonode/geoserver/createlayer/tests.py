@@ -20,7 +20,6 @@
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-import os
 import dj_database_url
 
 from django.conf import settings
