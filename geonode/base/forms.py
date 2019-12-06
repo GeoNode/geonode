@@ -414,9 +414,12 @@ class ResourceBaseForm(TranslationModelForm):
 
     def clean_keywords(self):
         # import urllib.request, urllib.parse, urllib.error
-        import urllib.request
-        import urllib.parse
-        import urllib.error
+        try:
+            import urllib.request
+            import urllib.parse
+            import urllib.error
+        except ImportError: #python2 compatible
+            import urllib
 
         try:
             import HTMLParser
