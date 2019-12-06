@@ -418,7 +418,7 @@ class ResourceBaseForm(TranslationModelForm):
             import urllib.request
             import urllib.parse
             import urllib.error
-        except ImportError: #python2 compatible
+        except ImportError:  # python2 compatible
             import urllib
 
         try:
