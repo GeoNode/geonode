@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='harvestjob',
             name='status',
-            field=models.CharField(default=b'QUEUED', max_length=15, choices=[(b'QUEUED', b'QUEUED'), (b'CANCELLED', b'QUEUED'), (b'IN_PROCESS', b'IN_PROCESS'), (b'PROCESSED', b'PROCESSED'), (b'FAILED', b'FAILED')]),
+            field=models.CharField(default='QUEUED', max_length=15, choices=[('QUEUED','QUEUED'), ('CANCELLED','QUEUED'), ('IN_PROCESS','IN_PROCESS'), ('PROCESSED','PROCESSED'), ('FAILED','FAILED')]),
         ),
         migrations.DeleteModel(
             name='WebServiceHarvestLayersJob',

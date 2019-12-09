@@ -20,13 +20,13 @@ class Migration(migrations.Migration):
                 ('use_resource', models.BooleanField(default=False)),
                 ('use_label', models.BooleanField(default=False)),
                 ('use_ows_service', models.BooleanField(default=False)),
-                ('field_option', models.CharField(default=b'min_value', max_length=32, choices=[(b'min_value', b'Value must be above'), (b'max_value', b'Value must be below'), (b'max_timeout', b'Last update must not be older than')])),
+                ('field_option', models.CharField(default='min_value', max_length=32, choices=[('min_value','Value must be above'), ('max_value','Value must be below'), ('max_timeout','Last update must not be older than')])),
             ],
         ),
         migrations.AlterField(
             model_name='metric',
             name='unit',
-            field=models.CharField(blank=True, max_length=255, null=True, choices=[(b'B', b'Bytes'), (b'KB', b'Kilobytes'), (b'MB', b'Megabytes'), (b'GB', b'Gigabytes'), (b'B/s', b'Bytes per second'), (b'KB/s', b'Kilobytes per second'), (b'MB/s', b'Megabytes per second'), (b'GB/s', b'Gigabytes per second'), (b's', b'Seconds'), (b'Rate', b'Rate'), (b'%', b'Percentage'), (b'Count', b'Count')]),
+            field=models.CharField(blank=True, max_length=255, null=True, choices=[('B','Bytes'), ('KB','Kilobytes'), ('MB','Megabytes'), ('GB','Gigabytes'), ('B/s','Bytes per second'), ('KB/s','Kilobytes per second'), ('MB/s','Megabytes per second'), ('GB/s','Gigabytes per second'), ('s','Seconds'), ('Rate','Rate'), ('%','Percentage'), ('Count','Count')]),
         ),
         migrations.AlterField(
             model_name='metricnotificationcheck',

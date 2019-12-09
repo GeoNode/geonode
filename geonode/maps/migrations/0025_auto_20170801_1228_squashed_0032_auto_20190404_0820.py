@@ -8,7 +8,7 @@ import django.db.models.manager
 
 class Migration(migrations.Migration):
 
-    replaces = [(b'maps', '0025_auto_20170801_1228'), (b'maps', '0026_auto_20180301_1947'), (b'maps', '0027_auto_20180302_0430'), (b'maps', '0028_auto_20180409_1238'), (b'maps', '0029_auto_20180412_0822'), (b'maps', '0030_auto_20180414_2120'), (b'maps', '0031_auto_20190329_1652'), (b'maps', '0032_auto_20190404_0820')]
+    replaces = [('maps', '0025_auto_20170801_1228'), ('maps', '0026_auto_20180301_1947'), ('maps', '0027_auto_20180302_0430'), ('maps', '0028_auto_20180409_1238'), ('maps', '0029_auto_20180412_0822'), ('maps', '0030_auto_20180414_2120'), ('maps', '0031_auto_20190329_1652'), ('maps', '0032_auto_20190404_0820')]
 
     dependencies = [
         ('maps', '24_initial'),

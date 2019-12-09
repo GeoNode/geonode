@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='eventtype',
             name='name',
-            field=models.CharField(choices=[(b'OWS:TMS', b'TMS'), (b'OWS:WMS-C', b'WMS-C'), (b'OWS:WMTS', b'WMTS'), (b'OWS:WCS', b'WCS'), (b'OWS:WFS', b'WFS'), (b'OWS:WMS', b'WMS'), (b'OWS:WPS', b'WPS'), (b'other', b'Not OWS'), (b'OWS:ALL', b'Any OWS'), (b'all', b'All'), (b'create', b'Create'), (b'upload', b'Upload'), (b'change', b'Change'), (b'change_metadata', b'Change Metadata'), (b'view_metadata', b'View Metadata'), (b'view', b'View'), (b'download', b'Download'), (b'publish', b'Publish'), (b'remove', b'Remove'), (b'geoserver', b'Geoserver event')], max_length=16, unique=True),
+            field=models.CharField(choices=[('OWS:TMS','TMS'), ('OWS:WMS-C','WMS-C'), ('OWS:WMTS','WMTS'), ('OWS:WCS','WCS'), ('OWS:WFS','WFS'), ('OWS:WMS','WMS'), ('OWS:WPS','WPS'), ('other','Not OWS'), ('OWS:ALL','Any OWS'), ('all','All'), ('create','Create'), ('upload','Upload'), ('change','Change'), ('change_metadata','Change Metadata'), ('view_metadata','View Metadata'), ('view','View'), ('download','Download'), ('publish','Publish'), ('remove','Remove'), ('geoserver','Geoserver event')], max_length=16, unique=True),
         ),
     ]

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='metric',
             name='unit',
-            field=models.CharField(blank=True, max_length=255, null=True, choices=[(b'B', b'Bytes'), (b'MB', b'Megabytes'), (b'GB', b'Gigabytes'), (b'B/s', b'Bytes per second'), (b'MB/s', b'Megabytes per second'), (b'GB/s', b'Gigabytes per second'), (b's', b'Seconds'), (b'Rate', b'Rate'), (b'%', b'Percentage'), (b'Count', b'Count')]),
+            field=models.CharField(blank=True, max_length=255, null=True, choices=[('B','Bytes'), ('MB','Megabytes'), ('GB','Gigabytes'), ('B/s','Bytes per second'), ('MB/s','Megabytes per second'), ('GB/s','Gigabytes per second'), ('s','Seconds'), ('Rate','Rate'), ('%','Percentage'), ('Count','Count')]),
         ),
         migrations.AlterField(
             model_name='metricvalue',
@@ -24,6 +24,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='owsservice',
             name='name',
-            field=models.CharField(unique=True, max_length=16, choices=[(b'TMS', b'TMS'), (b'WMS-C', b'WMS-C'), (b'WMTS', b'WMTS'), (b'WCS', b'WCS'), (b'WFS', b'WFS'), (b'WMS', b'WMS'), (b'WPS', b'WPS'), (b'all', b'All'), (b'other', b'Other')]),
+            field=models.CharField(unique=True, max_length=16, choices=[('TMS','TMS'), ('WMS-C','WMS-C'), ('WMTS','WMTS'), ('WCS','WCS'), ('WFS','WFS'), ('WMS','WMS'), ('WPS','WPS'), ('all','All'), ('other','Other')]),
         ),
     ]

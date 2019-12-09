@@ -7,7 +7,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [(b'geonode_themes', '0002_auto_20181015_1208'), (b'geonode_themes', '0003_remove_geonodethemecustomization_identifier')]
+    replaces = [('geonode_themes', '0002_auto_20181015_1208'), ('geonode_themes', '0003_remove_geonodethemecustomization_identifier')]
 
     dependencies = [
         ('geonode_themes', '0001_initial'),
@@ -21,17 +21,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='jumbotron_cta_hide',
-            field=models.BooleanField(default=False, verbose_name=b'Hide call to action'),
+            field=models.BooleanField(default=False, verbose_name='Hide call to action'),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='jumbotron_cta_link',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name=b'Call to action link'),
+            field=models.CharField(blank=True, max_length=255, null=True, verbose_name='Call to action link'),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='jumbotron_cta_text',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name=b'Call to action text'),
+            field=models.CharField(blank=True, max_length=255, null=True, verbose_name='Call to action text'),
         ),
         migrations.AlterField(
             model_name='geonodethemecustomization',
@@ -91,62 +91,62 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='geonodethemecustomization',
             name='contactus',
-            field=models.BooleanField(default=False, verbose_name=b'Enable contact us box'),
+            field=models.BooleanField(default=False, verbose_name='Enable contact us box'),
         ),
         migrations.AlterField(
             model_name='geonodethemecustomization',
             name='date',
-            field=models.DateTimeField(auto_now_add=True, help_text=b'This will not appear anywhere.'),
+            field=models.DateTimeField(auto_now_add=True, help_text='This will not appear anywhere.'),
         ),
         migrations.AlterField(
             model_name='geonodethemecustomization',
             name='description',
-            field=models.TextField(blank=True, help_text=b'This will not appear anywhere.', null=True),
+            field=models.TextField(blank=True, help_text='This will not appear anywhere.', null=True),
         ),
         migrations.AlterField(
             model_name='geonodethemecustomization',
             name='is_enabled',
-            field=models.BooleanField(default=False, help_text=b'Enabling this theme will disable the current enabled theme (if any)'),
+            field=models.BooleanField(default=False, help_text='Enabling this theme will disable the current enabled theme (if any)'),
         ),
         migrations.AlterField(
             model_name='geonodethemecustomization',
             name='jumbotron_bg',
-            field=models.ImageField(blank=True, null=True, upload_to=b'img/%Y/%m', verbose_name=b'Jumbotron background'),
+            field=models.ImageField(blank=True, null=True, upload_to='img/%Y/%m', verbose_name='Jumbotron background'),
         ),
         migrations.AlterField(
             model_name='geonodethemecustomization',
             name='jumbotron_welcome_content',
-            field=models.TextField(blank=True, null=True, verbose_name=b'Jumbotron content'),
+            field=models.TextField(blank=True, null=True, verbose_name='Jumbotron content'),
         ),
         migrations.AlterField(
             model_name='geonodethemecustomization',
             name='jumbotron_welcome_hide',
-            field=models.BooleanField(default=False, help_text=b'Check this if the jumbotron backgroud image already contains text', verbose_name=b'Hide text in the jumbotron'),
+            field=models.BooleanField(default=False, help_text='Check this if the jumbotron backgroud image already contains text', verbose_name='Hide text in the jumbotron'),
         ),
         migrations.AlterField(
             model_name='geonodethemecustomization',
             name='jumbotron_welcome_title',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name=b'Jumbotron title'),
+            field=models.CharField(blank=True, max_length=255, null=True, verbose_name='Jumbotron title'),
         ),
         migrations.AlterField(
             model_name='geonodethemecustomization',
             name='name',
-            field=models.CharField(help_text=b'This will not appear anywhere.', max_length=100),
+            field=models.CharField(help_text='This will not appear anywhere.', max_length=100),
         ),
         migrations.AlterField(
             model_name='partner',
             name='href',
-            field=models.CharField(max_length=255, verbose_name=b'Website'),
+            field=models.CharField(max_length=255, verbose_name='Website'),
         ),
         migrations.AlterField(
             model_name='partner',
             name='name',
-            field=models.CharField(help_text=b'This will not appear anywhere.', max_length=100),
+            field=models.CharField(help_text='This will not appear anywhere.', max_length=100),
         ),
         migrations.AlterField(
             model_name='partner',
             name='title',
-            field=models.CharField(max_length=255, verbose_name=b'Display name'),
+            field=models.CharField(max_length=255, verbose_name='Display name'),
         ),
         migrations.RemoveField(
             model_name='geonodethemecustomization',

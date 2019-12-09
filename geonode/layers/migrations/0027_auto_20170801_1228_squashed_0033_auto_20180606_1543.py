@@ -9,7 +9,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    replaces = [(b'layers', '0027_auto_20170801_1228'), (b'layers', '0028_auto_20171218_0249'), (b'layers', '0029_layer_service'), (b'layers', '0030_auto_20180228_0812'), (b'layers', '0031_uploadsession_resource'), (b'layers', '0032_auto_20180424_1638'), (b'layers', '0033_auto_20180606_1543')]
+    replaces = [('layers', '0027_auto_20170801_1228'), ('layers', '0028_auto_20171218_0249'), ('layers', '0029_layer_service'), ('layers', '0030_auto_20180228_0812'), ('layers', '0031_uploadsession_resource'), ('layers', '0032_auto_20180424_1638'), ('layers', '0033_auto_20180606_1543')]
 
     dependencies = [
         ('layers', '26_to_27'),
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='layerfile',
             name='file',
-            field=models.FileField(max_length=255, storage=django.core.files.storage.FileSystemStorage(base_url=b'/uploaded/'), upload_to=b'layers/%Y/%m/%d'),
+            field=models.FileField(max_length=255, storage=django.core.files.storage.FileSystemStorage(base_url='/uploaded/'), upload_to='layers/%Y/%m/%d'),
         ),
         migrations.AlterField(
             model_name='layer',
@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='layer',
             name='time_regex',
-            field=models.CharField(blank=True, choices=[(b'[0-9]{8}', 'YYYYMMDD'), (b'[0-9]{8}T[0-9]{6}', "YYYYMMDD'T'hhmmss"), (b'[0-9]{8}T[0-9]{6}Z', "YYYYMMDD'T'hhmmss'Z'")], max_length=128, null=True, verbose_name='Time regex'),
+            field=models.CharField(blank=True, choices=[('[0-9]{8}', 'YYYYMMDD'), ('[0-9]{8}T[0-9]{6}', "YYYYMMDD'T'hhmmss"), ('[0-9]{8}T[0-9]{6}Z', "YYYYMMDD'T'hhmmss'Z'")], max_length=128, null=True, verbose_name='Time regex'),
         ),
         migrations.AlterField(
             model_name='layer',

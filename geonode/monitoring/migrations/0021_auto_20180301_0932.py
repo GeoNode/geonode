@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='requestevent',
             name='resources',
-            field=models.ManyToManyField(blank=True, help_text=b'List of resources affected', related_name='requests', to='monitoring.MonitoredResource'),
+            field=models.ManyToManyField(blank=True, help_text='List of resources affected', related_name='requests', to='monitoring.MonitoredResource'),
         ),
     ]

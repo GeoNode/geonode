@@ -7,7 +7,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [(b'groups', '0027_auto_20180105_1631'), (b'groups', '0028_auto_20180606_1543')]
+    replaces = [('groups', '0027_auto_20180105_1631'), ('groups', '0028_auto_20180606_1543')]
 
     dependencies = [
         ('groups', '26_to_27'),
@@ -51,6 +51,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='groupprofile',
             name='categories',
-            field=models.ManyToManyField(blank=True, related_name='groups', to=b'groups.GroupCategory', verbose_name='Categories'),
+            field=models.ManyToManyField(blank=True, related_name='groups', to='groups.GroupCategory', verbose_name='Categories'),
         ),
     ]
