@@ -1,10 +1,12 @@
+from __future__ import print_function
+
 import sys
 import time
 import logging
 import multiprocessing
 
 from multiprocessing import Process, Queue, Event
-from Queue import Empty
+from queue import Empty
 
 from twisted.scripts.trial import Options, _getSuite
 from twisted.trial.runner import TrialRunner
@@ -140,7 +142,7 @@ class ParallelTestSuiteRunner(object):
             result = self._tests_func(tests=group_tests, worker_index=None)
             results_queue.put((group, result), block=False)
 
-        for group, tests in tests.iteritems():
+        for group, tests in tests.items():
             tests_queue.put((group, tests), block=False)
             pending_tests[group] = tests
 
@@ -284,12 +286,12 @@ class ParallelTestSuiteRunner(object):
         raise '_tests_func not implements'
 
     def _print_result(self, result):
-        print >> sys.stderr, result.output
+        print(result.output, file=sys.stderr)
 
     def _exit(self, start_time, end_time, failure_count, error_count):
         time_difference = (end_time - start_time)
 
-        print >> sys.stderr, 'Total run time: %d seconds' % (time_difference)
+        print("Total run time: {} seconds".format(time_difference), file=sys.stderr)
         try:
             sys.exit(failure_count + error_count)
         except Exception:
@@ -338,7 +340,7 @@ class ParallelTestSuiteRunner(object):
 
     def log(self, string):
         if self.verbosity >= 3:
-            print string
+            print(string)
 
 
 class DjangoParallelTestSuiteRunner(ParallelTestSuiteRunner,
@@ -446,7 +448,7 @@ class DjangoParallelTestSuiteRunner(ParallelTestSuiteRunner,
         old_names = []
         mirrors = []
         for signature, (db_name, aliases) in self.dependency_ordered(
-                test_databases.items(), dependencies):
+                list(test_databases.items()), dependencies):
             connection = connections[aliases[0]]
             old_names.append((connection, db_name, True))
             test_db_name = connection.creation.create_test_db(
