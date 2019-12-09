@@ -32,7 +32,7 @@ class Command(BaseCommand):
         all_layers = Layer.objects.all()
 
         for index, layer in enumerate(all_layers):
-            print "[%s / %s] Setting public permissions to Layer [%s] ..." % ((index + 1), len(all_layers), layer.name)
+            print("[%s / %s] Setting public permissions to Layer [%s] ..." % ((index + 1), len(all_layers), layer.name))
             try:
                 use_geofence = settings.OGC_SERVER['default'].get(
                     "GEOFENCE_SECURITY_ENABLED", False)
@@ -49,4 +49,4 @@ class Command(BaseCommand):
                 perm_spec["users"]["AnonymousUser"] = ['view_resourcebase', 'download_resourcebase']
                 layer.set_permissions(perm_spec)
             except:
-                print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
+                print("[ERROR] Layer [%s] couldn't be updated" % (layer.name))

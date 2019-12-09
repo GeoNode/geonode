@@ -87,7 +87,7 @@ class Command(BaseCommand):
             all_layers = all_layers.filter(owner__username=username)
 
         for index, layer in enumerate(all_layers):
-            print "[%s / %s] Updating Layer [%s] ..." % ((index + 1), len(all_layers), layer.name)
+            print("[%s / %s] Updating Layer [%s] ..." % ((index + 1), len(all_layers), layer.name))
             try:
                 # recalculate the layer statistics
                 set_attributes(layer, overwrite=True)
@@ -104,7 +104,7 @@ class Command(BaseCommand):
                         _links = Link.objects.filter(resource__id=layer.id, name=_n)
                         while _links.count() > 1:
                             _links.last().delete()
-                            print '.',
+                            print('.', end=' ')
                     # fixup Legend links
                     legend_url_template = ogc_server_settings.PUBLIC_LOCATION + \
                         'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
@@ -124,6 +124,6 @@ class Command(BaseCommand):
                 import traceback
                 traceback.print_exc()
                 if ignore_errors:
-                    print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
+                    print("[ERROR] Layer [%s] couldn't be updated" % (layer.name))
                 else:
                     raise e

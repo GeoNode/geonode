@@ -24,7 +24,11 @@ from django.conf import settings
 from django.core.management import call_command
 from django.template.response import TemplateResponse
 
-import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 from autocomplete_light.forms import ModelForm
 from autocomplete_light.forms import modelform_factory
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
@@ -99,7 +103,7 @@ def run(self, request, queryset):
         if request.POST.get("post"):
             for siteObj in queryset:
                 self.message_user(request, "Executed Backup: " + siteObj.name)
-                out = StringIO.StringIO()
+                out = StringIO()
                 call_command(
                     'backup',
                     force_exec=True,
@@ -136,7 +140,7 @@ def restore(self, request, queryset):
         if request.POST.get("post"):
             for siteObj in queryset:
                 self.message_user(request, "Executed Restore: " + siteObj.name)
-                out = StringIO.StringIO()
+                out = StringIO()
                 if siteObj.location:
                     call_command(
                         'restore', force_exec=True, backup_file=str(

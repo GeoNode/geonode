@@ -37,7 +37,7 @@ class PeopleTest(GeoNodeBaseTestSupport):
 
         # page renders
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         # and responds for a bad email
         response = self.client.post(url, data={
