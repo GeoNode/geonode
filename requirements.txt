@@ -18,9 +18,9 @@ python-slugify==4.0.0
 decorator==4.4.1
 celery==4.3.0
 kombu==4.6.6
-boto3==1.10.28
+boto3==1.10.32
 six<1.14.0
-tqdm==4.39.0
+tqdm==4.40.0
 Deprecated==1.2.7
 wrapt==1.11.2
 
@@ -58,6 +58,7 @@ numpy==1.16.*
 dj-database-url==0.5.0
 dj-pagination==2.4.0
 pinax-notifications==5.0.3
+pinax-ratings==3.0.3
 django-celery-monitor<=1.1.2
 django-celery-beat==1.5.0
 django-floppyforms<1.9.0
@@ -78,7 +79,6 @@ django-geonode-client==1.0.9
 geonode-user-messages==0.1.14
 geonode-avatar==2.1.8
 geonode-announcements==1.0.13
-geonode-agon-ratings==0.3.8
 arcrest>=10.0
 geonode-dialogos==3.0
 geoserver-restconfig==1.0.5
@@ -135,5 +135,5 @@ pytest-bdd==3.2.1
 splinter==0.11.0
 pytest-splinter==2.0.1
 pytest-django==3.7.0
-setuptools==42.0.1
+setuptools==42.0.2
 Twisted==19.10.0

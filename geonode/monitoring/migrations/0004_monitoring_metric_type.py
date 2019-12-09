@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='metric',
             name='type',
-            field=models.CharField(default=b'rate', max_length=255, choices=[(b'rate', b'Rate'), (b'count', b'Count'), (b'value', b'Value')]),
+            field=models.CharField(default='rate', max_length=255, choices=[('rate','Rate'), ('count','Count'), ('value','Value')]),
         ),
         migrations.AlterField(
             model_name='exceptionevent',
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='requestevent',
             name='resources',
-            field=models.ManyToManyField(help_text=b'List of resources affected', related_name='requests', null=True, to='monitoring.MonitoredResource', blank=True),
+            field=models.ManyToManyField(help_text='List of resources affected', related_name='requests', null=True, to='monitoring.MonitoredResource', blank=True),
         ),
         migrations.AlterField(
             model_name='servicetypemetric',

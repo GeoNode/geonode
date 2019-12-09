@@ -21,7 +21,11 @@
 
 import logging
 
-from urllib import quote
+try:
+    from urllib.parse import quote
+except ImportError:
+    # Python 2 compatibility
+    from urllib import quote
 
 from django.conf import settings
 from django.core.urlresolvers import reverse

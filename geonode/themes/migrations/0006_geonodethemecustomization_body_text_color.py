@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='body_text_color',
-            field=models.CharField(default=b'#3a3a3a', max_length=10),
+            field=models.CharField(default='#3a3a3a', max_length=10),
         ),
     ]

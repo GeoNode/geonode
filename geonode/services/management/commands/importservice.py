@@ -20,8 +20,13 @@
 
 from django.core.management.base import BaseCommand
 from geonode.services.models import Service
-from geonode.services.views import _register_cascaded_service, _register_indexed_service, \
-    _register_harvested_service, _register_cascaded_layers, _register_indexed_layers
+from geonode.services.views import (
+    _register_cascaded_service,
+    _register_indexed_service,
+    _register_harvested_service,
+    _register_cascaded_layers,
+    _register_indexed_layers,
+)
 import json
 from geonode.people.utils import get_valid_user
 import sys
@@ -68,7 +73,7 @@ class Command(BaseCommand):
         except Service.DoesNotExist:
             service = None
         if service is not None:
-            print "This is an existing Service"
+            print("This is an existing Service")
             register_service = False
             # Then Check that the name is Unique
         try:
@@ -76,7 +81,7 @@ class Command(BaseCommand):
         except Service.DoesNotExist:
             service = None
         if service is not None:
-            print "This is an existing service using this name.\nPlease specify a different name."
+            print("This is an existing service using this name.\nPlease specify a different name.")
         if register_service:
             if method == 'C':
                 response = _register_cascaded_service(type, url, name, username, password, owner=owner, verbosity=True)
@@ -85,22 +90,22 @@ class Command(BaseCommand):
             elif method == 'H':
                 response = _register_harvested_service(url, name, username, password, owner=owner, verbosity=True)
             elif method == 'X':
-                print 'Not Implemented (Yet)'
+                print("Not Implemented (Yet)")
             elif method == 'L':
-                print 'Local Services not configurable via API'
+                print("Local Services not configurable via API")
             else:
-                print 'Invalid method'
+                print("Invalid method")
 
             json_response = json.loads(response.content)
             if "id" in json_response:
-                print "Service created with id of %d" % json_response["id"]
+                print("Service created with id of {}".format(json_response["id"]))
                 service = Service.objects.get(id=json_response["id"])
             else:
-                print "Something went wrong: %s" % response.content
+                print("Something went wrong: {}".format(response.content))
                 return
 
-            print service.id
-            print register_layers
+            print(service.id)
+            print(register_layers)
 
         if service and register_layers:
             layers = []
@@ -111,10 +116,10 @@ class Command(BaseCommand):
             elif service.method == 'I':
                 response = _register_indexed_layers(user, service, layers, perm_spec)
             elif service.method == 'X':
-                print 'Not Implemented (Yet)'
+                print("Not Implemented (Yet)")
             elif service.method == 'L':
-                print 'Local Services not configurable via API'
+                print("Local Services not configurable via API")
             else:
-                print('Invalid Service Type')
+                print("Invalid Service Type")
 
-        print response.content
+        print(response.content)

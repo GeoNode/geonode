@@ -27,6 +27,8 @@ import logging
 
 # Django functionality
 from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import default_storage as storage
 
 # Geonode functionality
 from geonode.documents.models import ResourceBase
@@ -38,16 +40,20 @@ def delete_orphaned_thumbs():
     """
     Deletes orphaned thumbnails.
     """
-    documents_path = os.path.join(settings.MEDIA_ROOT, 'thumbs')
-    for filename in os.listdir(documents_path):
-        fn = os.path.join(documents_path, filename)
-        model = filename.split('-')[0]
-        uuid = filename.replace(model, '').replace('-thumb.png', '')[1:]
-        if ResourceBase.objects.filter(uuid=uuid).count() == 0:
-            print 'Removing orphan thumb %s' % fn
-            logger.debug('Removing orphan thumb %s' % fn)
-            try:
-                os.remove(fn)
-            except OSError:
-                print 'Could not delete file %s' % fn
-                logger.error('Could not delete file %s' % fn)
+    if isinstance(storage, FileSystemStorage):
+        documents_path = os.path.join(settings.MEDIA_ROOT, 'thumbs')
+    else:
+        documents_path = os.path.join(settings.STATIC_ROOT, 'thumbs')
+    if os.path.exists(documents_path):
+        for filename in os.listdir(documents_path):
+            fn = os.path.join(documents_path, filename)
+            model = filename.split('-')[0]
+            uuid = filename.replace(model, '').replace('-thumb.*', '')[1:]
+            if ResourceBase.objects.filter(uuid=uuid).count() == 0:
+                print 'Removing orphan thumb %s' % fn
+                logger.debug('Removing orphan thumb %s' % fn)
+                try:
+                    os.remove(fn)
+                except OSError:
+                    print 'Could not delete file %s' % fn
+                    logger.error('Could not delete file %s' % fn)

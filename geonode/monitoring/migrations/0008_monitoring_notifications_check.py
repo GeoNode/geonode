@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('min_value', models.DecimalField(default=None, null=True, max_digits=16, decimal_places=4, blank=True)),
                 ('max_value', models.DecimalField(default=None, null=True, max_digits=16, decimal_places=4, blank=True)),
-                ('max_timeout', models.DurationField(help_text=b'Max timeout for given metric before error should be raised', null=True, blank=True)),
+                ('max_timeout', models.DurationField(help_text='Max timeout for given metric before error should be raised', null=True, blank=True)),
                 ('active', models.BooleanField(default=True)),
                 ('label', models.ForeignKey(blank=True, to='monitoring.MetricLabel', null=True)),
                 ('metric', models.ForeignKey(related_name='checks', to='monitoring.Metric')),
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=255)),
                 ('description', models.CharField(max_length=255)),
-                ('user_threshold', jsonfield.fields.JSONField(default={}, help_text=b'Threshold definition')),
+                ('user_threshold', jsonfield.fields.JSONField(default={}, help_text='Threshold definition')),
             ],
         ),
         migrations.AddField(

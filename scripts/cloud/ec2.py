@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-import ConfigParser
+import configparser
 # pip install boto3
 # You will also need:
 # - A .pem keyfile generated using the Amazon web interface to launch
@@ -107,7 +107,7 @@ def writeconfig(config):
 
 
 def readconfig(default_ami=None):
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
 
     # If there is no config file, let's write one.
     if not os.path.exists(CONFIG_FILE):
@@ -225,13 +225,13 @@ def launch():
     print("Firing up instance...")
     instance = wait_for_state(ec2, instance_id, 'running')
     dns = instance['PublicDnsName']
-    print("Instance running at %s" % dns)
+    print(("Instance running at %s" % dns))
 
     config.set('ec2', 'HOST', dns)
     config.set('ec2', 'INSTANCE', instance_id)
     writeconfig(config)
 
-    print("ssh -i %s ubuntu@%s" % (key_path, dns))
+    print(("ssh -i %s ubuntu@%s" % (key_path, dns)))
     print("Terminate the instance via the web interface.")
 
     time.sleep(20)
@@ -266,12 +266,12 @@ if __name__ == '__main__':
         terminate()
     elif sys.argv[1] == "host":
         config = readconfig()
-        print config.get('ec2', 'HOST')
+        print(config.get('ec2', 'HOST'))
     elif sys.argv[1] == "key":
         config = readconfig()
-        print config.get('ec2', 'KEY_PATH')
+        print(config.get('ec2', 'KEY_PATH'))
     else:
-        print("Usage:\n    " + 
+        print(("Usage:\n    " + 
               "python %s launch_base\n     " +
               "python %s launch_geonode\n    " +
-              "python %s terminate" % (sys.argv[0], sys.argv[0], sys.argv[0]))
+              "python %s terminate" % (sys.argv[0], sys.argv[0], sys.argv[0])))

@@ -30,6 +30,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='monitoredresource',
             name='type',
-            field=models.CharField(choices=[(b'', b'No resource'), (b'layer', b'Layer'), (b'map', b'Map'), (b'resource_base', b'Resource base'), (b'document', b'Document'), (b'style', b'Style'), (b'admin', b'Admin'), (b'url', b'URL'), (b'other', b'Other')], default=b'', max_length=255),
+            field=models.CharField(choices=[('','No resource'), ('layer','Layer'), ('map','Map'), ('resource_base','Resource base'), ('document','Document'), ('style','Style'), ('admin','Admin'), ('url','URL'), ('other','Other')], default='', max_length=255),
         ),
     ]

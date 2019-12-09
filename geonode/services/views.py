@@ -37,8 +37,13 @@ from django.contrib.auth.decorators import login_required
 from geonode.security.views import _perms_info_json
 from geonode.layers.models import Layer
 from geonode.proxy.views import proxy
-from urlparse import urljoin
-from urllib import quote
+try:
+    from urllib.parse import urljoin
+    from urllib.parse import quote
+except ImportError:
+    # Python 2 compatibility
+    from urlparse import urljoin
+    from urllib import quote
 from .serviceprocessors import get_service_handler
 from . import enumerations
 from . import forms

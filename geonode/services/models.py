@@ -26,7 +26,11 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from geonode.base.models import ResourceBase
 from geonode.people.enumerations import ROLE_VALUES
-from urlparse import urljoin
+try:
+    from urllib.parse import urljoin
+except ImportError:
+    # Python 2 compatibility
+    from urlparse import urljoin
 
 from . import enumerations
 

@@ -157,8 +157,7 @@ class CommonModelApi(ModelResource):
             filters = {}
         orm_filters = super(CommonModelApi, self).build_filters(
             filters=filters, ignore_bad_filters=ignore_bad_filters, **kwargs)
-        if 'type__in' in filters and filters[
-                'type__in'] in list(FILTER_TYPES.keys()):
+        if 'type__in' in filters and filters['type__in'] in FILTER_TYPES.keys():
             orm_filters.update({'type': filters.getlist('type__in')})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
@@ -181,7 +180,7 @@ class CommonModelApi(ModelResource):
         filtered = None
         if types:
             for the_type in types:
-                if the_type in list(LAYER_SUBTYPES.keys()):
+                if the_type in LAYER_SUBTYPES.keys():
                     super_type = the_type
                     if 'vector_time' == the_type:
                         super_type = 'vector'
@@ -330,7 +329,7 @@ class CommonModelApi(ModelResource):
                 if type in ["map", "layer", "document", "user"]:
                     # Type is one of our Major Types (not a sub type)
                     types.append(type)
-                elif type in list(LAYER_SUBTYPES.keys()):
+                elif type in LAYER_SUBTYPES.keys():
                     subtypes.append(type)
 
             if 'vector' in subtypes and 'vector_time' not in subtypes:
@@ -544,10 +543,8 @@ class CommonModelApi(ModelResource):
         return self.create_response(request, object_list)
 
     def get_haystack_api_fields(self, haystack_object):
-        object_fields = dict(
-            (k, v) for k, v in list(haystack_object.get_stored_fields().items()) if not re.search(
-                '_exact$|_sortable$', k))
-        return object_fields
+        return {k: v for k, v in haystack_object.get_stored_fields().items()
+                if not re.search('_exact$|_sortable$', k)}
 
     def get_list(self, request, **kwargs):
         """
@@ -607,7 +604,7 @@ class CommonModelApi(ModelResource):
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):
                 if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
                 else:
                     formatted_obj['thumbnail_url'] = ''
 
@@ -789,7 +786,7 @@ class LayerResource(CommonModelApi):
 
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):
-                formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+                formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
 
             # put the object on the response stack
             formatted_objects.append(formatted_obj)
@@ -996,7 +993,7 @@ class MapResource(CommonModelApi):
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):
                 if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
                 else:
                     formatted_obj['thumbnail_url'] = ''
 
@@ -1053,7 +1050,7 @@ class DocumentResource(CommonModelApi):
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):
                 if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.img_thumbnail.url
+                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
                 else:
                     formatted_obj['thumbnail_url'] = ''
 

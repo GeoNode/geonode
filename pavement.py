@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from __future__ import print_function
 
 import django
 import fileinput
@@ -28,14 +29,28 @@ import subprocess
 import signal
 import sys
 import time
-import urllib
-import urllib2
+try:
+    from urllib.parse import urlparse
+    from urllib.request import urlopen, Request
+except ImportError:
+    from urllib2 import urlopen, Request
+    from urlparse import urlparse
 import zipfile
-from urlparse import urlparse
+from tqdm import tqdm
+import requests
+import math
 
 import yaml
-from paver.easy import (BuildFailure, call_task, cmdopts, info, needs, options,
-                        path, sh, task)
+from paver.easy import (
+    BuildFailure,
+    call_task,
+    cmdopts,
+    info,
+    needs,
+    path,
+    sh,
+    task,
+)
 from setuptools.command import easy_install
 
 try:
@@ -43,19 +58,21 @@ try:
 except ImportError:
     from paver.easy import pushd
 
-from geonode.settings import (on_travis,
-                              core_tests,
-                              internal_apps_tests,
-                              integration_tests,
-                              integration_csw_tests,
-                              integration_bdd_tests,
-                              INSTALLED_APPS,
-                              GEONODE_CORE_APPS,
-                              GEONODE_INTERNAL_APPS,
-                              GEONODE_APPS,
-                              OGC_SERVER,
-                              ASYNC_SIGNALS,
-                              MONITORING_ENABLED)
+from geonode.settings import (
+    on_travis,
+    core_tests,
+    internal_apps_tests,
+    integration_tests,
+    integration_csw_tests,
+    integration_bdd_tests,
+    INSTALLED_APPS,
+    GEONODE_CORE_APPS,
+    GEONODE_INTERNAL_APPS,
+    GEONODE_APPS,
+    OGC_SERVER,
+    ASYNC_SIGNALS,
+    MONITORING_ENABLED,
+)
 
 _django_11 = django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2
 
@@ -76,53 +93,49 @@ with open("dev_config.yml", 'r') as f:
 
 
 def grab(src, dest, name):
-    download = True
-    if not dest.exists():
-        print('Downloading %s' % name)
+    src, dest, name = map(str, (src, dest, name))
+
+    if not os.path.exists(dest):
+        print("Downloading {}".format(name))
     elif not zipfile.is_zipfile(dest):
-        print('Downloading %s (corrupt file)' % name)
+        print("Downloading {} (corrupt file)".format(name))
     else:
-        download = False
-    if download:
-        if str(src).startswith("file://"):
-            src2 = src[7:]
-            if not os.path.exists(src2):
-                print("Source location (%s) does not exist" % str(src2))
-            else:
-                print("Copying local file from %s" % str(src2))
-                shutil.copyfile(str(src2), str(dest))
+        return
+
+    if src.startswith("file://"):
+        src2 = src.replace("file://", '')
+        if not os.path.exists(src2):
+            print("Source location ({}) does not exist".format(src2))
         else:
-            # urllib.urlretrieve(str(src), str(dest))
-            from tqdm import tqdm
-            import requests
-            import math
-            # Streaming, so we can iterate over the response.
-            r = requests.get(str(src), stream=True, timeout=10, verify=False)
-            # Total size in bytes.
-            total_size = int(r.headers.get('content-length', 0))
-            print("Requesting %s" % str(src))
-            block_size = 1024
-            wrote = 0
-            with open('output.bin', 'wb') as f:
-                for data in tqdm(
-                        r.iter_content(block_size),
-                        total=math.ceil(
-                            total_size //
-                            block_size),
-                        unit='KB',
-                        unit_scale=False):
-                    wrote = wrote + len(data)
-                    f.write(data)
-            print(" total_size [%d] / wrote [%d] " % (total_size, wrote))
-            if total_size != 0 and wrote != total_size:
-                print("ERROR, something went wrong")
-            else:
-                shutil.move('output.bin', str(dest))
-            try:
-                # Cleaning up
-                os.remove('output.bin')
-            except OSError:
-                pass
+            print("Copying local file from {}".format(src2))
+            shutil.copyfile(src2, dest)
+    else:
+        # urlretrieve(str(src), str(dest))
+        # Streaming, so we can iterate over the response.
+        r = requests.get(src, stream=True, timeout=10, verify=False)
+        # Total size in bytes.
+        total_size = int(r.headers.get('content-length', 0))
+        print("Requesting {}".format(src))
+        block_size = 1024
+        wrote = 0
+        with open("output.bin", 'wb') as f:
+            for data in tqdm(
+                    r.iter_content(block_size),
+                    total=math.ceil(total_size // block_size),
+                    unit='KB',
+                    unit_scale=False):
+                wrote += len(data)
+                f.write(data)
+        print(" total_size [{}] / wrote [{}] ".format(total_size, wrote))
+        if total_size != 0 and wrote != total_size:
+            print("ERROR, something went wrong")
+        else:
+            shutil.move("output.bin", dest)
+        try:
+            # Cleaning up
+            os.remove("output.bin")
+        except OSError:
+            pass
 
 
 @task
@@ -172,7 +185,7 @@ def setup_geoserver(options):
             if not webapp_dir:
                 webapp_dir.makedirs()
 
-            print 'extracting geoserver'
+            print("extracting geoserver")
             z = zipfile.ZipFile(geoserver_bin, "r")
             z.extractall(webapp_dir)
 
@@ -325,8 +338,8 @@ def setup(options):
 def grab_winfiles(url, dest, packagename):
     # Add headers
     headers = {'User-Agent': 'Mozilla 5.10'}
-    request = urllib2.Request(url, None, headers)
-    response = urllib2.urlopen(request)
+    request = Request(url, None, headers)
+    response = urlopen(request)
     with open(dest, 'wb') as writefile:
         writefile.write(response.read())
 
@@ -349,23 +362,23 @@ def win_install_deps(options):
         "lXML": dev_config['WINDOWS']['lxml']
     }
     failed = False
-    for package, url in win_packages.iteritems():
+    for package, url in win_packages.items():
         tempfile = download_dir / os.path.basename(url)
-        print "Installing file ... " + tempfile
+        print("Installing file ... " + tempfile)
         grab_winfiles(url, tempfile, package)
         try:
             easy_install.main([tempfile])
         except Exception as e:
             failed = True
-            print "install failed with error: ", e
+            print("install failed with error: ", e)
         os.remove(tempfile)
     if failed and sys.maxsize > 2**32:
-        print "64bit architecture is not currently supported"
-        print "try finding the 64 binaries for py2exe, and pyproj"
+        print("64bit architecture is not currently supported")
+        print("try finding the 64 binaries for py2exe, and pyproj")
     elif failed:
-        print "install failed for py2exe, and/or pyproj"
+        print("install failed for py2exe, and/or pyproj")
     else:
-        print "Windows dependencies now complete.  Run pip install -e geonode --use-mirrors"
+        print("Windows dependencies now complete.  Run pip install -e geonode --use-mirrors")
 
 
 @task
@@ -381,9 +394,9 @@ def upgradedb(options):
         sh("python -W ignore manage.py migrate maps 0001 --fake")
         sh("python -W ignore manage.py migrate avatar 0001 --fake")
     elif version is None:
-        print "Please specify your GeoNode version"
+        print("Please specify your GeoNode version")
     else:
-        print "Upgrades from version %s are not yet supported." % version
+        print("Upgrades from version {} are not yet supported.".format(version))
 
 
 @task
@@ -619,13 +632,16 @@ def start_django(options):
         # "geonode.layer.viewer"
     ]
     if 'django_celery_beat' not in INSTALLED_APPS:
-        sh('%s celery -A geonode.celery_app:app worker -Q %s -B -E -l INFO %s' %
-        (settings, ",".join(celery_queues), foreground))
-    else:
-        sh('%s celery -A geonode.celery_app:app worker -Q %s -B -E -l INFO %s %s' % (
+        sh("{} celery -A geonode.celery_app:app worker -Q {} -B -E -l INFO {}".format(
             settings,
             ",".join(celery_queues),
-            '--scheduler django_celery_beat.schedulers:DatabaseScheduler',
+            foreground
+        ))
+    else:
+        sh("{} celery -A geonode.celery_app:app worker -Q {} -B -E -l INFO {} {}".format(
+            settings,
+            ",".join(celery_queues),
+            "--scheduler django_celery_beat.schedulers:DatabaseScheduler",
             foreground
         ))
 
@@ -666,10 +682,10 @@ def start_geoserver(options):
     url = GEOSERVER_BASE_URL
 
     if urlparse(GEOSERVER_BASE_URL).hostname != 'localhost':
-        print "Warning: OGC_SERVER['default']['LOCATION'] hostname is not equal to 'localhost'"
+        print("Warning: OGC_SERVER['default']['LOCATION'] hostname is not equal to 'localhost'")
 
     if not GEOSERVER_BASE_URL.endswith('/'):
-        print "Error: OGC_SERVER['default']['LOCATION'] does not end with a '/'"
+        print("Error: OGC_SERVER['default']['LOCATION'] does not end with a '/'")
         sys.exit(1)
 
     download_dir = path('downloaded').abspath()
@@ -723,27 +739,27 @@ def start_geoserver(options):
                 try:
                     open("../../downloaded/null.txt", 'w+').close()
                 except IOError as e:
-                    print "Chances are that you have Geoserver currently running.  You \
-                            can either stop all servers with paver stop or start only \
-                            the django application with paver start_django."
+                    print("Chances are that you have Geoserver currently running. You "
+                          "can either stop all servers with paver stop or start only "
+                          "the django application with paver start_django.")
                     sys.exit(1)
                 loggernullpath = "../../downloaded/null.txt"
 
             try:
                 sh(('%(javapath)s -version') % locals())
             except BaseException:
-                print "Java was not found in your path.  Trying some other options: "
+                print("Java was not found in your path.  Trying some other options: ")
                 javapath_opt = None
                 if os.environ.get('JAVA_HOME', None):
-                    print "Using the JAVA_HOME environment variable"
+                    print("Using the JAVA_HOME environment variable")
                     javapath_opt = os.path.join(os.path.abspath(
                         os.environ['JAVA_HOME']), "bin", "java.exe")
                 elif options.get('java_path'):
                     javapath_opt = options.get('java_path')
                 else:
-                    print "Paver cannot find java in the Windows Environment.  \
-                    Please provide the --java_path flag with your full path to \
-                    java.exe e.g. --java_path=C:/path/to/java/bin/java.exe"
+                    print("Paver cannot find java in the Windows Environment. "
+                          "Please provide the --java_path flag with your full path to "
+                          "java.exe e.g. --java_path=C:/path/to/java/bin/java.exe")
                     sys.exit(1)
                 # if there are spaces
                 javapath = 'START /B "" "' + javapath_opt + '"'
@@ -816,8 +832,9 @@ def test(options):
     for _app in _apps:
         if _app and len(_app) > 0 and 'geonode' in _app:
             _apps_to_test.append(_app)
-    if MONITORING_ENABLED and 'geonode.monitoring' in INSTALLED_APPS and \
-        'geonode.monitoring' not in _apps_to_test:
+    if MONITORING_ENABLED and \
+       'geonode.monitoring' in INSTALLED_APPS and \
+       'geonode.monitoring' not in _apps_to_test:
         _apps_to_test.append('geonode.monitoring')
     sh("%s manage.py test geonode.tests.smoke %s.tests --noinput %s %s" % (options.get('prefix'),
                                                                            '.tests '.join(_apps_to_test),
@@ -892,13 +909,16 @@ def test_integration(options):
             call_task('setup_data', options={'settings': settings})
 
         if name == 'geonode.geoserver.integration.tests':
-            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py makemigrations --noinput" % settings)
-            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py migrate --noinput" % settings)
-            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py loaddata sample_admin.json" % settings)
-            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" %
-               settings)
-            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" %
-               settings)
+            sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
+               "makemigrations --noinput".format(settings))
+            sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
+               "migrate --noinput".format(settings))
+            sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
+               "loaddata sample_admin.json".format(settings))
+            sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
+               "loaddata geonode/base/fixtures/default_oauth_apps.json".format(settings))
+            sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
+               "loaddata geonode/base/fixtures/initial_data.json".format(settings))
 
             call_task('start_geoserver')
 
@@ -1090,9 +1110,9 @@ def deb(options):
         deb_changelog = path('debian') / 'changelog'
         for idx, line in enumerate(fileinput.input([deb_changelog], inplace=True)):
             if idx == 0:
-                print "geonode (%s) %s; urgency=high" % (simple_version, distribution),
+                print("geonode ({}) {}; urgency=high".format(simple_version, distribution), end='')
             else:
-                print line.replace("urgency=medium", "urgency=high"),
+                print(line.replace("urgency=medium", "urgency=high"), end='')
 
         # Revert workaround for git-dhc bug
         sh('rm -rf .git')
@@ -1119,7 +1139,7 @@ def publish(options):
     if 'GPG_KEY_GEONODE' in os.environ:
         key = os.environ['GPG_KEY_GEONODE']
     else:
-        print "You need to set the GPG_KEY_GEONODE environment variable"
+        print("You need to set the GPG_KEY_GEONODE environment variable")
         return
 
     if 'PPA_GEONODE' in os.environ:
@@ -1221,9 +1241,9 @@ def kill(arg1, arg2):
 
 def waitfor(url, timeout=300):
     started = False
-    for a in xrange(timeout):
+    for a in range(timeout):
         try:
-            resp = urllib.urlopen(url)
+            resp = urlopen(url)
         except IOError:
             pass
         else:

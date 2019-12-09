@@ -22,7 +22,7 @@ from __future__ import with_statement
 
 import traceback
 import psycopg2
-import ConfigParser
+import configparser
 import os
 import sys
 
@@ -34,7 +34,7 @@ STATICFILES_DIRS = 'static_dirs'
 TEMPLATE_DIRS    = 'template_dirs'
 LOCALE_PATHS     = 'locale_dirs'
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'settings.ini'))
 
 db_name   = config.get('targetdb', 'dbname')
@@ -58,9 +58,9 @@ def get_db_conn():
 
 
 def patch_db():
-   """Apply patch to GeoNode DB"""
-   conn   = get_db_conn()
-   curs   = conn.cursor()
+    """Apply patch to GeoNode DB"""
+    conn   = get_db_conn()
+    curs   = conn.cursor()
 
     try:
         curs.execute("ALTER TABLE base_contactrole ALTER COLUMN resource_id DROP NOT NULL;")
@@ -78,9 +78,9 @@ def patch_db():
 
 
 def cleanup_db():
-   """Remove spurious records from GeoNode DB"""
-   conn   = get_db_conn()
-   curs   = conn.cursor()
+    """Remove spurious records from GeoNode DB"""
+    conn   = get_db_conn()
+    curs   = conn.cursor()
 
     try:
         curs.execute("DELETE FROM base_contactrole WHERE resource_id is NULL;")
@@ -138,11 +138,11 @@ def confirm(prompt=None, resp=False):
         prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
 
     while True:
-        ans = raw_input(prompt)
+        ans = input(prompt)
         if not ans:
             return resp
         if ans not in ['y', 'Y', 'n', 'N']:
-            print 'please enter y or n.'
+            print('please enter y or n.')
             continue
         if ans == 'y' or ans == 'Y':
             return True

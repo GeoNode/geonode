@@ -137,24 +137,6 @@ ADMIN_MODERATE_UPLOADS
     A ``Group Manager`` *can* approve the resource, but he cannot publish it whenever the setting ``RESOURCE_PUBLISHING`` is set to ``True``.
     Otherwise, if ``RESOURCE_PUBLISHING`` is set to ``False``, the resource becomes accessible as soon as it is approved.
 
-AGON_RATINGS_CATEGORY_CHOICES
------------------------------
-
-    Default::
-
-        {
-            "maps.Map": {
-                "map": "How good is this map?"
-                },
-            "layers.Layer": {
-                "layer": "How good is this layer?"
-                },
-            "documents.Document": {
-            "document": "How good is this document?"
-            }
-        }
-
-
 ALLOWED_DOCUMENT_TYPES
 ----------------------
 
@@ -251,6 +233,8 @@ AWS_ACCESS_KEY_ID
     This is a `Django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
     Your Amazon Web Services access key, as a string.
 
+    .. warning:: This works only if ``DEBUG = False``
+
 AWS_BUCKET_NAME
 ---------------
 
@@ -260,6 +244,8 @@ AWS_BUCKET_NAME
     The name of the S3 bucket GeoNode will pull static and/or media files from. Set through the environment variable S3_BUCKET_NAME.
     This is a `Django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
 
+    .. warning:: This works only if ``DEBUG = False``
+
 AWS_QUERYSTRING_AUTH
 --------------------
 
@@ -268,11 +254,15 @@ AWS_QUERYSTRING_AUTH
     This is a `Django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
     Setting AWS_QUERYSTRING_AUTH to False to remove query parameter authentication from generated URLs. This can be useful if your S3 buckets are public.
 
+    .. warning:: This works only if ``DEBUG = False``
+
 AWS_S3_BUCKET_DOMAIN
 --------------------
 
     https://github.com/GeoNode/geonode/blob/master/geonode/settings.py#L1661
-    AWS_S3_BUCKET_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    ``AWS_S3_BUCKET_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME``
+
+    .. warning:: This works only if ``DEBUG = False``
 
 AWS_SECRET_ACCESS_KEY
 ---------------------
@@ -283,6 +273,8 @@ AWS_SECRET_ACCESS_KEY
     This is a `Django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
     Your Amazon Web Services secret access key, as a string.
 
+    .. warning:: This works only if ``DEBUG = False``
+
 AWS_STORAGE_BUCKET_NAME
 -----------------------
 
@@ -291,6 +283,8 @@ AWS_STORAGE_BUCKET_NAME
 
     This is a `Django storage setting <https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html>`__
     Your Amazon Web Services storage bucket name, as a string.
+
+    .. warning:: This works only if ``DEBUG = False``
 
 B
 =
@@ -306,7 +300,7 @@ BING_API_KEY
     If using ``mapstore`` client library, make sure the ``MAPSTORE_BASELAYERS`` include the following:
 
     .. code-block:: python
-    
+
         if BING_API_KEY:
             BASEMAP = {
                 "type": "bing",
@@ -367,8 +361,50 @@ C
 CACHES
 ------
 
+    Default::
+
+        CACHES = {
+            'default': {
+                'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+            },
+            'resources': {
+                'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+                'TIMEOUT': 600,
+                'OPTIONS': {
+                    'MAX_ENTRIES': 10000
+                }
+            }
+        }
+
     A dictionary containing the settings for all caches to be used with Django.
     This is a `Django setting <https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CACHES>`__
+
+    The ``'default'`` cache is disabled because we don't have a mechanism to discriminate between client sesssions right now, and we don't want all users fetch the same api results.
+
+    The ``'resources'`` is not currently used. It might be helpful for `caching Django template fragments <https://docs.djangoproject.com/en/2.2/topics/cache/#template-fragment-caching>`__ and/or `Tastypie API Caching <https://django-tastypie.readthedocs.io/en/latest/caching.html>`__.
+
+
+CACHE_BUSTING_MEDIA_ENABLED
+---------------------------
+
+    | Default: ``False``
+    | Env: ``CACHE_BUSTING_MEDIA_ENABLED``
+
+    This is a `Django ManifestStaticFilesStorage storage setting <https://docs.djangoproject.com/en/2.2/ref/contrib/staticfiles/#manifeststaticfilesstorage>`__
+    A boolean allowing you to enable the ``ManifestStaticFilesStorage storage``. This works only on a production system.
+
+    .. warning:: This works only if ``DEBUG = False``
+
+CACHE_BUSTING_STATIC_ENABLED
+----------------------------
+
+    | Default: ``False``
+    | Env: ``CACHE_BUSTING_STATIC_ENABLED``
+
+    This is a `Django ManifestStaticFilesStorage storage setting <https://docs.djangoproject.com/en/2.2/ref/contrib/staticfiles/#manifeststaticfilesstorage>`__
+    A boolean allowing you to enable the ``ManifestStaticFilesStorage storage``. This works only on a production system.
+
+    .. warning:: This works only if ``DEBUG = False``
 
 
 CASCADE_WORKSPACE
@@ -1034,7 +1070,7 @@ MAPSTORE_BASELAYERS
             }, {
                 "type": "wms",
                 "title": "Sentinel-2 cloudless - https://s2maps.eu",
-                "format": "image/png8",
+                "format": "image/jpeg",
                 "id": "s2cloudless",
                 "name": "s2cloudless:s2cloudless",
                 "url": "https://maps.geo-solutions.it/geoserver/wms",
@@ -1081,7 +1117,7 @@ MAPSTORE_BASELAYERS
             }, {
                 "type": "wms",
                 "title": "Sentinel-2 cloudless - https://s2maps.eu",
-                "format": "image/png8",
+                "format": "image/jpeg",
                 "id": "s2cloudless",
                 "name": "s2cloudless:s2cloudless",
                 "url": "https://maps.geo-solutions.it/geoserver/wms",
@@ -1473,6 +1509,23 @@ PINAX_NOTIFICATIONS_QUEUE_ALL
 
     By default, calling notification.send will send the notification immediately, however, if you set this setting to True, then the default behavior of the send method will be to queue messages in the database for sending via the emit_notices command.
     This is a `pinax notification setting: <https://django-notification.readthedocs.io/en/latest/settings.html#pinax-notifications-queue-all>`__
+
+PINAX_RATINGS_CATEGORY_CHOICES
+------------------------------
+
+    Default::
+
+        {
+            "maps.Map": {
+                "map": "How good is this map?"
+                },
+            "layers.Layer": {
+                "layer": "How good is this layer?"
+                },
+            "documents.Document": {
+            "document": "How good is this document?"
+            }
+        }
 
 PROXY_ALLOWED_HOSTS
 -------------------

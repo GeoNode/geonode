@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-import StringIO
+import io
 import json
 import logging
 import os
@@ -83,7 +83,7 @@ def download_zip(request, layername):
     zip_filename = "%s.zip" % zip_subdir
 
     # Open StringIO to grab in-memory ZIP contents
-    s = StringIO.StringIO()
+    s = io.StringIO()
 
     # The zip compressor
     zf = zipfile.ZipFile(s, "w")
@@ -155,7 +155,7 @@ def download_map(request, mapid):
     zip_filename = "%s.zip" % zip_subdir
 
     # Open StringIO to grab in-memory ZIP contents
-    s = StringIO.StringIO()
+    s = io.StringIO()
 
     # The zip compressor
     zf = zipfile.ZipFile(s, "w")
@@ -215,7 +215,7 @@ def legend(request, layername, layertitle=False, style=None):
             try:
                 style_list(layer, internal=False)
             except BaseException:
-                print 'Failed to fetch styles'
+                print("Failed to fetch styles")
 
             # refresh values
             qgis_layer.refresh_from_db()
@@ -307,7 +307,7 @@ def tile(request, layername, z, x, y, style=None):
             try:
                 style_list(layer, internal=False)
             except BaseException:
-                print 'Failed to fetch styles'
+                print("Failed to fetch styles")
 
             # refresh values
             qgis_layer.refresh_from_db()
@@ -408,8 +408,7 @@ def qgis_server_request(request):
     """View to forward OGC request to QGIS Server."""
     # Make a copy of the query string with capital letters for the key.
     query = request.GET or request.POST
-    params = {
-        param.upper(): value for param, value in query.iteritems()}
+    params = {param.upper(): value for param, value in query.items()}
 
     # 900913 is deprecated
     if params.get('SRS') == 'EPSG:900913':
@@ -527,11 +526,9 @@ def qgis_server_pdf(request):
 def qgis_server_map_print(request):
     logger.debug('qgis_server_map_print')
     temp = []
-    for key, value in request.POST.iteritems():
+    for key, value in request.POST.items():
         temp[key] = value
-        print key
-        print value
-        print '--------'
+        print("{}\n{}\n--------".format(key, value))
     return HttpResponse(
         json.dumps(temp), content_type="application/json")
 
@@ -556,7 +553,7 @@ def qml_style(request, layername, style_name=None):
             try:
                 styles_obj = style_list(layer, internal=False)
             except BaseException:
-                print 'Failed to fetch styles'
+                print("Failed to fetch styles")
 
             styles_dict = []
             if styles_obj:
@@ -655,7 +652,7 @@ def qml_style(request, layername, style_name=None):
                 try:
                     style_list(layer, internal=False)
                 except BaseException:
-                    print 'Failed to fetch styles'
+                    print("Failed to fetch styles")
 
                 return TemplateResponse(
                     request,
@@ -722,7 +719,7 @@ def qml_style(request, layername, style_name=None):
             try:
                 style_list(layer, internal=False)
             except BaseException:
-                print 'Failed to fetch styles'
+                print("Failed to fetch styles")
 
             return TemplateResponse(
                 request,
