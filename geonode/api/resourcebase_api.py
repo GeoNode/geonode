@@ -30,10 +30,11 @@ from django.template.response import TemplateResponse
 from tastypie import http
 from tastypie.bundle import Bundle
 
-from tastypie.constants import ALL, ALL_WITH_RELATIONS
-from tastypie.resources import ModelResource
 from tastypie import fields
+from tastypie.cache import SimpleCache  # noqa
 from tastypie.utils import trailing_slash
+from tastypie.resources import ModelResource
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
 from guardian.shortcuts import get_objects_for_user
 
@@ -688,6 +689,7 @@ class ResourceBaseResource(CommonModelApi):
         authentication = MultiAuthentication(SessionAuthentication(),
                                              OAuthAuthentication(),
                                              GeonodeApiKeyAuthentication())
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
 
 class FeaturedResourceBaseResource(CommonModelApi):
@@ -701,6 +703,7 @@ class FeaturedResourceBaseResource(CommonModelApi):
         authentication = MultiAuthentication(SessionAuthentication(),
                                              OAuthAuthentication(),
                                              GeonodeApiKeyAuthentication())
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
 
 class LayerResource(CommonModelApi):
@@ -930,6 +933,7 @@ class LayerResource(CommonModelApi):
             'name': ALL,
             'alternate': ALL,
         })
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
 
 class MapResource(CommonModelApi):
@@ -1010,6 +1014,7 @@ class MapResource(CommonModelApi):
         authentication = MultiAuthentication(SessionAuthentication(),
                                              OAuthAuthentication(),
                                              GeonodeApiKeyAuthentication())
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
 
 class DocumentResource(CommonModelApi):
@@ -1069,3 +1074,4 @@ class DocumentResource(CommonModelApi):
         authentication = MultiAuthentication(SessionAuthentication(),
                                              OAuthAuthentication(),
                                              GeonodeApiKeyAuthentication())
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])

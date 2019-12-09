@@ -225,9 +225,9 @@ def data_json(request):
         record['description'] = resource.abstract
         record['keyword'] = resource.keyword_csv.split(',')
         record['modified'] = resource.csw_insert_date.isoformat()
-        record['publisher'] = resource.poc.organization
-        record['contactPoint'] = resource.poc.name_long
-        record['mbox'] = resource.poc.email
+        record['publisher'] = resource.poc.organization if resource.poc else None
+        record['contactPoint'] = resource.poc.name_long if resource.poc else None
+        record['mbox'] = resource.poc.email if resource.poc else None
         record['identifier'] = resource.uuid
         if resource.is_published:
             record['accessLevel'] = 'public'

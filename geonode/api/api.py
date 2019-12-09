@@ -56,9 +56,10 @@ from geonode.groups.models import GroupProfile, GroupCategory
 from django.core.serializers.json import DjangoJSONEncoder
 from tastypie.serializers import Serializer
 from tastypie import fields
+from tastypie.cache import SimpleCache  # noqa
+from tastypie.utils import trailing_slash
 from tastypie.resources import ModelResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
-from tastypie.utils import trailing_slash
 
 from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
@@ -134,7 +135,6 @@ class TypeFilteredResource(ModelResource):
             self.type_filter = None
         if 'title__icontains' in filters:
             self.title_filter = filters['title__icontains']
-
         return orm_filters
 
     def serialize(self, request, data, format, options=None):
@@ -143,7 +143,6 @@ class TypeFilteredResource(ModelResource):
         options['title_filter'] = getattr(self, 'title_filter', None)
         options['type_filter'] = getattr(self, 'type_filter', None)
         options['user'] = request.user
-
         return super(TypeFilteredResource, self).serialize(request, data, format, options)
 
 
@@ -165,6 +164,7 @@ class TagResource(TypeFilteredResource):
             'slug': ALL,
         }
         serializer = CountJSONSerializer()
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
 
 class ThesaurusKeywordResource(TypeFilteredResource):
@@ -220,6 +220,7 @@ class ThesaurusKeywordResource(TypeFilteredResource):
             'thesaurus': ALL,
         }
         serializer = CountJSONSerializer()
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
 
 class RegionResource(TypeFilteredResource):
@@ -242,6 +243,7 @@ class RegionResource(TypeFilteredResource):
         }
         if settings.API_INCLUDE_REGIONS_COUNT:
             serializer = CountJSONSerializer()
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
 
 class TopicCategoryResource(TypeFilteredResource):
@@ -261,7 +263,6 @@ class TopicCategoryResource(TypeFilteredResource):
                 admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
                 unpublished_not_visible=settings.RESOURCE_PUBLISHING,
                 private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
-
         return filter_set.distinct().count()
 
     def serialize(self, request, data, format, options=None):
@@ -279,6 +280,7 @@ class TopicCategoryResource(TypeFilteredResource):
             'identifier': ALL,
         }
         serializer = CountJSONSerializer()
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
 
 class GroupCategoryResource(TypeFilteredResource):
@@ -292,6 +294,7 @@ class GroupCategoryResource(TypeFilteredResource):
         include_resource_uri = False
         filtering = {'slug': ALL,
                      'name': ALL}
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
     def dehydrate_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
@@ -331,6 +334,7 @@ class GroupProfileResource(ModelResource):
             'categories': ALL_WITH_RELATIONS,
         }
         ordering = ['title', 'last_modified']
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
     def dehydrate_member_count(self, bundle):
         """Provide relative URL to the geonode UI's page on the group"""
@@ -364,6 +368,7 @@ class GroupResource(ModelResource):
             'group_profile': ALL_WITH_RELATIONS,
         }
         ordering = ['name', 'last_modified']
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
     def apply_filters(self, request, applicable_filters):
         user = request.user
@@ -519,6 +524,7 @@ class ProfileResource(TypeFilteredResource):
             'username': ALL,
         }
         serializer = CountJSONSerializer()
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
 
 class OwnersResource(TypeFilteredResource):
@@ -547,6 +553,7 @@ class OwnersResource(TypeFilteredResource):
             'username': ALL,
         }
         serializer = CountJSONSerializer()
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
 
 class QGISStyleResource(ModelResource):
@@ -755,6 +762,7 @@ class GeoserverStyleResource(ModelResource):
             'name': ALL,
             'layer': ALL_WITH_RELATIONS
         }
+        # cache = SimpleCache(cache_name='resources', varies=["Accept", "User-Agent", "Cookie"])
 
     def build_filters(self, filters=None, **kwargs):
         """Apply custom filters for layer."""
