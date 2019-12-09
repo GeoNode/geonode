@@ -80,14 +80,14 @@ class GeoNodeBaseTestSupport(TestCase):
 
     def tearDown(self):
         super(GeoNodeBaseTestSupport, self).tearDown()
-        logging.info(" Test tearDown. Destroying models / Cleaning up Server.")
-        remove_models(self.get_obj_ids, type=self.get_type)
-
         from django.conf import settings
-        if settings.OGC_SERVER['default'].get(
-                "GEOFENCE_SECURITY_ENABLED", False):
-            from geonode.security.utils import purge_geofence_all
-            purge_geofence_all()
+        if settings.integration_tests:
+            logging.info(" Test tearDown. Destroying models / Cleaning up Server.")
+            remove_models(self.get_obj_ids, type=self.get_type)
+            if settings.OGC_SERVER['default'].get(
+                    "GEOFENCE_SECURITY_ENABLED", False):
+                from geonode.security.utils import purge_geofence_all
+                purge_geofence_all()
 
 
 class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport,
