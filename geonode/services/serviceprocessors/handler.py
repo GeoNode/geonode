@@ -52,7 +52,7 @@ def get_service_handler(base_url, proxy_base=None, service_type=enumerations.AUT
         if service_type == enumerations.AUTO:
             to_check = handlers.keys()
         else:
-            to_check = [k for k, v in handlers.items() if v["OWS"]]
+            to_check = (k for k, v in handlers.items() if v["OWS"])
         for type_ in to_check:
             logger.debug("Checking {}...".format(type_))
             try:
