@@ -48,12 +48,12 @@ def delete_orphaned_thumbs():
         for filename in os.listdir(documents_path):
             fn = os.path.join(documents_path, filename)
             model = filename.split('-')[0]
-            uuid = filename.replace(model, '').replace('-thumb.*', '')[1:]
+            uuid = filename.replace(model, '').replace('-thumb.png', '')[1:]
             if ResourceBase.objects.filter(uuid=uuid).count() == 0:
-                print 'Removing orphan thumb %s' % fn
+                print('Removing orphan thumb %s' % fn)
                 logger.debug('Removing orphan thumb %s' % fn)
                 try:
                     os.remove(fn)
                 except OSError:
-                    print 'Could not delete file %s' % fn
+                    print('Could not delete file %s' % fn)
                     logger.error('Could not delete file %s' % fn)
