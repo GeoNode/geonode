@@ -22,37 +22,17 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
 import copy
+import json
 import base64
 import pickle
-import requests
-try:
-    from urllib.parse import urlencode
-    from urllib.request import (
-        urlopen,
-        build_opener,
-        install_opener,
-        HTTPCookieProcessor,
-        HTTPPasswordMgrWithDefaultRealm,
-        HTTPBasicAuthHandler,
-    )
-    from urllib.error import HTTPError, URLError
-except ImportError:
-    from urllib import urlencode
-    from urllib2 import (
-        urlopen,
-        build_opener,
-        install_opener,
-        HTTPCookieProcessor,
-        HTTPError,
-        HTTPPasswordMgrWithDefaultRealm,
-        HTTPBasicAuthHandler,
-        URLError,
-    )
+import urllib
+import urllib2
 import logging
 import contextlib
 
 from bs4 import BeautifulSoup
-from requests_toolbelt.multipart.encoder import MultipartEncoder
+from poster.streaminghttp import register_openers
+from poster.encode import multipart_encode, MultipartParam
 
 from django.core import mail
 from django.conf import settings
@@ -87,12 +67,18 @@ class Client(DjangoTestClient):
         self.passwd = passwd
         self.csrf_token = None
         self.response_cookies = None
-        self.cookies = requests.cookies.RequestsCookieJar()
+        self.opener = self._init_url_opener()
         self.u, _ = get_user_model().objects.get_or_create(username=self.user)
         self.u.is_active = True
         self.u.email = 'admin@geonode.org'
         self.u.set_password(self.passwd)
         self.u.save()
+
+    def _init_url_opener(self):
+        self.cookies = urllib2.HTTPCookieProcessor()
+        opener = register_openers()
+        opener.add_handler(self.cookies)  # Add cookie handler
+        return opener
 
     def _login(self, user, backend=None):
         from importlib import import_module
@@ -115,15 +101,16 @@ class Client(DjangoTestClient):
         url = path if path.startswith("http") else self.url + path
         if ajax:
             url += '&force_ajax=true' if '?' in url else '?force_ajax=true'
+        request = None
         # Create a fake request to store login details.
         _request = None
         _session_id = None
         if force_login:
             session_cookie = settings.SESSION_COOKIE_NAME
-            for cookie in self.cookies:
+            for cookie in self.cookies.cookiejar:
                 if cookie.name == session_cookie:
                     _session_id = cookie.value
-                    self.response_cookies += "; {}={}".format(session_cookie, _session_id)
+                    self.response_cookies += "; %s=%s" % (session_cookie, _session_id)
                     # _request = self.force_login(self.u)
 
                     # # Save the session values.
@@ -135,42 +122,45 @@ class Client(DjangoTestClient):
                     # cookie.value = _request.session.session_key
                     # cookie.expires = None
                     # self.cookies.cookiejar.set_cookie(cookie)
-        headers = {}
+
         if data:
-            fields = {}
+            items = []
             # wrap post parameters
             for name, value in data.items():
                 if isinstance(value, file):
                     # add file
-                    fields[name] = (value.name, value)
-                elif name == 'csrfmiddlewaretoken' and _request and _request.META['CSRF_COOKIE']:
-                    value = _request.META['CSRF_COOKIE']
-                    self.csrf_token = value
-                    for cookie in self.cookies:
-                        if cookie.name == 'csrftoken':
-                            cookie.value = value
-                            self.cookies.set_cookie(cookie)
-                    fields[name] = value
-                logger.debug(" MultipartParam: {} / {}: ".format(name, value))
-            encoder = MultipartEncoder(fields=fields)
-            headers['Content-Type'] = encoder.content_type
+                    items.append(MultipartParam.from_file(name, value.name))
+                else:
+                    if name == 'csrfmiddlewaretoken' and _request and _request.META['CSRF_COOKIE']:
+                        value = _request.META['CSRF_COOKIE']
+                        self.csrf_token = value
+                        for cookie in self.cookies.cookiejar:
+                            if cookie.name == 'csrftoken':
+                                cookie.value = value
+                                self.cookies.cookiejar.set_cookie(cookie)
+                    items.append(MultipartParam(name, value))
+                logger.debug(" MultipartParam: %s / %s: " % (name, value))
+            datagen, headers = multipart_encode(items)
+            request = urllib2.Request(url, datagen, headers)
+        else:
+            request = urllib2.Request(url=url)
 
         if self.csrf_token:
-            headers['X-CSRFToken'] = self.csrf_token
+            request.add_header('X-CSRFToken', self.csrf_token)
         if self.response_cookies:
-            headers['cookie'] = self.response_cookies
+            request.add_header('cookie', self.response_cookies)
         if ajax:
-            headers['X_REQUESTED_WITH'] = "XMLHttpRequest"
+            request.add_header('X_REQUESTED_WITH', 'XMLHttpRequest')
 
-        if data:
-            response = requests.post(url, data=encoder, headers=headers, cookies=self.cookies)
-        else:
-            response = requests.get(url, headers=headers, cookies=self.cookies)
-
-        response.raise_for_status()
-        response.code = response.status_code
-
-        return response
+        try:
+            return self.opener.open(request)
+        except urllib2.HTTPError as ex:
+            if not debug:
+                raise
+            logger.error('error in request to %s' % path)
+            logger.error(ex.reason)
+            logger.error(ex.read())
+            raise
 
     def get(self, path, debug=True):
         return self.make_request(path, debug=debug)
@@ -239,32 +229,26 @@ class Client(DjangoTestClient):
             data=params,
             ajax=True,
             force_login=True)
+        data = resp.read()
         try:
-            return resp, resp.json()
+            return resp, json.loads(data)
         except ValueError:
             logger.exception(ValueError(
                 'probably not json, status %s' %
-                resp.status_code,
-                resp.content))
-            return resp, resp.content
+                resp.getcode(),
+                data))
+            return resp, data
 
     def get_html(self, path, debug=True):
         """ Method that make a get request and passes the results to bs4
         Takes a path and returns a tuple
         """
         resp = self.get(path, debug)
-        return resp, BeautifulSoup(resp.content)
+        return resp, BeautifulSoup(resp.read())
 
     def get_json(self, path):
         resp = self.get(path)
-        try:
-            return resp, resp.json()
-        except ValueError:
-            logger.exception(ValueError(
-                'probably not json, status %s' %
-                resp.status_code,
-                resp.content))
-            return resp, resp.content
+        return resp, json.loads(resp.read())
 
     def get_csrf_token(self, last=False):
         """Get a csrf_token from the home page or read from the cookie jar
@@ -272,7 +256,7 @@ class Client(DjangoTestClient):
         """
         if not last:
             self.get('/')
-        csrf = [c for c in self.cookies if c.name == 'csrftoken']
+        csrf = [c for c in self.cookies.cookiejar if c.name == 'csrftoken']
         return csrf[0].value if csrf else None
 
 
@@ -282,9 +266,9 @@ def get_web_page(url, username=None, password=None, login_url=None):
 
     if login_url:
         # Login via a form
-        cookies = HTTPCookieProcessor()
-        opener = build_opener(cookies)
-        install_opener(opener)
+        cookies = urllib2.HTTPCookieProcessor()
+        opener = urllib2.build_opener(cookies)
+        urllib2.install_opener(opener)
 
         opener.open(login_url)
 
@@ -298,7 +282,7 @@ def get_web_page(url, username=None, password=None, login_url=None):
                       this_is_the_login_form=True,
                       csrfmiddlewaretoken=token,
                       )
-        encoded_params = urlencode(params)
+        encoded_params = urllib.urlencode(params)
 
         with contextlib.closing(opener.open(login_url, encoded_params)) as f:
             f.read()
@@ -306,22 +290,22 @@ def get_web_page(url, username=None, password=None, login_url=None):
         # Login using basic auth
 
         # Create password manager
-        passman = HTTPPasswordMgrWithDefaultRealm()
+        passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
         passman.add_password(None, url, username, password)
 
         # create the handler
-        authhandler = HTTPBasicAuthHandler(passman)
-        opener = build_opener(authhandler)
-        install_opener(opener)
+        authhandler = urllib2.HTTPBasicAuthHandler(passman)
+        opener = urllib2.build_opener(authhandler)
+        urllib2.install_opener(opener)
 
     try:
-        pagehandle = urlopen(url)
-    except HTTPError as e:
+        pagehandle = urllib2.urlopen(url)
+    except urllib2.HTTPError as e:
         msg = ('The server couldn\'t fulfill the request. '
                'Error code: %s' % e.code)
         e.args = (msg,)
         raise
-    except URLError as e:
+    except urllib2.URLError as e:
         msg = 'Could not open URL "%s": %s' % (url, e)
         e.args = (msg,)
         raise
@@ -386,7 +370,7 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
         set_attributes(_l, attribute_map)
 
         # 2 items in attribute_map should translate into 2 Attribute instances
-        self.assertEqual(_l.attributes.count(), len(expected_results))
+        self.assertEquals(_l.attributes.count(), len(expected_results))
 
         # The name and type should be set as provided by attribute map
         for a in _l.attributes:
