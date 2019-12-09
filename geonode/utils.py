@@ -40,7 +40,7 @@ import subprocess
 
 from osgeo import ogr
 from slugify import slugify
-from StringIO import StringIO
+from io import StringIO
 from contextlib import closing
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
@@ -547,7 +547,7 @@ class GXPMapBase(object):
             server_lookup[json.dumps(source)] = str(i)
 
         def source_lookup(source):
-            for k, v in sources.iteritems():
+            for k, v in sources.items():
                 if v == source:
                     return k
             return None
@@ -682,7 +682,7 @@ class GXPLayerBase(object):
             Will also override any access_token in the request and replace it with an existing one.
             '''
             urls = []
-            for name, server in settings.OGC_SERVER.iteritems():
+            for name, server in settings.OGC_SERVER.items():
                 url = urlsplit(server['PUBLIC_LOCATION'])
                 urls.append(url.netloc)
 
@@ -1435,7 +1435,7 @@ class HttpClient(object):
         action = getattr(session, method.lower(), None)
         if action:
             response = action(
-                url=unquote(url).decode('utf8'),
+                url=unquote(url),
                 data=data,
                 headers=headers,
                 timeout=timeout or self.timeout,

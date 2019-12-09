@@ -25,7 +25,11 @@ import re
 import sys
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
-from urlparse import urlparse, urlunparse, urljoin
+try:
+    from urllib.parse import urlparse, urlunparse, urljoin
+except ImportError:
+    # Python 2 compatibility
+    from urlparse import urlparse, urlunparse, urljoin
 
 import django
 import dj_database_url
@@ -1558,8 +1562,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
 
     if GEONODE_CATALOGUE_SERVICE:
-        MAPSTORE_CATALOGUE_SERVICES[GEONODE_CATALOGUE_SERVICE.keys()[0]] = GEONODE_CATALOGUE_SERVICE[GEONODE_CATALOGUE_SERVICE.keys()[0]]
-        MAPSTORE_CATALOGUE_SELECTED_SERVICE = GEONODE_CATALOGUE_SERVICE.keys()[0]
+        MAPSTORE_CATALOGUE_SERVICES[list(GEONODE_CATALOGUE_SERVICE.keys())[0]] = GEONODE_CATALOGUE_SERVICE[list(GEONODE_CATALOGUE_SERVICE.keys())[0]]
+        MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(GEONODE_CATALOGUE_SERVICE.keys())[0]
 
         DEFAULT_MS2_BACKGROUNDS = [
             {
