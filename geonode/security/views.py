@@ -43,10 +43,8 @@ def _perms_info(obj):
 
 def _perms_info_json(obj):
     info = _perms_info(obj)
-    info['users'] = dict([(u.username, perms)
-                          for u, perms in info['users'].items()])
-    info['groups'] = dict([(g.name, perms)
-                           for g, perms in info['groups'].items()])
+    info['users'] = {u.username: perms for u, perms in info['users'].items()}
+    info['groups'] = {g.name: perms for g, perms in info['groups'].items()}
 
     return json.dumps(info)
 
@@ -74,19 +72,21 @@ def resource_permissions(request, resource_id):
             # Check Users Permissions Consistency
             view_any = False
             info = _perms_info(resource)
-            info_users = dict([(u.username, perms) for u, perms in info['users'].items()])
 
-            for user, perms in info_users.items():
-                if user == 'AnonymousUser':
-                    view_any = ('view_resourcebase' in perms)
+            for user, perms in info['users'].items():
+                if user.username == "AnonymousUser":
+                    view_any = "view_resourcebase" in perms
                     break
 
-            for user, perms in info_users.items():
-                if 'download_resourcebase' in perms and 'view_resourcebase' not in perms and not view_any:
+            for user, perms in info['users'].items():
+                if "download_resourcebase" in perms and \
+                   "view_resourcebase" not in perms and \
+                   not view_any:
+
                     success = False
-                    message = 'User ' + str(user) + ' has Download permissions but ' \
-                              'cannot access the resource. ' \
-                              'Please update permissions consistently!'
+                    message = "User {} has download permissions but cannot " \
+                              "access the resource. Please update permission " \
+                              "consistently!".format(user.username)
 
             return HttpResponse(
                 json.dumps({'success': success, 'message': message}),
