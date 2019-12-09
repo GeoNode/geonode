@@ -20,10 +20,7 @@
 
 import os
 # import sys
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+from urlparse import urlparse
 
 import django
 import pytest

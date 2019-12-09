@@ -17,10 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-try:
-    from urllib.parse import urljoin
-except ImportError:
-    from urlparse import urljoin
+from urlparse import urljoin
 
 import pytest
 from geonode import settings
