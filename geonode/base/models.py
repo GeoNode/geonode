@@ -1190,6 +1190,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 url = urljoin(site_url, url)
 
             # should only have one 'Thumbnail' link
+            _links = Link.objects.filter(resource=self, name='Thumbnail')
+            if _links.count() > 1:
+                _links.delete()
             obj, created = Link.objects.get_or_create(
                 resource=self,
                 name='Thumbnail',
@@ -1203,16 +1206,32 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.thumbnail_url = url
             obj.url = url
             obj.save()
-
             ResourceBase.objects.filter(id=self.id).update(
                 thumbnail_url=url
             )
-
-        except Exception:
+        except Exception as e:
             logger.error(
-                'Error when generating the thumbnail for resource %s.' %
-                self.id)
+                'Error when generating the thumbnail for resource %s. (%s)' %
+                (self.id, str(e)))
             logger.error('Check permissions for file %s.' % upload_path)
+            Link.objects.filter(resource=self, name='Thumbnail').delete()
+            _thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
+            obj, created = Link.objects.get_or_create(
+                resource=self,
+                name='Thumbnail',
+                defaults=dict(
+                    url=_thumbnail_url,
+                    extension='png',
+                    mime='image/png',
+                    link_type='image',
+                )
+            )
+            self.thumbnail_url = _thumbnail_url
+            obj.url = _thumbnail_url
+            obj.save()
+            ResourceBase.objects.filter(id=self.id).update(
+                thumbnail_url=_thumbnail_url
+            )
 
     def set_missing_info(self):
         """Set default permissions and point of contacts.
