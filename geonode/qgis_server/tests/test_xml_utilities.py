@@ -50,7 +50,7 @@ class XMLUtilitiesTest(GeoNodeBaseTestSupport):
         element.text = 'TESTtext'
         result_xml = ElementTree.tostring(root)
 
-        self.assertEquals(expected_xml, result_xml)
+        self.assertEqual(expected_xml, result_xml)
 
     @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_update_xml(self):
