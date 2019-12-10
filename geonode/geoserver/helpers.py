@@ -979,7 +979,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             })
             try:
                 req, body = http_client.get(dft_url, user=_user)
-                soup = BeautifulSoup(body)
+                soup = BeautifulSoup(body, features="lxml")
                 for field in soup.findAll('th'):
                     if(field.string is None):
                         field_name = field.contents[0].string
