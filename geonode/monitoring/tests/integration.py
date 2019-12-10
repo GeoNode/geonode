@@ -209,6 +209,7 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
         self.client = TestClient(REMOTE_ADDR='127.0.0.1')
 
         settings.DATABASES['default']['NAME'] = DB_NAME
+        settings.OGC_SERVER['default']['DATASTORE'] = ''
 
         connections['default'].settings_dict['ATOMIC_REQUESTS'] = False
         connections['default'].connect()
