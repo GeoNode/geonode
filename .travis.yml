@@ -34,6 +34,9 @@ matrix:
       env:
           - BACKEND: 'geonode.geoserver'
             DOCKER_COMPOSE_VERSION: 1.19.0
+            # This is GeoServer server address
+            GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+            GEOSERVER_SERVER_PORT: 8080
             ON_TRAVIS: 'True'
             TEST_RUN_CORE: 'True'
             MONITORING_ENABLED: 'False'
@@ -45,6 +48,9 @@ matrix:
       env:
           - BACKEND: 'geonode.geoserver'
             DOCKER_COMPOSE_VERSION: 1.19.0
+            # This is GeoServer server address
+            GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+            GEOSERVER_SERVER_PORT: 8080
             ON_TRAVIS: 'True'
             TEST_RUN_INTERNAL_APPS: 'True'
             MONITORING_ENABLED: 'False'
@@ -172,10 +178,9 @@ matrix:
 branches:
   only:
     - master
+    - 2.10.2
     - 2.10.1
     - 2.10.x
-    - 2.8.x
-    - 2.6.x
 
 before_install:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
