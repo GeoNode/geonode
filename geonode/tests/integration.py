@@ -26,12 +26,10 @@ import os
 import json
 import datetime
 import urllib2
-# import base64
 import time
 import logging
 
 from StringIO import StringIO
-# import traceback
 import gisdata
 from decimal import Decimal
 from defusedxml import lxml as dlxml
@@ -45,13 +43,10 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.auth import get_user_model
-# from guardian.shortcuts import assign_perm
-from geonode.base.populate_test_data import reconnect_signals, all_public
+from geonode.base.enumerations import CHARSETS
+from geonode.base.populate_test_data import all_public
 from tastypie.test import ResourceTestCaseMixin
-
 from geonode.qgis_server.models import QGISServerLayer
-
-# from geonode.security.models import *
 from geonode.decorators import on_ogc_backend
 from geonode.base.models import TopicCategory, Link
 from geonode.layers.models import Layer
@@ -61,15 +56,14 @@ from geonode.layers.utils import (
     upload,
     file_upload,
 )
+from geonode.layers.populate_layers_data import create_layer_data
 from geonode.tests.utils import check_layer, get_web_page
-
 from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
-# FIXME(Ariel): Uncomment these when #1767 is fixed
-# from geonode.geoserver.helpers import get_time_info
-# from geonode.geoserver.helpers import get_wms
-# from geonode.geoserver.helpers import set_time_info
 from geonode.geoserver.signals import gs_catalog
 from geonode.utils import check_ogc_backend
+
+from guardian.shortcuts import get_anonymous_user
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -83,10 +77,6 @@ logger = logging.getLogger(__name__)
 
 def _log(msg, *args):
     logger.debug(msg, *args)
-
-
-# Reconnect post_save signals that is disconnected by populate_test_data
-reconnect_signals()
 
 
 def zip_dir(basedir, archivename):
@@ -1831,3 +1821,97 @@ class LayersStylesApiInteractionTests(
             meta = self.deserialize(resp)['meta']
 
             self.assertEqual(meta['total_count'], 0)
+
+
+@override_settings(SITEURL='http://localhost:8008/')
+class LayersUploaderTests(GeoNodeLiveTestSupport):
+
+    """
+    Tests geonode.maps app/module
+    """
+    port = 8008
+
+    GEONODE_REST_UPLOADER = {
+        'BACKEND': 'geonode.rest',
+        'OPTIONS': {
+            'TIME_ENABLED': True,
+            'MOSAIC_ENABLED': False,
+            'GEOGIG_ENABLED': False,
+        },
+        'SUPPORTED_CRS': [
+            'EPSG:4326',
+            'EPSG:3785',
+            'EPSG:3857',
+            'EPSG:32647',
+            'EPSG:32736'
+        ],
+        'SUPPORTED_EXT': [
+            '.shp',
+            '.csv',
+            '.kml',
+            '.kmz',
+            '.json',
+            '.geojson',
+            '.tif',
+            '.tiff',
+            '.geotiff',
+            '.gml',
+            '.xml'
+        ]
+    }
+
+    def setUp(self):
+        super(LayersUploaderTests, self).setUp()
+        create_layer_data()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        self.anonymous_user = get_anonymous_user()
+
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
+    def test_geonode_rest_layer_uploader(self):
+        layer_upload_url = reverse('layer_upload')
+        self.client.login(username=self.user, password=self.passwd)
+        # Check upload for each charset
+        for charset in CHARSETS:
+            files = dict(
+                base_file=SimpleUploadedFile('foo.shp', ' '),
+                shx_file=SimpleUploadedFile('foo.shx', ' '),
+                dbf_file=SimpleUploadedFile('foo.dbf', ' '),
+                prj_file=SimpleUploadedFile('foo.prj', ' '))
+            files['permissions'] = '{}'
+            files['charset'] = charset[0]
+            files['layer_title'] = 'test layer_{}'.format(charset[0])
+            resp = self.client.post(layer_upload_url, data=files)
+            # Check response status code
+            self.assertEqual(resp.status_code, 200)
+            # Retrieve the layer from DB
+            data = json.loads(resp.content)
+            # Check success
+            self.assertTrue(data['success'])
+            _lname = data['url'].split(':')[-1]
+            _l = Layer.objects.get(name=_lname)
+            # Check the layer has been published
+            self.assertTrue(_l.is_published)
+            # Check errors
+            self.assertNotIn('errors', data)
+            self.assertNotIn('errormsgs', data)
+            self.assertNotIn('traceback', data)
+            self.assertNotIn('context', data)
+            self.assertNotIn('upload_session', data)
+            if 'info' in data:
+                self.assertEqual(data['info'], _l.info)
+            self.assertEqual(data['bbox'], _l.bbox_string)
+            self.assertEqual(
+                data['crs'],
+                {
+                    'type': 'name',
+                    'properties': _l.srid
+                }
+            )
+            self.assertEqual(
+                data['ogc_backend'],
+                settings.OGC_SERVER['default']['BACKEND']
+            )
+            _l.delete()

@@ -17,3 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+from geonode import geoserver, qgis_server  # noqa
+from geonode.utils import (designals,
+                           check_ogc_backend)
+
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    designals()
