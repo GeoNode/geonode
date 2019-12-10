@@ -52,7 +52,6 @@ def _add_user_to_registered_members(user):
         groupprofile = GroupProfile.objects.filter(slug=group_name).first()
         if groupprofile:
             groupprofile.join(user)
-            print(user.groups.all())
 
 
 def _remove_user_from_registered_members(user):
@@ -61,7 +60,6 @@ def _remove_user_from_registered_members(user):
         groupprofile = GroupProfile.objects.filter(slug=group_name).first()
         if groupprofile:
             groupprofile.leave(user)
-            print(user.groups.all())
 
 
 def do_login(sender, user, request, **kwargs):

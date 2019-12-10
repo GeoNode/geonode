@@ -1864,7 +1864,7 @@ def do_autoconfigure():
         try:
             h = Host.objects.get(name=host[0])
             if h.ip != host[1]:
-                print("Different ip. got", h.ip, "instead of", host[1])
+                log.warning("Different ip. got", h.ip, "instead of", host[1])
         except Host.DoesNotExist:
             h = Host.objects.create(name=host[0], ip=host[1])
         hosts_map[h.name] = h
