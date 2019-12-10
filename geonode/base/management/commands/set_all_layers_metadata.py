@@ -102,9 +102,10 @@ class Command(BaseCommand):
                     # remove duplicates
                     for _n in _names:
                         _links = Link.objects.filter(resource__id=layer.id, name=_n)
-                        while _links.count() > 1:
+                        _cnt = _links.count()
+                        while _cnt > 1:
                             _links.last().delete()
-                            print '.',
+                            _cnt -= 1
                     # fixup Legend links
                     legend_url_template = ogc_server_settings.PUBLIC_LOCATION + \
                         'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
