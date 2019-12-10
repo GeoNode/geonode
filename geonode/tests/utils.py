@@ -244,7 +244,7 @@ class Client(DjangoTestClient):
         Takes a path and returns a tuple
         """
         resp = self.get(path, debug)
-        return resp, BeautifulSoup(resp.read())
+        return resp, BeautifulSoup(resp.read(), features="lxml")
 
     def get_json(self, path):
         resp = self.get(path)
