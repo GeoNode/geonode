@@ -137,21 +137,21 @@ def setup_geoserver(options):
     if _backend == 'geonode.qgis_server' or 'geonode.geoserver' not in INSTALLED_APPS:
         return
 
+    download_dir = path('downloaded')
+    if not download_dir.exists():
+        download_dir.makedirs()
+
+    geoserver_dir = path('geoserver')
+
+    geoserver_bin = download_dir / \
+        os.path.basename(dev_config['GEOSERVER_URL'])
+    jetty_runner = download_dir / \
+        os.path.basename(dev_config['JETTY_RUNNER_URL'])
+
     if _django_11 and on_travis:
         """Will make use of the docker container for the Integration Tests"""
         pass
     else:
-        download_dir = path('downloaded')
-        if not download_dir.exists():
-            download_dir.makedirs()
-
-        geoserver_dir = path('geoserver')
-
-        geoserver_bin = download_dir / \
-            os.path.basename(dev_config['GEOSERVER_URL'])
-        jetty_runner = download_dir / \
-            os.path.basename(dev_config['JETTY_RUNNER_URL'])
-
         grab(
             options.get(
                 'geoserver',

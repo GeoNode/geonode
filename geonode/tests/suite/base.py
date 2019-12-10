@@ -37,12 +37,8 @@ def destroy_test_db(database_name):
     connection.creation.destroy_test_db(database_name, verbosity)
 
 
-def load_db_fixtures(fixtures, commit, database):
-    call_command('loaddata', *fixtures, **{
-        'verbosity': verbosity,
-        'commit': commit,
-        'database': database
-    })
+def load_db_fixtures(fixtures):
+    call_command('loaddata', *fixtures)
 
 
 def setup_test_db(worker_index, fixtures, fn, *args):
