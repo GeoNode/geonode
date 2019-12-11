@@ -363,7 +363,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
-            self.assertEqual(len(links), 9)
+            self.assertEqual(len(links), 8)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
@@ -822,29 +822,27 @@ class LayersTest(GeoNodeBaseTestSupport):
             ValidationError,
             lambda: field.clean('<users></users>'))
 
-    # AF: This causing Segmentation Fault
-    # def test_rating_layer_remove(self):
-    #     """ Test layer rating is removed on layer remove
-    #     """
-    #     # Get the layer to work with
-    #     layer = Layer.objects.all()[3]
-    #     layer_id = layer.id
+    def test_rating_layer_remove(self):
+        """ Test layer rating is removed on layer remove
+        """
+        # Get the layer to work with
+        layer = Layer.objects.all()[3]
+        layer_id = layer.id
 
-    #     # Create the rating with the correct content type
-    #     ctype = ContentType.objects.get(model='layer')
-    #     from pinax.ratings.models import OverallRating
-    #     OverallRating.objects.create(
-    #         category=2,
-    #         object_id=layer_id,
-    #         content_type=ctype,
-    #         rating=3)
-    #     rating = OverallRating.objects.all()
-    #     self.assertEqual(rating.count(), 1)
-    #     # Remove the layer
-    #     layer.delete()
-    #     # Check there are no ratings matching the remove layer
-    #     rating = OverallRating.objects.all()
-    #     self.assertEqual(rating.count(), 0)
+        # Create the rating with the correct content type
+        ctype = ContentType.objects.get(model='layer')
+        OverallRating.objects.create(
+            category=2,
+            object_id=layer_id,
+            content_type=ctype,
+            rating=3)
+        rating = OverallRating.objects.all()
+        self.assertEqual(rating.count(), 1)
+        # Remove the layer
+        layer.delete()
+        # Check there are no ratings matching the remove layer
+        rating = OverallRating.objects.all()
+        self.assertEqual(rating.count(), 0)
 
     def test_layer_remove(self):
         """Test layer remove functionality
