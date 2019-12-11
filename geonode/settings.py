@@ -19,9 +19,9 @@
 #########################################################################
 
 # Django settings for the GeoNode project.
-import ast
 import os
 import re
+import ast
 import sys
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
@@ -638,14 +638,6 @@ MIDDLEWARE_CLASSES = (
 
     # Security settings
     'django.middleware.security.SecurityMiddleware',
-
-    # This middleware allows to print private layers for the users that have
-    # the permissions to view them.
-    # It sets temporary the involved layers as public before restoring the
-    # permissions.
-    # Beware that for few seconds the involved layers are public there could be
-    # risks.
-    # 'geonode.middleware.PrintProxyMiddleware',
 
     # If you use SessionAuthenticationMiddleware, be sure it appears before OAuth2TokenMiddleware.
     # SessionAuthenticationMiddleware is NOT required for using
@@ -1599,6 +1591,20 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
            }
         ]
 
+    if MAPBOX_ACCESS_TOKEN:
+        BASEMAP = {
+            "type": "tileprovider",
+            "title": "MapBox streets-v11",
+            "provider": "MapBoxStyle",
+            "name": "MapBox streets-v11",
+            "accessToken": "%s" % MAPBOX_ACCESS_TOKEN,
+            "source": "streets-v11",
+            "thumbURL": "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/6/33/23?access_token=%s" % MAPBOX_ACCESS_TOKEN,
+            "group": "background",
+            "visibility": True
+        }
+        DEFAULT_MS2_BACKGROUNDS = [BASEMAP,] + DEFAULT_MS2_BACKGROUNDS
+
     if BING_API_KEY:
         BASEMAP = {
             "type": "bing",
@@ -1695,12 +1701,11 @@ BROKER_TRANSPORT_OPTIONS = {
 
 ASYNC_SIGNALS = ast.literal_eval(os.environ.get('ASYNC_SIGNALS', 'False'))
 RABBITMQ_SIGNALS_BROKER_URL = 'amqp://localhost:5672'
-REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
+# REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
 LOCAL_SIGNALS_BROKER_URL = 'memory://'
 
 if ASYNC_SIGNALS:
-    _BROKER_URL = os.environ.get('BROKER_URL', RABBITMQ_SIGNALS_BROKER_URL)
-    # _BROKER_URL =  = os.environ.get('BROKER_URL', REDIS_SIGNALS_BROKER_URL)
+    _BROKER_URL = RABBITMQ_SIGNALS_BROKER_URL
     CELERY_RESULT_BACKEND = _BROKER_URL
 else:
     _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
@@ -1711,29 +1716,28 @@ else:
     CELERY_RESULT_BACKEND = 'file:///%s' % CELERY_RESULT_BACKEND_PATH
 
 # Note:BROKER_URL is deprecated in favour of CELERY_BROKER_URL
-CELERY_BROKER_URL = _BROKER_URL
-
-CELERY_RESULT_PERSISTENT = False
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', _BROKER_URL)
+CELERY_RESULT_PERSISTENT = ast.literal_eval(os.environ.get('CELERY_RESULT_PERSISTENT', 'False'))
 
 # Allow to recover from any unknown crash.
-CELERY_ACKS_LATE = True
+CELERY_ACKS_LATE = ast.literal_eval(os.environ.get('CELERY_ACKS_LATE', 'True'))
 
 # Set this to False in order to run async
-CELERY_TASK_ALWAYS_EAGER = False if ASYNC_SIGNALS else True
-CELERY_TASK_EAGER_PROPAGATES = False if ASYNC_SIGNALS else True
-CELERY_TASK_IGNORE_RESULT = True
+CELERY_TASK_ALWAYS_EAGER = ast.literal_eval(os.environ.get('CELERY_TASK_ALWAYS_EAGER', 'False' if ASYNC_SIGNALS else 'True'))
+CELERY_TASK_EAGER_PROPAGATES = ast.literal_eval(os.environ.get('CELERY_TASK_EAGER_PROPAGATES', 'False' if ASYNC_SIGNALS else 'True'))
+CELERY_TASK_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_TASK_IGNORE_RESULT', 'True'))
 
 # I use these to debug kombu crashes; we get a more informative message.
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER', 'json')
+CELERY_RESULT_SERIALIZER = os.environ.get('CELERY_RESULT_SERIALIZER', 'json')
+CELERY_ACCEPT_CONTENT = [CELERY_RESULT_SERIALIZER, ]
 
 # Set Tasks Queues
 # CELERY_TASK_DEFAULT_QUEUE = "default"
 # CELERY_TASK_DEFAULT_EXCHANGE = "default"
 # CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
 # CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
-CELERY_TASK_CREATE_MISSING_QUEUES = True
+CELERY_TASK_CREATE_MISSING_QUEUES = ast.literal_eval(os.environ.get('CELERY_TASK_CREATE_MISSING_QUEUES', 'True'))
 GEONODE_EXCHANGE = Exchange("default", type="direct", durable=True)
 GEOSERVER_EXCHANGE = Exchange("geonode", type="topic", durable=False)
 CELERY_TASK_QUEUES = (
@@ -1780,34 +1784,33 @@ if USE_GEOSERVER:
 # }
 
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
-CELERY_ENABLE_UTC = True
+CELERY_ENABLE_UTC = ast.literal_eval(os.environ.get('CELERY_ENABLE_UTC', 'True'))
 CELERY_TIMEZONE = TIME_ZONE
 
 # Half a day is enough
-CELERY_TASK_RESULT_EXPIRES = 43200
+CELERY_TASK_RESULT_EXPIRES = os.environ.get('CELERY_TASK_RESULT_EXPIRES', 43200)
 
 # Sometimes, Ask asks us to enable this to debug issues.
 # BTW, it will save some CPU cycles.
-CELERY_DISABLE_RATE_LIMITS = False
-CELERY_SEND_TASK_EVENTS = True
-CELERY_WORKER_DISABLE_RATE_LIMITS = False
-CELERY_WORKER_SEND_TASK_EVENTS = True
+CELERY_DISABLE_RATE_LIMITS = ast.literal_eval(os.environ.get('CELERY_DISABLE_RATE_LIMITS', 'False'))
+CELERY_SEND_TASK_EVENTS = ast.literal_eval(os.environ.get('CELERY_SEND_TASK_EVENTS', 'True'))
+CELERY_WORKER_DISABLE_RATE_LIMITS = ast.literal_eval(os.environ.get('CELERY_WORKER_DISABLE_RATE_LIMITS', 'False'))
+CELERY_WORKER_SEND_TASK_EVENTS = ast.literal_eval(os.environ.get('CELERY_WORKER_SEND_TASK_EVENTS', 'True'))
 
 # Allow our remote workers to get tasks faster if they have a
 # slow internet connection (yes Gurney, I'm thinking of you).
-CELERY_MESSAGE_COMPRESSION = 'gzip'
+CELERY_MESSAGE_COMPRESSION = os.environ.get('CELERY_MESSAGE_COMPRESSION', 'gzip')
 
 # The default beiing 5000, we need more than this.
-CELERY_MAX_CACHED_RESULTS = 32768
+CELERY_MAX_CACHED_RESULTS = os.environ.get('CELERY_MAX_CACHED_RESULTS', 32768)
 
 # NOTE: I don't know if this is compatible with upstart.
-CELERYD_POOL_RESTARTS = True
-
-CELERY_TRACK_STARTED = True
-CELERY_SEND_TASK_SENT_EVENT = True
+CELERYD_POOL_RESTARTS = ast.literal_eval(os.environ.get('CELERYD_POOL_RESTARTS', 'True'))
+CELERY_TRACK_STARTED = ast.literal_eval(os.environ.get('CELERY_TRACK_STARTED', 'True'))
+CELERY_SEND_TASK_SENT_EVENT = ast.literal_eval(os.environ.get('CELERY_SEND_TASK_SENT_EVENT', 'True'))
 
 # Disabled by default and I like it, because we use Sentry for this.
-# CELERY_SEND_TASK_ERROR_EMAILS = False
+CELERY_SEND_TASK_ERROR_EMAILS = ast.literal_eval(os.environ.get('CELERY_SEND_TASK_ERROR_EMAILS', 'False'))
 
 # ########################################################################### #
 # SECURITY SETTINGS
