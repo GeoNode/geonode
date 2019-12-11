@@ -132,7 +132,7 @@ poster~=0.8.1
 flake8==3.7.9
 pytest==4.6.7
 pytest-bdd==3.2.1
-splinter==0.11.0
+splinter==0.12.0
 pytest-splinter==2.0.1
 pytest-django==3.7.0
 setuptools==42.0.2
