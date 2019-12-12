@@ -143,15 +143,15 @@ class Command(BaseCommand):
         if verbosity > 0:
             print("\n\nFinished processing {} layers in {} seconds.\n".format(
                 len(output['layers']), round(output['stats']['duration_sec'], 2)))
-            print("{} Created layers".format(output['stats']['created'])
-            print("{} Updated layers".format(output['stats']['updated'])
-            print("{} Failed layers".format(output['stats']['failed'])
+            print("{} Created layers".format(output['stats']['created']))
+            print("{} Updated layers".format(output['stats']['updated']))
+            print("{} Failed layers".format(output['stats']['failed']))
             try:
                 duration_layer = round(
                     output['stats']['duration_sec'] * 1.0 / len(output['layers']), 2)
             except ZeroDivisionError:
                 duration_layer = 0
             if len(output) > 0:
-                print("{} seconds per layer".format(duration_layer)
+                print("{} seconds per layer".format(duration_layer))
             if remove_deleted:
-                print("\n{} Deleted layers".format(output['stats']['deleted'])
+                print("\n{} Deleted layers".format(output['stats']['deleted']))
