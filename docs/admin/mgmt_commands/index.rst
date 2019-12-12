@@ -1,12 +1,348 @@
+
+.. _migrate_baseurl:
+
 Migrate GeoNode Base URL
 ========================
 
-**TODO**
+The ``migrate_baseurl`` :guilabel:`Management Command` allows you to fix all the GeoNode Links whenever, for some reason,
+you need to change the :guilabel:`Domain Name` of :guilabel:`IP Address` of GeoNode.
 
-Update Metadata and Download Links
-==================================
+This **must** be used also in the cases you'll need to chnage the network schema from ``HTTP`` to ``HTTPS``, as an instance.
 
-**TODO**
+First of all let's take a look at the :guilabel:`--help` option of the ``migrate_baseurl`` 
+management command in order to inspect all the command options and features. 
+
+Run
+
+.. code-block:: shell
+
+    DJANGO_SETTINGS_MODULE=geonode.settings python manage.py migrate_baseurl --help
+
+.. note:: If you enabled ``local_settings.py`` the command will change as following:
+
+    .. code-block:: shell
+
+        DJANGO_SETTINGS_MODULE=geonode.local_settings python manage.py migrate_baseurl --help
+
+This will produce output that looks like the following
+
+.. code-block:: shell
+
+    usage: manage.py migrate_baseurl [-h] [--version] [-v {0,1,2,3}]
+                                 [--settings SETTINGS]
+                                 [--pythonpath PYTHONPATH] [--traceback]
+                                 [--no-color] [-f]
+                                 [--source-address SOURCE_ADDRESS]
+                                 [--target-address TARGET_ADDRESS]
+
+    Migrate GeoNode VM Base URL
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --version             show program's version number and exit
+    -v {0,1,2,3}, --verbosity {0,1,2,3}
+                            Verbosity level; 0=minimal output, 1=normal output,
+                            2=verbose output, 3=very verbose output
+    --settings SETTINGS   The Python path to a settings module, e.g.
+                            "myproject.settings.main". If this isn't provided, the
+                            DJANGO_SETTINGS_MODULE environment variable will be
+                            used.
+    --pythonpath PYTHONPATH
+                            A directory to add to the Python path, e.g.
+                            "/home/djangoprojects/myproject".
+    --traceback           Raise on CommandError exceptions
+    --no-color            Don't colorize the command output.
+    -f, --force           Forces the execution without asking for confirmation.
+    --source-address SOURCE_ADDRESS
+                            Source Address (the one currently on DB e.g.
+                            http://192.168.1.23)
+    --target-address TARGET_ADDRESS
+                            Target Address (the one to be changed e.g. http://my-
+                            public.geonode.org)
+
+* **Example 1**: I want to move my GeoNode instance from  ``http:\\127.0.0.1`` to ``http:\\example.org``
+
+    .. warning:: Make always sure you are using the **correct** settings
+
+    .. code-block:: shell
+
+        DJANGO_SETTINGS_MODULE=geonode.settings python manage.py migrate_baseurl --source-address=127.0.0.1 --target-address=example.org
+
+* **Example 2**: I want to move my GeoNode instance from  ``http:\\example.org`` to ``https:\\example.org``
+
+    .. warning:: Make always sure you are using the **correct** settings
+
+    .. code-block:: shell
+
+        DJANGO_SETTINGS_MODULE=geonode.settings python manage.py migrate_baseurl --source-address=http:\\example.org --target-address=https:\\example.org
+
+* **Example 3**: I want to move my GeoNode instance from  ``https:\\example.org`` to ``https:\\geonode.example.org``
+
+    .. warning:: Make always sure you are using the **correct** settings
+
+    .. code-block:: shell
+
+        DJANGO_SETTINGS_MODULE=geonode.settings python manage.py migrate_baseurl --source-address=example.org --target-address=geonode.example.org
+
+.. note:: After migrating the base URL, make sure to sanitize the links and catalog metadata also (:ref:`sync_layers_and_metadata`).
+
+.. _sync_layers_and_metadata:
+
+Update Permissions, Metadata, Legends and Download Links
+========================================================
+
+The following three utility :guilabel:`Management Commands`, allow to fixup:
+
+1. :guilabel:`Users/Groups Permissions` on :guilabel:`Layers`; those will be refreshed and synchronized with the :guilabel:`GIS Server` ones also
+
+2. :guilabel:`Metadata`, :guilabel:`Legend` and :guilabel:`Download` links on :guilabel:`Layers` and :guilabel:`Maps`
+
+3. Cleanup :guilabel:`Duplicated Links` and :guilabel:`Outdated Thumbnails`
+
+Management Command ``sync_geonode_layers``
+------------------------------------------
+
+This command allows to sync already existing permissions on Layers. In order to change/set Layers' permissions refer to the section :ref:`batch_sync_permissions`
+
+The options are:
+
+* **filter**; Only update data the layer names that match the given filter.
+
+* **username**; Only update data owned by the specified username.
+
+* **updatepermissions**; Update the layer permissions; synchronize it back to the GeoSpatial Server.
+  This option is also available from the :guilabel:`Layer Details` page.
+
+* **updateattributes**; Update the layer attributes; synchronize it back to the GeoSpatial Server.
+  This option is also available from the :guilabel:`Layer Details` page.
+
+* **updatethumbnails**; Update the map styles and thumbnails.
+  This option is also available from the :guilabel:`Layer Details` page.
+
+* **remove-duplicates**; Removes duplicated Links.
+
+First of all let's take a look at the :guilabel:`--help` option of the ``sync_geonode_layers`` 
+management command in order to inspect all the command options and features. 
+
+Run
+
+.. code-block:: shell
+
+    DJANGO_SETTINGS_MODULE=geonode.settings python manage.py sync_geonode_layers --help
+
+.. note:: If you enabled ``local_settings.py`` the command will change as following:
+
+    .. code-block:: shell
+
+        DJANGO_SETTINGS_MODULE=geonode.local_settings python manage.py sync_geonode_layers --help
+
+This will produce output that looks like the following
+
+.. code-block:: shell
+
+    usage: manage.py sync_geonode_layers [-h] [--version] [-v {0,1,2,3}]
+                                        [--settings SETTINGS]
+                                        [--pythonpath PYTHONPATH] [--traceback]
+                                        [--no-color] [-i] [-d] [-f FILTER]
+                                        [-u USERNAME] [--updatepermissions]
+                                        [--updatethumbnails] [--updateattributes]
+
+    Update the GeoNode layers: permissions (including GeoFence database),
+    statistics, thumbnails
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --version             show program's version number and exit
+    -v {0,1,2,3}, --verbosity {0,1,2,3}
+                            Verbosity level; 0=minimal output, 1=normal output,
+                            2=verbose output, 3=very verbose output
+    --settings SETTINGS   The Python path to a settings module, e.g.
+                            "myproject.settings.main". If this isn't provided, the
+                            DJANGO_SETTINGS_MODULE environment variable will be
+                            used.
+    --pythonpath PYTHONPATH
+                            A directory to add to the Python path, e.g.
+                            "/home/djangoprojects/myproject".
+    --traceback           Raise on CommandError exceptions
+    --no-color            Don't colorize the command output.
+    -i, --ignore-errors   Stop after any errors are encountered.
+    -d, --remove-duplicates
+                            Remove duplicates first.
+    -f FILTER, --filter FILTER
+                            Only update data the layers that match the given
+                            filter.
+    -u USERNAME, --username USERNAME
+                            Only update data owned by the specified username.
+    --updatepermissions   Update the layer permissions.
+    --updatethumbnails    Update the layer styles and thumbnails.
+    --updateattributes    Update the layer attributes.
+
+* **Example 1**: I want to update/sync all layers permissions and attributes with the GeoSpatial Server
+
+    .. warning:: Make always sure you are using the **correct** settings
+
+    .. code-block:: shell
+
+        DJANGO_SETTINGS_MODULE=geonode.settings python manage.py sync_geonode_layers --updatepermissions --updateattributes
+
+* **Example 2**: I want to regenerate the Thumbnails of all the Layers belonging to ``afabiani``
+
+    .. warning:: Make always sure you are using the **correct** settings
+
+    .. code-block:: shell
+
+        DJANGO_SETTINGS_MODULE=geonode.settings python manage.py sync_geonode_layers -u afabiani --updatethumbnails
+
+Management Command ``sync_geonode_maps``
+----------------------------------------
+
+This command is basically similar to the previous one, but affects the :guilabel:`Maps`; with some limitations.
+
+The options are:
+
+* **filter**; Only update data the maps titles that match the given filter.
+
+* **username**; Only update data owned by the specified username.
+
+* **updatethumbnails**; Update the map styles and thumbnails.
+  This option is also available from the :guilabel:`Map Details` page.
+
+* **remove-duplicates**; Removes duplicated Links.
+
+First of all let's take a look at the :guilabel:`--help` option of the ``sync_geonode_maps`` 
+management command in order to inspect all the command options and features. 
+
+Run
+
+.. code-block:: shell
+
+    DJANGO_SETTINGS_MODULE=geonode.settings python manage.py sync_geonode_maps --help
+
+.. note:: If you enabled ``local_settings.py`` the command will change as following:
+
+    .. code-block:: shell
+
+        DJANGO_SETTINGS_MODULE=geonode.local_settings python manage.py sync_geonode_maps --help
+
+This will produce output that looks like the following
+
+.. code-block:: shell
+
+    usage: manage.py sync_geonode_maps [-h] [--version] [-v {0,1,2,3}]
+                                    [--settings SETTINGS]
+                                    [--pythonpath PYTHONPATH] [--traceback]
+                                    [--no-color] [-i] [-d] [-f FILTER]
+                                    [-u USERNAME] [--updatethumbnails]
+
+    Update the GeoNode maps: permissions, thumbnails
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --version             show program's version number and exit
+    -v {0,1,2,3}, --verbosity {0,1,2,3}
+                            Verbosity level; 0=minimal output, 1=normal output,
+                            2=verbose output, 3=very verbose output
+    --settings SETTINGS   The Python path to a settings module, e.g.
+                            "myproject.settings.main". If this isn't provided, the
+                            DJANGO_SETTINGS_MODULE environment variable will be
+                            used.
+    --pythonpath PYTHONPATH
+                            A directory to add to the Python path, e.g.
+                            "/home/djangoprojects/myproject".
+    --traceback           Raise on CommandError exceptions
+    --no-color            Don't colorize the command output.
+    -i, --ignore-errors   Stop after any errors are encountered.
+    -d, --remove-duplicates
+                            Remove duplicates first.
+    -f FILTER, --filter FILTER
+                            Only update data the maps that match the given filter.
+    -u USERNAME, --username USERNAME
+                            Only update data owned by the specified username.
+    --updatethumbnails    Update the map styles and thumbnails.
+
+* **Example 1**: I want to regenerate the Thumbnail of the Map ``This is a test Map``
+
+    .. warning:: Make always sure you are using the **correct** settings
+
+    .. code-block:: shell
+
+        DJANGO_SETTINGS_MODULE=geonode.settings python manage.py sync_geonode_maps --updatethumbnails -f 'This is a test Map'
+
+Management Command ``set_all_layers_metadata``
+----------------------------------------------
+
+This command allows to reset **Metadata Attributes** and **Catalogue Schema** on Layers. The command will also update the :guilabel:`CSW Catalogue` XML and Links of GeoNode.
+
+The options are:
+
+* **filter**; Only update data the layers that match the given filter.
+
+* **username**; Only update data owned by the specified username.
+
+* **remove-duplicates**; Update the map styles and thumbnails.
+
+* **delete-orphaned-thumbs**; Removes duplicated Links.
+
+First of all let's take a look at the :guilabel:`--help` option of the ``set_all_layers_metadata`` 
+management command in order to inspect all the command options and features. 
+
+Run
+
+.. code-block:: shell
+
+    DJANGO_SETTINGS_MODULE=geonode.settings python manage.py set_all_layers_metadata --help
+
+.. note:: If you enabled ``local_settings.py`` the command will change as following:
+
+    .. code-block:: shell
+
+        DJANGO_SETTINGS_MODULE=geonode.local_settings python manage.py set_all_layers_metadata --help
+
+This will produce output that looks like the following
+
+.. code-block:: shell
+
+    usage: manage.py set_all_layers_metadata [-h] [--version] [-v {0,1,2,3}]
+                                            [--settings SETTINGS]
+                                            [--pythonpath PYTHONPATH]
+                                            [--traceback] [--no-color] [-i] [-d]
+                                            [-t] [-f FILTER] [-u USERNAME]
+
+    Resets Metadata Attributes and Schema to All Layers
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --version             show program's version number and exit
+    -v {0,1,2,3}, --verbosity {0,1,2,3}
+                            Verbosity level; 0=minimal output, 1=normal output,
+                            2=verbose output, 3=very verbose output
+    --settings SETTINGS   The Python path to a settings module, e.g.
+                            "myproject.settings.main". If this isn't provided, the
+                            DJANGO_SETTINGS_MODULE environment variable will be
+                            used.
+    --pythonpath PYTHONPATH
+                            A directory to add to the Python path, e.g.
+                            "/home/djangoprojects/myproject".
+    --traceback           Raise on CommandError exceptions
+    --no-color            Don't colorize the command output.
+    -i, --ignore-errors   Stop after any errors are encountered.
+    -d, --remove-duplicates
+                            Remove duplicates first.
+    -t, --delete-orphaned-thumbs
+                            Delete Orphaned Thumbnails.
+    -f FILTER, --filter FILTER
+                            Only update data the layers that match the given
+                            filter
+    -u USERNAME, --username USERNAME
+                            Only update data owned by the specified username
+
+* **Example 1**: After having changed the Base URL, I want to regenerate all the Catalogue Schema and eventually remove all duplicates.
+
+    .. warning:: Make always sure you are using the **correct** settings
+
+    .. code-block:: shell
+
+        DJANGO_SETTINGS_MODULE=geonode.settings python manage.py set_all_layers_metadata -d
 
 .. _load_data_into_geonode:
 
@@ -1344,7 +1680,7 @@ Other Raster Data Use Cases
 * `Serving a large number of DTM ASCII Grid Files <https://geoserver.geo-solutions.it/edu/en/raster_data/advanced_gdal/example2.html>`_
 * `Serving a large number of Cartographic Black/White GeoTiff with Palette <https://geoserver.geo-solutions.it/edu/en/raster_data/advanced_gdal/example3.html>`_
 * `Serving a large number of satellite/aerial RGB GeoTiff with compression <https://geoserver.geo-solutions.it/edu/en/raster_data/advanced_gdal/example4.html>`_
-* `Optimizing and serving UAV data <https://geoserver.geo-solutions.it/edu/en/raster_data/advanced_gdal/example5.html>
+* `Optimizing and serving UAV data <https://geoserver.geo-solutions.it/edu/en/raster_data/advanced_gdal/example5.html>`_
 * `Optimizing and serving 16-bits satellite/aerial RGB GeoTiff <https://geoserver.geo-solutions.it/edu/en/raster_data/advanced_gdal/example6.html>`_
 
 Process Raster Datasets Programmatically
@@ -1510,4 +1846,64 @@ Until now we've only created superusers. So how do you create an ordinary user? 
 Batch Sync Permissions
 ======================
 
-**TODO**
+GeoNode provides a very useful management command ``set_layers_permisions`` allowing an administrator to easily add / remove permissions to groups and users on one or more layers.
+
+The ``set_layers_permisions`` command arguments are:
+
+- **permissions** to set/unset --> read (r), write (w), download (d), owner (o)
+
+    .. code-block:: python
+
+        READ_PERMISSIONS = [
+            'view_resourcebase'
+        ]
+        WRITE_PERMISSIONS = [
+            'change_layer_data',
+            'change_layer_style',
+            'change_resourcebase_metadata'
+        ]
+        DOWNLOAD_PERMISSIONS = [
+            'download_resourcebase'
+        ]
+        OWNER_PERMISSIONS = [
+            'change_resourcebase',
+            'delete_resourcebase',
+            'change_resourcebase_permissions',
+            'publish_resourcebase'
+        ]
+
+- **resources** (layers) which permissions will be assigned on --> type the layer title (use quotation mark for titles with white space), multiple choices can be typed with white space separator, if no titles are provided all the layers will be considered
+- **users** who permissions will be assigned to, multiple choices can be typed with a white space separator
+- **groups** who permissions will be assigned to, multiple choices can be typed with a white space separator
+- **delete** flag (optional) which means the permissions will be unset
+
+Usage examples:
+---------------
+
+1. Assign **write** permissions on the layers **layer_X** and **layer Y** to the users **user_A** and **user_B** and to the group **group_C**.
+
+    .. code-block:: shell
+
+        python manage.py set_layers-permissions -p write -u user_A user_B -g group_C -r layer_X 'layer Y'
+
+2. Assign **owner** permissions on all the layers to the group **group_C**.
+
+    .. code-block:: shell
+
+        python manage.py set_layers-permissions -p owner -g group_C
+
+3. Unset **download** permissions on the layer **layer_X** for the user **user_A**.
+
+    .. code-block:: shell
+
+        python manage.py set_layers-permissions -p download -u user_A -r layer_X -d
+
+The same functionalities, with some limitations, are available also from the :guilabel:`Admin Dashboard >> Layers`.
+
+.. figure:: img/layer_batch_perms_admin.png
+   :align: center
+
+An action named :guilabel:`Set layers permissions` is available from the list, redirecting the administrator to a form to set / unset read, write, download and ownership permissions on the selected layers.
+
+.. figure:: img/layer_batch_perms_form.png
+   :align: center

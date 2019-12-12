@@ -1067,7 +1067,9 @@ MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS
 MAPSTORE_BASELAYERS
 -------------------
 
-    | Default::
+    | Default:
+
+    .. code-block:: python
 
         [
             {
@@ -1106,7 +1108,7 @@ MAPSTORE_BASELAYERS
                 "args": ["Empty Background", {"visibility": False}]
            }
         ]
-    
+ 
     | Env: ``MAPSTORE_BASELAYERS``
 
     Allows to specify which backgrounds MapStore should use. The parameter ``visibility`` for a layer, specifies which one is the default one.
@@ -2073,6 +2075,15 @@ USER_ANALYTICS_ENABLED
     If true you have to set :ref:`monitoring-data-aggregation` and :ref:`monitoring-skip-paths`.
 
     See :ref:`geonode_monitoring` to learn more about it.
+
+USER_ANALYTICS_GZIP
+-------------------
+
+    | Default: ``False``
+    | Env: ``USER_ANALYTICS_GZIP``
+
+    To be used with ``USER_ANALYTICS_ENABLED``.
+    Compress ``gzip`` json messages before sending to ``logstash``.
 
 X
 =
