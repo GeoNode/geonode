@@ -35,7 +35,7 @@ Get information on why this package was installed.
 **For further information on how to install or use please visit the official yarn documentation.**
 
 File/Folder overview:
-----------------
+---------------------
 
 ``./static_dependencies.json``
 
