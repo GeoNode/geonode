@@ -1,29 +1,42 @@
 Overview
 ========
 
+**TODO***
+
 Django
 ======
+
+**TODO**
 
 WebServers
 ==========
 
+**TODO**
+
 Apache
 ------
+
+**TODO**
 
 NGINX
 -----
 
+**TODO**
+
 GeoServer
 =========
+
+**TODO**
 
 Databases
 =========
 
+**TODO**
+
 .. _geoserver_geonode_aa:
 
-Security with OAuth2
-====================
-
+OAuth2 Security: Authentication and Authorization
+=================================================
 GeoNode interacts with GeoServer through an advanced security mechanism based on OAuth2 Protocol and GeoFence. This section is a walk through of the configuration and setup of GeoNode and GeoServer Advanced Security.
 
 What we will see in this section is:

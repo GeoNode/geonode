@@ -20,6 +20,7 @@
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
+import io
 import os
 import json
 import shutil
@@ -27,7 +28,6 @@ import gisdata
 import logging
 import zipfile
 import tempfile
-import io
 import contextlib
 
 from datetime import datetime
