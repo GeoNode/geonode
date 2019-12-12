@@ -20,7 +20,10 @@
 
 import os
 import signal
-from urlparse import urljoin
+try:
+    from urllib.parse import urljoin
+except ImportError:
+    from urlparse import urljoin
 
 import pytest
 # from geonode import settings as gn_settings

@@ -57,7 +57,6 @@ import os
 import csv
 import glob
 import time
-import json
 try:
     from urllib.parse import unquote
     from urllib.error import HTTPError
@@ -195,7 +194,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
         # the final url for uploader process. This does a redirect to
         # the final layer page in geonode
         resp, _ = self.client.get_html(path)
-        self.assertTrue(resp.code == 200)
+        self.assertEqual(resp.status_code, 200)
         self.assertTrue('content-type' in resp.headers)
 
     def check_layer_geoserver_caps(self, type_name):
@@ -224,18 +223,17 @@ class UploaderBase(GeoNodeLiveTestSupport):
             self.assertTrue(time_step in redirect_to)
         resp = self.client.make_request(redirect_to)
         token = self.client.get_csrf_token(True)
-        self.assertEqual(resp.code, 200)
+        self.assertEqual(resp.status_code, 200)
         resp = self.client.make_request(
             redirect_to, {'csrfmiddlewaretoken': token}, ajax=True)
-        data = json.loads(resp.read())
-        return resp, data
+        return resp, resp.json()
 
     def complete_raster_upload(self, file_path, resp, data):
         return self.complete_upload(file_path, resp, data, is_raster=True)
 
     def check_save_step(self, resp, data):
         """Verify the initial save step"""
-        self.assertEqual(resp.code, 200)
+        self.assertEqual(resp.status_code, 200)
         self.assertTrue(isinstance(data, dict))
         # make that the upload returns a success True key
         self.assertTrue(data['success'], 'expected success but got %s' % data)
@@ -272,7 +270,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
             skip_srs=False):
         if not is_raster and _ALLOW_TIME_STEP:
             resp, data = self.check_and_pass_through_timestep(current_step)
-            self.assertEqual(resp.code, 200)
+            self.assertEqual(resp.status_code, 200)
             if not isinstance(data, string_types):
                 if data['success']:
                     self.assertTrue(
@@ -292,10 +290,9 @@ class UploaderBase(GeoNodeLiveTestSupport):
             self.assertTrue(upload_step('final') in current_step)
             resp = self.client.get(current_step)
 
-        self.assertEqual(resp.code, 200)
-        resp_js = resp.read()
+        self.assertEqual(resp.status_code, 200)
         try:
-            c = json.loads(resp_js)
+            c = resp.json()
             url = c['url']
             url = unquote(url)
             # and the final page should redirect to the layer page
@@ -356,7 +353,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
     def check_invalid_projection(self, layer_name, resp, data):
         """ Makes sure that we got the correct response from an layer
         that can't be uploaded"""
-        self.assertTrue(resp.code, 200)
+        self.assertTrue(resp.status_code, 200)
         if not isinstance(data, string_types):
             self.assertTrue(data['success'])
             srs_step = upload_step("srs")
@@ -371,7 +368,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
     def check_upload_complete(self, layer_name, resp, data):
         """ Makes sure that we got the correct response from an layer
         that can't be uploaded"""
-        self.assertTrue(resp.code, 200)
+        self.assertTrue(resp.status_code, 200)
         if not isinstance(data, string_types):
             self.assertTrue(data['success'])
             final_step = upload_step("final")
@@ -421,8 +418,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
         if progress_url:
             resp = self.client.get(progress_url)
             assert resp.getcode() == 200, 'Invalid progress status code'
-            raw_data = resp.read()
-            json_data = json.loads(raw_data)
+            json_data = resp.json()
             # "COMPLETE" state means done
             if json_data.get('state', '') == 'RUNNING':
                 time.sleep(0.1)
@@ -625,7 +621,7 @@ class TestUpload(UploaderBase):
             ['lat', 'lon', 'thing'], ['-100', '-40', 'foo'])
         layer_name, ext = os.path.splitext(os.path.basename(csv_file))
         resp, data = self.client.upload_file(csv_file)
-        self.assertEqual(resp.code, 200)
+        self.assertEqual(resp.status_code, 200)
         if not isinstance(data, string_types):
             self.assertTrue('success' in data)
             self.assertTrue(data['success'])
@@ -643,7 +639,7 @@ class TestUploadDBDataStore(UploaderBase):
             ['lat', 'lon', 'thing'], ['-100', '-40', 'foo'])
         layer_name, ext = os.path.splitext(os.path.basename(csv_file))
         resp, form_data = self.client.upload_file(csv_file)
-        self.assertEqual(resp.code, 200)
+        self.assertEqual(resp.status_code, 200)
         if not isinstance(form_data, string_types):
             self.check_save_step(resp, form_data)
             csv_step = form_data['redirect_to']
@@ -653,9 +649,9 @@ class TestUploadDBDataStore(UploaderBase):
                 lng='lon',
                 csrfmiddlewaretoken=self.client.get_csrf_token())
             resp = self.client.make_request(csv_step, form_data)
-            content = json.loads(resp.read())
+            content = resp.json()
             logger.info(content)
-            self.assertEqual(resp.code, 200)
+            self.assertEqual(resp.status_code, 200)
             self.assertEqual(content['status'], 'incomplete')
 
     def test_time(self):
@@ -668,34 +664,34 @@ class TestUploadDBDataStore(UploaderBase):
 
         # get to time step
         resp, data = self.client.upload_file(shp)
-        self.assertEqual(resp.code, 200)
+        self.assertEqual(resp.status_code, 200)
         if not isinstance(data, string_types):
             self.wait_for_progress(data.get('progress'))
             self.assertTrue(data['success'])
             self.assertTrue(data['redirect_to'], upload_step('time'))
             redirect_to = data['redirect_to']
             resp, data = self.client.get_html(upload_step('time'))
-            self.assertEqual(resp.code, 200)
+            self.assertEqual(resp.status_code, 200)
             data = dict(csrfmiddlewaretoken=self.client.get_csrf_token(),
                         time_attribute='date',
                         presentation_strategy='LIST',
                         )
             resp = self.client.make_request(redirect_to, data)
-            self.assertEqual(resp.code, 200)
-            resp_js = json.loads(resp.read())
+            self.assertEqual(resp.status_code, 200)
+            resp_js = resp.json()
             if resp_js['success']:
                 url = resp_js['redirect_to']
 
                 resp = self.client.make_request(url, data)
 
-                url = json.loads(resp.read())['url']
+                url = resp.json()['url']
 
                 self.assertTrue(
                     url.endswith(layer_name),
                     'expected url to end with %s, but got %s' %
                     (layer_name,
                      url))
-                self.assertEqual(resp.code, 200)
+                self.assertEqual(resp.status_code, 200)
 
                 url = unquote(url)
                 self.check_layer_complete(url, layer_name)
@@ -729,7 +725,7 @@ class TestUploadDBDataStore(UploaderBase):
 
         # initial state is no positions or info
         self.assertTrue(get_wms_timepositions() is None)
-        self.assertEqual(resp.code, 200)
+        self.assertEqual(resp.status_code, 200)
 
         # enable using interval and single attribute
         if not isinstance(data, string_types):
@@ -738,28 +734,28 @@ class TestUploadDBDataStore(UploaderBase):
             self.assertTrue(data['redirect_to'], upload_step('time'))
             redirect_to = data['redirect_to']
             resp, data = self.client.get_html(upload_step('time'))
-            self.assertEqual(resp.code, 200)
+            self.assertEqual(resp.status_code, 200)
             data = dict(csrfmiddlewaretoken=self.client.get_csrf_token(),
                         time_attribute='date',
                         time_end_attribute='enddate',
                         presentation_strategy='LIST',
                         )
             resp = self.client.make_request(redirect_to, data)
-            self.assertEqual(resp.code, 200)
-            resp_js = json.loads(resp.read())
+            self.assertEqual(resp.status_code, 200)
+            resp_js = resp.json()
             if resp_js['success']:
                 url = resp_js['redirect_to']
 
                 resp = self.client.make_request(url, data)
 
-                url = json.loads(resp.read())['url']
+                url = resp.json()['url']
 
                 self.assertTrue(
                     url.endswith(layer_name),
                     'expected url to end with %s, but got %s' %
                     (layer_name,
                      url))
-                self.assertEqual(resp.code, 200)
+                self.assertEqual(resp.status_code, 200)
 
                 url = unquote(url)
                 self.check_layer_complete(url, layer_name)

@@ -56,32 +56,32 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
     def test_home_page(self):
         '''Test if the homepage renders.'''
         response = self.client.get(reverse('home'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_help_page(self):
         '''Test help page renders.'''
 
         response = self.client.get(reverse('help'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_developer_page(self):
         '''Test help page renders.'''
 
         response = self.client.get(reverse('help'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     # Layer Pages #
 
     def test_layer_page(self):
         'Test if the data home page renders.'
         response = self.client.get(reverse('layer_browse'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_acls(self):
         'Test if the data/acls endpoint renders.'
         response = self.client.get(reverse('layer_acls'))
-        self.failUnlessEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
 
     # Maps Pages #
 
@@ -89,13 +89,13 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
         '''Test Maps page renders.'''
 
         response = self.client.get(reverse('maps_browse'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_new_map_page(self):
         '''Test New Map page renders.'''
 
         response = self.client.get(reverse('new_map'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     # People Pages #
 
@@ -103,30 +103,30 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
         '''Test the profiles page renders.'''
 
         response = self.client.get(reverse('profile_browse'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     @override_settings(USE_GEOSERVER=False)
     def test_profiles(self):
         '''Test that user profile pages render.'''
         response = self.client.get(reverse('profile_detail', args=['admin']))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response = self.client.get(reverse('profile_detail', args=['norman']))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response = self.client.get(
             reverse(
                 'profile_detail',
                 args=['a.fancy.username.123']))
-        self.failUnlessEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_csw_endpoint(self):
         '''Test that the CSW endpoint is correctly configured.'''
         response = self.client.get(reverse('csw_global_dispatch'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_opensearch_description(self):
         '''Test that the local OpenSearch endpoint is correctly configured.'''
         response = self.client.get(reverse('opensearch_dispatch'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
 
 class GeoNodeUtilsTests(GeoNodeBaseTestSupport):
