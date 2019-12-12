@@ -24,6 +24,7 @@ import time
 import shutil
 import requests
 import re
+import six
 try: 
     import helpers
     from helpers import Config

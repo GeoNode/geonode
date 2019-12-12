@@ -307,8 +307,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         logger.error("TypeError: can't pickle traceback objects")
                     try:
                         upload_session.traceback = traceback.format_exc(tb)
-                    except BaseException:
-                        pass
+                    except TypeError:
+                        upload_session.traceback = traceback.format_tb(tb)
                     upload_session.context = log_snippet(CONTEXT_LOG_FILE)
                     upload_session.save()
                     out['traceback'] = upload_session.traceback

@@ -1974,7 +1974,6 @@ def _render_thumbnail(req_body, width=240, height=200):
         cover.save(imgByteArr, format='JPEG')
         content = imgByteArr.getvalue()
     except BaseException as e:
-        logger.warning('Error generating thumbnail')
         logger.debug(e)
         return
 

@@ -23,9 +23,10 @@
 import traceback
 import psycopg2
 try:
-    import ConfigParser
+    from configparser import ConfigParser
 except ImportError:
-    import configparser
+    # Python 2 compatibility
+    from ConfigParser import ConfigParser
 import os
 import sys
 
@@ -105,10 +106,8 @@ class Config(object):
         if not settings_path:
             settings_dir = os.path.abspath(os.path.dirname(__file__))
             settings_path = os.path.join(settings_dir, 'settings.ini')
-        try:
-            config = ConfigParser.ConfigParser()
-        except NameError:
-            config = configparser.ConfigParser()
+
+        config = ConfigParser()
         config.read(settings_path)
 
         self.pg_dump_cmd = config.get('database', 'pgdump')

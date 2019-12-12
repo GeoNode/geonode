@@ -287,7 +287,7 @@ def _get_basic_auth_info(request):
     meth, auth = request.META['HTTP_AUTHORIZATION'].split()
     if meth.lower() != 'basic':
         raise ValueError
-    username, password = base64.b64decode(auth).decode('utf-8').split(':')
+    username, password = base64.b64decode(auth.encode()).decode().split(':')
     return username, password
 
 
@@ -1211,10 +1211,9 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
                 qry += key.encode(charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
                 qry += u"\" TO \"{}\"".format(list_col[key])
                 inDataSource.ExecuteSQL(qry)
-        except BaseException as e:
-            logger.exception(e)
-            raise GeoNodeException(
-                "Could not decode SHAPEFILE attributes by using the specified charset '{}'.".format(charset))
+        except BaseException:
+            logger.exception(GeoNodeException(
+                "Could not decode SHAPEFILE attributes by using the specified charset '{}'.".format(charset)))
     return True, None, list_col
 
 
@@ -1462,7 +1461,7 @@ class HttpClient(object):
                     pass
             elif user == self.username:
                 valid_uname_pw = base64.b64encode(
-                    ("%s:%s" % (self.username, self.password)).encode("UTF-8")).decode("ascii")
+                    "{}:{}".format(self.username, self.password).encode()).decode()
                 headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
 
         response = None

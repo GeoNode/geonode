@@ -33,6 +33,7 @@ from django.template.defaultfilters import slugify
 from django.core.cache import cache
 
 from geonode.layers.models import Layer
+from geonode.compat import ensure_string
 from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.security.utils import remove_object_permissions
@@ -44,7 +45,6 @@ from geonode.utils import (GXPMapBase,
                            num_encode)
 
 from geonode import geoserver, qgis_server  # noqa
-from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
 
 from deprecated import deprecated
@@ -172,28 +172,46 @@ class Map(ResourceBase, GXPMapBase):
         """
 
         template_name = hookset.update_from_viewer(conf, context=context)
-        conf = context['config']
+        if not isinstance(context, dict):
+            try:
+                context = json.loads(ensure_string(context))
+            except BaseException:
+                pass
+
+        conf = context.get("config", {})
         if not isinstance(conf, dict):
-            conf = json.loads(ensure_string(conf))
+            try:
+                conf = json.loads(ensure_string(conf))
+            except BaseException:
+                pass
 
-        self.title = conf['title'] if 'title' in conf else conf['about']['title']
-        self.abstract = conf['abstract'] if 'abstract' in conf else conf['about']['abstract']
+        about = conf.get("about", {})
+        self.title = conf.get("title", about.get("title", ""))
+        self.abstract = conf.get("abstract", about.get("abstract", ""))
 
-        center = conf['map']['center'] if 'center' in conf['map'] else settings.DEFAULT_MAP_CENTER
-        self.zoom = conf['map']['zoom'] if 'zoom' in conf['map'] else settings.DEFAULT_MAP_ZOOM
-        self.center_x = center['x'] if isinstance(center, dict) else center[0]
-        self.center_y = center['y'] if isinstance(center, dict) else center[1]
-        if 'bbox' not in conf['map']:
+        _map = conf.get("map", {})
+        center = _map.get("center", settings.DEFAULT_MAP_CENTER)
+        self.zoom = _map.get("zoom", settings.DEFAULT_MAP_ZOOM)
+
+        if isinstance(center, dict):
+            self.center_x = center.get('x')
+            self.center_y = center.get('y')
+        else:
+            self.center_x, self.center_y = center
+
+        projection = _map.get("projection", None)
+        bbox = _map.get("bbox", None)
+
+        if bbox:
+            self.set_bounds_from_bbox(bbox, projection)
+        else:
             self.set_bounds_from_center_and_zoom(
                 self.center_x,
                 self.center_y,
                 self.zoom)
-        else:
-            # Must be in the form : [x0, x1, y0, y1]
-            self.set_bounds_from_bbox(conf['map']['bbox'], conf['map']['projection'])
 
         if self.projection is None or self.projection == '':
-            self.projection = conf['map']['projection']
+            self.projection = projection
 
         if self.uuid is None or self.uuid == '':
             self.uuid = str(uuid.uuid1())
@@ -207,11 +225,11 @@ class Map(ResourceBase, GXPMapBase):
                 else:
                     return {}
 
-        layers = [l for l in conf["map"]["layers"]]
-        layer_names = set([l.alternate for l in self.local_layers])
+        layers = [l for l in _map.get("layers", [])]
+        layer_names = set(l.alternate for l in self.local_layers)
 
         self.layer_set.all().delete()
-        self.keywords.add(*conf['map'].get('keywords', []))
+        self.keywords.add(*_map.get('keywords', []))
 
         for ordering, layer in enumerate(layers):
             self.layer_set.add(

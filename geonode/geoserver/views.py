@@ -49,6 +49,7 @@ from django.utils.translation import ugettext as _
 from guardian.shortcuts import get_objects_for_user
 
 from geonode.base.models import ResourceBase
+from geonode.compat import ensure_string
 from geonode.base.auth import get_or_create_token
 from geonode.decorators import logged_in_or_basicauth
 from geonode.layers.forms import LayerStyleUploadForm
@@ -687,9 +688,7 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
 
     _user, _password = ogc_server_settings.credentials
     req, content = http_client.get(wms_url, user=_user)
-    if isinstance(content, bytes):
-        content = content.decode('UTF-8')
-    getcap = content
+    getcap = ensure_string(content)
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         if tolerant and ('ServiceException' in getcap or req.status_code == 404):
             # WARNING Please make sure to have enabled DJANGO CACHE as per
@@ -699,9 +698,7 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
             if access_token:
                 wms_url += ('&access_token=%s' % access_token)
             req, content = http_client.get(wms_url, user=_user)
-            if isinstance(content, bytes):
-                content = content.decode('UTF-8')
-            getcap = content
+            getcap = ensure_string(content)
 
     if 'ServiceException' in getcap or req.status_code == 404:
         return None

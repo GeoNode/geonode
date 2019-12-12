@@ -446,8 +446,8 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
         super(DocumentModerationTestCase, self).setUp()
         self.user = 'admin'
         self.passwd = 'admin'
-        create_models(type='document')
-        create_models(type='map')
+        create_models(type=b'document')
+        create_models(type=b'map')
         self.u = get_user_model().objects.get(username=self.user)
         self.u.email = 'test@email.com'
         self.u.is_active = True
@@ -528,7 +528,7 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
     def setUp(self):
         self.user = 'admin'
         self.passwd = 'admin'
-        create_models(type='document')
+        create_models(type=b'document')
         self.anonymous_user = get_anonymous_user()
         self.u = get_user_model().objects.get(username=self.user)
         self.u.email = 'test@email.com'
@@ -558,9 +558,9 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
 class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        create_models('document')
-        create_models('map')
-        create_models('layer')
+        create_models(b'document')
+        create_models(b'map')
+        create_models(b'layer')
 
         self.test_file = io.BytesIO(
             b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'

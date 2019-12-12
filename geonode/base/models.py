@@ -1244,7 +1244,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         [_default_thumb_size['width'], _default_thumb_size['height']])
                     cover.save(storage.path(_upload_path), format='JPEG')
                 except BaseException as e:
-                    logger.warn(e)
+                    logger.debug(e)
 
                 # check whether it is an URI or not
                 parsed = urlsplit(url)
