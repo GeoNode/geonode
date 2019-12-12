@@ -401,32 +401,32 @@ class ProfileRequest(BaseRequest, StatusModel):
 
     def send_verification_email(self):
         print('sending ver')
-        # self.set_verification_key()
-        # site = Site.objects.get_current()
-        # verification_url = (
-        #     str(site) +
-        #     reverse('datarequests:email_verification_confirm') +
-        #     '?key=' + self.verification_key + '&email=' +
-        #     urlquote(self.email)
-        # )
-        # verification_url = iri_to_uri(verification_url).replace("//", "/")
+        self.set_verification_key()
+        site = Site.objects.get_current()
+        verification_url = (
+            str(site) +
+            reverse('datarequests:email_verification_confirm') +
+            '?key=' + self.verification_key + '&email=' +
+            urlquote(self.email)
+        )
+        verification_url = iri_to_uri(verification_url).replace("//", "/")
 
-        # text_content = email_utils.VERIFICATION_EMAIL_TEXT.format(
-        #      unidecode(self.first_name),
-        #      verification_url,
-        #      settings.LIPAD_SUPPORT_MAIL,
-        #  )
+        text_content = email_utils.VERIFICATION_EMAIL_TEXT.format(
+             unidecode(self.first_name),
+             verification_url,
+             settings.LIPAD_SUPPORT_MAIL,
+         )
 
-        # html_content = email_utils.VERIFICATION_EMAIL_HTML.format(
-        #     unidecode(self.first_name),
-        #     verification_url,
-        #     verification_url,
-        #     settings.LIPAD_SUPPORT_MAIL,
-        #     settings.LIPAD_SUPPORT_MAIL,
-        # )
+        html_content = email_utils.VERIFICATION_EMAIL_HTML.format(
+            unidecode(self.first_name),
+            verification_url,
+            verification_url,
+            settings.LIPAD_SUPPORT_MAIL,
+            settings.LIPAD_SUPPORT_MAIL,
+        )
 
-        # email_subj = _('[LiPAD] Email Confirmation')
-        # self.send_email(email_subj,text_content,html_content, recipient=self.email)
+        email_subj = _('[LiPAD] Email Confirmation')
+        self.send_email(email_subj,text_content,html_content, recipient=self.email)
 
     def send_approval_email(self):
         site = Site.objects.get_current()
