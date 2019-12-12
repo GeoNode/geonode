@@ -51,20 +51,27 @@ def register(request):
         reverse('datarequests:profile_request_form'))
 
 def profile_request_view(request):
+    print('profile_request_view exec')
     profile_request_obj = request.session.get('profile_request_obj', None)
+    print('printing profile_request_obj:')
+    print(profile_request_obj)
     data_request_session=request.session.get('data_request_session', None)
-
+    # creates form as an object of ProfileRequestForm from geonode/datarequests/forms
     form = ProfileRequestForm()
 
     if request.user.is_authenticated():
+        print('is authenticated')
         return HttpResponseRedirect(
             reverse('datarequests:data_request_form')
         )
     else:
+        print(request.method)
         if request.method == 'POST':
             form = ProfileRequestForm(request.POST)
+            print(form.is_valid())
             if form.is_valid():
                 if profile_request_obj and data_request_session:
+                    print('form clean assign')
                     profile_request_obj.first_name = form.cleaned_data['first_name']
                     profile_request_obj.middle_name = form.cleaned_data['middle_name']
                     profile_request_obj.last_name = form.cleaned_data['last_name']
@@ -76,6 +83,8 @@ def profile_request_view(request):
                         profile_request_obj.save()
                         profile_request_obj.send_verification_email()
                 else:
+                    print('no session')
+                    # saves form (obj ProfileRequestForm) as profile_request_obj
                     profile_request_obj = form.save()
                     profile_request_obj.status = "unconfirmed"
                     profile_request_obj.save()
@@ -83,8 +92,12 @@ def profile_request_view(request):
 
                 request.session['profile_request_obj']= profile_request_obj
                 request.session.set_expiry(900)
+                # return HttpResponseRedirect(
+                #     reverse('datarequests:profile_request_form')
+                # )
+                # stop here, redirect or open a banner saying "Confirm account via email"
                 return HttpResponseRedirect(
-                    reverse('datarequests:data_request_form')
+                   reverse('datarequests:register_success')
                 )
         elif request.method == 'GET':
             if data_request_session and profile_request_obj:
@@ -101,20 +114,28 @@ def profile_request_view(request):
                     'location': profile_request_obj.location
                 }
                 form = ProfileRequestForm(initial = initial)
-
+        print('render profile.html')
         return render(
             request,
             'datarequests/registration/profile.html',
             {'form': form}
         )
-
+def register_success(request):
+    context = {
+        'support_email': settings.LIPAD_SUPPORT_MAIL,
+    }
+    return render(
+        request,
+        'datarequests/registration/registration_success.html',
+        context
+    )
 def data_request_view(request):
     profile_request_obj = request.session.get('profile_request_obj', None)
     if not profile_request_obj:
         pprint("no profile request object found")
     if not request.user.is_authenticated() and not profile_request_obj:
         return redirect(reverse('datarequests:profile_request_form'))
-
+    print(request.user)
     request.session['data_request_session'] = True
 
     form = DataRequestForm()
@@ -248,6 +269,7 @@ def data_request_view(request):
         if not out['errors']:
             out['success'] = True
             data_request_obj = details_form.save()
+            # if user exists/logged in
             if request.user.is_authenticated() and not request.user.username  == 'AnonymousUser':
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile = request.user)
                 data_request_obj.request_letter = request_letter
@@ -255,12 +277,14 @@ def data_request_view(request):
                 data_request_obj.profile = request.user
                 data_request_obj.save()
                 data_request_obj.set_status("pending")
+            # user is not authenticated, users should no longer be able to access this
             else:
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile_request = profile_request_obj)
                 data_request_obj.request_letter = request_letter
                 data_request_obj.save()
                 data_request_obj.profile_request = profile_request_obj
                 data_request_obj.save()
+                # save data request to profile request object
                 profile_request_get = ProfileRequest.objects.get(id=profile_request_obj.id)
                 profile_request_get.data_request= data_request_obj
                 profile_request_get.save()
@@ -273,9 +297,13 @@ def data_request_view(request):
                 tag_request_suc.delay([data_request_obj])
             status_code = 200
             pprint("request has been succesfully submitted")
+            # an unauthenticated user or user done with registration but email not verified
             if profile_request_obj and not request.user.is_authenticated():
             #    request_data.send_verification_email()
+                """
                 if profile_request_get.status == "approved":
+                    # autoapproves data request object if profile's status is approvied
+                    # change this, data request approval to manual
                     data_request_obj.set_status('approved')
                     data_request_obj.profile = profile_request_get.profile
                     data_request_obj.send_approval_email(data_request_obj.profile.username)
@@ -289,7 +317,7 @@ def data_request_view(request):
                         except ObjectDoesNotExist as e:
                             pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
                     messages.info(request, "Request "+str(data_request_obj.pk)+" has been approved.")
-
+                """
                 out['success_url'] = reverse('datarequests:email_verification_send')
 
                 out['redirect_to'] = reverse('datarequests:email_verification_send')
@@ -311,10 +339,14 @@ def data_request_view(request):
                         uj.delete()
                     except ObjectDoesNotExist as e:
                         pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
+                data_request_obj.send_new_request_notif_to_admins()
+                data_request_obj.save()
+
+                """
                 data_request_obj.set_status('approved')
                 data_request_obj.send_approval_email(data_request_obj.profile.username)
                 messages.info(request, "Request "+str(data_request_obj.pk)+" has been approved.")
-
+                """
             del request.session['data_request_session']
 
             if 'profile_request_obj' in request.session:
@@ -376,8 +408,19 @@ def email_verification_confirm(request):
                 profile_request.verification_date = timezone.now()
                 pprint(email+" "+profile_request.status)
                 profile_request.save()
+                # Manual Approval, set the status from unconfirmed to pending, instead of straight to approved
+                if profile_request.status == "unconfirmed":
+                    #profile_request.set_status("pending")
+                    profile_request.status = "pending"
+                    profile_request.verification_date = timezone.now()
+                    pprint(email+" "+profile_request.status)
+                    profile_request.save()
+                    pprint(email+" "+profile_request.status)
+                    profile_request.send_new_request_notif_to_admins()
+                    profile_requests = ProfileRequest.objects.filter(email=email, status="unconfirmed")
+                    set_status_for_multiple_requests.delay(profile_requests,"cancelled")
                 """
-                #Requests auto approval
+                # Check if email is in use
                 if profile_request.email in Profile.objects.all().values_list('email', flat=True):
                     messages.info(request,'The email for this profile request is already in use')
                     pprint(request)
@@ -387,6 +430,9 @@ def email_verification_confirm(request):
                         'datarequests/registration/verification_failed.html',
                         context
                     )
+                
+                #Requests auto approval
+        
                 result = True
                 message = ''
                 result, message = profile_request.create_account() #creates account in AD if AD profile does not exist
@@ -398,32 +444,35 @@ def email_verification_confirm(request):
                     profile_request.profile.organization_other = profile_request.organization_other
                     profile_request.save()
                     profile_request.profile.save()
+                    if profile_request.org_type == "Private Entities":
+                        profile_request.set_status('rejected')
+                        profile_request.send_rejection_email()
+                    else:
+                        profile_request.set_status('approved')
+                        # This should never trigger, as data_request can't be accessed
+                        if profile_request.data_request:
+                            profile_request.data_request.profile = profile_request.profile
 
-                    profile_request.set_status('approved')
-
-                    if profile_request.data_request:
-                        profile_request.data_request.profile = profile_request.profile
-
-                        if profile_request.data_request.jurisdiction_shapefile:
-                            profile_request.data_request.assign_jurisdiction() #assigns/creates jurisdiction object
-                            assign_grid_refs.delay(profile_request.data_request.profile)
-                        else:
-                            try:
-                                uj = UserJurisdiction.objects.get(user=profile_request.data_request.profile)
-                                uj.delete()
-                            except ObjectDoesNotExist as e:
-                                pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
-                        profile_request.data_request.save()
-                        profile_request.data_request.set_status('approved')
-                        profile_request.data_request.send_approval_email(profile_request.data_request.profile.username)
-                        pprint(request, "Request "+str(profile_request.data_request.pk)+" has been approved.")
-                    profile_request.send_approval_email()
+                            if profile_request.data_request.jurisdiction_shapefile:
+                                profile_request.data_request.assign_jurisdiction() #assigns/creates jurisdiction object
+                                assign_grid_refs.delay(profile_request.data_request.profile)
+                            else:
+                                try:
+                                    uj = UserJurisdiction.objects.get(user=profile_request.data_request.profile)
+                                    uj.delete()
+                                except ObjectDoesNotExist as e:
+                                    pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
+                            profile_request.data_request.save()
+                            profile_request.data_request.set_status('approved')
+                            profile_request.data_request.send_approval_email(profile_request.data_request.profile.username)
+                            pprint(request, "Request "+str(profile_request.data_request.pk)+" has been approved.")
+                        profile_request.send_approval_email()
 
                 pprint(email+" "+profile_request.status)
                 profile_request.send_new_request_notif_to_admins()
                 profile_requests = ProfileRequest.objects.filter(email=email, status="unconfirmed")
                 set_status_for_multiple_requests.delay(profile_requests,"cancelled")
-
+      
 
         except ObjectDoesNotExist:
             profile_request = None

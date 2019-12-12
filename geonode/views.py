@@ -58,8 +58,9 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
     service_typename = typename.split(":", 1)
+    print(service_typename)
     service = Service.objects.filter(name=service_typename[0])
-
+    print(service)
     if service.count() > 0:
         return resolve_object(request,
                               Layer,
@@ -80,7 +81,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 
 def philgrid(request,template='index.html'):
     layername = "geonode:philgrid"
-
+    print('philgird exec')
     layer = _resolve_layer(
         request,
         layername,
@@ -105,7 +106,7 @@ def philgrid(request,template='index.html'):
     config["queryable"] = True
 
     # print "CONFIG 2" + str(config)
-
+    print('philgrid exec post resolve_layer')
     if layer.storeType == "remoteStore":
         service = layer.service
         source_params = {
