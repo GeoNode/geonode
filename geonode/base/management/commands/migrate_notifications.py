@@ -34,7 +34,7 @@ class Command(BaseCommand):
     """
 
     def has_duplicate(self, ns):
-        args = dict(list(zip('medium send notice_type_id user_id'.split(' '), ns)))
+        args = dict(zip('medium send notice_type_id user_id'.split(' '), ns))
         return NoticeSetting.objects.filter(**args).exists()
 
     def handle(self, **options):

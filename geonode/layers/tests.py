@@ -197,12 +197,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         logger.debug(layer_bbox)
 
         def decimal_encode(bbox):
-            import decimal
-            _bbox = []
-            for o in [float(coord) for coord in bbox]:
-                if isinstance(o, decimal.Decimal):
-                    o = (str(o) for o in [o])
-                _bbox.append(o)
+            _bbox = [float(o) for o in bbox]
             # Must be in the form : [x0, x1, y0, y1
             return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
 
@@ -220,7 +215,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         logger.debug(projected_bbox)
         self.assertEqual(projected_bbox,
                          [-20037397.023298454, -74299743.40065672,
-                          20037397.02329845, 74299743.40061197])
+                          20037397.023298454, 74299743.40061197])
 
     def test_layer_attributes_feature_catalogue(self):
         """ Test layer feature catalogue functionality

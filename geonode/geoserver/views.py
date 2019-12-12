@@ -691,7 +691,7 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
         content = content.decode('UTF-8')
     getcap = content
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-        if tolerant and ('ServiceException' in getcap or req.status_code == 404):
+        if tolerant and (b'ServiceException' in getcap or req.status_code == 404):
             # WARNING Please make sure to have enabled DJANGO CACHE as per
             # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
             wms_url = '%s%s/ows?service=wms&version=%s&request=GetCapabilities&layers=%s'\

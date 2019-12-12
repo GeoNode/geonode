@@ -594,15 +594,19 @@ class LayerTests(GeoNodeBaseTestSupport):
         d = None
         try:
             d = tempfile.mkdtemp()
-            for f in ("san_andres_y_providencia.sld",
-                      "lac.sld",
-                      "freshgwabs2.sld",
-                      "raster.sld",
-                      "line.sld",):
+            files = (
+                "san_andres_y_providencia.sld",
+                "lac.sld",
+                "freshgwabs2.sld",
+                "raster.sld",
+                "line.sld",
+            )
+
+            for f in files:
                 path = os.path.join(d, f)
-                f = open(path, "wb")
-                f.write(SLDS[splitext(basename(path))[0]].encode('utf-8'))
-                f.close()
+                with open(path, 'w') as f:
+                    name, ext = splitext(basename(path))
+                    f.write(SLDS[name])
 
             # Test 'san_andres_y_providencia.sld'
             san_andres_y_providencia_sld_file = os.path.join(
@@ -776,16 +780,17 @@ class LayerTests(GeoNodeBaseTestSupport):
         """
 
         # Test that HTTP_AUTHORIZATION in request.META is working properly
-        valid_uname_pw = '%s:%s' % ('bobby', 'bob')
-        invalid_uname_pw = '%s:%s' % ('n0t', 'v@l1d')
+        valid_uname_pw = b"bobby:bob"
+        invalid_uname_pw = b"n0t:v@l1d"
 
         valid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw.encode('utf-8')).decode('utf-8'),
+            'HTTP_AUTHORIZATION': 'basic ' +
+            base64.b64encode(valid_uname_pw).decode(),
         }
 
         invalid_auth_headers = {
             'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(invalid_uname_pw.encode('utf-8')).decode('utf-8'),
+            base64.b64encode(invalid_uname_pw).decode(),
         }
 
         bob = get_user_model().objects.get(username='bobby')
@@ -843,16 +848,17 @@ class LayerTests(GeoNodeBaseTestSupport):
         """Verify that the resolve_user view is behaving as expected
         """
         # Test that HTTP_AUTHORIZATION in request.META is working properly
-        valid_uname_pw = "%s:%s" % ('admin', 'admin')
-        invalid_uname_pw = "%s:%s" % ("n0t", "v@l1d")
+        valid_uname_pw = b"admin:admin"
+        invalid_uname_pw = b"n0t:v@l1d"
 
         valid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw.encode('utf-8')).decode('utf-8'),
+            'HTTP_AUTHORIZATION': 'basic ' +
+            base64.b64encode(valid_uname_pw).decode(),
         }
 
         invalid_auth_headers = {
             'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(invalid_uname_pw.encode('utf-8')).decode('utf-8'),
+            base64.b64encode(invalid_uname_pw).decode(),
         }
 
         response = self.client.get(
@@ -984,9 +990,11 @@ class UtilsTests(GeoNodeBaseTestSupport):
             wcs_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
         except BaseException:
             wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
-        self.assertTrue(wcs_url in wcs)
-        for _item in 'request=GetCapabilities&version=2.0.1&service=WCS'.split('&'):
-            self.assertTrue(_item in wcs)
+
+        self.assertTrue(wcs.startswith(wcs_url))
+        self.assertIn("service=WCS", wcs)
+        self.assertIn("request=GetCapabilities", wcs)
+        self.assertIn("version=2.0.1", wcs)
 
         wfs = _wfs_get_capabilities()
         logger.debug(wfs)
@@ -996,9 +1004,10 @@ class UtilsTests(GeoNodeBaseTestSupport):
             wfs_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
         except BaseException:
             wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
-        self.assertTrue(wfs_url in wfs)
-        for _item in 'request=GetCapabilities&version=1.1.0&service=WFS'.split('&'):
-            self.assertTrue(_item in wfs)
+        self.assertTrue(wfs.startswith(wfs_url))
+        self.assertIn("service=WFS", wfs)
+        self.assertIn("request=GetCapabilities", wfs)
+        self.assertIn("version=1.1.0", wfs)
 
         wms = _wms_get_capabilities()
         logger.debug(wms)
@@ -1008,9 +1017,10 @@ class UtilsTests(GeoNodeBaseTestSupport):
             wms_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
         except BaseException:
             wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
-        self.assertTrue(wms_url in wms)
-        for _item in 'request=GetCapabilities&version=1.3.0&service=WMS'.split('&'):
-            self.assertTrue(_item in wms)
+        self.assertTrue(wms.startswith(wms_url))
+        self.assertIn("service=WMS", wms)
+        self.assertIn("request=GetCapabilities", wms)
+        self.assertIn("version=1.3.0", wms)
 
         # Test OWS Download Links
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links

@@ -23,6 +23,7 @@ import traceback
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.core.exceptions import ObjectDoesNotExist
 from geonode.groups.models import GroupProfile
 from guardian.shortcuts import assign_perm, get_groups_with_perms
 
@@ -112,9 +113,12 @@ class PermissionLevelMixin(object):
         return info
 
     def get_self_resource(self):
-        return self.resourcebase_ptr if hasattr(
-            self,
-            'resourcebase_ptr_id') else self
+        try:
+            if hasattr(self, "resourcebase_ptr_id"):
+                return self.resourcebase_ptr
+        except ObjectDoesNotExist:
+            pass
+        return self
 
     def set_default_permissions(self):
         """

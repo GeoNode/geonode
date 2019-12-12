@@ -414,9 +414,11 @@ class ResourceBaseForm(TranslationModelForm):
 
     def clean_keywords(self):
         try:
-            import urllib.parse
-        except ImportError:  # python2 compatible
-            import urllib
+            from urllib.parse import unquote
+            from html.entities import codepoint2name
+        except ImportError:
+            from urllib import unquote
+            from htmlentitydefs import codepoint2name
 
         def unicode_escape(unistr):
             """
@@ -424,30 +426,18 @@ class ResourceBaseForm(TranslationModelForm):
             Takes a unicode string as an argument
             Returns a unicode string
             """
-            try:  # python2 compatible
-                import htmlentitydefs
-            except ImportError:
-                import html.entities
             escaped = ""
             for char in unistr:
-                try:  # python2 compatible
-                    if ord(char) in htmlentitydefs.codepoint2name:
-                        name = htmlentitydefs.codepoint2name.get(ord(char))
-                        escaped += '&%s;' % name if 'nbsp' not in name else ' '
-                except NameError:
-                    if ord(char) in html.entities.codepoint2name:
-                        name = html.entities.codepoint2name.get(ord(char))
-                        escaped += '&%s;' % name if 'nbsp' not in name else ' '
+                if ord(char) in codepoint2name:
+                    name = codepoint2name.get(ord(char))
+                    escaped += '&%s;' % name if 'nbsp' not in name else ' '
                 else:
                     escaped += char
             return escaped
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
-            try:  # python2 compatible
-                _k = urllib.unquote(('%s' % k)).split(",")
-            except AttributeError:
-                _k = urllib.parse.unquote(('%s' % k)).split(",")
+            _k = unquote(('%s' % k)).split(",")
             if not isinstance(_k, six.string_types):
                 for _kk in [x.strip() for x in _k]:
                     # Simulate JS Unescape

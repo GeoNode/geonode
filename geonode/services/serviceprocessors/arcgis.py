@@ -219,15 +219,19 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                                      layer_meta.extent.ymin,
                                      layer_meta.extent.xmax,
                                      layer_meta.extent.ymax])
+
+        typename = slugify(u"{}-{}".format(
+            layer_meta.id,
+            ''.join(c for c in layer_meta.title if ord(c) < 128)
+        ))
+
         return {
             "name": layer_meta.title,
             "store": self.name,
             "storeType": "remoteStore",
             "workspace": "remoteWorkspace",
-            "typename": slugify(
-                u"%s-%s" % (layer_meta.id, layer_meta.title.encode("ascii", "ignore"))),
-            "alternate": slugify(
-                u"%s-%s" % (layer_meta.id, layer_meta.title.encode("ascii", "ignore"))),
+            "typename": typename,
+            "alternate": typename,
             "title": layer_meta.title,
             "abstract": layer_meta.abstract,
             "bbox_x0": bbox[0],
