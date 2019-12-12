@@ -43,6 +43,7 @@ class LoginRequiredMiddleware(object):
         if not request.user.is_authenticated(
         ) or request.user == get_anonymous_user():
             if not any(path.match(request.path) for path in self.white_list):
+                print('middleware security')
                 return HttpResponseRedirect(
                     '{login_path}?next={request_path}'.format(
                         login_path=self.redirect_to,

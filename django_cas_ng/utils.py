@@ -16,7 +16,8 @@ def get_redirect_url(request):
     """Redirects to referring page, or CAS_REDIRECT_URL if no referrer is
     set.
     """
-
+    print('get_redirect_url exec')
+    print(REDIRECT_FIELD_NAME)
     next_ = request.GET.get(REDIRECT_FIELD_NAME)
     if not next_:
         if django_settings.CAS_IGNORE_REFERER:
@@ -28,6 +29,7 @@ def get_redirect_url(request):
         )
         if next_.startswith(prefix):
             next_ = next_[len(prefix):]
+    print('next_: '+ next_)
     return next_
 
 
@@ -38,6 +40,7 @@ def get_service_url(request, redirect_to=None):
     service = urllib_parse.urlunparse(
         (protocol, host, request.path, '', '', ''),
     )
+    print('pre-service service: '+ service)
     if '?' in service:
         service += '&'
     else:
@@ -45,6 +48,7 @@ def get_service_url(request, redirect_to=None):
     service += urllib_parse.urlencode({
         REDIRECT_FIELD_NAME: redirect_to or get_redirect_url(request)
     })
+    print("service " + service)
     return service
 
 

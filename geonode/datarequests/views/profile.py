@@ -29,13 +29,13 @@ class ProfileRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/profile_request_list.html'
     raise_exception = True
 
-@login_required
+#@login_required
 def profile_request_detail(request, pk, template='datarequests/profile_detail.html'):
 
     profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
-    if not request.user.is_superuser and not profile_request.profile == request.user:
-        return HttpResponseRedirect('/forbidden')
+    #if not request.user.is_superuser and not profile_request.profile == request.user:
+    #    return HttpResponseRedirect('/forbidden')
 
     pprint("profile_request "+profile_request.status)
     context_dict={"profile_request": profile_request}
@@ -104,7 +104,7 @@ def profile_request_approve(request, pk):
 
         result = True
         message = ''
-
+        # this should be it
         result, message = profile_request.create_account() #creates account in AD if AD profile does not exist
 
         if not result:

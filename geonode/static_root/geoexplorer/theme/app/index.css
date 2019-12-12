@@ -1,0 +1,54 @@
+body {
+    font-family: tahoma,arial,helvetica,sans-serif;
+    font-size: 1.25em;
+    background-color: white;
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.75em;
+}
+
+div.logo {
+    margin: 20px auto 0;
+    width: 100%;
+    text-align: center;
+    height: 70px;
+    background: url('img/GeoExt_Logo.png') center no-repeat;
+}
+
+div#maps {
+    margin: 1em auto;
+    width: 600px;
+}
+
+/* list of maps on index page */
+img.icon-viewmap {
+    width: 16px;
+    height: 16px;
+    background: url(img/silk/map_go.png) no-repeat;
+}
+img.icon-editmap {
+    width: 16px;
+    height: 16px;
+    background: url(img/silk/map_edit.png) no-repeat;
+}
+img.icon-removemap {
+    width: 16px;
+    height: 16px;
+    background: url(img/silk/delete.png) no-repeat;
+}
+
+.x-btn .add {
+    background-image: url(img/silk/add.png);
+}
+
+#login {
+    font-size: 12px;
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: 200px;
+}

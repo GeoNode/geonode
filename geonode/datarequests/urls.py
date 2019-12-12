@@ -20,8 +20,12 @@ urlpatterns = patterns(
 
     #urls for registration
     url(r'^register/$','register',name='request_register'),
+    # Start of part 2 registration
     url(r'^register/data_request/$', 'data_request_view', name='data_request_form'),
+    # Resolve /register/profile_request, proceed to ./views/registration.py/ profile_request_view
     url(r'^register/profile_request/$', 'profile_request_view', name='profile_request_form'),
+    # Insert a landing page: registration success 
+    url(r'^register/register_success/$', 'register_success', name='register_success'),
     url(r'^register/verification-sent/$', 'email_verification_send', name='email_verification_send'),
     url(r'^register/email-verified/$', 'email_verification_confirm', name='email_verification_confirm'),
 
@@ -29,6 +33,7 @@ urlpatterns = patterns(
     url(r'^profile/$', ProfileRequestList.as_view(), name='profile_request_browse'),
     url(r'^profile_requests_csv/$', 'profile_requests_csv', name='profile_requests_csv'),
 
+    # See here pending users?
     url(r'^profile/(?P<pk>\d+)/$', 'profile_request_detail', name="profile_request_detail"),
     url(r'^profile/(?P<pk>\d+)/edit/$', 'profile_request_edit', name="profile_request_edit"),
     url(r'^profile/(?P<pk>\d+)/approve/$', 'profile_request_approve', name="profile_request_approve"),

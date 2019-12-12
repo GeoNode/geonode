@@ -1,0 +1,20 @@
+div.map-overlay {
+    width: 240px;
+}
+
+.overlay-scalechooser {
+    width: 110px;
+}
+
+.overlay-scaleline {
+    width: 100px;
+    padding-bottom: 5px;
+}
+
+.gx-layer-menu {
+    min-width: 220px;
+}
+
+.ext-ie6 .x-menu-item-icon {
+    left: -24px;
+}

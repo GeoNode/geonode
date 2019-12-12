@@ -1,0 +1,67 @@
+body {
+	padding-top: 40px;
+}
+
+.navbar-brand {
+	height: 70px;
+	background: url(../img/logo_phillidar_65x65.png) no-repeat;
+	width: inherit;
+	text-indent: 135px;
+	display: block;
+	font-size: 24px;
+	font-weight: bold;
+}
+
+.navbar-brand small {
+	display: block;
+	font-size: 16px;
+	font-weight: 300;
+}
+/* make room for new header size */
+#wrap {
+	padding-top: 50px;
+}
+
+/* override map_geoexplorer.css to make room for new header size*/
+/*#paneltbar {
+	margin-top: 100px !important;
+}*/
+
+.data-request-status {
+	font-size: 20px;
+	padding: 10px;
+	width: 100%;
+}
+.data-request-status-parent {
+	padding: 10px 30px 10px 30px;
+}
+
+.pending-request {
+	color: #000;
+	padding: 0;
+
+}
+
+.yourlabs-autocomplete {
+	margin-top: 30px !important;
+}
+
+.home-facets {
+    text-align: center;
+    /*padding: 4em 0px;*/
+   position: relative;
+   /*padding-top: 31%;*/
+   padding-left: 0px;
+}
+
+.philgrid,{
+	z-index: 1;
+	position:absolute;
+}
+
+.legend{
+	z-index: 2;
+	top: 655px;
+	position: absolute;
+	padding: 5px 5px;
+}

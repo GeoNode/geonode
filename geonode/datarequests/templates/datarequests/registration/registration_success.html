@@ -1,0 +1,13 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
+{% block title %} {% trans "Verify email address" %} {% endblock %}
+{% block head_title %}{% trans "Verify email address" %} {% endblock %}
+
+{% block body %}
+    <h2>{% trans "Verify email address" %}</h2>
+    
+    <p>{% blocktrans %}Your registration details have been received. We have sent you an email for verification. Follow the link provided in the email to finalize the signup process.{% endblocktrans %}</p>
+    <p>{% blocktrans %}Didn't receive your email? Please check your spam folder. Still not there? Contact us at <strong>{{ support_email }}</strong>, and we'll be glad to assist you.{% endblocktrans %}</p>
+    
+{% endblock %}

@@ -1,0 +1,47 @@
+/* sidenavi wrapper */
+#sideNavi,
+.side-navi-item,
+.side-navi-data,
+.side-navi-tab {  margin: 0; padding: 0;  outline: #000000 thin groove;}
+#sideNavi {
+    position: fixed;
+    right: 50px;
+    top: 16%;
+}
+/* items */
+.side-navi-item {
+    position: absolute;
+    left: 0;
+    display: inline-block;
+    width: 120px;
+    height: 50px;
+    transform: rotate(-90deg);
+    transform-origin: left top 0;
+    color: #fff;
+    background-color: #555;
+    cursor: pointer;
+    padding: 0px 5px;
+}
+.side-navi-item.item1 {  top: 130px;  }
+.side-navi-item.item2 {  top: 255px;  }
+.side-navi-item.item3 {  top: 380px;  }
+.side-navi-item.item4 {  top: 505px;  }
+.side-navi-item.active,
+.side-navi-item:hover {  background-color: #fff; color: #000;  }
+.side-navi-item > div {  padding-top: 15px; text-align: center;  }
+/* data wrapper */
+.side-navi-data {
+    position: absolute;
+    top: 0;
+    left: 50px;
+    width: 250px;
+    height: 520px;
+    background-color: #fff;
+}
+/* tab wrapper */
+.side-navi-tab {  display: none;  }
+.side-navi-tab.active {  display: inline-block;  }
+.side-navi-tab > div {  padding: 25px;  }
+
+/* class for floating tabs in maptiles */
+.floating-tab {  margin: 0; padding: 0;  outline: #000000 thin groove;}

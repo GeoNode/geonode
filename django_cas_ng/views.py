@@ -41,8 +41,10 @@ __all__ = ['login', 'logout', 'callback']
 def login(request, next_page=None, required=False):
     """Forwards to CAS login URL or verifies CAS ticket"""
     service_url = get_service_url(request, next_page)
+    print(service_url)
     client = get_cas_client(service_url=service_url)
     pprint("service url: "+service_url)
+    print("client: " + str(client))
     if not next_page:
         next_page = get_redirect_url(request)
 
@@ -121,6 +123,8 @@ def login(request, next_page=None, required=False):
             error = "<h1>{0}</h1><p>{1}</p>".format(_('Forbidden'), _('Login failed.'))
             return HttpResponseForbidden(error)
     else:
+        print('redirect?')
+        print(client.get_login_url())
         return HttpResponseRedirect(client.get_login_url())
 
 

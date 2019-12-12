@@ -1,0 +1,16 @@
+body {font-family: Lato,"Helvetica Neue",Helvetica,Arial,sans-serif;}
+#aboutbutton {
+    display: none;
+}
+#paneltbar {
+    margin-top: 90px;
+}
+button.logout {
+    display: none;
+}
+button.login {
+    display:none;
+}
+.map-title-header {
+    margin-right: 10px;
+}

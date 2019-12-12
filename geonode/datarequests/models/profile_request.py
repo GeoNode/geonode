@@ -67,6 +67,17 @@ class ProfileRequest(BaseRequest, StatusModel):
         ('reason3', _('Reason 3')),
     )
 
+    ORGANIZATION_TYPE_CHOICES = Choices(
+        ('lidar1', _('Phil-LiDAR 1 SUC')),
+        ('lidar2', _('Phil-LiDAR 2 SUC' )),
+        ('gov', _( 'Government Agency')),
+        ('Academe', _('Academe')),
+        ('intlngo', _( 'International NGO')),
+        ('localngo', _('Local NGO')),
+        ('private', _('Private Insitution' )),
+        ('other ', _('Other' )),
+    )
+
     data_request = models.ForeignKey(
         'DataRequest',
         on_delete=models.SET_NULL,
@@ -92,7 +103,7 @@ class ProfileRequest(BaseRequest, StatusModel):
     )
 
     location = models.CharField(
-        _('Are you a local or foreign entity?'),
+        _('Are eh? you a local or foreign entity?'),
         choices=LOCATION_CHOICES,
         default=LOCATION_CHOICES.local,
         max_length=10,
@@ -108,14 +119,23 @@ class ProfileRequest(BaseRequest, StatusModel):
         blank = True,
         null = True
     )
+    #org_type = models.CharField(
+    #    _('Organization Type'),
+    #    max_length=255,
+    #    blank=False,
+     #   null=False,
+     #   default="Other",
+     #   help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
+    #)
+
     org_type = models.CharField(
         _('Organization Type'),
-        max_length=255,
-        blank=False,
-        null=False,
-        default="Other",
-        help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
+        choices=ORGANIZATION_TYPE_CHOICES,
+        blank=True,
+        null=True,
+        max_length=15
     )
+
     organization_other = models.CharField(
         _('If Other, please specify'),
         max_length=255,
@@ -380,32 +400,33 @@ class ProfileRequest(BaseRequest, StatusModel):
         self.send_email(email_subj,text_content,html_content)
 
     def send_verification_email(self):
-        self.set_verification_key()
-        site = Site.objects.get_current()
-        verification_url = (
-            str(site) +
-            reverse('datarequests:email_verification_confirm') +
-            '?key=' + self.verification_key + '&email=' +
-            urlquote(self.email)
-        )
-        verification_url = iri_to_uri(verification_url).replace("//", "/")
+        print('sending ver')
+        # self.set_verification_key()
+        # site = Site.objects.get_current()
+        # verification_url = (
+        #     str(site) +
+        #     reverse('datarequests:email_verification_confirm') +
+        #     '?key=' + self.verification_key + '&email=' +
+        #     urlquote(self.email)
+        # )
+        # verification_url = iri_to_uri(verification_url).replace("//", "/")
 
-        text_content = email_utils.VERIFICATION_EMAIL_TEXT.format(
-             unidecode(self.first_name),
-             verification_url,
-             settings.LIPAD_SUPPORT_MAIL,
-         )
+        # text_content = email_utils.VERIFICATION_EMAIL_TEXT.format(
+        #      unidecode(self.first_name),
+        #      verification_url,
+        #      settings.LIPAD_SUPPORT_MAIL,
+        #  )
 
-        html_content = email_utils.VERIFICATION_EMAIL_HTML.format(
-            unidecode(self.first_name),
-            verification_url,
-            verification_url,
-            settings.LIPAD_SUPPORT_MAIL,
-            settings.LIPAD_SUPPORT_MAIL,
-        )
+        # html_content = email_utils.VERIFICATION_EMAIL_HTML.format(
+        #     unidecode(self.first_name),
+        #     verification_url,
+        #     verification_url,
+        #     settings.LIPAD_SUPPORT_MAIL,
+        #     settings.LIPAD_SUPPORT_MAIL,
+        # )
 
-        email_subj = _('[LiPAD] Email Confirmation')
-        self.send_email(email_subj,text_content,html_content, recipient=self.email)
+        # email_subj = _('[LiPAD] Email Confirmation')
+        # self.send_email(email_subj,text_content,html_content, recipient=self.email)
 
     def send_approval_email(self):
         site = Site.objects.get_current()

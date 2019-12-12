@@ -468,7 +468,7 @@ def _get_viewer_projection_info(srid):
 
 
 def resolve_object(request, model, query, permission='base.view_resourcebase',
-                   permission_required=True, permission_msg=None):
+                   permission_required=False, permission_msg=None):
     """Resolve an object using the provided query and check the optional
     permission. Model views should wrap this function as a shortcut.
 
@@ -477,10 +477,13 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     permission_required - if False, allow get methods to proceed
     permission_msg - optional message to use in 403
     """
+    print('resolve_object exec')
+    print(request.user)
     obj = get_object_or_404(model, **query)
     obj_to_check = obj.get_self_resource()
 
     if settings.RESOURCE_PUBLISHING:
+        print('settings.RESOURCE_PUBLISHING')
         if (not obj_to_check.is_published) and (
                 not request.user.has_perm('publish_resourcebase', obj_to_check)
         ):
@@ -488,17 +491,23 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
 
     allowed = True
     if permission.split('.')[-1] in ['change_layer_data', 'change_layer_style']:
+        print('permission.split')
         if obj.__class__.__name__ == 'Layer':
+            print('obj.class.name layer')
             obj_to_check = obj
     if permission:
+        print('permission')
         if permission_required or request.method != 'GET':
+            print('permission_required')
             #NOTE:replace to check for both user or group perms
             #allowed = request.user.has_perm(
             #    permission,
             #    obj_to_check)
             allowed = has_direct_or_group_perm(request.user, permission, obj_to_check)
     if not allowed:
+        print('not allowed')
         mesg = permission_msg or _('Permission Denied')
+        print(mesg)
         raise PermissionDenied(mesg)
     return obj
 
