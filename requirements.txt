@@ -82,7 +82,7 @@ geonode-announcements==1.0.13
 arcrest>=10.0
 geonode-dialogos==3.0
 geoserver-restconfig==1.0.5
-gn-gsimporter==1.0.15
+gn-gsimporter==1.0.17
 gisdata==0.5.4
 
 # haystack/elasticsearch
