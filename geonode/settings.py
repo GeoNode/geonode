@@ -1721,8 +1721,7 @@ else:
         os.makedirs(CELERY_RESULT_BACKEND_PATH)
     CELERY_RESULT_BACKEND = 'file:///%s' % CELERY_RESULT_BACKEND_PATH
 
-# Note:BROKER_URL is deprecated in favour of CELERY_BROKER_URL
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', _BROKER_URL)
+CELERY_BROKER_URL = os.environ.get('BROKER_URL', _BROKER_URL)
 CELERY_RESULT_PERSISTENT = ast.literal_eval(os.environ.get('CELERY_RESULT_PERSISTENT', 'False'))
 
 # Allow to recover from any unknown crash.

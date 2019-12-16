@@ -169,11 +169,11 @@ matrix:
       python: 3.5
       env:
           - TEST_RUN_SELENIUM: 'True'
-    # - name: "Selenium Integration Tests SPCGeonode"
-    #   python: 3.5
-    #   env:
-    #       - TEST_RUN_SELENIUM: 'True'
-    #       - SPCGEONODE: 'True'
+    - name: "Selenium Integration Tests SPCGeonode"
+      python: 3.5
+      env:
+          - TEST_RUN_SELENIUM: 'True'
+          - SPCGEONODE: 'True'
 
 branches:
   only:
