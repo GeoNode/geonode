@@ -39,7 +39,7 @@
     "requirejs/require.js",
     "requirejs-text/text.js",
     "requirejs/require.js"
-    ],
+  ],
   "assets.min.js": [
     "jquery/dist/jquery.min.js",
     "jquery-ui-dist/jquery-ui.min.js",
@@ -89,32 +89,32 @@
     "leaflet.pancontrol/src/L.Control.Pan.js"
   ],
   "concatBootstrap":[
-      "bootstrap/dist/js/bootstrap.js",
-      "bootstrap/js/affix.js",
-      "bootstrap/js/alert.js",
-      "bootstrap/js/button.js",
-      "bootstrap/js/carousel.js",
-      "bootstrap/js/collapse.js",
-      "bootstrap/js/dropdown.js",
-      "bootstrap/js/modal.js",
-      "bootstrap/js/popover.js",
-      "bootstrap/js/scrollspy.js",
-      "bootstrap/js/tab.js",
-      "bootstrap/js/tooltip.js",
-      "bootstrap/js/transition.js"
-    ],
+    "bootstrap/dist/js/bootstrap.js",
+    "bootstrap/js/affix.js",
+    "bootstrap/js/alert.js",
+    "bootstrap/js/button.js",
+    "bootstrap/js/carousel.js",
+    "bootstrap/js/collapse.js",
+    "bootstrap/js/dropdown.js",
+    "bootstrap/js/modal.js",
+    "bootstrap/js/popover.js",
+    "bootstrap/js/scrollspy.js",
+    "bootstrap/js/tab.js",
+    "bootstrap/js/tooltip.js",
+    "bootstrap/js/transition.js"
+  ],
   "images": [
-      "raty-js/lib/images/*.png",
-      "jquery-ui-dist/images/*",
-      "leaflet/dist/images/*.png",
-      "leaflet-fullscreen/dist/*.png",
-      "leaflet.control.opacity/img/*",
-      "leaflet-measure/dist/assets/*",
-      "leaflet-navbar/img/*",
-      "leaflet.pancontrol/src/images/*",
-      "datatables/media/images/*.png",
-      "timeago/*.png",
-      "timeago/*.png",
-      "zeroclipboard/dist/ZeroClipboard.swf"
-    ]
+    "raty-js/lib/images/*.png",
+    "jquery-ui-dist/images/*",
+    "leaflet/dist/images/*.png",
+    "leaflet-fullscreen/dist/*.png",
+    "leaflet.control.opacity/img/*",
+    "leaflet-measure/dist/assets/*",
+    "leaflet-navbar/img/*",
+    "leaflet.pancontrol/src/images/*",
+    "datatables/media/images/*.png",
+    "timeago/*.png",
+    "timeago/*.png",
+    "zeroclipboard/dist/ZeroClipboard.swf"
+  ]
 }

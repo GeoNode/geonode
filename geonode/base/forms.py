@@ -229,7 +229,7 @@ class RegionsSelect(forms.Select):
         for option_value, option_label in self.choices:
             if not isinstance(
                     option_label, (list, tuple)) and isinstance(
-                    option_label, str):
+                    option_label, six.string_types):
                 output.append(
                     self.render_option_value(
                         selected_choices,
@@ -240,7 +240,7 @@ class RegionsSelect(forms.Select):
         for option_value, option_label in self.choices:
             if isinstance(
                     option_label, (list, tuple)) and not isinstance(
-                    option_label, str):
+                    option_label, six.string_types):
                 output.append(
                     format_html(
                         '<optgroup label="{}">',
@@ -248,10 +248,10 @@ class RegionsSelect(forms.Select):
                 for option in option_label:
                     if isinstance(
                             option, (list, tuple)) and not isinstance(
-                            option, str):
+                            option, six.string_types):
                         if isinstance(
                                 option[1][0], (list, tuple)) and not isinstance(
-                                option[1][0], str):
+                                option[1][0], six.string_types):
                             for option_child in option[1][0]:
                                 output.append(
                                     self.render_option_value(
@@ -381,8 +381,7 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         help_text=_("A space or comma-separated list of keywords. Use the widget to select from Hierarchical tree."),
         # widget=TreeWidget(url='autocomplete_hierachical_keyword'), #Needs updating to work with select2
-        widget=TaggitSelect2Custom(url='autocomplete_hierachical_keyword')
-        )
+        widget=TaggitSelect2Custom(url='autocomplete_hierachical_keyword'))
 
     """
     regions = TreeNodeMultipleChoiceField(
@@ -447,7 +446,6 @@ class ResourceBaseForm(TranslationModelForm):
                 else:
                     escaped += char
             return escaped
-
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
@@ -455,18 +453,18 @@ class ResourceBaseForm(TranslationModelForm):
                 _k = urllib.unquote(('%s' % k)).split(",")
             except AttributeError:
                 _k = urllib.parse.unquote(('%s' % k)).split(",")
-            if not isinstance(_k, str):
+            if not isinstance(_k, six.string_types):
                 for _kk in [x.strip() for x in _k]:
                     _kk = HTMLParser().unescape(unicode_escape(_kk))
                     # Simulate JS Unescape
                     _kk = _kk.replace('%u', r'\u').decode('unicode-escape') if '%u' in _kk else _kk
-                    _hk = HierarchicalKeyword.objects.filter(name__contains='%s' % _kk.strip())
+                    _hk = HierarchicalKeyword.objects.filter(name__iexact='%s' % _kk.strip())
                     if _hk and len(_hk) > 0:
                         _unsescaped_kwds.append(_hk[0])
                     else:
                         _unsescaped_kwds.append(_kk)
             else:
-                _hk = HierarchicalKeyword.objects.filter(name__iexact=_k)
+                _hk = HierarchicalKeyword.objects.filter(name__iexact=_k.strip())
                 if _hk and len(_hk) > 0:
                     _unsescaped_kwds.append(_hk[0])
                 else:

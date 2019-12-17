@@ -1,8 +1,22 @@
-{% load static from staticfiles %}
-{% load floppyforms %}
 {% load i18n %}
+{% load static %}
+{% load floppyforms %}
+
 <!--<link href="{% static "lib/css/bootstrap-select.css" %}" rel="stylesheet" />-->
 <script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
+
+<!-- Required to make select2 fields work for autocomplete -->
+<link href="{% static "vendor/select2/dist/css/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<link href="{% static "autocomplete_light/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/jquery.init.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/select2/dist/js/i18n/en.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/autocomplete.init.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/forward.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/select2.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/jquery.post-setup.js" %}"></script>
+
 <style>
 /* general panel styles */
 #mdeditor_form .panel-group .panel{
@@ -288,13 +302,10 @@ span.grippy::after {
                                     <div class="col-lg-12">
                                         <span><label for="{{ map_form.date_type|id }}">{{ map_form.keywords.label }}</label></span>
                                         {{ map_form.keywords }}
-                                        {{ map_form.media }}
                                     </div>
                                     {% if THESAURI_FILTERS %}
                                     <div class="col-lg-12 thesauri_keywords">
                                         {{ tkeywords_form }}
-                                        <!-- .media required to make select2 fields work for autocomplete functionality -->
-                                        {{ tkeywords_form.media }}
                                     </div>
                                     {% endif %}
                                     <div class="col-lg-6 col-xs-12">

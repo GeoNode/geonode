@@ -30,7 +30,7 @@ from django.utils.translation import ugettext_lazy as _
 from geonode.security.models import PermissionLevelMixin
 from lxml import etree
 from defusedxml import lxml as dlxml
-
+from six import string_types
 
 from geonode import qgis_server
 from geonode.layers.models import Layer
@@ -222,7 +222,7 @@ class QGISServerStyle(models.Model, PermissionLevelMixin):
         :rtype: QGISServerStyle, bool
         """
 
-        if isinstance(style_xml, str):
+        if isinstance(style_xml, string_types):
             style_xml = dlxml.fromstring(style_xml)
 
         elif isinstance(style_xml, ElementTree.Element):
