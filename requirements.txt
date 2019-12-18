@@ -46,7 +46,7 @@ pyopenssl==19.1.0
 pyproj>=1.9.5,<2.2.3.0
 OWSLib==0.18.0
 pycsw==2.4.0
-SQLAlchemy==1.3.11 # required by PyCSW
+SQLAlchemy==1.3.12 # required by PyCSW
 Shapely==1.6.4.post2
 mercantile==1.1.2
 geoip2==2.9.0
