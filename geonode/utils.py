@@ -435,8 +435,8 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
     ``save_map`` if map should be saved (default: True)
     """
     layer_cfg = dict(layer)
-    for k in ["format", "store", "name", "opacity", "styles", "transparent",
-              "fixed", "group", "visibility", "source", "getFeatureInfo"]:
+    for k in ["format", "name", "opacity", "styles", "transparent",
+              "fixed", "group", "visibility", "source"]:
         if k in layer_cfg:
             del layer_cfg[k]
     layer_cfg["id"] = 1
@@ -952,7 +952,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
     if content_type is None:
         content_type = "application/json"
     if errors:
-        if isinstance(errors, str):
+        if isinstance(errors, six.string_types):
             errors = [errors]
         body = {
             'success': False,
@@ -985,7 +985,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
     if status is None:
         status = 200
 
-    if not isinstance(body, str):
+    if not isinstance(body, six.string_types):
         body = json.dumps(body, cls=DjangoJSONEncoder)
     return HttpResponse(body, content_type=content_type, status=status)
 
@@ -1400,7 +1400,7 @@ class HttpClient(object):
         check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
             if connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
                 try:
-                    if user and isinstance(user, str):
+                    if user and isinstance(user, six.string_types):
                         user = get_user_model().objects.get(username=user)
                     _u = user or get_user_model().objects.get(username=self.username)
                     access_token = get_or_create_token(_u)
