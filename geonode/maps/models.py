@@ -530,19 +530,35 @@ class MapLayer(models.Model, GXPLayerBase):
 
     @property
     def layer_title(self):
-        if self.local:
-            title = Layer.objects.get(store=self.store, alternate=self.name).title
-        else:
+        title = None
+        try:
+            if self.local:
+                if self.store:
+                    title = Layer.objects.get(
+                        store=self.store, alternate=self.name).title
+                else:
+                    title = Layer.objects.get(alternate=self.name).title
+        except BaseException:
+            title = None
+        if title is None:
             title = self.name
         return title
 
     @property
     def local_link(self):
-        if self.local:
-            layer = Layer.objects.get(store=self.store, alternate=self.name)
-            link = "<a href=\"%s\">%s</a>" % (
-                layer.get_absolute_url(), layer.title)
-        else:
+        link = None
+        try:
+            if self.local:
+                if self.store:
+                    layer = Layer.objects.get(
+                        store=self.store, alternate=self.name)
+                else:
+                    layer = Layer.objects.get(alternate=self.name)
+                link = "<a href=\"%s\">%s</a>" % (
+                    layer.get_absolute_url(), layer.title)
+        except BaseException:
+            link = None
+        if link is None:
             link = "<span>%s</span> " % self.name
         return link
 

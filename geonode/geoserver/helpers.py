@@ -60,6 +60,7 @@ from owslib.wms import WebMapService
 from geonode import GeoNodeException
 from geonode.base.auth import get_or_create_token
 from geonode.utils import http_client
+from geonode.catalogue.models import catalogue_post_save
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.security.views import _perms_info_json
@@ -1100,6 +1101,10 @@ def set_styles(layer, gs_catalog):
 
     Layer.objects.filter(id=layer.id).update(**to_update)
     layer.refresh_from_db()
+
+    # refresh catalogue metadata records
+    catalogue_post_save(instance=layer, sender=layer.__class__)
+
     try:
         set_geowebcache_invalidate_cache(layer.alternate or layer.typename)
     except BaseException as e:
