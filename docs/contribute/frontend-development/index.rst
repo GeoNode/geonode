@@ -78,7 +78,7 @@ Example 1 – Change styling:
 Example 2 – add/update a new library:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. In your settings set ``DEBU_STATIC=True``. This will load unminified assets in your template.
+1. In your settings set ``DEBUG_STATIC=True``. This will load unminified assets in your template.
 2. yarn add angular@1.7
 3. ``vim static_dependencies.json`` Edit the file and add your dependency to its fitting
    destination. For example, assets.min.js
