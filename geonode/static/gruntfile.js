@@ -34,6 +34,8 @@ module.exports = function(grunt) {
       }
     },
 
+    // this task is currently not used as it would wipe out
+    // needed binary files from /lib for production
     clean: {
       lib: ['lib/']
     },
@@ -234,9 +236,9 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['jshint']);
 
   // build development
-  grunt.registerTask('development', ['jshint', 'clean:lib', 'less:development', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:development']);
+  grunt.registerTask('development', ['jshint', 'less:development', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:development']);
 
   // build production
-  grunt.registerTask('production', ['jshint', 'clean:lib', 'less:production', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:production']);
+  grunt.registerTask('production', ['jshint', 'less:production', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:production']);
 
 };
