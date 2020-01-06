@@ -2984,6 +2984,12 @@ select[multiple].input-lg {
   background-color: #f2dede;
   border-color: #a94442;
 }
+.has-error {
+  color: #a94442 !important;
+}
+.has-error .select2-selection {
+  border-color: #a94442 !important;
+}
 .has-error .form-control-feedback {
   color: #a94442;
 }
@@ -8096,6 +8102,10 @@ form-inline {
 }
 #metadata_update .select2-container--default .select2-selection--single .select2-selection__arrow {
   top: 8px !important;
+}
+#metadata_update .form-controls {
+  padding-right: 0px !important;
+  padding-left: 0px !important;
 }
 #metadata_update .form-group {
   margin-right: 0px;

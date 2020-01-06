@@ -65,7 +65,7 @@
       <!-- Added in the thesuarus field here since saving the form without it causes the thesuarus keywords to be removed. 
            Unfortunately this needs to appear at the top (or the bottom) of the form since tkeywords_form is a complete other django form. 
            There might be a better way to solve this.-->
-        <div class="col-md-6 form-controls">
+        <div class="col-md-12 form-controls">
           {{ document_form|as_bootstrap }}
           {% if THESAURI_FILTERS %}
             {{ tkeywords_form }}

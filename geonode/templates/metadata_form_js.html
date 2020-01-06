@@ -189,7 +189,7 @@
           }
 
           if(target.id === 'id_resource-keywords') {
-            $(target).closest('.keywords-container').toggleClass('has-error', empty);
+            $(target).siblings('span').toggleClass('has-error', empty);
             $(target).toggleClass("input-empty", empty);
           }
 
@@ -309,6 +309,8 @@
 
         $('#category_form').change(onInputChange).change();
         $('#id_resource-group').change(onInputChange).change();
+        document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
+
         $('#id_resource-regions').change(onInputChange).change();
         $('#mandatory').find(":input:not(.value-select):not(.autocomplete)").each(function(){
             if(isMandatoryField(this)) {
@@ -628,7 +630,7 @@
       {% endif %}
         $('.has-popover').popover({'trigger':'hover'});
 
-        /**
+        /** 
         NOTE: This is commented as it needs updating to work with select2 and autocomlete light.
         
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
@@ -664,8 +666,8 @@
                                 event.preventDefault();  //prevents creation of token
                         });
                     });
-                    // $('#id_resource-keywords').tokenfield('readonly');
-                    /* $('div.token .close').click(function() {
+                    $('#id_resource-keywords').tokenfield('readonly');
+                    $('div.token .close').click(function() {
                         const token_close_button = $(this);
                         const token_item = token_close_button.parent();
                         token_item.remove();
@@ -689,7 +691,7 @@
                 {% endif %}
 
                 if (window.location.href.match('/metadata_advanced$')) {
-                    /*if (!select_button_active) {
+                    if (!select_button_active) {
                         const select_button = $('<button id="id_freetext_keyword_select" class="btn btn-primary">Select</button>');
                         const select_button_parent = $('#id_resource-keywords').parent().parent();
                         select_button_parent.append(select_button);
