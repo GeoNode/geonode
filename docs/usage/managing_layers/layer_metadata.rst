@@ -68,7 +68,7 @@ Metadata Wizard
   * The *Title* of the layer, which should be clear and understandable;
   * An *Abstract* on the layer;
   * The *Creation/Publication/Revision Dates*  which define the time period that is covered by the layer;
-  * The *Keywords*, which should be chosen within the available list. The contributor search for available keywords by clicking on the searching bar, or on the folder logo representing, or by entering the first letters of the desired word;
+  * The *Keywords*, which should be chosen within the available list. The contributor search for available keywords by clicking on the searching bar or by entering the first letters of the desired word;
   * The *Category* which the layer belongs to;
   * The *Group* which the layer is linked to.
 
