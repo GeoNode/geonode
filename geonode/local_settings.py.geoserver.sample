@@ -584,6 +584,20 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
         }
     ]
 
+    if MAPBOX_ACCESS_TOKEN:
+        MAPBOX_BASEMAPS = {
+            "type": "tileprovider",
+            "title": "MapBox streets-v11",
+            "provider": "MapBoxStyle",
+            "name": "MapBox streets-v11",
+            "accessToken": "%s" % MAPBOX_ACCESS_TOKEN,
+            "source": "streets-v11",
+            "thumbURL": "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/6/33/23?access_token=%s" % MAPBOX_ACCESS_TOKEN,
+            "group": "background",
+            "visibility": True
+        }
+        DEFAULT_MS2_BACKGROUNDS = [MAPBOX_BASEMAPS,] + DEFAULT_MS2_BACKGROUNDS
+
     if BING_API_KEY:
         BING_BASEMAPS = [
             {

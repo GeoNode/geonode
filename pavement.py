@@ -136,22 +136,18 @@ def setup_geoserver(options):
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
     if _backend == 'geonode.qgis_server' or 'geonode.geoserver' not in INSTALLED_APPS:
         return
-
-    download_dir = path('downloaded')
-    if not download_dir.exists():
-        download_dir.makedirs()
-
-    geoserver_dir = path('geoserver')
-
-    geoserver_bin = download_dir / \
-        os.path.basename(dev_config['GEOSERVER_URL'])
-    jetty_runner = download_dir / \
-        os.path.basename(dev_config['JETTY_RUNNER_URL'])
-
-    if _django_11 and (integration_tests or integration_csw_tests or integration_bdd_tests):
+    if _django_11 and on_travis:
         """Will make use of the docker container for the Integration Tests"""
         pass
     else:
+        download_dir = path('downloaded')
+        if not download_dir.exists():
+            download_dir.makedirs()
+        geoserver_dir = path('geoserver')
+        geoserver_bin = download_dir / \
+            os.path.basename(dev_config['GEOSERVER_URL'])
+        jetty_runner = download_dir / \
+            os.path.basename(dev_config['JETTY_RUNNER_URL'])
         grab(
             options.get(
                 'geoserver',
@@ -164,7 +160,6 @@ def setup_geoserver(options):
                 dev_config['JETTY_RUNNER_URL']),
             jetty_runner,
             "jetty runner")
-
         if not geoserver_dir.exists():
             geoserver_dir.makedirs()
 
@@ -175,7 +170,6 @@ def setup_geoserver(options):
             print 'extracting geoserver'
             z = zipfile.ZipFile(geoserver_bin, "r")
             z.extractall(webapp_dir)
-
         _install_data_dir()
 
 
@@ -517,7 +511,7 @@ def stop_geoserver(options):
     Stop GeoServer
     """
     # we use docker-compose for integration tests
-    if integration_tests or integration_csw_tests or integration_bdd_tests:
+    if on_travis:
         return
 
     # only start if using Geoserver backend
@@ -654,7 +648,7 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
     # we use docker-compose for integration tests
-    if integration_tests or integration_csw_tests or integration_bdd_tests:
+    if on_travis:
         return
 
     # only start if using Geoserver backend

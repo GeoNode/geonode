@@ -170,6 +170,11 @@ community."
         self.assertEquals(map_obj.abstract, "Abstract2")
         self.assertEquals(map_obj.layer_set.all().count(), 1)
 
+        for map_layer in map_obj.layers:
+            self.assertEqual(
+                map_layer.layer_title,
+                "base:nic_admin")
+
     @dump_func_name
     def test_map_save(self):
         """POST /maps/new/data -> Test saving a new map"""
@@ -331,6 +336,23 @@ community."
         layer = Layer.objects.all().first()
         map_obj = Map.objects.all().first()
         self.client.get(reverse('add_layer') + '?layer_name=%s&map_id=%s' % (layer.alternate, map_obj.id))
+
+        map_obj = Map.objects.get(id=map_obj.id)
+        for map_layer in map_obj.layers:
+            layer_title = map_layer.layer_title
+            local_link = map_layer.local_link
+            if map_layer.name == layer.alternate:
+                self.assertTrue(
+                    layer_title in layer.alternate)
+                self.assertTrue(
+                    map_layer.name in local_link)
+            if Layer.objects.filter(alternate=map_layer.name).exists():
+                attribute_cfg = Layer.objects.get(alternate=map_layer.name).attribute_config()
+                if "getFeatureInfo" in attribute_cfg:
+                    self.assertIsNotNone(attribute_cfg["getFeatureInfo"])
+                    cfg = map_layer.layer_config()
+                    self.assertIsNotNone(cfg["getFeatureInfo"])
+                    self.assertEqual(cfg["getFeatureInfo"], attribute_cfg["getFeatureInfo"])
 
     @dump_func_name
     def test_ajax_map_permissions(self):
@@ -557,6 +579,20 @@ community."
             config_default['about']['title'],
             response_config_dict['about']['title'])
 
+        map_obj.update_from_viewer(config_map, context={})
+        title = config_map['title'] if 'title' in config_map else config_map['about']['title']
+        abstract = config_map['abstract'] if 'abstract' in config_map else config_map['about']['abstract']
+        center = config_map['map']['center'] if 'center' in config_map['map'] else settings.DEFAULT_MAP_CENTER
+        zoom = config_map['map']['zoom'] if 'zoom' in config_map['map'] else settings.DEFAULT_MAP_ZOOM
+        projection = config_map['map']['projection']
+
+        self.assertEqual(map_obj.title, title)
+        self.assertEqual(map_obj.abstract, abstract)
+        self.assertEqual(map_obj.center_x, center['x'] if isinstance(center, dict) else center[0])
+        self.assertEqual(map_obj.center_y, center['y'] if isinstance(center, dict) else center[1])
+        self.assertEqual(map_obj.zoom, zoom)
+        self.assertEqual(map_obj.projection, projection)
+
     @dump_func_name
     def test_map_view(self):
         """Test that map view can be properly rendered
@@ -604,6 +640,25 @@ community."
         self.assertEquals(
             config_map['about']['title'],
             response_config_dict['about']['title'])
+
+        map_obj.update_from_viewer(config_map, context={})
+        title = config_map['title'] if 'title' in config_map else config_map['about']['title']
+        abstract = config_map['abstract'] if 'abstract' in config_map else config_map['about']['abstract']
+        center = config_map['map']['center'] if 'center' in config_map['map'] else settings.DEFAULT_MAP_CENTER
+        zoom = config_map['map']['zoom'] if 'zoom' in config_map['map'] else settings.DEFAULT_MAP_ZOOM
+        projection = config_map['map']['projection']
+
+        self.assertEqual(map_obj.title, title)
+        self.assertEqual(map_obj.abstract, abstract)
+        self.assertEqual(map_obj.center_x, center['x'] if isinstance(center, dict) else center[0])
+        self.assertEqual(map_obj.center_y, center['y'] if isinstance(center, dict) else center[1])
+        self.assertEqual(map_obj.zoom, zoom)
+        self.assertEqual(map_obj.projection, projection)
+
+        for map_layer in map_obj.layers:
+            if Layer.objects.filter(alternate=map_layer.name).exists():
+                cfg = map_layer.layer_config()
+                self.assertIsNotNone(cfg["getFeatureInfo"])
 
     @dump_func_name
     def test_new_map_config(self):

@@ -26,12 +26,10 @@ import os
 import json
 import datetime
 import urllib2
-# import base64
 import time
 import logging
 
 from StringIO import StringIO
-# import traceback
 import gisdata
 from decimal import Decimal
 from defusedxml import lxml as dlxml
@@ -45,13 +43,9 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.auth import get_user_model
-# from guardian.shortcuts import assign_perm
-from geonode.base.populate_test_data import reconnect_signals, all_public
+from geonode.base.populate_test_data import all_public
 from tastypie.test import ResourceTestCaseMixin
-
 from geonode.qgis_server.models import QGISServerLayer
-
-# from geonode.security.models import *
 from geonode.decorators import on_ogc_backend
 from geonode.base.models import TopicCategory, Link
 from geonode.layers.models import Layer
@@ -62,12 +56,7 @@ from geonode.layers.utils import (
     file_upload,
 )
 from geonode.tests.utils import check_layer, get_web_page
-
 from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
-# FIXME(Ariel): Uncomment these when #1767 is fixed
-# from geonode.geoserver.helpers import get_time_info
-# from geonode.geoserver.helpers import get_wms
-# from geonode.geoserver.helpers import set_time_info
 from geonode.geoserver.signals import gs_catalog
 from geonode.utils import check_ogc_backend
 
@@ -83,10 +72,6 @@ logger = logging.getLogger(__name__)
 
 def _log(msg, *args):
     logger.debug(msg, *args)
-
-
-# Reconnect post_save signals that is disconnected by populate_test_data
-reconnect_signals()
 
 
 def zip_dir(basedir, archivename):
@@ -1305,106 +1290,12 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
 
 
 @override_settings(SITEURL='http://localhost:8004/')
-class GeoNodeMapPrintTest(GeoNodeLiveTestSupport):
-
-    """
-    Tests geonode.maps print
-    """
-    port = 8004
-
-    @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    def testPrintProxy(self):
-        """ Test the PrintProxyMiddleware if activated.
-            It should respect the permissions on private layers.
-        """
-
-        if 'geonode.middleware.PrintProxyMiddleware' in settings.MIDDLEWARE_CLASSES:
-            # STEP 1: Import a layer
-            from geonode.maps.models import Map
-
-            self.client.login(username='norman', password='norman')
-
-            # TODO: Would be nice to ensure the name is available before
-            # running the test...
-            norman = get_user_model().objects.get(username="norman")
-            saved_layer = file_upload(
-                os.path.join(
-                    gisdata.VECTOR_DATA,
-                    "san_andres_y_providencia_poi.shp"),
-                name="san_andres_y_providencia_poi_by_norman",
-                user=norman,
-                overwrite=True,
-            )
-            try:
-                # Set the layer private
-                saved_layer.set_permissions(
-                    {'users': {'AnonymousUser': ['view_resourcebase']}})
-
-                url = reverse(
-                    'layer_metadata',
-                    args=[
-                        saved_layer.service_typename])
-
-                # check is accessible while logged in
-                resp = self.client.get(url)
-                self.assertEquals(resp.status_code, 200)
-
-                # check is inaccessible when not logged in
-                self.client.logout()
-                resp = self.client.get(url)
-                self.assertEquals(resp.status_code, 302)
-
-                # STEP 2: Create a Map with that layer
-
-                map_obj = Map(owner=norman, zoom=0,
-                              center_x=0, center_y=0)
-                map_obj.create_from_layer_list(norman, [saved_layer], 'title', '')
-
-                # STEP 3: Print the map
-
-                print_url = settings.OGC_SERVER['default'][
-                    'LOCATION'] + 'pdf/create.json'
-
-                post_payload = {
-                    'dpi': 75,
-                    'layers': [
-                        {
-                            'baseURL': settings.OGC_SERVER['default']['LOCATION'] +
-                            'wms?SERVICE=WMS&',
-                            'format': "image/png",
-                            'customParams': {
-                                'TILED': True,
-                                'TRANSPARENT': True},
-                            'layers': [
-                                saved_layer.service_typename],
-                            'opacity': 1,
-                            'singleTile': False,
-                            'type': 'WMS'}],
-                    'layout': 'A4 portrait',
-                    'mapTitle': 'test',
-                    'outputFilename': 'print',
-                    'srs': getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
-                    'units': 'm'}
-
-                self.client.post(print_url, post_payload)
-
-                # Test the layer is still inaccessible as non authenticated
-                resp = self.client.get(url)
-                self.assertEquals(resp.status_code, 302)
-            finally:
-                # Clean up and completely delete the layer
-                saved_layer.delete()
-        else:
-            pass
-
-
-@override_settings(SITEURL='http://localhost:8005/')
 class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
     """
     Tests GeoNode/GeoServer syncronization
     """
-    port = 8005
+    port = 8004
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()
@@ -1456,13 +1347,13 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
             layer.delete()
 
 
-@override_settings(SITEURL='http://localhost:8006/')
+@override_settings(SITEURL='http://localhost:8005/')
 class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
 
     """
     Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
     """
-    port = 8006
+    port = 8005
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()
@@ -1572,11 +1463,11 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             layer3.delete()
 
 
-@override_settings(SITEURL='http://localhost:8007/')
+@override_settings(SITEURL='http://localhost:8006/')
 class LayersStylesApiInteractionTests(
         ResourceTestCaseMixin, GeoNodeLiveTestSupport):
     """Test Layers"""
-    port = 8007
+    port = 8006
 
     def setUp(self):
         super(LayersStylesApiInteractionTests, self).setUp()

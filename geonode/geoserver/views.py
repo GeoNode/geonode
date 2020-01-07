@@ -50,10 +50,11 @@ from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 from geonode.maps.models import Map
 from geonode.proxy.views import proxy
-from geonode.geoserver.signals import gs_catalog
 from .tasks import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info, http_client
 from geoserver.catalog import FailedRequestError
+from geonode.geoserver.signals import (gs_catalog,
+                                       geoserver_post_save_local)
 from .helpers import (get_stores,
                       ogc_server_settings,
                       extract_name_from_sld,
@@ -533,8 +534,6 @@ def geoserver_proxy(request,
 
 
 def _response_callback(**kwargs):
-    # affected_layers = kwargs['affected_layers']
-    # response = kwargs['response']
     content = kwargs['content']
     status = kwargs['status']
     content_type = kwargs['content_type']
@@ -545,6 +544,10 @@ def _response_callback(**kwargs):
         content = content\
             .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
             .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
+
+    if 'affected_layers' in kwargs and kwargs['affected_layers']:
+        for layer in kwargs['affected_layers']:
+            geoserver_post_save_local(layer)
 
     return HttpResponse(
         content=content,

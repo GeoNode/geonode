@@ -116,5 +116,17 @@
       "timeago/*.png",
       "timeago/*.png",
       "zeroclipboard/dist/ZeroClipboard.swf"
+    ],
+    "lib_fonts": [
+        "bootstrap/fonts/*"
+      ],
+    "lib_css_fonts": [
+        "raty-js/lib/fonts/*"
+      ],
+    "lib_css_assets": [
+      "leaflet-measure/assets/*"
+    ],
+    "lib_css_png": [
+      "leaflet-fullscreen/dist/*.png"
     ]
 }

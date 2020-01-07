@@ -311,8 +311,7 @@ many GeoNode(s) so it can make available both *single-instance dashboards*
 (referred to individual instances) and *global dashboards*
 (stats calculated on the whole set of instances).
 
-.. warning:: The centralized monitoring service cannot be active if the settings
-variables :ref:`user-analytics` and :ref:`monitoring-enabled` are set to `False`.
+.. warning:: The centralized monitoring service cannot be active if the settings variables :ref:`user-analytics` and :ref:`monitoring-enabled` are set to `False`.
 
 Overview
 --------

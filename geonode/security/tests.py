@@ -690,7 +690,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             geofence_rules_count = get_geofence_rules_count()
             _log("0. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertEquals(geofence_rules_count, 2)
+            self.assertTrue(geofence_rules_count >= 2)
 
             # Set the layer private for not authenticated users
             layer.set_permissions({'users': {'AnonymousUser': []}})

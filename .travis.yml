@@ -34,6 +34,9 @@ matrix:
       env:
           - BACKEND: 'geonode.geoserver'
             DOCKER_COMPOSE_VERSION: 1.19.0
+            # This is GeoServer server address
+            GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+            GEOSERVER_SERVER_PORT: 8080
             ON_TRAVIS: 'True'
             TEST_RUN_CORE: 'True'
             MONITORING_ENABLED: 'False'
@@ -45,6 +48,9 @@ matrix:
       env:
           - BACKEND: 'geonode.geoserver'
             DOCKER_COMPOSE_VERSION: 1.19.0
+            # This is GeoServer server address
+            GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+            GEOSERVER_SERVER_PORT: 8080
             ON_TRAVIS: 'True'
             TEST_RUN_INTERNAL_APPS: 'True'
             MONITORING_ENABLED: 'False'
@@ -172,10 +178,9 @@ matrix:
 branches:
   only:
     - master
+    - 2.10.2
     - 2.10.1
     - 2.10.x
-    - 2.8.x
-    - 2.6.x
 
 before_install:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
@@ -201,7 +206,9 @@ install:
       tar zxf geckodriver.tar.gz -C bin;
       export PATH=$PATH:$PWD/bin;
     fi
-  - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
+  - if [ "$TEST_RUN_SELENIUM" = "True" ] && [ "$SPCGEONODE" == "True" ]; then
+      :;
+    elif [ "$TEST_RUN_SELENIUM" = "True" ]; then
       pip install -r geonode-selenium/requirements.txt;
       wget https://download.osgeo.org/geotiff/samples/spot/chicago/UTM2GTIF.TIF -P geonode-selenium/data;
       wget https://download.osgeo.org/geotiff/samples/made_up/ntf_nord.tif -P geonode-selenium/data;
@@ -221,7 +228,7 @@ install:
       export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");
       export PATH=$JAVA_HOME'bin/java':$PATH;
       pip install -r requirements.txt --upgrade;
-      pip install -e .;
+      pip install -e . --upgrade;
       pip install pygdal==`gdal-config --version`.*;
       pip install codecov;
     fi

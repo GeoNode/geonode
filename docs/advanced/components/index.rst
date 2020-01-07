@@ -1,29 +1,42 @@
 Overview
 ========
 
+**TODO***
+
 Django
 ======
+
+**TODO**
 
 WebServers
 ==========
 
+**TODO**
+
 Apache
 ------
+
+**TODO**
 
 NGINX
 -----
 
+**TODO**
+
 GeoServer
 =========
+
+**TODO**
 
 Databases
 =========
 
+**TODO**
+
 .. _geoserver_geonode_aa:
 
-Security with OAuth2
-====================
-
+OAuth2 Security: Authentication and Authorization
+=================================================
 GeoNode interacts with GeoServer through an advanced security mechanism based on OAuth2 Protocol and GeoFence. This section is a walk through of the configuration and setup of GeoNode and GeoServer Advanced Security.
 
 What we will see in this section is:
@@ -342,12 +355,6 @@ Default values are:
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-        # This middleware allows to print private layers for the users that have
-        # the permissions to view them.
-        # It sets temporary the involved layers as public before restoring the permissions.
-        # Beware that for few seconds the involved layers are public there could be risks.
-        # 'geonode.middleware.PrintProxyMiddleware',
 
         # If you use SessionAuthenticationMiddleware, be sure it appears before OAuth2TokenMiddleware.
         # SessionAuthenticationMiddleware is NOT required for using django-oauth-toolkit.
