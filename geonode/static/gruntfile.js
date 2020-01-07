@@ -95,6 +95,35 @@ module.exports = function(grunt) {
           cwd: 'node_modules',
           dest: 'lib/img',
           src: fileHandling.images
+        },
+        {
+          expand: true,
+          flatten: true,
+          nonull: true,
+          cwd: 'node_modules',
+          dest: 'lib/fonts',
+          src: fileHandling.lib_fonts
+        },{
+          expand: true,
+          flatten: true,
+          nonull: true,
+          cwd: 'node_modules',
+          dest: 'lib/css/fonts',
+          src: fileHandling.lib_css_fonts
+        },{
+          expand: true,
+          flatten: true,
+          nonull: true,
+          cwd: 'node_modules',
+          dest: 'lib/css/assets',
+          src: fileHandling.lib_css_assets
+        }, {
+          expand: true,
+          flatten: true,
+          nonull: true,
+          cwd: 'node_modules',
+          dest: 'lib/css',
+          src: fileHandling.lib_css_png
         }, {
           expand: true,
           flatten: true,
