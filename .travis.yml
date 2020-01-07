@@ -169,11 +169,11 @@ matrix:
       python: 3.5
       env:
           - TEST_RUN_SELENIUM: 'True'
-    # - name: "Selenium Integration Tests SPCGeonode"
-    #   python: 3.5
-    #   env:
-    #       - TEST_RUN_SELENIUM: 'True'
-    #       - SPCGEONODE: 'True'
+    - name: "Selenium Integration Tests SPCGeonode"
+      python: 3.5
+      env:
+          - TEST_RUN_SELENIUM: 'True'
+          - SPCGEONODE: 'True'
 
 branches:
   only:
@@ -228,7 +228,7 @@ install:
       export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");
       export PATH=$JAVA_HOME'bin/java':$PATH;
       pip install -r requirements.txt --upgrade;
-      pip install -e .;
+      pip install -e . --upgrade;
       pip install pygdal==`gdal-config --version`.*;
       pip install codecov;
     fi
