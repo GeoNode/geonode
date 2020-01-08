@@ -2984,12 +2984,6 @@ select[multiple].input-lg {
   background-color: #f2dede;
   border-color: #a94442;
 }
-.has-error {
-  color: #a94442 !important;
-}
-.has-error .select2-selection {
-  border-color: #a94442 !important;
-}
 .has-error .form-control-feedback {
   color: #a94442;
 }
@@ -7376,11 +7370,10 @@ article.tab-pane {
   cursor: pointer;
   word-break: break-all;
   padding-left: 0px;
-  padding-left: 35px;
+  padding-left: 12px;
 }
 .treeview span.icon {
   margin-right: 5px;
-  margin-left: -18px;
 }
 span.icon.node-icon:before {
   font-family: FontAwesome;
@@ -8058,6 +8051,13 @@ form-inline {
   color: #bd362f;
   font-style: italic;
 }
+/** Metadata select2 styles */
+.has-error {
+  color: #a94442 !important;
+}
+.has-error .select2-selection {
+  border-color: #a94442 !important;
+}
 /** Autocomplete styling **/
 .autocomplete-input #text_search_input,
 .autocomplete-input #region_search_input {
@@ -8067,9 +8067,11 @@ form-inline {
   position: absolute;
   border: 1px solid #eeeeee;
   border-top: none;
-  width: 210px;
+  border-radius: 5px;
+  outline-width: 0;
+  text-indent: 5px;
   margin-top: 0px;
-  z-index: 10;
+  z-index: 10000;
 }
 .autocomplete-input .ac-results .result-wrapper {
   border-bottom: 1px solid #eeeeee;

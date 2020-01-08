@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 try:
     from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
-    URL = 'http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz'
+    URL = 'https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&date=20200107&license_key=s0L0UN5Vsg8YDmVy&suffix=tar.gz'
     OLD_FORMAT = False
 except ImportError:
     try:

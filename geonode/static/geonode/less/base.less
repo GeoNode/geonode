@@ -681,12 +681,11 @@ article.tab-pane {
     cursor: pointer;
     word-break: break-all;
     padding-left: 0px;
-    padding-left: 35px;
+    padding-left: 12px;
 }
 
 .treeview span.icon {
     margin-right: 5px;
-    margin-left: -18px;
 }
 
 span.icon.node-icon:before {
@@ -1518,7 +1517,7 @@ form-inline {
 }
 .has-error .select2-selection {
   border-color: #a94442 !important;
-
+}
 
 /** Autocomplete styling **/
 .autocomplete-input #text_search_input, .autocomplete-input #region_search_input {
@@ -1529,9 +1528,11 @@ form-inline {
   position: absolute;
   border: 1px solid #eeeeee;
   border-top: none;
-  width: 210px;
+  border-radius: 5px;
+  outline-width: 0;
+  text-indent: 5px;
   margin-top: 0px;
-  z-index: 10;
+  z-index: 10000;
 }
 
 .autocomplete-input .ac-results .result-wrapper {
@@ -1541,36 +1542,36 @@ form-inline {
 }
 
 .autocomplete-input .ac-results .result-wrapper:hover {
-background-color: #eeeeee;
-opacity: 1;
+  background-color: #eeeeee;
+  opacity: 1;
 }
 
 .autocomplete-input .ac-results .result-wrapper:last-child {
-border-bottom: none;
+  border-bottom: none;
 }
 
 .autocomplete-input .ac-results .result-wrapper .ac-result {
-border: none;
-text-decoration: none;
-color: black;
-padding: 0px;
+  border: none;
+  text-decoration: none;
+  color: black;
+  padding: 0px;
 }
 
 /** Autocomplete for thesaurus field in advanced metadata edit views
   There should be a better way to do this!
 **/
 #metadata_update .select2-container {
-width: 100% !important;
-min-width: 0 !important;
+  width: 100% !important;
+  min-width: 0 !important;
 }
 
 #metadata_update .select2-selection {
-min-height: 42px !important;
-height: auto !important;
+  min-height: 42px !important;
+  height: auto !important;
 }
 
 #metadata_update .select2-container--default .select2-selection--single .select2-selection__arrow {
-top: 8px !important;
+  top: 8px !important;
 }
 
 #metadata_update .form-controls {
@@ -1579,6 +1580,6 @@ top: 8px !important;
 }
 
 #metadata_update .form-group {
-margin-right: 0px;
-margin-left: 0px;
+  margin-right: 0px;
+  margin-left: 0px;
 }
