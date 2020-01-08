@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-20 11:56+0200\n"
-"PO-Revision-Date: 2019-10-16 10:42+0200\n"
+"PO-Revision-Date: 2020-01-07 10:34+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/de/)\n"
 "Language: de\n"
@@ -1046,19 +1046,19 @@ msgstr "Bewertung der Geschwindigkeit"
 
 #: geonode/contrib/favorite/readme.txt:38 geonode/contrib/favorite/templates/favorite/_favorite.html:5
 msgid "Favorite"
-msgstr "Favourit"
+msgstr "Favorit"
 
 #: geonode/contrib/favorite/readme.txt:68 geonode/contrib/favorite/readme.txt:76
 msgid "Favorites"
-msgstr "Favouriten"
+msgstr "Favoriten"
 
 #: geonode/contrib/favorite/templates/favorite/_favorite.html:17
 msgid "Log in to add/delete Favorites."
-msgstr "Anmelden um Favouriten hinzuzufügen oder zu löschen."
+msgstr "Anmelden um Favoriten hinzuzufügen oder zu löschen."
 
 #: geonode/contrib/favorite/templates/favorite/_favorite_js.html:23
 msgid "Delete from Favorites"
-msgstr "Aus Favouriten entfernen"
+msgstr "Aus Favoriten entfernen"
 
 #: geonode/contrib/favorite/templates/favorite/_favorite_js.html:26
 msgid "Add to Favorites"
@@ -1066,7 +1066,7 @@ msgstr "Zu Favoriten hinzufügen"
 
 #: geonode/contrib/favorite/templates/favorite/favorite_list.html:8
 msgid "Favorites for"
-msgstr "Favouriten für"
+msgstr "Favoriten für"
 
 #: geonode/contrib/geosites/apps.py:29
 msgid "Geosites"

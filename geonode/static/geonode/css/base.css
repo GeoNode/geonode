@@ -7370,11 +7370,10 @@ article.tab-pane {
   cursor: pointer;
   word-break: break-all;
   padding-left: 0px;
-  padding-left: 35px;
+  padding-left: 12px;
 }
 .treeview span.icon {
   margin-right: 5px;
-  margin-left: -18px;
 }
 span.icon.node-icon:before {
   font-family: FontAwesome;
