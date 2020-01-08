@@ -385,7 +385,7 @@
                                   </div>
                                 </div>
                               </div>
-                              <input type="text" class="form-control js-data-array" style="position:static;" id="single_value" placeholder="" data-toggle="tooltip" title="">
+                              <select class="form-control js-data-array" style="position:static;" id="single_value" placeholder="" data-toggle="tooltip" title=""></select>
                               <div class="input-group-btn" id="button_query">
                                 <a href="#" id="query_part" class="btn btn-primary btn-mg" data-toggle="modal" data-target="#myModal" title=""><span class="glyphicon glyphicon-plus"></span></a>
                               </div>
@@ -887,11 +887,15 @@
             } else {
               $( "p" ).remove( "#wrong-data-type" );
               // check of single_value_input; string or number
-              if (isNaN(single_value_input)){
-                let checkArr = ["=", "<>", ">", "<", ">=", "<="];
-                if (checkArr.includes(operator_list)) {
+              let checkArr = ["=", "<>", ">", "<", ">=", "<="];
+              if (checkArr.includes(operator_list)) {
+                if (isNaN(single_value_input)){
                   single_value_input = "'" + single_value_input + "'";
-                } else if (operator_list == " LIKE ") {
+                }
+              } else if (operator_list == " LIKE ") {
+                if(single_value_input.indexOf('%') >= 0) {
+                  single_value_input = "'" + single_value_input.replace(/%/g, '%25') + "'";
+                } else {
                   single_value_input = "'%25" + single_value_input + "%25'";
                 }
               }
@@ -935,7 +939,7 @@
         }
         idValue = $(this).attr("id");
 
-        if (typeof all_urls !== 'undefined') {
+        if (idValue !== "original-dataset" && typeof all_urls !== 'undefined') {
             url_main = all_urls[idValue]
           if(cql_filters.length >1) {
             addressValue = url_main + complete_cql
@@ -977,29 +981,21 @@
 
                   // functionality added for the autocomplete
                   property_name = $("#modal-button-attributes:first-child").text();
-
                   attribute_values = data['feature_properties'];
                   selected_data = attribute_values[$.trim(property_name)];
-
                   selected_data_prepare = [];
                   for (i = 0; i < selected_data.length; i++) {
-                    jsonString = {
+                    var jsonString = {
                       id: i,
                       text: selected_data[i].toString()
                     };
-                    selected_data_val = jsonString;
-                    selected_data_prepare.push(selected_data_val);
+                    selected_data_prepare.push(jsonString);
                   }
+
                   $(".js-data-array").select2({
                     data: selected_data_prepare,
                     // allow new values by the user
-                    createSearchChoice:function(term, data) {
-                      if ($(data).filter( function() {
-                        return this.text.localeCompare(term)===0;
-                      }).length===0) {
-                        return {id:term, text:term};
-                      }
-                    },
+                    tags: true
                   })
                 });
                 ajax_loaded = true;
