@@ -887,7 +887,7 @@
                   single_value_input = "'" + single_value_input + "'";
                 }
               } else if (operator_list == " LIKE ") {
-                single_value_input = "'%25" + single_value_input + "%25'";
+                single_value_input = "'" + single_value_input.replace(/%/g, '%25') + "'";
               }
 
               input = attribute_list + operator_list + single_value_input;
