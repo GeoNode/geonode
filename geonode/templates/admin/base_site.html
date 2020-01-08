@@ -1,5 +1,5 @@
 {% extends "admin/base.html" %}
-{% load static from staticfiles %}
+{% load static %}
 
 {% block title %}{{ title }} | {{ site_title|default:_('GeoNode site admin') }}{% endblock %}
 
@@ -9,5 +9,4 @@
 
 {% block extrahead %}
     <script src="{% static "lib/js/assets.min.js" %}"></script>
-    {% include 'autocomplete_light/static.html' %}
 {% endblock %}

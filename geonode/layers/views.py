@@ -27,6 +27,7 @@ import traceback
 from types import TracebackType
 import decimal
 import pickle
+import six
 from django.db.models import Q
 from celery.exceptions import TimeoutError
 try:
@@ -43,7 +44,7 @@ from itertools import chain
 from six import string_types
 from owslib.wfs import WebFeatureService
 
-from guardian.shortcuts import get_perms
+from guardian.shortcuts import get_perms, get_objects_for_user
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -54,7 +55,7 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
 
-from geonode import geoserver, qgis_server
+from dal import autocomplete
 
 import json
 from django.utils.html import escape
@@ -95,6 +96,8 @@ from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.documents.models import get_related_documents
+from geonode import geoserver, qgis_server
+from geonode.security.utils import get_visible_resources
 
 from geonode.utils import (
     resolve_object,
@@ -921,9 +924,7 @@ def layer_metadata(
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
-        tkeywords_form = TKeywordForm(
-            prefix="tkeywords",
-            initial={'tkeywords': request.POST.getlist('tkeywords-tkeywords')})
+        tkeywords_form = TKeywordForm(request.POST)
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
@@ -957,9 +958,7 @@ def layer_metadata(
                     tb = traceback.format_exc()
                     logger.error(tb)
 
-        tkeywords_form = TKeywordForm(
-            prefix="tkeywords",
-            initial={'tkeywords': tkeywords_list})
+        tkeywords_form = TKeywordForm(instance=layer)
 
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid():
@@ -1050,34 +1049,17 @@ def layer_metadata(
         message = layer.alternate
 
         try:
-            # Keywords from THESAURUS management
-            tkeywords_to_add = []
-            tkeywords_cleaned = tkeywords_form.clean()
-            if tkeywords_cleaned and len(tkeywords_cleaned) > 0:
-                tkeywords_ids = []
-                for i, val in enumerate(tkeywords_cleaned):
-                    try:
-                        cleaned_data = [value for key, value in tkeywords_cleaned[i].items(
-                        ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
-                        tkeywords_ids.extend(map(int, cleaned_data[0]))
-                    except BaseException:
-                        pass
+            if not tkeywords_form.is_valid():
+                return HttpResponse(json.dumps({'message': "Invalid thesaurus keywords"}, status_code=400))
 
-                if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
-                    el = settings.THESAURUS
-                    thesaurus_name = el['name']
-                    try:
-                        t = Thesaurus.objects.get(
-                            identifier=thesaurus_name)
-                        for tk in t.thesaurus.all():
-                            tkl = tk.keyword.filter(pk__in=tkeywords_ids)
-                            if len(tkl) > 0:
-                                tkeywords_to_add.append(tkl[0].keyword_id)
-                        layer.tkeywords.clear()
-                        layer.tkeywords.add(*tkeywords_to_add)
-                    except BaseException:
-                        tb = traceback.format_exc()
-                        logger.error(tb)
+            tkeywords_data = tkeywords_form.cleaned_data['tkeywords']
+
+            thesaurus_setting = getattr(settings, 'THESAURUS', None)
+            if thesaurus_setting:
+                tkeywords_data = tkeywords_data.filter(
+                    thesaurus__identifier=thesaurus_setting['name']
+                )
+                layer.tkeywords = tkeywords_data
         except BaseException:
             tb = traceback.format_exc()
             logger.error(tb)
@@ -1610,3 +1592,32 @@ def layer_view_counter(layer_id, viewer):
     _l = Layer.objects.get(id=layer_id)
     _u = get_user_model().objects.get(username=viewer)
     _l.view_count_up(_u, do_local=True)
+
+
+class LayerAutocomplete(autocomplete.Select2QuerySetView):
+
+    # Overriding both result label methods to ensure autocomplete labels display without 'geonode:' prefix
+    def get_selected_result_label(self, result):
+        """Return the label of a selected result."""
+        return self.get_result_label(result)
+
+    def get_result_label(self, result):
+        """Return the label of a selected result."""
+        return six.text_type(result.title)
+
+    def get_queryset(self):
+        request = self.request
+        permitted = get_objects_for_user(
+            request.user,
+            'base.view_resourcebase')
+        qs = Layer.objects.all().filter(id__in=permitted)
+
+        if self.q:
+            qs = qs.filter(title__icontains=self.q)
+
+        return get_visible_resources(
+            qs,
+            request.user if request else None,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)

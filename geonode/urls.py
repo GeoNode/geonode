@@ -42,10 +42,6 @@ from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
 from geonode.monitoring import register_url_event
 
-from autocomplete_light.registry import autodiscover
-
-# Setup Django Admin
-autodiscover()
 
 admin.autodiscover()
 
@@ -117,8 +113,7 @@ urlpatterns += [
 
     # Search views
     url(r'^search/$',
-        TemplateView.as_view(
-            template_name='search/search.html'),
+        TemplateView.as_view(template_name='search/search.html'),
         name='search'),
 
     # Social views
@@ -148,11 +143,11 @@ urlpatterns += [
         name='moderator_contacted'),
 
     # url(r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^autocomplete/', include('autocomplete_light.urls')),
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^groups/', include('geonode.groups.urls')),
     url(r'^documents/', include('geonode.documents.urls')),
     url(r'^services/', include('geonode.services.urls')),
+    url(r'^base/', include('geonode.base.urls')),
 
     # OAuth Provider
     url(r'^o/',

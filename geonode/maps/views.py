@@ -20,6 +20,7 @@
 
 import math
 import logging
+import six
 try:
     from urllib.parse import quote, urlsplit
 except ImportError:
@@ -79,6 +80,8 @@ from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
 from requests.compat import urljoin
 from deprecated import deprecated
+
+from dal import autocomplete
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
@@ -210,9 +213,7 @@ def map_metadata(
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
-        tkeywords_form = TKeywordForm(
-            prefix="tkeywords",
-            initial={'tkeywords': request.POST.getlist('tkeywords-tkeywords')})
+        tkeywords_form = TKeywordForm(request.POST)
     else:
         map_form = MapForm(instance=map_obj, prefix="resource")
         category_form = CategoryForm(
@@ -242,9 +243,7 @@ def map_metadata(
                     tb = traceback.format_exc()
                     logger.error(tb)
 
-        tkeywords_form = TKeywordForm(
-            prefix="tkeywords",
-            initial={'tkeywords': tkeywords_list})
+        tkeywords_form = TKeywordForm(instance=map_obj)
 
     if request.method == "POST" and map_form.is_valid(
     ) and category_form.is_valid():
@@ -257,7 +256,7 @@ def map_metadata(
 
         new_category = None
         if category_form and 'category_choice_field' in category_form.cleaned_data and\
-        category_form.cleaned_data['category_choice_field']:
+                category_form.cleaned_data['category_choice_field']:
             new_category = TopicCategory.objects.get(
                 id=int(category_form.cleaned_data['category_choice_field']))
 
@@ -306,33 +305,18 @@ def map_metadata(
 
         try:
             # Keywords from THESAURUS management
-            tkeywords_to_add = []
-            tkeywords_cleaned = tkeywords_form.clean()
-            if tkeywords_cleaned and len(tkeywords_cleaned) > 0:
-                tkeywords_ids = []
-                for i, val in enumerate(tkeywords_cleaned):
-                    try:
-                        cleaned_data = [value for key, value in tkeywords_cleaned[i].items(
-                        ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
-                        tkeywords_ids.extend(map(int, cleaned_data[0]))
-                    except BaseException:
-                        pass
+            # Rewritten to work with updated autocomplete
+            if not tkeywords_form.is_valid():
+                return HttpResponse(json.dumps({'message': "Invalid thesaurus keywords"}, status_code=400))
 
-                if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
-                    el = settings.THESAURUS
-                    thesaurus_name = el['name']
-                    try:
-                        t = Thesaurus.objects.get(
-                            identifier=thesaurus_name)
-                        for tk in t.thesaurus.all():
-                            tkl = tk.keyword.filter(pk__in=tkeywords_ids)
-                            if len(tkl) > 0:
-                                tkeywords_to_add.append(tkl[0].keyword_id)
-                        map_obj.tkeywords.clear()
-                        map_obj.tkeywords.add(*tkeywords_to_add)
-                    except BaseException:
-                        tb = traceback.format_exc()
-                        logger.error(tb)
+            tkeywords_data = tkeywords_form.cleaned_data['tkeywords']
+
+            thesaurus_setting = getattr(settings, 'THESAURUS', None)
+            if thesaurus_setting:
+                tkeywords_data = tkeywords_data.filter(
+                    thesaurus__identifier=thesaurus_setting['name']
+                )
+                map_obj.tkeywords = tkeywords_data
         except BaseException:
             tb = traceback.format_exc()
             logger.error(tb)
@@ -1471,3 +1455,23 @@ def map_metadata_detail(
 @login_required
 def map_batch_metadata(request, ids):
     return batch_modify(request, ids, 'Map')
+
+
+class MapAutocomplete(autocomplete.Select2QuerySetView):
+
+    # Overriding both result label methods to ensure autocomplete labels display without ' by user' suffix
+    def get_selected_result_label(self, result):
+        """Return the label of a selected result."""
+        return self.get_result_label(result)
+
+    def get_result_label(self, result):
+        """Return the label of a selected result."""
+        return six.text_type(result.title)
+
+    def get_queryset(self):
+        qs = Map.objects.all()
+
+        if self.q:
+            qs = qs.filter(title__icontains=self.q).order_by('title')[:100]
+
+        return qs

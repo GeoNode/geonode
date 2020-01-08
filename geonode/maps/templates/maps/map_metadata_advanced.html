@@ -1,7 +1,8 @@
 {% extends "metadata_base.html" %}
 {% load i18n %}
-{% load bootstrap_tags %}
+{% load static %}
 {% load base_tags %}
+{% load bootstrap_tags %}
 {% load guardian_tags %}
 
 {% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
@@ -11,6 +12,18 @@
 {% block body_outer %}
 
 {{ block.super }}
+
+<!-- Required to make select2 fields work for autocomplete -->
+<link href="{% static "vendor/select2/dist/css/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<link href="{% static "autocomplete_light/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/jquery.init.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/select2/dist/js/i18n/en.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/autocomplete.init.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/forward.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/select2.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/jquery.post-setup.js" %}"></script>
 
 <div class="page-header">
   <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Maps" %}</a>
@@ -23,6 +36,7 @@
         Editing details for {{ map_title }}
       {% endblocktrans %}
     </p>
+
     <form id="metadata_update" class="form-horizontal" action="{{ map.get_absolute_url }}/metadata" method="POST">
       {% if map.metadata_uploaded %}
       <div style="background-color: orange;">{% blocktrans %}Note: this map's orginal metadata was populated by importing a metadata XML file.
@@ -49,10 +63,15 @@
         <input type="submit" id="btn_upd_md_up" class="btn btn-primary" value="{% trans "Update" %}"/>
       </div>
       {% csrf_token %}
-      <div class="form-controls">
-        {{ map_form|as_bootstrap }}
-      </div>
-
+      <!-- Added in the thesuarus field here since saving the form without it causes the thesuarus keywords to be removed. 
+           Unfortunately this needs to appear at the top (or the bottom) of the form since tkeywords_form is a complete other django form. 
+           There might be a better way to solve this. -->
+        <div class="col-md-6 form-controls">
+          {{ map_form|as_bootstrap }}
+          {% if THESAURI_FILTERS %}
+              {{ tkeywords_form }}
+          {% endif %}
+        </div>
         <div class="row">
           <div class="col-md-12">
             <label class="control-label required-field">{% trans "Category" %}</label>
