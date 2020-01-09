@@ -153,12 +153,13 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
     """
     service_typename = alternate.split(":", 1)
     if Service.objects.filter(name=service_typename[0]).exists():
-        # service = Service.objects.filter(name=service_typename[0])
         query = {
             'alternate': service_typename[1]
         }
         if len(service_typename) > 1:
             query['store'] = service_typename[0]
+        else:
+            query['storeType'] = 'remoteStore'
         return resolve_object(
             request,
             Layer,
@@ -179,6 +180,11 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
                 }
         else:
             query = {'alternate': alternate}
+        test_query = Layer.objects.filter(**query)
+        if test_query.count() > 1 and test_query.exclude(storeType='remoteStore').count() == 1:
+            query = {
+                'id': test_query.exclude(storeType='remoteStore').first().id
+            }
         return resolve_object(request,
                               Layer,
                               query,

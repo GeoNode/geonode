@@ -61,6 +61,7 @@ from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.layers import utils
 from geonode.utils import designals
+from geonode.layers.views import _resolve_layer
 
 logger = logging.getLogger(__name__)
 
@@ -121,6 +122,28 @@ class LayersTest(GeoNodeBaseTestSupport):
         lyr.save()
 
     # Layer Tests
+
+    def test_layer_name_clash(self):
+        _ll_1 = Layer.objects.create(
+            name='states',
+            store='geonode_data',
+            storeType="dataStore",
+            alternate="geonode:states"
+        )
+        _ll_2 = Layer.objects.create(
+            name='geonode:states',
+            store='httpfooremoteservce',
+            storeType="remoteStore",
+            alternate="geonode:states"
+        )
+        _ll_1.set_permissions({'users': {"bobby": ['base.view_resourcebase']}})
+        _ll_2.set_permissions({'users': {"bobby": ['base.view_resourcebase']}})
+        self.client.login(username="bobby", password="bob")
+        _request = self.client.request()
+        _request.user = get_user_model().objects.get(username="bobby")
+        _ll = _resolve_layer(_request, alternate="geonode:states")
+        self.assertIsNotNone(_ll)
+        self.assertEqual(_ll.name, _ll_1.name)
 
     # Test layer upload endpoint
     def test_upload_layer(self):
@@ -537,7 +560,6 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertRaises(GeoNodeException, lambda: layer_type('foo.gml'))
 
     def test_get_files(self):
-
         # Check that a well-formed Shapefile has its components all picked up
         d = None
         try:
