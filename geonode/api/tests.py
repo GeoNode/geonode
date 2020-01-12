@@ -57,7 +57,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(self.list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
     def test_layers_get_list_unauth_some_public(self):
         """
@@ -69,7 +69,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(self.list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
     def test_layers_get_list_auth_some_public(self):
         """
@@ -82,7 +82,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(self.list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
     def test_layer_get_list_layer_private_to_one_user(self):
         """
@@ -93,15 +93,15 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer = Layer.objects.all()[0]
         layer.set_permissions(perm_spec)
         resp = self.api_client.get(self.list_url)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         self.api_client.client.login(username='bobby', password='bob')
         resp = self.api_client.get(self.list_url)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
 
         self.api_client.client.login(username=self.user, password=self.passwd)
         resp = self.api_client.get(self.list_url)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
         layer.is_published = False
         layer.save()
@@ -109,23 +109,23 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # with resource publishing
         with self.settings(RESOURCE_PUBLISHING=True):
             resp = self.api_client.get(self.list_url)
-            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
             self.api_client.client.login(username='bobby', password='bob')
             resp = self.api_client.get(self.list_url)
-            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 2)
 
             self.api_client.client.login(username=self.user, password=self.passwd)
             resp = self.api_client.get(self.list_url)
-            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
     def test_layer_get_detail_unauth_layer_not_public(self):
         """
-        Test that layer detail gives 401 when not public and not logged in
+        Test that layer detail gives 404 when not public and not logged in
         """
         layer = Layer.objects.all()[0]
         layer.set_permissions(self.perm_spec)
-        self.assertHttpUnauthorized(self.api_client.get(
+        self.assertHttpNotFound(self.api_client.get(
             self.list_url + str(layer.id) + '/'))
 
         self.api_client.client.login(username=self.user, password=self.passwd)
@@ -141,11 +141,11 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
                 self.client.login(username=self.user, password=self.passwd)
                 resp = self.client.get(self.list_url)
-                self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+                self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
                 self.client.logout()
                 resp = self.client.get(self.list_url)
-                self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+                self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
                 from geonode.people.models import Profile
                 Profile.objects.create(username='imnew',
@@ -153,7 +153,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     6NbOXIQWWblfInIoq/Ta34FdRiPhawCIZ+sOO3YQs=')
                 self.client.login(username='imnew', password='thepwd')
                 resp = self.client.get(self.list_url)
-                self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+                self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
     def test_new_user_has_access_to_old_layers(self):
         """Test that a new user can access the public available layers"""
@@ -164,7 +164,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.api_client.client.login(username='imnew', password='thepwd')
         resp = self.api_client.get(self.list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         # with delayed security
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -181,15 +181,15 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
                     self.client.login(username=self.user, password=self.passwd)
                     resp = self.client.get(self.list_url)
-                    self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+                    self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
                     self.client.logout()
                     resp = self.client.get(self.list_url)
-                    self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+                    self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
                     self.client.login(username='imnew', password='thepwd')
                     resp = self.client.get(self.list_url)
-                    self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+                    self.assertEqual(len(self.deserialize(resp)['objects']), 0)
             finally:
                 _ogc_geofence_enabled['default']['GEOFENCE_SECURITY_ENABLED'] = False
 
@@ -217,16 +217,16 @@ class OAuthApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # all public
             resp = self.api_client.get(self.list_url)
             self.assertValidJSONResponse(resp)
-            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
             perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
             layer = Layer.objects.all()[0]
             layer.set_permissions(perm_spec)
             resp = self.api_client.get(self.list_url)
-            self.assertEquals(len(self.deserialize(resp)['objects']), 7)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
             resp = self.api_client.get(self.list_url, authentication=self.auth_header)
-            self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
             layer.is_published = False
             layer.save()
@@ -269,25 +269,25 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 9)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 9)
 
         filter_url = self.profiles_list_url + '?name__icontains=norm'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
         filter_url = self.profiles_list_url + '?name__icontains=NoRmAN'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
         filter_url = self.profiles_list_url + '?name__icontains=bar'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 0)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
     def test_groups_filters(self):
         """Test groups filtering"""
@@ -296,25 +296,25 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
         filter_url = self.groups_list_url + '?name__icontains=bar'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
         filter_url = self.groups_list_url + '?name__icontains=BaR'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
         filter_url = self.groups_list_url + '?name__icontains=foo'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 0)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
     def test_category_filters(self):
         """Test category filtering"""
@@ -325,14 +325,14 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 3)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         filter_url = self.list_url + \
             '?category__identifier__in=location&category__identifier__in=biota'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 5)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
     def test_tag_filters(self):
         """Test keywords filtering"""
@@ -343,14 +343,14 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         filter_url = self.list_url + \
             '?keywords__slug__in=layertagunique&keywords__slug__in=populartag'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
     def test_owner_filters(self):
         """Test owner filtering"""
@@ -361,14 +361,14 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         filter_url = self.list_url + \
             '?owner__username__in=user1&owner__username__in=foo'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 2)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
     def test_title_filter(self):
         """Test title filtering"""
@@ -379,7 +379,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
     def test_date_filter(self):
         """Test date filtering"""
@@ -398,18 +398,18 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 0)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         d3 = to_date(now - (3 * step))
         filter_url = self.list_url + '?date__gte={}'.format(d3)
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 3)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         d4 = to_date(now - (4 * step))
         filter_url = self.list_url + '?date__range={},{}'.format(d4, to_date(now))
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 4)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)

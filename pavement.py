@@ -47,6 +47,9 @@ from geonode.settings import (on_travis,
                               core_tests,
                               internal_apps_tests,
                               integration_tests,
+    integration_server_tests,
+    integration_upload_tests,
+    integration_monitoring_tests,
                               integration_csw_tests,
                               integration_bdd_tests,
                               INSTALLED_APPS,
@@ -867,29 +870,22 @@ def test_integration(options):
         call_task('stop_qgis_server')
         _reset()
 
-    name = options.get('name', 'geonode.tests.integration')
+    name = options.get('name', None)
     settings = options.get('settings', '')
-    if name == 'geonode.geoserver.integration.tests':
-        if _django_11:
-            sh("cp geonode/upload/tests/test_settings.py geonode/")
-            settings = 'geonode.test_settings'
-        else:
-            settings = 'geonode.upload.tests.test_settings'
-
     success = False
     try:
         call_task('setup', options={'settings': settings})
 
-        if name == 'geonode.tests.csw':
+        if name and name in ('geonode.tests.csw', 'geonode.tests.integration', 'geonode.geoserver.tests.integration'):
             call_task('sync', options={'settings': settings})
             call_task('start', options={'settings': settings})
             call_task('setup_data', options={'settings': settings})
-
-        if name == 'geonode.geoserver.integration.tests':
-            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py makemigrations --noinput" % settings)
-            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py migrate --noinput" % settings)
-            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py loaddata sample_admin.json" % settings)
-            sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" %
+        elif not integration_csw_tests and _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
+            if _django_11:
+                sh("cp geonode/upload/tests/test_settings.py geonode/")
+                settings = 'geonode.test_settings'
+            else:
+                settings = 'geonode.upload.tests.test_settings'
                settings)
             sh("DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" %
                settings)
@@ -910,26 +906,13 @@ def test_integration(options):
             live_server_option = ''
 
         info("Running the tests now...")
-        if name == 'geonode.geoserver.integration.tests':
-            sh(('%s %s manage.py test %s'
-                ' %s --noinput %s' % (settings,
-                                      prefix,
-                                      'geonode.upload.tests.integration',
-                                      _keepdb,
-                                      live_server_option)))
-            sh(('%s %s manage.py test %s'
-                ' %s --noinput %s' % (settings,
-                                      prefix,
-                                      'geonode.monitoring.tests.integration',
-                                      _keepdb,
-                                      live_server_option)))
-        else:
-            sh(('%s %s manage.py test %s'
-                ' %s --noinput %s' % (settings,
-                                      prefix,
-                                      name,
-                                      _keepdb,
-                                      live_server_option)))
+
+        sh(('%s %s manage.py test %s'
+            ' %s --noinput %s' % (settings,
+                                    prefix,
+                                    name,
+                                    _keepdb,
+                                    live_server_option)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -965,21 +948,19 @@ def run_tests(options):
 
     if not integration_tests and not integration_csw_tests and not integration_bdd_tests:
         call_task('test', options={'prefix': prefix})
-    else:
-        if integration_tests:
-            call_task('test_integration', options={'prefix': prefix})
-
-            # only start if using Geoserver backend
-            _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-            if _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
-                call_task('test_integration',
-                          options={'name': 'geonode.geoserver.integration.tests'})
+    elif integration_tests:
+        if integration_server_tests:
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.geoserver.tests.integration'})
+        elif integration_upload_tests:
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.upload.tests.integration'})
+        elif integration_monitoring_tests:
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.monitoring.tests.integration'})
         elif integration_csw_tests:
             call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.csw'})
-
-        if integration_bdd_tests:
+        elif integration_bdd_tests:
             call_task('test_bdd', options={'local': local})
-
+        else:
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.integration'})
     sh('flake8 geonode')
 
 
