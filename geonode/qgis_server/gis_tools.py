@@ -20,7 +20,11 @@
 
 import logging
 import traceback
-from urllib import urlencode, urlretrieve
+try:
+    from urllib.parse import urlencode
+    from urllib.request import urlretrieve
+except ImportError:
+    from urllib import urlencode, urlretrieve
 from os.path import splitext
 from math import atan, degrees, sinh, pi
 from defusedxml import lxml as dlxml

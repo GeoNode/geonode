@@ -26,9 +26,15 @@ import base64
 import traceback
 from types import TracebackType
 import decimal
-import cPickle as pickle
+import pickle
+import six
 from django.db.models import Q
 from celery.exceptions import TimeoutError
+try:
+    from urllib.parse import quote
+except ImportError:
+    # Python 2 compatibility
+    from urllib import quote
 
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
@@ -38,7 +44,7 @@ from itertools import chain
 from six import string_types
 from owslib.wfs import WebFeatureService
 
-from guardian.shortcuts import get_perms
+from guardian.shortcuts import get_perms, get_objects_for_user
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -49,7 +55,7 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
 
-from geonode import geoserver, qgis_server
+from dal import autocomplete
 
 import json
 from django.utils.html import escape
@@ -90,6 +96,8 @@ from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.documents.models import get_related_documents
+from geonode import geoserver, qgis_server
+from geonode.security.utils import get_visible_resources
 
 from geonode.utils import (
     resolve_object,
@@ -153,12 +161,13 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
     """
     service_typename = alternate.split(":", 1)
     if Service.objects.filter(name=service_typename[0]).exists():
-        # service = Service.objects.filter(name=service_typename[0])
         query = {
             'alternate': service_typename[1]
         }
         if len(service_typename) > 1:
             query['store'] = service_typename[0]
+        else:
+            query['storeType'] = 'remoteStore'
         return resolve_object(
             request,
             Layer,
@@ -179,6 +188,11 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
                 }
         else:
             query = {'alternate': alternate}
+        test_query = Layer.objects.filter(**query)
+        if test_query.count() > 1 and test_query.exclude(storeType='remoteStore').count() == 1:
+            query = {
+                'id': test_query.exclude(storeType='remoteStore').first().id
+            }
         return resolve_object(request,
                               Layer,
                               query,
@@ -346,11 +360,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
         _keys = ['info', 'errors']
         for _k in _keys:
             if _k in out:
-                if isinstance(out[_k], unicode) or isinstance(
-                        out[_k], str):
+                if isinstance(out[_k], string_types):
                     out[_k] = out[_k].decode(layer_charset).encode("utf-8")
                 elif isinstance(out[_k], dict):
-                    for key, value in out[_k].iteritems():
+                    for key, value in out[_k].items():
                         try:
                             item = out[_k][key]
                             # Ref issue #4241
@@ -385,7 +398,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
 
     def sld_definition(style):
-        from urllib import quote
         _sld = {
             "title": style.sld_title or style.name,
             "legend": {
@@ -722,7 +734,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     data_dict = json.loads(request.POST.get('json_data'))
     layername = data_dict['layer_name']
     filtered_attributes = ''
-    if not isinstance(data_dict['filtered_attributes'], basestring):
+    if not isinstance(data_dict['filtered_attributes'], string_types):
         filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
     name = layername if ':' not in layername else layername.split(':')[1]
     location = "{location}{service}".format(** {
@@ -756,7 +768,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
         # in the dictionary (if doesn't exist) together with the value
         from collections import Iterable
         for i in range(len(decoded_features)):
-            for key, value in decoded_features[i]['properties'].iteritems():
+            for key, value in decoded_features[i]['properties'].items():
                 if value != '' and isinstance(value, (string_types, int, float)) and (
                         (isinstance(value, Iterable) and '/load_layer_data' not in value) or value):
                     properties[key].append(value)
@@ -918,9 +930,7 @@ def layer_metadata(
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
-        tkeywords_form = TKeywordForm(
-            prefix="tkeywords",
-            initial={'tkeywords': request.POST.getlist('tkeywords-tkeywords')})
+        tkeywords_form = TKeywordForm(request.POST)
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
@@ -954,9 +964,7 @@ def layer_metadata(
                     tb = traceback.format_exc()
                     logger.error(tb)
 
-        tkeywords_form = TKeywordForm(
-            prefix="tkeywords",
-            initial={'tkeywords': tkeywords_list})
+        tkeywords_form = TKeywordForm(instance=layer)
 
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid():
@@ -1047,34 +1055,17 @@ def layer_metadata(
         message = layer.alternate
 
         try:
-            # Keywords from THESAURUS management
-            tkeywords_to_add = []
-            tkeywords_cleaned = tkeywords_form.clean()
-            if tkeywords_cleaned and len(tkeywords_cleaned) > 0:
-                tkeywords_ids = []
-                for i, val in enumerate(tkeywords_cleaned):
-                    try:
-                        cleaned_data = [value for key, value in tkeywords_cleaned[i].items(
-                        ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
-                        tkeywords_ids.extend(map(int, cleaned_data[0]))
-                    except BaseException:
-                        pass
+            if not tkeywords_form.is_valid():
+                return HttpResponse(json.dumps({'message': "Invalid thesaurus keywords"}, status_code=400))
 
-                if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
-                    el = settings.THESAURUS
-                    thesaurus_name = el['name']
-                    try:
-                        t = Thesaurus.objects.get(
-                            identifier=thesaurus_name)
-                        for tk in t.thesaurus.all():
-                            tkl = tk.keyword.filter(pk__in=tkeywords_ids)
-                            if len(tkl) > 0:
-                                tkeywords_to_add.append(tkl[0].keyword_id)
-                        layer.tkeywords.clear()
-                        layer.tkeywords.add(*tkeywords_to_add)
-                    except BaseException:
-                        tb = traceback.format_exc()
-                        logger.error(tb)
+            tkeywords_data = tkeywords_form.cleaned_data['tkeywords']
+
+            thesaurus_setting = getattr(settings, 'THESAURUS', None)
+            if thesaurus_setting:
+                tkeywords_data = tkeywords_data.filter(
+                    thesaurus__identifier=thesaurus_setting['name']
+                )
+                layer.tkeywords = tkeywords_data
         except BaseException:
             tb = traceback.format_exc()
             logger.error(tb)
@@ -1607,3 +1598,32 @@ def layer_view_counter(layer_id, viewer):
     _l = Layer.objects.get(id=layer_id)
     _u = get_user_model().objects.get(username=viewer)
     _l.view_count_up(_u, do_local=True)
+
+
+class LayerAutocomplete(autocomplete.Select2QuerySetView):
+
+    # Overriding both result label methods to ensure autocomplete labels display without 'geonode:' prefix
+    def get_selected_result_label(self, result):
+        """Return the label of a selected result."""
+        return self.get_result_label(result)
+
+    def get_result_label(self, result):
+        """Return the label of a selected result."""
+        return six.text_type(result.title)
+
+    def get_queryset(self):
+        request = self.request
+        permitted = get_objects_for_user(
+            request.user,
+            'base.view_resourcebase')
+        qs = Layer.objects.all().filter(id__in=permitted)
+
+        if self.q:
+            qs = qs.filter(title__icontains=self.q)
+
+        return get_visible_resources(
+            qs,
+            request.user if request else None,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)

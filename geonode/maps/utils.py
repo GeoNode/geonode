@@ -58,7 +58,7 @@ def _layer_json(layers, sources):
         server_lookup[json.dumps(source)] = str(i)
 
     def source_lookup(source):
-        for k, v in sources.iteritems():
+        for k, v in sources.items():
             if v == source:
                 return k
         return None

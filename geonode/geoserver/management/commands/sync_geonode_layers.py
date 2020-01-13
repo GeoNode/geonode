@@ -48,9 +48,9 @@ def sync_geonode_layers(ignore_errors,
     for layer in layers:
         try:
             count += 1
-            print 'Syncing layer %s/%s: %s' % (count, layers_count, layer.name)
+            print("Syncing layer {}/{}: {}".format(count, layers_count, layer.name))
             if updatepermissions:
-                print 'Syncing permissions...'
+                print("Syncing permissions...")
                 # sync permissions in GeoFence
                 perm_spec = json.loads(_perms_info_json(layer))
                 # re-sync GeoFence security rules
@@ -59,7 +59,7 @@ def sync_geonode_layers(ignore_errors,
                 # recalculate the layer statistics
                 set_attributes_from_geoserver(layer, overwrite=True)
             if updatethumbnails:
-                print 'Regenerating thumbnails...'
+                print("Regenerating thumbnails...")
                 layer.save()
             if removeduplicates:
                 # remove duplicates
@@ -68,17 +68,17 @@ def sync_geonode_layers(ignore_errors,
         except Exception:
             layer_errors.append(layer.alternate)
             exception_type, error, traceback = sys.exc_info()
-            print exception_type, error, traceback
+            print(exception_type, error, traceback)
             if ignore_errors:
                 pass
             else:
                 import traceback
                 traceback.print_exc()
-                print 'Stopping process because --ignore-errors was not set and an error was found.'
+                print("Stopping process because --ignore-errors was not set and an error was found.")
                 return
-    print 'There are %s layers which could not be updated because of errors' % len(layer_errors)
+    print("There are {} layers which could not be updated because of errors".format(len(layer_errors)))
     for layer_error in layer_errors:
-        print layer_error
+        print(layer_error)
 
 
 class Command(BaseCommand):

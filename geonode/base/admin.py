@@ -24,15 +24,19 @@ from django.conf import settings
 from django.core.management import call_command
 from django.template.response import TemplateResponse
 
-import StringIO
-from autocomplete_light.forms import ModelForm
-from autocomplete_light.forms import modelform_factory
-from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
+from dal import autocomplete
+from taggit.forms import TagField
+from django import forms
 
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
 
-from modeltranslation.admin import TranslationAdmin
+from modeltranslation.admin import TabbedTranslationAdmin
 
 from geonode.base.models import (
     TopicCategory,
@@ -50,6 +54,8 @@ from geonode.base.models import (
     CuratedThumbnail,
 )
 from django.http import HttpResponseRedirect
+
+from geonode.base.widgets import TaggitSelect2Custom
 
 
 def metadata_batch_edit(modeladmin, request, queryset):
@@ -72,17 +78,7 @@ def set_batch_permissions(modeladmin, request, queryset):
 set_batch_permissions.short_description = 'Set permissions'
 
 
-class MediaTranslationAdmin(TranslationAdmin):
-    class Media:
-        js = (
-            'modeltranslation/js/tabbed_translation_fields.js',
-        )
-        css = {
-            'screen': ('modeltranslation/css/tabbed_translation_fields.css',),
-        }
-
-
-class BackupAdminForm(ModelForm):
+class BackupAdminForm(forms.ModelForm):
 
     class Meta:
         model = Backup
@@ -99,7 +95,7 @@ def run(self, request, queryset):
         if request.POST.get("post"):
             for siteObj in queryset:
                 self.message_user(request, "Executed Backup: " + siteObj.name)
-                out = StringIO.StringIO()
+                out = StringIO()
                 call_command(
                     'backup',
                     force_exec=True,
@@ -162,7 +158,7 @@ run.short_description = "Run the Backup"
 restore.short_description = "Run the Restore"
 
 
-class BackupAdmin(MediaTranslationAdmin):
+class BackupAdmin(TabbedTranslationAdmin):
     list_display = ('id', 'name', 'date', 'location')
     list_display_links = ('name',)
     date_hierarchy = 'date'
@@ -171,13 +167,13 @@ class BackupAdmin(MediaTranslationAdmin):
     actions = [run, restore]
 
 
-class LicenseAdmin(MediaTranslationAdmin):
+class LicenseAdmin(TabbedTranslationAdmin):
     model = License
     list_display = ('id', 'name')
     list_display_links = ('name',)
 
 
-class TopicCategoryAdmin(MediaTranslationAdmin):
+class TopicCategoryAdmin(TabbedTranslationAdmin):
     model = TopicCategory
     list_display_links = ('identifier',)
     list_display = (
@@ -204,7 +200,7 @@ class TopicCategoryAdmin(MediaTranslationAdmin):
             return False
 
 
-class RegionAdmin(MediaTranslationAdmin):
+class RegionAdmin(TabbedTranslationAdmin):
     model = Region
     list_display_links = ('name',)
     list_display = ('code', 'name', 'parent')
@@ -212,7 +208,7 @@ class RegionAdmin(MediaTranslationAdmin):
     group_fieldsets = True
 
 
-class SpatialRepresentationTypeAdmin(MediaTranslationAdmin):
+class SpatialRepresentationTypeAdmin(TabbedTranslationAdmin):
     model = SpatialRepresentationType
     list_display_links = ('identifier',)
     list_display = ('identifier', 'description', 'gn_description', 'is_choice')
@@ -226,7 +222,7 @@ class SpatialRepresentationTypeAdmin(MediaTranslationAdmin):
         return False
 
 
-class RestrictionCodeTypeAdmin(MediaTranslationAdmin):
+class RestrictionCodeTypeAdmin(TabbedTranslationAdmin):
     model = RestrictionCodeType
     list_display_links = ('identifier',)
     list_display = ('identifier', 'description', 'gn_description', 'is_choice')
@@ -245,7 +241,7 @@ class ContactRoleAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     list_display = ('id', 'contact', 'resource', 'role')
     list_editable = ('contact', 'resource', 'role')
-    form = modelform_factory(ContactRole, fields='__all__')
+    form = forms.modelform_factory(ContactRole, fields='__all__')
 
 
 class LinkAdmin(admin.ModelAdmin):
@@ -254,7 +250,7 @@ class LinkAdmin(admin.ModelAdmin):
     list_display = ('id', 'resource', 'extension', 'link_type', 'name', 'mime')
     list_filter = ('resource', 'extension', 'link_type', 'mime')
     search_fields = ('name', 'resource__title',)
-    form = modelform_factory(Link, fields='__all__')
+    form = forms.modelform_factory(Link, fields='__all__')
 
 
 class HierarchicalKeywordAdmin(TreeAdmin):
@@ -297,12 +293,9 @@ admin.site.register(MenuItem, MenuItemAdmin)
 admin.site.register(CuratedThumbnail, CuratedThumbnailAdmin)
 
 
-class ResourceBaseAdminForm(ModelForm):
-    # We need to specify autocomplete='TagAutocomplete' or admin views like
-    # /admin/maps/map/2/ raise exceptions during form rendering.
-    # But if we specify it up front, TaggitField.__init__ throws an exception
-    # which prevents app startup. Therefore, we defer setting the widget until
-    # after that's done.
-    keywords = TaggitField(required=False)
-    keywords.widget = TaggitWidget(
-        autocomplete='HierarchicalKeywordAutocomplete')
+class ResourceBaseAdminForm(autocomplete.FutureModelForm):
+
+    keywords = TagField(widget=TaggitSelect2Custom('autocomplete_hierachical_keyword'))
+
+    class Meta:
+        pass

@@ -21,7 +21,11 @@
 import logging
 import os
 import uuid
-from urlparse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    # Python 2 compatibility
+    from urlparse import urlparse
 
 from django.db import models
 from django.db.models import signals

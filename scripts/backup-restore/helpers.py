@@ -22,7 +22,7 @@ from __future__ import with_statement
 
 import traceback
 import psycopg2
-import ConfigParser
+import configparser
 import os
 import sys
 
@@ -34,7 +34,7 @@ STATICFILES_DIRS = 'static_dirs'
 TEMPLATE_DIRS    = 'template_dirs'
 LOCALE_PATHS     = 'locale_dirs'
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'settings.ini'))
 
 db_name   = config.get('targetdb', 'dbname')
@@ -138,11 +138,11 @@ def confirm(prompt=None, resp=False):
         prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
 
     while True:
-        ans = raw_input(prompt)
+        ans = input(prompt)
         if not ans:
             return resp
         if ans not in ['y', 'Y', 'n', 'N']:
-            print 'please enter y or n.'
+            print('please enter y or n.')
             continue
         if ans == 'y' or ans == 'Y':
             return True

@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='footer_bg_color',
-            field=models.CharField(default=b'#333333', max_length=10),
+            field=models.CharField(default='#333333', max_length=10),
         ),
     ]

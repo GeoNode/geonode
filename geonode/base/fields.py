@@ -18,46 +18,13 @@
 #
 #########################################################################
 
-import logging
-import traceback
-
 from django import forms
-from django.conf import settings
-
-from geonode.base.models import Thesaurus
-
-from .widgets import MultiThesaurusWidget
-
-logger = logging.getLogger(__name__)
 
 
-class MultiThesauriField(forms.MultiValueField):
+class MultiThesauriField(forms.ModelMultipleChoiceField):
 
-    widget = MultiThesaurusWidget()
-
-    def __init__(self, *args, **kwargs):
-        super(MultiThesauriField, self).__init__(*args, **kwargs)
-        self.require_all_fields = kwargs.pop('require_all_fields', True)
-
-        if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
-            el = settings.THESAURUS
-            choices_list = []
-            thesaurus_name = el['name']
-            try:
-                t = Thesaurus.objects.get(identifier=thesaurus_name)
-                for tk in t.thesaurus.all():
-                    tkl = tk.keyword.filter(lang='en')
-                    choices_list.append((tkl[0].id, tkl[0].label))
-                self.fields += (forms.MultipleChoiceField(choices=tuple(choices_list)), )
-            except BaseException:
-                tb = traceback.format_exc()
-                logger.exception(tb)
-
-        for f in self.fields:
-            f.error_messages.setdefault('incomplete',
-                                        self.error_messages['incomplete'])
-            if self.require_all_fields:
-                # Set 'required' to False on the individual fields, because the
-                # required validation will be handled by MultiValueField, not
-                # by those individual fields.
-                f.required = False
+    def label_from_instance(self, obj):
+        # Note: Not using .get() because filter()[0] is used in original
+        # code. The hard-coded language is currently used throughout
+        # geonode.
+        return obj.keyword.filter(lang='en').first().label

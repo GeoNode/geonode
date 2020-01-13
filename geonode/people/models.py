@@ -141,7 +141,7 @@ class Profile(AbstractUser):
         return reverse('profile_detail', args=[self.username, ])
 
     def __unicode__(self):
-        return u"%s" % (self.username)
+        return "%s" % (self.username)
 
     def class_name(value):
         return value.__class__.__name__

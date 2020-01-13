@@ -18,13 +18,18 @@
 #
 #########################################################################
 
+import io
 import subprocess
 import traceback
 
 from django.conf import settings
 from threading import Timer
 from mimetypes import guess_type
-from urllib import pathname2url
+try:
+    from urllib.request import pathname2url
+except ImportError:
+    # Python 2 compatibility
+    from urllib import pathname2url
 from tempfile import NamedTemporaryFile
 
 
@@ -95,7 +100,6 @@ def generate_thumbnail_content(image_path, size=(200, 150)):
 
     Return the entire content of the image file.
     """
-    from cStringIO import StringIO
 
     try:
         from PIL import Image, ImageOps
@@ -110,7 +114,7 @@ def generate_thumbnail_content(image_path, size=(200, 150)):
         if source_width != target_width or source_width != target_height:
             image = ImageOps.fit(image, size, Image.ANTIALIAS)
 
-        output = StringIO()
+        output = io.BytesIO()
         image.save(output, format='PNG')
         content = output.getvalue()
         output.close()

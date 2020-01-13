@@ -46,7 +46,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
-from agon_ratings.models import OverallRating
+from pinax.ratings.models import OverallRating
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
@@ -63,7 +63,7 @@ from geonode.utils import (
 from geonode.security.models import PermissionLevelMixin
 from taggit.managers import TaggableManager, _TaggableManager
 from taggit.models import TagBase, ItemBase
-from treebeard.mp_tree import MP_Node
+from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 
 from geonode.people.enumerations import ROLE_VALUES
 
@@ -140,7 +140,7 @@ class TopicCategory(models.Model):
     fa_class = models.CharField(max_length=64, default='fa-times')
 
     def __unicode__(self):
-        return u"{0}".format(self.gn_description)
+        return "{0}".format(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -160,7 +160,7 @@ class SpatialRepresentationType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return u"{0}".format(self.gn_description)
+        return "{0}".format(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -213,7 +213,7 @@ class Region(MPTTModel):
         default='EPSG:4326')
 
     def __unicode__(self):
-        return u"{0}".format(self.name)
+        return "{0}".format(self.name)
 
     @property
     def bbox(self):
@@ -262,7 +262,7 @@ class RestrictionCodeType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return u"{0}".format(self.gn_description)
+        return "{0}".format(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -291,7 +291,7 @@ class License(models.Model):
     license_text = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return u"{0}".format(self.name)
+        return "{0}".format(self.name)
 
     @property
     def name_long(self):
@@ -316,8 +316,25 @@ class License(models.Model):
         verbose_name_plural = 'Licenses'
 
 
+class HierarchicalKeywordQuerySet(MP_NodeQuerySet):
+    """QuerySet to automatically create a root node if `depth` not given."""
+
+    def create(self, **kwargs):
+        if 'depth' not in kwargs:
+            return self.model.add_root(**kwargs)
+        return super(HierarchicalKeywordQuerySet, self).create(**kwargs)
+
+
+class HierarchicalKeywordManager(MP_NodeManager):
+
+    def get_queryset(self):
+        return HierarchicalKeywordQuerySet(self.model).order_by('path')
+
+
 class HierarchicalKeyword(TagBase, MP_Node):
     node_order_by = ['name']
+
+    objects = HierarchicalKeywordManager()
 
     @classmethod
     def dump_bulk_tree(cls, parent=None, keep_ids=True):
@@ -379,7 +396,6 @@ class TaggedContentItem(ItemBase):
 
 
 class _HierarchicalTagManager(_TaggableManager):
-
     def add(self, *tags):
         str_tags = set([
             t
@@ -426,7 +442,7 @@ class Thesaurus(models.Model):
     slug = models.CharField(max_length=64, default='')
 
     def __unicode__(self):
-        return u"{0}".format(self.identifier)
+        return "{0}".format(self.identifier)
 
     class Meta:
         ordering = ("identifier",)
@@ -447,7 +463,7 @@ class ThesaurusKeywordLabel(models.Model):
     keyword = models.ForeignKey('ThesaurusKeyword', related_name='keyword')
 
     def __unicode__(self):
-        return u"{0}".format(self.label)
+        return "{0}".format(self.label)
 
     class Meta:
         ordering = ("keyword", "lang")
@@ -471,7 +487,7 @@ class ThesaurusKeyword(models.Model):
     thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus')
 
     def __unicode__(self):
-        return u"{0}".format(self.alt_label)
+        return "{0}".format(self.alt_label)
 
     @property
     def labels(self):
@@ -776,7 +792,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     last_updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return u"{0}".format(self.title)
+        return "{0}".format(self.title)
 
     # fields controlling security state
     dirty_state = models.BooleanField(
@@ -1389,7 +1405,7 @@ class Link(models.Model):
     objects = LinkManager()
 
     def __unicode__(self):
-        return u"{0} link".format(self.link_type)
+        return "{0} link".format(self.link_type)
 
 
 class MenuPlaceholder(models.Model):
@@ -1402,7 +1418,7 @@ class MenuPlaceholder(models.Model):
     )
 
     def __unicode__(self):
-        return u"{0}".format(self.name)
+        return "{0}".format(self.name)
 
     def __str__(self):
         return self.name
@@ -1425,7 +1441,7 @@ class Menu(models.Model):
     )
 
     def __unicode__(self):
-        return u"{0}".format(self.title)
+        return "{0}".format(self.title)
 
     def __str__(self):
         return self.title
@@ -1461,7 +1477,7 @@ class MenuItem(models.Model):
     )
 
     def __unicode__(self):
-        return u"{0}".format(self.title)
+        return "{0}".format(self.title)
 
     def __str__(self):
         return self.title

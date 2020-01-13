@@ -18,19 +18,45 @@
 #
 #########################################################################
 
-import os, sys
-import boto
-from boto.s3.key import Key
+import os.path
+import sys
+import boto3
+import botocore
 
-bucket_name = sys.argv[1] 
-file_name = sys.argv[2] 
 
-conn = boto.connect_s3(os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY'])
-bucket = conn.get_bucket(bucket_name)
+def upload_file_s3(filename, bucket, obj_name=None):
+    """Upload a file to an S3 bucket
 
-k = Key(bucket)
-k.key = file_name.split('/')[-1]
-k.set_contents_from_filename(file_name)
-k.set_acl('public-read')
+    :param filename: File to upload
+    :param bucket: Bucket to upload to
+    :param object_name: S3 object name. If not specified, filename is used
+    :return None if upload was successful, otherwise the associated error code
+    """
 
-print file_name + " uploaded to " + bucket_name
+    if obj_name is None:
+        obj_name = filename
+
+    s3_client = boto3.client('s3')
+    try:
+        s3_client.upload_file(filename, bucket, obj_name)
+    except botocore.exceptions.ClientError as e:
+        error_code = e.response['Error']['Code']
+        return error_code
+
+    return None
+
+
+if __name__ == '__main__':
+    try:
+        _, bucket_name, filepath = sys.argv
+    except ValueError:
+        print(("Usage:\n    python %s bucket_name filepath" % sys.argv[0]))
+
+    filename = os.path.basename(filepath)
+    error = upload_file_s3(filepath, bucket_name)
+
+    if error is not None:
+        print((filename + " failed uploading to " +
+              bucket_name + " with error " + error))
+    else:
+        print((filename + " uploaded to " + bucket_name))

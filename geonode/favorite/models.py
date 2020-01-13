@@ -32,14 +32,7 @@ from geonode.maps.models import Map
 class FavoriteManager(models.Manager):
 
     def favorites_for_user(self, user):
-        result = self.filter(user=user)
-        cleaned_data = []
-        for r in result:
-            if r.content_object:
-                cleaned_data.append(r)
-            else:
-                r.delete()
-        return cleaned_data
+        return self.filter(user=user)
 
     def _favorite_ct_for_user(self, user, model):
         content_type = ContentType.objects.get_for_model(model)

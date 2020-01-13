@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='exceptionevent',
             name='error_message',
-            field=models.CharField(default=b'', max_length=255),
+            field=models.CharField(default='', max_length=255),
         ),
     ]

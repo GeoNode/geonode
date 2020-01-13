@@ -18,7 +18,10 @@
 #
 #########################################################################
 
-import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from datetime import datetime
 from datetime import timedelta
@@ -43,8 +46,10 @@ import six
 # primarily used as a first step to generate the json data for the fixture using
 # django's dumpdata
 
-imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
-                            '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
+imgfile = StringIO(
+    'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
+    '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
+)
 f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
 
 

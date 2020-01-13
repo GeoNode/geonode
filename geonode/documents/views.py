@@ -24,7 +24,7 @@ import logging
 import traceback
 from itertools import chain
 
-from guardian.shortcuts import get_perms
+from guardian.shortcuts import get_perms, get_objects_for_user
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -57,6 +57,9 @@ from geonode.groups.models import GroupProfile
 from geonode.base.views import batch_modify
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
+from geonode.security.utils import get_visible_resources
+
+from dal import autocomplete
 
 logger = logging.getLogger("geonode.documents.views")
 
@@ -374,9 +377,7 @@ def document_metadata(
             category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
                 request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
                 request.POST["category_choice_field"] else None)
-            tkeywords_form = TKeywordForm(
-                prefix="tkeywords",
-                initial={'tkeywords': request.POST.getlist('tkeywords-tkeywords')})
+            tkeywords_form = TKeywordForm(request.POST)
         else:
             document_form = DocumentForm(instance=document, prefix="resource")
             category_form = CategoryForm(
@@ -406,9 +407,7 @@ def document_metadata(
                         tb = traceback.format_exc()
                         logger.error(tb)
 
-            tkeywords_form = TKeywordForm(
-                prefix="tkeywords",
-                initial={'tkeywords': tkeywords_list})
+            tkeywords_form = TKeywordForm(instance=document)
 
         if request.method == "POST" and document_form.is_valid(
         ) and category_form.is_valid():
@@ -484,36 +483,22 @@ def document_metadata(
 
             try:
                 # Keywords from THESAURUS management
-                tkeywords_to_add = []
-                tkeywords_cleaned = tkeywords_form.clean()
-                if tkeywords_cleaned and len(tkeywords_cleaned) > 0:
-                    tkeywords_ids = []
-                    for i, val in enumerate(tkeywords_cleaned):
-                        try:
-                            cleaned_data = [value for key, value in tkeywords_cleaned[i].items(
-                            ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
-                            tkeywords_ids.extend(map(int, cleaned_data[0]))
-                        except BaseException:
-                            pass
+                # Rewritten to work with updated autocomplete
+                if not tkeywords_form.is_valid():
+                    return HttpResponse(json.dumps({'message': "Invalid thesaurus keywords"}, status_code=400))
 
-                    if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
-                        el = settings.THESAURUS
-                        thesaurus_name = el['name']
-                        try:
-                            t = Thesaurus.objects.get(
-                                identifier=thesaurus_name)
-                            for tk in t.thesaurus.all():
-                                tkl = tk.keyword.filter(pk__in=tkeywords_ids)
-                                if len(tkl) > 0:
-                                    tkeywords_to_add.append(tkl[0].keyword_id)
-                            document.tkeywords.clear()
-                            document.tkeywords.add(*tkeywords_to_add)
-                        except BaseException:
-                            tb = traceback.format_exc()
-                            logger.error(tb)
+                tkeywords_data = tkeywords_form.cleaned_data['tkeywords']
+
+                thesaurus_setting = getattr(settings, 'THESAURUS', None)
+                if thesaurus_setting:
+                    tkeywords_data = tkeywords_data.filter(
+                        thesaurus__identifier=thesaurus_setting['name']
+                    )
+                    document.tkeywords = tkeywords_data
             except BaseException:
                 tb = traceback.format_exc()
                 logger.error(tb)
+
             return HttpResponse(json.dumps({'message': message}))
 
         # - POST Request Ends here -
@@ -737,3 +722,23 @@ def document_metadata_detail(
 @login_required
 def document_batch_metadata(request, ids):
     return batch_modify(request, ids, 'Document')
+
+
+class DocumentAutocomplete(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        request = self.request
+        permitted = get_objects_for_user(
+            request.user,
+            'base.view_resourcebase')
+        qs = Document.objects.all().filter(id__in=permitted)
+
+        if self.q:
+            qs = qs.filter(title__icontains=self.q)
+
+        return get_visible_resources(
+            qs,
+            request.user if request else None,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)

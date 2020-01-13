@@ -125,7 +125,7 @@ def update_xml(xml_file, new_values):
     exml = etree.parse(xml_file)
     root = exml.getroot()
 
-    for name, path in properties.iteritems():
+    for name, path in properties.items():
         if name in new_values:
             elem = root.find(path, XML_NS)
             if elem is None:

@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='requestevent',
             name='resources',
-            field=models.ManyToManyField(help_text=b'List of resources affected', to='monitoring.MonitoredResource', null=True, blank=True),
+            field=models.ManyToManyField(help_text='List of resources affected', to='monitoring.MonitoredResource', null=True, blank=True),
         ),
     ]

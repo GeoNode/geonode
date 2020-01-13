@@ -598,7 +598,7 @@ class QGISStyleResource(ModelResource):
             filters, **kwargs)
         # Convert layer__ filters into layer_styles__layer__
         updated_filters = {}
-        for key, value in filters.iteritems():
+        for key, value in filters.items():
             key = key.replace('layer__', 'layer_styles__layer__')
             updated_filters[key] = value
         return updated_filters
@@ -762,7 +762,7 @@ class GeoserverStyleResource(ModelResource):
             filters, **kwargs)
         # Convert layer__ filters into layer_styles__layer__
         updated_filters = {}
-        for key, value in filters.iteritems():
+        for key, value in filters.items():
             key = key.replace('layer__', 'layer_default_style__')
             updated_filters[key] = value
         return updated_filters

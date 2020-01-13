@@ -1,5 +1,7 @@
 import os
 
+from six import string_types
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.contrib.sites.models import Site
@@ -35,7 +37,7 @@ class Command(BaseCommand):
     def get_social_providers():
         providers = []
         for app_info in settings.INSTALLED_APPS:
-            if isinstance(app_info, basestring):
+            if isinstance(app_info, string_types):
                 if app_info.startswith("allauth.socialaccount.providers"):
                     provider_module = app_info.rpartition(".")[-1]
                     provider_name = provider_module.partition("_")[0]

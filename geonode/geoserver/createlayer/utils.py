@@ -23,6 +23,8 @@ import uuid
 import logging
 import json
 
+from six import string_types
+
 from django.template.defaultfilters import slugify
 
 from geoserver.catalog import FailedRequestError
@@ -165,7 +167,7 @@ def get_or_create_datastore(cat, workspace=None, charset="UTF-8"):
          'fetch size': '1000',
          'host': db['HOST'],
          'port': db['PORT'] if isinstance(
-             db['PORT'], basestring) else str(db['PORT']) or '5432',
+             db['PORT'], string_types) else str(db['PORT']) or '5432',
          'database': db['NAME'],
          'user': db['USER'],
          'passwd': db['PASSWORD'],

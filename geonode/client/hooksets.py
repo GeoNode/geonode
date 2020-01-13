@@ -19,6 +19,8 @@
 #########################################################################
 import json
 
+from six import string_types
+
 
 class GeoExtHookSet(object):
 
@@ -74,7 +76,7 @@ class GeoExtHookSet(object):
         if not context:
             context = {}
 
-        if isinstance(conf, basestring):
+        if isinstance(conf, string_types):
             conf = json.loads(conf)
         return conf
 

@@ -27,7 +27,11 @@ from lxml import etree
 from defusedxml import lxml as dlxml
 from os.path import isfile
 
-from urlparse import urlsplit, urljoin
+try:
+    from urllib.parse import urlsplit, urljoin, unquote
+except ImportError:
+    from urllib import unquote
+    from urlparse import urlsplit, urljoin
 
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseRedirect
@@ -120,8 +124,7 @@ def layer_style(request, layername):
     # that the new default style name is included
     # in the list of possible styles.
 
-    new_style = (
-        style for style in layer.styles if style.name == style_name).next()
+    new_style = next(style for style in layer.styles if style.name == style_name)
 
     # Does this change this in geoserver??
     layer.default_style = new_style
@@ -525,9 +528,8 @@ def geoserver_proxy(request,
                     logger.warn("Could not find any Layer %s on DB" % os.path.basename(request.path))
 
     kwargs = {'affected_layers': affected_layers}
-    import urllib
-    raw_url = urllib.unquote(raw_url).decode('utf8')
-    timeout = getattr(ogc_server_settings, 'TIMEOUT') or 10
+    raw_url = unquote(raw_url).decode('utf8')
+    timeout = getattr(ogc_server_settings, 'TIMEOUT') or 5
     allowed_hosts = [urlsplit(ogc_server_settings.public_url).hostname, ]
     return proxy(request, url=raw_url, response_callback=_response_callback,
                  timeout=timeout, allowed_hosts=allowed_hosts, **kwargs)
@@ -539,7 +541,8 @@ def _response_callback(**kwargs):
     content_type = kwargs['content_type']
 
     # Replace Proxy URL
-    if content_type in ('application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json'):
+    content_type_list = ['application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json']
+    if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
         _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
         content = content\
             .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\

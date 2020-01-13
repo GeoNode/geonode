@@ -45,7 +45,8 @@ class GroupCategory(models.Model):
         verbose_name_plural = _('Group Categories')
 
     def __unicode__(self):
-        return 'Category: {}'.format(self.name.encode('utf-8'))
+        # return 'Category: {}'.format(self.name.encode('utf-8'))
+        return self.name.encode('utf-8')
 
     def get_absolute_url(self):
         return reverse('group_category_detail', args=(self.slug,))

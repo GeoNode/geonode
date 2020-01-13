@@ -20,7 +20,10 @@
 
 import traceback
 import os
-import helpers
+try:
+    import helpers
+except ImportError:
+    from . import helpers
 import tempfile
 import json
 
@@ -96,7 +99,7 @@ class Command(BaseCommand):
                         if app_name == mig_name:
                             fixture_file = os.path.join(target_folder, dump_name+'.json')
 
-                            print "Deserializing "+fixture_file
+                            print("Deserializing "+fixture_file)
                             mangler = helpers.load_class(mangler)
                             site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
                             obj = helpers.load_fixture(app_name, fixture_file, mangler=mangler,
@@ -110,7 +113,7 @@ class Command(BaseCommand):
                             for obj in objects:
                                 obj.save(using=DEFAULT_DB_ALIAS)
 
-                print "Restore finished. Please find restored files and dumps into: '"+target_folder+"'."
+                print("Restore finished. Please find restored files and dumps into: '"+target_folder+"'.")
 
             except Exception:
                 traceback.print_exc()

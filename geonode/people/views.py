@@ -34,6 +34,8 @@ from geonode.people.forms import ProfileForm
 from geonode.people.forms import ForgotUsernameForm
 from geonode.tasks.tasks import send_email
 
+from dal import autocomplete
+
 
 @login_required
 def profile_edit(request, username=None):
@@ -110,3 +112,17 @@ def forgot_username(request):
         'message': message,
         'form': username_form
     })
+
+
+class ProfileAutocomplete(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        qs = Profile.objects.all().exclude(Q(username='AnonymousUser') | Q(is_active=False))
+
+        if self.q:
+            qs = qs.filter(Q(username__icontains=self.q)
+                           | Q(email__icontains=self.q)
+                           | Q(first_name__icontains=self.q)
+                           | Q(last_name__icontains=self.q))
+
+        return qs

@@ -21,7 +21,7 @@
 import traceback
 import os, sys
 import shutil
-import helpers
+from . import helpers
 
 from geonode.utils import (designals,
                            resignals,
@@ -55,12 +55,12 @@ def restore_full(archive):
       for app_name, dump_name in zip(helpers.app_names, helpers.dump_names):
          fixture_file = os.path.join(target_folder, dump_name+'.json')
 
-         print "Deserializing "+fixture_file
+         print("Deserializing "+fixture_file)
          try:
             call_command('loaddata', fixture_file, app_label=app_name)
          except:
             #traceback.print_exc()
-            print "WARNING: No valid fixture data found for '"+dump_name+"'."
+            print("WARNING: No valid fixture data found for '"+dump_name+"'.")
             #helpers.load_fixture(app_name, fixture_file)
 
       # Restore Media Root
@@ -77,7 +77,7 @@ def restore_full(archive):
 
       copy_tree(media_folder, media_root)
       chmod_tree(media_root)
-      print "Media Files Restored into '"+media_root+"'."
+      print("Media Files Restored into '"+media_root+"'.")
 
       # Restore Static Root
       static_root = settings.STATIC_ROOT
@@ -93,7 +93,7 @@ def restore_full(archive):
 
       copy_tree(static_folder, static_root)
       chmod_tree(static_root)
-      print "Static Root Restored into '"+static_root+"'."
+      print("Static Root Restored into '"+static_root+"'.")
 
       # Restore Static Folders
       static_folders = settings.STATICFILES_DIRS
@@ -111,7 +111,7 @@ def restore_full(archive):
 
          copy_tree(os.path.join(static_files_folders, os.path.basename(os.path.normpath(static_files_folder))), static_files_folder)
          chmod_tree(static_files_folder)
-         print "Static Files Restored into '"+static_files_folder+"'."
+         print("Static Files Restored into '"+static_files_folder+"'.")
 
       # Restore Template Folders
       template_folders = []
@@ -136,7 +136,7 @@ def restore_full(archive):
 
          copy_tree(os.path.join(template_files_folders, os.path.basename(os.path.normpath(template_files_folder))), template_files_folder)
          chmod_tree(template_files_folder)
-         print "Template Files Restored into '"+template_files_folder+"'."
+         print("Template Files Restored into '"+template_files_folder+"'.")
 
       # Restore Locale Folders
       locale_folders = settings.LOCALE_PATHS
@@ -154,7 +154,7 @@ def restore_full(archive):
 
          copy_tree(os.path.join(locale_files_folders, os.path.basename(os.path.normpath(locale_files_folder))), locale_files_folder)
          chmod_tree(locale_files_folder)
-         print "Locale Files Restored into '"+locale_files_folder+"'."
+         print("Locale Files Restored into '"+locale_files_folder+"'.")
 
       # Cleanup DB
       try:
@@ -162,10 +162,10 @@ def restore_full(archive):
       except:
          traceback.print_exc()
 
-   except Exception, err:
-      print str(err)
+   except Exception as err:
+      print(str(err))
 
-   print "Restore finished. Please find restored files and dumps into: '"+target_folder+"'."
+   print("Restore finished. Please find restored files and dumps into: '"+target_folder+"'.")
 
 
 if __name__ == '__main__':
@@ -181,5 +181,5 @@ if __name__ == '__main__':
       if helpers.confirm(prompt='WARNING: The restore will overwrite all your GeoNode data and files. Are you sure you want to proceed?', resp=False):
          restore_full(restore_file)
    else:
-      print "Please, provide the full path to the ZIP archive to Restore.\n"
-      print "Usage example:  python restore.py backup/geonode_backup_test.zip\n"
+      print("Please, provide the full path to the ZIP archive to Restore.\n")
+      print("Usage example:  python restore.py backup/geonode_backup_test.zip\n")

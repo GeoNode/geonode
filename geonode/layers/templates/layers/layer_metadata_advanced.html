@@ -1,16 +1,29 @@
 {% extends "metadata_base.html" %}
 {% load i18n %}
-{% load bootstrap_tags %}
+{% load static %}
 {% load base_tags %}
+{% load bootstrap_tags %}
 {% load guardian_tags %}
 
-{% block title %}{{ layer.alternate }} — {{ block.super }}{% endblock %}
+{% block title %}{{ layer.title }} — {{ block.super }}{% endblock %}
 
 {% block body_class %}{% trans "data" %}{% endblock %}
 
 {% block body_outer %}
 
 {{ block.super }}
+
+<!-- Required to make select2 fields work for autocomplete -->
+<link href="{% static "vendor/select2/dist/css/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<link href="{% static "autocomplete_light/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/jquery.init.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/select2/dist/js/i18n/en.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/autocomplete.init.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/forward.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/select2.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/jquery.post-setup.js" %}"></script>
 
 <div class="page-header">
   <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
@@ -19,10 +32,11 @@
 <div class="row">
   <div class="col-md-8">
     <p class="lead">
-      {% blocktrans with layer.alternate as layer_title %}
+      {% blocktrans with layer.title as layer_title %}
         Editing details for {{ layer_title }}
       {% endblocktrans %}
     </p>
+
     <form id="metadata_update" class="form-horizontal" action="{% url "layer_metadata" layer.service_typename %}" method="POST">
       {% if layer.metadata_uploaded_preserve %}
         <p class="bg-warning">{% blocktrans %}Note: this layer's orginal metadata was populated and preserved by importing a metadata XML file.
@@ -52,9 +66,9 @@
           {% if not attribute_form.is_valid %}
             <li>{% trans "Attributes" %}</li>
             {% for field in attribute_form %}
-            {% if field.errors %}
-            <li>{{ field.errors }}</li>
-            {% endif %}
+              {% if field.errors %}
+              <li>{{ field.errors }}</li>
+              {% endif %}
             {% endfor %}
           {% endif %}
           {% if category_form.errors %}
@@ -71,8 +85,14 @@
         {% endif %}
 
         {% csrf_token %}
+        <!-- Added in the thesuarus field here since saving the form without it causes the thesuarus keywords to be removed. 
+             Unfortunately this needs to appear at the bottom of the form since tkeywords_form is a complete other django form. 
+             There might be a better way to solve this. -->
         <div class="col-md-6 form-controls">
           {{ layer_form|as_bootstrap }}
+          {% if THESAURI_FILTERS %}
+            {{ tkeywords_form }}
+          {% endif %}
         </div>
         <div class="row">
           <div class="col-md-12">

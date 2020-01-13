@@ -11,13 +11,15 @@
                 </a></h4>
             <ul class="nav open" id="text">
                 <li>
-                    <div class="input-group">
-                    <input name="text_search_input" id="text_search_input" ng-model="text_query" type="text"
-                           placeholder="Search by name" class="form-control" data-query-key='name__icontains'>
-                    <span class="input-group-btn">
-                        <button class="btn btn-primary" type="submit" id="text_search_btn"><i class="fa fa-search"></i></button>
-                    </span>
+                  <form class="autocomplete-input input-group" id="text-search-autocomplete">
+                    {% csrf_token %}
+                    <div id="text-search-container">
+                      <input autocomplete="off" ng-model="text_query"  type="text" name="text_search_input" id="text_search_input" placeholder="Search by name" >
                     </div>
+                    <span class="input-group-btn">
+                      <button class="btn btn-primary" type="submit" id="text_search_btn"><i class="fa fa-search"></i></button>
+                    </span>
+                  </form>
                 </li>
             </ul>
         </nav>

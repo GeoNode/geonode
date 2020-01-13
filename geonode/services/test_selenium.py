@@ -45,7 +45,7 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
             cls.selenium.refresh()
         except Exception as e:
             msg = str(e)
-            print msg
+            print(msg)
 
     @classmethod
     def tearDownClass(cls):

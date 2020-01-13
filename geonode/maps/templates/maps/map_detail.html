@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load staticfiles %}
 {% load dialogos_tags %}
-{% load agon_ratings_tags %}
+{% load pinax_ratings_tags %}
 {% load bootstrap_tags %}
 {% load pagination_tags %}
 {% load base_tags %}
@@ -31,7 +31,13 @@
 <div class="page-header">
     <style>
     #paneltbar {
-        margin-top: 1px !important;
+      margin-top: 1px !important;
+    }
+
+    .msgapi #mapstore-print-panel.modal-dialog {
+      height: 400px;
+      width: 100%;
+      position: absolute;
     }
     </style>
 

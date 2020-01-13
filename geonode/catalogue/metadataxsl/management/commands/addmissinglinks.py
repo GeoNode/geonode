@@ -36,9 +36,9 @@ class Command(BaseCommand):
             isolink = Link.objects.filter(resource_id=resource.id, link_type='metadata', name='ISO')
 
             if(isolink):
-                print ('  ISO link found for resource {} "{}"'. format(resource.id, resource.title))
+                print('  ISO link found for resource {} "{}"'.format(resource.id, resource.title))
                 created = add_xsl_link(resource)
                 if (created):
                     print('   XSL link created')
             else:
-                print ('  ISO link NOT found for resource {} "{}"'. format(resource.id, resource.title))
+                print('  ISO link NOT found for resource {} "{}"'.format(resource.id, resource.title))

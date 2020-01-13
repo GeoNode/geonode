@@ -256,7 +256,7 @@ def aggregate_period(period_start, period_end, metric_data_q, cleanup=True):
         try:
             value_q = per_metric_q.aggregate(fvalue=f,
                                              fsamples_count=Sum(F('samples_count')))
-        except TypeError, err:
+        except TypeError as err:
             raise ValueError(f, m, err)
         value = value_q['fvalue']
         samples_count = value_q['fsamples_count']

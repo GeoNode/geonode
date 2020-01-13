@@ -47,7 +47,7 @@ from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
 
 from deprecated import deprecated
-from agon_ratings.models import OverallRating
+from pinax.ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
 

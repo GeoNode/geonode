@@ -13,7 +13,7 @@ Editing a document's metadata is done in three steps (*Basic Metadata*, *Locatio
   * The *Resources* the document should be linked to;
   * An *Abstract* on the document;
   * The *Creation/Publication/Revision* dates which define the time period that is covered by the document;
-  * The *Keywords*, which should be chosen within the available list. The contributor search for available keywords by clicking on the searching bar, or on the folder logo representing, or by entering the first letters of the desired word. Key-words should be relevant to the imported document;
+  * The *Keywords*, which should be chosen within the available list. The contributor search for available keywords by clicking on the searching bar or by entering the first letters of the desired word. Key-words should be relevant to the imported document;
   * The *Category* in which the document belongs;
   * The *Group* to which the document is linked.
 

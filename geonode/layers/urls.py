@@ -71,6 +71,9 @@ urlpatterns = [
         views.layer_batch_metadata, name='layer_batch_metadata'),
     url(r'^permissions/batch/(?P<ids>[^/]*)/$',
         views.layer_batch_permissions, name='layer_batch_permissions'),
+    url(r'^autocomplete/$',
+        views.LayerAutocomplete.as_view(), name='autocomplete_layer'),
+
 ]
 
 # -- Deprecated url routes for Geoserver authentication -- remove after GeoNode 2.1

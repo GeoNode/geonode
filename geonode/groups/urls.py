@@ -56,4 +56,8 @@ urlpatterns = [  # 'geonode.groups.views',
         views.group_join, name='group_join'),
     url(r'^group/(?P<slug>[-\w]+)/activity/$',
         GroupActivityView.as_view(), name='group_activity'),
+    url(r'^autocomplete/$',
+        views.GroupProfileAutocomplete.as_view(), name='autocomplete_groups'),
+    url(r'^autocomplete_category/$',
+        views.GroupCategoryAutocomplete.as_view(), name='autocomplete_category'),
 ]

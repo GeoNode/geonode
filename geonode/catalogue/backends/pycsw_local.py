@@ -21,7 +21,6 @@
 import os
 from defusedxml import lxml as dlxml
 from django.conf import settings
-from ConfigParser import SafeConfigParser
 from owslib.iso import MD_Metadata
 from pycsw import server
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
@@ -102,7 +101,7 @@ class CatalogueBackend(GenericCatalogueBackend):
                 [MD_Metadata(x) for x in e.findall('//{http://www.isotc211.org/2005/gmd}MD_Metadata')]
 
             # build results into JSON for API
-            results = [self.catalogue.metadatarecord2dict(doc) for v, doc in self.catalogue.records.iteritems()]
+            results = [self.catalogue.metadatarecord2dict(doc) for v, doc in self.catalogue.records.items()]
 
             result = {'rows': results,
                       'total': e.find('{http://www.opengis.net/cat/csw/2.0.2}SearchResults').attrib.get(
@@ -118,24 +117,16 @@ class CatalogueBackend(GenericCatalogueBackend):
         HTTP-less CSW
         """
 
-        # serialize pycsw settings into SafeConfigParser
-        # object for interaction with pycsw
         mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
         if 'server' in settings.PYCSW['CONFIGURATION']:
             # override server system defaults with user specified directives
             mdict['server'].update(settings.PYCSW['CONFIGURATION']['server'])
-        config = SafeConfigParser()
-
-        for section, options in mdict.iteritems():
-            config.add_section(section)
-            for option, value in options.iteritems():
-                config.set(section, option, value)
 
         # fake HTTP environment variable
         os.environ['QUERY_STRING'] = ''
 
         # init pycsw
-        csw = server.Csw(config, version='2.0.2')
+        csw = server.Csw(mdict, version='2.0.2')
 
         # fake HTTP method
         csw.requesttype = 'GET'

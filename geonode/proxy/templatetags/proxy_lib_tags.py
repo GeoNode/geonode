@@ -23,7 +23,11 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.core.files.storage import FileSystemStorage
 
-from urlparse import urlsplit, urljoin
+try:
+    from urllib.parse import urlsplit, urljoin
+except ImportError:
+    # Python 2 compatibility
+    from urlparse import urlsplit, urljoin
 
 from geonode.utils import resolve_object
 from geonode.layers.models import Layer, LayerFile

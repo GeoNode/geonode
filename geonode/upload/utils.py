@@ -29,6 +29,7 @@ from osgeo import ogr
 from lxml import etree
 from itertools import islice
 from defusedxml import lxml as dlxml
+from six import string_types, text_type
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -165,7 +166,7 @@ def json_loads_byteified(json_text, charset):
 
 def _byteify(data, ignore_dicts=False):
     # if this is a unicode string, return its string representation
-    if isinstance(data, unicode):
+    if isinstance(data, text_type):
         return data.encode('utf-8')
     # if this is a list of values, return list of byteified values
     if isinstance(data, list):
@@ -175,7 +176,7 @@ def _byteify(data, ignore_dicts=False):
     if isinstance(data, dict) and not ignore_dicts:
         return {
             _byteify(key, ignore_dicts=True): _byteify(value, ignore_dicts=True)
-            for key, value in data.iteritems()
+            for key, value in data.items()
         }
     # if it's anything else, return it in its original form
     return data
@@ -442,8 +443,7 @@ def check_import_session_is_valid(request, upload_session, import_session):
     if store_type == 'dataStore':
         try:
             layer = import_session.tasks[0].layer
-            invalid = filter(
-                lambda a: str(a.name).find(' ') >= 0, layer.attributes)
+            invalid = [a for a in layer.attributes if str(a.name).find(' ') >= 0]
             if invalid:
                 att_list = "<pre>%s</pre>" % '. '.join(
                     [a.name for a in invalid])
@@ -749,7 +749,7 @@ def import_imagemosaic_granules(
              'fetch size': '1000',
              'host': db['HOST'],
              'port': db['PORT'] if isinstance(
-                 db['PORT'], basestring) else str(db['PORT']) or '5432',
+                 db['PORT'], string_types) else str(db['PORT']) or '5432',
              'database': db['NAME'],
              'user': db['USER'],
              'passwd': db['PASSWORD'],

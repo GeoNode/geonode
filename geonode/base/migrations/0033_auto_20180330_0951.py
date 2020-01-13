@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import migrations, models
 
@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='region',
             name='srid',
-            field=models.CharField(default=b'EPSG:4326', max_length=30),
+            field=models.CharField(default='EPSG:4326', max_length=30),
         ),
         migrations.AlterField(
             model_name='resourcebase',
             name='srid',
-            field=models.CharField(default=b'EPSG:4326', max_length=30),
+            field=models.CharField(default='EPSG:4326', max_length=30),
         ),
     ]

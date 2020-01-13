@@ -15,11 +15,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='jumbotron_text_color',
-            field=models.CharField(default=b'#ffffff', max_length=10),
+            field=models.CharField(default='#ffffff', max_length=10),
         ),
         migrations.AddField(
             model_name='geonodethemecustomization',
             name='jumbotron_title_color',
-            field=models.CharField(default=b'#ffffff', max_length=10),
+            field=models.CharField(default='#ffffff', max_length=10),
         ),
     ]

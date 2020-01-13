@@ -21,7 +21,10 @@
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
-import urlparse
+try:
+    from urllib.parse import urlparse, parse_qs
+except ImportError:
+    from urlparse import urlparse, parse_qs
 import unittest
 from imghdr import what
 
@@ -38,10 +41,12 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 
 from geonode import qgis_server
+from geonode.base.models import Region
 from geonode.decorators import on_ogc_backend
 from geonode.layers.utils import file_upload
-from geonode.qgis_server.helpers import validate_django_settings, \
-    transform_layer_bbox, qgis_server_endpoint, tile_url_format, tile_url, \
+from geonode.qgis_server.helpers import get_model_path, \
+    validate_django_settings, transform_layer_bbox, \
+    qgis_server_endpoint, tile_url_format, tile_url, \
     style_get_url, style_add_url, style_list, style_set_default_url, \
     style_remove_url
 
@@ -87,7 +92,7 @@ class HelperTest(GeoNodeBaseTestSupport):
         self.assertEqual(
             settings.QGIS_SERVER_URL, qgis_server_endpoint(internal=True))
         # Public url should go to proxy url
-        parse_result = urlparse.urlparse(qgis_server_endpoint(internal=False))
+        parse_result = urlparse(qgis_server_endpoint(internal=False))
         self.assertEqual(parse_result.path, reverse('qgis_server:request'))
 
     @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
@@ -104,13 +109,13 @@ class HelperTest(GeoNodeBaseTestSupport):
 
         qgis_tile_url = tile_url(uploaded, 11, 1576, 1054, internal=True)
 
-        parse_result = urlparse.urlparse(qgis_tile_url)
+        parse_result = urlparse(qgis_tile_url)
 
-        base_net_loc = urlparse.urlparse(settings.QGIS_SERVER_URL).netloc
+        base_net_loc = urlparse(settings.QGIS_SERVER_URL).netloc
 
         self.assertEqual(base_net_loc, parse_result.netloc)
 
-        query_string = urlparse.parse_qs(parse_result.query)
+        query_string = parse_qs(parse_result.query)
 
         expected_query_string = {
             'SERVICE': 'WMS',
@@ -128,7 +133,7 @@ class HelperTest(GeoNodeBaseTestSupport):
             'MAP_RESOLUTION': '96',
             'FORMAT_OPTIONS': 'dpi:96'
         }
-        for key, value in expected_query_string.iteritems():
+        for key, value in expected_query_string.items():
             # urlparse.parse_qs returned a dictionary of list
             actual_value = query_string[key][0]
             self.assertEqual(actual_value, value)
@@ -296,3 +301,9 @@ class HelperTest(GeoNodeBaseTestSupport):
 
         # cleanup
         uploaded.delete()
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_get_model_path(self):
+        region = Region.objects.first()
+        model_path = get_model_path(region)
+        self.assertEqual(model_path, 'base.region')

@@ -24,10 +24,16 @@ import shutil
 import logging
 import tempfile
 import traceback
+import io
+import gzip
 
 from hyperlink import URL
 from slugify import slugify
-from urlparse import urlparse, urlsplit, urljoin
+try:
+    from urllib.parse import urlparse, urlsplit, urljoin
+except ImportError:
+    # Python 2 compatibility
+    from urlparse import urlparse, urlsplit, urljoin
 
 from django.conf import settings
 from django.http import HttpResponse
@@ -177,9 +183,7 @@ def proxy(request, url=None, response_callback=None,
     # decompress GZipped responses if not enabled
     # if content and response and response.getheader('Content-Encoding') == 'gzip':
     if content and content_type and content_type == 'gzip':
-        from StringIO import StringIO
-        import gzip
-        buf = StringIO(content)
+        buf = io.BytesIO(content)
         f = gzip.GzipFile(fileobj=buf)
         content = f.read()
 

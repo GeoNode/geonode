@@ -69,7 +69,7 @@ def view_decorator(fdec, subclass=False):
         if subclass:
             cls = type("%sWithDecorator(%s)" %
                        (cls.__name__, fdec.__name__), (cls,), {})
-        original = cls.as_view.im_func
+        original = cls.as_view.__func__
 
         @wraps(original)
         def as_view(current, **initkwargs):

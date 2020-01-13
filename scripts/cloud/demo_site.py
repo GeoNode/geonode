@@ -51,9 +51,9 @@ class DemoGeonode(object):
         if demo_node is not None:
             self.deleteNode(demo_node)
             self.buildJob(GEONODE_DEMO_JOB)
-            print 're-deploy complete!'
+            print('re-deploy complete!')
         else:
-            print 'No demo.genode.org node found on jenkins'
+            print('No demo.genode.org node found on jenkins')
 
     def getDemoNode(self, nodes_data):
         """Commodity method to get the correct jenkins node name,
@@ -66,15 +66,15 @@ class DemoGeonode(object):
 
     def deleteNode(self, node_name):
         """Delete the jenkins node and shutdown the amazon VM"""
-        print 'Deleting demo node'
+        print('Deleting demo node')
         self.j.delete_node(node_name)
-        print 'Deletion requested'
+        print('Deletion requested')
 
     def buildJob(self, job):
         """Trigger a job build"""
-        print 'Building %s job' % job
+        print('Building %s job' % job)
         self.j.build_job(job)
-        print 'Build requested'
+        print('Build requested')
 
 
 if __name__ == "__main__":
@@ -94,6 +94,6 @@ if __name__ == "__main__":
         elif task == 'build-demo-job':
             demo.buildJob(GEONODE_DEMO_JOB)
         else:
-            print 'Command not found'
+            print('Command not found')
     else:
-        print 'username and access token are both required'
+        print('username and access token are both required')

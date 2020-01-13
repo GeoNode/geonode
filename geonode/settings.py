@@ -25,7 +25,11 @@ import ast
 import sys
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
-from urlparse import urlparse, urlunparse, urljoin
+try:
+    from urllib.parse import urlparse, urlunparse, urljoin
+except ImportError:
+    # Python 2 compatibility
+    from urlparse import urlparse, urlunparse, urljoin
 
 import django
 import dj_database_url
@@ -405,13 +409,16 @@ GEONODE_APPS = GEONODE_CORE_APPS + GEONODE_INTERNAL_APPS + GEONODE_CONTRIB_APPS
 
 INSTALLED_APPS = (
 
-    'modeltranslation',
 
     # Boostrap admin theme
     # 'django_admin_bootstrapped.bootstrap3',
     # 'django_admin_bootstrapped',
 
     # Apps bundled with Django
+    'modeltranslation',
+    'dal',
+    'dal_select2',
+    
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -431,7 +438,6 @@ INSTALLED_APPS = (
     'bootstrap3_datetime',
     'django_filters',
     'django_basic_auth',
-    'autocomplete_light',
     'mptt',
     'storages',
     'floppyforms',
@@ -442,7 +448,7 @@ INSTALLED_APPS = (
     # Social
     'avatar',
     'dialogos',
-    'agon_ratings',
+    'pinax.ratings',
     'announcements',
     'actstream',
     'user_messages',
@@ -560,6 +566,9 @@ on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
 core_tests = ast.literal_eval(os.environ.get('TEST_RUN_CORE', 'False'))
 internal_apps_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTERNAL_APPS', 'False'))
 integration_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION', 'False'))
+integration_server_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_SERVER', 'False'))
+integration_upload_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_UPLOAD', 'False'))
+integration_monitoring_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_MONITORING', 'False'))
 integration_csw_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_CSW', 'False'))
 integration_bdd_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_BDD', 'False'))
 selenium_tests = ast.literal_eval(os.environ.get('TEST_RUN_SELENIUM', 'False'))
@@ -772,8 +781,8 @@ DEFAULT_SEARCH_SIZE = int(os.getenv('DEFAULT_SEARCH_SIZE', '10'))
 # Settings for third party apps
 #
 
-# Agon Ratings
-AGON_RATINGS_CATEGORY_CHOICES = {
+# Pinax Ratings
+PINAX_RATINGS_CATEGORY_CHOICES = {
     "maps.Map": {
         "map": "How good is this map?"
     },
@@ -911,8 +920,8 @@ OGC_SERVER = {
         # Set to name of database in DATABASES dictionary to enable
         # 'datastore',
         'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE', ''),
-        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '20')),
-        'MAX_RETRIES': int(os.getenv('OGC_REQUEST_MAX_RETRIES', '5')),
+        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '5')),
+        'MAX_RETRIES': int(os.getenv('OGC_REQUEST_MAX_RETRIES', '2')),
         'BACKOFF_FACTOR': float(os.getenv('OGC_REQUEST_BACKOFF_FACTOR', '0.3')),
         'POOL_MAXSIZE': int(os.getenv('OGC_REQUEST_POOL_MAXSIZE', '10')),
         'POOL_CONNECTIONS': int(os.getenv('OGC_REQUEST_POOL_CONNECTIONS', '10')),
@@ -1552,8 +1561,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
 
     if GEONODE_CATALOGUE_SERVICE:
-        MAPSTORE_CATALOGUE_SERVICES[GEONODE_CATALOGUE_SERVICE.keys()[0]] = GEONODE_CATALOGUE_SERVICE[GEONODE_CATALOGUE_SERVICE.keys()[0]]
-        MAPSTORE_CATALOGUE_SELECTED_SERVICE = GEONODE_CATALOGUE_SERVICE.keys()[0]
+        MAPSTORE_CATALOGUE_SERVICES[list(GEONODE_CATALOGUE_SERVICE.keys())[0]] = GEONODE_CATALOGUE_SERVICE[list(GEONODE_CATALOGUE_SERVICE.keys())[0]]
+        MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(GEONODE_CATALOGUE_SERVICE.keys())[0]
 
         DEFAULT_MS2_BACKGROUNDS = [
             {

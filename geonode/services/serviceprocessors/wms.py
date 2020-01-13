@@ -25,7 +25,11 @@ import requests
 import traceback
 
 from uuid import uuid4
-from urlparse import urlsplit, urljoin
+try:
+    from urllib.parse import urlsplit, urljoin
+except ImportError:
+    # Python 2 compatibility
+    from urlparse import urlsplit, urljoin
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -165,7 +169,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
         """
         try:
-            contents_gen = self.parsed_service.contents.itervalues()
+            contents_gen = self.parsed_service.contents.values()
             return (r for r in contents_gen if not any(r.children))
         except BaseException:
             return None

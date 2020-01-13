@@ -56,13 +56,7 @@ else:
         '/static/*',
     )
 
-white_list = map(
-    compile,
-    white_list_paths +
-    getattr(
-        settings,
-        "AUTH_EXEMPT_URLS",
-        ()))
+white_list = [compile(x) for x in white_list_paths + getattr(settings, "AUTH_EXEMPT_URLS", ())]
 
 
 class LoginRequiredMiddleware(object):

@@ -21,7 +21,7 @@
 import traceback
 import os, sys
 import shutil
-import helpers
+from . import helpers
 import json
 
 from django.conf import settings
@@ -55,7 +55,7 @@ def migrate_layers(archive, owner):
             if app_name == mig_name:
                fixture_file = os.path.join(target_folder, dump_name+'.json')
          
-               print "Deserializing "+fixture_file
+               print("Deserializing "+fixture_file)
                mangler = helpers.load_class(mangler)
 
                obj = helpers.load_fixture(app_name, fixture_file, mangler=mangler, basepk=higher_pk, owner=owner, datastore=settings.OGC_SERVER['default']['DATASTORE'], siteurl=settings.SITEURL)
@@ -66,10 +66,10 @@ def migrate_layers(archive, owner):
                for obj in objects:
                   obj.save(using=DEFAULT_DB_ALIAS)
 
-   except Exception, err:
+   except Exception as err:
       traceback.print_exc()
 
-   print "Restore finished. Please find restored files and dumps into: '"+target_folder+"'."
+   print("Restore finished. Please find restored files and dumps into: '"+target_folder+"'.")
 
 
 if __name__ == '__main__':
@@ -87,7 +87,7 @@ if __name__ == '__main__':
       if helpers.confirm(prompt='WARNING: The migration may break some of your GeoNode existing Layers. Are you sure you want to proceed?', resp=False):
          migrate_layers(restore_file, owner)
    else:
-      print "Please, provide the full path to the ZIP archive to Restore AND the Owner of the imported Layers.\n"
-      print "Usage example:  python migrate_layers.py backup/geonode_backup_test.zip admin\n"
+      print("Please, provide the full path to the ZIP archive to Restore AND the Owner of the imported Layers.\n")
+      print("Usage example:  python migrate_layers.py backup/geonode_backup_test.zip admin\n")
 
 
