@@ -197,8 +197,8 @@ class PermissionLevelMixin(object):
 
         # Owner
         if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-            purge_geofence_layer_rules(self.get_self_resource())
             if self.polymorphic_ctype.name == 'layer':
+                purge_geofence_layer_rules(self.get_self_resource())
                 perms = [
                     "change_resourcebase",
                     "change_resourcebase_permissions",
