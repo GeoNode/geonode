@@ -541,7 +541,8 @@ def _response_callback(**kwargs):
     content_type = kwargs['content_type']
 
     # Replace Proxy URL
-    if content_type in ('application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json'):
+    content_type_list = ['application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json']
+    if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
         _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
         content = content\
             .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
