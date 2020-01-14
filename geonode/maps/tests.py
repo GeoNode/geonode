@@ -801,10 +801,11 @@ community."
 
         # number of local layers
         n_locallayers = map_obj.layer_set.filter(local=True).count()
-
         fix_baselayers(map_id)
-
-        self.assertEquals(map_obj.layer_set.all().count(), n_baselayers + n_locallayers)
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            self.assertEqual(1, n_baselayers + n_locallayers)
+        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+            self.assertEqual(2, n_baselayers + n_locallayers)
 
     @dump_func_name
     def test_batch_edit(self):
