@@ -34,7 +34,7 @@ from datetime import datetime
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import Group
 from geonode.base.models import License, Region
 
@@ -66,7 +66,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         super(DocumentsTest, self).setUp()
         create_models('map')
         self.imgfile = io.BytesIO(
-            b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
+            'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
             '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
         self.anonymous_user = get_anonymous_user()
 
@@ -75,7 +75,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         f = SimpleUploadedFile(
             'test_img_file.gif',
-            self.imgfile.read(),
+            self.imgfile.read().encode("UTF-8"),
             'image/gif')
 
         superuser = get_user_model().objects.get(pk=2)
@@ -90,7 +90,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         """Tests the creation of a document with no a map related"""
         f = SimpleUploadedFile(
             'test_img_file.gif',
-            self.imgfile.read(),
+            self.imgfile.read().encode("UTF-8"),
             'image/gif')
 
         superuser = get_user_model().objects.get(pk=2)
@@ -193,7 +193,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         file_data = {
             'doc_file': SimpleUploadedFile(
                 'test_img_file.gif',
-                self.imgfile.read(),
+                self.imgfile.read().encode("UTF-8"),
                 'image/gif')}
         form = DocumentCreateForm(form_data, file_data)
         self.assertTrue(form.is_valid())
@@ -247,7 +247,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         f = SimpleUploadedFile(
             'test_img_file.gif',
-            self.imgfile.read(),
+            self.imgfile.read().encode("UTF-8"),
             'image/gif')
         m = Map.objects.all()[0]
 
@@ -298,7 +298,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # Setup some document names to work with
         f = SimpleUploadedFile(
             'test_img_file.gif',
-            self.imgfile.read(),
+            self.imgfile.read().encode("UTF-8"),
             'image/gif')
 
         superuser = get_user_model().objects.get(pk=2)
@@ -562,7 +562,7 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
         create_models('layer')
 
         self.test_file = io.BytesIO(
-            b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
+            'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
             '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
         )
 
@@ -570,7 +570,7 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
         """Tests the creation of document links."""
         f = SimpleUploadedFile(
             'test_img_file.gif',
-            self.test_file.read(),
+            self.test_file.read().encode("UTF-8"),
             'image/gif'
         )
 

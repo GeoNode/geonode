@@ -21,7 +21,7 @@
 import logging
 from django.db import models
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from geonode.base.models import ResourceBase
@@ -147,13 +147,17 @@ class Service(ResourceBase):
         'services.Service',
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
         related_name='service_set'
     )
 
     # Supported Capabilities
 
+    def __str__(self):
+        return "{0}".format(self.name)
+
     def __unicode__(self):
-        return self.name
+        return u"{0}".format(self.__str__())
 
     @property
     def service_url(self):
@@ -191,14 +195,14 @@ class ServiceProfileRole(models.Model):
     """
     ServiceProfileRole is an intermediate model to bind Profiles and Services and apply roles.
     """
-    profiles = models.ForeignKey(settings.AUTH_USER_MODEL)
-    service = models.ForeignKey(Service)
+    profiles = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
     role = models.CharField(choices=ROLE_VALUES, max_length=255, help_text=_(
         'function performed by the responsible party'))
 
 
 class HarvestJob(models.Model):
-    service = models.ForeignKey(Service)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
     resource_id = models.CharField(max_length=255)
     status = models.CharField(
         choices=(

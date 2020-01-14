@@ -73,7 +73,7 @@ def geoserver_upload(
     try:
         store = get_store(cat, name, workspace=workspace)
 
-    except geoserver.catalog.FailedRequestError as e:
+    except geoserver.catalog.FailedRequestError:
         # There is no store, ergo the road is clear
         pass
     else:

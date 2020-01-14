@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='metricnotificationcheck',
             name='service',
-            field=models.ForeignKey(related_name='checks', blank=True, to='monitoring.Service', null=True),
+            field=models.ForeignKey(related_name='checks', blank=True, to='monitoring.Service',
+                                    on_delete=models.CASCADE, null=True),
         ),
     ]

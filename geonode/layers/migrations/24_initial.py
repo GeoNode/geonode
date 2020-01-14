@@ -40,7 +40,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Layer',
             fields=[
-                ('resourcebase_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='base.ResourceBase')),
+                ('resourcebase_ptr', models.OneToOneField(parent_link=True, on_delete=models.CASCADE,
+                                                          auto_created=True, primary_key=True, serialize=False, to='base.ResourceBase')),
                 ('title_en', models.CharField(help_text='name by which the cited resource is known', max_length=255, null=True, verbose_name='title')),
                 ('abstract_en', models.TextField(help_text='brief narrative summary of the content of the resource(s)', null=True, verbose_name='abstract', blank=True)),
                 ('purpose_en', models.TextField(help_text='summary of the intentions with which the resource(s) was developed', null=True, verbose_name='purpose', blank=True)),
@@ -89,19 +90,20 @@ class Migration(migrations.Migration):
                 ('error', models.TextField(null=True, blank=True)),
                 ('traceback', models.TextField(null=True, blank=True)),
                 ('context', models.TextField(null=True, blank=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
 
         migrations.AddField(
             model_name='layerfile',
             name='upload_session',
-            field=models.ForeignKey(to='layers.UploadSession'),
+            field=models.ForeignKey(to='layers.UploadSession', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='layer',
             name='default_style',
-            field=models.ForeignKey(related_name='layer_default_style', blank=True, to='layers.Style', null=True),
+            field=models.ForeignKey(related_name='layer_default_style', blank=True,
+                                    on_delete=models.CASCADE, to='layers.Style', null=True),
         ),
         migrations.AddField(
             model_name='layer',
@@ -111,11 +113,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='layer',
             name='upload_session',
-            field=models.ForeignKey(blank=True, to='layers.UploadSession', null=True),
+            field=models.ForeignKey(blank=True, on_delete=models.CASCADE, to='layers.UploadSession', null=True),
         ),
         migrations.AddField(
             model_name='attribute',
             name='layer',
-            field=models.ForeignKey(related_name='attribute_set', to='layers.Layer'),
+            field=models.ForeignKey(related_name='attribute_set', on_delete=models.CASCADE, to='layers.Layer'),
         ),
     ]

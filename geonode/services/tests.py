@@ -23,7 +23,7 @@ from django.test import Client
 from selenium import webdriver
 from unittest import TestCase as StandardTestCase
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 try:

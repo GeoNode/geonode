@@ -17,12 +17,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('object_id', models.PositiveIntegerField()),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
             model_name='documentresourcelink',
             name='document',
-            field=models.ForeignKey(related_name='links', to='documents.Document'),
+            field=models.ForeignKey(related_name='links', to='documents.Document', on_delete=models.CASCADE),
         ),
     ]

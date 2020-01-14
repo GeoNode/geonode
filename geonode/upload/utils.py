@@ -32,7 +32,7 @@ from defusedxml import lxml as dlxml
 from six import string_types, text_type
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
@@ -127,8 +127,8 @@ class JSONResponse(HttpResponse):
 
 
 def json_response(*args, **kw):
-    if 'exception' in kw:
-        logger.warn(traceback.format_exc(kw['exception']))
+    # if 'exception' in kw:
+    #     logger.warn(traceback.format_exc(kw['exception']))
     return do_json_response(*args, **kw)
 
 

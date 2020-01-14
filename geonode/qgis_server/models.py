@@ -61,7 +61,8 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
     layer = models.OneToOneField(
         Layer,
         primary_key=True,
-        related_name='qgis_layer'
+        related_name='qgis_layer',
+        on_delete=models.CASCADE
     )
     base_layer_path = models.CharField(
         name='base_layer_path',
@@ -330,7 +331,8 @@ class QGISServerMap(models.Model, PermissionLevelMixin):
     map = models.OneToOneField(
         Map,
         primary_key=True,
-        name='map'
+        name='map',
+        on_delete="CASCASE"
     )
 
     map_name_format = 'map_{id}'

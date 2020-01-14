@@ -34,7 +34,7 @@ from decimal import Decimal
 from tastypie.test import ResourceTestCaseMixin
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test.utils import override_settings

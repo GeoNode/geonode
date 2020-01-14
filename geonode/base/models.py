@@ -81,8 +81,8 @@ class ContactRole(models.Model):
     """
     ContactRole is an intermediate model to bind Profiles as Contacts to Resources and apply roles.
     """
-    resource = models.ForeignKey('ResourceBase', blank=True, null=True)
-    contact = models.ForeignKey(settings.AUTH_USER_MODEL)
+    resource = models.ForeignKey('ResourceBase', blank=True, null=True, on_delete=models.CASCADE)
+    contact = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     role = models.CharField(
         choices=ROLE_VALUES,
         max_length=255,
@@ -139,8 +139,11 @@ class TopicCategory(models.Model):
     is_choice = models.BooleanField(default=True)
     fa_class = models.CharField(max_length=64, default='fa-times')
 
+    def __str__(self):
+        return self.gn_description
+
     def __unicode__(self):
-        return "{0}".format(self.gn_description)
+        return u"{0}".format(self.__str__())
 
     class Meta:
         ordering = ("identifier",)
@@ -159,8 +162,11 @@ class SpatialRepresentationType(models.Model):
     gn_description = models.CharField('GeoNode description', max_length=255)
     is_choice = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{0}".format(self.gn_description)
+
+    def __unicode__(self):
+        return u"{0}".format(self.__str__())
 
     class Meta:
         ordering = ("identifier",)
@@ -181,6 +187,7 @@ class Region(MPTTModel):
         'self',
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
         related_name='children')
 
     # Save bbox values in the database.
@@ -213,6 +220,9 @@ class Region(MPTTModel):
         default='EPSG:4326')
 
     def __unicode__(self):
+        return u"{0}".format(self.__str__())
+
+    def __str__(self):
         return "{0}".format(self.name)
 
     @property
@@ -262,6 +272,9 @@ class RestrictionCodeType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __unicode__(self):
+        return u"{0}".format(self.__str__())
+
+    def __str__(self):
         return "{0}".format(self.gn_description)
 
     class Meta:
@@ -291,6 +304,9 @@ class License(models.Model):
     license_text = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
+        return u"{0}".format(self.__str__())
+
+    def __str__(self):
         return "{0}".format(self.name)
 
     @property
@@ -380,8 +396,8 @@ class HierarchicalKeyword(TagBase, MP_Node):
 
 
 class TaggedContentItem(ItemBase):
-    content_object = models.ForeignKey('ResourceBase')
-    tag = models.ForeignKey('HierarchicalKeyword', related_name='keywords')
+    content_object = models.ForeignKey('ResourceBase', on_delete=models.CASCADE)
+    tag = models.ForeignKey('HierarchicalKeyword', related_name='keywords', on_delete=models.CASCADE)
 
     # see https://github.com/alex/django-taggit/issues/101
     @classmethod
@@ -442,6 +458,9 @@ class Thesaurus(models.Model):
     slug = models.CharField(max_length=64, default='')
 
     def __unicode__(self):
+        return u"{0}".format(self.__str__())
+
+    def __str__(self):
         return "{0}".format(self.identifier)
 
     class Meta:
@@ -460,9 +479,12 @@ class ThesaurusKeywordLabel(models.Model):
     label = models.CharField(max_length=255)
 #    note  = models.CharField(max_length=511)
 
-    keyword = models.ForeignKey('ThesaurusKeyword', related_name='keyword')
+    keyword = models.ForeignKey('ThesaurusKeyword', related_name='keyword', on_delete=models.CASCADE)
 
     def __unicode__(self):
+        return u"{0}".format(self.__str__())
+
+    def __str__(self):
         return "{0}".format(self.label)
 
     class Meta:
@@ -484,9 +506,12 @@ class ThesaurusKeyword(models.Model):
         null=True,
         blank=True)
 
-    thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus')
+    thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus', on_delete=models.CASCADE)
 
     def __unicode__(self):
+        return u"{0}".format(self.__str__())
+
+    def __str__(self):
         return "{0}".format(self.alt_label)
 
     @property
@@ -569,7 +594,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         null=True,
         related_name='owned_resource',
-        verbose_name=_("Owner"))
+        verbose_name=_("Owner"),
+        on_delete=models.CASCADE)
     contacts = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='ContactRole')
@@ -634,8 +660,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         help_text=restriction_code_type_help_text,
         null=True,
         blank=True,
-        limit_choices_to=Q(
-            is_choice=True))
+        on_delete=models.CASCADE,
+        limit_choices_to=Q(is_choice=True))
 
     constraints_other = models.TextField(
         _('restrictions other'),
@@ -645,7 +671,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     license = models.ForeignKey(License, null=True, blank=True,
                                 verbose_name=_("License"),
-                                help_text=license_help_text)
+                                help_text=license_help_text,
+                                on_delete=models.CASCADE)
     language = models.CharField(
         _('language'),
         max_length=3,
@@ -657,16 +684,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         TopicCategory,
         null=True,
         blank=True,
-        limit_choices_to=Q(
-            is_choice=True),
+        on_delete=models.CASCADE,
+        limit_choices_to=Q(is_choice=True),
         help_text=category_help_text)
 
     spatial_representation_type = models.ForeignKey(
         SpatialRepresentationType,
         null=True,
         blank=True,
-        limit_choices_to=Q(
-            is_choice=True),
+        on_delete=models.CASCADE,
+        limit_choices_to=Q(is_choice=True),
         verbose_name=_("spatial representation type"),
         help_text=spatial_representation_type_help_text)
 
@@ -696,7 +723,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         null=True,
         help_text=data_quality_statement_help_text)
 
-    group = models.ForeignKey(Group, null=True, blank=True)
+    group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
 
     # Section 9
     # see metadata_author property definition below
@@ -792,6 +819,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     last_updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
+        return u"{0}".format(self.__str__())
+
+    def __str__(self):
         return "{0}".format(self.title)
 
     # fields controlling security state
@@ -1342,7 +1372,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         # custom permissions,
         # add, change and delete are standard in django-guardian
         permissions = (
-            ('view_resourcebase', 'Can view resource'),
+            # ('view_resourcebase', 'Can view resource'),
             ('change_resourcebase_permissions', 'Can change resource permissions'),
             ('download_resourcebase', 'Can download resource'),
             ('publish_resourcebase', 'Can publish resource'),
@@ -1389,7 +1419,7 @@ class Link(models.Model):
         * OGC:WFS: for WFS service links
         * OGC:WCS: for WCS service links
     """
-    resource = models.ForeignKey(ResourceBase, blank=True, null=True)
+    resource = models.ForeignKey(ResourceBase, blank=True, null=True, on_delete=models.CASCADE)
     extension = models.CharField(
         max_length=255,
         help_text=_('For example "kml"'))
@@ -1405,6 +1435,9 @@ class Link(models.Model):
     objects = LinkManager()
 
     def __unicode__(self):
+        return u"{0}".format(self.__str__())
+
+    def __str__(self):
         return "{0} link".format(self.link_type)
 
 
@@ -1418,10 +1451,10 @@ class MenuPlaceholder(models.Model):
     )
 
     def __unicode__(self):
-        return "{0}".format(self.name)
+        return u"{0}".format(self.__str__())
 
     def __str__(self):
-        return self.name
+        return "{0}".format(self.name)
 
 
 class Menu(models.Model):
@@ -1441,10 +1474,10 @@ class Menu(models.Model):
     )
 
     def __unicode__(self):
-        return "{0}".format(self.title)
+        return u"{0}".format(self.__str__())
 
     def __str__(self):
-        return self.title
+        return "{0}".format(self.title)
 
     class Meta:
         unique_together = (
@@ -1463,8 +1496,8 @@ class MenuItem(models.Model):
     )
     menu = models.ForeignKey(
         to='Menu',
-        on_delete=models.CASCADE,
-        null=False
+        null=False,
+        on_delete=models.CASCADE
     )
     order = models.IntegerField(
         null=False
@@ -1477,10 +1510,10 @@ class MenuItem(models.Model):
     )
 
     def __unicode__(self):
-        return "{0}".format(self.title)
+        return u"{0}".format(self.__str__())
 
     def __str__(self):
-        return self.title
+        return "{0}".format(self.title)
 
     class Meta:
         unique_together = (
@@ -1491,7 +1524,7 @@ class MenuItem(models.Model):
 
 
 class CuratedThumbnail(models.Model):
-    resource = models.OneToOneField(ResourceBase)
+    resource = models.OneToOneField(ResourceBase, on_delete="CASCASE")
     img = models.ImageField(upload_to='curated_thumbs')
     # TOD read thumb size from settings
     img_thumbnail = ImageSpecField(source='img',

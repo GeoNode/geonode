@@ -48,7 +48,7 @@ from guardian.shortcuts import get_perms, get_objects_for_user
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.conf import settings
@@ -716,7 +716,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         logger.error(
             "Possible error with OWSLib. Turning all available properties to string")
     # maps owned by user needed to fill the "add to existing map section" in template
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         context_dict["maps"] = Map.objects.filter(owner=request.user)
         if getattr(settings, 'FAVORITE_ENABLED', False):
             from geonode.favorite.utils import get_favorite_info

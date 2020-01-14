@@ -22,8 +22,9 @@ from re import compile
 
 from django.conf import settings
 from django.contrib.auth import logout
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
+# from django.http.response import HttpResponse
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -36,7 +37,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         reverse('account_login'),
         reverse('forgot_username'),
         reverse('help'),
-        reverse('javascript-catalog'),
         reverse('layer_acls'),
         reverse('layer_acls_dep'),
         reverse('layer_resolve_user'),
@@ -50,7 +50,6 @@ else:
         reverse('account_login'),
         reverse('forgot_username'),
         reverse('help'),
-        reverse('javascript-catalog'),
         '/account/(?!.*(?:signup))',
         # block unauthenticated users from creating new accounts.
         '/static/*',
@@ -66,6 +65,15 @@ class LoginRequiredMiddleware(object):
     """
 
     redirect_to = getattr(settings, 'LOGIN_URL', reverse('account_login'))
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+    # def process_exception(self, request, exception):
+    #     return HttpResponse("in exception")
 
     def process_request(self, request):
         if not request.user.is_authenticated(
@@ -83,6 +91,15 @@ class SessionControlMiddleware(object):
     """
 
     redirect_to = getattr(settings, 'LOGIN_URL', reverse('account_login'))
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+    # def process_exception(self, request, exception):
+    #     return HttpResponse("in exception")
 
     def process_request(self, request):
         if request and request.user and not request.user.is_anonymous:

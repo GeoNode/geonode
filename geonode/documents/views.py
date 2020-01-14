@@ -32,7 +32,7 @@ from django.template import loader
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -156,7 +156,7 @@ def document_detail(request, docid):
             except BaseException:
                 logger.error("Exif extraction failed.")
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if getattr(settings, 'FAVORITE_ENABLED', False):
                 from geonode.favorite.utils import get_favorite_info
                 context_dict["favorite_info"] = get_favorite_info(request.user, document)

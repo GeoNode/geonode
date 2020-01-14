@@ -21,7 +21,7 @@
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import json
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from geonode.base.models import ResourceBase
 from geonode.catalogue import get_catalogue
 

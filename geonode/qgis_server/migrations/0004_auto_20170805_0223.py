@@ -33,7 +33,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='qgisserverlayer',
             name='layer',
-            field=models.OneToOneField(related_name='qgis_layer', primary_key=True, serialize=False, to='layers.Layer'),
+            field=models.OneToOneField(related_name='qgis_layer', on_delete=models.CASCADE,
+                                       primary_key=True, serialize=False, to='layers.Layer'),
         ),
         migrations.AlterField(
             model_name='qgisserverstyle',

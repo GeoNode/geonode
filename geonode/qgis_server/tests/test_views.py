@@ -36,7 +36,7 @@ from defusedxml import lxml as dlxml
 import gisdata
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from geonode import qgis_server
 from geonode.decorators import on_ogc_backend

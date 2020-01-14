@@ -51,13 +51,14 @@ except ImportError:
 import logging
 import contextlib
 
+from io import IOBase
 from bs4 import BeautifulSoup
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from django.core import mail
 from django.conf import settings
 from django.db.models import signals
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.management import call_command
 from django.contrib.auth import get_user_model
 from django.test.client import Client as DjangoTestClient
@@ -117,7 +118,7 @@ class Client(DjangoTestClient):
 
         if data:
             for name, value in data.items():
-                if isinstance(value, file):
+                if isinstance(value, IOBase):
                     data[name] = (os.path.basename(value.name), value)
 
             encoder = MultipartEncoder(fields=data)

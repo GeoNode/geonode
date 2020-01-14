@@ -44,8 +44,11 @@ class Partner(models.Model):
         _href = self.href if self.href.startswith('http') else 'http://%s' % self.href
         return u"{0}".format(_href)
 
+    def __str__(self):
+        return "{0}".format(self.title)
+
     def __unicode__(self):
-        return u"{0}".format(self.title)
+        return u"{0}".format(self.__str__())
 
     class Meta:
         ordering = ("name", )
@@ -191,8 +194,11 @@ class GeoNodeThemeCustomization(models.Model):
             self.identifier = slugify("theme id %s %s" % (self.id, self.date))
         return u"{0}".format(self.identifier)
 
+    def __str__(self):
+        return "{0}".format(self.name)
+
     def __unicode__(self):
-        return u"{0}".format(self.name)
+        return u"{0}".format(self.__str__())
 
     class Meta:
         ordering = ("date", )

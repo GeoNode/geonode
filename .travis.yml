@@ -1,6 +1,6 @@
 sudo: required
 language: python
-dist: xenial
+dist: bionic
 
 cache:
   pip: true
@@ -28,7 +28,7 @@ matrix:
   fast_finish: true
   include:
     - name: "GeoServer-backend Core Modules Smoke Tests"
-      python: 2.7
+      python: 3.6
       virtualenv:
           system_site_packages: true
       env:
@@ -42,7 +42,7 @@ matrix:
             MONITORING_ENABLED: 'False'
             SESSION_EXPIRED_CONTROL_ENABLED: 'True'
     - name: "GeoServer-backend Contrib Apps Smoke Tests"
-      python: 2.7
+      python: 3.6
       virtualenv:
           system_site_packages: true
       env:
@@ -56,7 +56,7 @@ matrix:
             MONITORING_ENABLED: 'False'
             SESSION_EXPIRED_CONTROL_ENABLED: 'True'
     - name: "GeoServer-backend Integration Tests"
-      python: 2.7
+      python: 3.6
       virtualenv:
           system_site_packages: true
       env:
@@ -78,7 +78,7 @@ matrix:
             SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "GeoServer-backend Integration GeoServer Tests"
-      python: 2.7
+      python: 3.6
       virtualenv:
           system_site_packages: true
       env:
@@ -100,7 +100,7 @@ matrix:
             SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "GeoServer-backend Integration Upload Tests"
-      python: 2.7
+      python: 3.6
       virtualenv:
           system_site_packages: true
       env:
@@ -122,7 +122,7 @@ matrix:
             SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "GeoServer-backend Integration Monitoring Tests"
-      python: 2.7
+      python: 3.6
       virtualenv:
           system_site_packages: true
       env:
@@ -144,7 +144,7 @@ matrix:
             SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "GeoServer-backend Integration CSW Tests"
-      python: 2.7
+      python: 3.6
       virtualenv:
           system_site_packages: true
       env:
@@ -159,7 +159,7 @@ matrix:
             SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "GeoServer-backend Integration BDD Tests"
-      python: 2.7
+      python: 3.6
       virtualenv:
           system_site_packages: true
       env:
@@ -176,7 +176,7 @@ matrix:
             SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Core Modules Smoke Tests"
-      python: 2.7
+      python: 3.6
       virtualenv:
           system_site_packages: true
       env:
@@ -195,7 +195,7 @@ matrix:
             SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Contrib Apps Smoke Tests"
-      python: 2.7
+      python: 3.6
       virtualenv:
           system_site_packages: true
       env:
@@ -214,7 +214,7 @@ matrix:
             SESSION_EXPIRED_CONTROL_ENABLED: 'True'
             CELERY_ALWAYS_EAGER: 'True'
     - name: "QGis Server-backend Integration Tests"
-      python: 2.7
+      python: 3.6
       virtualenv:
           system_site_packages: true
       env:
@@ -245,9 +245,6 @@ matrix:
 branches:
   only:
     - master
-    - 2.10.2
-    - 2.10.1
-    - 2.10.x
 
 before_install:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then

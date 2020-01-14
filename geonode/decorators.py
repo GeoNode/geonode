@@ -178,7 +178,7 @@ def logged_in_or_apiauth():
     def view_decorator(func):
         def wrapper(request, *args, **kwargs):
             return view_or_apiauth(func, request,
-                                   lambda u: u.is_authenticated(),
+                                   lambda u: u.is_authenticated,
                                    *args, **kwargs)
         return wrapper
 

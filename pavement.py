@@ -1193,18 +1193,18 @@ def kill(arg1, arg2):
         for line in lines:
             # this kills all java.exe and python including self in windows
             if ('%s' %
-                arg2 in line) or (os.name == 'nt' and '%s' %
-                                  arg1 in line):
+                arg2 in str(line)) or (os.name == 'nt' and '%s' %
+                                  arg1 in str(line)):
                 running = True
 
                 # Get pid
                 fields = line.strip().split()
 
-                info('Stopping %s (process number %s)' % (arg1, fields[1]))
+                info('Stopping %s (process number %s)' % (arg1, int(fields[1])))
                 if os.name == 'nt':
-                    kill = 'taskkill /F /PID "%s"' % fields[1]
+                    kill = 'taskkill /F /PID "%s"' % int(fields[1])
                 else:
-                    kill = 'kill -9 %s 2> /dev/null' % fields[1]
+                    kill = 'kill -9 %s 2> /dev/null' % int(fields[1])
                 os.system(kill)
 
         # Give it a little more time
@@ -1215,7 +1215,7 @@ def kill(arg1, arg2):
     if running:
         raise Exception('Could not stop %s: '
                         'Running processes are\n%s'
-                        % (arg1, '\n'.join([l.strip() for l in lines])))
+                        % (arg1, '\n'.join([str(l).strip() for l in lines])))
 
 
 def waitfor(url, timeout=300):

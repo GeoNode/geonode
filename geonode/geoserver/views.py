@@ -41,7 +41,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import get_template
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
@@ -442,7 +442,7 @@ def geoserver_proxy(request,
     # or not on session
 
     # @dismissed
-    # if not request.user.is_authenticated():
+    # if not request.user.is_authenticated:
     #     return HttpResponse(
     #         "You must be logged in to access GeoServer",
     #         content_type="text/plain",
@@ -588,7 +588,7 @@ def resolve_user(request):
         'superuser': superuser,
     }
 
-    if acl_user and acl_user.is_authenticated():
+    if acl_user and acl_user.is_authenticated:
         resp['fullname'] = acl_user.get_full_name()
         resp['email'] = acl_user.email
     return HttpResponse(json.dumps(resp), content_type="application/json")
@@ -655,9 +655,9 @@ def layer_acls(request):
         'ro': list(read_only),
         'name': acl_user.username,
         'is_superuser': acl_user.is_superuser,
-        'is_anonymous': acl_user.is_anonymous(),
+        'is_anonymous': acl_user.is_anonymous,
     }
-    if acl_user.is_authenticated():
+    if acl_user.is_authenticated:
         result['fullname'] = acl_user.get_full_name()
         result['email'] = acl_user.email
 

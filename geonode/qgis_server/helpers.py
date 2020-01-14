@@ -35,7 +35,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.gdal import CoordTransform, SpatialReference
 from django.contrib.gis.geos import GEOSGeometry, Point
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from defusedxml import lxml as dlxml
 from requests import Request
 

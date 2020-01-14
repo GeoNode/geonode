@@ -26,7 +26,11 @@
 
 import ast
 import os
-from urlparse import urlparse, urlunparse
+try:  # python2
+    from urlparse import urlparse, urlunparse, urlsplit, urljoin
+except ImportError:
+    # Python 3 fallback
+    from urllib.parse import urlparse, urlunparse, urlsplit, urljoin
 from geonode.settings import *
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -291,23 +295,7 @@ GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv('GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore')
 
-MAP_BASELAYERS = [{
-        "source": {"ptype": "gxp_olsource"},
-        "type": "OpenLayers.Layer",
-        "args": ["No background"],
-        "name": "background",
-        "visibility": False,
-        "fixed": True,
-        "group":"background"
-    },
-    {
-        "source": {"ptype": "gxp_osmsource"},
-        "type": "OpenLayers.Layer.OSM",
-        "name": "mapnik",
-        "visibility": True,
-        "fixed": True,
-        "group": "background"
-    }]
+MAP_BASELAYERS = [{}]
 
 """
 To enable the GeoExt based Client:
@@ -510,8 +498,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
 
     if GEONODE_CATALOGUE_SERVICE:
-        MAPSTORE_CATALOGUE_SERVICES[GEONODE_CATALOGUE_SERVICE.keys()[0]] = GEONODE_CATALOGUE_SERVICE[GEONODE_CATALOGUE_SERVICE.keys()[0]]
-        MAPSTORE_CATALOGUE_SELECTED_SERVICE = GEONODE_CATALOGUE_SERVICE.keys()[0]
+        MAPSTORE_CATALOGUE_SERVICES[list(GEONODE_CATALOGUE_SERVICE.keys())[0]] = GEONODE_CATALOGUE_SERVICE[list(GEONODE_CATALOGUE_SERVICE.keys())[0]]
+        MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(GEONODE_CATALOGUE_SERVICE.keys())[0]
 
     DEFAULT_MS2_BACKGROUNDS = [
         {

@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='QGISServerMap',
             fields=[
-                ('map', models.OneToOneField(primary_key=True, serialize=False, to='maps.Map')),
+                ('map', models.OneToOneField(primary_key=True, on_delete=models.CASCADE, serialize=False, to='maps.Map')),
             ],
         ),
     ]

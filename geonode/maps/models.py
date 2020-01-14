@@ -28,7 +28,7 @@ import json
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django.core.cache import cache
 
@@ -89,9 +89,12 @@ class Map(ResourceBase, GXPMapBase):
         blank=True)
     # Full URL for featured map view, ie http://domain/someview
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s by %s' % (
             self.title, (self.owner.username if self.owner else "<Anonymous>"))
+
+    def __unicode__(self):
+        return u"{0}".format(self.__str__())
 
     @property
     def center(self):
@@ -416,7 +419,7 @@ class MapLayer(models.Model, GXPLayerBase):
     and the file format to use for image tiles.
     """
 
-    map = models.ForeignKey(Map, related_name="layer_set")
+    map = models.ForeignKey(Map, related_name="layer_set", on_delete=models.CASCADE)
     # The map containing this layer
 
     stack_order = models.IntegerField(_('stack order'))
@@ -565,8 +568,11 @@ class MapLayer(models.Model, GXPLayerBase):
     class Meta:
         ordering = ["stack_order"]
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s?layers=%s' % (self.ows_url, self.name)
+
+    def __unicode__(self):
+        return u"{0}".format(self.__str__())
 
 
 def pre_delete_map(instance, sender, **kwrargs):
@@ -578,7 +584,7 @@ def pre_delete_map(instance, sender, **kwrargs):
 
 
 class MapSnapshot(models.Model):
-    map = models.ForeignKey(Map, related_name="snapshot_set")
+    map = models.ForeignKey(Map, related_name="snapshot_set", on_delete=models.CASCADE)
     """
     The ID of the map this snapshot was generated from.
     """
@@ -593,7 +599,7 @@ class MapSnapshot(models.Model):
     The date/time the snapshot was created.
     """
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
     """
     The user who created the snapshot.
     """

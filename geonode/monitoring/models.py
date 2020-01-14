@@ -40,7 +40,7 @@ from django.http import Http404
 from jsonfield import JSONField
 
 from django.utils.translation import ugettext_noop as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 try:
@@ -88,8 +88,11 @@ class Host(models.Model):
     ip = models.GenericIPAddressField(null=False, blank=False)
     active = models.BooleanField(null=False, blank=False, default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Host: {} ({})'.format(self.name, self.ip)
+
+    def __unicode__(self):
+        return u"{0}".format(self.__str__())
 
 
 class ServiceType(models.Model):
@@ -114,8 +117,11 @@ class ServiceType(models.Model):
         null=False,
         choices=TYPES)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Service Type: {}'.format(self.name)
+
+    def __unicode__(self):
+        return u"{0}".format(self.__str__())
 
     @property
     def is_system_monitor(self):
@@ -132,17 +138,20 @@ class Service(models.Model):
         unique=True,
         blank=False,
         null=False)
-    host = models.ForeignKey(Host, null=False)
+    host = models.ForeignKey(Host, null=False, on_delete=models.CASCADE)
     check_interval = models.DurationField(
         null=False, blank=False, default=timedelta(seconds=60))
     last_check = models.DateTimeField(null=True, blank=True, auto_now_add=True)
-    service_type = models.ForeignKey(ServiceType, null=False)
+    service_type = models.ForeignKey(ServiceType, null=False, on_delete=models.CASCADE)
     active = models.BooleanField(null=False, blank=False, default=True)
     notes = models.TextField(null=True, blank=True)
     url = models.URLField(null=True, blank=True, default='')
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Service: {}@{}'.format(self.name, self.host.name)
+
+    def __unicode__(self):
+        return u"{0}".format(self.__str__())
 
     def get_metrics(self):
         return [m.metric for m in self.service_type.metric.all()]
@@ -196,8 +205,11 @@ class MonitoredResource(models.Model):
     class Meta:
         unique_together = (('name', 'type',),)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Monitored Resource: {} {}'.format(self.name, self.type)
+
+    def __unicode__(self):
+        return u"{0}".format(self.__str__())
 
     @classmethod
     def get(cls, resource_type, resource_name, or_create=False):
@@ -287,7 +299,7 @@ class Metric(models.Model):
     def get_aggregate_name(self):
         return self.AGGREGATE_MAP[self.type]
 
-    def __unicode__(self):
+    def __unicode__de__(self):
         return "Metric: {}".format(self.name)
 
     @property
@@ -322,11 +334,14 @@ class Metric(models.Model):
 
 
 class ServiceTypeMetric(models.Model):
-    service_type = models.ForeignKey(ServiceType, related_name='metric')
-    metric = models.ForeignKey(Metric, related_name='service_type')
+    service_type = models.ForeignKey(ServiceType, related_name='metric', on_delete=models.CASCADE)
+    metric = models.ForeignKey(Metric, related_name='service_type', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{} - {}'.format(self.service_type, self.metric)
 
     def __unicode__(self):
-        return '{} - {}'.format(self.service_type, self.metric)
+        return u"{0}".format(self.__str__())
 
 
 class EventType(models.Model):
@@ -372,8 +387,11 @@ class EventType(models.Model):
                             null=False,
                             blank=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Event Type: {}'.format(self.name)
+
+    def __unicode__(self):
+        return u"{0}".format(self.__str__())
 
     @classmethod
     def get(cls, service_name=None):
@@ -417,8 +435,8 @@ class RequestEvent(models.Model):
     METHODS = list(zip(_methods, _methods))
     created = models.DateTimeField(db_index=True, null=False)
     received = models.DateTimeField(db_index=True, null=False)
-    service = models.ForeignKey(Service)
-    event_type = models.ForeignKey(EventType, blank=True, null=True)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    event_type = models.ForeignKey(EventType, blank=True, null=True, on_delete=models.CASCADE)
     host = models.CharField(max_length=255, blank=True, default='')
     request_path = models.TextField(blank=False, default='')
 
@@ -561,7 +579,7 @@ class RequestEvent(models.Model):
     @classmethod
     def _get_user_consent(cls, request):
         return settings.USER_ANALYTICS_ENABLED
-        # if  request.user.is_authenticated():
+        # if  request.user.is_authenticated:
         #    return request.user.allow_analytics
         # return True
 
@@ -822,11 +840,11 @@ class RequestEvent(models.Model):
 class ExceptionEvent(models.Model):
     created = models.DateTimeField(db_index=True, null=False)
     received = models.DateTimeField(db_index=True, null=False)
-    service = models.ForeignKey(Service)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
     error_type = models.CharField(max_length=255, null=False, db_index=True)
     error_message = models.CharField(max_length=255, null=False, default='')
     error_data = models.TextField(null=False, default='')
-    request = models.ForeignKey(RequestEvent, related_name='exceptions')
+    request = models.ForeignKey(RequestEvent, related_name='exceptions', on_delete=models.CASCADE)
 
     @classmethod
     def add_error(cls, from_service, error_type, stack_trace,
@@ -900,26 +918,28 @@ class MetricLabel(models.Model):
         null=True,
         blank=True)
 
-    def __unicode__(self):
+    def __unicode__de__(self):
         return 'Metric Label: {}'.format(self.name.encode('ascii', 'ignore'))
 
 
 class MetricValue(models.Model):
     valid_from = models.DateTimeField(db_index=True, null=False)
     valid_to = models.DateTimeField(db_index=True, null=False)
-    service_metric = models.ForeignKey(ServiceTypeMetric)
-    service = models.ForeignKey(Service)
+    service_metric = models.ForeignKey(ServiceTypeMetric, on_delete=models.CASCADE)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
     event_type = models.ForeignKey(
         EventType,
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
         related_name='metric_values')
     resource = models.ForeignKey(
         MonitoredResource,
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
         related_name='metric_values')
-    label = models.ForeignKey(MetricLabel, related_name='metric_values')
+    label = models.ForeignKey(MetricLabel, related_name='metric_values', on_delete=models.CASCADE)
     value = models.CharField(max_length=255, null=False, blank=False)
     value_num = models.DecimalField(
         max_digits=20,
@@ -943,7 +963,7 @@ class MetricValue(models.Model):
              'event_type',
              ))
 
-    def __unicode__(self):
+    def __str__(self):
         metric = self.service_metric.metric.name
         if self.label:
             _l = self.label.name
@@ -956,6 +976,9 @@ class MetricValue(models.Model):
                     self.resource.type, self.resource.name))
         return 'Metric Value: {}: [{}] (since {} until {})'.format(
             metric, self.value, self.valid_from, self.valid_to)
+
+    def __unicode__(self):
+        return u"{0}".format(self.__str__())
 
     @classmethod
     def add(cls, metric, valid_from, valid_to, service, label,
@@ -1123,8 +1146,11 @@ class NotificationCheck(models.Model):
         blank=False,
         help_text=_("Is it active"))
 
-    def __unicode__(self):
+    def __str__(self):
         return "Notification Check #{}: {}".format(self.id, self.name)
+
+    def __unicode__(self):
+        return u"{0}".format(self.__str__())
 
     @property
     def notification_subject(self):
@@ -1379,8 +1405,8 @@ class NotificationCheck(models.Model):
 
 class NotificationReceiver(models.Model):
     notification_check = models.ForeignKey(
-        NotificationCheck, related_name='receivers')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+        NotificationCheck, related_name='receivers', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     email = models.EmailField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -1399,8 +1425,8 @@ class NotificationMetricDefinition(models.Model):
         (FIELD_OPTION_MAX_TIMEOUT, _("Last update must not be older than"),))
 
     notification_check = models.ForeignKey(
-        NotificationCheck, related_name='definitions')
-    metric = models.ForeignKey(Metric, related_name='notification_checks')
+        NotificationCheck, related_name='definitions', on_delete=models.CASCADE)
+    metric = models.ForeignKey(Metric, related_name='notification_checks', on_delete=models.CASCADE)
     use_service = models.BooleanField(null=False, default=False)
     use_resource = models.BooleanField(null=False, default=False)
     use_label = models.BooleanField(null=False, default=False)
@@ -1521,16 +1547,17 @@ class NotificationMetricDefinition(models.Model):
 
 class MetricNotificationCheck(models.Model):
     notification_check = models.ForeignKey(
-        NotificationCheck, related_name="checks")
-    metric = models.ForeignKey(Metric, related_name="checks")
+        NotificationCheck, related_name="checks", on_delete=models.CASCADE)
+    metric = models.ForeignKey(Metric, related_name="checks", on_delete=models.CASCADE)
     service = models.ForeignKey(
         Service,
         related_name="checks",
         null=True,
-        blank=True)
-    resource = models.ForeignKey(MonitoredResource, null=True, blank=True)
-    label = models.ForeignKey(MetricLabel, null=True, blank=True)
-    event_type = models.ForeignKey(EventType, null=True, blank=True)
+        blank=True,
+        on_delete=models.CASCADE)
+    resource = models.ForeignKey(MonitoredResource, null=True, blank=True, on_delete=models.CASCADE)
+    label = models.ForeignKey(MetricLabel, null=True, blank=True, on_delete=models.CASCADE)
+    event_type = models.ForeignKey(EventType, null=True, blank=True, on_delete=models.CASCADE)
     min_value = models.DecimalField(
         max_digits=20,
         decimal_places=4,
@@ -1552,9 +1579,10 @@ class MetricNotificationCheck(models.Model):
     definition = models.OneToOneField(
         NotificationMetricDefinition,
         null=True,
-        related_name='metric_check')
+        related_name='metric_check',
+        on_delete="CASCASE")
 
-    def __unicode__(self):
+    def __str__(self):
         indicator = []
         if self.min_value is not None:
             indicator.append("value above {}".format(self.min_value))
@@ -1567,6 +1595,9 @@ class MetricNotificationCheck(models.Model):
         indicator = ' and '.join(indicator)
         return "MetricCheck({}@{}: {})".format(
             self.metric.name, self.service.name if self.service else '', indicator)
+
+    def __unicode__(self):
+        return u"{0}".format(self.__str__())
 
     @property
     def field_option(self):
@@ -1600,11 +1631,14 @@ class MetricNotificationCheck(models.Model):
 
             self.valid_from, self.valid_to = metric.valid_from, metric.valid_to
 
-        def __unicode__(self):
+        def __str__(self):
             return "MetricValueError({}: metric {} misses {} check: {})".format(self.severity,
                                                                                 self.metric,
                                                                                 self.check,
                                                                                 self.message)
+
+        def __unicode__(self):
+            return u"{0}".format(self.__str__())
 
     def check_value(self, metric, valid_on):
         """

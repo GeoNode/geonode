@@ -33,7 +33,7 @@ import contextlib
 
 from django.conf import settings
 from django.http import HttpRequest
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
 from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
@@ -146,7 +146,7 @@ class SecurityTest(GeoNodeBaseTestSupport):
 
         self.client.login(username='admin', password='admin')
         admin = get_user_model().objects.get(username='admin')
-        self.assertTrue(admin.is_authenticated())
+        self.assertTrue(admin.is_authenticated)
         request.user = admin
 
         # The middleware should return None when an authenticated user attempts
@@ -168,7 +168,7 @@ class SecurityTest(GeoNodeBaseTestSupport):
 
         self.client.login(username='admin', password='admin')
         admin = get_user_model().objects.get(username='admin')
-        self.assertTrue(admin.is_authenticated())
+        self.assertTrue(admin.is_authenticated)
         request.user = admin
         request.path = reverse('layer_browse')
         middleware.process_request(request)

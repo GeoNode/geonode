@@ -50,7 +50,7 @@ imgfile = StringIO(
     'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
     '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
 )
-f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
+f = SimpleUploadedFile('test_img_file.gif', imgfile.read().encode("UTF-8"), 'image/gif')
 
 
 def all_public():

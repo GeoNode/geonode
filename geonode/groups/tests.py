@@ -26,7 +26,7 @@ from six import string_types
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import override_settings
 from django.conf import settings
 
@@ -751,7 +751,7 @@ class GroupProfileTest(GeoNodeBaseTestSupport):
             slug="test",
             description="test",
             access="public",
-            logo=SimpleUploadedFile("dummy-file.jpg", b"dummy contents")
+            logo=SimpleUploadedFile("dummy-file.jpg", "dummy contents".encode("UTF-8"))
         )
         test_profile.save()
         response = self.client.get(

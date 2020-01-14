@@ -31,8 +31,8 @@ class Migration(migrations.Migration):
                 ('mosaic_time_value', models.CharField(max_length=128, null=True)),
                 ('mosaic_elev_regex', models.CharField(max_length=128, null=True)),
                 ('mosaic_elev_value', models.CharField(max_length=128, null=True)),
-                ('layer', models.ForeignKey(to='layers.Layer', null=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
+                ('layer', models.ForeignKey(to='layers.Layer', on_delete=models.SET_NULL, null=True)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)),
             ],
             options={
                 'ordering': ['-date'],
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('file', models.FileField(upload_to='uploads')),
                 ('slug', models.SlugField(blank=True)),
-                ('upload', models.ForeignKey(blank=True, to='upload.Upload', null=True)),
+                ('upload', models.ForeignKey(blank=True, to='upload.Upload', on_delete=models.SET_NULL, null=True)),
             ],
         ),
     ]

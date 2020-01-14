@@ -27,7 +27,7 @@ from geonode.sitemap import LayerSitemap, MapSitemap
 from django.views.generic import TemplateView
 from django.contrib import admin
 from django.conf.urls.i18n import i18n_patterns
-from django.views.i18n import javascript_catalog
+from django.views.i18n import JavaScriptCatalog
 from django.contrib.sitemaps.views import sitemap
 
 import geonode.proxy.urls
@@ -47,7 +47,7 @@ admin.autodiscover()
 
 js_info_dict = {
     'domain': 'djangojs',
-    'packages': ('geonode',)
+    'packages': 'geonode'
 }
 
 sitemaps = {
@@ -76,8 +76,6 @@ urlpatterns = [
         name='privacy-cookies'),
 
     # Meta
-    url(r'^jsi18n/$', javascript_catalog,
-        js_info_dict, name='javascript-catalog'),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
         name='sitemap'),
     url(r'^robots\.txt$', TemplateView.as_view(
@@ -142,8 +140,6 @@ urlpatterns += [
         geonode.views.moderator_contacted,
         name='moderator_contacted'),
 
-    # url(r'^i18n/', include('django.conf.urls.i18n')),
-    # url(r'^admin/', include(admin.site.urls)),
     url(r'^groups/', include('geonode.groups.urls')),
     url(r'^documents/', include('geonode.documents.urls')),
     url(r'^services/', include('geonode.services.urls')),
@@ -170,11 +166,13 @@ urlpatterns += [
 ]
 
 urlpatterns += i18n_patterns(
-    url("^admin/", include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls, name="admin"),
 )
 
+# Internationalization Javascript
 urlpatterns += [
-    url(r'^i18n/', include(django.conf.urls.i18n))
+    url(r'^i18n/', include(django.conf.urls.i18n), name="i18n"),
+    url(r'^jsi18n/$', JavaScriptCatalog.as_view(), js_info_dict, name='javascript-catalog')
 ]
 
 urlpatterns += [  # '',
@@ -250,5 +248,5 @@ urlpatterns += [  # '',
 
 if settings.MONITORING_ENABLED:
     urlpatterns += [url(r'^monitoring/',
-                        include('geonode.monitoring.urls',
+                        include(('geonode.monitoring.urls', 'geonode.monitoring'),
                                 namespace='monitoring'))]

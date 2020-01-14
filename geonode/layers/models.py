@@ -27,7 +27,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
 from geonode.people.utils import get_valid_user
@@ -81,10 +81,10 @@ class Style(models.Model, PermissionLevelMixin):
     workspace = models.CharField(max_length=255, null=True, blank=True)
 
     def __unicode__(self):
-        return u"%s" % self.name
+        return u"{0}".format(self.__str__())
 
     def __str__(self):
-        return self.__unicode__().encode('utf-8')
+        return "{0}".format(self.name)
 
     def absolute_url(self):
         if self.sld_url:
@@ -152,11 +152,11 @@ class Layer(ResourceBase):
         null=True,
         blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')
-    remote_service = models.ForeignKey("services.Service", null=True, blank=True)
+    remote_service = models.ForeignKey("services.Service", null=True, blank=True, on_delete=models.CASCADE)
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
-    upload_session = models.ForeignKey('UploadSession', blank=True, null=True)
+    upload_session = models.ForeignKey('UploadSession', blank=True, null=True, on_delete=models.CASCADE)
 
     def is_vector(self):
         return self.storeType == 'dataStore'
@@ -274,16 +274,10 @@ class Layer(ResourceBase):
         return cfg
 
     def __unicode__(self):
-        return u"{0}".format(self.alternate)
-        # if self.alternate is not None:
-        #     return "%s Layer" % self.service_typename.encode('utf-8')
-        # elif self.name is not None:
-        #     return "%s Layer" % self.name
-        # else:
-        #     return "Unamed Layer"
+        return u"{0}".format(self.__str__())
 
     def __str__(self):
-        return self.__unicode__().encode('utf-8')
+        return "{0}".format(self.alternate)
 
     class Meta:
         # custom permissions,
@@ -331,9 +325,9 @@ class UploadSession(models.Model):
 
     """Helper class to keep track of uploads.
     """
-    resource = models.ForeignKey(ResourceBase, blank=True, null=True)
+    resource = models.ForeignKey(ResourceBase, blank=True, null=True, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     processed = models.BooleanField(default=False)
     error = models.TextField(blank=True, null=True)
     traceback = models.TextField(blank=True, null=True)
@@ -342,23 +336,23 @@ class UploadSession(models.Model):
     def successful(self):
         return self.processed and self.errors is None
 
-    def __unicode__(self):
+    def __str__(self):
         _s = "[Upload session-id: {}]".format(self.id)
         try:
             _s += " - {}".format(self.resource.title)
         except BaseException:
             pass
-        return u"{0}".format(_s)
+        return "{0}".format(_s)
 
-    def __str__(self):
-        return self.__unicode__().encode('utf-8')
+    def __unicode__(self):
+        return u"{0}".format(self.__str__())
 
 
 class LayerFile(models.Model):
 
     """Helper class to store original files.
     """
-    upload_session = models.ForeignKey(UploadSession)
+    upload_session = models.ForeignKey(UploadSession, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     base = models.BooleanField(default=False)
     file = models.FileField(
@@ -392,6 +386,7 @@ class Attribute(models.Model):
         blank=False,
         null=False,
         unique=False,
+        on_delete=models.CASCADE,
         related_name='attribute_set')
     attribute = models.CharField(
         _('attribute name'),
@@ -491,9 +486,13 @@ class Attribute(models.Model):
 
     objects = AttributeManager()
 
+    def __str__(self):
+        return "{0}".format(
+            self.attribute_label.encode(
+                "utf-8", "replace") if self.attribute_label else self.attribute.encode("utf-8", "replace"))
+
     def __unicode__(self):
-        return "%s" % self.attribute_label.encode(
-            "utf-8", "replace") if self.attribute_label else self.attribute.encode("utf-8", "replace")
+        return u"{0}".format(self.__str__())
 
     def unique_values_as_list(self):
         return self.unique_values.split(',')

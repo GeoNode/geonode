@@ -21,7 +21,7 @@
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core import mail
 from django.contrib.sites.models import Site
 

@@ -18,6 +18,7 @@
 #
 #########################################################################
 import logging
+import traceback
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -85,28 +86,29 @@ class PermissionLevelMixin(object):
             'users': users,
             'groups': groups}
 
-        # TODO very hugly here, but isn't huglier
-        # to set layer permissions to resource base?
-        if hasattr(self, "layer"):
-            info_layer = {
-                'users': get_users_with_perms(
-                    self.layer),
-                'groups': get_groups_with_perms(
-                    self.layer,
-                    attach_perms=True)}
+        try:
+            if hasattr(self, "layer"):
+                info_layer = {
+                    'users': get_users_with_perms(
+                        self.layer),
+                    'groups': get_groups_with_perms(
+                        self.layer,
+                        attach_perms=True)}
 
-            for user in info_layer['users']:
-                if user in info['users']:
-                    info['users'][user] = info['users'][user] + info_layer['users'][user]
-                else:
-                    info['users'][user] = info_layer['users'][user]
+                for user in info_layer['users']:
+                    if user in info['users']:
+                        info['users'][user] = info['users'][user] + info_layer['users'][user]
+                    else:
+                        info['users'][user] = info_layer['users'][user]
 
-            for group in info_layer['groups']:
-                if group in info['groups']:
-                    info['groups'][group] = info['groups'][group] + info_layer['groups'][group]
-                else:
-                    info['groups'][group] = info_layer['groups'][group]
-
+                for group in info_layer['groups']:
+                    if group in info['groups']:
+                        info['groups'][group] = info['groups'][group] + info_layer['groups'][group]
+                    else:
+                        info['groups'][group] = info_layer['groups'][group]
+        except BaseException:
+            tb = traceback.format_exc()
+            logger.debug(tb)
         return info
 
     def get_self_resource(self):

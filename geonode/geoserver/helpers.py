@@ -806,7 +806,7 @@ def gs_slurp(
                 layer.delete()
                 output['stats']['deleted'] += 1
                 status = "delete_succeeded"
-            except Exception as e:
+            except Exception:
                 status = "delete_failed"
             finally:
                 from .signals import geoserver_pre_delete
@@ -1108,7 +1108,7 @@ def set_styles(layer, gs_catalog):
 
     # Remove duplicates
     style_set = list(dict.fromkeys(style_set))
-    layer.styles = style_set
+    layer.styles.set(style_set)
 
     # Update default style to database
     to_update = {
@@ -1238,7 +1238,7 @@ def cleanup(name, uuid):
     """
     try:
         Layer.objects.get(name=name)
-    except Layer.DoesNotExist as e:
+    except Layer.DoesNotExist:
         pass
     else:
         msg = ('Not doing any cleanup because the layer %s exists in the '
@@ -1520,7 +1520,10 @@ class OGC_Server(object):
         return urlsplit(self.LOCATION).netloc
 
     def __unicode__(self):
-        return self.alias
+        return u"{0}".format(self.__str__())
+
+    def __str__(self):
+        return "{0}".format(self.alias)
 
 
 class OGC_Servers_Handler(object):

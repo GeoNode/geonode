@@ -23,7 +23,7 @@ from django.contrib.sites.models import Site
 try:
     from django.urls import reverse
 except ImportError:
-    from django.core.urlresolvers import reverse
+    from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required

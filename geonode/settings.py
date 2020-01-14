@@ -41,7 +41,12 @@ from geonode import get_version
 from kombu import Queue, Exchange
 
 
-SILENCED_SYSTEM_CHECKS = ['1_8.W001', 'fields.W340', 'auth.W004', 'urls.W002']
+SILENCED_SYSTEM_CHECKS = [
+    '1_8.W001',
+    'fields.W340',
+    'auth.W004',
+    'urls.W002'
+]
 
 # GeoNode Version
 VERSION = get_version()
@@ -631,7 +636,7 @@ TEMPLATES = [
     },
 ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -644,14 +649,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    # Security settings
     'django.middleware.security.SecurityMiddleware',
-
-    # If you use SessionAuthenticationMiddleware, be sure it appears before OAuth2TokenMiddleware.
-    # SessionAuthenticationMiddleware is NOT required for using
-    # django-oauth-toolkit.
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
 )
 
@@ -663,7 +661,7 @@ SESSION_EXPIRED_CONTROL_ENABLED = ast.literal_eval(os.environ.get('SESSION_EXPIR
 if SESSION_EXPIRED_CONTROL_ENABLED:
     # This middleware checks for ACCESS_TOKEN validity and if expired forces
     # user logout
-    MIDDLEWARE_CLASSES += \
+    MIDDLEWARE += \
             ('geonode.security.middleware.SessionControlMiddleware',)
 
 SESSION_COOKIE_SECURE = ast.literal_eval(os.environ.get('SESSION_COOKIE_SECURE', 'False'))
@@ -920,8 +918,8 @@ OGC_SERVER = {
         # Set to name of database in DATABASES dictionary to enable
         # 'datastore',
         'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE', ''),
-        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '5')),
-        'MAX_RETRIES': int(os.getenv('OGC_REQUEST_MAX_RETRIES', '2')),
+        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '10')),
+        'MAX_RETRIES': int(os.getenv('OGC_REQUEST_MAX_RETRIES', '3')),
         'BACKOFF_FACTOR': float(os.getenv('OGC_REQUEST_BACKOFF_FACTOR', '0.3')),
         'POOL_MAXSIZE': int(os.getenv('OGC_REQUEST_POOL_MAXSIZE', '10')),
         'POOL_CONNECTIONS': int(os.getenv('OGC_REQUEST_POOL_CONNECTIONS', '10')),
@@ -1058,11 +1056,7 @@ PYCSW = {
     }
 }
 
-# handle timestamps like 2017-05-30 16:04:00.719 UTC
-if django.VERSION[0] == 1 and django.VERSION[1] >= 9:
-    _DATETIME_INPUT_FORMATS = ['%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z']
-else:
-    _DATETIME_INPUT_FORMATS = ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
+_DATETIME_INPUT_FORMATS = ['%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z']
 DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS + _DATETIME_INPUT_FORMATS
 
 DISPLAY_SOCIAL = ast.literal_eval(os.getenv('DISPLAY_SOCIAL', 'True'))
@@ -1285,8 +1279,8 @@ MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get('MONITORING_DISABLE_CS
 if MONITORING_ENABLED:
     if 'geonode.monitoring' not in INSTALLED_APPS:
         INSTALLED_APPS += ('geonode.monitoring',)
-    if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
-        MIDDLEWARE_CLASSES += \
+    if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE:
+        MIDDLEWARE += \
             ('geonode.monitoring.middleware.MonitoringMiddleware',)
 
     # skip certain paths to not to mud stats too much
@@ -1342,23 +1336,7 @@ GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv('GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore')
 
-MAP_BASELAYERS = [{
-        "source": {"ptype": "gxp_olsource"},
-        "type": "OpenLayers.Layer",
-        "args": ["No background"],
-        "name": "background",
-        "visibility": False,
-        "fixed": True,
-        "group":"background"
-    },
-    {
-        "source": {"ptype": "gxp_osmsource"},
-        "type": "OpenLayers.Layer.OSM",
-        "name": "mapnik",
-        "visibility": True,
-        "fixed": True,
-        "group": "background"
-    }]
+MAP_BASELAYERS = [{}]
 
 """
 To enable the GeoExt based Client:
@@ -1372,6 +1350,24 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'geoext':
 
     if 'geoexplorer' not in INSTALLED_APPS:
         INSTALLED_APPS += ('geoexplorer', )
+
+    MAP_BASELAYERS += [{
+            "source": {"ptype": "gxp_olsource"},
+            "type": "OpenLayers.Layer",
+            "args": ["No background"],
+            "name": "background",
+            "visibility": False,
+            "fixed": True,
+            "group": "background"
+        },
+        {
+            "source": {"ptype": "gxp_osmsource"},
+            "type": "OpenLayers.Layer.OSM",
+            "name": "mapnik",
+            "visibility": True,
+            "fixed": True,
+            "group": "background"
+        }]
 
     # MAP_BASELAYERS += [
     # {
@@ -1561,8 +1557,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
 
     if GEONODE_CATALOGUE_SERVICE:
-        MAPSTORE_CATALOGUE_SERVICES[list(GEONODE_CATALOGUE_SERVICE.keys())[0]] = GEONODE_CATALOGUE_SERVICE[list(GEONODE_CATALOGUE_SERVICE.keys())[0]]
-        MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(GEONODE_CATALOGUE_SERVICE.keys())[0]
+        MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]]
+        MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]
 
         DEFAULT_MS2_BACKGROUNDS = [
             {
@@ -1828,7 +1824,7 @@ CELERY_SEND_TASK_ERROR_EMAILS = ast.literal_eval(os.environ.get('CELERY_SEND_TAS
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
+    MIDDLEWARE += \
         ('geonode.security.middleware.LoginRequiredMiddleware',)
 
 # for windows users check if they didn't set GEOS and GDAL in local_settings.py

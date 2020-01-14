@@ -40,7 +40,7 @@ from defusedxml import lxml as dlxml
 from django.core import mail
 from django.conf import settings
 from django.db import connections
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test.utils import override_settings
 from django.core.management import call_command
 from django.contrib.auth import get_user, get_user_model
@@ -295,7 +295,7 @@ class RequestsTestCase(MonitoringTestBase):
         Test if we have geonode requests logged
         """
         self.client.login_user(self.u)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
 
         _l = file_upload(
             os.path.join(
@@ -324,7 +324,7 @@ class RequestsTestCase(MonitoringTestBase):
         Test if we get geonode errors logged
         """
         self.client.login_user(self.u)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
 
         _l = file_upload(
             os.path.join(
@@ -350,7 +350,7 @@ class RequestsTestCase(MonitoringTestBase):
         Test if we can calculate metrics
         """
         self.client.login_user(self.u)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
 
         _l = file_upload(
             os.path.join(
@@ -628,7 +628,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
                                                max_timeout=None)
 
         self.client.login_user(self.u)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
 
         nresp = self.client.get(reverse('monitoring:api_user_notifications'))
         self.assertIsNotNone(nresp)
@@ -651,7 +651,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         self.assertTrue(data['data'][0]['id'] == nc.id)
 
         self.client.login_user(self.u2)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
 
         nresp = self.client.get(reverse('monitoring:api_user_notifications'))
         self.assertIsNotNone(nresp)
@@ -675,7 +675,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
 
         c = self.client
         c.login_user(self.u)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         notification_url = reverse('monitoring:api_user_notifications')
         uthreshold = [(
             'request.count', 'min_value', False, False, False, False, 0, 100, None, "Min number of request"),
@@ -766,7 +766,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         nc = NotificationCheck.create(*notifications_config)
         self.assertTrue(nc.definitions.all().count() == 2)
         self.client.login_user(self.u2)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         for nc in NotificationCheck.objects.all():
             notifications_config_url = reverse(
                 'monitoring:api_user_notification_config', args=(nc.id,))
@@ -920,7 +920,7 @@ class AutoConfigTestCase(MonitoringTestBase):
         self.assertEqual(resp.status_code, 401)
 
         self.client.login_user(self.u)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         resp = self.client.post(autoconf_url)
         self.assertEqual(resp.status_code, 200, resp)
 
@@ -988,7 +988,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1049,7 +1049,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1110,7 +1110,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1163,7 +1163,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1216,7 +1216,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1277,7 +1277,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1320,7 +1320,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1354,7 +1354,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1388,7 +1388,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1418,13 +1418,13 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
 
         self.client.login_user(self.user)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1458,7 +1458,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         self.assertEqual(out["data"]["metric"], 'request.users')
@@ -1606,7 +1606,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         self.assertEqual(out["data"]["metric"], 'request.users')
@@ -1650,7 +1650,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         self.assertEqual(out["status"], "ok")
@@ -1684,7 +1684,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         self.assertEqual(out["status"], "ok")
@@ -1798,7 +1798,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1841,7 +1841,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1891,7 +1891,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         self.assertEqual(out["status"], "ok")
@@ -1928,7 +1928,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -1969,7 +1969,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -2053,7 +2053,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -2144,7 +2144,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -2187,7 +2187,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -2248,7 +2248,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -2346,7 +2346,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         self.assertEqual(out["data"]["metric"], 'request.users')
@@ -2399,7 +2399,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -2441,7 +2441,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -2483,7 +2483,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -2525,7 +2525,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -2575,7 +2575,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -2672,7 +2672,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data
@@ -2704,7 +2704,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["error"], "unauthorized_request")
         # Authorized
         self.client.login_user(self.admin)
-        self.assertTrue(get_user(self.client).is_authenticated())
+        self.assertTrue(get_user(self.client).is_authenticated)
         response = self.client.get(url)
         out = json.loads(response.content)
         # Check data

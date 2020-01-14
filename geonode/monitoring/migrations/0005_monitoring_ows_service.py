@@ -25,17 +25,18 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='metricvalue',
             name='label',
-            field=models.ForeignKey(related_name='metric_values', to='monitoring.MetricLabel'),
+            field=models.ForeignKey(related_name='metric_values',
+                                    to='monitoring.MetricLabel', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='metricvalue',
             name='ows_service',
-            field=models.ForeignKey(blank=True, to='monitoring.OWSService', null=True),
+            field=models.ForeignKey(blank=True, to='monitoring.OWSService', on_delete=models.CASCADE, null=True),
         ),
         migrations.AddField(
             model_name='requestevent',
             name='ows_service',
-            field=models.ForeignKey(blank=True, to='monitoring.OWSService', null=True),
+            field=models.ForeignKey(blank=True, to='monitoring.OWSService', on_delete=models.CASCADE, null=True),
         ),
         migrations.AlterUniqueTogether(
             name='metricvalue',

@@ -28,7 +28,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers.json import DjangoJSONEncoder
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils.decorators import method_decorator
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render
 from django.http import HttpResponse
 
@@ -426,7 +426,7 @@ class MapUpdateView(UpdateView):
                                _PERMISSION_MSG_VIEW)
 
         if request.method == 'POST':
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return self.render_to_response(
                     'You must be logged in to save new maps',
                     content_type="text/plain",

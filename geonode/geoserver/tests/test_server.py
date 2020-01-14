@@ -28,7 +28,7 @@ from django.core.management import call_command
 from os.path import basename, splitext
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
 
@@ -938,7 +938,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         # Testing OWS endpoints
         from urlparse import urljoin
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
         from ..ows import _wcs_get_capabilities, _wfs_get_capabilities, _wms_get_capabilities
         wcs = _wcs_get_capabilities()
         logger.debug(wcs)

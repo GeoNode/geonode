@@ -51,7 +51,7 @@ except ImportError:
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.html import escape
 from django.shortcuts import get_object_or_404
@@ -631,7 +631,7 @@ _steps = {
 def view(req, step):
     """Main uploader view"""
     from django.contrib import auth
-    if not auth.get_user(req).is_authenticated():
+    if not auth.get_user(req).is_authenticated:
         return error_response(req, errors=["Not Authorized"])
     upload_session = None
     upload_id = req.GET.get('id', None)

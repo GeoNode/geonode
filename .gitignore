@@ -92,3 +92,7 @@ scripts/spcgeonode/_volume_*
 /geonode/test_settings.py
 
 /geonode/static/yarn.lock
+
+/geonode/development.db-journal
+
+/output.bin

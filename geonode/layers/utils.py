@@ -70,6 +70,8 @@ from geonode.utils import (http_client,
                            check_ogc_backend,
                            unzip_file,
                            extract_tarfile,
+                           get_layer_name,
+                           get_layer_workspace,
                            bbox_to_projection)
 
 READ_PERMISSIONS = [
@@ -145,10 +147,10 @@ def get_files(filename):
 
     # Verify if the filename is in ascii format.
     try:
-        filename.decode('ascii')
+        filename
     except UnicodeEncodeError:
         msg = "Please use only characters from the english alphabet for the filename. '%s' is not yet supported." \
-            % os.path.basename(filename).encode('UTF-8')
+            % os.path.basename(filename).encode('UTF-8', 'strict')
         raise GeoNodeException(msg)
 
     # Let's unzip the filname in case it is a ZIP file
@@ -1072,7 +1074,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                                 'PASSWORD' in _ogc_server_settings else 'geoserver'
                             import base64
                             valid_uname_pw = base64.b64encode(
-                                b"%s:%s" % (_user, _pwd)).decode("ascii")
+                                ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
                             headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
                         resp, image = ogc_client.request(thumbnail_create_url, headers=headers)
                         if 'ServiceException' in image or \
@@ -1112,13 +1114,21 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
         for layer in instance.layers:
             if layer.local:
                 # Compute Bounds
+                _layer_name = get_layer_name(layer)
+                _layer_store = layer.store
+                _layer_workspace = get_layer_workspace(layer)
                 _l = None
-                if layer.store and Layer.objects.filter(store=layer.store, name=layer.name).count() > 0:
-                    _l = Layer.objects.get(
-                        store=layer.store,
-                        name=layer.name)
-                elif Layer.objects.filter(name=layer.name).count() > 0:
-                    _l = Layer.objects.get(name=layer.name)
+                if _layer_store and \
+                Layer.objects.filter(store=_layer_store, workspace=_layer_workspace, name=_layer_name).count() > 0:
+                    _l = Layer.objects.filter(
+                        store=_layer_store,
+                        workspace=_layer_workspace,
+                        name=_layer_name).first()
+                elif _layer_workspace and \
+                Layer.objects.filter(workspace=_layer_workspace, name=_layer_name).count() > 0:
+                    _l = Layer.objects.filter(workspace=_layer_workspace, name=_layer_name).first()
+                elif Layer.objects.filter(alternate=layer.name).count() > 0:
+                    _l = Layer.objects.filter(alternate=layer.name).first()
                 if _l:
                     wgs84_bbox = bbox_to_projection(_l.bbox)
                     local_bboxes.append(wgs84_bbox)
