@@ -43,7 +43,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import assign_perm
 from geonode.groups.models import GroupProfile
-from ..services.enumerations import CASCADED
+from geonode.utils import get_layer_workspace
 
 logger = logging.getLogger("geonode.security.utils")
 
@@ -290,7 +290,7 @@ def purge_geofence_layer_rules(resource):
     user = settings.OGC_SERVER['default']['USER']
     passwd = settings.OGC_SERVER['default']['PASSWORD']
     headers = {'Content-type': 'application/json'}
-    workspace = _get_layer_workspace(resource.layer)
+    workspace = get_layer_workspace(resource.layer)
     r = requests.get(
         "{}rest/geofence/rules.json?workspace={}&layer={}".format(
             url, workspace, resource.layer.name),
@@ -389,7 +389,7 @@ def set_geofence_all(instance):
 
     resource = instance.get_self_resource()
     logger.debug("Inside set_geofence_all for instance {}".format(instance))
-    workspace = _get_layer_workspace(resource.layer)
+    workspace = get_layer_workspace(resource.layer)
     logger.debug("going to work in workspace {!r}".format(workspace))
     try:
         url = settings.OGC_SERVER['default']['LOCATION']
@@ -435,7 +435,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     Sync Guardian permissions to GeoFence.
     """
     _layer_name = layer.name if layer.name else layer.alternate.split(":")[0]
-    _layer_workspace = _get_layer_workspace(layer)
+    _layer_workspace = get_layer_workspace(layer)
     # Create new rule-set
     gf_services = {}
     gf_services["*"] = 'download_resourcebase' in perms and \
@@ -515,24 +515,6 @@ def remove_object_permissions(instance):
                                         object_pk=instance.id).delete()
     GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
                                          object_pk=instance.id).delete()
-
-
-def _get_layer_workspace(layer):
-    """Get the workspace where the input layer belongs"""
-    workspace = layer.workspace
-    if not workspace and layer.alternate and ':' in layer.alternate:
-        workspace = layer.alternate.split(":")[1]
-    if not workspace:
-        default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
-        try:
-            if layer.remote_service.method == CASCADED:
-                workspace = getattr(
-                    settings, "CASCADE_WORKSPACE", default_workspace)
-            else:
-                raise RuntimeError("Layer is not cascaded")
-        except AttributeError:  # layer does not have a service
-            workspace = default_workspace
-    return workspace
 
 
 def _get_geofence_payload(layer, workspace, access, user=None, group=None,
