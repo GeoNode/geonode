@@ -232,7 +232,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
 
         perms_info = _perms_info_json(layer)
         # Ensure foo is in the perms_info output
-        self.assertItemsEqual(
+        self.assertCountEqual(
             json.loads(perms_info)['groups'], {
                 'bar': ['view_resourcebase']})
 
@@ -259,7 +259,10 @@ class SmokeTest(GeoNodeBaseTestSupport):
                     kwargs=dict(
                         resource_id=obj.id)))
             self.assertEqual(response.status_code, 200)
-            js = json.loads(response.content)
+            content = response.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            js = json.loads(content)
             permissions = js.get('permissions', dict())
 
             if isinstance(permissions, string_types):
@@ -274,7 +277,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
                 expected_permissions.setdefault(
                     u'anonymous', []).append(u'view_resourcebase')
 
-            self.assertItemsEqual(permissions.get('groups'), expected_permissions)
+            self.assertCountEqual(permissions.get('groups'), expected_permissions)
 
             permissions = {
                 'groups': {
@@ -301,14 +304,17 @@ class SmokeTest(GeoNodeBaseTestSupport):
                     kwargs=dict(
                         resource_id=obj.id)))
 
-            js = json.loads(response.content)
+            content = response.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            js = json.loads(content)
             permissions = js.get('permissions', dict())
 
             if isinstance(permissions, string_types):
                 permissions = json.loads(permissions)
 
             # Make sure the bar group now has write permissions
-            self.assertItemsEqual(
+            self.assertCountEqual(
                 permissions['groups'], {
                     'bar': ['change_resourcebase']})
 
@@ -331,14 +337,17 @@ class SmokeTest(GeoNodeBaseTestSupport):
                     kwargs=dict(
                         resource_id=obj.id)))
 
-            js = json.loads(response.content)
+            content = response.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            js = json.loads(content)
             permissions = js.get('permissions', dict())
 
             if isinstance(permissions, string_types):
                 permissions = json.loads(permissions)
 
             # Assert the bar group no longer has permissions
-            self.assertItemsEqual(permissions['groups'], {})
+            self.assertCountEqual(permissions['groups'], {})
 
     def test_create_new_group(self):
         """
@@ -528,7 +537,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
 
             perms_info = _perms_info_json(layer)
             # Ensure foo is in the perms_info output
-            self.assertItemsEqual(
+            self.assertCountEqual(
                 json.loads(perms_info)['groups'], {
                     'bar': ['view_resourcebase']})
 

@@ -369,7 +369,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             maxScale=0
         )
         resource_fields = handler._get_indexed_layer_fields(layer_meta)
-        self.assertEqual(resource_fields['alternate'], '0-droits-ptroliers-et-gaziers-oil-and-gas-rights')
+        self.assertEqual(resource_fields['alternate'], '0-bdroits-ptroliers-et-gaziers-oil-and-gas-rights')
 
 
 class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):

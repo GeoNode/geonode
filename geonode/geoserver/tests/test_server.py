@@ -24,6 +24,13 @@ import json
 import os
 import shutil
 import tempfile
+
+try:
+    from urllib.parse import urljoin
+except ImportError:
+    # Python 2 compatibility
+    from urlparse import urljoin
+
 from django.core.management import call_command
 from os.path import basename, splitext
 
@@ -50,6 +57,7 @@ from geonode.geoserver.helpers import (
     _prepare_thumbnail_body_from_opts)
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 san_andres_y_providencia_sld = """<?xml version="1.0" encoding="UTF-8"?>
@@ -752,12 +760,12 @@ class LayerTests(GeoNodeBaseTestSupport):
         invalid_uname_pw = '%s:%s' % ('n0t', 'v@l1d')
 
         valid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw),
+            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw.encode('utf8')),
         }
 
         invalid_auth_headers = {
             'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(invalid_uname_pw),
+            base64.b64encode(invalid_uname_pw.encode('utf8')),
         }
 
         bob = get_user_model().objects.get(username='bobby')
@@ -816,12 +824,12 @@ class LayerTests(GeoNodeBaseTestSupport):
         invalid_uname_pw = "%s:%s" % ("n0t", "v@l1d")
 
         valid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw),
+            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw.encode('utf8')),
         }
 
         invalid_auth_headers = {
             'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(invalid_uname_pw),
+            base64.b64encode(invalid_uname_pw.encode('utf8')),
         }
 
         response = self.client.get(
@@ -937,7 +945,6 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNone(ogc_settings.SFDSDFDSF)
 
         # Testing OWS endpoints
-        from urlparse import urljoin
         from django.urls import reverse
         from ..ows import _wcs_get_capabilities, _wfs_get_capabilities, _wms_get_capabilities
         wcs = _wcs_get_capabilities()

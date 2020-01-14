@@ -544,7 +544,9 @@ def _response_callback(**kwargs):
     content_type_list = ['application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json']
     if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
         _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
-        content = content.decode('UTF-8')\
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        content = content\
             .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
             .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
 
@@ -681,7 +683,9 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
 
     _user, _password = ogc_server_settings.credentials
     req, content = http_client.get(wms_url, user=_user)
-    getcap = content.decode('UTF-8')
+    if isinstance(content, bytes):
+        content = content.decode('UTF-8')
+    getcap = content
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         if tolerant and ('ServiceException' in getcap or req.status_code == 404):
             # WARNING Please make sure to have enabled DJANGO CACHE as per
@@ -691,7 +695,9 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
             if access_token:
                 wms_url += ('&access_token=%s' % access_token)
             req, content = http_client.get(wms_url, user=_user)
-            getcap = content.decode('UTF-8')
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            getcap = content
 
     if 'ServiceException' in getcap or req.status_code == 404:
         return None

@@ -537,7 +537,9 @@ class GeoNodeServiceHandler(WmsServiceHandler):
 
         if status == 200 and 'application/json' == content_type:
             try:
-                _json_obj = json.loads(content.decode('UTF-8'))
+                if isinstance(content, bytes):
+                    content = content.decode('UTF-8')
+                _json_obj = json.loads(content)
                 if _json_obj['meta']['total_count'] == 1:
                     _layer = _json_obj['objects'][0]
                     if _layer:
