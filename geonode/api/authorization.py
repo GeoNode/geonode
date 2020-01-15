@@ -26,6 +26,8 @@ from tastypie.compat import get_user_model, get_username_field
 from guardian.shortcuts import get_objects_for_user
 from tastypie.http import HttpUnauthorized
 
+from django.conf import settings
+
 from geonode import geoserver, qgis_server
 from geonode.utils import check_ogc_backend
 
@@ -150,3 +152,18 @@ class GeoNodeStyleAuthorization(GeoNodeAuthorization):
 
         resource_obj = bundle.obj.get_self_resource()
         return resource_obj in permitted_ids
+
+
+class ApiLockdownAuthorization(DjangoAuthorization):
+    """API authorization for all resources which are not protected  by others authentication/authorization mechanism.
+    If setting "API_LOCKDOWN" is set to True, resource can only be accessed by authenticated users. For anonymous
+    requests, empty lists are returned.
+    """
+    def read_list(self, object_list, bundle):
+        user = bundle.request.user
+        if settings.API_LOCKDOWN and not user.is_authenticated:
+            # return empty list
+            return []
+        else:
+            return object_list
+
