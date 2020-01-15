@@ -123,7 +123,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     gs_resource = None
     values = None
     _tries = 0
-    _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 5)
+    _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 2)
 
     # If the store in None then it's a new instance from an upload,
     # only in this case run the geoserver_upload method
