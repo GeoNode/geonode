@@ -103,12 +103,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    try:
-        instance.refresh_from_db()
-    except BaseException:
-        from django.db import connection
-        connection._rollback()
-
     instance.refresh_from_db()
 
     # Don't run this signal if is a Layer from a remote service
@@ -308,34 +302,26 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                     gs_catalog.save(gs_resource)
 
         if not settings.FREETEXT_KEYWORDS_READONLY:
-            try:
-                # AF: Warning - this won't allow people to have empty keywords on GeoNode
-                if len(instance.keyword_list()) == 0 and gs_resource.keywords:
-                    for keyword in gs_resource.keywords:
-                        if keyword not in instance.keyword_list():
-                            instance.keywords.add(keyword)
-            except BaseException:
-                from django.db import connection
-                connection._rollback()
+            # AF: Warning - this won't allow people to have empty keywords on GeoNode
+            if len(instance.keyword_list()) == 0 and gs_resource.keywords:
+                for keyword in gs_resource.keywords:
+                    if keyword not in instance.keyword_list():
+                        instance.keywords.add(keyword)
 
-        try:
-            if any(instance.keyword_list()):
-                keywords = instance.keyword_list()
-                gs_resource.keywords = [kw for kw in list(set(keywords))]
+        if any(instance.keyword_list()):
+            keywords = instance.keyword_list()
+            gs_resource.keywords = [kw for kw in list(set(keywords))]
 
-                # gs_resource should only be called if
-                # ogc_server_settings.BACKEND_WRITE_ENABLED == True
-                if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-                    try:
-                        gs_catalog.save(gs_resource)
-                    except geoserver.catalog.FailedRequestError as e:
-                        msg = ('Error while trying to save resource named %s in GeoServer, '
-                               'try to use: "%s"' % (gs_resource, str(e)))
-                        e.args = (msg,)
-                        logger.exception(e)
-        except BaseException:
-            from django.db import connection
-            connection._rollback()
+            # gs_resource should only be called if
+            # ogc_server_settings.BACKEND_WRITE_ENABLED == True
+            if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
+                try:
+                    gs_catalog.save(gs_resource)
+                except geoserver.catalog.FailedRequestError as e:
+                    msg = ('Error while trying to save resource named %s in GeoServer, '
+                           'try to use: "%s"' % (gs_resource, str(e)))
+                    e.args = (msg,)
+                    logger.exception(e)
 
     to_update = {
         'title': instance.title or instance.name,
@@ -349,12 +335,8 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     }
 
     # Update ResourceBase
-    try:
-        resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
-        resources.update(**to_update)
-    except BaseException:
-        from django.db import connection
-        connection._rollback()
+    resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
+    resources.update(**to_update)
 
     # to_update['name'] = instance.name,
     to_update['workspace'] = instance.workspace
@@ -363,25 +345,13 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     to_update['typename'] = instance.alternate
 
     # Save all the modified information in the instance without triggering signals.
-    try:
-        Layer.objects.filter(id=instance.id).update(**to_update)
-    except BaseException:
-        from django.db import connection
-        connection._rollback()
+    Layer.objects.filter(id=instance.id).update(**to_update)
 
     # Refresh from DB
-    try:
-        instance.refresh_from_db()
-    except BaseException:
-        from django.db import connection
-        connection._rollback()
+    instance.refresh_from_db()
 
     # Updating the Catalogue
-    try:
-        catalogue_post_save(instance=instance, sender=instance.__class__)
-    except BaseException:
-        from django.db import connection
-        connection._rollback()
+    catalogue_post_save(instance=instance, sender=instance.__class__)
 
     # store the resource to avoid another geoserver call in the post_save
     if gs_resource:
@@ -391,12 +361,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
     if gs_resource:
         logger.info("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
-        try:
-            set_resource_default_links(instance, instance, prune=True)
-        except BaseException:
-            from django.db import connection
-            connection._rollback()
-            logger.warn("Failure Creating Default Resource Links for Layer [%s]" % (instance.alternate))
+        set_resource_default_links(instance, instance, prune=True)
 
         if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
                 'thumbnail_url' in kwargs['update_fields']:

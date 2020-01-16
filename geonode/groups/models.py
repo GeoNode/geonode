@@ -207,7 +207,7 @@ class GroupProfile(models.Model):
             logger.warning("The invited user \"{0}\" is not a member".format(user.username))
 
     def get_absolute_url(self):
-        return reverse('group_detail', args=[self.slug, self.version_number])
+        return reverse('group_detail', args=[self.slug, ])
 
     @property
     def class_name(self):

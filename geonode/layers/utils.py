@@ -952,6 +952,8 @@ def upload(incoming, user=None, overwrite=False,
 def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                      check_bbox=False, ogc_client=None, overwrite=False,
                      width=240, height=200):
+    _default_thumb_size = getattr(
+        settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
     thumbnail_name = None
     if isinstance(instance, Layer):
         thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
@@ -1044,7 +1046,8 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
                         try:
                             image = _prepare_thumbnail_body_from_opts(request_body)
-                        except BaseException:
+                        except BaseException as e:
+                            logger.exception(e)
                             image = None
 
                 if image is None:
@@ -1065,7 +1068,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
                         for _p in params.keys():
                             if _p.lower() not in thumbnail_create_url.lower():
-                                thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (_p, params[_p])
+                                thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (str(_p), str(params[_p]))
                         headers = {}
                         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                             _ogc_server_settings = settings.OGC_SERVER['default']
@@ -1077,7 +1080,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                                 ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
                             headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
                         resp, image = ogc_client.request(thumbnail_create_url, headers=headers)
-                        if 'ServiceException' in image or \
+                        if 'ServiceException' in str(image) or \
                         resp.status_code < 200 or resp.status_code > 299:
                             msg = 'Unable to obtain thumbnail: %s' % image
                             logger.error(msg)
@@ -1087,7 +1090,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
                     except BaseException as e:
                         logger.exception(e)
-
                         # Replace error message with None.
                         image = None
 
@@ -1134,23 +1136,23 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
                     local_bboxes.append(wgs84_bbox)
                     if _l.storeType != "remoteStore":
                         local_layers.append(_l.alternate)
-        layers = ",".join(local_layers).encode('utf-8')
+        layers = ",".join(local_layers)
     else:
         # Compute Bounds
         if instance.store:
             _ll = Layer.objects.filter(
                 store=instance.store,
-                alternate=instance.alternate.encode('utf-8'))
+                alternate=instance.alternate)
         else:
             _ll = Layer.objects.filter(
-                alternate=instance.alternate.encode('utf-8'))
+                alternate=instance.alternate)
         for _l in _ll:
             if _l.name == instance.name:
                 wgs84_bbox = bbox_to_projection(_l.bbox)
                 local_bboxes.append(wgs84_bbox)
                 if _l.storeType != "remoteStore":
                     local_layers.append(_l.alternate)
-        layers = ",".join(local_layers).encode('utf-8')
+        layers = ",".join(local_layers)
 
     if local_bboxes:
         for _bbox in local_bboxes:
@@ -1180,10 +1182,12 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     }
 
     if bbox:
+        _default_thumb_size = getattr(
+            settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
         params['bbox'] = "%s,%s,%s,%s" % (bbox[0], bbox[2], bbox[1], bbox[3])
         params['crs'] = 'EPSG:4326'
-        params['width'] = 240
-        params['height'] = 180
+        params['width'] = _default_thumb_size['width']
+        params['height'] = _default_thumb_size['height']
 
     user = None
     try:

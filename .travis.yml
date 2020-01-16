@@ -1,6 +1,4 @@
-sudo: required
 language: python
-dist: bionic
 
 cache:
   pip: true
@@ -9,6 +7,8 @@ cache:
 
 before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
+
+dist: xenial
 
 services:
   - docker
@@ -24,227 +24,258 @@ addons:
       - nginx
   firefox: "latest-esr"
 
-matrix:
-  fast_finish: true
+branches:
+  only:
+    - master
+
+jobs:
   include:
-    - name: "GeoServer-backend Core Modules Smoke Tests"
-      python: 3.6
+    - stage: unit-test
+      name: "GeoServer-backend Core Modules Smoke Tests"
+      python: "3.5"
       virtualenv:
           system_site_packages: true
       env:
           - BACKEND: 'geonode.geoserver'
-            DOCKER_COMPOSE_VERSION: 1.19.0
+          - DOCKER_COMPOSE_VERSION: 1.19.0
             # This is GeoServer server address
-            GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
-            GEOSERVER_SERVER_PORT: 8080
-            ON_TRAVIS: 'True'
-            TEST_RUN_CORE: 'True'
-            MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-    - name: "GeoServer-backend Contrib Apps Smoke Tests"
-      python: 3.6
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUN_CORE: 'True'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+
+    - stage: unit-test
+      name: "GeoServer-backend Contrib Apps Smoke Tests"
+      python: "3.5"
       virtualenv:
           system_site_packages: true
       env:
           - BACKEND: 'geonode.geoserver'
-            DOCKER_COMPOSE_VERSION: 1.19.0
+          - DOCKER_COMPOSE_VERSION: 1.19.0
             # This is GeoServer server address
-            GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
-            GEOSERVER_SERVER_PORT: 8080
-            ON_TRAVIS: 'True'
-            TEST_RUN_INTERNAL_APPS: 'True'
-            MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-    - name: "GeoServer-backend Integration Tests"
-      python: 3.6
-      virtualenv:
-          system_site_packages: true
-      env:
-          - BACKEND: 'geonode.geoserver'
-            DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
-            GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
-            GEOSERVER_SERVER_PORT: 8080
-            ON_TRAVIS: 'True'
-            TEST_RUNNER_KEEPDB: 'True'
-            TEST_RUN_INTEGRATION: 'True'
-            TEST_RUN_INTEGRATION_SERVER: 'False'
-            TEST_RUN_INTEGRATION_UPLOAD: 'False'
-            TEST_RUN_INTEGRATION_MONITORING: 'False'
-            TEST_RUN_INTEGRATION_CSW: 'False'
-            TEST_RUN_INTEGRATION_BDD: 'False'
-            MONITORING_ENABLED: 'True'
-            USER_ANALYTICS_ENABLED: 'True'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-            CELERY_ALWAYS_EAGER: 'True'
-    - name: "GeoServer-backend Integration GeoServer Tests"
-      python: 3.6
-      virtualenv:
-          system_site_packages: true
-      env:
-          - BACKEND: 'geonode.geoserver'
-            DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
-            GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
-            GEOSERVER_SERVER_PORT: 8080
-            ON_TRAVIS: 'True'
-            TEST_RUNNER_KEEPDB: 'True'
-            TEST_RUN_INTEGRATION: 'True'
-            TEST_RUN_INTEGRATION_SERVER: 'True'
-            TEST_RUN_INTEGRATION_UPLOAD: 'False'
-            TEST_RUN_INTEGRATION_MONITORING: 'False'
-            TEST_RUN_INTEGRATION_CSW: 'False'
-            TEST_RUN_INTEGRATION_BDD: 'False'
-            MONITORING_ENABLED: 'True'
-            USER_ANALYTICS_ENABLED: 'True'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-            CELERY_ALWAYS_EAGER: 'True'
-    - name: "GeoServer-backend Integration Upload Tests"
-      python: 3.6
-      virtualenv:
-          system_site_packages: true
-      env:
-          - BACKEND: 'geonode.geoserver'
-            DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
-            GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
-            GEOSERVER_SERVER_PORT: 8080
-            ON_TRAVIS: 'True'
-            TEST_RUNNER_KEEPDB: 'True'
-            TEST_RUN_INTEGRATION: 'True'
-            TEST_RUN_INTEGRATION_SERVER: 'False'
-            TEST_RUN_INTEGRATION_UPLOAD: 'True'
-            TEST_RUN_INTEGRATION_MONITORING: 'False'
-            TEST_RUN_INTEGRATION_CSW: 'False'
-            TEST_RUN_INTEGRATION_BDD: 'False'
-            MONITORING_ENABLED: 'True'
-            USER_ANALYTICS_ENABLED: 'True'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-            CELERY_ALWAYS_EAGER: 'True'
-    - name: "GeoServer-backend Integration Monitoring Tests"
-      python: 3.6
-      virtualenv:
-          system_site_packages: true
-      env:
-          - BACKEND: 'geonode.geoserver'
-            DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
-            GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
-            GEOSERVER_SERVER_PORT: 8080
-            ON_TRAVIS: 'True'
-            TEST_RUNNER_KEEPDB: 'True'
-            TEST_RUN_INTEGRATION: 'True'
-            TEST_RUN_INTEGRATION_SERVER: 'False'
-            TEST_RUN_INTEGRATION_UPLOAD: 'False'
-            TEST_RUN_INTEGRATION_MONITORING: 'True'
-            TEST_RUN_INTEGRATION_CSW: 'False'
-            TEST_RUN_INTEGRATION_BDD: 'False'
-            MONITORING_ENABLED: 'True'
-            USER_ANALYTICS_ENABLED: 'True'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-            CELERY_ALWAYS_EAGER: 'True'
-    - name: "GeoServer-backend Integration CSW Tests"
-      python: 3.6
-      virtualenv:
-          system_site_packages: true
-      env:
-          - BACKEND: 'geonode.geoserver'
-            DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
-            GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
-            GEOSERVER_SERVER_PORT: 8080
-            ON_TRAVIS: 'True'
-            TEST_RUN_INTEGRATION_CSW: 'True'
-            MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-            CELERY_ALWAYS_EAGER: 'True'
-    - name: "GeoServer-backend Integration BDD Tests"
-      python: 3.6
-      virtualenv:
-          system_site_packages: true
-      env:
-          - BACKEND: 'geonode.geoserver'
-            DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
-            GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
-            GEOSERVER_SERVER_PORT: 8080
-            ON_TRAVIS: 'True'
-            TEST_RUN_INTEGRATION: 'False'
-            TEST_RUN_INTEGRATION_CSW: 'False'
-            TEST_RUN_INTEGRATION_BDD: 'True'
-            MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-            CELERY_ALWAYS_EAGER: 'True'
-    - name: "QGis Server-backend Core Modules Smoke Tests"
-      python: 3.6
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUN_INTERNAL_APPS: 'True'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+
+    - stage: unit-test
+      name: "QGis Server-backend Core Modules Smoke Tests"
+      python: "3.5"
       virtualenv:
           system_site_packages: true
       env:
           - BACKEND: 'geonode.qgis_server'
-            DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
-            DOCKER_COMPOSE_VERSION: 1.19.0
+          - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
             # This is qgis server address
-            QGIS_SERVER_URL: http://localhost:9000/
+          - QGIS_SERVER_URL: http://localhost:9000/
             # This is the location of docker network bridge
             # So QGIS server can access this address
-            SITEURL: http://localhost:8000/
-            QGIS_SERVER_PORT: 9000
-            ON_TRAVIS: 'True'
-            TEST_RUN_CORE: 'True'
-            MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-            CELERY_ALWAYS_EAGER: 'True'
-    - name: "QGis Server-backend Contrib Apps Smoke Tests"
-      python: 3.6
+          - SITEURL: http://localhost:8000/
+          - QGIS_SERVER_PORT: 9000
+          - ON_TRAVIS: 'True'
+          - TEST_RUN_CORE: 'True'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+
+    - stage: unit-test
+      name: "QGis Server-backend Contrib Apps Smoke Tests"
+      python: "3.5"
       virtualenv:
           system_site_packages: true
       env:
           - BACKEND: 'geonode.qgis_server'
-            DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
-            DOCKER_COMPOSE_VERSION: 1.19.0
+          - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
             # This is qgis server address
-            QGIS_SERVER_URL: http://localhost:9000/
+          - QGIS_SERVER_URL: http://localhost:9000/
             # This is the location of docker network bridge
             # So QGIS server can access this address
-            SITEURL: http://localhost:8000/
-            QGIS_SERVER_PORT: 9000
-            ON_TRAVIS: 'True'
-            TEST_RUN_INTERNAL_APPS: 'True'
-            MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-            CELERY_ALWAYS_EAGER: 'True'
-    - name: "QGis Server-backend Integration Tests"
-      python: 3.6
+          - SITEURL: http://localhost:8000/
+          - QGIS_SERVER_PORT: 9000
+          - ON_TRAVIS: 'True'
+          - TEST_RUN_INTERNAL_APPS: 'True'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+
+    - stage: integration-test
+      name: "GeoServer-backend Integration Tests"
+      python: "3.5"
+      virtualenv:
+          system_site_packages: true
+      env:
+          - BACKEND: 'geonode.geoserver'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
+            # This is GeoServer server address
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUNNER_KEEPDB: 'True'
+          - TEST_RUN_INTEGRATION: 'True'
+          - TEST_RUN_INTEGRATION_SERVER: 'False'
+          - TEST_RUN_INTEGRATION_UPLOAD: 'False'
+          - TEST_RUN_INTEGRATION_MONITORING: 'False'
+          - TEST_RUN_INTEGRATION_CSW: 'False'
+          - TEST_RUN_INTEGRATION_BDD: 'False'
+          - MONITORING_ENABLED: 'True'
+          - USER_ANALYTICS_ENABLED: 'True'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+
+    - stage: integration-test
+      name: "GeoServer-backend Integration GeoServer Tests"
+      python: "3.5"
+      virtualenv:
+          system_site_packages: true
+      env:
+          - BACKEND: 'geonode.geoserver'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
+            # This is GeoServer server address
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUNNER_KEEPDB: 'True'
+          - TEST_RUN_INTEGRATION: 'True'
+          - TEST_RUN_INTEGRATION_SERVER: 'True'
+          - TEST_RUN_INTEGRATION_UPLOAD: 'False'
+          - TEST_RUN_INTEGRATION_MONITORING: 'False'
+          - TEST_RUN_INTEGRATION_CSW: 'False'
+          - TEST_RUN_INTEGRATION_BDD: 'False'
+          - MONITORING_ENABLED: 'True'
+          - USER_ANALYTICS_ENABLED: 'True'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+
+    - stage: integration-test
+      name: "GeoServer-backend Integration Upload Tests"
+      python: "3.5"
+      virtualenv:
+          system_site_packages: true
+      env:
+          - BACKEND: 'geonode.geoserver'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
+            # This is GeoServer server address
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUNNER_KEEPDB: 'True'
+          - TEST_RUN_INTEGRATION: 'True'
+          - TEST_RUN_INTEGRATION_SERVER: 'False'
+          - TEST_RUN_INTEGRATION_UPLOAD: 'True'
+          - TEST_RUN_INTEGRATION_MONITORING: 'False'
+          - TEST_RUN_INTEGRATION_CSW: 'False'
+          - TEST_RUN_INTEGRATION_BDD: 'False'
+          - MONITORING_ENABLED: 'True'
+          - USER_ANALYTICS_ENABLED: 'True'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+
+    - stage: integration-test
+      name: "GeoServer-backend Integration Monitoring Tests"
+      python: "3.5"
+      virtualenv:
+          system_site_packages: true
+      env:
+          - BACKEND: 'geonode.geoserver'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
+            # This is GeoServer server address
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUNNER_KEEPDB: 'True'
+          - TEST_RUN_INTEGRATION: 'True'
+          - TEST_RUN_INTEGRATION_SERVER: 'False'
+          - TEST_RUN_INTEGRATION_UPLOAD: 'False'
+          - TEST_RUN_INTEGRATION_MONITORING: 'True'
+          - TEST_RUN_INTEGRATION_CSW: 'False'
+          - TEST_RUN_INTEGRATION_BDD: 'False'
+          - MONITORING_ENABLED: 'True'
+          - USER_ANALYTICS_ENABLED: 'True'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+
+    - stage: integration-test
+      name: "GeoServer-backend Integration CSW Tests"
+      python: "3.5"
+      virtualenv:
+          system_site_packages: true
+      env:
+          - BACKEND: 'geonode.geoserver'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
+            # This is GeoServer server address
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUN_INTEGRATION_CSW: 'True'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+
+    - stage: integration-test
+      name: "QGis Server-backend Integration Tests"
+      python: "3.5"
       virtualenv:
           system_site_packages: true
       env:
           - BACKEND: 'geonode.qgis_server'
-            DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
-            DOCKER_COMPOSE_VERSION: 1.19.0
+          - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
             # This is qgis server address
-            QGIS_SERVER_URL: http://localhost:9000/
+          - QGIS_SERVER_URL: http://localhost:9000/
             # This is the location of docker network bridge
             # So QGIS server can access this address
-            SITEURL: http://localhost:8000/
-            QGIS_SERVER_PORT: 9000
-            ON_TRAVIS: 'True'
-            TEST_RUN_INTEGRATION: 'True'
-            MONITORING_ENABLED: 'False'
-            SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-            CELERY_ALWAYS_EAGER: 'True'
-    - name: "Selenium Integration Tests Core"
-      python: 3.5
+          - SITEURL: http://localhost:8000/
+          - QGIS_SERVER_PORT: 9000
+          - ON_TRAVIS: 'True'
+          - TEST_RUN_INTEGRATION: 'True'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+
+    - stage: frontend-test
+      name: "BDD Tests"
+      python: "3.5"
+      virtualenv:
+          system_site_packages: true
+      env:
+          - BACKEND: 'geonode.geoserver'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
+            # This is GeoServer server address
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUN_INTEGRATION: 'False'
+          - TEST_RUN_INTEGRATION_CSW: 'False'
+          - TEST_RUN_INTEGRATION_BDD: 'True'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+
+    - stage: frontend-test
+      name: "Selenium Tests Core"
+      python: "3.5"
       env:
           - TEST_RUN_SELENIUM: 'True'
-    - name: "Selenium Integration Tests SPCGeonode"
-      python: 3.5
+
+    - stage: frontend-test
+      name: "Selenium Tests SPCGeoNode"
+      python: "3.5"
       env:
           - TEST_RUN_SELENIUM: 'True'
           - SPCGEONODE: 'True'
 
-branches:
-  only:
-    - master
+  fast_finish: true
+
+  allow_failures:
+    - name: "QGis Server-backend Core Modules Smoke Tests"
+    - name: "QGis Server-backend Contrib Apps Smoke Tests"
+    - name: "QGis Server-backend Integration Tests"
 
 before_install:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
@@ -348,4 +379,3 @@ after_success:
 notifications:
   email:
     - alessio.fabiani@gmail.com
-  slack: geonode-sprint:oQylJRkU9feZ8JruGi6czWwe

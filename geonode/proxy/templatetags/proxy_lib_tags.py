@@ -17,6 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+import traceback
+
 from django import template
 from django.conf import settings
 from django.urls import reverse
@@ -63,9 +66,10 @@ def original_link_available(context, resourceid, url):
                     item for idx, item in enumerate(LayerFile.objects.filter(upload_session=upload_session))]
                 if layer_files:
                     for l in layer_files:
-                        if not storage.exists(l.file):
+                        if not storage.exists(str(l.file)):
                             return False
         except BaseException:
+            traceback.print_exc()
             return False
     if layer_files:
         return True

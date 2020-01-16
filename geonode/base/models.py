@@ -1213,49 +1213,69 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 except BaseException:
                     pass
 
-            actual_name = storage.save(upload_path, ContentFile(image))
-            url = storage.url(actual_name)
-            _url = urlparse(url)
-            _upload_path = os.path.join('thumbs/', os.path.basename(_url.path))
-            if upload_path != _upload_path:
-                if storage.exists(_upload_path):
-                    storage.delete(_upload_path)
+            if upload_path and image:
+                actual_name = storage.save(upload_path, ContentFile(image))
+                url = storage.url(actual_name)
+                _url = urlparse(url)
+                _upload_path = os.path.join('thumbs/', os.path.basename(_url.path))
+                if upload_path != _upload_path:
+                    if storage.exists(_upload_path):
+                        storage.delete(_upload_path)
+                    try:
+                        os.rename(
+                            storage.path(upload_path),
+                            storage.path(_upload_path)
+                        )
+                    except BaseException as e:
+                        logger.exception(e)
+
                 try:
-                    os.rename(
-                        storage.path(upload_path),
-                        storage.path(_upload_path)
-                    )
+                    # Optimize the Thumbnail size and resolution
+                    from PIL import Image
+                    from io import BytesIO
+                    from resizeimage import resizeimage
+                    _default_thumb_size = getattr(
+                        settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
+                    im = Image.open(open(storage.path(_upload_path), mode='rb'))
+                    im.thumbnail(
+                        (_default_thumb_size['width'], _default_thumb_size['height']),
+                        resample=Image.ANTIALIAS)
+                    cover = resizeimage.resize_cover(
+                        im,
+                        [_default_thumb_size['width'], _default_thumb_size['height']])
+                    cover.save(storage.path(_upload_path), format='JPEG')
                 except BaseException as e:
                     logger.exception(e)
 
-            # check whether it is an URI or not
-            parsed = urlsplit(url)
-            if not parsed.netloc:
-                # assuming is a relative path to current site
-                site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-                url = urljoin(site_url, url)
+                # check whether it is an URI or not
+                parsed = urlsplit(url)
+                if not parsed.netloc:
+                    # assuming is a relative path to current site
+                    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+                    url = urljoin(site_url, url)
 
-            # should only have one 'Thumbnail' link
-            _links = Link.objects.filter(resource=self, name='Thumbnail')
-            if _links.count() > 1:
-                _links.delete()
-            obj, created = Link.objects.get_or_create(
-                resource=self,
-                name='Thumbnail',
-                defaults=dict(
-                    url=url,
-                    extension='png',
-                    mime='image/png',
-                    link_type='image',
+                # should only have one 'Thumbnail' link
+                _links = Link.objects.filter(resource=self, name='Thumbnail')
+                if _links and _links.count() > 1:
+                    _links.delete()
+                obj, created = Link.objects.get_or_create(
+                    resource=self,
+                    name='Thumbnail',
+                    defaults=dict(
+                        url=url,
+                        extension='png',
+                        mime='image/png',
+                        link_type='image',
+                    )
                 )
-            )
-            self.thumbnail_url = url
-            obj.url = url
-            obj.save()
-            ResourceBase.objects.filter(id=self.id).update(
-                thumbnail_url=url
-            )
-        except Exception as e:
+                self.thumbnail_url = url
+                obj.url = url
+                obj.save()
+                ResourceBase.objects.filter(id=self.id).update(
+                    thumbnail_url=url
+                )
+        except BaseException as e:
+            logger.exception(e)
             logger.error(
                 'Error when generating the thumbnail for resource %s. (%s)' %
                 (self.id, str(e)))

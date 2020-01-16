@@ -1931,6 +1931,7 @@ INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 THUMBNAIL_GENERATOR = "geonode.layers.utils.create_gs_thumbnail_geonode"
 #THUMBNAIL_GENERATOR_DEFAULT_BG = r"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
 THUMBNAIL_GENERATOR_DEFAULT_BG = r"https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
+THUMBNAIL_GENERATOR_DEFAULT_SIZE = {'width': 240, 'height': 200}
 
 # define the urls after the settings are overridden
 if USE_GEOSERVER:

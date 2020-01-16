@@ -968,7 +968,7 @@ class MetricValue(models.Model):
         if self.label:
             _l = self.label.name
             if isinstance(_l, text_type):
-                _l = _l.encode('utf-8')
+                _l = _l
             metric = '{} [{}]'.format(metric, _l)
         if self.resource and self.resource.type:
             metric = '{} for {}'.format(

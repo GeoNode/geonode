@@ -1001,7 +1001,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         # WMS Links
         wms_links = wms_links(ogc_settings.public_url + 'wms?',
-                              instance.alternate.encode('utf-8'),
+                              instance.alternate,
                               bbox,
                               srid,
                               height,
@@ -1009,7 +1009,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(wms_links)
         self.assertEquals(len(wms_links), 3)
         wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wms')
-        identifier = urllib.urlencode({'layers': instance.alternate.encode('utf-8')})
+        identifier = urllib.urlencode({'layers': instance.alternate})
         for _link in wms_links:
             logger.debug('%s --> %s' % (wms_url, _link[3]))
             self.assertTrue(wms_url in _link[3])
@@ -1018,13 +1018,13 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         # WFS Links
         wfs_links = wfs_links(ogc_settings.public_url + 'wfs?',
-                              instance.alternate.encode('utf-8'),
+                              instance.alternate,
                               bbox,
                               srid)
         self.assertIsNotNone(wfs_links)
         self.assertEquals(len(wfs_links), 6)
         wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wfs')
-        identifier = urllib.urlencode({'typename': instance.alternate.encode('utf-8')})
+        identifier = urllib.urlencode({'typename': instance.alternate})
         for _link in wfs_links:
             logger.debug('%s --> %s' % (wfs_url, _link[3]))
             self.assertTrue(wfs_url in _link[3])
@@ -1033,13 +1033,13 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         # WCS Links
         wcs_links = wcs_links(ogc_settings.public_url + 'wcs?',
-                              instance.alternate.encode('utf-8'),
+                              instance.alternate,
                               bbox,
                               srid)
         self.assertIsNotNone(wcs_links)
         self.assertEquals(len(wcs_links), 2)
         wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wcs')
-        identifier = urllib.urlencode({'coverageid': instance.alternate.encode('utf-8')})
+        identifier = urllib.urlencode({'coverageid': instance.alternate})
         for _link in wcs_links:
             logger.debug('%s --> %s' % (wcs_url, _link[3]))
             self.assertTrue(wcs_url in _link[3])

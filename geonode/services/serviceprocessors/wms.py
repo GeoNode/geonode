@@ -244,7 +244,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             "service": "WMS",
             "version": self.parsed_service.version,
             "request": "GetMap",
-            "layers": geonode_layer.alternate.encode('utf-8'),
+            "layers": geonode_layer.alternate,
             "bbox": geonode_layer.bbox_string,
             "srs": "EPSG:4326",
             "width": "200",
@@ -537,7 +537,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
 
         if status == 200 and 'application/json' == content_type:
             try:
-                _json_obj = json.loads(content)
+                _json_obj = json.loads(content.decode('UTF-8'))
                 if _json_obj['meta']['total_count'] == 1:
                     _layer = _json_obj['objects'][0]
                     if _layer:
@@ -562,7 +562,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                                     geonode_layer.remote_service.service_url, _url.path)
                             resp, image = http_client.request(
                                 thumbnail_remote_url)
-                            if 'ServiceException' in image or \
+                            if 'ServiceException' in str(image) or \
                                resp.status_code < 200 or resp.status_code > 299:
                                 msg = 'Unable to obtain thumbnail: %s' % image
                                 logger.debug(msg)

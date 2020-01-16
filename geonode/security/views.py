@@ -19,6 +19,8 @@
 #########################################################################
 
 import json
+import traceback
+
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
@@ -56,6 +58,7 @@ def resource_permissions(request, resource_id):
                 'id': resource_id}, 'base.change_resourcebase_permissions')
 
     except PermissionDenied:
+        traceback.print_exc()
         # we are handling this in a non-standard way
         return HttpResponse(
             'You are not allowed to change permissions for this resource',
@@ -66,7 +69,7 @@ def resource_permissions(request, resource_id):
         success = True
         message = "Permissions successfully updated!"
         try:
-            permission_spec = json.loads(request.body)
+            permission_spec = json.loads(request.body.decode('UTF-8'))
             resource.set_permissions(permission_spec)
 
             # Check Users Permissions Consistency
@@ -94,6 +97,7 @@ def resource_permissions(request, resource_id):
                 content_type='text/plain'
             )
         except BaseException:
+            traceback.print_exc()
             success = False
             message = "Error updating permissions :("
             return HttpResponse(
@@ -110,6 +114,7 @@ def resource_permissions(request, resource_id):
             content_type='text/plain'
         )
     else:
+        traceback.print_exc()
         return HttpResponse(
             'No methods other than get and post are allowed',
             status=401,
@@ -133,6 +138,7 @@ def invalidate_permissions_cache(request):
             content_type='text/plain'
         )
     else:
+        traceback.print_exc()
         return HttpResponse(
             json.dumps({'success': 'false', 'message': 'You cannot modify this resource!'}),
             status=200,
@@ -181,6 +187,7 @@ def attributes_sats_refresh(request):
             layer.srid = gs_resource.projection
             layer.save()
         except BaseException as e:
+            traceback.print_exc()
             return HttpResponse(
                 json.dumps(
                     {
@@ -272,6 +279,7 @@ def request_permissions(request):
             status=200,
             content_type='text/plain')
     except BaseException:
+        traceback.print_exc()
         return HttpResponse(
             json.dumps({'error': 'error delivering notification'}),
             status=400,
@@ -309,4 +317,5 @@ def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.n
             email.content_subtype = "html"
             email.send()
         except BaseException:
+            traceback.print_exc()
             pass

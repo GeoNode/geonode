@@ -139,6 +139,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         try:
             return self._parse_layers(self.parsed_service.layers)
         except BaseException:
+            traceback.print_exc()
             return None
 
     def _parse_layers(self, layers):
@@ -262,7 +263,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             "service": "WMS",
             "version": self.parsed_service.version,
             "request": "GetMap",
-            "layers": geonode_layer.alternate.encode('utf-8'),
+            "layers": geonode_layer.alternate,
             "bbox": geonode_layer.bbox_string,
             "srs": "EPSG:4326",
             "width": "200",

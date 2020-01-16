@@ -368,8 +368,7 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
     logger = logging.getLogger(__name__)
     logger.error(content)
 
-    return HttpResponse(content.encode('utf-8').decode('utf-8'),
-                        content_type="text/csv")
+    return HttpResponse(content, content_type="text/csv")
 
 
 def csw_render_extra_format_html(request, layeruuid, resname):

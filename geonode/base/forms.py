@@ -155,7 +155,7 @@ class RegionsMultipleChoiceField(forms.MultipleChoiceField):
 class RegionsSelect(forms.Select):
     allow_multiple_selected = True
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = []
         final_attrs = self.build_attrs(attrs)
@@ -418,11 +418,6 @@ class ResourceBaseForm(TranslationModelForm):
         except ImportError:  # python2 compatible
             import urllib
 
-        try:  # python2 compatible
-            from HTMLParser import HTMLParser
-        except ImportError:
-            from html.parser import HTMLParser
-
         def unicode_escape(unistr):
             """
             Tidys up unicode entities into HTML friendly entities
@@ -455,20 +450,21 @@ class ResourceBaseForm(TranslationModelForm):
                 _k = urllib.parse.unquote(('%s' % k)).split(",")
             if not isinstance(_k, six.string_types):
                 for _kk in [x.strip() for x in _k]:
-                    _kk = HTMLParser().unescape(unicode_escape(_kk))
                     # Simulate JS Unescape
-                    _kk = _kk.replace('%u', r'\u').decode('unicode-escape') if '%u' in _kk else _kk
+                    _kk = _kk.replace('%u', r'\u').\
+                        encode('unicode-escape').replace(b'\\\\u',
+                                                         b'\\u').decode('unicode-escape') if '%u' in _kk else _kk
                     _hk = HierarchicalKeyword.objects.filter(name__iexact='%s' % _kk.strip())
                     if _hk and len(_hk) > 0:
-                        _unsescaped_kwds.append(_hk[0])
+                        _unsescaped_kwds.append(str(_hk[0]))
                     else:
-                        _unsescaped_kwds.append(_kk)
+                        _unsescaped_kwds.append(str(_kk))
             else:
                 _hk = HierarchicalKeyword.objects.filter(name__iexact=_k.strip())
                 if _hk and len(_hk) > 0:
-                    _unsescaped_kwds.append(_hk[0])
+                    _unsescaped_kwds.append(str(_hk[0]))
                 else:
-                    _unsescaped_kwds.append(_k)
+                    _unsescaped_kwds.append(str(_k))
         return _unsescaped_kwds
 
     class Meta:

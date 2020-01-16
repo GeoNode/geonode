@@ -167,7 +167,7 @@ def json_loads_byteified(json_text, charset):
 def _byteify(data, ignore_dicts=False):
     # if this is a unicode string, return its string representation
     if isinstance(data, text_type):
-        return data.encode('utf-8')
+        return data
     # if this is a list of values, return list of byteified values
     if isinstance(data, list):
         return [_byteify(item, ignore_dicts=True) for item in data]
@@ -541,16 +541,17 @@ def _get_layer_values(layer, upload_session, expand=0):
                 feat_values = json_loads_byteified(
                     feat.ExportToJson(),
                     upload_session.charset).get('properties')
-                for k in feat_values.keys():
-                    type_code = feat.GetFieldDefnRef(k).GetType()
-                    binding = feat.GetFieldDefnRef(k).GetFieldTypeName(type_code)
-                    feat_value = feat_values[k] if str(feat_values[k]) != 'None' else 0
-                    if expand > 0:
-                        ff = {'value': feat_value, 'binding': binding}
-                        feat_values[k] = ff
-                    else:
-                        feat_values[k] = feat_value
-                layer_values.append(feat_values)
+                if feat_values:
+                    for k in feat_values.keys():
+                        type_code = feat.GetFieldDefnRef(k).GetType()
+                        binding = feat.GetFieldDefnRef(k).GetFieldTypeName(type_code)
+                        feat_value = feat_values[k] if str(feat_values[k]) != 'None' else 0
+                        if expand > 0:
+                            ff = {'value': feat_value, 'binding': binding}
+                            feat_values[k] = ff
+                        else:
+                            feat_values[k] = feat_value
+                    layer_values.append(feat_values)
             except BaseException as e:
                 logger.exception(e)
     return layer_values

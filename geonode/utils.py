@@ -1419,8 +1419,8 @@ def check_ogc_backend(backend_package):
 class HttpClient(object):
 
     def __init__(self):
-        self.timeout = 5
-        self.retries = 5
+        self.timeout = 30
+        self.retries = 3
         self.pool_maxsize = 10
         self.backoff_factor = 0.3
         self.pool_connections = 10
@@ -1696,7 +1696,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Set download links for WMS, WCS or WFS and KML
         logger.info(" -- Resource Links[Set download links for WMS, WCS or WFS and KML]...")
         links = wms_links(ogc_server_settings.public_url + 'ows?',
-                          instance.alternate.encode('utf-8'),
+                          instance.alternate,
                           bbox,
                           srid,
                           height,
@@ -1725,7 +1725,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         if instance.storeType == "dataStore":
             links = wfs_links(ogc_server_settings.public_url + 'ows?',
-                              instance.alternate.encode('utf-8'),
+                              instance.alternate,
                               bbox=None,  # bbox filter should be set at runtime otherwise conflicting with CQL
                               srid=srid)
             for ext, name, mime, wfs_url in links:
@@ -1747,7 +1747,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         elif instance.storeType == 'coverageStore':
             links = wcs_links(ogc_server_settings.public_url + 'wcs?',
-                              instance.alternate.encode('utf-8'),
+                              instance.alternate,
                               bbox,
                               srid)
 

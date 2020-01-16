@@ -528,8 +528,8 @@ def geoserver_proxy(request,
                     logger.warn("Could not find any Layer %s on DB" % os.path.basename(request.path))
 
     kwargs = {'affected_layers': affected_layers}
-    raw_url = unquote(raw_url).decode('utf8')
-    timeout = getattr(ogc_server_settings, 'TIMEOUT') or 5
+    raw_url = unquote(raw_url)
+    timeout = getattr(ogc_server_settings, 'TIMEOUT') or 30
     allowed_hosts = [urlsplit(ogc_server_settings.public_url).hostname, ]
     return proxy(request, url=raw_url, response_callback=_response_callback,
                  timeout=timeout, allowed_hosts=allowed_hosts, **kwargs)
@@ -544,7 +544,7 @@ def _response_callback(**kwargs):
     content_type_list = ['application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json']
     if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
         _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
-        content = content\
+        content = content.decode('UTF-8')\
             .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
             .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
 
@@ -681,7 +681,7 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
 
     _user, _password = ogc_server_settings.credentials
     req, content = http_client.get(wms_url, user=_user)
-    getcap = content
+    getcap = content.decode('UTF-8')
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         if tolerant and ('ServiceException' in getcap or req.status_code == 404):
             # WARNING Please make sure to have enabled DJANGO CACHE as per
@@ -691,11 +691,11 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
             if access_token:
                 wms_url += ('&access_token=%s' % access_token)
             req, content = http_client.get(wms_url, user=_user)
-            getcap = content
+            getcap = content.decode('UTF-8')
 
     if 'ServiceException' in getcap or req.status_code == 404:
         return None
-    return getcap
+    return getcap.encode('UTF-8')
 
 
 def format_online_resource(workspace, layer, element, namespaces):

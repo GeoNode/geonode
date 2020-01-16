@@ -100,7 +100,7 @@ class Style(models.Model, PermissionLevelMixin):
         else:
             logger.error(
                 "SLD URL is empty for Style %s" %
-                self.name.encode('utf-8'))
+                self.name)
             return None
 
     def get_self_resource(self):
@@ -590,7 +590,7 @@ def pre_delete_layer(instance, sender, **kwargs):
         from geonode.maps.models import MapLayer
         logger.debug(
             "Going to delete associated maplayers for [%s]",
-            instance.alternate.encode('utf-8'))
+            instance.alternate)
         MapLayer.objects.filter(
             name=instance.alternate,
             ows_url=instance.ows_url).delete()
@@ -598,7 +598,7 @@ def pre_delete_layer(instance, sender, **kwargs):
 
     logger.debug(
         "Going to delete the styles associated for [%s]",
-        instance.alternate.encode('utf-8'))
+        instance.alternate)
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(
         content_type=ct,

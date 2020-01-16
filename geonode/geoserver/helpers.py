@@ -30,7 +30,6 @@ except ImportError:
     pass
 from six import (
     string_types,
-    text_type,
     reraise as raise_
 )
 import json
@@ -659,9 +658,9 @@ def gs_slurp(
                 # "workspace": workspace.name,
                 "store": the_store.name,
                 "storeType": the_store.resource_type,
-                "alternate": "%s:%s" % (workspace.name.encode('utf-8'), resource.name.encode('utf-8')),
+                "alternate": "%s:%s" % (workspace.name, resource.name),
                 "title": resource.title or 'No title provided',
-                "abstract": resource.abstract or u"{}".format(_('No abstract provided')).encode('utf-8'),
+                "abstract": resource.abstract or u"{}".format(_('No abstract provided')),
                 "owner": owner,
                 "uuid": str(uuid.uuid4())
             })
@@ -704,7 +703,7 @@ def gs_slurp(
                     print(msg, file=sys.stderr)
                 raise_(
                     Exception,
-                    Exception("Failed to process {}".format(resource.name.encode('utf-8')), e),
+                    Exception("Failed to process {}".format(resource.name), e),
                     sys.exc_info()[2]
                 )
         else:
@@ -887,7 +886,7 @@ def set_attributes(
             logger.debug(
                 "Going to delete [%s] for [%s]",
                 la.attribute,
-                layer.name.encode('utf-8'))
+                layer.name)
             la.delete()
 
     # Add new layer attributes if they don't already exist
@@ -933,7 +932,7 @@ def set_attributes(
                     logger.debug(
                         "Created [%s] attribute for [%s]",
                         field,
-                        layer.name.encode('utf-8'))
+                        layer.name)
     else:
         logger.debug("No attributes found")
 
@@ -958,7 +957,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             logger.debug(tb)
             attribute_map = []
     elif layer.storeType in ["dataStore", "remoteStore", "wmsStore"]:
-        typename = layer.alternate.encode('utf-8') if layer.alternate else layer.typename.encode('utf-8')
+        typename = layer.alternate if layer.alternate else layer.typename
         dft_url = re.sub(r"\/wms\/?$",
                          "/",
                          server_url) + "ows?" + urlencode({"service": "wfs",
@@ -984,7 +983,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 "version": "1.0.0",
                 "request": "GetFeatureInfo",
                 "bbox": ','.join([str(x) for x in layer.bbox]),
-                "LAYERS": layer.alternate.encode('utf-8'),
+                "LAYERS": layer.alternate,
                 "QUERY_LAYERS": typename,
                 "feature_count": 1,
                 "width": 1,
@@ -1008,7 +1007,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 logger.debug(tb)
                 attribute_map = []
     elif layer.storeType in ["coverageStore"]:
-        typename = layer.alternate.encode('utf-8') if layer.alternate else layer.typename.encode('utf-8')
+        typename = layer.alternate if layer.alternate else layer.typename
         dc_url = server_url + "wcs?" + urlencode({
             "service": "wcs",
             "version": "1.1.0",
@@ -1938,32 +1937,19 @@ _esri_types = {
     "esriFieldTypeXML": "xsd:anyType"}
 
 
-def _render_thumbnail(req_body, width=240, height=180):
+def _render_thumbnail(req_body, width=240, height=200):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
     headers = {'Content-type': 'text/html'}
-    # valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
-    # headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+    _default_thumb_size = getattr(
+        settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
     params = dict(width=width, height=height)
     url += "?" + urlencode(params)
-
-    # @todo annoying but not critical
-    # openlayers controls posted back contain a bad character. this seems
-    # to come from a &minus; entity in the html, but it gets converted
-    # to a unicode en-dash but is not uncoded properly during transmission
-    # 'ignore' the error for now as controls are not being rendered...
-    data = spec
-    if isinstance(data, text_type):
-        # make sure any stored bad values are wiped out
-        # don't use keyword for errors - 2.6 compat
-        # though unicode accepts them (as seen below)
-        data = data.encode('ASCII', 'ignore')
-    data = u"{}".format(data).encode('utf-8')
     try:
         req, content = http_client.request(
             url,
             method='POST',
-            data=data,
+            data=spec,
             timeout=60,
             retries=2,
             headers=headers,
@@ -1971,15 +1957,17 @@ def _render_thumbnail(req_body, width=240, height=180):
         # Optimize the Thumbnail size and resolution
         from PIL import Image
         from io import BytesIO
+        from resizeimage import resizeimage
         content_data = BytesIO(content)
         im = Image.open(content_data)
-        im_width, im_height = im.size
-        right = min(width, im_width)
-        bottom = min(height, im_height)
-        size = right, bottom
-        im.thumbnail(size, Image.ANTIALIAS)
+        im.thumbnail(
+            (_default_thumb_size['width'], _default_thumb_size['height']),
+            resample=Image.ANTIALIAS)
+        cover = resizeimage.resize_cover(
+            im,
+            [_default_thumb_size['width'], _default_thumb_size['height']])
         imgByteArr = BytesIO()
-        im.save(imgByteArr, format='JPEG')
+        cover.save(imgByteArr, format='JPEG')
         content = imgByteArr.getvalue()
     except BaseException as e:
         logger.warning('Error generating thumbnail')
@@ -1990,14 +1978,18 @@ def _render_thumbnail(req_body, width=240, height=180):
 
 
 def _prepare_thumbnail_body_from_opts(request_body, request=None):
+    if isinstance(request_body, bytes):
+        request_body = request_body.decode("UTF-8")
     try:
         import mercantile
         from geonode.utils import (_v,
                                    bbox_to_projection,
                                    bounds_to_zoom_level)
         image = None
-        width = 240
-        height = 200
+        _default_thumb_size = getattr(
+            settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
+        width = _default_thumb_size['width']
+        height = _default_thumb_size['height']
 
         if isinstance(request_body, string_types):
             try:
@@ -2041,14 +2033,11 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             width = int(request_body['width'])
         if 'height' in request_body:
             height = int(request_body['height'])
-        if (float(width) / float(height)) > 1.3:
-            height = int(float(width) / 1.3)
         smurl = None
         if 'smurl' in request_body:
             smurl = request_body['smurl']
         if not smurl and getattr(settings, 'THUMBNAIL_GENERATOR_DEFAULT_BG', None):
             smurl = settings.THUMBNAIL_GENERATOR_DEFAULT_BG
-
         layers = None
         thumbnail_create_url = None
         if 'thumbnail_create_url' in request_body:
