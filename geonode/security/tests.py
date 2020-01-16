@@ -707,7 +707,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # test view_resourcebase permission on anonymous user
             request = Request(url)
             response = urlopen(request)
-            self.assertTrue(
+            self.assertEqual(
                 response.info().getheader('Content-Type'),
                 'application/vnd.ogc.se_xml;charset=UTF-8'
             )
@@ -719,7 +719,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 '%s:%s' % ('bobby', 'bob')).replace('\n', '')
             request.add_header("Authorization", "Basic %s" % base64string)
             response = urlopen(request)
-            self.assertTrue(
+            self.assertEqual(
                 response.info().getheader('Content-Type'),
                 'application/vnd.ogc.se_xml;charset=UTF-8'
             )
@@ -732,7 +732,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 '%s:%s' % ('bobby', 'bob')).replace('\n', '')
             request.add_header("Authorization", "Basic %s" % base64string)
             response = urlopen(request)
-            self.assertTrue(response.info().getheader('Content-Type'), 'image/png')
+            self.assertEqual(response.info().getheader('Content-Type'), 'image/png')
 
             # test change_layer_data
             # would be nice to make a WFS/T request and test results, but this
