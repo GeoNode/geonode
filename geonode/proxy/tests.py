@@ -120,7 +120,6 @@ class ProxyTest(GeoNodeBaseTestSupport):
         url = "http://example.org/test/test/../../index.html"
 
         self.client.get('%s?url=%s' % (self.proxy_url, url))
-        assert request_mock.assert_called_once
         assert request_mock.call_args[0][0] == 'http://example.org/index.html'
 
 

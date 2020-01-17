@@ -33,6 +33,7 @@ from defusedxml import lxml as dlxml
 from six import string_types
 
 from geonode import qgis_server
+from geonode.compat import ensure_string
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.utils import check_ogc_backend
@@ -251,7 +252,7 @@ class QGISServerStyle(models.Model, PermissionLevelMixin):
 
         response = requests.get(style_url)
         style_body = etree.tostring(
-            dlxml.fromstring(response.content), pretty_print=True)
+            dlxml.fromstring(ensure_string(response.content)), pretty_print=True)
 
         default_dict = {
             'title': style_xml.xpath(

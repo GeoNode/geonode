@@ -57,12 +57,12 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
 SESSION_EXPIRED_CONTROL_ENABLED = False
-if 'geonode.security.middleware.SessionControlMiddleware' in MIDDLEWARE:
-    _middleware = list(MIDDLEWARE)
-    _middleware.remove('geonode.security.middleware.SessionControlMiddleware')
-    MIDDLEWARE = tuple(_middleware)
+# if 'geonode.security.middleware.SessionControlMiddleware' in MIDDLEWARE:
+#     _middleware = list(MIDDLEWARE)
+#     _middleware.remove('geonode.security.middleware.SessionControlMiddleware')
+#     MIDDLEWARE = tuple(_middleware)
 
-# Django 1.11 ParallelTestSuite
+# Django ParallelTestSuite
 TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
 TEST_RUNNER_KEEPDB = os.environ.get('TEST_RUNNER_KEEPDB', 1)
 TEST_RUNNER_PARALLEL = os.environ.get('TEST_RUNNER_PARALLEL', 1)

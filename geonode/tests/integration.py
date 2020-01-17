@@ -47,6 +47,7 @@ from geonode.layers.utils import (
 )
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
+from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
 from geonode.base.populate_test_data import all_public
@@ -1000,7 +1001,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 vector_replace_url, post_data)
             # TODO: This should really return a 400 series error with the json dict
             self.assertEqual(response.status_code, 400)
-            response_dict = json.loads(response.content)
+            response_dict = json.loads(ensure_string(response.content))
             self.assertEqual(response_dict['success'], False)
 
             # test replace a vector with a different vector
@@ -1022,7 +1023,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                  'charset': 'UTF-8',
                  'permissions': json.dumps(post_permissions)
                  })
-            response_dict = json.loads(response.content)
+            response_dict = json.loads(ensure_string(response.content))
 
             if not response_dict['success'] and 'unknown encoding' in \
                     response_dict['errors']:
@@ -1051,14 +1052,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                      'charset': 'UTF-8',
                      'permissions': json.dumps(post_permissions)
                     })
-                response_dict = json.loads(response.content)
+                response_dict = json.loads(ensure_string(response.content))
 
-                if not response_dict['success'] and 'unknown encoding' in \
-                        response_dict['errors']:
-                    pass
-                else:
-                    self.assertEqual(response.status_code, 200)
-                    self.assertEqual(response_dict['success'], True)
+                if response_dict['success']:
                     # Get a Layer object for the newly created layer.
                     new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
 

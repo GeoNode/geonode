@@ -129,11 +129,15 @@ class Client(DjangoTestClient):
 
         try:
             response.raise_for_status()
-        except requests.HTTPError as ex:
-            if debug:
-                logger.error('error in request to %s' % path)
-                logger.error(ex.message)
-            message = ex.message[ex.message.index(':')+2:]
+        except requests.exceptions.HTTPError as ex:
+            message = ''
+            if hasattr(ex, 'message'):
+                if debug:
+                    logger.error('error in request to %s' % path)
+                    logger.error(ex.message)
+                message = ex.message[ex.message.index(':')+2:]
+            else:
+                message = str(ex)
             raise HTTPError(url, response.status_code, message, response.headers, None)
 
         return response

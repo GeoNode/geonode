@@ -47,8 +47,10 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 
 from guardian.shortcuts import get_objects_for_user
+
 from geonode.base.models import ResourceBase
 from geonode.base.auth import get_or_create_token
+from geonode.decorators import logged_in_or_basicauth
 from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
@@ -68,7 +70,6 @@ from .helpers import (get_stores,
                       _stylefilterparams_geowebcache_layer,
                       _invalidate_geowebcache_layer)
 
-from django_basic_auth import logged_in_or_basicauth
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_control
 
@@ -512,7 +513,7 @@ def geoserver_proxy(request,
                     content_type="text/plain",
                     status=401)
             elif downstream_path == 'rest/styles':
-                logger.info(
+                logger.debug(
                     "[geoserver_proxy] Updating Style ---> url %s" %
                     url.geturl())
                 affected_layers = style_update(request, raw_url)
@@ -771,7 +772,7 @@ def get_capabilities(request, layerid=None, user=None,
                 layercap = get_layer_capabilities(layer,
                                                   access_token=access_token,
                                                   tolerant=tolerant)
-                if layercap:  # 1st one, seed with real GetCapabilities doc
+                if layercap is not None:  # 1st one, seed with real GetCapabilities doc
                     try:
                         namespaces = {'wms': 'http://www.opengis.net/wms',
                                       'xlink': 'http://www.w3.org/1999/xlink',
@@ -780,7 +781,7 @@ def get_capabilities(request, layerid=None, user=None,
                         rootdoc = etree.ElementTree(layercap)
                         format_online_resource(workspace, layername, rootdoc, namespaces)
                         service_name = rootdoc.find('.//wms:Service/wms:Name', namespaces)
-                        if service_name:
+                        if service_name is not None:
                             service_name.text = cap_name
                         rootdoc = rootdoc.find('.//wms:Capability/wms:Layer/wms:Layer', namespaces)
                     except Exception as e:
@@ -790,7 +791,7 @@ def get_capabilities(request, layerid=None, user=None,
                             "Error occurred creating GetCapabilities for %s: %s" %
                             (layer.typename, str(e)))
                         rootdoc = None
-                if not layercap or not rootdoc:
+                if layercap is None or not len(layercap) or rootdoc is None or not len(rootdoc):
                     # Get the required info from layer model
                     # TODO: store time dimension on DB also
                     tpl = get_template("geoserver/layer.xml")

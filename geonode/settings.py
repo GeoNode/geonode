@@ -82,13 +82,6 @@ else:
     EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
                               default='django.core.mail.backends.console.EmailBackend')
 
-# This is needed for integration tests, they require
-# geonode to be listening for GeoServer auth requests.
-if django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2:
-    pass
-else:
-    DJANGO_LIVE_TEST_SERVER_ADDRESS = 'localhost:8000'
-
 # Make this unique, and don't share it with anybody.
 _DEFAULT_SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
 SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
@@ -442,7 +435,6 @@ INSTALLED_APPS = (
     'leaflet',
     'bootstrap3_datetime',
     'django_filters',
-    'django_basic_auth',
     'mptt',
     'storages',
     'floppyforms',

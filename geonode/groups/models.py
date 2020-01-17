@@ -146,12 +146,15 @@ class GroupProfile(models.Model):
             self.group, [
                 'base.view_resourcebase', 'base.change_resourcebase'], any_perm=True)
 
+        _queryset = []
         if resource_type:
-            queryset = [
-                item for item in queryset if hasattr(
-                    item,
-                    resource_type)]
-
+            for item in queryset:
+                try:
+                    if hasattr(item, resource_type):
+                        _queryset.append(item)
+                except BaseException as e:
+                    logger.exception(e)
+        queryset = _queryset if _queryset else queryset
         for resource in queryset:
             yield resource
 

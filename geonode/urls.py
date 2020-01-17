@@ -213,9 +213,8 @@ if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     # QGIS Server's urls
     urlpatterns += [  # '',
         url(r'^qgis-server/',
-            include(
-                'geonode.qgis_server.urls',
-                namespace='qgis_server')),
+            include(('geonode.qgis_server.urls', 'geonode.qgis_server'),
+                    namespace='qgis_server')),
     ]
 
 if settings.NOTIFICATIONS_MODULE in settings.INSTALLED_APPS:

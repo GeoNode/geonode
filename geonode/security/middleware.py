@@ -76,8 +76,8 @@ class LoginRequiredMiddleware(object):
     #     return HttpResponse("in exception")
 
     def process_request(self, request):
-        if not request.user.is_authenticated(
-        ) or request.user == get_anonymous_user():
+        if not request.user.is_authenticated or \
+        request.user == get_anonymous_user():
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
                     '{login_path}?next={request_path}'.format(

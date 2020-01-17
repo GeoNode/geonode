@@ -77,8 +77,6 @@ from geonode.settings import (
     MONITORING_ENABLED,
 )
 
-_django_11 = django.VERSION[0] == 1 and django.VERSION[1] >= 11 and django.VERSION[2] >= 2
-
 try:
     from geonode.settings import TEST_RUNNER_KEEPDB, TEST_RUNNER_PARALLEL
     _keepdb = '--keepdb' if TEST_RUNNER_KEEPDB else ''
@@ -152,7 +150,7 @@ def setup_geoserver(options):
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
     if _backend == 'geonode.qgis_server' or 'geonode.geoserver' not in INSTALLED_APPS:
         return
-    if _django_11 and on_travis:
+    if on_travis:
         """Will make use of the docker container for the Integration Tests"""
         pass
     else:
@@ -898,11 +896,8 @@ def test_integration(options):
             call_task('start', options={'settings': settings})
             call_task('setup_data', options={'settings': settings})
         elif not integration_csw_tests and _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
-            if _django_11:
-                sh("cp geonode/upload/tests/test_settings.py geonode/")
-                settings = 'geonode.test_settings'
-            else:
-                settings = 'geonode.upload.tests.test_settings'
+            sh("cp geonode/upload/tests/test_settings.py geonode/")
+            settings = 'geonode.test_settings'
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
                "makemigrations --noinput".format(settings))
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
@@ -925,12 +920,8 @@ def test_integration(options):
             sh('sleep 30')
             settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
 
-        live_server_option = '--liveserver=localhost:8000'
-        if _django_11:
-            live_server_option = ''
-
+        live_server_option = ''
         info("Running the tests now...")
-
         sh(('%s %s manage.py test %s'
             ' %s --noinput %s' % (settings,
                                     prefix,

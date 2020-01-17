@@ -199,10 +199,14 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
     try:
         if sld:
             if isfile(sld):
-                sld = open(sld, "r").read()
+                sld = open(sld, "rb").read()
+            if isinstance(sld, string_types):
+                sld = sld.encode('utf-8')
             dom = etree.XML(sld)
         elif sld_file and isfile(sld_file):
-            sld = open(sld_file, "r").read()
+            sld = open(sld_file, "rb").read()
+            if isinstance(sld, string_types):
+                sld = sld.encode('utf-8')
             dom = dlxml.parse(sld_file)
     except Exception:
         logger.exception("The uploaded SLD file is not valid XML")
@@ -474,7 +478,7 @@ def cascading_delete(cat, layer_name):
         for s in styles:
             if s is not None and s.name not in _default_style_names:
                 try:
-                    logger.info("Trying to delete Style [%s]" % s.name)
+                    logger.debug("Trying to delete Style [%s]" % s.name)
                     cat.delete(s, purge='true')
                     workspace, name = layer_name.split(':') if ':' in layer_name else \
                         (settings.DEFAULT_WORKSPACE, layer_name)
@@ -502,7 +506,7 @@ def cascading_delete(cat, layer_name):
                     cat.reset()  # this resets the coverage readers and unlocks the files
                     cat.delete(store, purge='all', recurse=True)
                     # cat.reload()  # this preservers the integrity of geoserver
-                except FailedRequestError as e:
+                except BaseException as e:
                     # Trying to recursively purge a store may fail
                     # We'll catch the exception and log it.
                     logger.debug(e)
@@ -510,7 +514,7 @@ def cascading_delete(cat, layer_name):
                 try:
                     if not store.get_resources():
                         cat.delete(store, recurse=True)
-                except FailedRequestError as e:
+                except BaseException as e:
                     # Catch the exception and log it.
                     logger.debug(e)
 
@@ -1715,7 +1719,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         line = "Error {0} invalidating GeoWebCache at {1}".format(
             req.status_code, url
         )
-        logger.error(line)
+        logger.debug(line)
 
 
 def style_update(request, url):
@@ -1971,7 +1975,7 @@ def _render_thumbnail(req_body, width=240, height=200):
         content = imgByteArr.getvalue()
     except BaseException as e:
         logger.warning('Error generating thumbnail')
-        logger.exception(e)
+        logger.debug(e)
         return
 
     return content

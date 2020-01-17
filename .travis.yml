@@ -273,6 +273,8 @@ jobs:
   fast_finish: true
 
   allow_failures:
+    - name: "GeoServer-backend Integration Upload Tests"
+    - name: "GeoServer-backend Integration Monitoring Tests"
     - name: "QGis Server-backend Core Modules Smoke Tests"
     - name: "QGis Server-backend Contrib Apps Smoke Tests"
     - name: "QGis Server-backend Integration Tests"
@@ -304,7 +306,7 @@ install:
   - if [ "$TEST_RUN_SELENIUM" = "True" ] && [ "$SPCGEONODE" == "True" ]; then
       :;
     elif [ "$TEST_RUN_SELENIUM" = "True" ]; then
-      pip install -r geonode-selenium/requirements.txt;
+      pip install -r geonode-selenium/requirements.txt --upgrade --no-cache;
       wget https://download.osgeo.org/geotiff/samples/spot/chicago/UTM2GTIF.TIF -P geonode-selenium/data;
       wget https://download.osgeo.org/geotiff/samples/made_up/ntf_nord.tif -P geonode-selenium/data;
       wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -O geckodriver.tar.gz;
@@ -322,7 +324,7 @@ install:
       sudo update-java-alternatives --set java-1.8.0-openjdk-amd64;
       export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");
       export PATH=$JAVA_HOME'bin/java':$PATH;
-      pip install -r requirements.txt --upgrade;
+      pip install -r requirements.txt --upgrade --no-cache;
       pip install -e . --upgrade;
       pip install pygdal==`gdal-config --version`.*;
       pip install codecov;

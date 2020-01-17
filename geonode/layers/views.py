@@ -305,7 +305,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         err_msg = 'The error could not be parsed'
                         upload_session.error = err_msg
                         logger.error("TypeError: can't pickle traceback objects")
-                    upload_session.traceback = traceback.format_exc(tb)
+                    try:
+                        upload_session.traceback = traceback.format_exc(tb)
+                    except BaseException:
+                        pass
                     upload_session.context = log_snippet(CONTEXT_LOG_FILE)
                     upload_session.save()
                     out['traceback'] = upload_session.traceback
@@ -361,17 +364,20 @@ def layer_upload(request, template='upload/layer_upload.html'):
         for _k in _keys:
             if _k in out:
                 if isinstance(out[_k], string_types):
-                    out[_k] = out[_k].decode(layer_charset).encode("utf-8")
+                    out[_k] = out[_k].encode(layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
                 elif isinstance(out[_k], dict):
                     for key, value in out[_k].items():
                         try:
                             item = out[_k][key]
                             # Ref issue #4241
                             if isinstance(item, ErrorList):
-                                out[_k][key] = item.as_text().decode(layer_charset).encode("utf-8")
+                                out[_k][key] = item.as_text().encode(
+                                    layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
                             else:
-                                out[_k][key] = item.decode(layer_charset).encode("utf-8")
-                            out[_k][key.decode(layer_charset).encode("utf-8")] = out[_k].pop(key)
+                                out[_k][key] = item.encode(layer_charset, 'surrogateescape').decode(
+                                    'utf-8', 'surrogateescape')
+                            out[_k][key.encode(layer_charset, 'surrogateescape').decode(
+                                'utf-8', 'surrogateescape')] = out[_k].pop(key)
                         except BaseException as e:
                             logger.exception(e)
 

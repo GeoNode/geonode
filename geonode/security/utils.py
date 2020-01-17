@@ -434,7 +434,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     """
     Sync Guardian permissions to GeoFence.
     """
-    _layer_name = layer.name if layer.name else layer.alternate.split(":")[0]
+    _layer_name = layer.name if layer and hasattr(layer, 'name') else layer.alternate.split(":")[0]
     _layer_workspace = get_layer_workspace(layer)
     # Create new rule-set
     gf_services = {}

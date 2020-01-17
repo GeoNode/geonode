@@ -39,6 +39,7 @@ from django.urls import reverse
 from defusedxml import lxml as dlxml
 from requests import Request
 
+from geonode.compat import ensure_string
 from geonode import qgis_server, geoserver
 from geonode.utils import check_ogc_backend
 from geonode.geoserver.helpers import OGC_Servers_Handler
@@ -795,7 +796,7 @@ def style_list(layer, internal=True, generating_qgis_capabilities=False):
     try:
         response = requests.get(url)
 
-        root_xml = dlxml.fromstring(response.content)
+        root_xml = dlxml.fromstring(ensure_string(response.content))
         styles_xml = root_xml.xpath(
             'wms:Capability/wms:Layer/wms:Layer/wms:Style',
             namespaces={

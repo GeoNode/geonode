@@ -54,7 +54,7 @@ except ImportError:
 import user_agents
 from ipware import get_client_ip
 import pycountry
-from multi_email_field.forms import MultiEmailField
+from geonode.monitoring.forms import MultiEmailField
 
 from django.db.models import Sum, F, Case, When, Max
 
@@ -1251,8 +1251,6 @@ class NotificationCheck(models.Model):
     @classmethod
     def create(cls, name, description, user_threshold, severity=None):
         inst, _ = cls.objects.get_or_create(name=name)
-        if not _:
-            raise ValueError("Alert definition already exists")
         inst.description = description
         user_thresholds = {}
         for (metric_name, field_opt, use_service,
@@ -1274,9 +1272,9 @@ class NotificationCheck(models.Model):
             #  ('request.count', 'min_value', True, True, True, True,
             #    0, None, (100, 200, 500, 1000,)
 
-            metric = Metric.objects.get(name=metric_name)
+            metric, _ = Metric.objects.get_or_create(name=metric_name)
             steps = cls.get_steps(minimum, maximum, thresholds)
-            nm = NotificationMetricDefinition.objects.create(
+            nm, _ = NotificationMetricDefinition.objects.get_or_create(
                 notification_check=inst,
                 metric=metric,
                 description=_description,
@@ -1620,16 +1618,16 @@ class MetricNotificationCheck(models.Model):
             self.metric = metric
             self.check = check
             self.message = message
-            self.name = metric.service_metric.metric.name
+            self.name = metric.service_metric.metric.name if hasattr(metric, 'service_metric') else str(metric)
             self.offending_value = offending_value
             self.threshold_value = threshold_value
-            self.severity = check.notification_check.severity
-            self.check_url = check.notification_check.url
-            self.check_id = check.notification_check.id
+            self.severity = check.notification_check.severity if hasattr(check, 'notification_check') else None
+            self.check_url = check.notification_check.url if hasattr(check, 'notification_check') else None
+            self.check_id = check.notification_check.id if hasattr(check, 'notification_check') else None
             self.spotted_at = datetime.utcnow().replace(tzinfo=pytz.utc)
             self.description = description
-
-            self.valid_from, self.valid_to = metric.valid_from, metric.valid_to
+            self.valid_from = metric.valid_from if hasattr(metric, 'valid_from') else None
+            self.valid_to = metric.valid_to if hasattr(metric, 'valid_to') else None
 
         def __str__(self):
             return "MetricValueError({}: metric {} misses {} check: {})".format(self.severity,
@@ -1650,77 +1648,82 @@ class MetricNotificationCheck(models.Model):
         unit_name = ' {}'.format(m.unit) if not m.is_count else ''
         had_check = False
 
-        def_msg = self.definition.description
-        msg_prefix = []
-        if self.event_type:
-            os = self.event_type
-            if os.is_all or os.is_other:
-                msg_prefix.append("for {} OWS".format(os.name))
-            else:
-                msg_prefix.append("for {} OWS".format(os.name))
-        if self.service:
-            msg_prefix.append("for {} service".format(self.service.name))
-        if self.resource:
-            msg_prefix.append(
-                "for {}[{}] resource".format(
-                    self.resource.name,
-                    self.resource.type))
+        if self.definition:
+            def_msg = self.definition.description
+            msg_prefix = []
+            if self.event_type:
+                os = self.event_type
+                if os.is_all or os.is_other:
+                    msg_prefix.append("for {} OWS".format(os.name))
+                else:
+                    msg_prefix.append("for {} OWS".format(os.name))
+            if self.service:
+                msg_prefix.append("for {} service".format(self.service.name))
+            if self.resource:
+                msg_prefix.append(
+                    "for {}[{}] resource".format(
+                        self.resource.name,
+                        self.resource.type))
 
-        msg_prefix = ' '.join(msg_prefix)
-        description_tmpl = ("{} {} should be {{}} "
-                            "{{:0.0f}}{}, got {{:0.0f}}{} instead").format(msg_prefix,
-                                                                           metric_name,
-                                                                           unit_name,
-                                                                           unit_name)\
-            .strip()
+            msg_prefix = ' '.join(msg_prefix)
+            description_tmpl = ("{} {} should be {{}} "
+                                "{{:0.0f}}{}, got {{:0.0f}}{} instead").format(msg_prefix,
+                                                                               metric_name,
+                                                                               unit_name,
+                                                                               unit_name)\
+                .strip()
 
-        if self.min_value is not None:
-            had_check = True
-            if v < self.min_value:
-                msg = "{} {} {}".format(
-                    def_msg, int(self.min_value), unit_name)
-                description = description_tmpl.format(
-                    'at least', self.min_value, v)
-                raise self.MetricValueError(
-                    metric, self, msg, v, self.min_value, description)
-        if self.max_value is not None:
-            had_check = True
-            if v > self.max_value:
-                msg = "{} {} {}".format(
-                    def_msg, int(self.max_value), unit_name)
-                description = description_tmpl.format(
-                    'at most', self.min_value, v)
-                raise self.MetricValueError(
-                    metric, self, msg, v, self.max_value, description)
+            if v is not None and self.min_value is not None:
+                had_check = True
+                if float(v) < float(self.min_value):
+                    msg = "{} {} {}".format(
+                        def_msg, int(self.min_value), unit_name)
+                    description = description_tmpl.format(
+                        'at least', float(self.min_value), float(v))
+                    raise self.MetricValueError(
+                        metric, self, msg, v, self.min_value, description)
+            if v is not None and self.max_value is not None:
+                had_check = True
+                if float(v) > float(self.max_value):
+                    msg = "{} {} {}".format(
+                        def_msg, int(self.max_value), unit_name)
+                    description = description_tmpl.format(
+                        'at most', float(self.max_value), float(v))
+                    raise self.MetricValueError(
+                        metric, self, msg, v, self.max_value, description)
 
-        if self.max_timeout is not None:
-            had_check = True
+            if self.max_timeout is not None:
+                had_check = True
 
-            # we have to check for now, because valid_on may be in the past,
-            # metric may be at the valid_on point in time
-            valid_on = datetime.utcnow().replace(tzinfo=pytz.utc)
-            metric.valid_to = metric.valid_to.replace(tzinfo=pytz.utc)
-            if (valid_on - metric.valid_to) > self.max_timeout:
-                total_seconds = self.max_timeout.total_seconds()
-                actual_seconds = (valid_on - metric.valid_to).total_seconds()
-                msg = "{} {} seconds".format(def_msg, int(total_seconds))
-                description = description_tmpl.format('recored at most ',
-                                                      '{} seconds ago'.format(
-                                                          total_seconds),
-                                                      '{} seconds'.format(actual_seconds))
-                raise self.MetricValueError(metric, self,
-                                            msg,
-                                            metric.valid_to,
-                                            valid_on,
-                                            description
-                                            )
+                # we have to check for now, because valid_on may be in the past,
+                # metric may be at the valid_on point in time
+                valid_on = datetime.utcnow().replace(tzinfo=pytz.utc)
+                metric.valid_to = metric.valid_to.replace(tzinfo=pytz.utc)
+                if (valid_on - metric.valid_to) > self.max_timeout:
+                    total_seconds = self.max_timeout.total_seconds()
+                    actual_seconds = (valid_on - metric.valid_to).total_seconds()
+                    msg = "{} {} seconds".format(def_msg, int(total_seconds))
+                    description = description_tmpl.format('recored at most ',
+                                                          '{} seconds ago'.format(
+                                                              total_seconds),
+                                                          '{} seconds'.format(actual_seconds))
+                    raise self.MetricValueError(metric,
+                                                self,
+                                                msg,
+                                                metric.valid_to,
+                                                valid_on,
+                                                description)
         if not had_check:
-            raise ValueError(
+            raise self.MetricValueError(
+                metric,
+                self,
+                "",
+                None,
+                None,
                 "Metric check {} is not checking anything".format(self))
 
     def check_metric(self, for_timestamp=None):
         """
-
         """
         if not for_timestamp:
             for_timestamp = datetime.utcnow().replace(tzinfo=pytz.utc)
@@ -1738,9 +1741,13 @@ class MetricNotificationCheck(models.Model):
         else:
             metrics = MetricValue.get_for(**qfilter)
         if not metrics:
-            raise ValueError(
-                "Cannot find metric values for {} on {}".format(
-                    self.metric, for_timestamp))
+            raise self.MetricValueError(
+                self.metric,
+                "",
+                "",
+                None,
+                None,
+                "Cannot find metric values for {} on {}".format(self.metric, for_timestamp))
         for m in metrics:
             self.check_value(m, for_timestamp)
         return True
@@ -1901,8 +1908,8 @@ def do_autoconfigure():
     for host in hosts:
         try:
             h = Host.objects.get(name=host[0])
-            if h.ip != host[1]:
-                log.warning("Different ip. got", h.ip, "instead of", host[1])
+            # if h.ip != host[1]:
+            #     log.warning("Different ip. got", h.ip, "instead of", host[1])
         except Host.DoesNotExist:
             h = Host.objects.create(name=host[0], ip=host[1])
         hosts_map[h.name] = h

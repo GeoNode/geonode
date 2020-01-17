@@ -1528,6 +1528,27 @@ class MenuItem(models.Model):
         blank=False
     )
 
+    def __eq__(self, other):
+        return self.order == other.order
+
+    def __ne__(self, other):
+        return self.order != other.order
+
+    def __lt__(self, other):
+        return self.order < other.order
+
+    def __le__(self, other):
+        return self.order <= other.order
+
+    def __gt__(self, other):
+        return self.order > other.order
+
+    def __ge__(self, other):
+        return self.order >= other.order
+
+    def __hash__(self):
+        return hash(self.url)
+
     def __unicode__(self):
         return u"{0}".format(self.__str__())
 

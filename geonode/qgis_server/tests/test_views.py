@@ -39,6 +39,7 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.urls import reverse
 
 from geonode import qgis_server
+from geonode.compat import ensure_string
 from geonode.decorators import on_ogc_backend
 from geonode.layers.utils import file_upload
 from geonode.maps.models import Map
@@ -93,7 +94,7 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
             reverse('qgis_server:download-zip', kwargs=params))
         self.assertEqual(response.status_code, 200)
         try:
-            f = io.StringIO(response.content)
+            f = io.StringIO(ensure_string(response.content))
             zipped_file = zipfile.ZipFile(f, 'r')
 
             for one_file in zipped_file.namelist():
@@ -109,7 +110,7 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
             reverse('qgis_server:legend', kwargs=params))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
-        self.assertEqual(what('', h=response.content), 'png')
+        self.assertEqual(what('', h=ensure_string(response.content)), 'png')
 
         # Tile
         coordinates = {'z': '11', 'x': '1576', 'y': '1054'}
@@ -118,7 +119,7 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
             reverse('qgis_server:tile', kwargs=coordinates))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
-        self.assertEqual(what('', h=response.content), 'png')
+        self.assertEqual(what('', h=ensure_string(response.content)), 'png')
 
         # Tile 404
         response = self.client.get(
@@ -132,7 +133,7 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
             reverse('qgis_server:geotiff', kwargs=params))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/tiff')
-        self.assertEqual(what('', h=response.content), 'tiff')
+        self.assertEqual(what('', h=ensure_string(response.content)), 'tiff')
 
         # Layer is already on the database
         # checking the Link
@@ -182,7 +183,10 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'application/json')
         # Should return a default style list
-        actual_result = json.loads(response.content)
+        content = ensure_string(response.content)
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        actual_result = json.loads(content)
         actual_result = [s['name'] for s in actual_result]
         expected_result = ['default']
         self.assertEqual(set(expected_result), set(actual_result))
@@ -214,7 +218,10 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
             reverse('qgis_server:set-thumbnail', kwargs=params),
             data=data)
         self.assertEqual(response.status_code, 200)
-        retval = json.loads(response.content)
+        content = ensure_string(response.content)
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        retval = json.loads(content)
         expected_retval = {
             'success': True
         }
@@ -232,7 +239,7 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
             reverse('qgis_server:layer-request', kwargs=params), query_string)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
-        self.assertEqual(what('', h=response.content), 'png')
+        self.assertEqual(what('', h=ensure_string(response.content)), 'png')
 
         # OGC Server for the Geonode instance
         # GetLegendGraphics is a shortcut when using the main OGC server.
@@ -247,7 +254,7 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
             reverse('qgis_server:request'), query_string)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
-        self.assertEqual(what('', h=response.content), 'png')
+        self.assertEqual(what('', h=ensure_string(response.content)), 'png')
 
         # WMS GetCapabilities
         query_string = {
@@ -258,19 +265,19 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
 
         response = self.client.get(
             reverse('qgis_server:request'), query_string)
-        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(response.status_code, 200, ensure_string(response.content))
         self.assertEqual(
-            response.content, 'GetCapabilities is not supported yet.')
+            ensure_string(response.content), 'GetCapabilities is not supported yet.')
 
         query_string['LAYERS'] = uploaded.name
 
         response = self.client.get(
             reverse('qgis_server:request'), query_string)
-        get_capabilities_content = response.content
+        get_capabilities_content = ensure_string(response.content)
 
         # Check xml content
-        self.assertEqual(response.status_code, 200, response.content)
-        root = dlxml.fromstring(response.content)
+        self.assertEqual(response.status_code, 200, ensure_string(response.content))
+        root = dlxml.fromstring(ensure_string(response.content))
         layer_xml = root.xpath(
             'wms:Capability/wms:Layer/wms:Layer/wms:Name',
             namespaces={'wms': 'http://www.opengis.net/wms'})
@@ -290,13 +297,13 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
         response = self.client.get(legend_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
-        self.assertEqual(what('', h=response.content), 'png')
+        self.assertEqual(what('', h=ensure_string(response.content)), 'png')
 
         # Check get capabilities using helper returns the same thing
         response = requests.get(wms_get_capabilities_url(
             uploaded, internal=False))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(get_capabilities_content, response.content)
+        self.assertEqual(get_capabilities_content, ensure_string(response.content))
 
         # WMS GetMap
         query_string = {
@@ -312,10 +319,10 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
         }
         response = self.client.get(
             reverse('qgis_server:request'), query_string)
-        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(response.status_code, 200, ensure_string(response.content))
         self.assertEqual(
-            response.get('Content-Type'), 'image/png', response.content)
-        self.assertEqual(what('', h=response.content), 'png')
+            response.get('Content-Type'), 'image/png', ensure_string(response.content))
+        self.assertEqual(what('', h=ensure_string(response.content)), 'png')
 
         # End of the test, we should remove every files related to the test.
         uploaded.delete()
@@ -345,8 +352,10 @@ class QGISServerViewsTest(GeoNodeBaseTestSupport):
             content_type='application/json')
         # map is successfully saved
         self.assertEqual(response.status_code, 200)
-
-        map_id = json.loads(response.content).get('id')
+        content = ensure_string(response.content)
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        map_id = json.loads(content).get('id')
 
         map = Map.objects.get(id=map_id)
 
@@ -451,7 +460,10 @@ class QGISServerStyleManagerTest(GeoNodeBaseTestSupport):
                 })
             response = self.client.get(style_list_url)
             self.assertEqual(response.status_code, 200)
-            actual_list_style = json.loads(response.content)
+            content = ensure_string(response.content)
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            actual_list_style = json.loads(content)
 
             # There will be a default style
             self.assertEqual(
@@ -523,7 +535,10 @@ class QGISServerStyleManagerTest(GeoNodeBaseTestSupport):
         expected_default_style_retval = {
             'name': 'new_style',
         }
-        actual_default_style_retval = json.loads(response.content)
+        content = ensure_string(response.content)
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        actual_default_style_retval = json.loads(content)
 
         for key, value in expected_default_style_retval.items():
             self.assertEqual(actual_default_style_retval[key], value)
@@ -563,7 +578,7 @@ class ThumbnailGenerationTest(GeoNodeBaseTestSupport):
         thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
         thumbnail_path = os.path.join(thumbnail_dir, 'layer-thumb.png')
 
-        layer.save_thumbnail(thumbnail_path, response.content)
+        layer.save_thumbnail(thumbnail_path, ensure_string(response.content))
 
         # Check thumbnail created
         self.assertTrue(os.path.exists(thumbnail_path))
@@ -610,8 +625,10 @@ class ThumbnailGenerationTest(GeoNodeBaseTestSupport):
             content_type='application/json')
 
         self.assertEqual(response.status_code, 200)
-
-        map_id = json.loads(response.content).get('id')
+        content = ensure_string(response.content)
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        map_id = json.loads(content).get('id')
 
         map = Map.objects.get(id=map_id)
 
@@ -635,7 +652,7 @@ class ThumbnailGenerationTest(GeoNodeBaseTestSupport):
         thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
         thumbnail_path = os.path.join(thumbnail_dir, 'map-thumb.png')
 
-        map.save_thumbnail(thumbnail_path, response.content)
+        map.save_thumbnail(thumbnail_path, ensure_string(response.content))
 
         # Check thumbnail created
         self.assertTrue(os.path.exists(thumbnail_path))

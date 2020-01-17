@@ -312,7 +312,7 @@ def fullurl(context, url):
 @register.simple_tag
 def get_menu(placeholder_name):
     menus = {
-        m: MenuItem.objects.filter(menu=m)
+        m: list(MenuItem.objects.filter(menu=m))
         for m in Menu.objects.filter(placeholder__name=placeholder_name)
     }
     return OrderedDict(sorted(menus.items(), key=lambda k_v1: (k_v1[1], k_v1[0])))
@@ -323,7 +323,7 @@ def render_nav_menu(placeholder_name):
     menus = {}
     try:
         menus = {
-            m: MenuItem.objects.filter(menu=m)
+            m: list(MenuItem.objects.filter(menu=m))
             for m in Menu.objects.filter(placeholder__name=placeholder_name)
         }
     except BaseException:

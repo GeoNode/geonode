@@ -260,9 +260,11 @@ def geoserver_post_save_local(instance, *args, **kwargs):
            * Download links (WMS, WCS or WFS and KML)
            * Styles (SLD)
         """
-        # instance.name = instance.name or gs_resource.name
-        # instance.title = instance.title or gs_resource.title
-        instance.abstract = gs_resource.abstract or ''
+        try:
+            instance.abstract = gs_resource.abstract or ''
+        except BaseException as e:
+            logger.exception(e)
+            instance.abstract = ''
         instance.workspace = gs_resource.store.workspace.name
         instance.store = gs_resource.store.name
 
@@ -275,8 +277,8 @@ def geoserver_post_save_local(instance, *args, **kwargs):
             instance.bbox_y0 = bbox[2]
             instance.bbox_y1 = bbox[3]
             instance.srid = bbox[4]
-        except BaseException:
-            pass
+        except BaseException as e:
+            logger.exception(e)
 
     if instance.srid:
         instance.srid_url = "http://www.spatialreference.org/ref/" + \
@@ -360,12 +362,12 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # some thumbnail generators will update thumbnail_url.  If so, don't
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
     if gs_resource:
-        logger.info("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
+        logger.debug("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
         set_resource_default_links(instance, instance, prune=True)
 
         if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
                 'thumbnail_url' in kwargs['update_fields']:
-            logger.info("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
+            logger.debug("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
             create_gs_thumbnail(instance, overwrite=True)
 
     # Updating HAYSTACK Indexes if needed
@@ -398,5 +400,5 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 def geoserver_post_save_map(instance, sender, created, **kwargs):
     instance.set_missing_info()
     if not created:
-        logger.info("... Creating Thumbnail for Map [%s]" % (instance.title))
+        logger.debug("... Creating Thumbnail for Map [%s]" % (instance.title))
         create_gs_thumbnail(instance, overwrite=False, check_bbox=True)

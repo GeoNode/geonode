@@ -186,11 +186,11 @@ xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegen
         kwargs = {'content': content,
                   'status': 200,
                   'content_type': 'application/xml'}
-        _content = _response_callback(**kwargs)
+        _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall('http://localhost:8000/gs/ows', str(_content)))
 
         kwargs = {'content': content,
                   'status': 200,
                   'content_type': 'text/xml; charset=UTF-8'}
-        _content = _response_callback(**kwargs)
+        _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall('http://localhost:8000/gs/ows', str(_content)))

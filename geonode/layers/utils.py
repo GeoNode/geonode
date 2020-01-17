@@ -315,8 +315,8 @@ def get_valid_name(layer_name):
         possible_chars = string.ascii_lowercase + string.digits
         suffix = "".join([choice(possible_chars) for i in range(4)])
         proposed_name = '%s_%s' % (name, suffix)
-        logger.warning('Requested name already used; adjusting name '
-                       '[%s] => [%s]', layer_name, proposed_name)
+        logger.debug('Requested name already used; adjusting name '
+                     '[%s] => [%s]', layer_name, proposed_name)
     else:
         logger.debug("Using name as requested")
 

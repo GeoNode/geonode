@@ -44,6 +44,7 @@ from geonode.utils import (GXPMapBase,
                            num_encode)
 
 from geonode import geoserver, qgis_server  # noqa
+from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
 
 from deprecated import deprecated
@@ -172,6 +173,8 @@ class Map(ResourceBase, GXPMapBase):
 
         template_name = hookset.update_from_viewer(conf, context=context)
         conf = context['config']
+        if not isinstance(conf, dict):
+            conf = json.loads(ensure_string(conf))
 
         self.title = conf['title'] if 'title' in conf else conf['about']['title']
         self.abstract = conf['abstract'] if 'abstract' in conf else conf['about']['abstract']

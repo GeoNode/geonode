@@ -36,7 +36,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.contrib.auth.models import Group
-from geonode.base.models import License, Region
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -44,11 +43,13 @@ from .forms import DocumentCreateForm
 
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
-from geonode.documents.models import Document, DocumentResourceLink
-from geonode.documents.forms import DocumentFormMixin
-from geonode.base.populate_test_data import create_models
-from geonode.tests.utils import NotificationsTestsHelper
+from geonode.compat import ensure_string
+from geonode.base.models import License, Region
 from geonode.documents import DocumentsAppConfig
+from geonode.documents.forms import DocumentFormMixin
+from geonode.tests.utils import NotificationsTestsHelper
+from geonode.base.populate_test_data import create_models
+from geonode.documents.models import Document, DocumentResourceLink
 
 
 class DocumentsTest(GeoNodeBaseTestSupport):
@@ -66,8 +67,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         super(DocumentsTest, self).setUp()
         create_models('map')
         self.imgfile = io.BytesIO(
-            'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
-            '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
+            b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
+            b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
         self.anonymous_user = get_anonymous_user()
 
     def test_create_document_with_no_rel(self):
@@ -75,7 +76,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         f = SimpleUploadedFile(
             'test_img_file.gif',
-            self.imgfile.read().encode("UTF-8"),
+            self.imgfile.read(),
             'image/gif')
 
         superuser = get_user_model().objects.get(pk=2)
@@ -90,7 +91,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         """Tests the creation of a document with no a map related"""
         f = SimpleUploadedFile(
             'test_img_file.gif',
-            self.imgfile.read().encode("UTF-8"),
+            self.imgfile.read(),
             'image/gif')
 
         superuser = get_user_model().objects.get(pk=2)
@@ -193,7 +194,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         file_data = {
             'doc_file': SimpleUploadedFile(
                 'test_img_file.gif',
-                self.imgfile.read().encode("UTF-8"),
+                self.imgfile.read(),
                 'image/gif')}
         form = DocumentCreateForm(form_data, file_data)
         self.assertTrue(form.is_valid())
@@ -240,14 +241,14 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         log = self.client.login(username='bobby', password='bob')
         self.assertTrue(log)
         response = self.client.get(reverse('document_upload'))
-        self.assertTrue('Upload Documents' in response.content)
+        self.assertTrue('Upload Documents' in ensure_string(response.content))
 
     def test_document_isuploaded(self):
         """/documents/upload -> Test uploading a document"""
 
         f = SimpleUploadedFile(
             'test_img_file.gif',
-            self.imgfile.read().encode("UTF-8"),
+            self.imgfile.read(),
             'image/gif')
         m = Map.objects.all()[0]
 
@@ -298,7 +299,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # Setup some document names to work with
         f = SimpleUploadedFile(
             'test_img_file.gif',
-            self.imgfile.read().encode("UTF-8"),
+            self.imgfile.read(),
             'image/gif')
 
         superuser = get_user_model().objects.get(pk=2)
@@ -320,7 +321,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         # Test that GET returns permissions
         response = self.client.get(reverse('resource_permissions', args=(document_id,)))
-        assert('permissions' in response.content)
+        assert('permissions' in ensure_string(response.content))
 
         # Test that a user is required to have
         # documents.change_layer_permissions
@@ -562,15 +563,15 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
         create_models('layer')
 
         self.test_file = io.BytesIO(
-            'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
-            '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
+            b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
+            b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
         )
 
     def test_create_document_with_links(self):
         """Tests the creation of document links."""
         f = SimpleUploadedFile(
             'test_img_file.gif',
-            self.test_file.read().encode("UTF-8"),
+            self.test_file.read(),
             'image/gif'
         )
 
