@@ -684,7 +684,10 @@ def view(req, step):
             if step == 'final':
                 delete_session = True
                 try:
-                    resp_js = json.loads(resp.content)
+                    content = resp.content
+                    if isinstance(content, bytes):
+                        content = content.decode('UTF-8')
+                    resp_js = json.loads(content)
                     delete_session = resp_js.get('status') != 'pending'
 
                     if delete_session:

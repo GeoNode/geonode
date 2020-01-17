@@ -702,7 +702,10 @@ class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
 
         r = self.client.get(api_url)
         self.assertEqual(r.status_code, 200)
-        data = json.loads(r.content)
+        content = r.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        data = json.loads(content)
         self.assertEqual(
             data['meta']['total_count'],
             GroupCategory.objects.all().count())
@@ -767,7 +770,10 @@ class GroupProfileTest(GeoNodeBaseTestSupport):
             reverse("api_dispatch_list",
                     kwargs={"api_name": "api", "resource_name": "groups"})
         )
-        response_payload = json.loads(response.content)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        response_payload = json.loads(content)
         returned = response_payload["objects"]
         group_profile = [
             g["group_profile"] for g in returned if
@@ -793,7 +799,10 @@ class GroupProfileTest(GeoNodeBaseTestSupport):
             reverse("api_dispatch_list",
                     kwargs={"api_name": "api", "resource_name": "groups"})
         )
-        response_payload = json.loads(response.content)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        response_payload = json.loads(content)
         returned = response_payload["objects"]
         group_profile = [
             g["group_profile"] for g in returned if

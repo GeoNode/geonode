@@ -1130,7 +1130,10 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
                 files['layer_title'] = 'test layer'
                 resp = self.client.post(layer_upload_url, data=files)
             self.assertEqual(resp.status_code, 200)
-            data = json.loads(resp.content)
+            content = resp.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            data = json.loads(content)
             lname = data['url'].split(':')[-1]
             _l = Layer.objects.get(name=lname)
 
@@ -1158,7 +1161,10 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
                 files['layer_title'] = 'test layer'
                 resp = self.client.post(layer_upload_url, data=files)
             self.assertEqual(resp.status_code, 200)
-            data = json.loads(resp.content)
+            content = resp.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            data = json.loads(content)
             lname = data['url'].split(':')[-1]
             _l = Layer.objects.get(name=lname)
 
@@ -1313,7 +1319,10 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
         # Check response status code
         self.assertEqual(resp.status_code, 200)
         # Retrieve the layer from DB
-        data = json.loads(resp.content)
+        content = resp.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        data = json.loads(content)
         # Check success
         self.assertTrue(data['success'])
         _lname = data['url'].split(':')[-1]

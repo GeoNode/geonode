@@ -138,7 +138,10 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(reverse('download', args=(layer.id,)))
         # Espected 404 since there are no files available for this layer
         self.assertEqual(response.status_code, 404)
-        data = response.content
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        data = content
         self.assertTrue(
             "No files have been found for this resource. Please, contact a system administrator." in data)
 
@@ -160,5 +163,8 @@ class OWSApiTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(q.count(), 3)
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
-        data = json.loads(resp.content)
+        content = resp.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        data = json.loads(content)
         self.assertTrue(len(data['data']), q.count())

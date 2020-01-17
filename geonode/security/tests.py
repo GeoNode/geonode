@@ -359,7 +359,10 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'resources': [layer.id, layer2.id]
         }
         resp = self.client.post(self.bulk_perms_url, data)
-        self.assertTrue(layer2.title in json.loads(resp.content)['not_changed'])
+        content = resp.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        self.assertTrue(layer2.title in json.loads(content)['not_changed'])
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_perm_specs_synchronization(self):
@@ -1331,7 +1334,10 @@ class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             resp = self.client.post(layer_upload_url, data=files)
         # Check the response is OK
         self.assertEqual(resp.status_code, 200)
-        data = json.loads(resp.content)
+        content = resp.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        data = json.loads(content)
         lname = data['url'].split(':')[-1]
         self._l = Layer.objects.get(name=lname)
 

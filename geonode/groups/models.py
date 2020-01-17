@@ -106,7 +106,10 @@ class GroupProfile(models.Model):
         super(GroupProfile, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        Group.objects.filter(name=self.slug).delete()
+        try:
+            Group.objects.filter(name=str(self.slug)).delete()
+        except BaseException as e:
+            logger.exception(e)
         super(GroupProfile, self).delete(*args, **kwargs)
 
     @classmethod
