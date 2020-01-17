@@ -1401,7 +1401,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'geoext':
         }
         MAP_BASELAYERS.append(BASEMAP)
 
-
     if GOOGLE_API_KEY:
         BASEMAP = {
             'source': {
