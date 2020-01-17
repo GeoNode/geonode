@@ -540,11 +540,16 @@ def _response_callback(**kwargs):
 
     # Replace Proxy URL
     content_type_list = ['application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json']
-    if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
-        _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
-        content = content\
-            .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
-            .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
+    try:
+        if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
+            _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            content = content\
+                .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
+                .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
+    except BaseException as e:
+        logger.exception(e)
 
     if 'affected_layers' in kwargs and kwargs['affected_layers']:
         for layer in kwargs['affected_layers']:
