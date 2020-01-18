@@ -14,13 +14,15 @@ The steps to be followed are:
 5- Install and start Geoserver
 6- Start GeoNode
 
-.. note:: The following commands/steps will be executed on your terminal 
+.. note:: 
+    The following commands/steps will be executed on your terminal 
 
-.. warning:: If you have a running GeoNode service, you will need to stop it before starting the following steps. To stop GeoNode you will need to run:
+.. warning:: 
+    If you have a running GeoNode service, you will need to stop it before starting the following steps. To stop GeoNode you will need to run:
 
 .. code-block:: shell 
-service apahe2 stop   # or your installed server
-service tomcat7 stop  # or your version of tomcat 
+    service apahe2 stop   # or your installed server
+    service tomcat7 stop  # or your version of tomcat 
 
 
 Install GeoNode-Project for development
@@ -32,82 +34,80 @@ Installation steps
 1- Install build tools and libraries
 
 .. code-block:: shell
-$ sudo apt-get install -y build-essential libxml2-dev libxslt1-dev libpq-dev zlib1g-dev
+    $ sudo apt-get install -y build-essential libxml2-dev libxslt1-dev libpq-dev zlib1g-dev
 
 
 2- Install dependencies and supporting tools
 
 Install python native libraries and tools
 .. code-block:: shell
-sudo apt-get install -y python-dev python-pil python-lxml python-pyproj python-shapely python-nose python-httplib2 python-pip software-properties
+    sudo apt-get install -y python-dev python-pil python-lxml python-pyproj python-shapely python-nose python-httplib2 python-pip software-properties-common
 
 Install python virtual environment
 .. code-block:: shell
-$ sudo pip install virtualenvwrapper
+    $ sudo pip install virtualenvwrapper
 
 Install postgresql and postgis
 
 .. code-block:: shell
-$ sudo apt-get install postgresql-10 postgresql-10-postgis-2.4
+    $ sudo apt-get install postgresql-10 postgresql-10-postgis-2.4
 
 Change postgres password expiry and set a pasword  
 
 .. code-block:: shell
-$ sudo passwd -u postgres # change password expiry infromation
-$ sudo passwd postgres # change unix password for postgres
+    $ sudo passwd -u postgres # change password expiry infromation
+    $ sudo passwd postgres # change unix password for postgres
 
 
 Create geonode role and database
 .. code-block:: shell
-$ su postgres
-$ createdb geonode_dev
-$ createdb geonode_dev-imports
-$ psql
-  postgres=#
-  postgres=# \password postgres
-  postgres=# CREATE USER geonode_dev WITH PASSWORD 'geonode_dev'; # should be same as password in setting.py
-  postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode_dev" to geonode_dev;
-  postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode_dev-imports" to geonode_dev;
-  postgres=# \q
+    $ su postgres
+    $ createdb geonode_dev
+    $ createdb geonode_dev-imports
+    $ psql
+        postgres=#
+        postgres=# \password postgres
+        postgres=# CREATE USER geonode_dev WITH PASSWORD 'geonode_dev'; # should be same as password in setting.py
+        postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode_dev" to geonode_dev;
+        postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode_dev-imports" to geonode_dev;
+        postgres=# \q
+    $ psql -d geonode_dev-imports -c 'CREATE EXTENSION postgis;'
+    $ psql -d geonode_dev-imports -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
+    $ psql -d geonode_dev-imports -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
 
-$ psql -d geonode_dev-imports -c 'CREATE EXTENSION postgis;'
-$ psql -d geonode_dev-imports -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
-$ psql -d geonode_dev-imports -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
-
-$ exit
+    $ exit
 
 
 Edit PostgreSQL configuration file
 
 .. code-block:: shell
-sudo gedit /etc/postgresql/10/main/pg_hba.conf
+    sudo gedit /etc/postgresql/10/main/pg_hba.conf
 
 
 Scroll to the bottom of the file and edit this line
 
 .. code-block:: shell
-
-# "local" is for Unix domain socket connections only
-local   all             all                            peer
+    # "local" is for Unix domain socket connections only
+    local   all             all                            peer
 
 As follows
 .. code-block:: shell
-# "local" is for Unix domain socket connections only
-local   all             all                                trust
+    # "local" is for Unix domain socket connections only
+    local   all             all                                trust
 
 Then restart PostgreSQL to make the changes effective
 .. code-block:: shell
-sudo service postgresql restart
+    sudo service postgresql restart
 
 Java dependencies
 
 .. code-block:: shell
-$ sudo apt-get install -y openjdk-11-jdk --no-install-recommends
+    $ sudo apt-get install -y openjdk-11-jdk --no-install-recommends
 
 
 Install supporting tools
-
-$ sudo apt-get install -y ant maven git gettext
+.. code-block:: shell
+    $ sudo apt-get install -y ant maven git gettext
 
 
 3- Setup Python virtual environment
@@ -148,7 +148,7 @@ Set up the local virtual environment for Geonode
 To download the latest geonode version from github, the command clone is used
 
 .. Note::
-If you are following the GeoNode training, skip the following command. You can find the cloned repository in /home/geonode/dev
+    If you are following the GeoNode training, skip the following command. You can find the cloned repository in /home/geonode/dev
 
 .. code-block:: shell
     $ git clone https://github.com/GeoNode/geonode.git
@@ -181,37 +181,35 @@ Create local_settings.py
 
 Copy the sample file /home/geonode/dev/geonode/geonode/local_settings.py.geoserver.sample and rename it to be local_settings.py 
 .. code-block:: shell
-$ cd /home/geonode/dev/geonode
-$ cp geonode/local_settings.py.geoserver.sample geonode/local_settings.py
-$ gedit geonode/local_settings.py
+    $ cd /home/geonode/dev/geonode
+    $ cp geonode/local_settings.py.geoserver.sample geonode/local_settings.py
+    $ gedit geonode/local_settings.py
 
 In the local_settings.py file, add the following line after the import statements:
 
 
 .. code-block:: python
-
-SITEURL = "http://localhost:8000/"
+    SITEURL = "http://localhost:8000/"
 
 
 In the DATABASES dictionary under the 'default' key, change only the values for the keys NAME, USER and PASSWORD to be as follows:
 .. code-block:: python
-DATABASES = {
+    DATABASES = {
     'default': {
-         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-         'NAME': 'geonode_dev',
-         'USER': 'geonode_dev',
-         'PASSWORD': 'geonode_dev',
-         .......
-         ......
-         .....
-         ....
-         ...
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'geonode_dev',
+        'USER': 'geonode_dev',
+        'PASSWORD': 'geonode_dev',
+        .......
+        ......
+        .....
+        ....
+        ...
      },
 
 
 In the DATABASES dictionary under the 'datastore' key, change only the values for the keys NAME, USER and PASSWORD to be as follows:
 .. code-block:: python
-
     # vector datastore for uploads
     'datastore' : {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
@@ -225,12 +223,12 @@ In the DATABASES dictionary under the 'datastore' key, change only the values fo
         ....
         ...
     }
-}
+    }
 
 
 In the CATALOGUE dictionary under the 'default' key, uncomment the USER and PASSWORD keys to activate the credentials for GeoNetwork as follows:
-
-CATALOGUE = {
+.. code-block:: python
+    CATALOGUE = {
     'default': {
         # The underlying CSW implementation
         # default is pycsw in local mode (tied directly to GeoNode Django DB)
@@ -252,8 +250,8 @@ CATALOGUE = {
         'PASSWORD': 'admin',
 
         # 'ALTERNATES_ONLY': True,
-    }
-}
+        }
+        }
 
 
 5- Install and Start Geoserver 
@@ -261,8 +259,8 @@ CATALOGUE = {
 From the virtual environment, first you need to align the database structure using the following command :
 
 .. code-block:: shell
-$ cd /home/geonode/dev/geonode
-$ python manage.py migrate
+    $ cd /home/geonode/dev/geonode
+    $ python manage.py migrate
 
 .. warning::
 If the start fails because of an import error related to osgeo or libgeos, then please consult the `Install GDAL for Development <http://https://training.geonode.geo-solutions.it/005_dev_workshop/004_devel_env/gdal_install.html>`_ 
@@ -271,7 +269,7 @@ If the start fails because of an import error related to osgeo or libgeos, then 
 then setup GeoServer using the following command:
 
 .. code-block:: shell
-$ paver setup
+    $ paver setup
 
 
 6- Now we can start our geonode instance
@@ -283,7 +281,7 @@ $ paver setup
     service tomcat7 stop
 
 .. code-block:: shell
-$ paver start
+    $ paver start
 
 Now you can visit the geonode site by typing http://localhost:8000 into your browser window
 
