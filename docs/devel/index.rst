@@ -18,6 +18,9 @@ How to Develop
 
 
 .. toctree::
-    :maxdepth: 7
+    :maxdepth: 2
 
     workshops/index
+
+
+This documentation helps developers to install GeoNode-Core and GeoNode-Project from different scenarios. GeoNode-Project can be installed on top of GeoNode-Core if already installed. Also GeoNode-Project can be installed from scratch as it has GeoNode-Core as a prerequisit.
