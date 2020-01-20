@@ -28,7 +28,6 @@ In this example, GeoNode-Project is cloned to create a template instance in whic
 .. code-block:: shell
     
     $ django-admin.py startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -e py,rst,json,yml,ini,env,sample -n Dockerfile
-
 Here, django-admin is used with startproject option to create my_geonode project copying the template which is passed as GeoNode-project Github repo. It also includes "py,rst,json,yml,ini,env,sample" extensions
 
 2- Once the cloning finished, the next step is to install the GeoNode-Project we just downloaded as follows: 
@@ -44,7 +43,6 @@ Here, django-admin is used with startproject option to create my_geonode project
     
     $ cd /home/geonode/my_geonode
     $ paver setup
-
 
 4- Note the GeoNode database connection parameters mentioned in the local_settings.py configuration file. If not found, copy local_settings.py.sample and rename it to local_settings.py then use psql to create the required user and grant the required previleges as follows:
 
@@ -82,6 +80,7 @@ Which means you have some sql statements not executed yet and you need to run th
 .. warning:: If encountered this message: (Invalid HTTP_HOST header: '0.0.0.0:8000'. You may need to add u'0.0.0.0' to ALLOWED_HOSTS) It can be fixed in the local_settings.py file
 
 .. code-block:: shell
+    
     $ python manage.py createsuperuser
     $ Username: admin
     $ Email address: admin@admin.com
@@ -131,7 +130,6 @@ Edit the site_base.html file in the templates folder and uncomment the list item
      <a href="{{ PROJECT_ROOT }}app">App</a>
     </li>
     {% endcomment %}
-
 To:
 
 .. code-block:: python
@@ -139,7 +137,6 @@ To:
     <li>
      <a href="{{ PROJECT_ROOT }}/geocollections">Geocollections</a>
     </li>
-
 
 On browser refresh you will see a new entry in the nav bar which is persistent to the whole site.
 
@@ -156,7 +153,6 @@ For the layers list page we can add a folder named "layers" into the template fo
     cp geonode/geonode/layers/templates/layers/layer_list.html  my_geonode/templates/layers/layer_list.html
     
     vim my_geonode/templates/layers/layer_list.html
-
 For example change in page title to be:  <h2 class="page-title">{% trans "Explore My Layers" %}</h2> then refresh your browser to see the update.
 
 **Modify functionality**
@@ -174,7 +170,6 @@ Customizing metadata can be achieved from the model which is defined in the core
 
 .. code-block:: python
     
-    ...
     # internal fields
     uuid = models.CharField(max_length=36)
     owner = models.ForeignKey(
@@ -223,7 +218,6 @@ Customizing metadata can be achieved from the model which is defined in the core
         blank=True,
         null=True,
         help_text=maintenance_frequency_help_text)
-        ...
 
 
 To add fields directly to the ResourceBase Class without actually modifying it, this can be done from my_geonode/my_geonode/apps.py file
@@ -232,7 +226,7 @@ The "ready" method is invoked at initialization time and can be currently used t
 
 .. code-block:: python
     
-    ...
+    
     class AppConfig(BaseAppConfig):
     
         name = "my_geonode"
@@ -250,7 +244,7 @@ Now we can add the "patch_resource_base" method to the AppConfig and execute it 
     from django.db import models
     from django.utils.translation import ugettext_lazy as _
     
-    ...
+    
     class AppConfig(BaseAppConfig):
     
         name = "my_geonode"
@@ -277,7 +271,6 @@ Now we can add the "patch_resource_base" method to the AppConfig and execute it 
             from geonode.base.models import ResourceBase
             self.patch_resource_base(ResourceBase)
 
-
 .. note:: you will need to perform migrations as follows: Migrations for 'base':
   /home/moataz/dev/.venvs/geonode2/src/geonode/geonode/base/migrations/0031_resourcebase_doi.py
     - Add field doi to resourcebase
@@ -302,7 +295,6 @@ Similar to what we have done before in the Templates directory, we will need to 
     $ mkdir -p my_geonode/templates/layouts
     $ cp ~/geonode/src/geonode/geonode/layers/templates/layouts/panels.html  my_geonode/templates/layouts/panels.html
     $ vim my_geonode/templates/layouts/panels.html
-
 
 Inside panels.html, we will add a new div with text input as follows:
 
@@ -332,18 +324,15 @@ In additon, we will override the Layer Detail template page as follows:
     
     vim my_geonode/templates/base/_resourcebase_info_panel.html
 
-
 .. code:: python
     
-    ...
+    
     <dd><a href="/groups/group/{{ resource.group.name }}/activity/">{{ group }}</a> </dd>
-    ...
-
+    
     <dt>DOI</dt>
      <dd>{{ resource.doi }}</dd>
     
     </dl>
-    ...
 
 Now from the admin panel, you can see the DOI metadata entry per layer
 
@@ -381,7 +370,6 @@ In this section, we will add a custom model and the related logic as follows:
     
     vim geocollections/models.py
 
-
 .. code-block::
     
     from django.db import models
@@ -415,7 +403,6 @@ At this point we need to ask django to create the database table. Django since v
     
     python manage.py migrate
 
-
 Next we will use django generic view to show the collections detail. Add the following code in the views.py file:
 
 
@@ -432,6 +419,7 @@ Next we will use django generic view to show the collections detail. Add the fol
     class GeocollectionDetail(DetailView):
         model = Geocollection
 
+
 Add url configuration
 
 In order to access the created view we also need url mapping. We can create a urls.py file containing a url mapping to our generic view:
@@ -440,7 +428,6 @@ In order to access the created view we also need url mapping. We can create a ur
 .. code-block:: shell
     
     vim geocollections/urls.py
-
 
 .. code-block:: python
     
@@ -453,16 +440,13 @@ In order to access the created view we also need url mapping. We can create a ur
             GeocollectionDetail.as_view(),
             name='geocollection-detail'),
     ]
-
-
 We also need to register the app urls in the project urls. So let's modify the my_geonode urls.py file adding the following:
 
 .. code-block:: shell
     
     vim my_geonode/urls.py
-
-
--- code-block:: python
+    
+.. code-block:: python
     
     ...
     urlpatterns += [
@@ -492,7 +476,6 @@ We need a user interface where we can create geocollections. Django makes this v
         filter_horizontal = ('resources',)
         admin.site.register(Geocollection, GeocollectionAdmin)
 
-
 **Adding the template**
 
 Now we need the template where the geocollection detail will be rendered. Let's create a geocollections directory inside the my_geonode/templates directory with a file named geocollection_detail.html:
@@ -507,9 +490,7 @@ Now we need the template where the geocollection detail will be rendered. Let's 
 .. code-block:: python
     
     {% raw %}
-
     {% extends "geonode_base.html" %}
-
     {% block body %}
         <h2>Geocollection {{ object.name }}</h2>
         <p>Group: {{ object.group.title }}</p>
@@ -520,7 +501,6 @@ Now we need the template where the geocollection detail will be rendered. Let's 
             {% endfor %}
         </ul>
     {% endblock %}
-
 
 To check the results, create a group in the geonode ui interface and load one or more layers/documents
 
@@ -559,7 +539,6 @@ We need to add the permissions object to the database. We can do this by adding 
             ('view_geocollection', 'Can view geocollection'),
         )
 
-
 Then run python manage.py makemigrations and python manage.py migrate to install them
 
 **Permissions logic (set_default)**
@@ -571,7 +550,6 @@ Let's add a method that will be used to set the default permissions on the Geoco
     
     vim geocollections/models.py
 
-
 .. code-block:: python
     
     
@@ -580,7 +558,8 @@ Let's add a method that will be used to set the default permissions on the Geoco
     from django.contrib.contenttypes.models import ContentType
     from django.conf import settings
     from guardian.shortcuts import assign_perm
-        def set_default_permissions(self):
+    
+    def set_default_permissions(self):
             """
             Set default permissions.
             """
@@ -596,7 +575,6 @@ Let's add a method that will be used to set the default permissions on the Geoco
             # default permissions for group members
             assign_perm('view_geocollection', self.group, self)
 
-
 **Permissions logic (methods)**
 
 Now we need a method to add generic permissions, we want to be able to assign view permissions to groups and single users. We can add this to our Geocollection model
@@ -611,15 +589,12 @@ Now we need a method to add generic permissions, we want to be able to assign vi
     def set_permissions(self, perm_spec):
         anonymous_group = Group.objects.get(name='anonymous')
         self.remove_object_permissions()
-
         if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
             assign_perm('view_geocollection', anonymous_group, self)
-
         if 'users' in perm_spec:
             for user, perms in perm_spec['users'].items():
                 user = get_user_model().objects.get(username=user)
                 assign_perm('view_geocollection', user, self)
-
         if 'groups' in perm_spec:
             for group, perms in perm_spec['groups'].items():
                 group = Group.objects.get(name=group)
@@ -631,9 +606,7 @@ Now we need a method to add generic permissions, we want to be able to assign vi
         GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(self),
                                              object_pk=self.id).delete()
 
-
 Permissions logic (views.py)
-
 
 We can add now a view to receive and set our permissions, in views.py:
 
@@ -676,7 +649,6 @@ We can add now a view to receive and set our permissions, in views.py:
                     status=500,
                     content_type='text/plain'
                 )
-
 
 **Permissions logic (url)**
 
@@ -724,11 +696,9 @@ We need first to create an api.py file in our geocollection app.
     
     vim geocollections/api.py
 
-
 .. code-block:: python
     
     import json
-
     from tastypie.resources import ModelResource
     from tastypie import fields
     from tastypie.constants import ALL_WITH_RELATIONS, ALL
@@ -753,7 +723,6 @@ We need first to create an api.py file in our geocollection app.
                 'id': ALL
             }
 
-
 **PI authorization**
 
 We want the API to respect our custom permissions, we can easily achieve this by adding the following to the beginning of api.py:
@@ -761,7 +730,6 @@ We want the API to respect our custom permissions, we can easily achieve this by
 .. code-block:: shell
     
     vim geocollections/api.py
-
 
 .. code-block:: python
     
@@ -780,15 +748,11 @@ We want the API to respect our custom permissions, we can easily achieve this by
             return bundle.request.user.has_perm(
                 'view_geocollection',
                 bundle.obj)
-
-
 And this to the GeocollectionResource Meta class:
 
 .. code-block:: python
     
     authorization = GeocollectionAuth()
-
-
 
 **Add a url for our API**
 
@@ -815,8 +779,6 @@ And add the follofing in the urlpatterns:
 .. code-block:: python
     
     url(r'', include(api.urls)),
-
-
 The final result will be:
 
 .. code-block:: python
@@ -836,7 +798,6 @@ The final result will be:
     url(r'', include(api.urls)),
     url(r'^geocollections/', include('geocollections.urls')),
     ]
-
 
 Let's test permissions on API
 
@@ -872,7 +833,7 @@ perms = {
   
   
   
-  **Deploy your GeoNode**
+**Deploy your GeoNode**
   
 
 So far we demonstrated how to modify, extend and style our GeoNode in dev mode but now it's time to go on production. In this section we will clarify how to:
@@ -899,7 +860,6 @@ Steps to push your code to GitHub:
 - Add your remote repository address with "git remote add yourname yourremoteaddress"
 
 - edit .gitignore adding all *.pyc files
-
 - git add * to add all content of my_geonode
 
 - git commit -m 'initial import' to make the initial commit
@@ -934,9 +894,13 @@ We need now to install our my_geonode project following these steps:
 
 - add the apache rights to the my_geonode folder with a directory like
 
+
 <Directory "/path/to/my_geonode/">
+
      Order allow,deny
+     
      Require all granted
+     
 </Directory>
 
 - Test your server.
