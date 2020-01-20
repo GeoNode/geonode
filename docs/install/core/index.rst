@@ -954,9 +954,10 @@ Install and enable HTTPS secured connection through the Let's Encrypt provider
     # Change everywhere 'http' to 'https'
     %s/http/https/g
 
-    # Add two more 'env' variables to the configuration
+    # Add three more 'env' variables to the configuration
     env = SECURE_SSL_REDIRECT=True
     env = SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+    env = AVATAR_GRAVATAR_SSL=True
 
     # Restart the service
     sudo service uwsgi restart
