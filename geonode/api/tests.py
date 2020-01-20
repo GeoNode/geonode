@@ -417,7 +417,6 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
 
-
 class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     """Test the api lockdown functionality"""
