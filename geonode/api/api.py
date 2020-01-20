@@ -299,7 +299,6 @@ class GroupCategoryResource(TypeFilteredResource):
                      'name': ALL}
         authorization = ApiLockdownAuthorization()
 
-
     def dehydrate_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
 
@@ -339,7 +338,6 @@ class GroupProfileResource(ModelResource):
         }
         ordering = ['title', 'last_modified']
         authorization = ApiLockdownAuthorization()
-
 
     def dehydrate_member_count(self, bundle):
         """Provide relative URL to the geonode UI's page on the group"""

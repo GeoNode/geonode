@@ -166,4 +166,3 @@ class ApiLockdownAuthorization(DjangoAuthorization):
             return []
         else:
             return object_list
-
