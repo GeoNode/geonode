@@ -43,7 +43,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import assign_perm
 from geonode.groups.models import GroupProfile
-from ..services.enumerations import CASCADED
+from geonode.utils import get_layer_workspace
 
 logger = logging.getLogger("geonode.security.utils")
 
@@ -290,7 +290,7 @@ def purge_geofence_layer_rules(resource):
     user = settings.OGC_SERVER['default']['USER']
     passwd = settings.OGC_SERVER['default']['PASSWORD']
     headers = {'Content-type': 'application/json'}
-    workspace = _get_layer_workspace(resource.layer)
+    workspace = get_layer_workspace(resource.layer)
     r = requests.get(
         "{}rest/geofence/rules.json?workspace={}&layer={}".format(
             url, workspace, resource.layer.name),
@@ -389,14 +389,8 @@ def set_geofence_all(instance):
 
     resource = instance.get_self_resource()
     logger.debug("Inside set_geofence_all for instance {}".format(instance))
-    try:
-        workspace = _get_layer_workspace(resource.layer)
-        logger.debug("going to work in workspace {!r}".format(workspace))
-    except (ObjectDoesNotExist, AttributeError, RuntimeError):
-        # This is either not a layer (if raised AttributeError) or it is
-        # a layer that is not manageable by geofence (if raised
-        # RuntimeError) so we have nothing to do
-        return
+    workspace = get_layer_workspace(resource.layer)
+    logger.debug("going to work in workspace {!r}".format(workspace))
     try:
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
@@ -440,6 +434,8 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     """
     Sync Guardian permissions to GeoFence.
     """
+    _layer_name = layer.name if layer.name else layer.alternate.split(":")[0]
+    _layer_workspace = get_layer_workspace(layer)
     # Create new rule-set
     gf_services = {}
     gf_services["*"] = 'download_resourcebase' in perms and \
@@ -451,7 +447,6 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     gf_services["WCS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
         and not layer.is_vector()
     gf_services["WPS"] = 'download_resourcebase' in perms or 'change_layer_data' in perms
-
     _user = None
     if user:
         _user = user if isinstance(user, string_types) else user.username
@@ -462,14 +457,13 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
         if allowed:
             if _user:
                 logger.debug("Adding 'user' to geofence the rule: %s %s %s" % (layer, service, _user))
-                _update_geofence_rule(layer.name, layer.workspace, service, user=_user)
+                _update_geofence_rule(_layer_name, _layer_workspace, service, user=_user)
             elif not _group:
                 logger.debug("Adding to geofence the rule: %s %s *" % (layer, service))
-                _update_geofence_rule(layer.name, layer.workspace, service)
-
+                _update_geofence_rule(_layer_name, _layer_workspace, service)
             if _group:
                 logger.debug("Adding 'group' to geofence the rule: %s %s %s" % (layer, service, _group))
-                _update_geofence_rule(layer.name, layer.workspace, service, group=_group)
+                _update_geofence_rule(_layer_name, _layer_workspace, service, group=_group)
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         set_geofence_invalidate_cache()
     else:
@@ -494,7 +488,6 @@ def remove_object_permissions(instance):
     resourcebase permissions
 
     """
-
     from guardian.models import UserObjectPermission, GroupObjectPermission
     resource = instance.get_self_resource()
     if hasattr(resource, "layer"):
@@ -508,53 +501,20 @@ def remove_object_permissions(instance):
                 object_pk=instance.id
             ).delete()
             if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
-                purge_geofence_layer_rules(resource)
+                if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+                    purge_geofence_layer_rules(resource)
+                    set_geofence_invalidate_cache()
+            else:
+                resource.set_dirty_state()
         except (ObjectDoesNotExist, RuntimeError):
             pass  # This layer is not manageable by geofence
         except BaseException:
             tb = traceback.format_exc()
             logger.debug(tb)
-        finally:
-            if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-                set_geofence_invalidate_cache()
-            else:
-                resource.set_dirty_state()
-
     UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
                                         object_pk=instance.id).delete()
     GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
                                          object_pk=instance.id).delete()
-
-
-# # Logic to login a user automatically when it has successfully
-# # activated an account:
-# def autologin(sender, **kwargs):
-#     user = kwargs['user']
-#     request = kwargs['request']
-#     # Manually setting the default user backed to avoid the
-#     # 'User' object has no attribute 'backend' error
-#     user.backend = 'django.contrib.auth.backends.ModelBackend'
-#     # This login function does not need password.
-#     login(request, user)
-#
-# # FIXME(Ariel): Replace this signal with the one from django-user-accounts
-# # user_activated.connect(autologin)
-
-
-def _get_layer_workspace(layer):
-    """Get the workspace where the input layer belongs"""
-    workspace = layer.workspace
-    if not workspace:
-        default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
-        try:
-            if layer.remote_service.method == CASCADED:
-                workspace = getattr(
-                    settings, "CASCADE_WORKSPACE", default_workspace)
-            else:
-                raise RuntimeError("Layer is not cascaded")
-        except AttributeError:  # layer does not have a service
-            workspace = default_workspace
-    return workspace
 
 
 def _get_geofence_payload(layer, workspace, access, user=None, group=None,

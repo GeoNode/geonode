@@ -37,7 +37,7 @@ from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
 from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
-from geonode import geoserver
+from geonode import qgis_server, geoserver
 from geonode.base.populate_test_data import all_public
 from geonode.people.models import Profile
 from geonode.people.utils import get_valid_user
@@ -291,19 +291,24 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("1. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertEqual(geofence_rules_count, 4)
+            self.assertEqual(geofence_rules_count, 14)
             set_geofence_all(test_perm_layer)
             geofence_rules_count = get_geofence_rules_count()
             _log("2. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertEqual(geofence_rules_count, 5)
+            self.assertEqual(geofence_rules_count, 15)
 
         self.client.logout()
 
-        self.client.login(username='bobby', password='bob')
-        resp = self.client.get(self.list_url)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 7)
+        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+            self.client.login(username='bobby', password='bob')
+            resp = self.client.get(self.list_url)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 2)
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            self.client.login(username='bobby', password='bob')
+            resp = self.client.get(self.list_url)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 7)
+
             perms = get_users_with_perms(test_perm_layer)
             _log("3. perms: %s " % perms)
             sync_geofence_with_guardian(test_perm_layer, perms, user='bobby')
@@ -311,7 +316,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("4. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertEqual(geofence_rules_count, 5)
+            self.assertEqual(geofence_rules_count, 15)
 
             # Validate maximum priority
             geofence_rules_highest_priority = get_highest_priority()
@@ -377,32 +382,32 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log("1. geofence_rules_count: %s " % geofence_rules_count)
-        self.assertEqual(geofence_rules_count, 0)
+        self.assertEqual(geofence_rules_count, 5)
 
         perm_spec = {
             "users": {"admin": ["view_resourcebase"]}, "groups": {}}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log("2. geofence_rules_count: %s " % geofence_rules_count)
-        self.assertEqual(geofence_rules_count, 2)
+        self.assertEqual(geofence_rules_count, 7)
 
         perm_spec = {'users': {"admin": ['change_layer_data']}}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log("3. geofence_rules_count: %s " % geofence_rules_count)
-        self.assertEqual(geofence_rules_count, 2)
+        self.assertEqual(geofence_rules_count, 7)
 
         perm_spec = {'groups': {'bar': ['view_resourcebase']}}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log("4. geofence_rules_count: %s " % geofence_rules_count)
-        self.assertEqual(geofence_rules_count, 2)
+        self.assertEqual(geofence_rules_count, 7)
 
         perm_spec = {'groups': {'bar': ['change_resourcebase']}}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log("5. geofence_rules_count: %s " % geofence_rules_count)
-        self.assertEqual(geofence_rules_count, 0)
+        self.assertEqual(geofence_rules_count, 5)
 
         # Reset GeoFence Rules
         purge_geofence_all()
@@ -1033,7 +1038,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("1. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertTrue(geofence_rules_count == 1)
+            self.assertEqual(geofence_rules_count, 9)
 
         self.assertTrue(self.client.login(username='bobby', password='bob'))
 
@@ -1108,7 +1113,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("3. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertEqual(geofence_rules_count, 1)
+            self.assertEqual(geofence_rules_count, 9)
 
         # 5. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions

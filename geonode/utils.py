@@ -161,6 +161,50 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
     return absolute_base_file
 
 
+def get_layer_name(layer):
+    """Get the workspace where the input layer belongs"""
+    _name = layer.name
+    if _name and ':' in _name:
+        _name = _name.split(':')[1]
+    try:
+        if not _name and layer.alternate:
+            if ':' in layer.alternate:
+                _name = layer.alternate.split(':')[1]
+            else:
+                _name = layer.alternate
+    except BaseException:
+        pass
+    return _name
+
+
+def get_layer_workspace(layer):
+    """Get the workspace where the input layer belongs"""
+    alternate = None
+    workspace = None
+    try:
+        alternate = layer.alternate
+    except BaseException:
+        alternate = layer.name
+    try:
+        workspace = layer.workspace
+    except BaseException:
+        workspace = None
+    if not workspace and alternate and ':' in alternate:
+        workspace = alternate.split(":")[1]
+    if not workspace:
+        default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
+        try:
+            from geonode.services.enumerations import CASCADED
+            if layer.remote_service.method == CASCADED:
+                workspace = getattr(
+                    settings, "CASCADE_WORKSPACE", default_workspace)
+            else:
+                raise RuntimeError("Layer is not cascaded")
+        except AttributeError:  # layer does not have a service
+            workspace = default_workspace
+    return workspace
+
+
 def get_headers(request, url, raw_url, allowed_hosts=[]):
     headers = {}
     cookies = None
@@ -481,7 +525,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
         fixed=layer.get("fixed", False),
         group=layer.get('group', None),
         visibility=layer.get("visibility", True),
-        ows_url=source.get("url", None),
+        ows_url=source.get("url", None) if source else None,
         layer_params=json.dumps(layer_cfg),
         source_params=json.dumps(source_cfg)
     )
@@ -564,7 +608,7 @@ class GXPMapBase(object):
                        for source in sources.values() if source and 'url' in source]
 
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
-            if len(sources.keys()) > 0 and \
+            if len(sources.keys()) > 0 and 'source' in settings.MAP_BASELAYERS[0] and \
                 'url' in settings.MAP_BASELAYERS[0]['source'] and \
                     not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
                 keys = sorted(sources.keys())
@@ -581,7 +625,7 @@ class GXPMapBase(object):
             return base_source
 
         for idx, lyr in enumerate(settings.MAP_BASELAYERS):
-            if _base_source(
+            if "source" in lyr and _base_source(
                     lyr["source"]) not in map(
                     _base_source,
                     sources.values()):
@@ -788,7 +832,7 @@ def default_map_config(request):
             None,
             GXPLayer,
             layer=lyr,
-            source=lyr["source"],
+            source=lyr["source"] if lyr and "source" in lyr else None,
             ordering=order
         )
 
