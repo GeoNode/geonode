@@ -66,8 +66,8 @@ First, we are going to install all the **system packages** needed for the GeoNod
 .. code-block:: shell
 
   # Install packages from GeoNode core
-  sudo apt install -y python-gdal gdal-bin
-  sudo apt install -y python-pip python-dev python-virtualenv
+  sudo apt install -y gdal-bin
+  sudo apt install -y python3-pip python3-dev python3-virtualenv python3-venv virtualenvwrapper
   sudo apt install -y libxml2 libxml2-dev gettext
   sudo apt install -y libxslt1-dev libjpeg-dev libpng-dev libpq-dev libgdal-dev libgdal20
   sudo apt install -y software-properties-common build-essential
@@ -88,7 +88,7 @@ First, we are going to install all the **system packages** needed for the GeoNod
 
   # Install Packages for Virtual environment management
   sudo apt install -y virtualenv virtualenvwrapper
-  
+
   # Install text editor
   sudo apt install -y vim
 
@@ -127,8 +127,8 @@ Make an instance out of the ``Django Template``
 
 .. code-block:: shell
 
-  mkvirtualenv my_geonode
-  pip install Django==1.11.25
+  mkvirtualenv --python=/usr/bin/python3 my_geonode
+  pip install Django==2.2.9
 
   django-admin startproject --template=./geonode-project -e py,sh,md,rst,json,yml,ini,env,sample -n monitoring-cron -n Dockerfile my_geonode
 
@@ -227,8 +227,8 @@ Make an instance out of the ``Django Template``
 
 .. code-block:: shell
 
-  mkvirtualenv my_geonode
-  pip install Django==1.11.25
+  mkvirtualenv --python=/usr/bin/python3 my_geonode
+  pip install Django==2.2.9
 
   django-admin startproject --template=./geonode-project -e py,sh,md,rst,json,yml,ini,env,sample -n monitoring-cron -n Dockerfile my_geonode
   cd /opt/geonode_custom/my_geonode

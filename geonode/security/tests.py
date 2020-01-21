@@ -487,7 +487,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         )
 
         # Test that layer owner can wipe GWC Cache
-        ignore_errors = False
+        ignore_errors = True
         skip_unadvertised = False
         skip_geonode_registered = False
         remove_deleted = True
@@ -501,7 +501,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             'groups': {anonymous_group: ['view_resourcebase']},
         }
         gs_slurp(
-            ignore_errors,
+            ignore_errors=ignore_errors,
             verbosity=verbosity,
             owner=owner,
             workspace=workspace,
@@ -696,11 +696,12 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         self.assertIsNotNone(layer)
 
         # Reset GeoFence Rules
+        Layer.objects.all().delete()
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
         self.assertTrue(geofence_rules_count == 0)
 
-        ignore_errors = False
+        ignore_errors = True
         skip_unadvertised = False
         skip_geonode_registered = False
         remove_deleted = True
@@ -711,7 +712,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         store = None
         permissions = {'users': {"admin": ['change_layer_data']}, 'groups': []}
         gs_slurp(
-            ignore_errors,
+            ignore_errors=ignore_errors,
             verbosity=verbosity,
             owner=owner,
             console=StreamToLogger(logger, logging.INFO),
@@ -835,10 +836,10 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # self.assertEqual(_content_type, 'image/png')
 
         # Reset GeoFence Rules
+        Layer.objects.all().delete()
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
         self.assertTrue(geofence_rules_count == 0)
-        layer.delete()
 
     @dump_func_name
     def test_layer_set_default_permissions(self):

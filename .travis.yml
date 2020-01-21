@@ -273,11 +273,8 @@ jobs:
   fast_finish: true
 
   allow_failures:
-    - name: "GeoServer-backend Integration Upload Tests"
-    - name: "GeoServer-backend Integration Monitoring Tests"
-    - name: "QGis Server-backend Core Modules Smoke Tests"
-    - name: "QGis Server-backend Contrib Apps Smoke Tests"
-    - name: "QGis Server-backend Integration Tests"
+    - name: "Selenium Tests Core"
+    - name: "Selenium Tests SPCGeoNode"
 
 before_install:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then

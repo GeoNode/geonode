@@ -1276,65 +1276,68 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
     def test_geonode_rest_layer_uploader(self):
-        PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-        layer_upload_url = reverse('layer_upload')
-        self.client.login(username=self.user, password=self.passwd)
-        # Check upload for each charset
-        thelayer_name = 'ming_female_1'
-        thelayer_path = os.path.join(
-            PROJECT_ROOT,
-            '../tests/data/%s' % thelayer_name)
-        files = dict(
-            base_file=SimpleUploadedFile(
-                '%s.shp' % thelayer_name,
-                open(os.path.join(thelayer_path,
-                                  '%s.shp' % thelayer_name), mode='rb').read()),
-            shx_file=SimpleUploadedFile(
-                '%s.shx' % thelayer_name,
-                open(os.path.join(thelayer_path,
-                                  '%s.shx' % thelayer_name), mode='rb').read()),
-            dbf_file=SimpleUploadedFile(
-                '%s.dbf' % thelayer_name,
-                open(os.path.join(thelayer_path,
-                                  '%s.dbf' % thelayer_name), mode='rb').read()),
-            prj_file=SimpleUploadedFile(
-                '%s.prj' % thelayer_name,
-                open(os.path.join(thelayer_path,
-                                  '%s.prj' % thelayer_name), mode='rb').read())
-        )
-        files['permissions'] = '{}'
-        files['charset'] = 'windows-1258'
-        files['layer_title'] = 'test layer_{}'.format('windows-1258')
-        resp = self.client.post(layer_upload_url, data=files)
-        # Check response status code
-        if resp.status_code == 200:
-            # Retrieve the layer from DB
-            content = resp.content
-            if isinstance(content, bytes):
-                content = content.decode('UTF-8')
-            data = json.loads(content)
-            # Check success
-            self.assertTrue(data['success'])
-            _lname = data['url'].split(':')[-1]
-            _l = Layer.objects.get(name=_lname)
-            # Check the layer has been published
-            self.assertTrue(_l.is_published)
-            # Check errors
-            self.assertNotIn('errors', data)
-            self.assertNotIn('errormsgs', data)
-            self.assertNotIn('traceback', data)
-            self.assertNotIn('context', data)
-            self.assertNotIn('upload_session', data)
-            self.assertEqual(data['bbox'], _l.bbox_string)
-            self.assertEqual(
-                data['crs'],
-                {
-                    'type': 'name',
-                    'properties': _l.srid
-                }
+        try:
+            PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+            layer_upload_url = reverse('layer_upload')
+            self.client.login(username=self.user, password=self.passwd)
+            # Check upload for each charset
+            thelayer_name = 'ming_female_1'
+            thelayer_path = os.path.join(
+                PROJECT_ROOT,
+                '../tests/data/%s' % thelayer_name)
+            files = dict(
+                base_file=SimpleUploadedFile(
+                    '%s.shp' % thelayer_name,
+                    open(os.path.join(thelayer_path,
+                         '%s.shp' % thelayer_name), mode='rb').read()),
+                shx_file=SimpleUploadedFile(
+                    '%s.shx' % thelayer_name,
+                    open(os.path.join(thelayer_path,
+                         '%s.shx' % thelayer_name), mode='rb').read()),
+                dbf_file=SimpleUploadedFile(
+                    '%s.dbf' % thelayer_name,
+                    open(os.path.join(thelayer_path,
+                         '%s.dbf' % thelayer_name), mode='rb').read()),
+                prj_file=SimpleUploadedFile(
+                    '%s.prj' % thelayer_name,
+                    open(os.path.join(thelayer_path,
+                         '%s.prj' % thelayer_name), mode='rb').read())
             )
-            self.assertEqual(
-                data['ogc_backend'],
-                settings.OGC_SERVER['default']['BACKEND']
-            )
-            _l.delete()
+            files['permissions'] = '{}'
+            files['charset'] = 'windows-1258'
+            files['layer_title'] = 'test layer_{}'.format('windows-1258')
+            resp = self.client.post(layer_upload_url, data=files)
+            # Check response status code
+            if resp.status_code == 200:
+                # Retrieve the layer from DB
+                content = resp.content
+                if isinstance(content, bytes):
+                    content = content.decode('UTF-8')
+                data = json.loads(content)
+                # Check success
+                self.assertTrue(data['success'])
+                _lname = data['url'].split(':')[-1]
+                _l = Layer.objects.get(name=_lname)
+                # Check the layer has been published
+                self.assertTrue(_l.is_published)
+                # Check errors
+                self.assertNotIn('errors', data)
+                self.assertNotIn('errormsgs', data)
+                self.assertNotIn('traceback', data)
+                self.assertNotIn('context', data)
+                self.assertNotIn('upload_session', data)
+                self.assertEqual(data['bbox'], _l.bbox_string)
+                self.assertEqual(
+                    data['crs'],
+                    {
+                        'type': 'name',
+                        'properties': _l.srid
+                    }
+                )
+                self.assertEqual(
+                    data['ogc_backend'],
+                    settings.OGC_SERVER['default']['BACKEND']
+                )
+                _l.delete()
+        finally:
+            Layer.objects.all().delete()

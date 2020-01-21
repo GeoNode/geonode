@@ -3,7 +3,7 @@ version: '3.4'
 # Common Django template for Geonode, Celery and Celerycam services below
 x-common-django:
   &default-common-django
-  image: olivierdalang/spcgeonode:django-latest
+  image: geonode/spcgeonode:django-3.0
   build:
     context: ../../
     dockerfile: scripts/spcgeonode/django/Dockerfile
@@ -89,7 +89,7 @@ services:
 
   # Nginx is serving django static and media files and proxies to django and geonode
   nginx:
-    image: olivierdalang/spcgeonode:nginx-latest
+    image: geonode/spcgeonode:nginx-3.0
     build: ./nginx/
     environment:
       - HTTPS_HOST=${HTTPS_HOST}
@@ -107,7 +107,7 @@ services:
 
   # Geoserver backend
   geoserver:
-    image: olivierdalang/spcgeonode:geoserver-latest
+    image: geonode/spcgeonode:geoserver-3.0
     build: ./geoserver/
     healthcheck:
       test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8080/geoserver/rest/workspaces/geonode.html"
@@ -130,7 +130,7 @@ services:
 
   # Gets and installs letsencrypt certificates
   letsencrypt:
-    image: olivierdalang/spcgeonode:letsencrypt-latest
+    image: geonode/spcgeonode:letsencrypt-3.0
     build: ./letsencrypt/
     environment:
       - HTTPS_HOST=${HTTPS_HOST}
@@ -144,7 +144,7 @@ services:
   # dumps the non geodata db
   pgdumper_nogeo:
     container_name: dumper_${GEONODE_DATABASE}_${COMPOSE_PROJECT_NAME}
-    image: olivierdalang/pgdumper:latest
+    image: geonode/spcgeonode:pgdumper-3.0
     build: ./pgdumper/
     volumes:
       - pgdumps:/spcgeonode-pgdumps/
@@ -156,7 +156,7 @@ services:
   # dumps the geodata db
   pgdumper_geo:
     container_name: dumper_${GEONODE_GEODATABASE}_${COMPOSE_PROJECT_NAME}
-    image: olivierdalang/pgdumper:latest
+    image: geonode/spcgeonode:pgdumper-3.0
     build: ./pgdumper/
     volumes:
       - pgdumps:/spcgeonode-pgdumps/
@@ -167,7 +167,7 @@ services:
       - DATABASE_URL=postgres://${GEONODE_GEODATABASE_USER}:${GEONODE_GEODATABASE_PASSWORD}@postgres:5432/${GEONODE_GEODATABASE}
 
   rclone:
-    image: olivierdalang/spcgeonode:rclone-latest
+    image: geonode/spcgeonode:rclone-3.0
     build: ./rclone/
     environment:
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}

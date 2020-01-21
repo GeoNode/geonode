@@ -603,11 +603,17 @@ def gs_slurp(
         # filter out layers for delete comparison with GeoNode layers by following criteria:
         # enabled = true, if --skip-unadvertised: advertised = true, but
         # disregard the filter parameter in the case of deleting layers
-        resources_for_delete_compare = [
-            k for k in resources_for_delete_compare if k.enabled in ["true", True]]
-        if skip_unadvertised:
+        try:
             resources_for_delete_compare = [
-                k for k in resources_for_delete_compare if k.advertised in ["true", True]]
+                k for k in resources_for_delete_compare if k.enabled in ["true", True]]
+            if skip_unadvertised:
+                resources_for_delete_compare = [
+                    k for k in resources_for_delete_compare if k.advertised in ["true", True]]
+        except BaseException:
+            if ignore_errors:
+                pass
+            else:
+                raise
 
     if filter:
         resources = [k for k in resources if filter in k.name]
@@ -626,13 +632,25 @@ def gs_slurp(
     # resources = [k for k in resources if k.enabled in ["true", True]]
     resources = _resources
     if skip_unadvertised:
-        resources = [k for k in resources if k.advertised in ["true", True]]
+        try:
+            resources = [k for k in resources if k.advertised in ["true", True]]
+        except BaseException:
+            if ignore_errors:
+                pass
+            else:
+                raise
 
     # filter out layers already registered in geonode
     layer_names = Layer.objects.all().values_list('alternate', flat=True)
     if skip_geonode_registered:
-        resources = [k for k in resources
-                     if not '%s:%s' % (k.workspace.name, k.name) in layer_names]
+        try:
+            resources = [k for k in resources
+                         if not '%s:%s' % (k.workspace.name, k.name) in layer_names]
+        except BaseException:
+            if ignore_errors:
+                pass
+            else:
+                raise
 
     # TODO: Should we do something with these?
     # i.e. look for matching layers in GeoNode and also disable?

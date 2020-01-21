@@ -1130,6 +1130,7 @@ def check_shp_columnnames(layer):
 def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     """ Try to fix column names and warn the user
     """
+    charset = charset if charset and 'undefined' not in charset else 'UTF-8'
 
     if not tempdir:
         tempdir = tempfile.mkdtemp()
@@ -1164,14 +1165,13 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     for i in range(0, inLayerDefn.GetFieldCount()):
         try:
             field_name = inLayerDefn.GetFieldDefn(i).GetName()
-
             if a.match(field_name):
                 list_col_original.append(field_name)
         except BaseException as e:
             logger.exception(e)
+            return True, None, None
 
     for i in range(0, inLayerDefn.GetFieldCount()):
-        charset = charset if charset and 'undefined' not in charset else 'UTF-8'
         try:
             field_name = inLayerDefn.GetFieldDefn(i).GetName()
             if not a.match(field_name):
@@ -1201,19 +1201,19 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
                 list_col.update({field_name: new_field_name})
         except BaseException as e:
             logger.exception(e)
+            return True, None, None
 
     if len(list_col) == 0:
         return True, None, None
     else:
         try:
             for key in list_col.keys():
-                qry = u"ALTER TABLE \"{}\" RENAME COLUMN \"".format(inLayer.GetName())
-                qry += key.encode(charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
-                qry += u"\" TO \"{}\"".format(list_col[key])
+                qry = u"ALTER TABLE \"{}\" RENAME COLUMN \"{}\" TO \"{}\"".format(inLayer.GetName(), key, list_col[key])
                 inDataSource.ExecuteSQL(qry)
-        except BaseException:
-            logger.exception(GeoNodeException(
-                "Could not decode SHAPEFILE attributes by using the specified charset '{}'.".format(charset)))
+        except BaseException as e:
+            logger.exception(e)
+            raise GeoNodeException(
+                "Could not decode SHAPEFILE attributes by using the specified charset '{}'.".format(charset))
     return True, None, list_col
 
 

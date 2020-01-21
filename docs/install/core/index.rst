@@ -46,8 +46,8 @@ First, we are going to install all the **system packages** needed for the GeoNod
 .. code-block:: shell
 
   # Install packages from GeoNode core
-  sudo apt install -y python-gdal gdal-bin
-  sudo apt install -y python-pip python-dev python-virtualenv virtualenvwrapper
+  sudo apt install -y gdal-bin
+  sudo apt install -y python3-pip python3-dev python3-virtualenv python3-venv virtualenvwrapper
   sudo apt install -y libxml2 libxml2-dev gettext
   sudo apt install -y libxslt1-dev libjpeg-dev libpng-dev libpq-dev libgdal-dev libgdal20
   sudo apt install -y software-properties-common build-essential
@@ -104,7 +104,7 @@ Since geonode needs a large number of different python libraries and packages, i
 .. code-block:: shell
 
   # Create the GeoNode Virtual Environment (first time only)
-  virtualenv geonode
+  mkvirtualenv --python=/usr/bin/python3 geonode
 
 At this point your command prompt shows a ``(geonode)`` prefix, this indicates that your virtualenv is active.
 

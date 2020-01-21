@@ -297,33 +297,33 @@ def geoserver_post_save_local(instance, *args, **kwargs):
             setattr(instance, key, values[key])
 
     if gs_resource:
-        if settings.RESOURCE_PUBLISHING:
-            if instance.is_published != gs_resource.advertised:
+        try:
+            if settings.RESOURCE_PUBLISHING:
+                if instance.is_published != gs_resource.advertised:
+                    if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
+                        gs_resource.advertised = 'true'
+                        gs_catalog.save(gs_resource)
+
+            if not settings.FREETEXT_KEYWORDS_READONLY:
+                # AF: Warning - this won't allow people to have empty keywords on GeoNode
+                if len(instance.keyword_list()) == 0 and gs_resource.keywords:
+                    for keyword in gs_resource.keywords:
+                        if keyword not in instance.keyword_list():
+                            instance.keywords.add(keyword)
+
+            if any(instance.keyword_list()):
+                keywords = instance.keyword_list()
+                gs_resource.keywords = [kw for kw in list(set(keywords))]
+
+                # gs_resource should only be called if
+                # ogc_server_settings.BACKEND_WRITE_ENABLED == True
                 if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-                    gs_resource.advertised = 'true'
                     gs_catalog.save(gs_resource)
-
-        if not settings.FREETEXT_KEYWORDS_READONLY:
-            # AF: Warning - this won't allow people to have empty keywords on GeoNode
-            if len(instance.keyword_list()) == 0 and gs_resource.keywords:
-                for keyword in gs_resource.keywords:
-                    if keyword not in instance.keyword_list():
-                        instance.keywords.add(keyword)
-
-        if any(instance.keyword_list()):
-            keywords = instance.keyword_list()
-            gs_resource.keywords = [kw for kw in list(set(keywords))]
-
-            # gs_resource should only be called if
-            # ogc_server_settings.BACKEND_WRITE_ENABLED == True
-            if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-                try:
-                    gs_catalog.save(gs_resource)
-                except geoserver.catalog.FailedRequestError as e:
-                    msg = ('Error while trying to save resource named %s in GeoServer, '
-                           'try to use: "%s"' % (gs_resource, str(e)))
-                    e.args = (msg,)
-                    logger.exception(e)
+        except BaseException as e:
+            msg = ('Error while trying to save resource named %s in GeoServer, '
+                   'try to use: "%s"' % (gs_resource, str(e)))
+            e.args = (msg,)
+            logger.exception(e)
 
     to_update = {
         'title': instance.title or instance.name,
