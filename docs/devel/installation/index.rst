@@ -27,7 +27,7 @@ The steps to be followed are:
 
 .. code-block:: shell
     
-    service apahe2 stop   # or your installed server
+    service apache2 stop   # or your installed server
     service tomcat7 stop  # or your version of tomcat
 
 Install GeoNode-Core for development
