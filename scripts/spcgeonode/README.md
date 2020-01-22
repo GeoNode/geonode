@@ -1,4 +1,4 @@
-# SPCgeonode [![CircleCI](https://circleci.com/gh/olivierdalang/geonode.svg?style=svg)](https://circleci.com/gh/olivierdalang/geonode)
+# SPCgeonode [![CircleCI](https://circleci.com/gh/GeoNode/geonode-selenium.svg?style=svg)](https://circleci.com/gh/geonode-selenium)
 
 SPCgeonode is a setup for Geonode deployment at SPC. It makes it easy to deploy a production ready Geonode. The setup aims for simplicity over flexibility, so that it will only apply for typical small scale Geonode installations.
 
@@ -160,7 +160,7 @@ cp -r /usr/share/geoserver/data geodatadir
 
 #### On the new server
 
-Setup SPCGeonode by following the prerequisite and production steps on https://github.com/olivierdalang/SPCgeonode/tree/release up to (but not including) run the stack.
+Setup SPCGeonode by following the prerequisite and production steps on https://github.com/GeoNode/geonode/tree/master/scripts/spcgeonode up to (but not including) run the stack.
 
 Then run these commands:
 
