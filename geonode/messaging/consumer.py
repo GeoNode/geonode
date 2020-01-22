@@ -202,7 +202,7 @@ def _update_layer_data(body, last_message):
                 update_layer = True
 
     if update_layer:
-        gs_slurp(False, workspace=workspace, store=store, filter=filter, remove_deleted=True, execute_signals=True)
+        gs_slurp(True, workspace=workspace, store=store, filter=filter, remove_deleted=True, execute_signals=True)
 
 
 def _wait_for_layer(layer_id, num_attempts=5, wait_seconds=1):

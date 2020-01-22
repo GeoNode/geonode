@@ -57,12 +57,12 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
 SESSION_EXPIRED_CONTROL_ENABLED = False
-if 'geonode.security.middleware.SessionControlMiddleware' in MIDDLEWARE_CLASSES:
-    _middleware = list(MIDDLEWARE_CLASSES)
-    _middleware.remove('geonode.security.middleware.SessionControlMiddleware')
-    MIDDLEWARE_CLASSES = tuple(_middleware)
+# if 'geonode.security.middleware.SessionControlMiddleware' in MIDDLEWARE:
+#     _middleware = list(MIDDLEWARE)
+#     _middleware.remove('geonode.security.middleware.SessionControlMiddleware')
+#     MIDDLEWARE = tuple(_middleware)
 
-# Django 1.11 ParallelTestSuite
+# Django ParallelTestSuite
 TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
 TEST_RUNNER_KEEPDB = os.environ.get('TEST_RUNNER_KEEPDB', 1)
 TEST_RUNNER_PARALLEL = os.environ.get('TEST_RUNNER_PARALLEL', 1)
@@ -152,7 +152,7 @@ OGC_SERVER = {
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
         'DATASTORE': 'datastore',
-        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '5')),
+        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '10')),
         'MAX_RETRIES': int(os.getenv('OGC_REQUEST_MAX_RETRIES', '0')),
         'BACKOFF_FACTOR': float(os.getenv('OGC_REQUEST_BACKOFF_FACTOR', '0.0')),
         'POOL_MAXSIZE': int(os.getenv('OGC_REQUEST_POOL_MAXSIZE', '10')),
@@ -209,6 +209,6 @@ MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get('MONITORING_DISABLE_CS
 if MONITORING_ENABLED:
     if 'geonode.monitoring' not in INSTALLED_APPS:
         INSTALLED_APPS += ('geonode.monitoring',)
-    if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE_CLASSES:
-        MIDDLEWARE_CLASSES += \
+    if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE:
+        MIDDLEWARE += \
             ('geonode.monitoring.middleware.MonitoringMiddleware',)

@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('role', models.CharField(help_text='function performed by the responsible party', max_length=255, choices=[('author', 'party who authored the resource'), ('processor', 'party who has processed the data in a manner such that the resource has been modified'), ('publisher', 'party who published the resource'), ('custodian', 'party that accepts accountability and responsibility for the data and ensures         appropriate care and maintenance of the resource'), ('pointOfContact', 'party who can be contacted for acquiring knowledge about or acquisition of the resource'), ('distributor', 'party who distributes the resource'), ('user', 'party who uses the resource'), ('resourceProvider', 'party that supplies the resource'), ('originator', 'party who created the resource'), ('owner', 'party that owns the resource'), ('principalInvestigator', 'key party responsible for gathering information and conducting research')])),
-                ('contact', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('contact', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -67,7 +67,8 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
-                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='base.Region', null=True)),
+                ('parent', mptt.fields.TreeForeignKey(related_name='children',
+                                                      on_delete=models.CASCADE, blank=True, to='base.Region', null=True)),
             ],
             options={
                 'ordering': ('name',),
@@ -170,7 +171,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resourcebase',
             name='category',
-            field=models.ForeignKey(blank=True, to='base.TopicCategory', help_text='high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.', null=True),
+            field=models.ForeignKey(blank=True, on_delete=models.CASCADE, to='base.TopicCategory',
+                                    help_text='high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.', null=True),
         ),
         migrations.AddField(
             model_name='resourcebase',
@@ -180,17 +182,20 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resourcebase',
             name='license',
-            field=models.ForeignKey(blank=True, to='base.License', help_text='license of the dataset', null=True, verbose_name='License'),
+            field=models.ForeignKey(blank=True, on_delete=models.CASCADE, to='base.License',
+                                    help_text='license of the dataset', null=True, verbose_name='License'),
         ),
         migrations.AddField(
             model_name='resourcebase',
             name='owner',
-            field=models.ForeignKey(related_name='owned_resource', verbose_name='Owner', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='owned_resource', on_delete=models.CASCADE,
+                                    verbose_name='Owner', blank=True, to=settings.AUTH_USER_MODEL, null=True),
         ),
         migrations.AddField(
             model_name='resourcebase',
             name='polymorphic_ctype',
-            field=models.ForeignKey(related_name='polymorphic_base.resourcebase_set+', editable=False, to='contenttypes.ContentType', null=True),
+            field=models.ForeignKey(related_name='polymorphic_base.resourcebase_set+',
+                                    on_delete=models.CASCADE, editable=False, to='contenttypes.ContentType', null=True),
         ),
         migrations.AddField(
             model_name='resourcebase',
@@ -200,22 +205,24 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resourcebase',
             name='restriction_code_type',
-            field=models.ForeignKey(blank=True, to='base.RestrictionCodeType', help_text='limitation(s) placed upon the access or use of the data.', null=True, verbose_name='restrictions'),
+            field=models.ForeignKey(blank=True, on_delete=models.CASCADE, to='base.RestrictionCodeType',
+                                    help_text='limitation(s) placed upon the access or use of the data.', null=True, verbose_name='restrictions'),
         ),
         migrations.AddField(
             model_name='resourcebase',
             name='spatial_representation_type',
-            field=models.ForeignKey(blank=True, to='base.SpatialRepresentationType', help_text='method used to represent geographic information in the dataset.', null=True, verbose_name='spatial representation type'),
+            field=models.ForeignKey(blank=True, on_delete=models.CASCADE, to='base.SpatialRepresentationType',
+                                    help_text='method used to represent geographic information in the dataset.', null=True, verbose_name='spatial representation type'),
         ),
         migrations.AddField(
             model_name='link',
             name='resource',
-            field=models.ForeignKey(blank=True, to='base.ResourceBase', null=True),
+            field=models.ForeignKey(blank=True, on_delete=models.CASCADE, to='base.ResourceBase', null=True),
         ),
         migrations.AddField(
             model_name='contactrole',
             name='resource',
-            field=models.ForeignKey(blank=True, to='base.ResourceBase', null=True),
+            field=models.ForeignKey(blank=True, on_delete=models.CASCADE, to='base.ResourceBase', null=True),
         ),
         migrations.AlterUniqueTogether(
             name='contactrole',

@@ -15,7 +15,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='metricnotificationcheck',
             name='definition',
-            field=models.OneToOneField(related_name='metric_check', null=True, to='monitoring.NotificationMetricDefinition'),
+            field=models.OneToOneField(related_name='metric_check', on_delete=models.CASCADE,
+                                       null=True, to='monitoring.NotificationMetricDefinition'),
         ),
         migrations.AlterField(
             model_name='notificationcheck',

@@ -21,6 +21,15 @@
 
 class QGISServerLayerMiddleware(object):
 
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+    # def process_exception(self, request, exception):
+    #     return HttpResponse("in exception")
+
     def process_template_response(self, request, response):
         """Middleware to add more context for QGIS Server backend app.
 

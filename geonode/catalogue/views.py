@@ -96,7 +96,7 @@ def csw_global_dispatch(request):
                                                  for e in authorized_ids)) + ")"
             authorized_layers_filter = "id IN " + authorized_layers
             mdict['repository']['filter'] += " AND " + authorized_layers_filter
-            if request.user and request.user.is_authenticated():
+            if request.user and request.user.is_authenticated:
                 mdict['repository']['filter'] = "({}) OR ({})".format(mdict['repository']['filter'],
                                                                       authorized_layers_filter)
         else:
@@ -114,7 +114,7 @@ def csw_global_dispatch(request):
 
         if not is_admin and settings.GROUP_PRIVATE_RESOURCES:
             groups_ids = []
-            if request.user and request.user.is_authenticated():
+            if request.user and request.user.is_authenticated:
                 for group in request.user.groups.all():
                     groups_ids.append(group.id)
                 group_list_all = []
@@ -368,8 +368,7 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
     logger = logging.getLogger(__name__)
     logger.error(content)
 
-    return HttpResponse(content.encode('utf-8').decode('utf-8'),
-                        content_type="text/csv")
+    return HttpResponse(content, content_type="text/csv")
 
 
 def csw_render_extra_format_html(request, layeruuid, resname):

@@ -24,7 +24,7 @@ import json
 
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Max
 
 from .models import Favorite
@@ -107,7 +107,10 @@ class FavoriteTest(GeoNodeBaseTestSupport):
 
         # check response.
         self.assertEqual(response.status_code, 200)
-        json_content = json.loads(response.content)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        json_content = json.loads(content)
         self.assertEqual(json_content["has_favorite"], "true")
         expected_delete_url = reverse("delete_favorite", args=[favorites[0].pk])
         self.assertEqual(json_content["delete_url"], expected_delete_url)
@@ -173,7 +176,10 @@ class FavoriteTest(GeoNodeBaseTestSupport):
 
         # check response.
         self.assertEqual(response.status_code, 200)
-        json_content = json.loads(response.content)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        json_content = json.loads(content)
         self.assertEqual(json_content["has_favorite"], "false")
 
         # call method again, check for idempotent.

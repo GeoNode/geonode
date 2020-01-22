@@ -41,14 +41,17 @@ from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import get_template
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 
 from guardian.shortcuts import get_objects_for_user
+
 from geonode.base.models import ResourceBase
+from geonode.compat import ensure_string
 from geonode.base.auth import get_or_create_token
+from geonode.decorators import logged_in_or_basicauth
 from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
@@ -68,7 +71,6 @@ from .helpers import (get_stores,
                       _stylefilterparams_geowebcache_layer,
                       _invalidate_geowebcache_layer)
 
-from django_basic_auth import logged_in_or_basicauth
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_control
 
@@ -442,7 +444,7 @@ def geoserver_proxy(request,
     # or not on session
 
     # @dismissed
-    # if not request.user.is_authenticated():
+    # if not request.user.is_authenticated:
     #     return HttpResponse(
     #         "You must be logged in to access GeoServer",
     #         content_type="text/plain",
@@ -512,7 +514,7 @@ def geoserver_proxy(request,
                     content_type="text/plain",
                     status=401)
             elif downstream_path == 'rest/styles':
-                logger.info(
+                logger.debug(
                     "[geoserver_proxy] Updating Style ---> url %s" %
                     url.geturl())
                 affected_layers = style_update(request, raw_url)
@@ -528,8 +530,8 @@ def geoserver_proxy(request,
                     logger.warn("Could not find any Layer %s on DB" % os.path.basename(request.path))
 
     kwargs = {'affected_layers': affected_layers}
-    raw_url = unquote(raw_url).decode('utf8')
-    timeout = getattr(ogc_server_settings, 'TIMEOUT') or 5
+    raw_url = unquote(raw_url)
+    timeout = getattr(ogc_server_settings, 'TIMEOUT') or 30
     allowed_hosts = [urlsplit(ogc_server_settings.public_url).hostname, ]
     return proxy(request, url=raw_url, response_callback=_response_callback,
                  timeout=timeout, allowed_hosts=allowed_hosts, **kwargs)
@@ -542,11 +544,16 @@ def _response_callback(**kwargs):
 
     # Replace Proxy URL
     content_type_list = ['application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json']
-    if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
-        _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
-        content = content\
-            .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
-            .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
+    try:
+        if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
+            _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            content = content\
+                .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
+                .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
+    except BaseException as e:
+        logger.exception(e)
 
     if 'affected_layers' in kwargs and kwargs['affected_layers']:
         for layer in kwargs['affected_layers']:
@@ -588,7 +595,7 @@ def resolve_user(request):
         'superuser': superuser,
     }
 
-    if acl_user and acl_user.is_authenticated():
+    if acl_user and acl_user.is_authenticated:
         resp['fullname'] = acl_user.get_full_name()
         resp['email'] = acl_user.email
     return HttpResponse(json.dumps(resp), content_type="application/json")
@@ -655,9 +662,9 @@ def layer_acls(request):
         'ro': list(read_only),
         'name': acl_user.username,
         'is_superuser': acl_user.is_superuser,
-        'is_anonymous': acl_user.is_anonymous(),
+        'is_anonymous': acl_user.is_anonymous,
     }
-    if acl_user.is_authenticated():
+    if acl_user.is_authenticated:
         result['fullname'] = acl_user.get_full_name()
         result['email'] = acl_user.email
 
@@ -681,7 +688,7 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
 
     _user, _password = ogc_server_settings.credentials
     req, content = http_client.get(wms_url, user=_user)
-    getcap = content
+    getcap = ensure_string(content)
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         if tolerant and ('ServiceException' in getcap or req.status_code == 404):
             # WARNING Please make sure to have enabled DJANGO CACHE as per
@@ -691,11 +698,11 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
             if access_token:
                 wms_url += ('&access_token=%s' % access_token)
             req, content = http_client.get(wms_url, user=_user)
-            getcap = content
+            getcap = ensure_string(content)
 
     if 'ServiceException' in getcap or req.status_code == 404:
         return None
-    return getcap
+    return getcap.encode('UTF-8')
 
 
 def format_online_resource(workspace, layer, element, namespaces):
@@ -762,7 +769,7 @@ def get_capabilities(request, layerid=None, user=None,
                 layercap = get_layer_capabilities(layer,
                                                   access_token=access_token,
                                                   tolerant=tolerant)
-                if layercap:  # 1st one, seed with real GetCapabilities doc
+                if layercap is not None:  # 1st one, seed with real GetCapabilities doc
                     try:
                         namespaces = {'wms': 'http://www.opengis.net/wms',
                                       'xlink': 'http://www.w3.org/1999/xlink',
@@ -771,7 +778,7 @@ def get_capabilities(request, layerid=None, user=None,
                         rootdoc = etree.ElementTree(layercap)
                         format_online_resource(workspace, layername, rootdoc, namespaces)
                         service_name = rootdoc.find('.//wms:Service/wms:Name', namespaces)
-                        if service_name:
+                        if service_name is not None:
                             service_name.text = cap_name
                         rootdoc = rootdoc.find('.//wms:Capability/wms:Layer/wms:Layer', namespaces)
                     except Exception as e:
@@ -781,7 +788,7 @@ def get_capabilities(request, layerid=None, user=None,
                             "Error occurred creating GetCapabilities for %s: %s" %
                             (layer.typename, str(e)))
                         rootdoc = None
-                if not layercap or not rootdoc:
+                if layercap is None or not len(layercap) or rootdoc is None or not len(rootdoc):
                     # Get the required info from layer model
                     # TODO: store time dimension on DB also
                     tpl = get_template("geoserver/layer.xml")

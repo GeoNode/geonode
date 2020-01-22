@@ -55,7 +55,7 @@ class HelperTest(GeoNodeBaseTestSupport):
         logger.debug(Layer.objects.all())
         self.assertIsNotNone(layer)
 
-        logger.info("Attempting to replace a vector layer with a raster.")
+        logger.debug("Attempting to replace a vector layer with a raster.")
         filename = filename = os.path.join(
             gisdata.GOOD_DATA,
             'vector/san_andres_y_providencia_administrative.shp')
@@ -66,7 +66,7 @@ class HelperTest(GeoNodeBaseTestSupport):
         assertRaisesRegexp(Exception, "You are attempting to replace a vector layer with a raster."):
             file_upload(filename, layer=vector_layer, overwrite=True)
 
-        logger.info("Attempting to replace a raster layer with a vector.")
+        logger.debug("Attempting to replace a raster layer with a vector.")
         raster_layer = file_upload(filename)
         self.assertFalse(raster_layer.is_vector())
         filename = filename = os.path.join(
@@ -76,12 +76,12 @@ class HelperTest(GeoNodeBaseTestSupport):
         assertRaisesRegexp(Exception, "You are attempting to replace a raster layer with a vector."):
             file_upload(filename, layer=raster_layer, overwrite=True)
 
-        logger.info("Attempting to replace a layer with no geometry type.")
+        logger.debug("Attempting to replace a layer with no geometry type.")
         with self.\
         assertRaisesRegexp(Exception, "Local GeoNode layer has no geometry type."):
             replaced = file_upload(filename, layer=vector_layer, overwrite=True)
 
-        logger.info("Attempting to replace a vector layer.")
+        logger.debug("Attempting to replace a vector layer.")
         replaced = file_upload(filename, layer=vector_layer, overwrite=True, gtype='LineString')
         self.assertIsNotNone(replaced)
         self.assertTrue(replaced.is_vector())
@@ -186,11 +186,11 @@ xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegen
         kwargs = {'content': content,
                   'status': 200,
                   'content_type': 'application/xml'}
-        _content = _response_callback(**kwargs)
+        _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall('http://localhost:8000/gs/ows', str(_content)))
 
         kwargs = {'content': content,
                   'status': 200,
                   'content_type': 'text/xml; charset=UTF-8'}
-        _content = _response_callback(**kwargs)
+        _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall('http://localhost:8000/gs/ows', str(_content)))

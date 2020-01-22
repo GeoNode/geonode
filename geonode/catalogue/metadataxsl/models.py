@@ -25,7 +25,7 @@ except ImportError:
     from urlparse import urljoin
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import signals
 
 from geonode.base.models import Link
@@ -41,19 +41,16 @@ settings.DOWNLOAD_FORMATS_METADATA.append(ISO_XSL_NAME)
 def xsl_post_save(instance, sender, **kwargs):
     """Add a link to the enriched ISO metadata
     """
-
     add_xsl_link(instance.resourcebase_ptr)
 
 
 def add_xsl_link(resourcebase):
     """Add a link to the enriched ISO metadata
     """
-
-    urlpath = reverse('prefix_xsl_line', args=[resourcebase.id])
-    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-    url = urljoin(site_url, urlpath)
-
     try:
+        urlpath = reverse('prefix_xsl_line', args=[resourcebase.id])
+        site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+        url = urljoin(site_url, urlpath)
         link, created = Link.objects.get_or_create(
             resource=resourcebase,
             url=url,

@@ -656,10 +656,9 @@ def final_step(upload_session, user, charset="UTF-8"):
                 try:
                     style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
                         cat.get_style(name + '_layer')
-                except BaseException:
+                except BaseException as e:
                     style = cat.get_style('point')
-                    logger.warn(msg)
-                    e.args = (msg,)
+                    logger.warn(str(e))
 
         if style:
             publishing.default_style = style

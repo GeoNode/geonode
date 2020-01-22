@@ -47,7 +47,7 @@ def _supported_type(ext, supported_types):
 
 
 def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
-    logger.info("uploaded_files: {}".format(uploaded_files))
+    logger.debug("uploaded_files: {}".format(uploaded_files))
     requires_datastore = () if ogc_server_settings.DATASTORE else (
         'csv',
         'kml')

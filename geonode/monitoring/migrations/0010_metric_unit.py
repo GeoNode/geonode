@@ -19,7 +19,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='metricvalue',
             name='ows_service',
-            field=models.ForeignKey(related_name='metric_values', blank=True, to='monitoring.OWSService', null=True),
+            field=models.ForeignKey(related_name='metric_values', blank=True,
+                                    to='monitoring.OWSService', on_delete=models.CASCADE, null=True),
         ),
         migrations.AlterField(
             model_name='owsservice',

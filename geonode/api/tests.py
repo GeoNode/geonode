@@ -20,7 +20,7 @@
 from django.conf import settings
 from datetime import datetime, timedelta
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth.models import Group
 from geonode.decorators import on_ogc_backend

@@ -67,7 +67,7 @@ def do_login(sender, user, request, **kwargs):
     Take action on user login. Generate a new user access_token to be shared
     with GeoServer, and store it into the request.session
     """
-    if user and user.is_authenticated():
+    if user and user.is_authenticated:
         token = None
         try:
             token = get_or_create_token(user)

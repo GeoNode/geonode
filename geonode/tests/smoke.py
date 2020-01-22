@@ -24,7 +24,7 @@ import os
 import math
 from django.conf import settings
 from django.test import override_settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from user_messages.models import Message

@@ -25,7 +25,7 @@ from django.db.models import Q
 from django.conf.urls import url
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.db.models import Count
@@ -374,7 +374,7 @@ class GroupResource(ModelResource):
             applicable_filters)
 
         filtered = semi_filtered
-        if not user.is_authenticated() or user.is_anonymous:
+        if not user.is_authenticated or user.is_anonymous:
             filtered = semi_filtered.exclude(groupprofile__access='private')
         elif not user.is_superuser:
             groups_member_of = user.group_list_all()
@@ -453,7 +453,7 @@ class ProfileResource(TypeFilteredResource):
 
     def dehydrate_email(self, bundle):
         email = ''
-        if bundle.request.user.is_authenticated():
+        if bundle.request.user.is_authenticated:
             email = bundle.obj.email
         return email
 

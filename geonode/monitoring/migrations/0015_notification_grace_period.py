@@ -25,6 +25,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='notificationmetricdefinition',
             name='metric',
-            field=models.ForeignKey(related_name='notification_checks', to='monitoring.Metric'),
+            field=models.ForeignKey(related_name='notification_checks',
+                                    to='monitoring.Metric', on_delete=models.CASCADE),
         ),
     ]

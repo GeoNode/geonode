@@ -34,9 +34,8 @@ from datetime import datetime
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import Group
-from geonode.base.models import License, Region
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -44,11 +43,13 @@ from .forms import DocumentCreateForm
 
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
-from geonode.documents.models import Document, DocumentResourceLink
-from geonode.documents.forms import DocumentFormMixin
-from geonode.base.populate_test_data import create_models
-from geonode.tests.utils import NotificationsTestsHelper
+from geonode.compat import ensure_string
+from geonode.base.models import License, Region
 from geonode.documents import DocumentsAppConfig
+from geonode.documents.forms import DocumentFormMixin
+from geonode.tests.utils import NotificationsTestsHelper
+from geonode.base.populate_test_data import create_models
+from geonode.documents.models import Document, DocumentResourceLink
 
 
 class DocumentsTest(GeoNodeBaseTestSupport):
@@ -67,7 +68,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         create_models('map')
         self.imgfile = io.BytesIO(
             b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
-            '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
+            b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
         self.anonymous_user = get_anonymous_user()
 
     def test_create_document_with_no_rel(self):
@@ -240,7 +241,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         log = self.client.login(username='bobby', password='bob')
         self.assertTrue(log)
         response = self.client.get(reverse('document_upload'))
-        self.assertTrue('Upload Documents' in response.content)
+        self.assertTrue('Upload Documents' in ensure_string(response.content))
 
     def test_document_isuploaded(self):
         """/documents/upload -> Test uploading a document"""
@@ -320,7 +321,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         # Test that GET returns permissions
         response = self.client.get(reverse('resource_permissions', args=(document_id,)))
-        assert('permissions' in response.content)
+        assert('permissions' in ensure_string(response.content))
 
         # Test that a user is required to have
         # documents.change_layer_permissions
@@ -445,8 +446,8 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
         super(DocumentModerationTestCase, self).setUp()
         self.user = 'admin'
         self.passwd = 'admin'
-        create_models(type='document')
-        create_models(type='map')
+        create_models(type=b'document')
+        create_models(type=b'map')
         self.u = get_user_model().objects.get(username=self.user)
         self.u.email = 'test@email.com'
         self.u.is_active = True
@@ -527,7 +528,7 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
     def setUp(self):
         self.user = 'admin'
         self.passwd = 'admin'
-        create_models(type='document')
+        create_models(type=b'document')
         self.anonymous_user = get_anonymous_user()
         self.u = get_user_model().objects.get(username=self.user)
         self.u.email = 'test@email.com'
@@ -557,13 +558,13 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
 class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        create_models('document')
-        create_models('map')
-        create_models('layer')
+        create_models(b'document')
+        create_models(b'map')
+        create_models(b'layer')
 
         self.test_file = io.BytesIO(
             b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
-            '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
+            b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
         )
 
     def test_create_document_with_links(self):

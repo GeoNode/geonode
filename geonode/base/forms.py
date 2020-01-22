@@ -155,7 +155,7 @@ class RegionsMultipleChoiceField(forms.MultipleChoiceField):
 class RegionsSelect(forms.Select):
     allow_multiple_selected = True
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = []
         final_attrs = self.build_attrs(attrs)
@@ -414,14 +414,11 @@ class ResourceBaseForm(TranslationModelForm):
 
     def clean_keywords(self):
         try:
-            import urllib.parse
-        except ImportError:  # python2 compatible
-            import urllib
-
-        try:  # python2 compatible
-            from HTMLParser import HTMLParser
+            from urllib.parse import unquote
+            from html.entities import codepoint2name
         except ImportError:
-            from html.parser import HTMLParser
+            from urllib import unquote
+            from htmlentitydefs import codepoint2name
 
         def unicode_escape(unistr):
             """
@@ -429,46 +426,35 @@ class ResourceBaseForm(TranslationModelForm):
             Takes a unicode string as an argument
             Returns a unicode string
             """
-            try:  # python2 compatible
-                import htmlentitydefs
-            except ImportError:
-                import html.entities
             escaped = ""
             for char in unistr:
-                try:  # python2 compatible
-                    if ord(char) in htmlentitydefs.codepoint2name:
-                        name = htmlentitydefs.codepoint2name.get(ord(char))
-                        escaped += '&%s;' % name if 'nbsp' not in name else ' '
-                except NameError:
-                    if ord(char) in html.entities.codepoint2name:
-                        name = html.entities.codepoint2name.get(ord(char))
-                        escaped += '&%s;' % name if 'nbsp' not in name else ' '
+                if ord(char) in codepoint2name:
+                    name = codepoint2name.get(ord(char))
+                    escaped += '&%s;' % name if 'nbsp' not in name else ' '
                 else:
                     escaped += char
             return escaped
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
-            try:  # python2 compatible
-                _k = urllib.unquote(('%s' % k)).split(",")
-            except AttributeError:
-                _k = urllib.parse.unquote(('%s' % k)).split(",")
+            _k = unquote(('%s' % k)).split(",")
             if not isinstance(_k, six.string_types):
                 for _kk in [x.strip() for x in _k]:
-                    _kk = HTMLParser().unescape(unicode_escape(_kk))
                     # Simulate JS Unescape
-                    _kk = _kk.replace('%u', r'\u').decode('unicode-escape') if '%u' in _kk else _kk
+                    _kk = _kk.replace('%u', r'\u').\
+                        encode('unicode-escape').replace(b'\\\\u',
+                                                         b'\\u').decode('unicode-escape') if '%u' in _kk else _kk
                     _hk = HierarchicalKeyword.objects.filter(name__iexact='%s' % _kk.strip())
                     if _hk and len(_hk) > 0:
-                        _unsescaped_kwds.append(_hk[0])
+                        _unsescaped_kwds.append(str(_hk[0]))
                     else:
-                        _unsescaped_kwds.append(_kk)
+                        _unsescaped_kwds.append(str(_kk))
             else:
                 _hk = HierarchicalKeyword.objects.filter(name__iexact=_k.strip())
                 if _hk and len(_hk) > 0:
-                    _unsescaped_kwds.append(_hk[0])
+                    _unsescaped_kwds.append(str(_hk[0]))
                 else:
-                    _unsescaped_kwds.append(_k)
+                    _unsescaped_kwds.append(str(_k))
         return _unsescaped_kwds
 
     class Meta:

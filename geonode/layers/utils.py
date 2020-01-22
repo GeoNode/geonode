@@ -32,7 +32,6 @@ import json
 import logging
 import tarfile
 
-from itertools import islice
 from datetime import datetime
 try:
     from urllib.parse import urlparse
@@ -147,10 +146,10 @@ def get_files(filename):
 
     # Verify if the filename is in ascii format.
     try:
-        filename.decode('ascii')
+        filename.encode('ascii')
     except UnicodeEncodeError:
         msg = "Please use only characters from the english alphabet for the filename. '%s' is not yet supported." \
-            % os.path.basename(filename).encode('UTF-8')
+            % os.path.basename(filename).encode('UTF-8', 'strict')
         raise GeoNodeException(msg)
 
     # Let's unzip the filname in case it is a ZIP file
@@ -315,8 +314,8 @@ def get_valid_name(layer_name):
         possible_chars = string.ascii_lowercase + string.digits
         suffix = "".join([choice(possible_chars) for i in range(4)])
         proposed_name = '%s_%s' % (name, suffix)
-        logger.warning('Requested name already used; adjusting name '
-                       '[%s] => [%s]', layer_name, proposed_name)
+        logger.debug('Requested name already used; adjusting name '
+                     '[%s] => [%s]', layer_name, proposed_name)
     else:
         logger.debug("Using name as requested")
 
@@ -530,18 +529,14 @@ def file_upload(filename,
                     if not lyr:
                         raise Exception(
                             _("You are attempting to replace a vector layer with an incompatible source."))
-                    limit = 1
                     schema_is_compliant = False
-                    for feat in islice(lyr, 0, limit):
-                        _ff = json.loads(feat.ExportToJson())
-                        if not gtype:
-                            raise Exception(
-                                _("Local GeoNode layer has no geometry type."))
-                        if _ff["geometry"]["type"] in gtype or \
-                        gtype in _ff["geometry"]["type"]:
-                            schema_is_compliant = True
-                            break
-                    if not schema_is_compliant:
+                    _ff = json.loads(lyr.GetFeature(0).ExportToJson())
+                    if not gtype:
+                        raise Exception(
+                            _("Local GeoNode layer has no geometry type."))
+                    if _ff["geometry"]["type"] in gtype or gtype in _ff["geometry"]["type"]:
+                        schema_is_compliant = True
+                    elif not schema_is_compliant:
                         raise Exception(
                             _("You are attempting to replace a vector layer with an incompatible schema."))
                 except BaseException as e:
@@ -1044,7 +1039,8 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
                         try:
                             image = _prepare_thumbnail_body_from_opts(request_body)
-                        except BaseException:
+                        except BaseException as e:
+                            logger.exception(e)
                             image = None
 
                 if image is None:
@@ -1065,7 +1061,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
                         for _p in params.keys():
                             if _p.lower() not in thumbnail_create_url.lower():
-                                thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (_p, params[_p])
+                                thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (str(_p), str(params[_p]))
                         headers = {}
                         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                             _ogc_server_settings = settings.OGC_SERVER['default']
@@ -1074,20 +1070,19 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                                 'PASSWORD' in _ogc_server_settings else 'geoserver'
                             import base64
                             valid_uname_pw = base64.b64encode(
-                                b"%s:%s" % (_user, _pwd)).decode("ascii")
+                                ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
                             headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
                         resp, image = ogc_client.request(thumbnail_create_url, headers=headers)
-                        if 'ServiceException' in image or \
+                        if 'ServiceException' in str(image) or \
                         resp.status_code < 200 or resp.status_code > 299:
                             msg = 'Unable to obtain thumbnail: %s' % image
-                            logger.error(msg)
+                            logger.debug(msg)
 
                             # Replace error message with None.
                             image = None
 
                     except BaseException as e:
                         logger.exception(e)
-
                         # Replace error message with None.
                         image = None
 
@@ -1095,7 +1090,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                     instance.save_thumbnail(thumbnail_name, image=image)
                 else:
                     msg = 'Unable to obtain thumbnail for: %s' % instance
-                    logger.error(msg)
+                    logger.debug(msg)
 
 
 # this is the original implementation of create_gs_thumbnail()
@@ -1134,23 +1129,23 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
                     local_bboxes.append(wgs84_bbox)
                     if _l.storeType != "remoteStore":
                         local_layers.append(_l.alternate)
-        layers = ",".join(local_layers).encode('utf-8')
+        layers = ",".join(local_layers)
     else:
         # Compute Bounds
         if instance.store:
             _ll = Layer.objects.filter(
                 store=instance.store,
-                alternate=instance.alternate.encode('utf-8'))
+                alternate=instance.alternate)
         else:
             _ll = Layer.objects.filter(
-                alternate=instance.alternate.encode('utf-8'))
+                alternate=instance.alternate)
         for _l in _ll:
             if _l.name == instance.name:
                 wgs84_bbox = bbox_to_projection(_l.bbox)
                 local_bboxes.append(wgs84_bbox)
                 if _l.storeType != "remoteStore":
                     local_layers.append(_l.alternate)
-        layers = ",".join(local_layers).encode('utf-8')
+        layers = ",".join(local_layers)
 
     if local_bboxes:
         for _bbox in local_bboxes:
@@ -1180,10 +1175,12 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     }
 
     if bbox:
+        _default_thumb_size = getattr(
+            settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
         params['bbox'] = "%s,%s,%s,%s" % (bbox[0], bbox[2], bbox[1], bbox[3])
         params['crs'] = 'EPSG:4326'
-        params['width'] = 240
-        params['height'] = 180
+        params['width'] = _default_thumb_size['width']
+        params['height'] = _default_thumb_size['height']
 
     user = None
     try:
@@ -1221,11 +1218,11 @@ def delete_orphaned_layers():
     for filename in os.listdir(layer_path):
         fn = os.path.join(layer_path, filename)
         if LayerFile.objects.filter(file__icontains=filename).count() == 0:
-            logger.info('Removing orphan layer file %s' % fn)
+            logger.debug('Removing orphan layer file %s' % fn)
             try:
                 os.remove(fn)
             except OSError:
-                logger.info('Could not delete file %s' % fn)
+                logger.warn('Could not delete file %s' % fn)
 
 
 def set_layers_permissions(permissions_name, resources_names=None,

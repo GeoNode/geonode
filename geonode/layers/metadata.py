@@ -51,7 +51,7 @@ def set_metadata(xml):
     tagname = get_tagname(exml)
 
     if tagname == 'GetRecordByIdResponse':  # strip CSW element
-        LOGGER.info('stripping CSW root element')
+        LOGGER.debug('stripping CSW root element')
         exml = exml.getchildren()[0]
         tagname = get_tagname(exml)
 
