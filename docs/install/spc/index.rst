@@ -204,7 +204,7 @@ On the old server
 On the new server
 .................
 
-Setup SPCGeonode by following the prerequisite and production steps on https://github.com/olivierdalang/SPCgeonode/tree/release up to (but not including) run the stack.
+Setup SPCGeonode by following the prerequisite and production steps on https://github.com/GeoNode/geonode/tree/master/scripts/spcgeonode up to (but not including) run the stack.
 
 Then run these commands:
 
