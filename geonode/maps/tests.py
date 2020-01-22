@@ -767,7 +767,7 @@ community."
     #     if not on_travis:
     #         self.client.login(username=self.user, password=self.passwd)
     #         new_map = reverse('new_map_json')
-    #         logger.info("Create the map")
+    #         logger.debug("Create the map")
     #         response = self.client.post(
     #             new_map,
     #             data=self.viewer_config,
@@ -777,7 +777,7 @@ community."
     #             content = content.decode('UTF-8')
     #         map_id = int(json.loads(content)['id'])
     #         ctype = ContentType.objects.get(model='map')
-    #         logger.info("Create the rating with the correct content type")
+    #         logger.debug("Create the rating with the correct content type")
     #         try:
     #             OverallRating.objects.create(
     #                 category=1,
@@ -786,13 +786,13 @@ community."
     #                 rating=3)
     #         except BaseException as e:
     #             logger.exception(e)
-    #         logger.info("Remove the map")
+    #         logger.debug("Remove the map")
     #         try:
     #             response = self.client.post(reverse('map_remove', args=(map_id,)))
     #             self.assertEqual(response.status_code, 302)
     #         except BaseException as e:
     #             logger.exception(e)
-    #         logger.info("Check there are no ratings matching the removed map")
+    #         logger.debug("Check there are no ratings matching the removed map")
     #         try:
     #             rating = OverallRating.objects.filter(object_id=map_id)
     #             self.assertEqual(rating.count(), 0)

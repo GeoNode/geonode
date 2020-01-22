@@ -75,12 +75,12 @@ class GeoNodeBaseTestSupport(TestCase):
 
     def setUp(self):
         super(GeoNodeBaseTestSupport, self).setUp()
-        logging.info(" Test setUp. Creating models.")
+        logging.debug(" Test setUp. Creating models.")
         self.get_obj_ids = create_models(type=self.get_type)
 
     def tearDown(self):
         super(GeoNodeBaseTestSupport, self).tearDown()
-        logging.info(" Test tearDown. Destroying models / Cleaning up Server.")
+        logging.debug(" Test tearDown. Destroying models / Cleaning up Server.")
         remove_models(self.get_obj_ids, type=self.get_type)
         from django.conf import settings
         if settings.OGC_SERVER['default'].get(
@@ -96,12 +96,12 @@ class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport,
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()
-        logging.info(" Test setUp. Creating models.")
+        logging.debug(" Test setUp. Creating models.")
         self.get_obj_ids = create_models(type=self.get_type)
 
     def tearDown(self):
         super(GeoNodeLiveTestSupport, self).tearDown()
-        logging.info(" Test tearDown. Destroying models / Cleaning up Server.")
+        logging.debug(" Test tearDown. Destroying models / Cleaning up Server.")
         remove_models(self.get_obj_ids, type=self.get_type)
         from django.conf import settings
         if settings.OGC_SERVER['default'].get(

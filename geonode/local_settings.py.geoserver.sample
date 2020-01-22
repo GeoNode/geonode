@@ -299,7 +299,7 @@ MAP_BASELAYERS = [{}]
 
 """
 To enable the GeoExt based Client:
-1. pip install django-geoexplorer==4.0.42
+1. pip install django-geoexplorer>=4.0.42
 2. add 'geoexplorer' to INSTALLED_APPS
 3. enable those:
 """

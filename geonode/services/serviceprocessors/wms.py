@@ -567,7 +567,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                             if 'ServiceException' in str(image) or \
                                resp.status_code < 200 or resp.status_code > 299:
                                 msg = 'Unable to obtain thumbnail: %s' % image
-                                logger.warn(msg)
+                                logger.debug(msg)
 
                                 # Replace error message with None.
                                 image = None

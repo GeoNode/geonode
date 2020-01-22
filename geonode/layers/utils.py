@@ -1076,7 +1076,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         if 'ServiceException' in str(image) or \
                         resp.status_code < 200 or resp.status_code > 299:
                             msg = 'Unable to obtain thumbnail: %s' % image
-                            logger.error(msg)
+                            logger.debug(msg)
 
                             # Replace error message with None.
                             image = None
@@ -1090,7 +1090,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                     instance.save_thumbnail(thumbnail_name, image=image)
                 else:
                     msg = 'Unable to obtain thumbnail for: %s' % instance
-                    logger.error(msg)
+                    logger.debug(msg)
 
 
 # this is the original implementation of create_gs_thumbnail()
@@ -1218,11 +1218,11 @@ def delete_orphaned_layers():
     for filename in os.listdir(layer_path):
         fn = os.path.join(layer_path, filename)
         if LayerFile.objects.filter(file__icontains=filename).count() == 0:
-            logger.info('Removing orphan layer file %s' % fn)
+            logger.debug('Removing orphan layer file %s' % fn)
             try:
                 os.remove(fn)
             except OSError:
-                logger.info('Could not delete file %s' % fn)
+                logger.warn('Could not delete file %s' % fn)
 
 
 def set_layers_permissions(permissions_name, resources_names=None,

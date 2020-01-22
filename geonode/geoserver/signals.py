@@ -189,7 +189,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         metadata_links.append((link.mime, link.name, link.url))
 
     if gs_resource:
-        logger.info("Found geoserver resource for this layer: %s" % instance.name)
+        logger.debug("Found geoserver resource for this layer: %s" % instance.name)
         gs_resource.metadata_links = metadata_links
         # gs_resource should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True

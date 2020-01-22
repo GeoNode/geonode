@@ -524,7 +524,7 @@ Install and configure NGINX
 .. code-block:: shell
 
   # Install the services
-  sudo apt install -y nginx uwsgi uwsgi-plugin-python
+  sudo apt install -y nginx uwsgi uwsgi-plugin-python3
 
 Serving {“geonode”, “geoserver”} via NGINX
 ..........................................

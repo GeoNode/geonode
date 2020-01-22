@@ -458,7 +458,7 @@ with following content
         - name: Install python for Ansible
           become: yes
           become_user: root
-          raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+          raw: test -e /usr/bin/python || (apt -y update && apt install -y python3-minimal)
       roles:
          - { role: GeoNode.geonode }
 
