@@ -251,7 +251,7 @@ branches:
 
 before_install:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
-      git clone --depth 1 https://github.com/GeoNode/geonode-selenium.git;
+      git clone https://github.com/GeoNode/geonode-selenium.git -b 2.10.x --depth 1;
       export GEONODE_REPOSITORY=$(pwd);
       GECKODRIVER_VERSION="v0.24.0";
     else
