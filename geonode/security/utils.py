@@ -434,7 +434,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     """
     Sync Guardian permissions to GeoFence.
     """
-    _layer_name = layer.name if layer.name else layer.alternate.split(":")[0]
+    _layer_name = layer.name if layer and hasattr(layer, 'name') else layer.alternate.split(":")[0]
     _layer_workspace = get_layer_workspace(layer)
     # Create new rule-set
     gf_services = {}
@@ -490,8 +490,8 @@ def remove_object_permissions(instance):
     """
     from guardian.models import UserObjectPermission, GroupObjectPermission
     resource = instance.get_self_resource()
-    if hasattr(resource, "layer"):
-        try:
+    try:
+        if hasattr(resource, "layer"):
             UserObjectPermission.objects.filter(
                 content_type=ContentType.objects.get_for_model(resource.layer),
                 object_pk=instance.id
@@ -506,11 +506,11 @@ def remove_object_permissions(instance):
                     set_geofence_invalidate_cache()
             else:
                 resource.set_dirty_state()
-        except (ObjectDoesNotExist, RuntimeError):
-            pass  # This layer is not manageable by geofence
-        except BaseException:
-            tb = traceback.format_exc()
-            logger.debug(tb)
+    except (ObjectDoesNotExist, RuntimeError):
+        pass  # This layer is not manageable by geofence
+    except BaseException:
+        tb = traceback.format_exc()
+        logger.debug(tb)
     UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
                                         object_pk=instance.id).delete()
     GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),

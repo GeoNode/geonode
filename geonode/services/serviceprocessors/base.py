@@ -28,7 +28,7 @@ except ImportError:
     from urllib import quote
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from six.moves.urllib.parse import urlencode, urlparse, urljoin, parse_qs, urlunparse
 
 from geonode import geoserver

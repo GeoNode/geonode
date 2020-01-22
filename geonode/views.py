@@ -22,7 +22,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate, login, get_user_model
 from django.http import HttpResponse, HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 import json
 from django.db.models import Q
 from django.template.response import TemplateResponse
@@ -100,8 +100,8 @@ def ajax_lookup(request):
     )
 
 
-def err403(request):
-    if not request.user.is_authenticated():
+def err403(request, exception):
+    if not request.user.is_authenticated:
         return HttpResponseRedirect(
             reverse('account_login') +
             '?next=' +
@@ -111,7 +111,7 @@ def err403(request):
 
 
 def ident_json(request):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return HttpResponseRedirect(
             reverse('account_login') +
             '?next=' +

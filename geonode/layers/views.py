@@ -48,7 +48,7 @@ from guardian.shortcuts import get_perms, get_objects_for_user
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.conf import settings
@@ -276,7 +276,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 out['success'] = False
                 out['errormsgs'] = _('Failed to upload the layer')
                 try:
-                    out['errors'] = u''.join(error).encode('utf-8')
+                    out['errors'] = u''.join(error)
                 except BaseException:
                     try:
                         out['errors'] = str(error)
@@ -305,7 +305,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         err_msg = 'The error could not be parsed'
                         upload_session.error = err_msg
                         logger.error("TypeError: can't pickle traceback objects")
-                    upload_session.traceback = traceback.format_exc(tb)
+                    try:
+                        upload_session.traceback = traceback.format_exc(tb)
+                    except TypeError:
+                        upload_session.traceback = traceback.format_tb(tb)
                     upload_session.context = log_snippet(CONTEXT_LOG_FILE)
                     upload_session.save()
                     out['traceback'] = upload_session.traceback
@@ -361,17 +364,20 @@ def layer_upload(request, template='upload/layer_upload.html'):
         for _k in _keys:
             if _k in out:
                 if isinstance(out[_k], string_types):
-                    out[_k] = out[_k].decode(layer_charset).encode("utf-8")
+                    out[_k] = out[_k].encode(layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
                 elif isinstance(out[_k], dict):
                     for key, value in out[_k].items():
                         try:
                             item = out[_k][key]
                             # Ref issue #4241
                             if isinstance(item, ErrorList):
-                                out[_k][key] = item.as_text().decode(layer_charset).encode("utf-8")
+                                out[_k][key] = item.as_text().encode(
+                                    layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
                             else:
-                                out[_k][key] = item.decode(layer_charset).encode("utf-8")
-                            out[_k][key.decode(layer_charset).encode("utf-8")] = out[_k].pop(key)
+                                out[_k][key] = item.encode(layer_charset, 'surrogateescape').decode(
+                                    'utf-8', 'surrogateescape')
+                            out[_k][key.encode(layer_charset, 'surrogateescape').decode(
+                                'utf-8', 'surrogateescape')] = out[_k].pop(key)
                         except BaseException as e:
                             logger.exception(e)
 
@@ -716,7 +722,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         logger.error(
             "Possible error with OWSLib. Turning all available properties to string")
     # maps owned by user needed to fill the "add to existing map section" in template
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         context_dict["maps"] = Map.objects.filter(owner=request.user)
         if getattr(settings, 'FAVORITE_ENABLED', False):
             from geonode.favorite.utils import get_favorite_info

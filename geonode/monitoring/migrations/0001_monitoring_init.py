@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
                 ('value_num', models.DecimalField(default=None, null=True, max_digits=16, decimal_places=4, blank=True)),
                 ('value_raw', models.TextField(default=None, null=True, blank=True)),
                 ('data', jsonfield.fields.JSONField(default={})),
-                ('label', models.ForeignKey(to='monitoring.MetricLabel')),
+                ('label', models.ForeignKey(to='monitoring.MetricLabel', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
                 ('active', models.BooleanField(default=True)),
                 ('notes', models.TextField(null=True, blank=True)),
                 ('url', models.URLField(default='', null=True, blank=True)),
-                ('host', models.ForeignKey(to='monitoring.Host')),
+                ('host', models.ForeignKey(to='monitoring.Host', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -116,19 +116,19 @@ class Migration(migrations.Migration):
             name='ServiceTypeMetric',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('metric', models.ForeignKey(to='monitoring.Metric')),
-                ('service_type', models.ForeignKey(to='monitoring.ServiceType')),
+                ('metric', models.ForeignKey(to='monitoring.Metric', on_delete=models.CASCADE)),
+                ('service_type', models.ForeignKey(to='monitoring.ServiceType', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
             model_name='service',
             name='service_type',
-            field=models.ForeignKey(to='monitoring.ServiceType'),
+            field=models.ForeignKey(to='monitoring.ServiceType', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='requestevent',
             name='service',
-            field=models.ForeignKey(to='monitoring.Service'),
+            field=models.ForeignKey(to='monitoring.Service', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='monitoredresource',
@@ -137,26 +137,26 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='metricvalue',
             name='resource',
-            field=models.ForeignKey(to='monitoring.MonitoredResource'),
+            field=models.ForeignKey(to='monitoring.MonitoredResource', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='metricvalue',
             name='service',
-            field=models.ForeignKey(to='monitoring.Service'),
+            field=models.ForeignKey(to='monitoring.Service', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='metricvalue',
             name='service_metric',
-            field=models.ForeignKey(to='monitoring.ServiceTypeMetric'),
+            field=models.ForeignKey(to='monitoring.ServiceTypeMetric', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='exceptionevent',
             name='request',
-            field=models.ForeignKey(to='monitoring.RequestEvent'),
+            field=models.ForeignKey(to='monitoring.RequestEvent', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='exceptionevent',
             name='service',
-            field=models.ForeignKey(to='monitoring.Service'),
+            field=models.ForeignKey(to='monitoring.Service', on_delete=models.CASCADE),
         ),
     ]

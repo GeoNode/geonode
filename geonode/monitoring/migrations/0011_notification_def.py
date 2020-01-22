@@ -31,17 +31,19 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='metricnotificationcheck',
             name='user',
-            field=models.ForeignKey(related_name='monitoring_checks', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='monitoring_checks',
+                                    to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='notificationmetricdefinition',
             name='metric',
-            field=models.ForeignKey(related_name='+', to='monitoring.Metric'),
+            field=models.ForeignKey(related_name='+', to='monitoring.Metric', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='notificationmetricdefinition',
             name='notification_check',
-            field=models.ForeignKey(related_name='definitions', to='monitoring.NotificationCheck'),
+            field=models.ForeignKey(related_name='definitions',
+                                    to='monitoring.NotificationCheck', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='notificationcheck',

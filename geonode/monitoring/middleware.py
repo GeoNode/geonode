@@ -42,8 +42,12 @@ FILTER_URLS = (settings.MEDIA_URL,
 
 class MonitoringMiddleware(object):
 
-    def __init__(self):
+    def __init__(self, get_response):
+        self.get_response = get_response
         self.setup_logging()
+
+    def __call__(self, request):
+        return self.get_response(request)
 
     def setup_logging(self):
         self.log = logging.getLogger('{}.catcher'.format(__name__))
@@ -124,7 +128,7 @@ class MonitoringMiddleware(object):
         if settings.USER_ANALYTICS_ENABLED:
             meta.update({
                 'user_identifier': hashlib.sha256(request.session.session_key or '').hexdigest(),
-                'user_username': request.user.username if request.user.is_authenticated() else 'AnonymousUser'
+                'user_username': request.user.username if request.user.is_authenticated else 'AnonymousUser'
             })
 
         request._monitoring = meta

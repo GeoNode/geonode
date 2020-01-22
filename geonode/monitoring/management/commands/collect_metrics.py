@@ -102,10 +102,10 @@ class Command(BaseCommand):
                 if options['halt_on_errors']:
                     raise
         if not options['do_not_clear']:
-            log.info("Clearing old data")
+            log.debug("Clearing old data")
             c.clear_old_data()
         if options['emit_notifications']:
-            log.info("Processing notifications for %s", options['until'])
+            log.debug("Processing notifications for %s", options['until'])
             s = Service.objects.first()
             interval = s.check_interval
             now = datetime.utcnow().replace(tzinfo=pytz.utc)

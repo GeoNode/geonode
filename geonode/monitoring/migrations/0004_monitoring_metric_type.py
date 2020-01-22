@@ -19,12 +19,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='exceptionevent',
             name='request',
-            field=models.ForeignKey(related_name='exceptions', to='monitoring.RequestEvent'),
+            field=models.ForeignKey(related_name='exceptions', to='monitoring.RequestEvent', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='metricvalue',
             name='resource',
-            field=models.ForeignKey(related_name='metric_values', to='monitoring.MonitoredResource'),
+            field=models.ForeignKey(related_name='metric_values',
+                                    to='monitoring.MonitoredResource', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='requestevent',
@@ -34,11 +35,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='servicetypemetric',
             name='metric',
-            field=models.ForeignKey(related_name='service_type', to='monitoring.Metric'),
+            field=models.ForeignKey(related_name='service_type', to='monitoring.Metric', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='servicetypemetric',
             name='service_type',
-            field=models.ForeignKey(related_name='metric', to='monitoring.ServiceType'),
+            field=models.ForeignKey(related_name='metric', to='monitoring.ServiceType', on_delete=models.CASCADE),
         ),
     ]

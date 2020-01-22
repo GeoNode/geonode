@@ -50,13 +50,13 @@ FACETS = {
 }
 
 
-@register.assignment_tag
+@register.simple_tag
 def num_ratings(obj):
     ct = ContentType.objects.get_for_model(obj)
     return len(Rating.objects.filter(object_id=obj.pk, content_type=ct))
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def facets(context):
     request = context['request']
     title_filter = request.GET.get('title__icontains', '')
@@ -284,13 +284,13 @@ def get_facet_title(value):
     return value
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_current_path(context):
     request = context['request']
     return request.get_full_path()
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_context_resourcetype(context):
     c_path = get_current_path(context)
     resource_types = ['layers', 'maps', 'documents', 'search', 'people',
@@ -309,13 +309,13 @@ def fullurl(context, url):
     return r.build_absolute_uri(url)
 
 
-@register.assignment_tag
+@register.simple_tag
 def get_menu(placeholder_name):
     menus = {
-        m: MenuItem.objects.filter(menu=m)
+        m: MenuItem.objects.filter(menu=m).order_by('order')
         for m in Menu.objects.filter(placeholder__name=placeholder_name)
     }
-    return OrderedDict(sorted(menus.items(), key=lambda k_v1: (k_v1[1], k_v1[0])))
+    return OrderedDict(menus.items())
 
 
 @register.inclusion_tag(filename='base/menu.html')
@@ -323,10 +323,10 @@ def render_nav_menu(placeholder_name):
     menus = {}
     try:
         menus = {
-            m: MenuItem.objects.filter(menu=m)
+            m: MenuItem.objects.filter(menu=m).order_by('order')
             for m in Menu.objects.filter(placeholder__name=placeholder_name)
         }
     except BaseException:
         pass
 
-    return {'menus': OrderedDict(sorted(menus.items(), key=lambda k_v: (k_v[1], k_v[0])))}
+    return {'menus': OrderedDict(menus.items())}

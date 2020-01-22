@@ -33,6 +33,7 @@ from defusedxml import lxml as dlxml
 from six import string_types
 
 from geonode import qgis_server
+from geonode.compat import ensure_string
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.utils import check_ogc_backend
@@ -61,7 +62,8 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
     layer = models.OneToOneField(
         Layer,
         primary_key=True,
-        related_name='qgis_layer'
+        related_name='qgis_layer',
+        on_delete=models.CASCADE
     )
     base_layer_path = models.CharField(
         name='base_layer_path',
@@ -250,7 +252,7 @@ class QGISServerStyle(models.Model, PermissionLevelMixin):
 
         response = requests.get(style_url)
         style_body = etree.tostring(
-            dlxml.fromstring(response.content), pretty_print=True)
+            dlxml.fromstring(ensure_string(response.content)), pretty_print=True)
 
         default_dict = {
             'title': style_xml.xpath(
@@ -330,7 +332,8 @@ class QGISServerMap(models.Model, PermissionLevelMixin):
     map = models.OneToOneField(
         Map,
         primary_key=True,
-        name='map'
+        name='map',
+        on_delete="CASCASE"
     )
 
     map_name_format = 'map_{id}'

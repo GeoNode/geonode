@@ -106,9 +106,9 @@ class DocumentForm(ResourceBaseForm, DocumentFormMixin):
 
 
 class DocumentDescriptionForm(forms.Form):
-    title = forms.CharField(300)
-    abstract = forms.CharField(2000, widget=forms.Textarea, required=False)
-    keywords = forms.CharField(500, required=False)
+    title = forms.CharField(max_length=300)
+    abstract = forms.CharField(max_length=2000, widget=forms.Textarea, required=False)
+    keywords = forms.CharField(max_length=500, required=False)
 
 
 class DocumentReplaceForm(forms.ModelForm):

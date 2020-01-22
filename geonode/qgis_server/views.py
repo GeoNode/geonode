@@ -31,7 +31,7 @@ import datetime
 import requests
 import shutil
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, Http404
 from django.http.response import (
@@ -41,6 +41,7 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
+from geonode.compat import ensure_string
 from geonode.maps.models import MapLayer
 from geonode.layers.models import Layer, LayerFile
 from geonode.qgis_server.forms import QGISLayerStyleUploadForm
@@ -367,7 +368,7 @@ def layer_ogc_request(request, layername):
         reverse('qgis_server:layer-request', kwargs={'layername': layername}))
 
     is_text = response.headers.get('content-type').startswith('text')
-    raw = response.content
+    raw = ensure_string(response.content)
     if is_text:
         raw = raw.replace(
             QGIS_SERVER_CONFIG['qgis_server_url'], public_url)
@@ -461,7 +462,7 @@ def qgis_server_request(request):
     qgis_server_url = qgis_server_endpoint(internal=True)
     response = requests.get(qgis_server_url, params)
 
-    content = response.content
+    content = ensure_string(response.content)
 
     # if it is GetCapabilities request, we need to replace all reference to
     # our proxy
@@ -567,7 +568,7 @@ def qml_style(request, layername, style_name=None):
                     if response.status_code == 200:
                         style_url = style_add_url(layer, 'default')
                         with open(layer.qgis_layer.qml_path, 'w') as f:
-                            f.write(response.content)
+                            f.write(ensure_string(response.content))
                         response = requests.get(style_url)
                         if response.status_code == 200:
                             styles_obj = style_list(layer, internal=False)
@@ -582,13 +583,13 @@ def qml_style(request, layername, style_name=None):
         response = requests.get(style_url)
         if response.status_code == 200:
             response = HttpResponse(
-                response.content, content_type='text/xml')
+                ensure_string(response.content), content_type='text/xml')
             response[
                 'Content-Disposition'] = 'attachment; filename=%s.qml' % (
                 style_name, )
         else:
             response = HttpResponse(
-                response.content, status=response.status_code)
+                ensure_string(response.content), status=response.status_code)
         return response
     elif request.method == 'POST':
 
@@ -648,7 +649,7 @@ def qml_style(request, layername, style_name=None):
 
             response = requests.get(style_url)
 
-            if not (response.status_code == 200 and response.content == 'OK'):
+            if not (response.status_code == 200 and ensure_string(response.content) == 'OK'):
                 try:
                     style_list(layer, internal=False)
                 except BaseException:
@@ -661,7 +662,7 @@ def qml_style(request, layername, style_name=None):
                         'resource': layer,
                         'style_upload_form': QGISLayerStyleUploadForm(),
                         'alert': True,
-                        'alert_message': response.content,
+                        'alert_message': ensure_string(response.content),
                         'alert_class': 'alert-danger'
                     },
                     status=response.status_code).render()
@@ -712,9 +713,9 @@ def qml_style(request, layername, style_name=None):
 
         response = requests.get(style_url)
 
-        if not (response.status_code == 200 and response.content == 'OK'):
-            alert_message = response.content
-            if 'NAME is NOT an existing style.' in response.content:
+        if not (response.status_code == 200 and ensure_string(response.content) == 'OK'):
+            alert_message = ensure_string(response.content)
+            if 'NAME is NOT an existing style.' in ensure_string(response.content):
                 alert_message = '%s is not an existing style' % style_name
             try:
                 style_list(layer, internal=False)
@@ -794,10 +795,10 @@ def default_qml_style(request, layername, style_name=None):
 
         response = requests.get(style_url)
 
-        if not (response.status_code == 200 and response.content == 'OK'):
+        if not (response.status_code == 200 and ensure_string(response.content) == 'OK'):
             return HttpResponseServerError(
                 'Failed to change default Style.'
-                'Error: {0}'.format(response.content))
+                'Error: {0}'.format(ensure_string(response.content)))
 
         # Succesfully change default style
         # Synchronize models

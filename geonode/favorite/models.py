@@ -89,8 +89,8 @@ class FavoriteManager(models.Manager):
 
 
 class Favorite(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    content_type = models.ForeignKey(ContentType)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
@@ -104,6 +104,9 @@ class Favorite(models.Model):
         unique_together = (('user', 'content_type', 'object_id'),)
 
     def __unicode__(self):
+        return u"{0}".format(self.__str__())
+
+    def __str__(self):
         if self.content_object:
             return "Favorite: {}, {}, {}".format(
                 self.content_object.title, self.content_type, self.user)

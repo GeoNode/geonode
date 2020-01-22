@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='harvestjob',
             name='service',
-            field=models.ForeignKey(to='services.Service'),
+            field=models.ForeignKey(to='services.Service', on_delete=models.CASCADE),
         ),
     ]

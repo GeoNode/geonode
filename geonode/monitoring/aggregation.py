@@ -209,15 +209,15 @@ def aggregate_past_periods(metric_data_q=None, periods=None, cleanup=True, now=N
         until = now - cutoff_base
 
         if since > until:
-            log.info("Wrong period boundaries, end %s is before start %s, agg: %s",
-                     until, since, aggregation_period)
+            log.debug("Wrong period boundaries, end %s is before start %s, agg: %s",
+                      until, since, aggregation_period)
             previous_cutoff = max(until, since)
             continue
 
-        log.info("aggregation params: cutoff: %s agg period: %s"
-                 "\n  since: '%s' until '%s', but previous cutoff:"
-                 " '%s', aggregate to '%s'",
-                 cutoff_base, aggregation_period, since, until, previous_cutoff, aggregation_period)
+        log.debug("aggregation params: cutoff: %s agg period: %s"
+                  "\n  since: '%s' until '%s', but previous cutoff:"
+                  " '%s', aggregate to '%s'",
+                  cutoff_base, aggregation_period, since, until, previous_cutoff, aggregation_period)
 
         periods = generate_periods(since, aggregation_period, end=until)
 
@@ -225,7 +225,7 @@ def aggregate_past_periods(metric_data_q=None, periods=None, cleanup=True, now=N
         # and extract service, resource, event type and label combinations
         # then, for each distinctive set, calculate per-metric aggregate values
         for period_start, period_end in periods:
-            log.info('period %s - %s (%s s)', period_start, period_end, period_end-period_start)
+            log.debug('period %s - %s (%s s)', period_start, period_end, period_end-period_start)
             ret = aggregate_period(period_start, period_end, metric_data_q, cleanup)
             counter += ret
         previous_cutoff = until
@@ -262,8 +262,8 @@ def aggregate_period(period_start, period_end, metric_data_q, cleanup=True):
         samples_count = value_q['fsamples_count']
         if cleanup:
             per_metric_q.delete()
-        log.info('Metric %s: %s - %s (value: %s, samples: %s)',
-                 m, period_start, period_end, value, samples_count)
+        log.debug('Metric %s: %s - %s (value: %s, samples: %s)',
+                  m, period_start, period_end, value, samples_count)
         if not metric_data_q.filter(service_metric_id=metric_id,
                                     service_id=service_id,
                                     resource_id=resource_id,

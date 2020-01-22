@@ -25,7 +25,7 @@ import shutil
 
 from osgeo import ogr, osr, gdal
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import signals
 from django.dispatch import Signal
 from requests.compat import urljoin
@@ -33,6 +33,7 @@ from requests.compat import urljoin
 from geonode import qgis_server
 from geonode.base.models import Link
 from geonode.layers.models import Layer
+from geonode.compat import ensure_string
 from geonode.maps.models import Map, MapLayer
 from geonode.decorators import on_ogc_backend
 from geonode.qgis_server.gis_tools import set_attributes
@@ -377,7 +378,7 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
     logger.debug('Create project url: {url}'.format(url=response.url))
     logger.debug(
         'Creating the QGIS Project : %s -> %s' % (
-            qgis_map.qgis_project_path, response.content))
+            qgis_map.qgis_project_path, ensure_string(response.content)))
 
     # Generate map thumbnail
     create_qgis_server_thumbnail.delay(

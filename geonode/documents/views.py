@@ -32,8 +32,8 @@ from django.template import loader
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.core.urlresolvers import reverse
-from django.core.exceptions import PermissionDenied
+from django.urls import reverse
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django_downloadview.response import DownloadResponse
@@ -130,7 +130,7 @@ def document_detail(request, docid):
         if document.group:
             try:
                 group = GroupProfile.objects.get(slug=document.group.name)
-            except GroupProfile.DoesNotExist:
+            except ObjectDoesNotExist:
                 group = None
         context_dict = {
             'perms_list': get_perms(
@@ -156,7 +156,7 @@ def document_detail(request, docid):
             except BaseException:
                 logger.error("Exif extraction failed.")
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if getattr(settings, 'FAVORITE_ENABLED', False):
                 from geonode.favorite.utils import get_favorite_info
                 context_dict["favorite_info"] = get_favorite_info(request.user, document)
@@ -708,7 +708,7 @@ def document_metadata_detail(
     if document.group:
         try:
             group = GroupProfile.objects.get(slug=document.group.name)
-        except GroupProfile.DoesNotExist:
+        except ObjectDoesNotExist:
             group = None
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     register_event(request, EventType.EVENT_VIEW_METADATA, document)

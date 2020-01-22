@@ -51,13 +51,14 @@ except ImportError:
 import logging
 import contextlib
 
+from io import IOBase
 from bs4 import BeautifulSoup
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from django.core import mail
 from django.conf import settings
 from django.db.models import signals
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.management import call_command
 from django.contrib.auth import get_user_model
 from django.test.client import Client as DjangoTestClient
@@ -117,7 +118,7 @@ class Client(DjangoTestClient):
 
         if data:
             for name, value in data.items():
-                if isinstance(value, file):
+                if isinstance(value, IOBase):
                     data[name] = (os.path.basename(value.name), value)
 
             encoder = MultipartEncoder(fields=data)
@@ -128,11 +129,15 @@ class Client(DjangoTestClient):
 
         try:
             response.raise_for_status()
-        except requests.HTTPError as ex:
-            if debug:
-                logger.error('error in request to %s' % path)
-                logger.error(ex.message)
-            message = ex.message[ex.message.index(':')+2:]
+        except requests.exceptions.HTTPError as ex:
+            message = ''
+            if hasattr(ex, 'message'):
+                if debug:
+                    logger.error('error in request to %s' % path)
+                    logger.error(ex.message)
+                message = ex.message[ex.message.index(':')+2:]
+            else:
+                message = str(ex)
             raise HTTPError(url, response.status_code, message, response.headers, None)
 
         return response

@@ -26,7 +26,11 @@
 
 import ast
 import os
-from urlparse import urlparse, urlunparse
+try:  # python2
+    from urlparse import urlparse, urlunparse, urlsplit, urljoin
+except ImportError:
+    # Python 3 fallback
+    from urllib.parse import urlparse, urlunparse, urlsplit, urljoin
 from geonode.settings import *
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -134,7 +138,7 @@ OGC_SERVER = {
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
         'DATASTORE': 'datastore',
-        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '5')),
+        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '30')),
         'MAX_RETRIES': int(os.getenv('OGC_REQUEST_MAX_RETRIES', '5')),
         'BACKOFF_FACTOR': float(os.getenv('OGC_REQUEST_BACKOFF_FACTOR', '0.3')),
         'POOL_MAXSIZE': int(os.getenv('OGC_REQUEST_POOL_MAXSIZE', '10')),
@@ -295,7 +299,7 @@ MAP_BASELAYERS = [{}]
 
 """
 To enable the GeoExt based Client:
-1. pip install django-geoexplorer==4.0.42
+1. pip install django-geoexplorer>=4.0.42
 2. add 'geoexplorer' to INSTALLED_APPS
 3. enable those:
 """
@@ -493,8 +497,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
 
     if GEONODE_CATALOGUE_SERVICE:
-        MAPSTORE_CATALOGUE_SERVICES[GEONODE_CATALOGUE_SERVICE.keys()[0]] = GEONODE_CATALOGUE_SERVICE[GEONODE_CATALOGUE_SERVICE.keys()[0]]
-        MAPSTORE_CATALOGUE_SELECTED_SERVICE = GEONODE_CATALOGUE_SERVICE.keys()[0]
+        MAPSTORE_CATALOGUE_SERVICES[list(GEONODE_CATALOGUE_SERVICE.keys())[0]] = GEONODE_CATALOGUE_SERVICE[list(GEONODE_CATALOGUE_SERVICE.keys())[0]]
+        MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(GEONODE_CATALOGUE_SERVICE.keys())[0]
 
     DEFAULT_MS2_BACKGROUNDS = [
         {

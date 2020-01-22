@@ -28,6 +28,7 @@ from geonode.services.views import (
     _register_indexed_layers,
 )
 import json
+from geonode.compat import ensure_string
 from geonode.people.utils import get_valid_user
 import sys
 
@@ -96,12 +97,12 @@ class Command(BaseCommand):
             else:
                 print("Invalid method")
 
-            json_response = json.loads(response.content)
+            json_response = json.loads(ensure_string(response.content))
             if "id" in json_response:
                 print("Service created with id of {}".format(json_response["id"]))
                 service = Service.objects.get(id=json_response["id"])
             else:
-                print("Something went wrong: {}".format(response.content))
+                print("Something went wrong: {}".format(ensure_string(response.content)))
                 return
 
             print(service.id)
@@ -122,4 +123,4 @@ class Command(BaseCommand):
             else:
                 print("Invalid Service Type")
 
-        print(response.content)
+        print(ensure_string(response.content))

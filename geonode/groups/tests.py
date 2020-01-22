@@ -26,7 +26,7 @@ from six import string_types
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import override_settings
 from django.conf import settings
 
@@ -232,7 +232,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
 
         perms_info = _perms_info_json(layer)
         # Ensure foo is in the perms_info output
-        self.assertItemsEqual(
+        self.assertCountEqual(
             json.loads(perms_info)['groups'], {
                 'bar': ['view_resourcebase']})
 
@@ -259,7 +259,10 @@ class SmokeTest(GeoNodeBaseTestSupport):
                     kwargs=dict(
                         resource_id=obj.id)))
             self.assertEqual(response.status_code, 200)
-            js = json.loads(response.content)
+            content = response.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            js = json.loads(content)
             permissions = js.get('permissions', dict())
 
             if isinstance(permissions, string_types):
@@ -274,7 +277,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
                 expected_permissions.setdefault(
                     u'anonymous', []).append(u'view_resourcebase')
 
-            self.assertItemsEqual(permissions.get('groups'), expected_permissions)
+            self.assertCountEqual(permissions.get('groups'), expected_permissions)
 
             permissions = {
                 'groups': {
@@ -301,14 +304,17 @@ class SmokeTest(GeoNodeBaseTestSupport):
                     kwargs=dict(
                         resource_id=obj.id)))
 
-            js = json.loads(response.content)
+            content = response.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            js = json.loads(content)
             permissions = js.get('permissions', dict())
 
             if isinstance(permissions, string_types):
                 permissions = json.loads(permissions)
 
             # Make sure the bar group now has write permissions
-            self.assertItemsEqual(
+            self.assertCountEqual(
                 permissions['groups'], {
                     'bar': ['change_resourcebase']})
 
@@ -331,14 +337,17 @@ class SmokeTest(GeoNodeBaseTestSupport):
                     kwargs=dict(
                         resource_id=obj.id)))
 
-            js = json.loads(response.content)
+            content = response.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            js = json.loads(content)
             permissions = js.get('permissions', dict())
 
             if isinstance(permissions, string_types):
                 permissions = json.loads(permissions)
 
             # Assert the bar group no longer has permissions
-            self.assertItemsEqual(permissions['groups'], {})
+            self.assertCountEqual(permissions['groups'], {})
 
     def test_create_new_group(self):
         """
@@ -528,7 +537,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
 
             perms_info = _perms_info_json(layer)
             # Ensure foo is in the perms_info output
-            self.assertItemsEqual(
+            self.assertCountEqual(
                 json.loads(perms_info)['groups'], {
                     'bar': ['view_resourcebase']})
 
@@ -693,7 +702,10 @@ class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
 
         r = self.client.get(api_url)
         self.assertEqual(r.status_code, 200)
-        data = json.loads(r.content)
+        content = r.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        data = json.loads(content)
         self.assertEqual(
             data['meta']['total_count'],
             GroupCategory.objects.all().count())
@@ -751,14 +763,17 @@ class GroupProfileTest(GeoNodeBaseTestSupport):
             slug="test",
             description="test",
             access="public",
-            logo=SimpleUploadedFile("dummy-file.jpg", b"dummy contents")
+            logo=SimpleUploadedFile("dummy-file.jpg", "dummy contents".encode("UTF-8"))
         )
         test_profile.save()
         response = self.client.get(
             reverse("api_dispatch_list",
                     kwargs={"api_name": "api", "resource_name": "groups"})
         )
-        response_payload = json.loads(response.content)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        response_payload = json.loads(content)
         returned = response_payload["objects"]
         group_profile = [
             g["group_profile"] for g in returned if
@@ -784,7 +799,10 @@ class GroupProfileTest(GeoNodeBaseTestSupport):
             reverse("api_dispatch_list",
                     kwargs={"api_name": "api", "resource_name": "groups"})
         )
-        response_payload = json.loads(response.content)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        response_payload = json.loads(content)
         returned = response_payload["objects"]
         group_profile = [
             g["group_profile"] for g in returned if

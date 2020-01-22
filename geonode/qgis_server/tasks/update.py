@@ -35,6 +35,7 @@ from geonode.qgis_server.helpers import map_thumbnail_url, layer_thumbnail_url
 from geonode.qgis_server.models import QGISServerLayer
 
 from geonode import qgis_server
+from geonode.compat import ensure_string
 from geonode.decorators import on_ogc_backend
 
 logger = logging.getLogger(__name__)
@@ -149,7 +150,7 @@ def cache_request(url, cache_file):
         msg = msg.format(
             url=url,
             status_code=response.status_code,
-            content=response.content)
+            content=ensure_string(response.content))
         raise HTTPError(msg)
 
     with open(cache_file, 'wb') as out_file:

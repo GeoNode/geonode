@@ -35,7 +35,7 @@ from guardian.shortcuts import get_perms
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import redirect
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError, Http404
@@ -180,7 +180,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, map_obj)
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         if getattr(settings, 'FAVORITE_ENABLED', False):
             from geonode.favorite.utils import get_favorite_info
             context_dict["favorite_info"] = get_favorite_info(request.user, map_obj)
@@ -634,7 +634,7 @@ def map_json(request, mapid, snapshot=None):
             json.dumps(
                 map_obj.viewer_json(request)))
     elif request.method == 'PUT':
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return HttpResponse(
                 _PERMISSION_MSG_LOGIN,
                 status=401,
@@ -751,7 +751,7 @@ def new_map_json(request):
         else:
             return HttpResponse(config)
     elif request.method == 'POST':
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return HttpResponse(
                 'You must be logged in to save new maps',
                 content_type="text/plain",
@@ -809,7 +809,7 @@ def new_map_config(request):
 
         map_obj.abstract = DEFAULT_ABSTRACT
         map_obj.title = DEFAULT_TITLE
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             map_obj.owner = request.user
 
         config = map_obj.viewer_json(request)

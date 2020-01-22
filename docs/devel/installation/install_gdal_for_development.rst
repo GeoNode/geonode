@@ -31,7 +31,7 @@ On a fresh Ubuntu 18.04 installation, we will be installing gdal version 2.4.2
 .. code-block:: shell
 
     $ sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update
-    $ sudo apt-get install libgdal-dev python-gdal
+    $ sudo apt-get install libgdal-dev python3-gdal
 
 .. note:: Make sure you don't have a newer version on the software list under /et/apt/sources.list.d/
 

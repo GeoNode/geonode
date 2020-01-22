@@ -248,12 +248,12 @@ class NewLayerUploadForm(LayerUploadForm):
 
 
 class LayerDescriptionForm(forms.Form):
-    title = forms.CharField(300)
-    abstract = forms.CharField(2000, widget=forms.Textarea, required=False)
-    supplemental_information = forms.CharField(2000, widget=forms.Textarea, required=False)
-    data_quality_statement = forms.CharField(2000, widget=forms.Textarea, required=False)
-    purpose = forms.CharField(500, required=False)
-    keywords = forms.CharField(500, required=False)
+    title = forms.CharField(max_length=300, required=True)
+    abstract = forms.CharField(max_length=2000, widget=forms.Textarea, required=False)
+    supplemental_information = forms.CharField(max_length=2000, widget=forms.Textarea, required=False)
+    data_quality_statement = forms.CharField(max_length=2000, widget=forms.Textarea, required=False)
+    purpose = forms.CharField(max_length=500, required=False)
+    keywords = forms.CharField(max_length=500, required=False)
 
 
 class LayerAttributeForm(forms.ModelForm):

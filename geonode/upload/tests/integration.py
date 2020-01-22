@@ -429,13 +429,13 @@ class UploaderBase(GeoNodeLiveTestSupport):
         self._tempfiles.append(abspath)
         return fd, abspath
 
-    def make_csv(self, *rows):
+    def make_csv(self, fieldnames, *rows):
         fd, abspath = self.temp_file('.csv')
-        fp = os.fdopen(fd, 'wb')
-        out = csv.writer(fp)
-        for r in rows:
-            out.writerow(r)
-        fp.close()
+        with open(abspath, 'w', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for r in rows:
+                writer.writerow(r)
         return abspath
 
 
@@ -618,7 +618,7 @@ class TestUpload(UploaderBase):
     def test_csv(self):
         '''make sure a csv upload fails gracefully/normally when not activated'''
         csv_file = self.make_csv(
-            ['lat', 'lon', 'thing'], ['-100', '-40', 'foo'])
+            ['lat', 'lon', 'thing'], {'lat': -100, 'lon': -40, 'thing': 'foo'})
         layer_name, ext = os.path.splitext(os.path.basename(csv_file))
         resp, data = self.client.upload_file(csv_file)
         self.assertEqual(resp.status_code, 200)
@@ -636,7 +636,7 @@ class TestUploadDBDataStore(UploaderBase):
         """Override the baseclass test and verify a correct CSV upload"""
 
         csv_file = self.make_csv(
-            ['lat', 'lon', 'thing'], ['-100', '-40', 'foo'])
+            ['lat', 'lon', 'thing'], {'lat': -100, 'lon': -40, 'thing': 'foo'})
         layer_name, ext = os.path.splitext(os.path.basename(csv_file))
         resp, form_data = self.client.upload_file(csv_file)
         self.assertEqual(resp.status_code, 200)
@@ -650,7 +650,6 @@ class TestUploadDBDataStore(UploaderBase):
                 csrfmiddlewaretoken=self.client.get_csrf_token())
             resp = self.client.make_request(csv_step, form_data)
             content = resp.json()
-            logger.info(content)
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(content['status'], 'incomplete')
 

@@ -43,11 +43,9 @@ def delete_orphaned_document_files():
         fn = os.path.join(documents_path, filename)
         if Document.objects.filter(doc_file__contains=filename).count() == 0:
             message = 'Removing orphan document {}'.format(fn)
-            print(message)
             logger.debug(message)
             try:
                 os.remove(fn)
             except OSError:
                 message = 'Could not delete file {}'.format(fn)
-                print(message)
                 logger.error(message)

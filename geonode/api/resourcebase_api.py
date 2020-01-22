@@ -20,7 +20,7 @@
 import json
 import re
 
-from django.core.urlresolvers import resolve
+from django.urls import resolve
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings

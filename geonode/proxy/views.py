@@ -251,8 +251,8 @@ def download(request, resourceid, sender=Layer):
                 if layer_files:
                     # Copy all Layer related files into a temporary folder
                     for l in layer_files:
-                        if storage.exists(l.file):
-                            geonode_layer_path = storage.path(l.file)
+                        if storage.exists(str(l.file)):
+                            geonode_layer_path = storage.path(str(l.file))
                             base_filename, original_ext = os.path.splitext(geonode_layer_path)
                             shutil.copy2(geonode_layer_path, target_folder)
                         else:
@@ -359,7 +359,7 @@ def download(request, resourceid, sender=Layer):
             zip_dir(target_folder, target_file)
             register_event(request, 'download', instance)
             response = HttpResponse(
-                content=open(target_file),
+                content=open(target_file, mode='rb'),
                 status=200,
                 content_type="application/zip")
             response['Content-Disposition'] = 'attachment; filename="%s"' % target_file_name

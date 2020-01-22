@@ -23,7 +23,7 @@ import logging
 from actstream.models import Action
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import (
     Http404,
     HttpResponseForbidden,
@@ -313,7 +313,7 @@ class GroupProfileAutocomplete(autocomplete.Select2QuerySetView):
         if self.q:
             qs = qs.filter(title__icontains=self.q)
 
-        if not user.is_authenticated() or user.is_anonymous:
+        if not user.is_authenticated or user.is_anonymous:
             qs = qs.exclude(access='private')
         elif not user.is_superuser:
             groups_member_of = user.group_list_all()

@@ -50,7 +50,7 @@ def set_attributes(layer, overwrite=False):
     :type overwrite: bool
     """
     if layer.storeType in ['dataStore']:
-        layer_name = layer.alternate.encode('utf-8')
+        layer_name = layer.alternate
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
 
         qgis_server = geonode_config.QGIS_SERVER_CONFIG['qgis_server_url']
@@ -112,7 +112,7 @@ def set_attributes(layer, overwrite=False):
             logger.debug(
                 'Going to delete [%s] for [%s]',
                 la.attribute,
-                layer.name.encode('utf-8'))
+                layer.name)
             la.delete()
 
     # Add new layer attributes if they don't already exist.
@@ -133,7 +133,7 @@ def set_attributes(layer, overwrite=False):
                     logger.debug(
                         'Created [%s] attribute for [%s]',
                         field,
-                        layer.name.encode('utf-8'))
+                        layer.name)
     else:
         logger.debug('No attributes found')
 
