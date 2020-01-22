@@ -533,7 +533,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "name": "mapnik",
             "source": "osm",
             "group": "background",
-            "visibility": False
+            "visibility": True
         },
         {
             "type": "tileprovider",
