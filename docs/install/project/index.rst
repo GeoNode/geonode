@@ -127,6 +127,13 @@ Make an instance out of the ``Django Template``
 
 .. code-block:: shell
 
+  vim ~/.bashrc
+  # add the following line to the bottom
+  source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+
+.. code-block:: shell
+
+  source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
   mkvirtualenv --python=/usr/bin/python3 my_geonode
   pip install Django==2.2.9
 
@@ -227,6 +234,7 @@ Make an instance out of the ``Django Template``
 
 .. code-block:: shell
 
+  source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
   mkvirtualenv --python=/usr/bin/python3 my_geonode
   pip install Django==2.2.9
 
