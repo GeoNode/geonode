@@ -340,7 +340,7 @@ In addition, we will override the Layer Detail template page as follows:
     
     </dl>
 
-Now from the admin panel, you can see the DOI metadata entry per layer 
+Now from the layer details page, you can see the DOI metadata entry per layer 
 
 .. image:: ./img/doi.png
 

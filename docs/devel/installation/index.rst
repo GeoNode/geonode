@@ -298,11 +298,11 @@ then setup GeoServer using the following command:
 
 The starting process will take around 20 seconds (depends on your machine) and at the end it shows the following message:
 
-.. image:: /img/server-is-ready.png
+.. image:: ./img/server-is-ready.png
 
 Now you can visit the geonode site by typing http://0.0.0.0:8000 into your browser window
 
-.. image:: /img/geonode-gui.png
+.. image:: ./img/geonode-gui.png
 
 
 
