@@ -21,13 +21,14 @@ The workshops documentation demonstrates few examples on how to utilize GeoNode-
 1- Customize your GeoNode with the geonode-project
 --------------------------------------------------
 
-In this example, GeoNode-Project is cloned to create a template instance in which th rest of the examples will be building on top of it.
+In this example, GeoNode-Project is cloned to create a template instance in which the rest of the examples will be building on top of it.
 
 1- Assuming you already installed GeoNode-Core, firstly we need to create a GeoNode-Project template and this can be achieved from the following command:
 
 .. code-block:: shell
     
     $ django-admin.py startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -e py,rst,json,yml,ini,env,sample -n Dockerfile
+
 Here, django-admin is used with startproject option to create my_geonode project copying the template which is passed as GeoNode-project Github repo. It also includes "py,rst,json,yml,ini,env,sample" extensions
 
 2- Once the cloning finished, the next step is to install the GeoNode-Project we just downloaded as follows: 
@@ -44,7 +45,7 @@ Here, django-admin is used with startproject option to create my_geonode project
     $ cd /home/geonode/my_geonode
     $ paver setup
 
-4- Note the GeoNode database connection parameters mentioned in the local_settings.py configuration file. If not found, copy local_settings.py.sample and rename it to local_settings.py then use psql to create the required user and grant the required previleges as follows:
+4- Note the GeoNode database connection parameters mentioned in the local_settings.py configuration file. If not found, copy local_settings.py.sample and rename it to local_settings.py then use psql to create the required user and grant the required privileges as follows:
 
 .. code-block:: shell
     
@@ -57,6 +58,7 @@ Here, django-admin is used with startproject option to create my_geonode project
 	GRANT
 	postgres=# \q
 
+.. warning:: Don't forget to exit from postgres user before executing the following commands 
 
 5- Run GeoNode using paver 
 
@@ -75,21 +77,16 @@ Which means you have some sql statements not executed yet and you need to run th
     $ python manage.py migrate
     $ paver start
 
-6- Once the previous step is done, you can visit 0.0.0.0:8000 or localhost:8000 to view the GUI of GeoNode. However, we still don't have an account in order to login from the GUI. This can be done using django's manage.py createsuperuser as follows:
+.. warning:: If encountered this message: (Invalid HTTP_HOST header: '0.0.0.0:8000'. You may need to add u'0.0.0.0' to ALLOWED_HOSTS) It can be fixed in the settings.py file. You will need to add: ALLOWED_HOSTS = ['0.0.0.0'] in settings.py
 
-.. warning:: If encountered this message: (Invalid HTTP_HOST header: '0.0.0.0:8000'. You may need to add u'0.0.0.0' to ALLOWED_HOSTS) It can be fixed in the local_settings.py file
+.. image:: ./img/geonode-project-gui.png
 
-.. code-block:: shell
-    
-    $ python manage.py createsuperuser
-    $ Username: admin
-    $ Email address: admin@admin.com
-    $ Password: admin
-    $ Password (again): 
-    $ Superuser created successfully
+6- Once the previous step is done, you can visit 0.0.0.0:8000 to view the GUI of GeoNode. However, we still don't have an account in order to login from the GUI. This can be done using "paver sync". The command will create sync with latest fixtures and also creates a superuser "admin" with default password "admin"
+
 
 7- Use the created account to login from the GUI through localhost:8000 or 0.0.0.0:8000
 
+.. image:: ./img/logged-in-geonode.png
 
 
 2- Customize the look and feel
@@ -105,6 +102,8 @@ In the "my_geonode/my_geonode/templates" directory we can edit the site_index.ht
 
 Try to edit the content of the "jumbotron" box in the page, save and refresh your browser to see the changes.
 
+.. image:: ./img/geonode-is-awesome.png
+
 **The theme:**
 
 To change the theme of our geonode-project we can act on the site_base.css file available in the my_geonode/my_geonode/static/css folder.
@@ -112,6 +111,9 @@ To change the theme of our geonode-project we can act on the site_base.css file 
 The file is empty so we can inspect elements of the home page with the browser's developer tools and define css rules in there.
 
 For example, if we want to change the background of the jumbotron, we can add ".home .jumbotron { background: red }" to that file
+
+.. image:: ./img/red-background.png
+
 
 Adding the ".home" class is necessary in order to let the rule have precedence/priority over the GeoNode's one. We can see this by inspecting the element in the developer console.
 
@@ -138,13 +140,15 @@ To:
      <a href="{{ PROJECT_ROOT }}/geocollections">Geocollections</a>
     </li>
 
-On browser refresh you will see a new entry in the nav bar which is persistent to the whole site.
+On browser refresh you will see a new entry in the nav bar which is persistent to the whole site. 
+
+.. image:: ./img/geocollection-menu.png
 
 **GeoNode generic page**
 
 As you can see in the templates folder there are only the site_index.html and the site_base.html files. In order to customize another GeoNode page, for example the layers list page, you need to recreate the same folder structure of the GeoNode templates folder and add a file with the same name.
 
-For the layers list page we can add a folder named "layers" into the template folder and a file named "layer_list.html" in there. The changes made in this file will only affect the layer list page.
+For the layers list page we can create a directory named "layers" inside the template directory and a file named "layer_list.html" inside layers. The changes made in this file will only affect the layer list page.
 
 .. code-block:: shell
     
@@ -153,7 +157,10 @@ For the layers list page we can add a folder named "layers" into the template fo
     cp geonode/geonode/layers/templates/layers/layer_list.html  my_geonode/templates/layers/layer_list.html
     
     vim my_geonode/templates/layers/layer_list.html
+
 For example change in page title to be:  <h2 class="page-title">{% trans "Explore My Layers" %}</h2> then refresh your browser to see the update.
+
+.. image:: ./img/explore-my-layers.png
 
 **Modify functionality**
 
@@ -237,7 +244,7 @@ The "ready" method is invoked at initialization time and can be currently used t
             run_setup_hooks()
 
 
-Now we can add the "patch_resource_base" method to the AppConfig and execute it from the ready method as follows:
+Now we will add the "patch_resource_base" method to the AppConfig and execute it from the ready method as follows:
 
 .. code-block:: python
     
@@ -271,11 +278,10 @@ Now we can add the "patch_resource_base" method to the AppConfig and execute it 
             from geonode.base.models import ResourceBase
             self.patch_resource_base(ResourceBase)
 
-.. note:: you will need to perform migrations as follows: Migrations for 'base':
-  /home/moataz/dev/.venvs/geonode2/src/geonode/geonode/base/migrations/0031_resourcebase_doi.py
-    - Add field doi to resourcebase
+.. note:: you will need to perform migrations as follows: - Add field doi to resourcebase
 
-then once you run python manage.py migrate:
+
+Once you run python manage.py migrate:
 
 Running migrations:
   Applying announcements.0002_auto_20200119_1257... OK
@@ -284,11 +290,11 @@ Running migrations:
 
 Till now, we have patched the DB. however, it is not yet sufficient as we still need to display the added field.
 
-Let's extend the default templates so that we can show the newely added field
+Let's extend the default templates so that we can show the newly added field
 
 **Overriding the Metadata Wizard Template Page**
 
-Similar to what we have done before in the Templates directory, we will need to create "layouts" directory under my_geonode/my_geonode/templates. this directory will contain a copy from "geonode/src/geonode/geonode/layers/templates/layouts/panels.html" as follows:
+Similar to what we have done before in the Templates directory, we will need to create "layouts" directory under my_geonode/my_geonode/templates. This directory will contain a copy from "geonode/src/geonode/geonode/layers/templates/layouts/panels.html" as follows:
 
 .. code-block:: shell
     
@@ -314,7 +320,7 @@ Inside panels.html, we will add a new div with text input as follows:
           </div>
      </div>
 
-In additon, we will override the Layer Detail template page as follows:
+In addition, we will override the Layer Detail template page as follows:
 
 .. code-block:: shell
     
@@ -334,13 +340,15 @@ In additon, we will override the Layer Detail template page as follows:
     
     </dl>
 
-Now from the admin panel, you can see the DOI metadata entry per layer
+Now from the admin panel, you can see the DOI metadata entry per layer 
+
+.. image:: ./img/doi.png
 
 **Create your own django app**
 
 In this section, we will demonstrate how to create and setup the skeleton of a custom app using the django facilities. The app will add a geocollections functionality to our GeoNode.
 
-The Gecollections app allows to present, in a single page, resources and users grouped by a GeoNode Group. We can assign arbitrary resources to a Geocollection, a Group and a name that will be also used to build a dedicated URL. 
+The Gecollections app allows to present in a single page, resources and users grouped by a GeoNode Group. We can assign arbitrary resources to a Geocollection, a Group and a name that will be also used to build a dedicated URL. 
 
 .. Note:: Make sure to be in my_geonode directory to execute the following commands
 
@@ -399,7 +407,7 @@ At this point we need to ask django to create the database table. Django since v
     
     python manage.py makemigrations
     
-    # the above command informs you with the mogrations to be executed on the database
+    # the above command informs you with the migrations to be executed on the database
     
     python manage.py migrate
 
@@ -474,7 +482,12 @@ We need a user interface where we can create geocollections. Django makes this v
     class GeocollectionAdmin(admin.ModelAdmin):
         prepopulated_fields = {"slug": ("name",)}
         filter_horizontal = ('resources',)
-        admin.site.register(Geocollection, GeocollectionAdmin)
+    
+    admin.site.register(Geocollection, GeocollectionAdmin)
+
+Now we can visit the admin page and create a geocollection from there as follows:
+
+.. image:: ./img/geocollections-admin.png
 
 **Adding the template**
 
@@ -489,7 +502,6 @@ Now we need the template where the geocollection detail will be rendered. Let's 
 
 .. code-block:: python
     
-    {% raw %}
     {% extends "geonode_base.html" %}
     {% block body %}
         <h2>Geocollection {{ object.name }}</h2>
@@ -508,7 +520,11 @@ login into the admin panel -> geocollections and create a geocollections
 
 Visit http://localhost:8000/geocollections/<the-name-of-the-created-geocollection> and view the results.
 
-Now you know how to customize an html template so you can tune this page at home.
+.. image:: ./img/geocollections-details.png
+
+
+Now you know how to customize an html template so you can tune this page as you prefer.
+
 
 
 **Permissions and APIs**
@@ -723,7 +739,7 @@ We need first to create an api.py file in our geocollection app.
                 'id': ALL
             }
 
-**PI authorization**
+**API authorization**
 
 We want the API to respect our custom permissions, we can easily achieve this by adding the following to the beginning of api.py:
 
@@ -774,11 +790,12 @@ We can inject the url into the GeoNode API by adding the following in my_geonode
     
     api.register(GeocollectionResource())
 
-And add the follofing in the urlpatterns:
+And add the following in the urlpatterns:
 
 .. code-block:: python
     
     url(r'', include(api.urls)),
+
 The final result will be:
 
 .. code-block:: python
@@ -855,7 +872,7 @@ Steps to push your code to GitHub:
 
 - Create an empty repository in GitHub and copy it's address
 
-- In my_geonode, run git initto initialize an empty repository
+- In my_geonode, run git init to initialize an empty repository
 
 - Add your remote repository address with "git remote add yourname yourremoteaddress"
 
