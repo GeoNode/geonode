@@ -355,9 +355,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
         # null-safe charset
         layer_charset = 'UTF-8'
-        if saved_layer and hasattr(saved_layer, 'charset'):
-            layer_charset = saved_layer.charset
-        elif input_charset:
+        if saved_layer:
+            layer_charset = getattr(saved_layer, 'charset', layer_charset)
+        elif input_charset and 'undefined' not in input_charset:
             layer_charset = input_charset
 
         _keys = ['info', 'errors']

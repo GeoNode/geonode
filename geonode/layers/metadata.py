@@ -42,7 +42,7 @@ def set_metadata(xml):
 
     # check if document is XML
     try:
-        exml = dlxml.fromstring(xml)
+        exml = dlxml.fromstring(xml.encode())
     except Exception as err:
         raise GeoNodeException(
             'Uploaded XML document is not XML: %s' % str(err))
