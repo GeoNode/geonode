@@ -65,7 +65,8 @@ class CreateServiceForm(forms.Form):
 
     def clean_url(self):
         proposed_url = self.cleaned_data["url"]
-        existing = Service.objects.filter(base_url=proposed_url).exists()
+        base_url = proposed_url.split('?')[0]
+        existing = Service.objects.filter(base_url=base_url).exists()
         if existing:
             raise ValidationError(
                 _("Service %(url)s is already registered"),
