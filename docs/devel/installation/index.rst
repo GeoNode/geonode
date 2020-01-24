@@ -50,7 +50,7 @@ Installation steps
 
 .. code-block:: shell
     
-    $ sudo apt-get install -y python-dev python-pil python-lxml python-pyproj python-shapely python-nose python-httplib2 python-pip software-properties-common
+    $ sudo apt-get install -y python3-dev python3-pil python3-lxml python3-pyproj python3-shapely python3-nose python3-httplib2 python3-pip software-properties-common
 
 Install python virtual environment
 
@@ -370,7 +370,7 @@ If you didn't install GeoNode-Core earlier and you wanted to install GeoNode-Pro
 
 .. code-block:: shell
     
-    $ pip install Django==1.11.25
+    $ pip install Django==2.2.9
 
 4- Use django-admin.py to create a project "my_geonode" from a GeoNode-Project template as follows:
 
