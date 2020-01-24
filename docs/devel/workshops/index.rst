@@ -555,7 +555,7 @@ We need to add the permissions object to the database. We can do this by adding 
             ('view_geocollection', 'Can view geocollection'),
         )
 
-Then run python manage.py makemigrations and python manage.py migrate to install them
+Then run "python manage.py makemigrations" and "python manage.py migrate" to install them
 
 **Permissions logic (set_default)**
 
@@ -635,14 +635,19 @@ We can add now a view to receive and set our permissions, in views.py:
     import json
     from django.core.exceptions import PermissionDenied
     from django.http import HttpResponse
+    from django.contrib.auth import get_user_model
+    
+    
+    User = get_user_model()
+
     def geocollection_permissions(request, collection_id):
         
         collection = Geocollection.objects.get(id=collection_id)
+        user = User.objects.get(id=request.user.id)
         
-        if not request.user.has_perm('view_geocollection', collection):
-          return HttpResponse(
-              'You are not allowed to change permissions for this resource',
-              status=401,
+        if user.has_perm('view_geocollection', collection):
+           return HttpResponse(
+              'You have the permission to view. please customize a template for this view'',
               content_type='text/plain')
               
         if request.method == 'POST':
@@ -690,7 +695,9 @@ Lastly we need a url to map our client to our view, in urls.py
             name='geocollection_permissions'),
     ]
 
-This url will be called with the id of the geocollection, the id will be passed to the view in order to get the permissions.
+This url will be called with the id of the geocollection, the id will be passed to the view in order to get the permissions. 
+
+.. image:: ./img/view-permission.png
 
 .. warning:: 
     
@@ -751,6 +758,7 @@ We want the API to respect our custom permissions, we can easily achieve this by
     
     from tastypie.authorization import DjangoAuthorization
     from guardian.shortcuts import get_objects_for_user
+    
     class GeocollectionAuth(DjangoAuthorization):
         
         def read_list(self, object_list, bundle):
@@ -764,6 +772,7 @@ We want the API to respect our custom permissions, we can easily achieve this by
             return bundle.request.user.has_perm(
                 'view_geocollection',
                 bundle.obj)
+
 And this to the GeocollectionResource Meta class:
 
 .. code-block:: python
