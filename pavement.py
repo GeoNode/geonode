@@ -39,6 +39,7 @@ import zipfile
 from tqdm import tqdm
 import requests
 import math
+import psutil
 
 import yaml
 from paver.easy import (
@@ -542,18 +543,14 @@ def stop_geoserver(options):
             "ps -ef | grep -i -e 'geoserver' | awk '{print $2}'",
             shell=True,
             stdout=subprocess.PIPE)
-        for pid in proc.stdout:
-            info('Stopping geoserver (process number %s)' % int(pid))
-            os.kill(int(pid), signal.SIGKILL)
-            os.kill(int(pid), 9)
-            sh('sleep 30')
+        for pid in map(int, proc.stdout):
+            info('Stopping geoserver (process number {})'.format(pid))
+            os.kill(pid, signal.SIGKILL)
+
             # Check if the process that we killed is alive.
-            try:
-                os.kill(int(pid), 0)
-                # raise Exception("""wasn't able to kill the process\nHINT:use
-                # signal.SIGKILL or signal.SIGABORT""")
-            except OSError:
-                continue
+            killed, alive = psutil.wait_procs([psutil.Process(pid=pid)], timeout=30)
+            for p in alive:
+                p.kill()
     except Exception as e:
         info(e)
 
