@@ -273,8 +273,7 @@ jobs:
   fast_finish: true
 
   allow_failures:
-    - name: "Selenium Tests Core"
-    - name: "Selenium Tests SPCGeoNode"
+    - name: "GeoServer-backend Upload Tests"
 
 before_install:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
