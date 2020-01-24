@@ -64,7 +64,7 @@ Install postgresql and postgis
     
     $ sudo apt-get install postgresql-10 postgresql-10-postgis-2.4
     
-Change postgres password expiry and set a pasword  
+Change postgres password expiry and set a password  
 
 .. code-block:: shell
     
@@ -80,7 +80,6 @@ Create geonode role and database
     $ createdb geonode_dev-imports
     $ psql
     $ postgres=#
-    $ postgres=# \password postgres
     $ postgres=# CREATE USER geonode_dev WITH PASSWORD 'geonode_dev'; # should be same as password in setting.py
     $ postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode_dev" to geonode_dev;
     $ postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode_dev-imports" to geonode_dev;
@@ -125,21 +124,14 @@ Java dependencies
 Install supporting tools
 
 .. code-block:: shell
+    
     $ sudo apt-get install -y ant maven git gettext
 
 3- Setup Python virtual environment (Here is where Geonode will be running)
 
-Add the virtualenvwrapper to your new environement.
+Add the virtualenvwrapper to your new environment.
 
-.. code-block:: shell
-
-    $ cd /home/geonode/dev
-    $ export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
-    $ export WORKON_HOME=/home/geonode/dev/.venvs
-    $ source /usr/local/bin/virtualenvwrapper.sh
-    $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
-
-Since we are using Ubuntu, you can add the above settings to your .bashrc file 
+Since we are using Ubuntu, you can add the following settings to your .bashrc file. Please note that the Ubuntu account here is called "geonode". So you will need to change it according to the name you picked.
 
 .. code-block:: shell
 
@@ -161,7 +153,7 @@ Set up the local virtual environment for Geonode
 
 4- Download/Clone GeoNode from Github
 
-To download the latest geonode version from github, the command clone is used
+To download the latest geonode version from github, the command "git clone" is used
 
 .. Note:: If you are following the GeoNode training, skip the following command. You can find the cloned repository in /home/geonode/dev
 
@@ -183,13 +175,15 @@ This is required for static development
         
 .. Note:: Every time you want to update the static files after making changes to the sources, go to geonode/static and run ‘grunt production’.
 
+.. warning:: Starting from the following step, you have to make sure that you installed GDAL correctly according to the documentation page "Install GDAL for Development"
+
 Install GeoNode in the new active local virtualenv
 
 .. code-block:: shell
     
-    $ cd /home/geonode/dev
-    $ pip install -e geonode --use-mirrors
-    $ cd geonode
+    $ cd /home/geonode/dev  # or to the directory containing your cloned GeoNode 
+    $ pip install -e geonode
+    $ cd geonode/geonode
 
 Create local_settings.py
 
@@ -222,7 +216,7 @@ In the DATABASES dictionary under the 'default' key, change only the values for 
         .....
         ....
         ...
-     },
+     }...}
 
 In the DATABASES dictionary under the 'datastore' key, change only the values for the keys NAME, USER and PASSWORD to be as follows:
 
@@ -241,7 +235,7 @@ In the DATABASES dictionary under the 'datastore' key, change only the values fo
         ....
         ...
     }
-}
+
 
 In the CATALOGUE dictionary under the 'default' key, uncomment the USER and PASSWORD keys to activate the credentials for GeoNetwork as follows:
 
@@ -266,8 +260,8 @@ In the CATALOGUE dictionary under the 'default' key, uncomment the USER and PASS
         'USER': 'admin',
         'PASSWORD': 'admin',
         # 'ALTERNATES_ONLY': True,
-        }
-}
+        }}
+
 5- Install and Start Geoserver 
 
 From the virtual environment, first you need to align the database structure using the following command :
@@ -295,22 +289,27 @@ then setup GeoServer using the following command:
 
 .. code-block:: shell
     
-    service apahe2 stop
+    service apache2 stop
     service tomcat7 stop
 
 .. code-block:: shell
     
     $ paver start
 
-Now you can visit the geonode site by typing http://localhost:8000 into your browser window
+The starting process will take around 20 seconds (depends on your machine) and at the end it shows the following message:
 
-Next ...
+.. image:: ./img/server-is-ready.png
+
+Now you can visit the geonode site by typing http://0.0.0.0:8000 into your browser window
+
+.. image:: ./img/geonode-gui.png
+
 
 
 Install GeoNode-Project for development after installing GeoNode-Core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Geonode-Project gives the user flexibility to customize the installation of the GeoNode. Geonode itself will be installed as a requirement of your project. Inside the project structure it is possible to extend, replace or modify all geonode componentse (e.g. css and other static files, templates, models..) and even register new django apps without touching the original Geonode code.
+Geonode-Project gives the user flexibility to customize the installation of the GeoNode. Geonode itself will be installed as a requirement of your project. Inside the project structure it is possible to extend, replace or modify all geonode components (e.g. css and other static files, templates, models..) and even register new django apps without touching the original Geonode code.
 In order to install GeoNode-Project, the following steps need to be executed alongside the previous GeoNode-Core installation steps. 
 
 
@@ -322,11 +321,11 @@ In order to install GeoNode-Project, the following steps need to be executed alo
     
     $ django-admin.py startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -e py,rst,json,yml,ini,env,sample -n Dockerfile
     
-    $ ls /home/geonode/dev  # should ouput:  geonode  my_geonode
+    $ ls /home/geonode/dev  # should output:  geonode  my_geonode
 
 .. note:: Although the following command might show that the majority of requirements are already satisfied "because GeoNode-Core was already installed", it is recommended to still execute it as it might update or install any missing package.
 
-2- Install all the required pckages/tools for GeoNode-Project as follows:
+2- Install all the required packages/tools for GeoNode-Project as follows:
 
 .. code-block:: shell
     
@@ -376,6 +375,7 @@ If you didn't install GeoNode-Core earlier and you wanted to install GeoNode-Pro
 6- Install GDAL Utilities for Python
 
 .. code-block:: shell
+    
     $ pip install pygdal=="`gdal-config --version`.*"  # or refer to the link <Install GDAL for Development <https://training.geonode.geo-solutions.it/005_dev_workshop/004_devel_env/gdal_install.html>
 
 7- Install GeoServer and Tomcat using paver
