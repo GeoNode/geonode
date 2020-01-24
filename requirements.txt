@@ -36,7 +36,7 @@ django-mptt==0.9.1
 django-modeltranslation>=0.11,<0.15.0
 django-treebeard==4.3.1
 django-guardian<=1.4.9
-django-downloadview==1.10
+django-downloadview==2.1.1
 django-polymorphic==2.1.2
 django-tastypie<0.15.0
 oauthlib==3.1.0
