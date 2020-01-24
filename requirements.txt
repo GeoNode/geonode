@@ -32,7 +32,7 @@ django-imagekit==4.0.2
 django-jsonfield==1.4.0
 django-jsonfield-compat==0.4.4
 django-taggit==0.24.0
-django-mptt==0.9.1
+django-mptt==0.11.0
 django-modeltranslation>=0.11,<0.15.0
 django-treebeard==4.3.1
 django-guardian<=1.4.9
