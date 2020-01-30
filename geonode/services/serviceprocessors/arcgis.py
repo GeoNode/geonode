@@ -68,7 +68,6 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         self.proxy_base = None
         self.url = url
         self.parsed_service = ArcMapService(self.url)
-        extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
             _sname = utils.get_esri_service_name(self.url)
             _title_safe = safe(os.path.basename(os.path.normpath(_sname)))
@@ -311,7 +310,6 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         self.proxy_base = None
         self.url = url
         self.parsed_service = ArcImageService(self.url)
-        extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
             _sname = utils.get_esri_service_name(self.url)
             _title_safe = safe(os.path.basename(os.path.normpath(_sname)))

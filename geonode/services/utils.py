@@ -87,34 +87,6 @@ def get_esri_service_name(url):
         return result.group(1)
 
 
-def get_esri_extent(esriobj):
-    """
-    Get the extent of an ESRI resource
-    """
-
-    extent = None
-    srs = None
-
-    try:
-        if 'fullExtent' in esriobj._json_struct:
-            extent = esriobj._json_struct['fullExtent']
-    except Exception as err:
-        logger.debug(err, exc_info=True)
-
-    try:
-        if 'extent' in esriobj._json_struct:
-            extent = esriobj._json_struct['extent']
-    except Exception as err:
-        logger.debug(err, exc_info=True)
-
-    try:
-        srs = extent['spatialReference']['wkid']
-    except Exception as err:
-        logger.debug(err, exc_info=True)
-
-    return [extent, srs]
-
-
 def decimal_encode(bbox):
     _bbox = []
     _srid = None
