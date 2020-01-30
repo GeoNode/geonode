@@ -528,7 +528,7 @@ def file_upload(filename,
                     lyr = inDataSource.GetLayer(str(layer.name))
                     if not lyr:
                         raise Exception(
-                            _("You are attempting to replace a vector layer with an incompatible source."))
+                            _("Please ensure the name is consistent with the file you are trying to replace."))
                     schema_is_compliant = False
                     _ff = json.loads(lyr.GetFeature(0).ExportToJson())
                     if not gtype:
@@ -538,7 +538,8 @@ def file_upload(filename,
                         schema_is_compliant = True
                     elif not schema_is_compliant:
                         raise Exception(
-                            _("You are attempting to replace a vector layer with an incompatible schema."))
+                            _("Please ensure there is at least one geometry type \
+                                that is consistent with the file you are trying to replace."))
                 except BaseException as e:
                     raise Exception(
                         _("Some error occurred while trying to access the uploaded schema: %s" % str(e)))
