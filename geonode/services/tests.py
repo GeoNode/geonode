@@ -40,7 +40,7 @@ from .serviceprocessors import (base,
 from .serviceprocessors.arcgis import MapLayer
 from .serviceprocessors.wms import WebMapService
 
-from arcrest import MapService as ArcMapService
+from arcrest.ags import MapService as ArcMapService
 from owslib.wms import WebMapService as OwsWebMapService
 from collections import namedtuple
 

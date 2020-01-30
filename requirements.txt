@@ -79,7 +79,6 @@ geonode-user-messages==0.1.14
 geonode-avatar==2.1.8
 geonode-announcements==1.0.13
 geonode-agon-ratings==0.3.8
-arcrest>=10.0
 geonode-dialogos==1.2
 geoserver-restconfig==1.0.5
 gn-gsimporter==1.0.17
@@ -107,6 +106,7 @@ python-dateutil==2.8.1
 pytz==2019.3
 requests==2.22.0
 timeout-decorator==0.4.1
+ArcREST-Package==3.5.9
 
 # required by monitoring
 psutil==5.6.5

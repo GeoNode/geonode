@@ -33,7 +33,7 @@ from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.layers.utils import create_thumbnail
 
-from arcrest import MapService as ArcMapService, ImageService as ArcImageService
+from arcrest.ags import MapService as ArcMapService, ImageService as ArcImageService
 
 from .. import enumerations
 from ..enumerations import INDEXED
