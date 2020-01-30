@@ -212,7 +212,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         return geonode_projection in "EPSG:{}".format(srs)
 
     def _get_indexed_layer_fields(self, layer_meta):
-        srs = "EPSG:%s" % layer_meta.extent.spatialReference.wkid
+        srs = utils.epsg_string(layer_meta.extent)
         bbox = utils.decimal_encode([layer_meta.extent.xmin,
                                      layer_meta.extent.ymin,
                                      layer_meta.extent.xmax,
