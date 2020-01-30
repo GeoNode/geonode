@@ -77,7 +77,6 @@ django-geonode-client==1.0.9
 geonode-user-messages==2.0.0rc0
 geonode-avatar==3.0.2b0
 geonode-announcements==2.0.0b0
-gn-arcrest==10.5
 geonode-dialogos==3.0.1b0
 geoserver-restconfig==2.0.0b0
 gn-gsimporter==2.0.0rc0
@@ -106,6 +105,7 @@ pytz==2019.3
 requests==2.22.0
 timeout-decorator==0.4.1
 python_resize_image==1.1.19
+ArcREST-Package==3.5.9
 
 # required by monitoring
 psutil==5.6.7
