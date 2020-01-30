@@ -21,6 +21,8 @@ import re
 import math
 import logging
 
+from osgeo import osr
+
 logger = logging.getLogger(__name__)
 
 
@@ -131,3 +133,31 @@ def test_resource_table_status(test_cls, table, is_row_filtered):
         test_cls.assertEqual(result["filter_row_count"], 0)
         test_cls.assertEqual(result["visible_rows_count"], 20)
         test_cls.assertEqual(result["hidden_row_count"], 0)
+
+
+def epsg_string(extent):
+    logging.debug('bbox: %s', extent)
+    if 'spatialReference' in extent:
+        sr = extent['spatialReference']
+        if 'latestWkid' in sr:
+            return "EPSG:%s" % sr['latestWkid']
+        if 'wkt' in sr:
+            wkt = sr['wkt']
+            logging.debug('wkt: %s', wkt)
+            ref = osr.SpatialReference()
+            ref.ImportFromWkt(wkt)
+            ref.MorphFromESRI()
+            matches = ref.FindMatches()
+            if len(matches) > 0:
+                match = matches[0][0]
+                code = match.GetAuthorityCode('PROJCS')
+                if code:
+                    return "EPSG:%s" % code
+                code = match.GetAuthorityCode('GEOGCS')
+                if code:
+                    return "EPSG:%s" % code
+                code = match.GetAuthorityCode(None)
+                if code:
+                    return "EPSG:%s" % code
+
+    return None
