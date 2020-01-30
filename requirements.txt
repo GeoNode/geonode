@@ -68,7 +68,6 @@ geonode-user-messages==0.1.14
 geonode-avatar==2.1.8
 geonode-announcements==1.0.13
 geonode-agon-ratings==0.3.8
-arcrest>=10.0
 geonode-dialogos==1.2
 gsconfig>=1.0.10
 gn-gsimporter>=1.0.9
@@ -97,6 +96,8 @@ pytz==2018.9
 requests>=2.20.0
 simplejson==3.16.0
 timeout-decorator==0.4.1
+python_resize_image==1.1.19
+ArcREST-Package==3.5.9
 
 # required by monitoring
 psutil==5.6.1
