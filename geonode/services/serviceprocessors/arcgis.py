@@ -107,17 +107,17 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             method=self.indexing_method,
             owner=owner,
             parent=parent,
-            version=self.parsed_service._json_struct["currentVersion"],
+            version=self.parsed_service.currentVersion,
             name=self.name,
             title=self.title,
-            abstract=self.parsed_service._json_struct["serviceDescription"] or _(
+            abstract=self.parsed_service.serviceDescription or _(
                 "Not provided"),
             online_resource=self.parsed_service.url,
         )
         return instance
 
     def get_keywords(self):
-        return self.parsed_service._json_struct["capabilities"].split(",")
+        return self.parsed_service.documentInfo['Keywords'].split(',')
 
     def get_resource(self, resource_id):
         ll = None
