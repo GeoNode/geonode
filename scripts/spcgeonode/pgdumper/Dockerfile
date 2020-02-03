@@ -1,5 +1,5 @@
-FROM python:3.6.8-alpine3.8
-# alpine 3.8 uses postgres 10.x
+FROM python:3.7.6-alpine3.11
+# alpine 3.11 uses postgres 11.x
 
 # 1-2. Install system dependencies (we only need the pg_dump binary from postgresql, other dependencies are in postgresql-client)
 RUN apk add --no-cache postgresql-client && \

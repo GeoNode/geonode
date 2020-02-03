@@ -77,7 +77,7 @@ Which means you have some sql statements not executed yet and you need to run th
     $ python manage.py migrate
     $ paver start
 
-.. warning:: If encountered this message: (Invalid HTTP_HOST header: '0.0.0.0:8000'. You may need to add u'0.0.0.0' to ALLOWED_HOSTS) It can be fixed in the settings.py file. You will need to add: ALLOWED_HOSTS = ['0.0.0.0'] in settings.py
+.. warning:: If encountered this message: ``(Invalid HTTP_HOST header: '0.0.0.0:8000'. You may need to add u'0.0.0.0' to ALLOWED_HOSTS)`` It can be fixed in the settings.py file. You will need to add: ``ALLOWED_HOSTS = ['0.0.0.0']`` in settings.py
 
 .. image:: ./img/geonode-project-gui.png
 
@@ -106,16 +106,22 @@ Try to edit the content of the "jumbotron" box in the page, save and refresh you
 
 **The theme:**
 
-To change the theme of our geonode-project we can act on the site_base.css file available in the my_geonode/my_geonode/static/css folder.
+To change the theme of our geonode-project we can act on the site_base.css file available in the "my_geonode/my_geonode/static/css" folder.
 
 The file is empty so we can inspect elements of the home page with the browser's developer tools and define css rules in there.
 
-For example, if we want to change the background of the jumbotron, we can add ".home .jumbotron { background: red }" to that file
+For example, if we want to change the background of the jumbotron, in this file we can add
+
+.. code:: css 
+   
+   .home .jumbotron { background: red }
+
+Then once we refreshed the browser, we should see the change as follows:
 
 .. image:: ./img/red-background.png
 
 
-Adding the ".home" class is necessary in order to let the rule have precedence/priority over the GeoNode's one. We can see this by inspecting the element in the developer console.
+Adding the ``".home"`` class is necessary in order to let the rule have precedence/priority over the GeoNode's one. We can see this by inspecting the element in the developer console.
 
 **The top menu:**
 
@@ -158,7 +164,13 @@ For the layers list page we can create a directory named "layers" inside the tem
     
     vim my_geonode/templates/layers/layer_list.html
 
-For example change in page title to be:  <h2 class="page-title">{% trans "Explore My Layers" %}</h2> then refresh your browser to see the update.
+For example change in page title to be:  
+
+.. code:: html
+   
+   <h2 class="page-title">{% trans "Explore My Layers" %}</h2>
+
+then refresh the browser to see the update.
 
 .. image:: ./img/explore-my-layers.png
 
@@ -169,10 +181,10 @@ In this section, we will patch the ResourceBase of GeoNode and update the Templa
 
 We will add a DOI field to the ResourceBase model and modify the Templates in order to show the new field both into the Metadata Wizard and the Layer Details page.
 
-.. Note:: Make sure to be in my_geonode directory to execute the following commands
+.. Note:: Make sure to be inside "my_geonode" directory to execute the following commands
 
 
-Customizing metadata can be achieved from the model which is defined in the core at geonode/geonode/base/models.py directory as follows:
+Customizing metadata can be achieved from the model which is defined in the core at "geonode/geonode/base/models.py" as follows:
 
 
 .. code-block:: python
@@ -227,7 +239,7 @@ Customizing metadata can be achieved from the model which is defined in the core
         help_text=maintenance_frequency_help_text)
 
 
-To add fields directly to the ResourceBase Class without actually modifying it, this can be done from my_geonode/my_geonode/apps.py file
+To add fields directly to the ResourceBase Class without actually modifying it, this can be done from "my_geonode/my_geonode/apps.py" file
 
 The "ready" method is invoked at initialization time and can be currently used to tweak your app in several ways
 
@@ -283,10 +295,13 @@ Now we will add the "patch_resource_base" method to the AppConfig and execute it
 
 Once you run python manage.py migrate:
 
-Running migrations:
-  Applying announcements.0002_auto_20200119_1257... OK
-  Applying base.0031_resourcebase_doi... OK
-  Applying people.0027_auto_20200119_1257... OK
+.. code-block:: shell
+   
+   Running migrations:
+   Applying announcements.0002_auto_20200119_1257... OK
+   Applying base.0031_resourcebase_doi... OK
+   Applying people.0027_auto_20200119_1257... OK
+
 
 Till now, we have patched the DB. however, it is not yet sufficient as we still need to display the added field.
 
@@ -294,7 +309,7 @@ Let's extend the default templates so that we can show the newly added field
 
 **Overriding the Metadata Wizard Template Page**
 
-Similar to what we have done before in the Templates directory, we will need to create "layouts" directory under my_geonode/my_geonode/templates. This directory will contain a copy from "geonode/src/geonode/geonode/layers/templates/layouts/panels.html" as follows:
+Similar to what we have done before in the Templates directory, we will need to create "layouts" directory under "my_geonode/my_geonode/templates". This directory will contain a copy from "geonode/src/geonode/geonode/layers/templates/layouts/panels.html" as follows:
 
 .. code-block:: shell
     
@@ -344,13 +359,15 @@ Now from the layer details page, you can see the DOI metadata entry per layer
 
 .. image:: ./img/doi.png
 
-**Create your own django app**
+
+3- Create your own django app
+-----------------------------
 
 In this section, we will demonstrate how to create and setup the skeleton of a custom app using the django facilities. The app will add a geocollections functionality to our GeoNode.
 
 The Gecollections app allows to present in a single page, resources and users grouped by a GeoNode Group. We can assign arbitrary resources to a Geocollection, a Group and a name that will be also used to build a dedicated URL. 
 
-.. Note:: Make sure to be in my_geonode directory to execute the following commands
+.. Note:: Make sure to be inside "my_geonode" directory to execute the following commands
 
 Create the django app
 
@@ -360,9 +377,11 @@ python manage.py startapp geocollections
 
 This will create a folder named geocollections that contains empty models and views.
 
-We need to add the new app to the INSTALLED_APPS of our project. in my_geonode/settings.py line 54 change:
+We need to add the new app to the INSTALLED_APPS of our project. inside "my_geonode/settings.py" line 54 change:
 
-INSTALLED_APPS += (PROJECT_NAME,) to be:  INSTALLED_APPS += (PROJECT_NAME, 'geocollections',)
+.. code:: python
+   
+   INSTALLED_APPS += (PROJECT_NAME,) to be:  INSTALLED_APPS += (PROJECT_NAME, 'geocollections',)
 
 
 **Add a custom model**
@@ -401,7 +420,7 @@ In this section, we will add a custom model and the related logic as follows:
 
 At this point we need to ask django to create the database table. Django since version 1.8 has embedded migrations mechanism and we need to use them in order to change the state of the db.
 
-.. Note:: Make sure to be in my_geonode directory to execute the following commands
+.. Note:: Make sure to be inside "my_geonode" directory to execute the following commands
 
 .. code-block:: shell
     
@@ -448,7 +467,8 @@ In order to access the created view we also need url mapping. We can create a ur
             GeocollectionDetail.as_view(),
             name='geocollection-detail'),
     ]
-We also need to register the app urls in the project urls. So let's modify the my_geonode urls.py file adding the following:
+
+We also need to register the app urls in the project urls. So let's modify the "my_geonode" urls.py file adding the following:
 
 .. code-block:: shell
     
@@ -491,7 +511,7 @@ Now we can visit the admin page and create a geocollection from there as follows
 
 **Adding the template**
 
-Now we need the template where the geocollection detail will be rendered. Let's create a geocollections directory inside the my_geonode/templates directory with a file named geocollection_detail.html:
+Now we need the template where the geocollection detail will be rendered. Let's create a geocollections directory inside the "my_geonode/templates" directory with a file named geocollection_detail.html:
 
 
 .. code-block:: shell
@@ -785,7 +805,7 @@ In order to publish our API we need a url and we want that url to appear under t
 
 The final url for our API has to be /api/geocollections.
 
-We can inject the url into the GeoNode API by adding the following in my_geonode/urls.py file:
+We can inject the url into the GeoNode API by adding the following lines to "my_geonode/urls.py" file:
 
 .. code-block:: shell
     
@@ -829,16 +849,17 @@ Let's test permissions on API
 
 We can test the permissions on API by manually set a permission from the command line and check that the API respects it.
 
-With python manage.py shell in our my_geonode folder we open a geonode shell.
+With running ``python manage.py shell`` from inside our "my_geonode" folder, it opens a geonode shell.
 
 A perm spec could look like this:
 
-perms = {
-  'users': {
-    'AnonymousUser': ['view_geocollection'],
-    'alessio': ['view_geocollection']
-  }
-}
+.. code:: python
+   
+   perms = {
+   'users': {
+   'AnonymousUser': ['view_geocollection'],
+   'alessio': ['view_geocollection']}
+   }
 
 and we can assign the permissions with:
 
@@ -852,20 +873,22 @@ our http://localhost:8000/api/geocollections should now list the geocollection.
 
 If you remove the 'AnonymousUser' line from perms and assign again the permissions it will disappear.
 
-perms = {
-  'users': {
-    'alessio': ['view_geocollection']
-  }
-  
-  
-  
+.. code:: python
+   
+   perms = {
+   'users': {
+   'alessio': ['view_geocollection']
+   }
+
 **Deploy your GeoNode**
   
 
 So far we demonstrated how to modify, extend and style our GeoNode in dev mode but now it's time to go on production. In this section we will clarify how to:
 
 - commit your work on GitHub
+
 - setup your server
+
 - setup your GeoNode for production
   
   
@@ -883,50 +906,43 @@ Steps to push your code to GitHub:
 
 - In my_geonode, run git init to initialize an empty repository
 
-- Add your remote repository address with "git remote add yourname yourremoteaddress"
+- Add your remote repository address with ``git remote add yourname yourremoteaddress``
 
 - edit .gitignore adding all *.pyc files
-- git add * to add all content of my_geonode
 
-- git commit -m 'initial import' to make the initial commit
+- ``git add *`` to add all content of my_geonode
 
-- "git push yourname master" to push the code to the GitHub repository
+- ``git commit -m 'initial import'`` to make the initial commit
+
+- ``git push yourname master`` to push the code to the GitHub repository
 
 
 **Setup the server**
 
-There are different options for deploying:
+There are several options for deploying GeoNode projects on servers. In this section, we explain how to deploy it on Ubuntu server 18.04 using system-wide installation
 
-- on a dedicated Ubuntu 16.04 server installing GeoNode with apt-get (sistemwide installation)
-
-- on a server with other services installing GeoNode and my_geonode in a python virtualenv
-
-- on a dedicated server using a python sistemwide installation (sudo pip install .. )
-
-.. note:: For this documentation, we assume the first option so that apache and tomcat as well as postgres are all set up. Follow the quick install doc at http://docs.geonode.org/en/master/tutorials/install_and_admin/quick_install.html The other installations require a full manual setup as described in the docs at http://docs.geonode.org/en/master/tutorials/install_and_admin/geonode_install/index.html
+.. note:: For quick installation, follow the INSTALLING documentation at http://docs.geonode.org/en/master/install/core/index.html
 
 
 **Setup our my_geonode**
 
-We need now to install our my_geonode project following these steps:
+We need now to install the developed "my_geonode" project following these steps:
 
 - git clone from your repository (in the folder of your preference)
 
-- sudo pip install -e my_geonode
+- ``sudo pip install -e my_geonode``
 
 - edit the settings where needed
 
-- edit /etc/apache2/sites-enabled/geonode.conf replacing the wsgi path to the my_geonode/my_geonode/wsgi.py file
+- edit ``/etc/apache2/sites-enabled/geonode.conf`` replacing the wsgi path to the ``my_geonode/my_geonode/wsgi.py`` file
 
-- add the apache rights to the my_geonode folder with a directory like
+- add the apache rights to the "my_geonode" folder with a directory like
 
-
-<Directory "/path/to/my_geonode/">
-
+.. code:: apache
+   
+   <Directory "/path/to/my_geonode/">
      Order allow,deny
-     
      Require all granted
-     
-</Directory>
+   </Directory>
 
 - Test your server.
