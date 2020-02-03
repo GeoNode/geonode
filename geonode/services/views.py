@@ -115,15 +115,12 @@ def register_service(request):
 
 def _get_service_handler(request, service):
     """Add the service handler to the HttpSession.
-
     We use the django session object to store the service handler's
     representation of the remote service between sequentially logic steps.
     This is done in order to improve user experience, as we avoid making
     multiple Capabilities requests (this is a time saver on servers that
     feature many layers.
-
     """
-
     service_handler = get_service_handler(
         service.base_url, service.proxy_base, service.type)
     request.session[service.base_url] = service_handler

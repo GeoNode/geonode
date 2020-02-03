@@ -114,13 +114,9 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     def __init__(self, url):
         self.proxy_base = urljoin(
             settings.SITEURL, reverse('proxy'))
-        # (self.url, self.parsed_service) = WebMapService(
-        #     url, proxy_base=self.proxy_base)
-        (self.url, self.parsed_service) = WebMapService(
-            url, proxy_base=None)
+        self.url, _service = WebMapService(url, proxy_base=None)
         self.indexing_method = (
             INDEXED if self._offers_geonode_projection() else CASCADED)
-        # self.url = self.parsed_service.url
         self.name = slugify(self.url)[:255]
 
     def create_cascaded_store(self):
@@ -132,12 +128,11 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
     def create_geonode_service(self, owner, parent=None):
         """Create a new geonode.service.models.Service instance
-
         :arg owner: The user who will own the service instance
         :type owner: geonode.people.models.Profile
 
         """
-
+        _url, parsed_service = WebMapService(self.url, proxy_base=None)
         instance = models.Service(
             uuid=str(uuid4()),
             base_url=self.url,
@@ -146,20 +141,22 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             method=self.indexing_method,
             owner=owner,
             parent=parent,
-            version=self.parsed_service.identification.version,
+            version=parsed_service.identification.version,
             name=self.name,
-            title=self.parsed_service.identification.title or self.name,
-            abstract=self.parsed_service.identification.abstract or _(
+            title=parsed_service.identification.title or self.name,
+            abstract=parsed_service.identification.abstract or _(
                 "Not provided"),
-            online_resource=self.parsed_service.provider.url,
+            online_resource=parsed_service.provider.url,
         )
         return instance
 
     def get_keywords(self):
-        return self.parsed_service.identification.keywords
+        _url, parsed_service = WebMapService(self.url, proxy_base=None)
+        return parsed_service.identification.keywords
 
     def get_resource(self, resource_id):
-        return self.parsed_service.contents[resource_id]
+        _url, parsed_service = WebMapService(self.url, proxy_base=None)
+        return parsed_service.contents[resource_id]
 
     def get_resources(self):
         """Return an iterable with the service's resources.
@@ -169,7 +166,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
         """
         try:
-            contents_gen = self.parsed_service.contents.values()
+            _url, parsed_service = WebMapService(self.url, proxy_base=None)
+            contents_gen = parsed_service.contents.values()
             return (r for r in contents_gen if not any(r.children))
         except BaseException:
             return None
@@ -217,7 +215,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         self._create_layer_thumbnail(geonode_layer)
 
     def has_resources(self):
-        return True if len(self.parsed_service.contents) > 0 else False
+        _url, parsed_service = WebMapService(self.url, proxy_base=None)
+        return True if len(parsed_service.contents) > 0 else False
 
     def _create_layer(self, geonode_service, **resource_fields):
         # bear in mind that in ``geonode.layers.models`` there is a
@@ -240,9 +239,10 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
     def _create_layer_thumbnail(self, geonode_layer):
         """Create a thumbnail with a WMS request."""
+        _url, parsed_service = WebMapService(self.url, proxy_base=None)
         params = {
             "service": "WMS",
-            "version": self.parsed_service.version,
+            "version": parsed_service.version,
             "request": "GetMap",
             "layers": geonode_layer.alternate,
             "bbox": geonode_layer.bbox_string,
@@ -269,11 +269,11 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         Regardless of the service being INDEXED or CASCADED we're always
         creating the legend by making a request directly to the original
         service.
-
         """
+        _url, parsed_service = WebMapService(self.url, proxy_base=None)
         params = {
             "service": "WMS",
-            "version": self.parsed_service.version,
+            "version": parsed_service.version,
             "request": "GetLegendGraphic",
             "format": "image/png",
             "width": 20,
@@ -447,11 +447,10 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         self.proxy_base = urljoin(
             settings.SITEURL, reverse('proxy'))
         url = self._probe_geonode_wms(url)
-        (self.url, self.parsed_service) = WebMapService(
+        self.url, _ = WebMapService(
             url, proxy_base=self.proxy_base)
         self.indexing_method = (
             INDEXED if self._offers_geonode_projection() else CASCADED)
-        # self.url = self.parsed_service.url
         self.name = slugify(self.url)[:255]
 
     def harvest_resource(self, resource_id, geonode_service):
