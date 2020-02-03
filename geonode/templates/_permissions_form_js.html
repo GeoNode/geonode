@@ -237,6 +237,14 @@
         Utils.Extend(UsersAjaxAdapter, AjaxAdapter);
 
         var initialValues = [];
+        
+        // In case resources are private we add the current user
+        {% if DEFAULT_ANONYMOUS_VIEW_PERMISSION is False %}
+            {% if request.resolver_match.url_name  == 'layer_upload' or request.resolver_match.url_name  == 'document_upload' %}
+                var initialValues = [{name: "{{request.user}}", id:"{{request.user}}"}];
+            {% endif %}
+        {% endif %}
+        
         $(default_perms).each(function (index, perm) {
             initialValues.push({ id: perm, name: perm });
         });
