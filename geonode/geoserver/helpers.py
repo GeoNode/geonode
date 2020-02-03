@@ -990,7 +990,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         try:
             # The code below will fail if http_client cannot be imported or WFS not supported
             req, body = http_client.get(dft_url, user=_user)
-            doc = dlxml.fromstring(body)
+            doc = dlxml.fromstring(body.encode())
             path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(
                 xsd="{http://www.w3.org/2001/XMLSchema}")
             attribute_map = [[n.attrib["name"], n.attrib["type"]] for n in doc.findall(
@@ -1038,7 +1038,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         })
         try:
             req, body = http_client.get(dc_url, user=_user)
-            doc = dlxml.fromstring(body)
+            doc = dlxml.fromstring(body.encode())
             path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(
                 wcs="{http://www.opengis.net/wcs/1.1.1}")
             attribute_map = [[n.text, "raster"] for n in doc.findall(path)]
@@ -1652,7 +1652,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
         timeout=5,
         retries=1)
 
-    exml = dlxml.fromstring(content)
+    exml = dlxml.fromstring(content.encode())
 
     result = {}
 
