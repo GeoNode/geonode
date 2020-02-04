@@ -20,11 +20,20 @@
 
 try:  # for pip >= 10
     from pip._internal.req import parse_requirements
-    pip_session = 'hack'
+    try:
+        from pip._internal.download import PipSession
+        pip_session = PipSession()
+    except ImportError:  # for pip >= 20
+        from pip._internal.network.session import PipSession
+        pip_session = PipSession()
 except ImportError:  # for pip <= 9.0.3
-    from pip.req import parse_requirements
-    from pip.download import PipSession
-    pip_session = PipSession()
+    try:
+        from pip.req import parse_requirements
+        from pip.download import PipSession
+        pip_session = PipSession()
+    except ImportError:  # backup in case of further pip changes
+        pip_session = 'hack'
+
 from distutils.core import setup
 
 from setuptools import find_packages
