@@ -19,18 +19,10 @@
 #########################################################################
 
 from django import template
+from django.conf import settings
 from inflection import camelize as do_camelize
 
 register = template.Library()
-
-EPSG_CODE_MATCHES = {
-    'EPSG:4326': '(4326) WGS 84',
-    'EPSG:900913': '(900913) Google Maps Global Mercator',
-    'EPSG:3857': '(3857) WGS 84 / Pseudo-Mercator',
-    'EPSG:3785': '(3785 DEPRECATED) Popular Visualisation CRS / Mercator',
-    'EPSG:32647': '(32647) WGS 84 / UTM zone 47N',
-    'EPSG:32736': '(32736) WGS 84 / UTM zone 36S'
-}
 
 
 @register.filter(is_safe=True)
@@ -51,6 +43,6 @@ def camelize(value):  # Only one argument.
 @register.filter(is_safe=True)
 def crs_labels(value):  # Only one argument.
     """Converts a EPSG SRS ID into a human readable string"""
-    if value in EPSG_CODE_MATCHES.keys():
-        return EPSG_CODE_MATCHES[value]
+    if value in settings.EPSG_CODE_MATCHES.keys():
+        return settings.EPSG_CODE_MATCHES[value]
     return value
