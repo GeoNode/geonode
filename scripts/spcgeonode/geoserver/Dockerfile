@@ -1,7 +1,7 @@
 FROM openjdk:8-jre-alpine
 
-ARG version=2.15.4
-ARG branch=2.15.4
+ARG version=2.16.2
+ARG branch=2.16.2
 ARG plugins=
 
 # Install dependencies
@@ -52,6 +52,7 @@ EXPOSE 8080
 # Set environnment variables
 ENV GEOSERVER_HOME=/geoserver
 ENV GEOSERVER_DATA_DIR=/spcgeonode-geodatadir
+ENV GEOSERVER_CSRF_DISABLED=true
 
 # Run geoserver
 CMD ["bin/startup.sh"]
