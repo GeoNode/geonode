@@ -185,7 +185,7 @@ def _byteify(data, ignore_dicts=False):
 def get_kml_doc(kml_bytes):
     """Parse and return an etree element with the kml file's content"""
     kml_doc = dlxml.fromstring(
-        kml_bytes,
+        kml_bytes.encode(),
         parser=etree.XMLParser(resolve_entities=False)
     )
     ns = kml_doc.nsmap.copy()

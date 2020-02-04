@@ -146,7 +146,7 @@ def facets(context):
         if extent_filter:
             bbox = extent_filter.split(
                 ',')  # TODO: Why is this different when done through haystack?
-            bbox = map(str, bbox)  # 2.6 compat - float to decimal conversion
+            bbox = list(map(str, bbox))  # 2.6 compat - float to decimal conversion
             intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) |
                            Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
 
