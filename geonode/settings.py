@@ -1944,7 +1944,7 @@ if MONITORING_ENABLED:
     )
 
     CELERY_BEAT_SCHEDULE['collect_metrics'] = {
-        'task': 'geonode_logstash.tasks.dispatch_metrics',
+        'task': 'geonode.monitoring.tasks.collect_metrics',
         'schedule': 600.0,
     }
 
