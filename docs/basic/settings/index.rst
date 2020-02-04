@@ -835,7 +835,7 @@ E
 EMAIL_ENABLE
 ------------
 
-    Default: ``False``
+    | Default: ``False``
 
     Options:
 
@@ -868,6 +868,26 @@ EMAIL_ENABLE
         * DEFAULT_FROM_EMAIL
 
             Default: ``GeoNode <no-reply@geonode.org>``
+
+EPSG_CODE_MATCHES
+-----------------
+
+    | Default:
+
+    .. code-block:: python
+
+        {
+            'EPSG:4326': '(4326) WGS 84',
+            'EPSG:900913': '(900913) Google Maps Global Mercator',
+            'EPSG:3857': '(3857) WGS 84 / Pseudo-Mercator',
+            'EPSG:3785': '(3785 DEPRECATED) Popular Visualisation CRS / Mercator',
+            'EPSG:32647': '(32647) WGS 84 / UTM zone 47N',
+            'EPSG:32736': '(32736) WGS 84 / UTM zone 36S'
+        }
+
+    Supported projections human readbale descriptions associated to their EPSG Codes.
+    This list will be presented to the user during the upload process whenever GeoNode won't be able to recognize a suitable projection.
+    Those codes should be aligned to the `UPLOADER` ones and available in GeoServer also.
 
 F
 =
@@ -920,7 +940,7 @@ GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY
 GEONODE_EXCHANGE
 ----------------
 
-    Default:: ``Exchange("default", type="direct", durable=True)``
+    | Default:: ``Exchange("default", type="direct", durable=True)``
 
     The definition of Exchanges published by geonode. Find more about Exchanges at `celery docs <https://docs.celeryproject.org/en/latest/userguide/routing.html#exchanges-queues-and-routing-keys>`__.
 
@@ -928,7 +948,7 @@ GEONODE_EXCHANGE
 GEOSERVER_EXCHANGE
 ------------------
 
-    Default:: ``Exchange("geonode", type="topic", durable=False)``
+    | Default:: ``Exchange("geonode", type="topic", durable=False)``
 
     The definition of Exchanges published by GeoServer. Find more about Exchanges at `celery docs <https://docs.celeryproject.org/en/latest/userguide/routing.html#exchanges-queues-and-routing-keys>`__.
 
@@ -1012,7 +1032,7 @@ LEAFLET_CONFIG
 LICENSES
 --------
 
-    Default::
+    | Default::
 
         {
             'ENABLED': True,
@@ -1025,7 +1045,7 @@ LICENSES
 LOCAL_SIGNALS_BROKER_URL
 ------------------------
 
-    Default: ``memory://``
+    | Default: ``memory://``
 
 LOCKDOWN_GEONODE
 ----------------
