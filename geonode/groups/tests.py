@@ -695,6 +695,7 @@ class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
     def test_api(self):
         api_url = '/api/groupcategory/'
 
+        self.client.login(username='test', password='test')  # login necessary because settings.API_LOCKDOWN=True
         r = self.client.get(api_url)
         self.assertEqual(r.status_code, 200)
         data = json.loads(r.content)
@@ -750,49 +751,51 @@ class GroupProfileTest(GeoNodeBaseTestSupport):
     @override_settings(MEDIA_ROOT="/tmp/geonode_tests")
     def test_group_logo_is_present_on_list_view(self):
         """Verify that a group's logo is rendered on list view."""
-        test_profile = GroupProfile(
-            title="test",
-            slug="test",
-            description="test",
-            access="public",
-            logo=SimpleUploadedFile("dummy-file.jpg", b"dummy contents")
-        )
-        test_profile.save()
-        response = self.client.get(
-            reverse("api_dispatch_list",
-                    kwargs={"api_name": "api", "resource_name": "groups"})
-        )
-        response_payload = json.loads(response.content)
-        returned = response_payload["objects"]
-        group_profile = [
-            g["group_profile"] for g in returned if
-            g["group_profile"]["title"] == test_profile.title
-        ][0]
-        self.assertEqual(200, response.status_code)
-        self.assertEqual(group_profile["logo"], test_profile.logo.url)
+        with self.settings(API_LOCKDOWN=False):
+            test_profile = GroupProfile(
+                title="test",
+                slug="test",
+                description="test",
+                access="public",
+                logo=SimpleUploadedFile("dummy-file.jpg", b"dummy contents")
+            )
+            test_profile.save()
+            response = self.client.get(
+                reverse("api_dispatch_list",
+                        kwargs={"api_name": "api", "resource_name": "groups"})
+            )
+            response_payload = json.loads(response.content)
+            returned = response_payload["objects"]
+            group_profile = [
+                g["group_profile"] for g in returned if
+                g["group_profile"]["title"] == test_profile.title
+            ][0]
+            self.assertEqual(200, response.status_code)
+            self.assertEqual(group_profile["logo"], test_profile.logo.url)
 
     def test_group_logo_is_not_present_on_list_view(self):
         """
         Verify that no logo exists in list view when a group doesn't have one.
         """
 
-        test_profile = GroupProfile(
-            title="test",
-            slug="test",
-            description="test",
-            access="public"
-        )
-        test_profile.save()
+        with self.settings(API_LOCKDOWN=False):
+            test_profile = GroupProfile(
+                title="test",
+                slug="test",
+                description="test",
+                access="public"
+            )
+            test_profile.save()
 
-        response = self.client.get(
-            reverse("api_dispatch_list",
-                    kwargs={"api_name": "api", "resource_name": "groups"})
-        )
-        response_payload = json.loads(response.content)
-        returned = response_payload["objects"]
-        group_profile = [
-            g["group_profile"] for g in returned if
-            g["group_profile"]["title"] == test_profile.title
-        ][0]
-        self.assertEqual(200, response.status_code)
-        self.assertIsNone(group_profile["logo"])
+            response = self.client.get(
+                reverse("api_dispatch_list",
+                        kwargs={"api_name": "api", "resource_name": "groups"})
+            )
+            response_payload = json.loads(response.content)
+            returned = response_payload["objects"]
+            group_profile = [
+                g["group_profile"] for g in returned if
+                g["group_profile"]["title"] == test_profile.title
+            ][0]
+            self.assertEqual(200, response.status_code)
+            self.assertIsNone(group_profile["logo"])

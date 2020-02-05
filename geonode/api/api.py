@@ -39,7 +39,7 @@ from tastypie.exceptions import BadRequest
 
 from geonode import qgis_server, geoserver
 from geonode.api.paginator import CrossSiteXHRPaginator
-from geonode.api.authorization import GeoNodeStyleAuthorization
+from geonode.api.authorization import GeoNodeStyleAuthorization, ApiLockdownAuthorization
 from geonode.qgis_server.models import QGISServerStyle
 from guardian.shortcuts import get_objects_for_user
 from tastypie.bundle import Bundle
@@ -165,6 +165,7 @@ class TagResource(TypeFilteredResource):
             'slug': ALL,
         }
         serializer = CountJSONSerializer()
+        authorization = ApiLockdownAuthorization()
 
 
 class ThesaurusKeywordResource(TypeFilteredResource):
@@ -220,6 +221,7 @@ class ThesaurusKeywordResource(TypeFilteredResource):
             'thesaurus': ALL,
         }
         serializer = CountJSONSerializer()
+        authorization = ApiLockdownAuthorization()
 
 
 class RegionResource(TypeFilteredResource):
@@ -242,6 +244,7 @@ class RegionResource(TypeFilteredResource):
         }
         if settings.API_INCLUDE_REGIONS_COUNT:
             serializer = CountJSONSerializer()
+        authorization = ApiLockdownAuthorization()
 
 
 class TopicCategoryResource(TypeFilteredResource):
@@ -279,6 +282,7 @@ class TopicCategoryResource(TypeFilteredResource):
             'identifier': ALL,
         }
         serializer = CountJSONSerializer()
+        authorization = ApiLockdownAuthorization()
 
 
 class GroupCategoryResource(TypeFilteredResource):
@@ -292,6 +296,7 @@ class GroupCategoryResource(TypeFilteredResource):
         include_resource_uri = False
         filtering = {'slug': ALL,
                      'name': ALL}
+        authorization = ApiLockdownAuthorization()
 
     def dehydrate_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
@@ -331,6 +336,7 @@ class GroupProfileResource(ModelResource):
             'categories': ALL_WITH_RELATIONS,
         }
         ordering = ['title', 'last_modified']
+        authorization = ApiLockdownAuthorization()
 
     def dehydrate_member_count(self, bundle):
         """Provide relative URL to the geonode UI's page on the group"""
@@ -364,6 +370,7 @@ class GroupResource(ModelResource):
             'group_profile': ALL_WITH_RELATIONS,
         }
         ordering = ['name', 'last_modified']
+        authorization = ApiLockdownAuthorization()
 
     def apply_filters(self, request, applicable_filters):
         user = request.user
@@ -453,8 +460,9 @@ class ProfileResource(TypeFilteredResource):
 
     def dehydrate_email(self, bundle):
         email = ''
-        if bundle.request.user.is_authenticated():
+        if bundle.request.user.is_superuser:
             email = bundle.obj.email
+
         return email
 
     def dehydrate_layers_count(self, bundle):
@@ -519,6 +527,7 @@ class ProfileResource(TypeFilteredResource):
             'username': ALL,
         }
         serializer = CountJSONSerializer()
+        authorization = ApiLockdownAuthorization()
 
 
 class OwnersResource(TypeFilteredResource):
@@ -527,6 +536,12 @@ class OwnersResource(TypeFilteredResource):
 
     def dehydrate_full_name(self, bundle):
         return bundle.obj.get_full_name() or bundle.obj.username
+
+    def dehydrate_email(self, bundle):
+        email = ''
+        if bundle.request.user.is_superuser:
+            email = bundle.obj.email
+        return email
 
     def serialize(self, request, data, format, options=None):
         if options is None:
@@ -547,6 +562,7 @@ class OwnersResource(TypeFilteredResource):
             'username': ALL,
         }
         serializer = CountJSONSerializer()
+        authorization = ApiLockdownAuthorization()
 
 
 class QGISStyleResource(ModelResource):
