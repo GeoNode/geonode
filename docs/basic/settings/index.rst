@@ -172,6 +172,16 @@ API_LIMIT_PER_PAGE
 
     The Number of items returned by the APIs 0 equals no limit. Different from ``CLIENT_RESULTS_LIMIT``, affecting the number of items per page in the resource list.
 
+API_LOCKDOWN
+------------
+
+    | Default: ``True``
+    | Env: ``API_LOCKDOWN``
+
+    If this is set to ``True`` users must be authenticated to get search results when search for for users, groups, categories, regions, tags etc.
+    Filtering search results of Resourcebase-objects like Layers, Maps or Documents by one of the above types does not work.
+    Attention: If API_LOCKDOWN is set to ``False`` all details can be accessed by anonymous users.
+
 ASYNC_SIGNALS
 -------------
 
