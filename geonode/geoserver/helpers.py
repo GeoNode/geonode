@@ -1072,9 +1072,18 @@ def set_attributes_from_geoserver(layer, overwrite=False):
 def set_styles(layer, gs_catalog):
     style_set = []
 
-    gs_layer = gs_catalog.get_layer(layer.name)
+    gs_layer = None
+    try:
+        gs_layer = gs_catalog.get_layer(layer.name)
+    except BaseException:
+        tb = traceback.format_exc()
+        logger.debug(tb)
     if not gs_layer:
-        gs_layer = gs_catalog.get_layer(layer.alternate or layer.typename)
+        try:
+            gs_layer = gs_catalog.get_layer(layer.alternate or layer.typename)
+        except BaseException:
+            tb = traceback.format_exc()
+            logger.debug(tb)
 
     if gs_layer:
         default_style = None
@@ -1083,7 +1092,6 @@ def set_styles(layer, gs_catalog):
         except BaseException:
             tb = traceback.format_exc()
             logger.debug(tb)
-            pass
 
         if not default_style:
             try:
@@ -1105,7 +1113,7 @@ def set_styles(layer, gs_catalog):
                 except BaseException:
                     tb = traceback.format_exc()
                     logger.debug(tb)
-                    pass
+
                 style = gs_catalog.get_style(layer.name, workspace=layer.workspace)
             else:
                 style = default_style
@@ -1125,7 +1133,6 @@ def set_styles(layer, gs_catalog):
         except BaseException:
             tb = traceback.format_exc()
             logger.debug(tb)
-            pass
 
     # Remove duplicates
     style_set = list(dict.fromkeys(style_set))
