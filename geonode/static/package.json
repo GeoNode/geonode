@@ -7,7 +7,7 @@
     "angular": "^1.7.9",
     "angular-cookies": "1.4.0",
     "angular-leaflet-directive": "^0.10.0",
-    "bootstrap": "3.4.0",
+    "bootstrap": "3.4.1",
     "bootstrap-multiselect": "^0.9.13-1",
     "bootstrap-select": "^1.13.10",
     "bootstrap-table": "^1.14.2",
