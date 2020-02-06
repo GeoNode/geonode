@@ -451,8 +451,12 @@ def cascading_delete(cat, layer_name):
             'cascading_delete was called with a non existent resource')
         return
     resource_name = resource.name
-    lyr = cat.get_layer(resource_name)
-    if(lyr is not None):  # Already deleted
+    lyr = None
+    try:
+        lyr = cat.get_layer(resource_name)
+    except BaseException as e:
+        logger.debug(e)
+    if lyr is not None:  # Already deleted
         store = resource.store
         styles = lyr.styles
         try:
