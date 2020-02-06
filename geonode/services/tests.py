@@ -595,6 +595,28 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         response = self.client.post(reverse('remove_service', args=(s.id,)))
         self.assertEqual(len(Service.objects.all()), 0)
 
+    def test_add_duplicate_remote_service_url(self):
+        form_data = {
+            'url': 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities',
+            'type': enumerations.WMS
+        }
+
+        self.client.login(username='serviceowner', password='somepassword')
+
+        # Add the first resource
+        form = forms.CreateServiceForm(form_data)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(Service.objects.count(), 0)
+        self.client.post(reverse('register_service'), data=form_data)
+        self.assertEqual(Service.objects.count(), 1)
+
+        # Try adding the same URL again
+        form = forms.CreateServiceForm(form_data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(Service.objects.count(), 1)
+        self.client.post(reverse('register_service'), data=form_data)
+        self.assertEqual(Service.objects.count(), 1)
+
 
 class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
     selenium = None
