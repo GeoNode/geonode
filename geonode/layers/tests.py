@@ -1222,17 +1222,27 @@ class SetLayersPermissions(GeoNodeBaseTestSupport):
         layer = Layer.objects.all().first()
         perm_spec = layer.get_all_level_info()
         self.assertNotIn(self.user, perm_spec["users"])
-        utils.set_layers_permissions("write", None, [self.username], None, None)
+        utils.set_layers_permissions("write", None, [self.user], None, None)
         layer_after = Layer.objects.get(name=layer.name)
         perm_spec = layer_after.get_all_level_info()
         for perm in utils.WRITE_PERMISSIONS:
             self.assertIn(perm, perm_spec["users"][self.user])
+            _c = 0
+            for _u in perm_spec["users"]:
+                if _u == self.user:
+                    _c += 1
+            self.assertEqual(_c, 1)
         # Remove
-        utils.set_layers_permissions("write", None, [self.username], None, True)
+        utils.set_layers_permissions("write", None, [self.user], None, True)
         layer_after = Layer.objects.get(name=layer.name)
         perm_spec = layer_after.get_all_level_info()
         for perm in utils.WRITE_PERMISSIONS:
             self.assertNotIn(perm, perm_spec["users"][self.user])
+            _c = 0
+            for _u in perm_spec["users"]:
+                if _u == self.user:
+                    _c += 1
+            self.assertEqual(_c, 0)
 
 
 class LayersUploaderTests(GeoNodeBaseTestSupport):

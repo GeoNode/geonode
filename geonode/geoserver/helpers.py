@@ -1987,6 +1987,9 @@ def _render_thumbnail(req_body, width=240, height=200):
             retries=2,
             headers=headers,
             user=_user)
+        if not isinstance(content, bytes):
+            return None
+
         # Optimize the Thumbnail size and resolution
         from PIL import Image
         from io import BytesIO

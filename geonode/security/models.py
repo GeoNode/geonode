@@ -65,7 +65,6 @@ class PermissionLevelMixin(object):
     """
 
     def get_all_level_info(self):
-
         resource = self.get_self_resource()
         users = get_users_with_perms(resource)
         groups = get_groups_with_perms(resource,
@@ -101,10 +100,9 @@ class PermissionLevelMixin(object):
                         info['users'][user] = info['users'][user] + info_layer['users'][user]
                     else:
                         info['users'][user] = info_layer['users'][user]
-
                 for group in info_layer['groups']:
                     if group in info['groups']:
-                        info['groups'][group] = info['groups'][group] + info_layer['groups'][group]
+                        info['groups'][group] = list(dict.fromkeys(info['groups'][group] + info_layer['groups'][group]))
                     else:
                         info['groups'][group] = info_layer['groups'][group]
         except BaseException:
