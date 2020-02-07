@@ -779,7 +779,10 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         request.add_header("Authorization", "Basic {}".format(basic_auth.decode("utf-8")))
         response = urlopen(request)
         _content_type = response.getheader('Content-Type').lower()
-        # self.assertEqual(_content_type, 'image/png')
+        self.assertEqual(
+            _content_type,
+            'application/vnd.ogc.se_xml;charset=utf-8'
+        )
 
         # test change_layer_style
         url = 'http://localhost:8080/geoserver/rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
