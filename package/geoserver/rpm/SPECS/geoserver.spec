@@ -54,7 +54,7 @@ and edit geospatial data. Contains GeoNode extensions.
 cp /usr/share/tomcat6/conf/tomcat6.conf /usr/share/tomcat6/conf/tomcat6.conf.orig
 
 #GeoServer needs more ram than the default for tomcat.
-JVM_OPTS='JAVA_OPTS="-Djava.awt.headless=true -Xms256m -Xmx768m -Xrs -XX:PerfDataSamplingInterval=500 -XX:MaxPermSize=128m"'
+JVM_OPTS='JAVA_OPTS="-Djava.awt.headless=true -Xms256m -Xmx768m -Xrs -XX:PerfDataSamplingInterval=500 -XX:MaxPermSize=128m -DGEOSERVER_CSRF_DISABLED=true"'
 
 # Append a line with the new jvm configuration
 if [ "$(grep ^GEOSERVER /usr/share/tomcat6/conf/tomcat6.conf)" == "" ]; then 
