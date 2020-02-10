@@ -1227,7 +1227,8 @@ def delete_orphaned_layers():
 
 
 def set_layers_permissions(permissions_name, resources_names=None,
-                           users_usernames=None, groups_names=None, delete_flag=None):
+                           users_usernames=None, groups_names=None,
+                           delete_flag=None, verbose=False):
     # Processing information
     if not resources_names:
         # If resources is None we consider all the existing layer
@@ -1316,56 +1317,75 @@ def set_layers_permissions(permissions_name, resources_names=None,
                         for resource in resources:
                             # Existing permissions on the resource
                             perm_spec = resource.get_all_level_info()
-                            # self.stdout.write(
-                            #     "Initial permissions info for the resource %s:\n%s" % (resource.title, str(perm_spec))
-                            # )
+                            if verbose:
+                                print(
+                                    "Initial permissions info for the resource %s:" % resource.title
+                                )
+                                print(perm_spec)
                             for u in users:
-                                uname = u.username
+                                _user = u
                                 # Add permissions
                                 if not delete_flag:
                                     # Check the permission already exists
-                                    if uname not in perm_spec["users"]:
-                                        perm_spec["users"][uname] = permissions
+                                    if _user not in perm_spec["users"] and _user.username not in perm_spec["users"]:
+                                        perm_spec["users"][_user] = permissions
                                     else:
-                                        u_perms_list = perm_spec["users"][uname]
-                                        base_set = set(u_perms_list)
-                                        target_set = set(permissions)
-                                        perm_spec["users"][uname] = list(base_set | target_set)
+                                        if _user.username in perm_spec["users"]:
+                                            u_perms_list = perm_spec["users"][_user.username]
+                                            del(perm_spec["users"][_user.username])
+                                            perm_spec["users"][_user] = u_perms_list
+
+                                        try:
+                                            u_perms_list = perm_spec["users"][_user]
+                                            base_set = set(u_perms_list)
+                                            target_set = set(permissions)
+                                            perm_spec["users"][_user] = list(base_set | target_set)
+                                        except KeyError:
+                                            perm_spec["users"][_user] = permissions
+
                                 # Delete permissions
                                 else:
                                     # Skip resource owner
-                                    if u != resource.owner:
-                                        uname = u
-                                        if uname in perm_spec["users"]:
+                                    if _user != resource.owner:
+                                        if _user in perm_spec["users"]:
                                             u_perms_set = set()
-                                            for up in perm_spec["users"][uname]:
+                                            for up in perm_spec["users"][_user]:
                                                 if up not in permissions:
                                                     u_perms_set.add(up)
-                                            perm_spec["users"][uname] = list(u_perms_set)
+                                            perm_spec["users"][_user] = list(u_perms_set)
                                         else:
                                             logger.warning(
                                                 "The user %s does not have "
                                                 "any permission on the layer %s. "
-                                                "It has been skipped." % (u, resource.title)
+                                                "It has been skipped." % (_user.username, resource.title)
                                             )
                                     else:
                                         logger.warning(
                                             "Warning! - The user %s is the layer %s owner, "
                                             "so its permissions can't be changed. "
-                                            "It has been skipped." % (u, resource.title)
+                                            "It has been skipped." % (_user.username, resource.title)
                                         )
                             for g in groups:
-                                gname = g.name
+                                _group = g
                                 # Add permissions
                                 if not delete_flag:
                                     # Check the permission already exists
-                                    if gname not in perm_spec["groups"]:
-                                        perm_spec["groups"][gname] = permissions
+                                    if _group not in perm_spec["groups"] and _group.name not in perm_spec["groups"]:
+                                        perm_spec["groups"][_group] = permissions
                                     else:
-                                        g_perms_list = perm_spec["groups"][gname]
-                                        base_set = set(g_perms_list)
-                                        target_set = set(permissions)
-                                        perm_spec["groups"][gname] = list(base_set | target_set)
+                                        if _group.name in perm_spec["groups"]:
+                                            g_perms_list = perm_spec["groups"][_group.name]
+                                            del(perm_spec["groups"][_group.name])
+                                            perm_spec["groups"][_group] = g_perms_list
+
+                                        try:
+                                            g_perms_list = perm_spec["groups"][_group]
+                                            base_set = set(g_perms_list)
+                                            target_set = set(permissions)
+                                            perm_spec["groups"][_group] = list(base_set | target_set)
+                                        except KeyError:
+                                            perm_spec["groups"][_group] = permissions
+
                                 # Delete permissions
                                 else:
                                     if g in perm_spec["groups"]:
@@ -1377,12 +1397,14 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                     else:
                                         logger.warning(
                                             "The group %s does not have any permission on the layer %s. "
-                                            "It has been skipped." % (g, resource.title)
+                                            "It has been skipped." % (g.name, resource.title)
                                         )
                             # Set final permissions
                             resource.set_permissions(perm_spec)
-                            # self.stdout.write(
-                            #     "Final permissions info for the resource %s:\n"
-                            #     "%s" % (resource.title, str(perm_spec))
-                            # )
-                        # self.stdout.write("Permissions successfully updated!")
+                            if verbose:
+                                print(
+                                    "Final permissions info for the resource %s:" % resource.title
+                                )
+                                print(perm_spec)
+                        if verbose:
+                            print("Permissions successfully updated!")
