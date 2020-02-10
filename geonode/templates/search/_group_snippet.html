@@ -15,13 +15,13 @@
             <div class="col-xs-12 item-items">
               <ul class="list-inline">
                 <li>
-                    <a href="{{ group.group_profile.detail_url }}">
+                    <a href="{{ group.group_profile.detail_url }}">
                       <strong>{{ group.group_profile.member_count }}</strong>
                       <ng-pluralize count="group.group_profile.member_count" when="{'1': 'Member', 'other': 'Members'}"></ng-pluralize>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ group.group_profile.detail_url }}">
+                    <a href="{{ group.group_profile.detail_url }}">
                         <strong>{{ group.group_profile.manager_count }}</strong>
                         <ng-pluralize count="group.group_profile.manager_count" when="{'1': 'Manager', 'other': 'Managers'}"></ng-pluralize>
                     </a>
