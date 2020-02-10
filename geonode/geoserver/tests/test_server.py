@@ -924,6 +924,8 @@ class UtilsTests(GeoNodeBaseTestSupport):
         """
         Tests that OGC_SERVER_SETTINGS are built if they do not exist in the settings.
         """
+        from django.urls import reverse, resolve
+        from ..ows import _wcs_get_capabilities, _wfs_get_capabilities, _wms_get_capabilities
 
         OGC_SERVER = {'default': dict()}
 
@@ -936,10 +938,38 @@ class UtilsTests(GeoNodeBaseTestSupport):
         # Make sure we get None vs a KeyError when the key does not exist
         self.assertIsNone(ogc_settings.SFDSDFDSF)
 
+        # Testing REST endpoints
+        route = resolve('/gs/rest/layers').route
+        self.assertEqual(route, '^gs/rest/layers')
+
+        route = resolve('/gs/rest/imports').route
+        self.assertEqual(route, '^gs/rest/imports')
+
+        route = resolve('/gs/rest/sldservice').route
+        self.assertEqual(route, '^gs/rest/sldservice')
+
+        store_resolver = resolve('/gs/rest/stores/geonode_data/')
+        self.assertEqual(store_resolver.url_name, 'stores')
+        self.assertEqual(store_resolver.kwargs['store_type'], 'geonode_data')
+        self.assertEqual(store_resolver.route, '^gs/rest/stores/(?P<store_type>\\w+)/$')
+
+        sld_resolver = resolve('/gs/rest/styles')
+        self.assertIsNone(sld_resolver.url_name)
+        self.assertTrue('workspace' not in sld_resolver.kwargs)
+        self.assertEqual(sld_resolver.kwargs['proxy_path'], '/gs/rest/styles')
+        self.assertEqual(sld_resolver.kwargs['downstream_path'], 'rest/styles')
+        self.assertEqual(sld_resolver.route, '^gs/rest/styles')
+
+        sld_resolver = resolve('/gs/rest/workspaces/geonode/styles')
+        self.assertIsNone(sld_resolver.url_name)
+        self.assertEqual(sld_resolver.kwargs['workspace'], 'geonode')
+        self.assertEqual(sld_resolver.kwargs['proxy_path'], '/gs/rest/workspaces')
+        self.assertEqual(sld_resolver.kwargs['downstream_path'], 'rest/workspaces')
+        self.assertEqual(sld_resolver.route, '^gs/rest/workspaces/(?P<workspace>\\w+)')
+
         # Testing OWS endpoints
         from urlparse import urljoin
         from django.core.urlresolvers import reverse
-        from ..ows import _wcs_get_capabilities, _wfs_get_capabilities, _wms_get_capabilities
         wcs = _wcs_get_capabilities()
         logger.debug(wcs)
         self.assertIsNotNone(wcs)
