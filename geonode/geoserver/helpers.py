@@ -1988,7 +1988,7 @@ def _render_thumbnail(req_body, width=240, height=200):
             headers=headers,
             user=_user)
         if not isinstance(content, bytes):
-            return None
+            raise Exception(content)
 
         # Optimize the Thumbnail size and resolution
         from PIL import Image
@@ -2007,7 +2007,7 @@ def _render_thumbnail(req_body, width=240, height=200):
         content = imgByteArr.getvalue()
     except BaseException as e:
         logger.debug(e)
-        return
+        raise e
 
     return content
 
@@ -2029,11 +2029,13 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         if isinstance(request_body, string_types):
             try:
                 request_body = json.loads(request_body)
-            except BaseException:
+            except BaseException as e:
+                logger.debug(e)
                 try:
                     image = _render_thumbnail(
                         request_body, width=width, height=height)
-                except BaseException:
+                except BaseException as e:
+                    logger.debug(e)
                     image = None
 
         if image is not None:
@@ -2202,6 +2204,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         logger.warning('Error generating thumbnail')
         logger.exception(e)
         image = None
+        raise e
 
     return image
 
