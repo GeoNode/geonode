@@ -1238,11 +1238,6 @@ class SetLayersPermissions(GeoNodeBaseTestSupport):
         perm_spec = layer_after.get_all_level_info()
         for perm in utils.WRITE_PERMISSIONS:
             self.assertNotIn(perm, perm_spec["users"][self.user])
-            _c = 0
-            for _u in perm_spec["users"]:
-                if _u == self.user:
-                    _c += 1
-            self.assertEqual(_c, 0)
 
 
 class LayersUploaderTests(GeoNodeBaseTestSupport):
