@@ -17,7 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
 import logging
+from shutil import copyfile
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -207,6 +209,18 @@ class GroupProfile(models.Model):
     @property
     def class_name(self):
         return self.__class__.__name__
+
+    @property
+    def logo_url(self):
+        try:
+            _base_path = os.path.split(self.logo.path)[0]
+            _upload_path = os.path.split(self.logo.url)[1]
+            _upload_path = os.path.join(_base_path, _upload_path)
+            if not os.path.exists(_upload_path):
+                copyfile(self.logo.path, _upload_path)
+        except BaseException as e:
+            logger.exception(e)
+        return self.logo.url
 
 
 class GroupMember(models.Model):
