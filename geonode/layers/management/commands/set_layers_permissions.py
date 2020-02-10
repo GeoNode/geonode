@@ -106,5 +106,10 @@ class Command(BaseCommand):
         groups_names = options.get('groups')
         delete_flag = options.get('delete_flag')
         set_layers_permissions(
-            permissions_name, resources_names, users_usernames, groups_names, delete_flag
+            permissions_name,
+            resources_names,
+            users_usernames,
+            groups_names,
+            delete_flag,
+            verbose=True
         )
