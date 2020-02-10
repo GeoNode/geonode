@@ -182,7 +182,7 @@ class GeoServerService(BaseServiceHandler):
 
 class HostGeoServerService(BaseServiceHandler):
 
-    PATH = '/rest/about/monitoring.json'
+    PATH = '/rest/about/system-status.json'
 
     def _collect(self, *args, **kwargs):
         base_url = self.service.url

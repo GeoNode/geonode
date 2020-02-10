@@ -3,7 +3,7 @@ Pillow==7.0.0
 lxml==4.4.0
 defusedxml==0.6.0
 psycopg2==2.8.4
-Django==2.2.9
+Django==2.2.10
 
 # Other
 amqp==2.5.2
@@ -18,9 +18,9 @@ python-slugify==4.0.0
 decorator==4.4.1
 celery==4.4.0
 kombu==4.6.7
-boto3==1.11.9
+boto3==1.11.11
 six==1.12.0
-tqdm==4.42.0
+tqdm==4.42.1
 Deprecated==1.2.7
 wrapt==1.11.2
 
@@ -44,10 +44,10 @@ pyopenssl==19.1.0
 
 # geopython dependencies
 pyproj==2.4.2.post1
-OWSLib==0.18.0
+OWSLib==0.19.1
 pycsw==2.4.2
 SQLAlchemy==1.3.13 # required by PyCSW
-Shapely==1.6.4.post2
+Shapely==1.7.0
 mercantile==1.1.2
 geoip2==3.0.0
 numpy==1.18.*
@@ -64,23 +64,23 @@ django-celery-beat==1.6.0
 django-floppyforms<1.9.0
 django-forms-bootstrap<=3.1.0
 geonode-django-activity-stream==0.9.0
-django-autocomplete-light==3.5.0
+django-autocomplete-light==3.5.1
 django-leaflet==0.26.0
 django-invitations<=1.9.2
 django-recaptcha==2.0.6
 geonode-oauth-toolkit==1.1.4.6
 
 # GeoNode org maintained apps.
-django-mapstore-adapter==2.0.0rc2
-django-geonode-mapstore-client==2.0.0rc1
+django-mapstore-adapter==2.0.0
+django-geonode-mapstore-client==2.0.0
 django-geonode-client==1.0.9
-geonode-user-messages==2.0.0rc0
-geonode-avatar==3.0.2b0
-geonode-announcements==2.0.0b0
+geonode-user-messages==2.0.0
+geonode-avatar==3.0.2
+geonode-announcements==2.0.0
 gn-arcrest==10.5
-geonode-dialogos==3.0.1b0
-geoserver-restconfig==2.0.0b0
-gn-gsimporter==2.0.0rc0
+geonode-dialogos==3.0.1
+geoserver-restconfig==2.0.1
+gn-gsimporter==2.0.0
 gisdata==0.5.4
 
 # haystack/elasticsearch
@@ -91,7 +91,7 @@ elasticsearch>=2.0.0,<8.0.0
 django-bootstrap3-datetimepicker-2==2.8.2
 
 # AWS S3 dependencies
-django-storages==1.8
+django-storages==1.9.1
 
 # Django Caches
 python-memcached<=1.59
@@ -100,7 +100,7 @@ python-memcached<=1.59
 xmltodict<0.12.1
 inflection<=0.3.1
 jdcal==1.4.1
-mock<4.0.0
+mock<5.0.0
 python-dateutil==2.8.1
 pytz==2019.3
 requests==2.22.0
@@ -128,7 +128,7 @@ coverage==5.0.3
 parse-type==0.5.2
 requests-toolbelt==0.9.1
 flake8==3.7.9
-pytest==5.3.4
+pytest==5.3.5
 pytest-bdd==3.2.1
 splinter==0.13.0
 pytest-splinter==2.0.1

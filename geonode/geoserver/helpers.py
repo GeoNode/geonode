@@ -451,8 +451,12 @@ def cascading_delete(cat, layer_name):
             'cascading_delete was called with a non existent resource')
         return
     resource_name = resource.name
-    lyr = cat.get_layer(resource_name)
-    if(lyr is not None):  # Already deleted
+    lyr = None
+    try:
+        lyr = cat.get_layer(resource_name)
+    except BaseException as e:
+        logger.debug(e)
+    if lyr is not None:  # Already deleted
         store = resource.store
         styles = lyr.styles
         try:
@@ -1072,9 +1076,18 @@ def set_attributes_from_geoserver(layer, overwrite=False):
 def set_styles(layer, gs_catalog):
     style_set = []
 
-    gs_layer = gs_catalog.get_layer(layer.name)
+    gs_layer = None
+    try:
+        gs_layer = gs_catalog.get_layer(layer.name)
+    except BaseException:
+        tb = traceback.format_exc()
+        logger.debug(tb)
     if not gs_layer:
-        gs_layer = gs_catalog.get_layer(layer.alternate or layer.typename)
+        try:
+            gs_layer = gs_catalog.get_layer(layer.alternate or layer.typename)
+        except BaseException:
+            tb = traceback.format_exc()
+            logger.debug(tb)
 
     if gs_layer:
         default_style = None
@@ -1083,7 +1096,6 @@ def set_styles(layer, gs_catalog):
         except BaseException:
             tb = traceback.format_exc()
             logger.debug(tb)
-            pass
 
         if not default_style:
             try:
@@ -1105,7 +1117,7 @@ def set_styles(layer, gs_catalog):
                 except BaseException:
                     tb = traceback.format_exc()
                     logger.debug(tb)
-                    pass
+
                 style = gs_catalog.get_style(layer.name, workspace=layer.workspace)
             else:
                 style = default_style
@@ -1125,7 +1137,6 @@ def set_styles(layer, gs_catalog):
         except BaseException:
             tb = traceback.format_exc()
             logger.debug(tb)
-            pass
 
     # Remove duplicates
     style_set = list(dict.fromkeys(style_set))
@@ -1976,6 +1987,9 @@ def _render_thumbnail(req_body, width=240, height=200):
             retries=2,
             headers=headers,
             user=_user)
+        if not isinstance(content, bytes):
+            raise Exception(content)
+
         # Optimize the Thumbnail size and resolution
         from PIL import Image
         from io import BytesIO
@@ -1993,7 +2007,7 @@ def _render_thumbnail(req_body, width=240, height=200):
         content = imgByteArr.getvalue()
     except BaseException as e:
         logger.debug(e)
-        return
+        raise e
 
     return content
 
@@ -2015,11 +2029,13 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         if isinstance(request_body, string_types):
             try:
                 request_body = json.loads(request_body)
-            except BaseException:
+            except BaseException as e:
+                logger.debug(e)
                 try:
                     image = _render_thumbnail(
                         request_body, width=width, height=height)
-                except BaseException:
+                except BaseException as e:
+                    logger.debug(e)
                     image = None
 
         if image is not None:
@@ -2188,6 +2204,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         logger.warning('Error generating thumbnail')
         logger.exception(e)
         image = None
+        raise e
 
     return image
 

@@ -779,7 +779,10 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         request.add_header("Authorization", "Basic {}".format(basic_auth.decode("utf-8")))
         response = urlopen(request)
         _content_type = response.getheader('Content-Type').lower()
-        # self.assertEqual(_content_type, 'image/png')
+        self.assertEqual(
+            _content_type,
+            'application/vnd.ogc.se_xml;charset=utf-8'
+        )
 
         # test change_layer_style
         url = 'http://localhost:8080/geoserver/rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
@@ -1295,7 +1298,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             ws = gs_catalog.get_workspace(workspace)
             self.assertIsNotNone(ws)
             store = get_store(gs_catalog, name, workspace=ws)
-            _log("1. ------------ %s " % store)
+            _log("store. ------------ %s " % store)
             self.assertIsNotNone(store)
 
             # Save layer attributes
@@ -1307,12 +1310,12 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # set SLD
             sld = test_perm_layer.default_style.sld_body if test_perm_layer.default_style else None
             if sld:
-                _log("2. ------------ %s " % sld)
+                _log("sld. ------------ %s " % sld)
                 set_layer_style(test_perm_layer, test_perm_layer.alternate, sld)
 
-            fixup_style(gs_catalog, test_perm_layer.alternate, None)
-            self.assertIsNotNone(get_sld_for(gs_catalog, test_perm_layer))
-            _log("3. ------------ %s " % get_sld_for(gs_catalog, test_perm_layer))
+                fixup_style(gs_catalog, test_perm_layer.alternate, None)
+                self.assertIsNotNone(get_sld_for(gs_catalog, test_perm_layer))
+                _log("fixup_sld. ------------ %s " % get_sld_for(gs_catalog, test_perm_layer))
 
             create_gs_thumbnail(test_perm_layer, overwrite=True)
             self.assertIsNotNone(test_perm_layer.get_thumbnail_url())

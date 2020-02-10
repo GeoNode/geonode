@@ -1378,7 +1378,8 @@ def layer_thumbnail(request, layername):
     try:
         try:
             preview = json.loads(request.body).get('preview', None)
-        except BaseException:
+        except BaseException as e:
+            logger.debug(e)
             preview = None
 
         if preview and preview == 'react':
@@ -1390,7 +1391,8 @@ def layer_thumbnail(request, layername):
             try:
                 image = _prepare_thumbnail_body_from_opts(
                     request.body, request=request)
-            except BaseException:
+            except BaseException as e:
+                logger.debug(e)
                 image = _render_thumbnail(request.body)
 
         is_image = False
@@ -1411,9 +1413,9 @@ def layer_thumbnail(request, layername):
         layer_obj.save_thumbnail(filename, image)
 
         return HttpResponse('Thumbnail saved')
-    except BaseException:
+    except BaseException as e:
         return HttpResponse(
-            content='error saving thumbnail',
+            content='error saving thumbnail: %s' % str(e),
             status=500,
             content_type='text/plain'
         )
