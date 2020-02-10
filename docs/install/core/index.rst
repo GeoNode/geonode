@@ -113,8 +113,18 @@ At this point your command prompt shows a ``(geonode)`` prefix, this indicates t
 
   .. code-block:: shell
 
+    source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
     workon geonode
 
+.. note:: In order to save permanently the virtualenvwrapper envioroment
+
+  .. code-block:: shell
+
+    nano ~/.bashrc
+
+    # Write to the bottom of the file the following lines
+    export WORKON_HOME=/home/geonode/.virtualenvs
+    source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 
 .. code-block:: shell
 
