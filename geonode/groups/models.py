@@ -75,7 +75,7 @@ class GroupProfile(models.Model):
     email_help_text = _('Email used to contact one or all group members, '
                         'such as a mailing list, shared email, or exchange group.')
 
-    group = models.OneToOneField(Group)
+    group = models.OneToOneField(Group, on_delete=models.CASCADE)
     title = models.CharField(_('Title'), max_length=50)
     slug = models.SlugField(unique=True)
     logo = models.ImageField(_('Logo'), upload_to="people_group", blank=True)
