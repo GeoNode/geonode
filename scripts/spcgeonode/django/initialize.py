@@ -91,8 +91,8 @@ app, created = Application.objects.get_or_create(
     name='GeoServer',
     client_type='confidential',
     authorization_grant_type='authorization-code',
-    skip_authorization=True
 )
+app.skip_authorization = True
 _host = os.getenv('HTTPS_HOST',"") if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_HOST')
 _port = os.getenv('HTTPS_PORT') if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_PORT')
 if _port and _port not in ("80", "443"):
