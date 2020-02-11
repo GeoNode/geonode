@@ -199,9 +199,7 @@ class GroupProfile(models.Model):
         if user == user.get_anonymous():
             raise ValueError("The invited user cannot be anonymous")
         member, created = GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
-        if created:
-            user.groups.add(self.group)
-        else:
+        if not created:
             logger.warning("The invited user \"{0}\" is already a member".format(user.username))
 
     def leave(self, user, **kwargs):
@@ -250,6 +248,15 @@ class GroupMember(models.Model):
         (MEMBER, _("Member")),
     ])
     joined = models.DateTimeField(default=now)
+
+    def save(self, *args, **kwargs):
+        # add django.contrib.auth.group to user
+        self.user.groups.add(self.group.group)
+        super(GroupMember, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.user.groups.remove(self.group.group)
+        super(GroupMember, self).delete(*args, **kwargs)
 
 
 def group_pre_delete(instance, sender, **kwargs):
