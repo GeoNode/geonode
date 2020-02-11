@@ -924,6 +924,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         """
         Tests that OGC_SERVER_SETTINGS are built if they do not exist in the settings.
         """
+        from urlparse import urljoin
         from django.urls import reverse, resolve
         from ..ows import _wcs_get_capabilities, _wfs_get_capabilities, _wms_get_capabilities
 
@@ -968,8 +969,6 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertEqual(sld_resolver.route, '^gs/rest/workspaces/(?P<workspace>\\w+)')
 
         # Testing OWS endpoints
-        from urlparse import urljoin
-        from django.core.urlresolvers import reverse
         wcs = _wcs_get_capabilities()
         logger.debug(wcs)
         self.assertIsNotNone(wcs)
