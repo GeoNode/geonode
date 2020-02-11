@@ -220,7 +220,12 @@ class GroupProfile(models.Model):
                 copyfile(self.logo.path, _upload_path)
         except BaseException as e:
             logger.exception(e)
-        return self.logo.url
+        _url = None
+        try:
+            _url = self.logo.url
+        except BaseException as e:
+            logger.exception(e)
+        return _url
 
 
 class GroupMember(models.Model):
