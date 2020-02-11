@@ -195,7 +195,6 @@ def group_member_remove(request, slug, username):
         return HttpResponseForbidden()
     else:
         GroupMember.objects.get(group=group, user=user).delete()
-        user.groups.remove(group.group)
         return redirect("group_detail", slug=group.slug)
 
 
