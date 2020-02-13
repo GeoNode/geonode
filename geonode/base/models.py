@@ -81,7 +81,7 @@ class ContactRole(models.Model):
     """
     ContactRole is an intermediate model to bind Profiles as Contacts to Resources and apply roles.
     """
-    resource = models.ForeignKey('ResourceBase', blank=True, null=True, on_delete=models.CASCADE)
+    resource = models.ForeignKey('ResourceBase', blank=False, null=False, on_delete=models.CASCADE)
     contact = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     role = models.CharField(
         choices=ROLE_VALUES,
@@ -94,6 +94,13 @@ class ContactRole(models.Model):
         """
         Make sure there is only one poc and author per resource
         """
+
+        if not hasattr(self, 'resource'):
+            # The ModelForm will already raise a Validation error for a missing resource.
+            # Re-raising an empty error here ensures the rest of this method isn't
+            # executed.
+            raise ValidationError('')
+
         if (self.role == self.resource.poc) or (
                 self.role == self.resource.metadata_author):
             contacts = self.resource.contacts.filter(
