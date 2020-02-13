@@ -18,11 +18,7 @@
 #
 #########################################################################
 
-try:
-    from urllib.parse import urljoin
-except ImportError:
-    # Python 2 compatibility
-    from urlparse import urljoin
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.urls import reverse
