@@ -964,8 +964,10 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
     if overwrite or not _thumb_exists:
         BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
+        is_remote = False
         if not thumbnail_create_url:
             thumbnail_create_url = thumbnail_remote_url
+            is_remote = True
 
         if check_bbox:
             # Check if the bbox is invalid
@@ -1005,7 +1007,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
             if ogc_client:
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                     headers = {}
-                    if thumbnail_remote_url:
+                    if is_remote and thumbnail_remote_url:
                         try:
                             resp, image = ogc_client.request(
                                 thumbnail_remote_url,
