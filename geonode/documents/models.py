@@ -21,11 +21,7 @@
 import logging
 import os
 import uuid
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    # Python 2 compatibility
-    from urlparse import urlparse
+from urllib.parse import urlparse
 
 from django.db import models
 from django.db.models import signals
@@ -72,7 +68,7 @@ class Document(ResourceBase):
         verbose_name=_('URL'))
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.title)

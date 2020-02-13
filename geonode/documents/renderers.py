@@ -25,11 +25,8 @@ import traceback
 from django.conf import settings
 from threading import Timer
 from mimetypes import guess_type
-try:
-    from urllib.request import pathname2url
-except ImportError:
-    # Python 2 compatibility
-    from urllib import pathname2url
+from urllib.request import pathname2url
+
 from tempfile import NamedTemporaryFile
 
 
