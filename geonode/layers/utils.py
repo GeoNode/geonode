@@ -964,8 +964,10 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
     if overwrite or not _thumb_exists:
         BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
+        is_remote = False
         if not thumbnail_create_url:
             thumbnail_create_url = thumbnail_remote_url
+            is_remote = True
 
         if check_bbox:
             # Check if the bbox is invalid
@@ -1004,6 +1006,21 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
             if ogc_client:
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                    headers = {}
+                    if is_remote and thumbnail_remote_url:
+                        try:
+                            resp, image = ogc_client.request(
+                                thumbnail_remote_url,
+                                headers=headers,
+                                timeout=600)
+                            if 'ServiceException' in image or \
+                                    resp.status_code < 200 or resp.status_code > 299:
+                                msg = 'Unable to obtain thumbnail: %s' % image
+                                logger.error(msg)
+                                # Replace error message with None.
+                                image = None
+                        except BaseException:
+                            image = None
                     if image is None:
                         request_body = {
                             'width': width,
@@ -1061,7 +1078,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         for _p in params.keys():
                             if _p.lower() not in thumbnail_create_url.lower():
                                 thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (_p, params[_p])
-                        headers = {}
                         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                             _ogc_server_settings = settings.OGC_SERVER['default']
                             _user = _ogc_server_settings['USER'] if 'USER' in _ogc_server_settings else 'admin'
@@ -1079,7 +1095,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
                             # Replace error message with None.
                             image = None
-
                     except BaseException as e:
                         logger.exception(e)
 
@@ -1091,6 +1106,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 else:
                     msg = 'Unable to obtain thumbnail for: %s' % instance
                     logger.error(msg)
+                    instance.save_thumbnail(thumbnail_name, image=None)
 
 
 # this is the original implementation of create_gs_thumbnail()

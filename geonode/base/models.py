@@ -81,7 +81,7 @@ class ContactRole(models.Model):
     """
     ContactRole is an intermediate model to bind Profiles as Contacts to Resources and apply roles.
     """
-    resource = models.ForeignKey('ResourceBase', blank=True, null=True)
+    resource = models.ForeignKey('ResourceBase', blank=False, null=False, on_delete=models.CASCADE)
     contact = models.ForeignKey(settings.AUTH_USER_MODEL)
     role = models.CharField(
         choices=ROLE_VALUES,
@@ -94,6 +94,13 @@ class ContactRole(models.Model):
         """
         Make sure there is only one poc and author per resource
         """
+
+        if not hasattr(self, 'resource'):
+            # The ModelForm will already raise a Validation error for a missing resource.
+            # Re-raising an empty error here ensures the rest of this method isn't
+            # executed.
+            raise ValidationError('')
+
         if (self.role == self.resource.poc) or (
                 self.role == self.resource.metadata_author):
             contacts = self.resource.contacts.filter(
@@ -1161,6 +1168,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def save_thumbnail(self, filename, image):
         upload_path = os.path.join('thumbs/', filename)
         try:
+            # Check that the image is valid
+            from PIL import Image
+            from io import BytesIO
+            content_data = BytesIO(image)
+            im = Image.open(content_data)
+            im.verify()  # verify that it is, in fact an image
+
             for _thumb in glob.glob(storage.path('thumbs/%s*' % os.path.splitext(filename)[0])):
                 try:
                     os.remove(_thumb)
