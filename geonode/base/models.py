@@ -68,11 +68,8 @@ from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 from geonode.people.enumerations import ROLE_VALUES
 
 from pyproj import transform, Proj
-try:  # python2
-    from urlparse import urlparse, urlsplit, urljoin
-except ImportError:
-    # Python 3 fallback
-    from urllib.parse import urlparse, urlsplit, urljoin
+
+from urllib.parse import urlparse, urlsplit, urljoin
 
 logger = logging.getLogger(__name__)
 
@@ -150,7 +147,7 @@ class TopicCategory(models.Model):
         return self.gn_description
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     class Meta:
         ordering = ("identifier",)
@@ -173,7 +170,7 @@ class SpatialRepresentationType(models.Model):
         return "{0}".format(self.gn_description)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     class Meta:
         ordering = ("identifier",)
@@ -227,7 +224,7 @@ class Region(MPTTModel):
         default='EPSG:4326')
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.name)
@@ -279,7 +276,7 @@ class RestrictionCodeType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.gn_description)
@@ -311,7 +308,7 @@ class License(models.Model):
     license_text = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.name)
@@ -465,7 +462,7 @@ class Thesaurus(models.Model):
     slug = models.CharField(max_length=64, default='')
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.identifier)
@@ -489,7 +486,7 @@ class ThesaurusKeywordLabel(models.Model):
     keyword = models.ForeignKey('ThesaurusKeyword', related_name='keyword', on_delete=models.CASCADE)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.label)
@@ -516,7 +513,7 @@ class ThesaurusKeyword(models.Model):
     thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus', on_delete=models.CASCADE)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.alt_label)
@@ -826,7 +823,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     last_updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.title)
@@ -1468,7 +1465,7 @@ class Link(models.Model):
     objects = LinkManager()
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0} link".format(self.link_type)
@@ -1484,7 +1481,7 @@ class MenuPlaceholder(models.Model):
     )
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.name)
@@ -1507,7 +1504,7 @@ class Menu(models.Model):
     )
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.title)
@@ -1564,7 +1561,7 @@ class MenuItem(models.Model):
         return hash(self.url)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.title)

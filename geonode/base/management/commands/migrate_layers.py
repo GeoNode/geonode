@@ -20,12 +20,10 @@
 
 import traceback
 import os
-try:
-    import helpers
-except ImportError:
-    from . import helpers
 import tempfile
 import json
+
+from . import helpers
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
