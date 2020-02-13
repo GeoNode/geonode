@@ -1983,8 +1983,6 @@ def _render_thumbnail(req_body, width=240, height=200):
             url,
             method='POST',
             data=spec,
-            timeout=60,
-            retries=2,
             headers=headers,
             user=_user)
         if not isinstance(content, bytes):
