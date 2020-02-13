@@ -291,34 +291,37 @@ def purge_geofence_layer_rules(resource):
     passwd = settings.OGC_SERVER['default']['PASSWORD']
     headers = {'Content-type': 'application/json'}
     workspace = get_layer_workspace(resource.layer)
-    r = requests.get(
-        "{}rest/geofence/rules.json?workspace={}&layer={}".format(
-            url, workspace, resource.layer.name),
-        headers=headers,
-        auth=HTTPBasicAuth(user, passwd),
-        timeout=10,
-        verify=False
-    )
-    if (r.status_code >= 200 and r.status_code < 300):
-        gs_rules = r.json()
-        r_ids = []
-        if gs_rules and gs_rules['rules']:
-            for r in gs_rules['rules']:
-                if r['layer'] and r['layer'] == resource.layer.name:
-                    r_ids.append(r['id'])
+    try:
+        r = requests.get(
+            "{}rest/geofence/rules.json?workspace={}&layer={}".format(
+                url, workspace, resource.layer.name),
+            headers=headers,
+            auth=HTTPBasicAuth(user, passwd),
+            timeout=10,
+            verify=False
+        )
+        if (r.status_code >= 200 and r.status_code < 300):
+            gs_rules = r.json()
+            r_ids = []
+            if gs_rules and gs_rules['rules']:
+                for r in gs_rules['rules']:
+                    if r['layer'] and r['layer'] == resource.layer.name:
+                        r_ids.append(r['id'])
 
-        # Delete GeoFence Rules associated to the Layer
-        # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
-        for i, r_id in enumerate(r_ids):
-            r = requests.delete(url + 'rest/geofence/rules/id/' + str(r_id),
-                                headers=headers,
-                                auth=HTTPBasicAuth(user, passwd))
-            if (r.status_code < 200 or r.status_code > 201):
-                msg = "Could not DELETE GeoServer Rule for Layer "
-                msg = msg + str(resource.layer.name)
-                e = Exception(msg)
-                logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                raise e
+            # Delete GeoFence Rules associated to the Layer
+            # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
+            for i, r_id in enumerate(r_ids):
+                r = requests.delete(url + 'rest/geofence/rules/id/' + str(r_id),
+                                    headers=headers,
+                                    auth=HTTPBasicAuth(user, passwd))
+                if (r.status_code < 200 or r.status_code > 201):
+                    msg = "Could not DELETE GeoServer Rule for Layer "
+                    msg = msg + str(resource.layer.name)
+                    e = Exception(msg)
+                    logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                    raise e
+    except BaseException as e:
+        logger.exception(e)
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
