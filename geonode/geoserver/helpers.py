@@ -1945,8 +1945,6 @@ def _render_thumbnail(req_body, width=240, height=180):
             url,
             method='POST',
             data=data,
-            timeout=60,
-            retries=2,
             headers=headers,
             user=_user)
         # Optimize the Thumbnail size and resolution
