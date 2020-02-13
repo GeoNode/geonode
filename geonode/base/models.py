@@ -1161,6 +1161,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def save_thumbnail(self, filename, image):
         upload_path = os.path.join('thumbs/', filename)
         try:
+            # Check that the image is valid
+            from PIL import Image
+            from io import BytesIO
+            content_data = BytesIO(image)
+            im = Image.open(content_data)
+            im.verify()  # verify that it is, in fact an image
+
             for _thumb in glob.glob(storage.path('thumbs/%s*' % os.path.splitext(filename)[0])):
                 try:
                     os.remove(_thumb)

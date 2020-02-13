@@ -268,6 +268,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             "width": "200",
             "height": "150",
             "format": "image/png",
+            "styles": ""
         }
         kvp = "&".join("{}={}".format(*item) for item in params.items())
         thumbnail_remote_url = "{}?{}".format(
