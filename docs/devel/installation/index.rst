@@ -369,8 +369,8 @@ If you didn't install GeoNode-Core earlier and you wanted to install GeoNode-Pro
 .. code-block:: shell
     
     $ cd my_geonode
-    $ pip install -r requirements.txt --upgrade
-    $ pip install -e . --upgrade
+    $ pip install -r requirements.txt
+    $ pip install -e .
 
 6- Install GDAL Utilities for Python
 

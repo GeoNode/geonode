@@ -94,7 +94,7 @@ class CountJSONSerializer(Serializer):
                 resources = resources.filter(title__icontains=options['title_filter'])
 
             if options['type_filter']:
-                resources = resources.instance_of(options['type_filter'])
+                resources = resources.filter(polymorphic_ctype__model=options['type_filter'])
 
         counts = list(resources.values(options['count_type']).annotate(count=Count(options['count_type'])))
 
@@ -254,7 +254,7 @@ class TopicCategoryResource(TypeFilteredResource):
     def dehydrate_layers_count(self, bundle):
         request = bundle.request
         obj_with_perms = get_objects_for_user(request.user,
-                                              'base.view_resourcebase').instance_of(Layer)
+                                              'base.view_resourcebase').filter(polymorphic_ctype__model='layer')
         filter_set = bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id'))
 
         if not settings.SKIP_PERMS_FILTER:
@@ -298,6 +298,26 @@ class GroupCategoryResource(TypeFilteredResource):
                      'name': ALL}
         authorization = ApiLockdownAuthorization()
 
+    def apply_filters(self, request, applicable_filters):
+        user = request.user
+        semi_filtered = super(
+            GroupCategoryResource,
+            self).apply_filters(
+            request,
+            applicable_filters)
+
+        filtered = semi_filtered
+        if not user.is_authenticated or user.is_anonymous:
+            filtered = semi_filtered.exclude(groups__access='private')
+        elif not user.is_superuser:
+            groups_member_of = user.group_list_all()
+            filtered = semi_filtered.filter(
+                Q(groups__in=groups_member_of) |
+                ~Q(groups__access='private')
+            )
+
+        return filtered
+
     def dehydrate_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
 
@@ -306,8 +326,10 @@ class GroupCategoryResource(TypeFilteredResource):
 
     def dehydrate(self, bundle):
         """Provide additional resource counts"""
-
+        request = bundle.request
+        _user = request.user
         counts = _get_resource_counts(
+            _user,
             resourcebase_filter_kwargs={
                 'group__groupprofile__categories': bundle.obj
             }
@@ -394,9 +416,12 @@ class GroupResource(ModelResource):
 
     def dehydrate(self, bundle):
         """Provide additional resource counts"""
-
+        request = bundle.request
+        _user = request.user
         counts = _get_resource_counts(
-            resourcebase_filter_kwargs={'group': bundle.obj})
+            _user,
+            resourcebase_filter_kwargs={'group': bundle.obj}
+        )
         bundle.data.update(resource_counts=counts)
         return bundle
 
@@ -467,17 +492,17 @@ class ProfileResource(TypeFilteredResource):
 
     def dehydrate_layers_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
-                                              'base.view_resourcebase').instance_of(Layer)
+                                              'base.view_resourcebase').filter(polymorphic_ctype__model='layer')
         return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
 
     def dehydrate_maps_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
-                                              'base.view_resourcebase').instance_of(Map)
+                                              'base.view_resourcebase').filter(polymorphic_ctype__model='map')
         return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
 
     def dehydrate_documents_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
-                                              'base.view_resourcebase').instance_of(Document)
+                                              'base.view_resourcebase').filter(polymorphic_ctype__model='document')
         return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
 
     def dehydrate_avatar_100(self, bundle):
@@ -819,31 +844,36 @@ elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
         pass
 
 
-def _get_resource_counts(
-        resourcebase_filter_kwargs
-):
+def _get_resource_counts(user, resourcebase_filter_kwargs):
     """Return a dict with counts of resources of various types
 
     The ``resourcebase_filter_kwargs`` argument should be a dict with a suitable
     queryset filter that can be applied to select only the relevant
     ``ResourceBase`` objects to use when retrieving counts. For example::
 
-        _get_resource_counts({
-            'group__slug': 'my-group',
-        })
+        _get_resource_counts(
+            user,
+            {
+                'group__slug': 'my-group',
+            }
+        )
 
     The above function call would result in only counting ``ResourceBase``
     objects that belong to the group that has ``my-group`` as slug
 
     """
-
-    qs = ResourceBase.objects.filter(
-        **resourcebase_filter_kwargs
-    ).values(
+    resources = get_visible_resources(
+            ResourceBase.objects.filter(**resourcebase_filter_kwargs),
+            user,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
+    values = resources.values(
         'polymorphic_ctype__model',
         'is_approved',
         'is_published',
-    ).annotate(counts=Count('polymorphic_ctype__model'))
+    )
+    qs = values.annotate(counts=Count('polymorphic_ctype__model'))
     types = [
         'layer',
         'document',
@@ -861,14 +891,14 @@ def _get_resource_counts(
     for record in qs:
         resource_type = record['polymorphic_ctype__model']
         is_visible = all((record['is_approved'], record['is_published']))
-        counts['all']['total'] += 1
-        counts['all']['visible'] += 1 if is_visible else 0
-        counts['all']['published'] += 1 if record['is_published'] else 0
-        counts['all']['approved'] += 1 if record['is_approved'] else 0
+        counts['all']['total'] += record['counts']
+        counts['all']['visible'] += record['counts'] if is_visible else 0
+        counts['all']['published'] += record['counts'] if record['is_published'] else 0
+        counts['all']['approved'] += record['counts'] if record['is_approved'] else 0
         section = counts.get(resource_type)
         if section is not None:
-            section['total'] += 1
-            section['visible'] += 1 if is_visible else 0
-            section['published'] += 1 if record['is_published'] else 0
-            section['approved'] += 1 if record['is_approved'] else 0
+            section['total'] += record['counts']
+            section['visible'] += record['counts'] if is_visible else 0
+            section['published'] += record['counts'] if record['is_published'] else 0
+            section['approved'] += record['counts'] if record['is_approved'] else 0
     return counts
