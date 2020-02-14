@@ -200,11 +200,9 @@ class CommonModelApi(ModelResource):
                                 Layer___storeType=LAYER_SUBTYPES[super_type])
                 else:
                     if filtered:
-                        filtered = filtered | semi_filtered.instance_of(
-                            FILTER_TYPES[the_type])
+                        filtered = filtered | semi_filtered.filter(polymorphic_ctype__model=FILTER_TYPES[the_type])
                     else:
-                        filtered = semi_filtered.instance_of(
-                            FILTER_TYPES[the_type])
+                        filtered = semi_filtered.filter(polymorphic_ctype__model=FILTER_TYPES[the_type])
         else:
             filtered = semi_filtered
 
