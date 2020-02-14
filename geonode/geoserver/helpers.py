@@ -75,7 +75,7 @@ if not hasattr(settings, 'OGC_SERVER'):
     msg = (
         'Please configure OGC_SERVER when enabling geonode.geoserver.'
         ' More info can be found at '
-        'http://docs.geonode.org/en/2.10.x/basic/settings/index.html#ogc-server')
+        'http://docs.geonode.org/en/2.10.2/basic/settings/index.html#ogc-server')
     raise ImproperlyConfigured(msg)
 
 

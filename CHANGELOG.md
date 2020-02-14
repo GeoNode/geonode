@@ -1,5 +1,117 @@
 # Change Log
 
+## [2.10.2](https://github.com/GeoNode/geonode/tree/2.10.2) (2020-02-14)
+
+ - **[Implemented Features](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.2+label%3Afeature)**
+
+ - **[Dependencies Updates](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+label%3Adependencies+milestone%3A2.10.2)**
+
+ - **[Updated Doccumentations](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.2+label%3Adocs)**
+
+ - **[Updated Doccumentations Pull Requests](https://github.com/GeoNode/geonode/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+label%3Adocs+milestone%3A2.10.2)**
+
+ - **[Fixed Security Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.10.2+label%3Asecurity)**
+
+ - **[Fixed Security Pull Requests](https://github.com/GeoNode/geonode/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+label%3Asecurity+milestone%3A2.10.2+)**
+
+ - **[Resolved Regressions](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.2+label%3Aregression)**
+
+ - **[Fixed Critical Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.2+label%3Ablocker)**
+
+ - **[Fixed Major Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.2+label%3Amajor)**
+
+ - **[Fixed Minor Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.2+label%3Aminor)**
+
+ - **[Updated Translations](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.2+label%3Atranslations)**
+
+ - **[All Closed Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.10.2)**
+
+## [Full Changelog](https://github.com/GeoNode/geonode/compare/2.10.1...2.10.2)
+
+<li> 2020-02-13: Dana Lambert <a href="http://github.com/geonode/geonode/commit/b259f035a218a27898ac5cb513dcb81db69af8df" target="blank"> [Fixes #5566] Making ContactRole resource a required field</a></li> 
+<li> 2020-02-13: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/9770a033dd602f861476974340f823229963b84f" target="blank"> Bump invoke from 1.3.0 to 1.4.1</a></li> 
+<li> 2020-02-13: afabiani <a href="http://github.com/geonode/geonode/commit/10e6349391cd33c2610c6b56669a40b7a7493630" target="blank">  - Fix tests</a></li> 
+<li> 2020-02-13: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/a2dbae6b63c568f05439958618cabb9a66afde84" target="blank"> Bump psutil from 5.6.5 to 5.6.7</a></li> 
+<li> 2020-02-13: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/cbcf25c3bafbfde30471794d31b865518fa6e730" target="blank"> Update django-jsonfield requirement from <1.3.2 to <1.4.1</a></li> 
+<li> 2020-02-13: afabiani <a href="http://github.com/geonode/geonode/commit/5fdff55a2490ff4901315d9bf0d83781c15e2990" target="blank"> [Fixes #5682] Thumbnails broken for RemoteServices using a invalid WMS GetCapabilities request</a></li> 
+<li> 2020-02-13: afabiani <a href="http://github.com/geonode/geonode/commit/30ee255c2a979090b6a12e3879a127b50456d97e" target="blank"> [Fixes #5682] Thumbnails broken for RemoteServices using a invalid WMS GetCapabilities request</a></li> 
+<li> 2020-02-13: afabiani <a href="http://github.com/geonode/geonode/commit/b11253efcffec4e99ceb60353b8bda55cc4f3287" target="blank">  - [Hardening] some minor last minute fixes</a></li> 
+<li> 2020-02-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/3603478bd5445c2510be7f50b9767a3573344da2" target="blank"> Bump pytest from 4.6.6 to 4.6.9</a></li> 
+<li> 2020-02-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/f22dec28cdf6496d93b7d7822fb07a3e64d40d08" target="blank"> Bump shapely from 1.6.4.post2 to 1.7.0</a></li> 
+<li> 2020-02-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/ea574852eff7ca9f21d24f49f2331a709c35b460" target="blank"> Bump docker from 4.1.0 to 4.2.0</a></li> 
+<li> 2020-02-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/e01ea608902d094287ffed36e5a9f472f43bbc3e" target="blank"> Bump urllib3 from 1.25.7 to 1.25.8</a></li> 
+<li> 2020-02-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/9ffba72bc88db01343df9c040cc639664dad513a" target="blank"> Update django-invitations requirement from <=1.9.2 to <1.9.4</a></li> 
+<li> 2020-02-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/2304f4c6888235948321f6f1eb8277ff109240f6" target="blank"> Bump pillow from 6.2.1 to 6.2.2</a></li> 
+<li> 2020-02-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/7b761540511149fb936de9bf0de624c460533c1d" target="blank"> Update httplib2 requirement from <0.14.1 to <0.17.1</a></li> 
+<li> 2020-02-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/085276e4fc57f3d977e823e7ea4dffce5f7bf723" target="blank"> Bump pycsw from 2.4.0 to 2.4.2</a></li> 
+<li> 2020-02-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/49a6e17d9e576072498a7c52708495f0960259c9" target="blank"> Update django-multi-email-field requirement from <=0.5.1 to <0.6.2</a></li> 
+<li> 2020-02-12: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/72d88aad02c3ae9ab423dc5569ac3bdceca4c462" target="blank"> Bump coverage from 4.5.4 to 5.0.3</a></li> 
+<li> 2020-02-04: Travis Brundage <a href="http://github.com/geonode/geonode/commit/8682300a83d082154a3f0ef430971eda8cecb5c0" target="blank"> Add import path for pip 20.0+, retain backup hack pip session in case of future changes</a></li> 
+<li> 2020-02-11: sjohn-atenekom <a href="http://github.com/geonode/geonode/commit/0053c0e2aa9f7cd493b1bc0e4c97e366400bfcfe" target="blank"> [FIXES #5639] Group membership is ignored for layer permissions</a></li> 
+<li> 2020-02-11: afabiani <a href="http://github.com/geonode/geonode/commit/78ebc663d413273223e3e8d361ba29137a94a82f" target="blank">  - [Hardening] do not fail in case the profile avatar field has no file associated</a></li> 
+<li> 2020-02-11: afabiani <a href="http://github.com/geonode/geonode/commit/11dee29bc00a5a0dd6cb69b05fbbbcf111c079c0" target="blank">  - Fix test cases</a></li> 
+<li> 2020-02-11: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/9a075937fba046def62771c3df4a3457c79e232e" target="blank"> Bump beautifulsoup4 from 4.8.1 to 4.8.2</a></li> 
+<li> 2020-02-11: afabiani <a href="http://github.com/geonode/geonode/commit/60f1ca3b4b5b5c016e6b7786ff318b63463d7167" target="blank">  - flake8 issues</a></li> 
+<li> 2020-02-10: afabiani <a href="http://github.com/geonode/geonode/commit/7f5a86f34c449a9d50ad25a190275752198a713a" target="blank"> [Fixes #5648] '^rest/workspaces/(?P<workspace>\w+)/styles' URL is redundant and wrong</a></li> 
+<li> 2020-02-10: Francesco Frassinelli <a href="http://github.com/geonode/geonode/commit/075e4cd1a6408b52714d39a03461823a0de6a8bc" target="blank"> [Fixes #5646] Set skip_authorization for older setups</a></li> 
+<li> 2020-02-10: afabiani <a href="http://github.com/geonode/geonode/commit/ba721d41ee26bfe96639d85e152e050bc32ea2aa" target="blank"> [Fixes #5593] Users Avatar and Groups Logo appear as broken img</a></li> 
+<li> 2020-02-04: dependabot[bot] <a href="http://github.com/geonode/geonode/commit/03da638eeaac56147f9ed6e5e45bd416ce178b2a" target="blank"> Bump bootstrap from 3.4.0 to 3.4.1 in /geonode/static</a></li> 
+<li> 2020-02-06: Francesco Frassinelli <a href="http://github.com/geonode/geonode/commit/d1f9a29f93164495840b6ef02bc6234c3093742f" target="blank"> [Fixes #5615] Upgrade to Django 1.11.28</a></li> 
+<li> 2020-02-04: afabiani <a href="http://github.com/geonode/geonode/commit/799eb62d70353176802d8daa1392dc77aa9d4406" target="blank">  - Expose "EPSG_CODE_MATCHES" as variable in "settings.py"</a></li> 
+<li> 2020-02-04: afabiani <a href="http://github.com/geonode/geonode/commit/870e48dd6c6a9f96162932d2bdb6f995dd9a2425" target="blank">  - Expose "collect_metrics" as shared task in "settings.py"</a></li> 
+<li> 2020-02-04: sjohn-atenekom <a href="http://github.com/geonode/geonode/commit/4f6721511817473d3f1b6ec6095aa28730fb9d5c" target="blank"> [Fixes #5437] API endpoints reveal too much information - flake8 fixes</a></li> 
+<li> 2020-02-04: sjohn-atenekom <a href="http://github.com/geonode/geonode/commit/c504c031118e5af9f849f925df1930d47130dec4" target="blank"> [Fixes #5437] API endpoints reveal too much information</a></li> 
+<li> 2020-02-01: Toni <a href="http://github.com/geonode/geonode/commit/f447e1c4bb470ddc81726ca9cf505caf7ccccdd8" target="blank"> [Fixes #5584] Added dutch sorted languages</a></li> 
+<li> 2020-02-01: Toni <a href="http://github.com/geonode/geonode/commit/3d95f49c3a29355d27395c9d6666f7b42923f5bc" target="blank"> [Fixes #5587] Set permissions for current user when DEFAULT_ANONYMOUS_VIEW_PERMISSION is False</a></li> 
+<li> 2020-01-24: afabiani <a href="http://github.com/geonode/geonode/commit/3bb81d4797fe528bdf11329663ba74e6419d86f6" target="blank"> Workaround for pip 20.0.2+ issue #7645: 20.0.2 Regression: module missing pip._internal.download</a></li> 
+<li> 2020-01-22: afabiani <a href="http://github.com/geonode/geonode/commit/0d824a3dca5bfe41fca938c0e9b299a96696b20f" target="blank">  - Updating SPCGeoNode README and doc references</a></li> 
+<li> 2020-01-22: afabiani <a href="http://github.com/geonode/geonode/commit/221de306491c0d9689ba9ea82b4c715438a412fb" target="blank">  - Bump to officla spcgeonode images @ https://hub.docker.com/r/geonode/spcgeonode/tags</a></li> 
+<li> 2020-01-22: afabiani <a href="http://github.com/geonode/geonode/commit/9b8eec4258f07a72cca2a9257fa25b8845a9d565" target="blank">  - Fixed selenium branch to 2.10.x</a></li> 
+<li> 2020-01-21: Florian Hoedt <a href="http://github.com/geonode/geonode/commit/ab0302333739e08274db41f4d689ebc1697fcb66" target="blank"> Update index.rst</a></li> 
+<li> 2020-01-21: M. Ahmed <a href="http://github.com/geonode/geonode/commit/9da4f0f997aef8317adbe04857e47038333a4f4d" target="blank"> Adding documentation for Develop section</a></li> 
+<li> 2020-01-20: Ezequiel Gonzalez Rial <a href="http://github.com/geonode/geonode/commit/af4908285639116a08cd8f6d718fd91e3adf81df" target="blank"> Fix mixed content when logged in</a></li> 
+<li> 2020-01-16: Matthew Northcott <a href="http://github.com/geonode/geonode/commit/a5ad41688afa8ba2ae7a5abc198db21d4de0baa6" target="blank"> Update JETTY_RUNNER_URL to secure HTTPS equivalent</a></li> 
+<li> 2020-01-17: afabiani <a href="http://github.com/geonode/geonode/commit/15cfb0d8b204c4993617b2e4f7d99c385f70fad4" target="blank"> [Hardening] resilient to "re" errors</a></li> 
+<li> 2020-01-14: afabiani <a href="http://github.com/geonode/geonode/commit/ef3c474209e783799abed13e2607af8dea252f51" target="blank">  - Bump to GeoServer 2.15.4</a></li> 
+<li> 2020-01-14: afabiani <a href="http://github.com/geonode/geonode/commit/36dc37460c4e0e241ed3593bf0ada531c1b48ae4" target="blank"> [Fixes #5504] Map Thumbnails Broken</a></li> 
+<li> 2020-01-13: afabiani <a href="http://github.com/geonode/geonode/commit/f8df1bd9241c8d9430b43884194a0d9940cc3b2c" target="blank">  - Typo</a></li> 
+<li> 2020-01-13: afabiani <a href="http://github.com/geonode/geonode/commit/678ff8d85090434fe5d078ef8e522db11ad86867" target="blank">  - typo</a></li> 
+<li> 2020-01-09: afabiani <a href="http://github.com/geonode/geonode/commit/17f01463317a3286a39348c0d5e874517d07042e" target="blank"> [Fixes #5486] "resolve_object" get confused when present a remote layer with alternate similar to the local one</a></li> 
+<li> 2020-01-08: Rizky Maulana Nugraha <a href="http://github.com/geonode/geonode/commit/23fbb385444c9fdb3cefdbbb1d35bc97b5b61891" target="blank"> Fix environment variable references (#5475)</a></li> 
+<li> 2020-01-08: afabiani <a href="http://github.com/geonode/geonode/commit/52c01940e6fd4932800e5d4dea003a8805f6d5d5" target="blank"> .msgapi #mapstore-print-panel.modal-dialog</a></li> 
+<li> 2020-01-07: afabiani <a href="http://github.com/geonode/geonode/commit/3e44cbd4f6ad03539a56a13f822557549e1e1089" target="blank"> [Hardening] Removing problematic CSS comment</a></li> 
+<li> 2019-12-19: afabiani <a href="http://github.com/geonode/geonode/commit/2506af848742e96f58dc0152b428d1bf099b765a" target="blank"> Bump django-mapstore-adapter from 1.0.13 to 1.0.15</a></li> 
+<li> 2019-12-18: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/18bb9d373383bd39774b0a5887394da6f3f6f797" target="blank"> Bump django from 1.11.26 to 1.11.27</a></li> 
+<li> 2019-12-13: afabiani <a href="http://github.com/geonode/geonode/commit/8ad116bec3f4a5a277950506362273d39bf96143" target="blank">  - Disabling "Selenium Integration Tests SPCGeonode"</a></li> 
+<li> 2019-12-11: afabiani <a href="http://github.com/geonode/geonode/commit/83d0337e5d80dcee5fe18a250f5822e22b3bf576" target="blank"> [Hardening] Adding MAPBOX_BASEMAPS to local_settings.py.geoserver.sample</a></li> 
+<li> 2019-12-11: afabiani <a href="http://github.com/geonode/geonode/commit/7d611ef51af5ea82a58faa568b78118b2e68593a" target="blank"> [Hardening] Get rid of deprecated middelware</a></li> 
+<li> 2019-12-11: afabiani <a href="http://github.com/geonode/geonode/commit/2a524838fc3b14ed7240df48fcc904a45e707b34" target="blank"> - Fix tests Segmentation Fault</a></li> 
+<li> 2019-12-11: afabiani <a href="http://github.com/geonode/geonode/commit/7805ae3b6a6eb6d24722b6f5d9fe553a399432ee" target="blank">  - Fix tests</a></li> 
+<li> 2019-12-10: afabiani <a href="http://github.com/geonode/geonode/commit/ce93edc31f979190e24111263383c11c3389f16b" target="blank"> [Hardening] Minor fixes and checks</a></li> 
+<li> 2019-12-10: afabiani <a href="http://github.com/geonode/geonode/commit/8c58959961a5fedcda3281ee0de573891954dd33" target="blank"> - Integration Tests fix</a></li> 
+<li> 2019-12-10: afabiani <a href="http://github.com/geonode/geonode/commit/33d80d8749493e61ebd48988238c5fa94d2b2a5b" target="blank"> - Integration Tests fix</a></li> 
+<li> 2019-12-10: afabiani <a href="http://github.com/geonode/geonode/commit/a1253b63184bf6af308c99ea4d972501ecc6591a" target="blank"> - Smoke Test Seg Fault fix</a></li> 
+<li> 2019-12-10: afabiani <a href="http://github.com/geonode/geonode/commit/43ce450c119cdf3a2ddf9d40c6deda18c4e33d6f" target="blank"> - Smoke Test Seg Fault fix</a></li> 
+<li> 2019-12-10: afabiani <a href="http://github.com/geonode/geonode/commit/c04cd9f7a9ea69ecc93205519efd15c14b27a770" target="blank"> - Smoke Test Seg Fault fix</a></li> 
+<li> 2019-12-10: afabiani <a href="http://github.com/geonode/geonode/commit/fa3d9e81a60194c53ff33103cef385a864f380ee" target="blank">  - Cleanup print messages</a></li> 
+<li> 2019-12-10: afabiani <a href="http://github.com/geonode/geonode/commit/e7293f85db739164f226968b9ca10895e7efe605" target="blank"> - Smoke Test Seg Fault fix</a></li> 
+<li> 2019-12-09: afabiani <a href="http://github.com/geonode/geonode/commit/b8dffd598696d1908b2e424661792c5ff2eb8061" target="blank">  - Smoke Test Seg Fault fix</a></li> 
+<li> 2019-11-29: afabiani <a href="http://github.com/geonode/geonode/commit/4753522e48aa3d7e59723eb06b016821f4b62f20" target="blank"> [Hardeninig] prioritize meta urls</a></li> 
+<li> 2019-11-20: afabiani <a href="http://github.com/geonode/geonode/commit/12a97208bda92df644c4df6d58ce474ab6068f37" target="blank"> [Fixes  #5028] Maps migrated from GeoExplorer don't display the correct initial extent in MapStore</a></li> 
+<li> 2019-11-20: Toni <a href="http://github.com/geonode/geonode/commit/73d1c5090a5f0e9700f339d11d3889520669718d" target="blank"> Added kikislater to contributors</a></li> 
+<li> 2019-11-18: afabiani <a href="http://github.com/geonode/geonode/commit/175e4fd7679f037ea17e2124cf24a6a76a158480" target="blank"> [Fixes #5283] UnicodeEncodeError when trying to delete a Layer on a GeoNode instance with action streams containing exotic characters.</a></li> 
+<li> 2019-11-18: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/f318bbd094f1ed96c01ab486dd2345b218c497d5" target="blank"> Bump pyopenssl from 19.0.0 to 19.1.0</a></li> 
+<li> 2019-11-18: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/3dac7054df467cc4784da3df7a8ab5f86b06f935" target="blank"> Bump simplejson from 3.16.0 to 3.17.0</a></li> 
+<li> 2019-11-17: Toni Schönbuchner <a href="http://github.com/geonode/geonode/commit/1e67d0bdce119ffdb7c1b9d40a35560f4cfa2680" target="blank"> Fix #5260 Failed to get the certificates</a></li> 
+<li> 2019-11-15: afabiani <a href="http://github.com/geonode/geonode/commit/1c8fab08bb9cae8e6b8c7cb60b4e92f77f64c902" target="blank"> [Hardening] fixup Legend links</a></li> 
+<li> 2019-11-15: afabiani <a href="http://github.com/geonode/geonode/commit/f992e1c23b4a504cfde77749d41dc4e7775c1de2" target="blank"> [Hardening] fixup Legend links</a></li> 
+<li> 2019-11-15: afabiani <a href="http://github.com/geonode/geonode/commit/040c73a702ac9fa82b980bd491768267f33c88aa" target="blank"> [Fixes #5272] Line layer uploaded to GeoNode is rendered as point layer</a></li> 
+<li> 2019-11-14: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/a2cb6c6b4e2a1d278c4b9845d7126eeed6f32a00" target="blank"> Update django-modeltranslation requirement</a></li> 
+<li> 2019-11-14: afabiani <a href="http://github.com/geonode/geonode/commit/5d5f8e59611f8af7e9c1f12257cd085c9a3a3e62" target="blank"> [Fixes #4635] Encoding issues when uploading layers using a shapefile</a></li> 
+<li> 2019-11-14: afabiani <a href="http://github.com/geonode/geonode/commit/ae25dc09560edeb5824ff2d501489f69610c6209" target="blank"> [Fixes #5264] Use GeoServer 2.15.3</a></li> 
+<li> 2019-11-13: Florian Hoedt <a href="http://github.com/geonode/geonode/commit/4565ae2c5037c22a7148139b6933495d57688fba" target="blank"> [Fixes #5258] Duplicate Headline in /about</a></li> 
+<li> 2019-11-13: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/b4c989e670d3aa9b14336d874e33125ebc4e4d2c" target="blank"> Bump readthedocs-sphinx-ext from 1.0.0 to 1.0.1</a></li>
+
 ## [2.10.1](https://github.com/GeoNode/geonode/tree/2.10.1) (2019-11-12)
 
  - **[Implemented Features](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.1+label%3Afeature)**
