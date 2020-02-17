@@ -819,8 +819,8 @@ class ExceptionEvent(models.Model):
     received = models.DateTimeField(db_index=True, null=False)
     service = models.ForeignKey(Service)
     error_type = models.CharField(max_length=255, null=False, db_index=True)
-    error_message = models.CharField(max_length=255, null=False, default='')
-    error_data = models.TextField(null=False, default='')
+    error_message = models.TextField(null=True, blank=True)
+    error_data = models.TextField(null=True, blank=True)
     request = models.ForeignKey(RequestEvent, related_name='exceptions')
 
     @classmethod
