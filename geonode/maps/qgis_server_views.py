@@ -42,11 +42,7 @@ from geonode.utils import default_map_config, forward_mercator, \
     llbbox_to_mercator, check_ogc_backend
 from geonode import geoserver, qgis_server
 
-try:
-    from urllib.parse import urlsplit
-except ImportError:
-    # Python 2 compatibility
-    from urlparse import urlsplit
+from urllib.parse import urlsplit
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object

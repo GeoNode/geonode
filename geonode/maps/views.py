@@ -21,12 +21,7 @@
 import math
 import logging
 import six
-try:
-    from urllib.parse import quote, urlsplit
-except ImportError:
-    # Python 2 compatibility
-    from urllib import quote
-    from urlparse import urlsplit
+from urllib.parse import quote, urlsplit
 import traceback
 from itertools import chain
 from six import string_types
@@ -1257,7 +1252,7 @@ def snapshot_config(snapshot, map_obj, request):
 
     # Match up the layer with it's source
     def snapsource_lookup(source, sources):
-        for k, v in sources.items():
+        for k, v in list(sources.items()):
             if v.get("id") == source.get("id"):
                 return k
         return None
