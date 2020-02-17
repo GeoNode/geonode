@@ -118,7 +118,7 @@ def initialized(ctx):
 @task
 def devrequirements(ctx):
     print "*********************install dev requirements**********************"
-    ctx.run('pip install -r requirements_dev.txt --upgrade')
+    ctx.run('pip install -r requirements_dev.txt')
 
 
 def _update_db_connstring():
