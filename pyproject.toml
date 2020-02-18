@@ -1,0 +1,15 @@
+[tool.black]
+line-length = 120
+target-version = 'py35'
+exclude = '''
+/(
+    geonode/.*/migrations/.*
+  | geonode/.*/settings.py
+  | management
+  | scripts
+  | docs
+  | static
+  | migrations
+  | node_modules
+)/
+'''
