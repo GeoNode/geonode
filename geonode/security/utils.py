@@ -25,11 +25,6 @@ import json
 import logging
 import traceback
 import requests
-try:
-    from . import models
-except ImportError:
-    # Python 2 compatibility
-    import models
 
 from six import string_types
 from requests.auth import HTTPBasicAuth
@@ -46,6 +41,21 @@ from geonode.groups.models import GroupProfile
 from geonode.utils import get_layer_workspace
 
 logger = logging.getLogger("geonode.security.utils")
+
+ADMIN_PERMISSIONS = [
+    'view_resourcebase',
+    'download_resourcebase',
+    'change_resourcebase_metadata',
+    'change_resourcebase',
+    'delete_resourcebase',
+    'change_resourcebase_permissions',
+    'publish_resourcebase',
+]
+
+LAYER_ADMIN_PERMISSIONS = [
+    'change_layer_data',
+    'change_layer_style'
+]
 
 
 def get_visible_resources(queryset,

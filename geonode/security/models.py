@@ -31,24 +31,10 @@ from .utils import (get_users_with_perms,
                     set_owner_permissions,
                     remove_object_permissions,
                     purge_geofence_layer_rules,
-                    sync_geofence_with_guardian)
+                    sync_geofence_with_guardian,
+                    ADMIN_PERMISSIONS)
 
 logger = logging.getLogger("geonode.security.models")
-
-ADMIN_PERMISSIONS = [
-    'view_resourcebase',
-    'download_resourcebase',
-    'change_resourcebase_metadata',
-    'change_resourcebase',
-    'delete_resourcebase',
-    'change_resourcebase_permissions',
-    'publish_resourcebase',
-]
-
-LAYER_ADMIN_PERMISSIONS = [
-    'change_layer_data',
-    'change_layer_style'
-]
 
 
 class PermissionLevelError(Exception):
