@@ -24,6 +24,7 @@ import traceback
 import psycopg2
 import configparser
 import os
+import six
 import sys
 
 import json
@@ -138,7 +139,7 @@ def confirm(prompt=None, resp=False):
         prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
 
     while True:
-        ans = input(prompt)
+        ans = six.moves.input(prompt)
         if not ans:
             return resp
         if ans not in ['y', 'Y', 'n', 'N']:
