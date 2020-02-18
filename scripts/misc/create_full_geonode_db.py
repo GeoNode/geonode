@@ -25,6 +25,7 @@ geonode_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__fi
 sys.path.append(geonode_path)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
+from functools import patial
 import glob
 from random import randint
 from timeit import Timer
@@ -131,7 +132,7 @@ create_users(n_users)
 # 2. create documents
 Document.objects.all().delete()
 for d in range(0, n_docs):
-    t = Timer(lambda: create_document(d))
+    t = Timer(partial(create_document, d))
     print('Document %s generated in: %s' % (d, t.timeit(number=1)))
 
 # 3. create layers
@@ -144,5 +145,5 @@ for layer in Layer.objects.all():
         continue
 
 for l in range(0, n_layers):
-    t = Timer(lambda: create_layer(l))
+    t = Timer(partial(create_layer, l))
     print('Layer %s generated in: %s' % (l, t.timeit(number=1)))
