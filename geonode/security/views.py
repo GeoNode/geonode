@@ -318,4 +318,3 @@ def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.n
             email.send()
         except BaseException:
             traceback.print_exc()
-            pass

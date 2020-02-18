@@ -31,7 +31,6 @@ except ImportError:
     # Python 2 compatibility
     from urlparse import urlparse, urlunparse, urljoin
 
-import django
 import dj_database_url
 #
 # General Django development settings

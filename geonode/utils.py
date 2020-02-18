@@ -1255,7 +1255,7 @@ def designals():
                 # first tuple element:
                 # - case (id(instance), id(method))
                 if not isinstance(signal[0], tuple):
-                    raise "Malformed signal"
+                    raise Exception("Malformed signal")
 
                 lookup = signal[0]
 

@@ -2201,7 +2201,6 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
     except BaseException as e:
         logger.warning('Error generating thumbnail')
         logger.exception(e)
-        image = None
         raise e
 
     return image

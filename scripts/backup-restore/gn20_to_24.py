@@ -126,7 +126,7 @@ class ResourceBaseMangler(DefaultMangler):
       obj['fields']['context'] = None
       obj['fields']['error'] = None
       obj['fields']['processed'] = True
-      obj['fields']['date'] = datetime.datetime.now(from django.utils import timezone).strftime("%Y-%m-%dT%H:%M:%S")
+      obj['fields']['date'] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
       return obj
 
