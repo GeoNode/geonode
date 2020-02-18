@@ -133,7 +133,7 @@ def get_related_resources(document):
                 link.content_type.get_object_for_this_type(id=link.object_id)
                 for link in document.links.all()
             ]
-        except BaseException:
+        except Exception:
             return []
     else:
         return []

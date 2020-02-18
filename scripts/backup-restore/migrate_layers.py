@@ -46,7 +46,7 @@ def migrate_layers(archive, owner):
       from geonode.base.models import ResourceBase
       try:
          higher_pk = ResourceBase.objects.all().order_by("-id")[0].pk
-      except:
+      except Exception:
          higher_pk = 0
 
       # Restore Fixtures
@@ -80,7 +80,7 @@ if __name__ == '__main__':
    try:
       restore_file = sys.argv[1]
       owner        = sys.argv[2]
-   except:
+   except Exception:
       pass
 
    if restore_file and owner:

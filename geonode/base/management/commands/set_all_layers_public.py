@@ -48,5 +48,5 @@ class Command(BaseCommand):
                                                         'change_resourcebase_metadata']
                 perm_spec["users"]["AnonymousUser"] = ['view_resourcebase', 'download_resourcebase']
                 layer.set_permissions(perm_spec)
-            except:
+            except Exception:
                 print("[ERROR] Layer [%s] couldn't be updated" % (layer.name))

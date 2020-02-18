@@ -499,7 +499,7 @@ def _get_time_dimensions(layer, upload_session):
                                     att_list.append(a)
                     else:
                         pass
-    except BaseException:
+    except Exception:
         traceback.print_exc()
         return None
     return att_list
@@ -552,7 +552,7 @@ def _get_layer_values(layer, upload_session, expand=0):
                         else:
                             feat_values[k] = feat_value
                     layer_values.append(feat_values)
-            except BaseException as e:
+            except Exception as e:
                 logger.exception(e)
     return layer_values
 

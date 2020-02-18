@@ -397,7 +397,7 @@ class HierarchicalKeyword(TagBase, MP_Node):
                         parentser['nodes'] = []
                     parentser['nodes'].append(newobj)
                 lnk[pyobj.pk] = newobj
-        except BaseException:
+        except Exception:
             pass
         return ret
 
@@ -897,7 +897,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             try:
                 llbbox = bbox_to_projection([float(coord) for coord in llbbox] + [self.srid, ],
                                             target_srid=4326)
-            except BaseException:
+            except Exception:
                 pass
         return [
             llbbox[0],  # x0
@@ -1015,7 +1015,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 return ','.join([kw.name for kw in keywords_qs])
             else:
                 return ''
-        except BaseException:
+        except Exception:
             return ''
 
     def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
@@ -1103,7 +1103,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 self.zoom = zoom
                 self.center_x = center_x
                 self.center_y = center_y
-            except BaseException:
+            except Exception:
                 pass
 
     def download_links(self):
@@ -1224,7 +1224,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             for _thumb in glob.glob(storage.path('thumbs/%s*' % os.path.splitext(filename)[0])):
                 try:
                     os.remove(_thumb)
-                except BaseException:
+                except Exception:
                     pass
 
             if upload_path and image:
@@ -1240,7 +1240,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                             storage.path(upload_path),
                             storage.path(_upload_path)
                         )
-                    except BaseException as e:
+                    except Exception as e:
                         logger.warn(e)
 
                 try:
@@ -1257,7 +1257,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         im,
                         [_default_thumb_size['width'], _default_thumb_size['height']])
                     cover.save(storage.path(_upload_path), format='JPEG')
-                except BaseException as e:
+                except Exception as e:
                     logger.debug(e)
 
                 # check whether it is an URI or not
@@ -1287,7 +1287,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 ResourceBase.objects.filter(id=self.id).update(
                     thumbnail_url=url
                 )
-        except BaseException as e:
+        except Exception as e:
             logger.exception(e)
             logger.error(
                 'Error when generating the thumbnail for resource %s. (%s)' %
@@ -1337,7 +1337,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         else:
             try:
                 user = ResourceBase.objects.admin_contact().user
-            except BaseException:
+            except Exception:
                 pass
 
         if user:
@@ -1594,7 +1594,7 @@ class CuratedThumbnail(models.Model):
             _upload_path = os.path.join(os.path.dirname(upload_path), actual_name)
             if not os.path.exists(_upload_path):
                 os.rename(upload_path, _upload_path)
-        except BaseException as e:
+        except Exception as e:
             logger.exception(e)
         return self.img_thumbnail.url
 
@@ -1618,7 +1618,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
             csw_insert_date=now(),
             license=instance.license)
         instance.refresh_from_db()
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
@@ -1632,7 +1632,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
                 queryset = instance.regions.all().order_by('name')
                 for region in queryset:
                     print ("%s : %s" % (region.name, region.geographic_bounding_box))
-            except:
+            except Exception:
                 tb = traceback.format_exc()
             else:
                 tb = None
@@ -1663,7 +1663,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
                         regions_to_add.append(region)
                     if region.level == 0 and region.parent is None:
                         global_regions.append(region)
-                except BaseException:
+                except Exception:
                     tb = traceback.format_exc()
                     if tb:
                         logger.debug(tb)
@@ -1673,7 +1673,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
                     instance.regions.add(*regions_to_add)
                 else:
                     instance.regions.add(*global_regions)
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
@@ -1682,7 +1682,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
         # refresh catalogue metadata records
         from geonode.catalogue.models import catalogue_post_save
         catalogue_post_save(instance=instance, sender=instance.__class__)
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)

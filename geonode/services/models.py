@@ -185,7 +185,7 @@ class Service(ResourceBase):
         # try:
         #     resp, content = http_client.request(self.service_url)
         #     return resp.status
-        # except:
+        # except Exception:
         #     return 404
         return 200
 

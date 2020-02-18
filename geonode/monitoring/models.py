@@ -70,7 +70,7 @@ def get_geoip():
     if GEOIP_DB is None:
         try:
             GEOIP_DB = GeoIP()
-        except BaseException as e:
+        except Exception as e:
             log.exception(e)
     return GEOIP_DB
 
@@ -732,7 +732,7 @@ class RequestEvent(models.Model):
                 inst.resources.add(*resources)
                 inst.save()
             return inst
-        except BaseException:
+        except Exception:
             return None
 
     @classmethod
@@ -780,7 +780,7 @@ class RequestEvent(models.Model):
         utc = pytz.utc
         try:
             local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
-        except BaseException:
+        except Exception:
             local_tz = pytz.timezone(settings.TIME_ZONE)
 
         start_time = parse_datetime(rd['startTime'])
@@ -826,7 +826,7 @@ class RequestEvent(models.Model):
                 emessage = rd['error']['detailMessage']
                 ExceptionEvent.add_error(
                     service, etype, edata, message=emessage, request=inst)
-            except BaseException:
+            except Exception:
                 ExceptionEvent.add_error(service, 'undefined',
                                          '\n'.join(
                                              rd['error']['stackTrace']['trace']),
@@ -1880,7 +1880,7 @@ def do_autoconfigure():
     # default host
     try:
         _host_by_name = gethostbyname(wsite.hostname)
-    except BaseException:
+    except Exception:
         _host_by_name = '127.0.0.1'
     hosts = [(wsite.hostname, _host_by_name,)]
     # default geonode
@@ -1895,7 +1895,7 @@ def do_autoconfigure():
             gsite = urlparse(val['LOCATION'])
             try:
                 _host_by_name = gethostbyname(gsite.hostname)
-            except BaseException:
+            except Exception:
                 _host_by_name = '127.0.0.1'
             ghost = (gsite.hostname, _host_by_name,)
             if ghost not in hosts:

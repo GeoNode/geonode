@@ -70,7 +70,7 @@ def patch_db():
     except Exception:
         try:
             conn.rollback()
-        except:
+        except Exception:
             pass
 
         traceback.print_exc()
@@ -89,7 +89,7 @@ def cleanup_db():
     except Exception:
         try:
             conn.rollback()
-        except:
+        except Exception:
             pass
 
         traceback.print_exc()

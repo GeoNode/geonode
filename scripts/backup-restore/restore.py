@@ -48,7 +48,7 @@ def restore_full(archive):
          call_command('flush', interactive=False, load_initial_data=False)
 
          helpers.patch_db()
-      except:
+      except Exception:
          traceback.print_exc()
 
       # Restore Fixtures
@@ -58,7 +58,7 @@ def restore_full(archive):
          print("Deserializing "+fixture_file)
          try:
             call_command('loaddata', fixture_file, app_label=app_name)
-         except:
+         except Exception:
             #traceback.print_exc()
             print("WARNING: No valid fixture data found for '"+dump_name+"'.")
             #helpers.load_fixture(app_name, fixture_file)
@@ -69,7 +69,7 @@ def restore_full(archive):
 
       try:
          shutil.rmtree(media_root)
-      except:
+      except Exception:
          pass
 
       if not os.path.exists(media_root):
@@ -85,7 +85,7 @@ def restore_full(archive):
 
       try:
          shutil.rmtree(static_root)
-      except:
+      except Exception:
          pass
 
       if not os.path.exists(static_root):
@@ -103,7 +103,7 @@ def restore_full(archive):
 
          try:
             shutil.rmtree(static_files_folder)
-         except:
+         except Exception:
             pass
 
          if not os.path.exists(static_files_folder):
@@ -117,10 +117,10 @@ def restore_full(archive):
       template_folders = []
       try:
           template_folders = settings.TEMPLATE_DIRS
-      except:
+      except Exception:
           try:
               template_folders = settings.TEMPLATES[0]['DIRS']
-          except:
+          except Exception:
               pass
       template_files_folders = os.path.join(target_folder, helpers.TEMPLATE_DIRS)
 
@@ -128,7 +128,7 @@ def restore_full(archive):
 
          try:
             shutil.rmtree(template_files_folder)
-         except:
+         except Exception:
             pass
 
          if not os.path.exists(template_files_folder):
@@ -146,7 +146,7 @@ def restore_full(archive):
 
          try:
             shutil.rmtree(locale_files_folder)
-         except:
+         except Exception:
             pass
 
          if not os.path.exists(locale_files_folder):
@@ -159,7 +159,7 @@ def restore_full(archive):
       # Cleanup DB
       try:
          helpers.cleanup_db()
-      except:
+      except Exception:
          traceback.print_exc()
 
    except Exception as err:
@@ -174,7 +174,7 @@ if __name__ == '__main__':
    restore_file = None
    try:
       restore_file = sys.argv[1]
-   except:
+   except Exception:
       pass
 
    if restore_file:

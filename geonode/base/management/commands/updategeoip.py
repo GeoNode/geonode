@@ -39,7 +39,7 @@ except ImportError:
         from django.contrib.gis.geoip import GeoIP
         URL = 'https://build.geo-solutions.it/geonode/geoserver/latest/GeoLiteCity.dat.gz'
         OLD_FORMAT = True
-    except:
+    except Exception:
         URL = None
 
 

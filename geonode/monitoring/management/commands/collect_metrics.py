@@ -117,13 +117,13 @@ class Command(BaseCommand):
         utc = pytz.utc
         try:
             local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
-        except:
+        except Exception:
             local_tz = pytz.timezone(settings.TIME_ZONE)
         now = datetime.utcnow().replace(tzinfo=utc)
         Handler = get_for_service(service.service_type.name)
         try:
             service.last_check = service.last_check.astimezone(utc)
-        except:
+        except Exception:
             service.last_check = service.last_check.replace(tzinfo=utc) if service.last_check else now
 
         if not until:

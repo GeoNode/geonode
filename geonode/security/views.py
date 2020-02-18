@@ -96,7 +96,7 @@ def resource_permissions(request, resource_id):
                 status=200,
                 content_type='text/plain'
             )
-        except BaseException:
+        except Exception:
             traceback.print_exc()
             success = False
             message = "Error updating permissions :("
@@ -186,7 +186,7 @@ def attributes_sats_refresh(request):
             layer.bbox_y1 = Decimal(gs_resource.native_bbox[3])
             layer.srid = gs_resource.projection
             layer.save()
-        except BaseException as e:
+        except Exception as e:
             traceback.print_exc()
             return HttpResponse(
                 json.dumps(
@@ -278,7 +278,7 @@ def request_permissions(request):
             json.dumps({'success': 'ok', }),
             status=200,
             content_type='text/plain')
-    except BaseException:
+    except Exception:
         traceback.print_exc()
         return HttpResponse(
             json.dumps({'error': 'error delivering notification'}),
@@ -316,5 +316,5 @@ def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.n
                 reply_to=[geonode_email, ])
             email.content_subtype = "html"
             email.send()
-        except BaseException:
+        except Exception:
             traceback.print_exc()

@@ -84,10 +84,10 @@ def backup_full():
       template_folders = []
       try:
           template_folders = settings.TEMPLATE_DIRS
-      except:
+      except Exception:
           try:
               template_folders = settings.TEMPLATES[0]['DIRS']
-          except:
+          except Exception:
               pass
       template_files_folders = os.path.join(target_folder, helpers.TEMPLATE_DIRS)
       if not os.path.exists(template_files_folders):

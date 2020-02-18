@@ -69,7 +69,7 @@ def create_auth_token(user, client="GeoServer"):
             expires=expires,
             token=generate_token())
         return access_token
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
@@ -81,7 +81,7 @@ def extend_token(token):
         expires = make_token_expiration()
         access_token.expires = expires
         access_token.save()
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
@@ -95,7 +95,7 @@ def get_auth_token(user, client="GeoServer"):
         app = Application.objects.get(name=client)
         access_token = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
         return access_token
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
@@ -115,7 +115,7 @@ def get_or_create_token(user, client="GeoServer"):
             if existing_token and existing_token.is_expired():
                 existing_token.delete()
                 existing_token = None
-        except BaseException:
+        except Exception:
             existing_token = None
             tb = traceback.format_exc()
             if tb:
@@ -127,7 +127,7 @@ def get_or_create_token(user, client="GeoServer"):
             token = existing_token
 
         return token
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
@@ -145,7 +145,7 @@ def delete_old_tokens(user, client='GeoServer'):
         for old in old_tokens:
             if old.is_expired():
                 old.delete()
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
@@ -177,7 +177,7 @@ def get_token_object_from_session(session):
     if 'access_token' in session:
         try:
             return AccessToken.objects.get(token=get_session_token(session))
-        except BaseException:
+        except Exception:
             tb = traceback.format_exc()
             if tb:
                 logger.debug(tb)
