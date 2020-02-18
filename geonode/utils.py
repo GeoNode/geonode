@@ -242,9 +242,8 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
 
     access_token = None
     site_url = urlsplit(settings.SITEURL)
-    allowed_hosts += [url.hostname]
     # We want to convert HTTP_AUTH into a Beraer Token only when hitting the local GeoServer
-    if site_url.hostname in allowed_hosts:
+    if site_url.hostname in allowed_hosts + [url.hostname]:
         # we give precedence to obtained from Aithorization headers
         if 'HTTP_AUTHORIZATION' in request.META:
             auth_header = request.META.get(

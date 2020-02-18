@@ -174,9 +174,10 @@ class ThesaurusKeywordResource(TypeFilteredResource):
     thesaurus_identifier = fields.CharField(null=False)
     label_id = fields.CharField(null=False)
 
-    def build_filters(self, filters={}, ignore_bad_filters=False):
+    def build_filters(self, filters_with_id={}, ignore_bad_filters=False):
         """adds filtering by current language"""
 
+        filters = filters_with_id.copy()
         id = filters.pop('id', None)
 
         orm_filters = super(ThesaurusKeywordResource, self).build_filters(filters)
