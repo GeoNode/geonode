@@ -43,8 +43,7 @@ from geonode.utils import (designals,
                            resignals,
                            get_dir_time_suffix,
                            zip_dir,
-                           copy_tree,
-                           chmod_tree)
+                           copy_tree)
 
 
 class Command(BaseCommand):

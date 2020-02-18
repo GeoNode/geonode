@@ -19,14 +19,13 @@
 #########################################################################
 
 import traceback
-import os, sys
+import os
 import shutil
 from . import helpers
 
 from django.conf import settings
 from django.core.management import call_command
-from geonode.utils import (designals,
-                           resignals,
+from geonode.utils import (resignals,
                            get_dir_time_suffix,
                            zip_dir,
                            copy_tree)

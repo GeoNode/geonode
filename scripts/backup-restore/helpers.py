@@ -25,8 +25,6 @@ import psycopg2
 import configparser
 import os
 import six
-import sys
-
 import json
 
 MEDIA_ROOT       = 'uploaded'

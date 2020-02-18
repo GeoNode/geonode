@@ -30,7 +30,6 @@ from random import randint
 from timeit import Timer
 
 from django.core.files import File
-from django.conf import settings
 
 from taggit.models import Tag
 

@@ -20,16 +20,11 @@
 
 import traceback
 import os, sys
-import shutil
 from . import helpers
 import json
 
 from django.conf import settings
-from django.core.management import call_command
-from django.db import (
-    DEFAULT_DB_ALIAS, DatabaseError, IntegrityError, connections, router,
-    transaction,
-)
+from django.db import DEFAULT_DB_ALIAS
 
 def migrate_layers(archive, owner):
    """Migrate existing Layers on GeoNode DB"""

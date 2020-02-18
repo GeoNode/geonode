@@ -23,8 +23,7 @@ import os, sys
 import shutil
 from . import helpers
 
-from geonode.utils import (designals,
-                           resignals,
+from geonode.utils import (resignals,
                            copy_tree,
                            extract_archive,
                            chmod_tree)
