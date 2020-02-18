@@ -119,31 +119,8 @@ def catalogue_post_save(instance, sender, **kwargs):
             resources.update(is_published=is_published)
 
 
-def catalogue_pre_save(instance, sender, **kwargs):
-    """Send information to catalogue"""
-    return
-
-    # no idea why this was removed in notifications branch
-    record = None
-
-    # if the layer is in the catalogue, try to get the distribution urls
-    # that cannot be precalculated.
-    try:
-        catalogue = get_catalogue()
-        record = catalogue.get_record(instance.uuid)
-    except EnvironmentError as err:
-        msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
-        LOGGER.warn(msg, err)
-        raise err
-
-    if record is None:
-        return
-
-
 if 'geonode.catalogue' in settings.INSTALLED_APPS:
-    signals.pre_save.connect(catalogue_pre_save, sender=Layer)
     signals.post_save.connect(catalogue_post_save, sender=Layer)
     signals.pre_delete.connect(catalogue_pre_delete, sender=Layer)
-    signals.pre_save.connect(catalogue_pre_save, sender=Document)
     signals.post_save.connect(catalogue_post_save, sender=Document)
     signals.pre_delete.connect(catalogue_pre_delete, sender=Document)
