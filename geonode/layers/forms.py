@@ -60,7 +60,7 @@ class LayerForm(ResourceBaseForm):
         # }
 
     def __init__(self, *args, **kwargs):
-        super(ResourceBaseForm, self).__init__(*args, **kwargs)
+        super(LayerForm, self).__init__(*args, **kwargs)
         for field in self.fields:
             help_text = self.fields[field].help_text
             self.fields[field].help_text = None
