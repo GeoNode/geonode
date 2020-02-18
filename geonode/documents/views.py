@@ -616,12 +616,7 @@ def document_thumb_upload(
                 filename = 'document-{}-thumb.png'.format(document.uuid)
                 path = default_storage.save(
                     'tmp/' + filename, ContentFile(data.read()))
-                f = os.path.join(settings.MEDIA_ROOT, path)
-                try:
-                    image_path = f
-                except Exception:
-                    image_path = document.find_placeholder()
-
+                image_path = os.path.join(settings.MEDIA_ROOT, path)
                 thumbnail_content = None
                 try:
                     thumbnail_content = generate_thumbnail_content(image_path)

@@ -31,7 +31,7 @@ except ImportError:
 from socket import gethostbyname
 from datetime import datetime, timedelta
 from decimal import Decimal
-from six import text_type, string_types
+from six import string_types
 
 from django import forms
 from django.db import models

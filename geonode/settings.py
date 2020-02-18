@@ -27,6 +27,7 @@ from datetime import timedelta
 from distutils.util import strtobool  # noqa
 from six.moves.urllib.parse import urlparse, urljoin
 
+import django
 import dj_database_url
 #
 # General Django development settings

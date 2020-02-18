@@ -21,7 +21,6 @@
 import re
 import json
 import datetime
-from django.utils import timezone
 
 class DefaultMangler(json.JSONDecoder):
    """ TODO """

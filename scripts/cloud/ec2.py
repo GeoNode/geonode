@@ -170,9 +170,6 @@ def launch():
             launch = False
             return
 
-    if not launch:
-        return
-
     ec2 = boto3.client('ec2')
     vpc_id = ec2.describe_vpcs().get('Vpcs', [{}])[0].get('VpcId', '')
 

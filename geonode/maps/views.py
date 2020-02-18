@@ -329,24 +329,16 @@ def map_metadata(
     if poc is None:
         poc_form = ProfileForm(request.POST, prefix="poc")
     else:
-        if poc is None:
-            poc_form = ProfileForm(instance=poc, prefix="poc")
-        else:
-            map_form.fields['poc'].initial = poc.id
-            poc_form = ProfileForm(prefix="poc")
-            poc_form.hidden = True
+        map_form.fields['poc'].initial = poc.id
+        poc_form = ProfileForm(prefix="poc")
+        poc_form.hidden = True
 
     if metadata_author is None:
         author_form = ProfileForm(request.POST, prefix="author")
     else:
-        if metadata_author is None:
-            author_form = ProfileForm(
-                instance=metadata_author,
-                prefix="author")
-        else:
-            map_form.fields['metadata_author'].initial = metadata_author.id
-            author_form = ProfileForm(prefix="author")
-            author_form.hidden = True
+        map_form.fields['metadata_author'].initial = metadata_author.id
+        author_form = ProfileForm(prefix="author")
+        author_form.hidden = True
 
     config = map_obj.viewer_json(request)
     layers = MapLayer.objects.filter(map=map_obj.id)
