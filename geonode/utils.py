@@ -1152,9 +1152,9 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     # TODO we may need to improve this regexp
     # first character must be any letter or "_"
     # following characters can be any letter, number, "#", ":"
-    regex = r'^[a-zA-Z,_][a-zA-Z,_,#,:\d]*$'
+    regex_first_char = r'[a-zA-Z_]'
+    regex = r'^%s[\w#:]*$' % regex_first_char
     a = re.compile(regex)
-    regex_first_char = r'[a-zA-Z,_]{1}'
     b = re.compile(regex_first_char)
     inLayerDefn = inLayer.GetLayerDefn()
 
