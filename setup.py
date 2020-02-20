@@ -36,6 +36,12 @@ from distutils.core import setup
 
 from setuptools import find_packages
 
+import os
+import sys
+
+current_directory = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(current_directory)
+
 # Parse requirements.txt to get the list of dependencies
 inst_req = parse_requirements("requirements.txt", session=PipSession())
 REQUIREMENTS = [str(r.req) for r in inst_req]
