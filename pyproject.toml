@@ -13,3 +13,7 @@ exclude = '''
   | node_modules
 )/
 '''
+
+[build-system]
+requires = ["setuptools", "wheel", "pip"]
+build-backend = "setuptools.build_meta"
