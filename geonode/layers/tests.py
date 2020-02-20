@@ -180,7 +180,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(custom_attributes[1].attribute_label, "Description")
         self.assertEqual(
             custom_attributes[2].attribute,
-            u'N\xfamero_De_M\xe9dicos')
+            'N\xfamero_De_M\xe9dicos')
         # TODO: do test against layer with actual attribute statistics
         self.assertEqual(custom_attributes[1].count, 1)
         self.assertEqual(custom_attributes[1].min, "NA")
@@ -237,7 +237,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         custom_attributes = (lyr.attribute_config())["getFeatureInfo"]
         self.assertEqual(
             custom_attributes["fields"], [
-                "place_name", "description", u'N\xfamero_De_M\xe9dicos'])
+                "place_name", "description", 'N\xfamero_De_M\xe9dicos'])
         self.assertEqual(
             custom_attributes["propertyNames"]["description"],
             "Description")
@@ -267,15 +267,15 @@ class LayersTest(GeoNodeBaseTestSupport):
         lyr.save()
         self.assertEqual(
             lyr.keyword_list(), [
-                u'here', u'keywords', u'populartag', u'saving'])
+                'here', 'keywords', 'populartag', 'saving'])
 
         # Test exotic encoding Keywords
-        lyr.keywords.add(*[u'論語', u'ä', u'ö', u'ü', u'ß'])
+        lyr.keywords.add(*['論語', 'ä', 'ö', 'ü', 'ß'])
         lyr.save()
         self.assertEqual(
             lyr.keyword_list(), [
-                u'here', u'keywords', u'populartag', u'saving',
-                u'ß', u'ä', u'ö', u'ü', u'論語'])
+                'here', 'keywords', 'populartag', 'saving',
+                'ß', 'ä', 'ö', 'ü', '論語'])
 
         # Test input escape
         lyr.keywords.add(*["Europe<script>true;</script>",
@@ -284,9 +284,9 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(
             lyr.keyword_list(), [
-                u'&lt;IMG SRC=&#39;javascript:true;&#39;&gt;Science', u'Europe&lt;script&gt;true;&lt;/script&gt;',
-                u'here', u'keywords', u'land_&lt;script&gt;true;&lt;/script&gt;covering', u'populartag', u'saving',
-                u'ß', u'ä', u'ö', u'ü', u'論語'])
+                '&lt;IMG SRC=&#39;javascript:true;&#39;&gt;Science', 'Europe&lt;script&gt;true;&lt;/script&gt;',
+                'here', 'keywords', 'land_&lt;script&gt;true;&lt;/script&gt;covering', 'populartag', 'saving',
+                'ß', 'ä', 'ö', 'ü', '論語'])
 
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('layer_detail', args=(lyr.alternate,)))
@@ -301,21 +301,21 @@ class LayersTest(GeoNodeBaseTestSupport):
         from geonode.base.models import HierarchicalKeyword as hk
         keywords = hk.dump_bulk_tree()
         self.assertEqual(len(keywords), len([
-            {"text": u"here", "href": "here", "id": 2},
-            {"text": u"keywords", "href": "keywords", "id": 4},
-            {"text": u"layertagunique", "href": "layertagunique", "id": 3},
-            {"text": u"populartag", "href": "populartag", "id": 1},
-            {"text": u"saving", "href": "saving", "id": 5},
-            {"text": u"ß", "href": "ss", "id": 9},
-            {"text": u"ä", "href": "a", "id": 10},
-            {"text": u"ö", "href": "o", "id": 7},
-            {"text": u"ü", "href": "u", "id": 8},
-            {"text": u"論語", "href": "lun-yu", "id": 6},
-            {"text": u"Europe&lt;script&gt;true;&lt;/script&gt;",
+            {"text": "here", "href": "here", "id": 2},
+            {"text": "keywords", "href": "keywords", "id": 4},
+            {"text": "layertagunique", "href": "layertagunique", "id": 3},
+            {"text": "populartag", "href": "populartag", "id": 1},
+            {"text": "saving", "href": "saving", "id": 5},
+            {"text": "ß", "href": "ss", "id": 9},
+            {"text": "ä", "href": "a", "id": 10},
+            {"text": "ö", "href": "o", "id": 7},
+            {"text": "ü", "href": "u", "id": 8},
+            {"text": "論語", "href": "lun-yu", "id": 6},
+            {"text": "Europe&lt;script&gt;true;&lt;/script&gt;",
                 "href": "u'europeltscriptgttrueltscriptgt", "id": 12},
-            {"text": u"land_&lt;script&gt;true;&lt;/script&gt;covering",
+            {"text": "land_&lt;script&gt;true;&lt;/script&gt;covering",
                 "href": "u'land_ltscriptgttrueltscriptgtcovering", "id": 13},
-            {"text": u"&lt;IMGSRC=&#39;javascript:true;&#39;&gt;Science",
+            {"text": "&lt;IMGSRC=&#39;javascript:true;&#39;&gt;Science",
                 "href": "u'ltimgsrc39javascripttrue39gtscience", "id": 11},
         ]))
 
@@ -492,7 +492,7 @@ class LayersTest(GeoNodeBaseTestSupport):
     def testZipValidation(self):
         the_zip = zipfile.ZipFile('test_upload.zip', 'w')
         in_memory_file = io.StringIO()
-        in_memory_file.write(u'test')
+        in_memory_file.write('test')
         the_zip.writestr('foo.shp', in_memory_file.getvalue())
         the_zip.writestr('foo.dbf', in_memory_file.getvalue())
         the_zip.writestr('foo.shx', in_memory_file.getvalue())
@@ -518,7 +518,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         the_zip = zipfile.ZipFile('test_upload.zip', 'w')
         in_memory_file = io.StringIO()
-        in_memory_file.write(u'test')
+        in_memory_file.write('test')
         the_zip.writestr('foo.shp', in_memory_file.getvalue())
         the_zip.writestr('foo.dbf', in_memory_file.getvalue())
         the_zip.writestr('foo.shx', in_memory_file.getvalue())
@@ -579,7 +579,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             d, expected_files = generate_files("shp", "shx", "prj", "dbf")
             gotten_files = get_files(os.path.join(d, "foo.shp"))
             gotten_files = {k: os.path.basename(v) for k, v in gotten_files.items()}
-            self.assertEquals(gotten_files, expected_files)
+            self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
                 shutil.rmtree(d)
@@ -602,7 +602,7 @@ class LayersTest(GeoNodeBaseTestSupport):
                 d, expected_files = generate_files("shp", "shx", "prj", "dbf", "sld")
                 gotten_files = get_files(os.path.join(d, "foo.shp"))
                 gotten_files = {k: os.path.basename(v) for k, v in gotten_files.items()}
-                self.assertEquals(gotten_files, expected_files)
+                self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
                 shutil.rmtree(d)
@@ -616,7 +616,7 @@ class LayersTest(GeoNodeBaseTestSupport):
                 d, expected_files = generate_files("shp", "shx", "prj", "dbf", "qml", "json")
                 gotten_files = get_files(os.path.join(d, "foo.shp"))
                 gotten_files = {k: os.path.basename(v) for k, v in gotten_files.items()}
-                self.assertEquals(gotten_files, expected_files)
+                self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
                 shutil.rmtree(d)
@@ -627,7 +627,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             d, expected_files = generate_files("SHP", "SHX", "PRJ", "DBF")
             gotten_files = get_files(os.path.join(d, "foo.SHP"))
             gotten_files = {k: os.path.basename(v) for k, v in gotten_files.items()}
-            self.assertEquals(gotten_files, expected_files)
+            self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
                 shutil.rmtree(d)
@@ -638,7 +638,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             d, expected_files = generate_files("SHP", "shx", "pRJ", "DBF")
             gotten_files = get_files(os.path.join(d, "foo.SHP"))
             gotten_files = {k: os.path.basename(v) for k, v in gotten_files.items()}
-            self.assertEquals(gotten_files, expected_files)
+            self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
                 shutil.rmtree(d)
