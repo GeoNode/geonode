@@ -463,8 +463,8 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 today = date.today()
                 todoc = uploaded.date.today()
                 self.assertEqual((today.day, today.month, today.year),
-                                  (todoc.day, todoc.month, todoc.year),
-                                  'Expected specific date from uploaded layer XML metadata')
+                                 (todoc.day, todoc.month, todoc.year),
+                                 'Expected specific date from uploaded layer XML metadata')
 
                 # Set
                 from geonode.layers.metadata import set_metadata
@@ -1051,7 +1051,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                      'prj_file': layer_prj,
                      'charset': 'UTF-8',
                      'permissions': json.dumps(post_permissions)
-                    })
+                     })
                 response_dict = json.loads(ensure_string(response.content))
 
                 if response_dict['success']:
@@ -1080,7 +1080,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                          'shx_file': layer_shx,
                          'prj_file': layer_prj,
                          'permissions': json.dumps(post_permissions)
-                        })
+                         })
                     self.assertTrue(response.status_code in (401, 403))
         finally:
             # Clean up and completely delete the layer

@@ -38,11 +38,8 @@ from threading import local
 import time
 import uuid
 # import base64
-try:
-    from urllib.parse import urlencode, urlsplit, urljoin
-except ImportError:
-    from urllib.parse import urlencode
-    from urllib.parse import urlsplit, urljoin
+
+from urllib.parse import urlencode, urlsplit, urljoin
 
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
