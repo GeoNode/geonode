@@ -264,11 +264,11 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
         layer_meta = MapLayer(
             id=0,
-            title=u'Droits pétroliers et gaziers / Oil and Gas Rights',
-            abstract=u'Droits pétroliers et gaziers / Oil and Gas Rights',
-            type=u'Feature Layer',
-            geometryType=u'esriGeometryPolygon',
-            copyrightText=u'',
+            title='Droits pétroliers et gaziers / Oil and Gas Rights',
+            abstract='Droits pétroliers et gaziers / Oil and Gas Rights',
+            type='Feature Layer',
+            geometryType='esriGeometryPolygon',
+            copyrightText='',
             extent=LayerESRIExtent(
                 LayerESRIExtentSpatialReference(4140, 4617),
                 -144.97375,
@@ -277,92 +277,92 @@ class ModuleFunctionsTestCase(StandardTestCase):
                 -57.55125),
             fields=[
                 {
-                    u'alias': u'OBJECTID',
-                    u'domain': None,
-                    u'type': u'esriFieldTypeOID',
-                    u'name': u'OBJECTID'
+                    'alias': 'OBJECTID',
+                    'domain': None,
+                    'type': 'esriFieldTypeOID',
+                    'name': 'OBJECTID'
                 },
                 {
-                    u'alias': u'Numéro du titre / Title Number',
-                    u'length': 16,
-                    u'type': u'esriFieldTypeString',
-                    u'name': u'LICENCE_NUMBER',
-                    u'domain': None
+                    'alias': 'Numéro du titre / Title Number',
+                    'length': 16,
+                    'type': 'esriFieldTypeString',
+                    'name': 'LICENCE_NUMBER',
+                    'domain': None
                 },
                 {
-                    u'alias': u'Superficie actuelle (ha) / Current Area (ha)',
-                    u'domain': None,
-                    u'type': u'esriFieldTypeDouble',
-                    u'name': u'CURRENT_AREA_HA'
+                    'alias': 'Superficie actuelle (ha) / Current Area (ha)',
+                    'domain': None,
+                    'type': 'esriFieldTypeDouble',
+                    'name': 'CURRENT_AREA_HA'
                 },
                 {
-                    u'alias': u'Code du type de permis / Licence Type Code',
-                    u'length': 5,
-                    u'type': u'esriFieldTypeString',
-                    u'name': u'AGRMT_TYPE',
-                    u'domain': None
+                    'alias': 'Code du type de permis / Licence Type Code',
+                    'length': 5,
+                    'type': 'esriFieldTypeString',
+                    'name': 'AGRMT_TYPE',
+                    'domain': None
                 },
                 {
-                    u'alias': u'Datum',
-                    u'length': 8,
-                    u'type': u'esriFieldTypeString',
-                    u'name': u'DATUM',
-                    u'domain': None
+                    'alias': 'Datum',
+                    'length': 8,
+                    'type': 'esriFieldTypeString',
+                    'name': 'DATUM',
+                    'domain': None
                 },
                 {
-                    u'alias': u'Région (anglais) / Region (English)',
-                    u'length': 64,
-                    u'type': u'esriFieldTypeString',
-                    u'name': u'REGION_E',
-                    u'domain': None
+                    'alias': 'Région (anglais) / Region (English)',
+                    'length': 64,
+                    'type': 'esriFieldTypeString',
+                    'name': 'REGION_E',
+                    'domain': None
                 },
                 {
-                    u'alias': u'Région (français) / Region (French)',
-                    u'length': 64,
-                    u'type': u'esriFieldTypeString',
-                    u'name': u'REGION_F',
-                    u'domain': None
+                    'alias': 'Région (français) / Region (French)',
+                    'length': 64,
+                    'type': 'esriFieldTypeString',
+                    'name': 'REGION_F',
+                    'domain': None
                 },
                 {
-                    u'alias': u'Représentant / Representative',
-                    u'length': 50,
-                    u'type': u'esriFieldTypeString',
-                    u'name': u'COMPANY_NAME',
-                    u'domain': None
+                    'alias': 'Représentant / Representative',
+                    'length': 50,
+                    'type': 'esriFieldTypeString',
+                    'name': 'COMPANY_NAME',
+                    'domain': None
                 },
                 {
-                    u'alias': u"Date d'entrée en vigueur / Effective Date",
-                    u'length': 8,
-                    u'type': u'esriFieldTypeDate',
-                    u'name': u'LICENCE_ISSUE_DATE',
-                    u'domain': None
+                    'alias': "Date d'entrée en vigueur / Effective Date",
+                    'length': 8,
+                    'type': 'esriFieldTypeDate',
+                    'name': 'LICENCE_ISSUE_DATE',
+                    'domain': None
                 },
                 {
-                    u'alias': u"Date d'échéance / Expiry Date",
-                    u'length': 8,
-                    u'type': u'esriFieldTypeDate',
-                    u'name': u'LICENCE_EXPIRY_DATE',
-                    u'domain': None
+                    'alias': "Date d'échéance / Expiry Date",
+                    'length': 8,
+                    'type': 'esriFieldTypeDate',
+                    'name': 'LICENCE_EXPIRY_DATE',
+                    'domain': None
                 },
                 {
-                    u'alias': u"Type d'accord (anglais) / Agreement Type (English)",
-                    u'length': 50,
-                    u'type': u'esriFieldTypeString',
-                    u'name': u'AGRMT_TYPE_E',
-                    u'domain': None
+                    'alias': "Type d'accord (anglais) / Agreement Type (English)",
+                    'length': 50,
+                    'type': 'esriFieldTypeString',
+                    'name': 'AGRMT_TYPE_E',
+                    'domain': None
                 },
                 {
-                    u'alias': u"Type d'accord (français) / Agreement Type (French)",
-                    u'length': 50,
-                    u'type': u'esriFieldTypeString',
-                    u'name': u'AGRMT_TYPE_F',
-                    u'domain': None
+                    'alias': "Type d'accord (français) / Agreement Type (French)",
+                    'length': 50,
+                    'type': 'esriFieldTypeString',
+                    'name': 'AGRMT_TYPE_F',
+                    'domain': None
                 },
                 {
-                    u'alias': u'Shape',
-                    u'domain': None,
-                    u'type': u'esriFieldTypeGeometry',
-                    u'name': u'SHAPE'
+                    'alias': 'Shape',
+                    'domain': None,
+                    'type': 'esriFieldTypeGeometry',
+                    'name': 'SHAPE'
                 }
             ],
             minScale=0,
@@ -590,7 +590,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(s.title, 'Foo Title')
         self.assertEqual(s.description, 'Foo Description')
         self.assertEqual(s.abstract, 'Foo Abstract')
-        self.assertEqual([u'Foo', u'OWS', u'Service'],
+        self.assertEqual(['Foo', 'OWS', 'Service'],
                          list(s.keywords.all().values_list('name', flat=True)))
         response = self.client.post(reverse('remove_service', args=(s.id,)))
         self.assertEqual(len(Service.objects.all()), 0)
