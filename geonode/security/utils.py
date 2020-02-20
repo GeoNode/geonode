@@ -25,11 +25,7 @@ import json
 import logging
 import traceback
 import requests
-try:
-    from . import models
-except ImportError:
-    # Python 2 compatibility
-    import models
+from . import models
 
 from six import string_types
 from requests.auth import HTTPBasicAuth
