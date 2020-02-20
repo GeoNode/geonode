@@ -17,16 +17,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from __future__ import print_function
 
 import logging
 import types
 import pytz
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    # Python 2 compatibility
-    from urlparse import urlparse
+from urllib.parse import urlparse
 
 from socket import gethostbyname
 from datetime import datetime, timedelta
@@ -92,7 +87,7 @@ class Host(models.Model):
         return 'Host: {} ({})'.format(self.name, self.ip)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
 
 class ServiceType(models.Model):
@@ -121,7 +116,7 @@ class ServiceType(models.Model):
         return 'Service Type: {}'.format(self.name)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     @property
     def is_system_monitor(self):
@@ -151,7 +146,7 @@ class Service(models.Model):
         return 'Service: {}@{}'.format(self.name, self.host.name)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def get_metrics(self):
         return [m.metric for m in self.service_type.metric.all()]
@@ -209,7 +204,7 @@ class MonitoredResource(models.Model):
         return 'Monitored Resource: {} {}'.format(self.name, self.type)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     @classmethod
     def get(cls, resource_type, resource_name, or_create=False):
@@ -341,7 +336,7 @@ class ServiceTypeMetric(models.Model):
         return '{} - {}'.format(self.service_type, self.metric)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
 
 class EventType(models.Model):
@@ -391,7 +386,7 @@ class EventType(models.Model):
         return 'Event Type: {}'.format(self.name)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     @classmethod
     def get(cls, service_name=None):
@@ -811,7 +806,7 @@ class RequestEvent(models.Model):
 
         inst = cls.objects.create(**data)
         resource_names = (rd.get('resources') or {}).get('string') or []
-        if not isinstance(resource_names, (list, tuple,)):
+        if not isinstance(resource_names, (list, tuple)):
             resource_names = [resource_names]
         resources = cls._get_resources('layer', resource_names)
         if rd.get('error'):
@@ -855,7 +850,7 @@ class ExceptionEvent(models.Model):
             error_type = '{}.{}'.format(_cls.__module__, _cls.__name__)
         if not message:
             message = str(error_type)
-        if isinstance(stack_trace, (list, tuple,)):
+        if isinstance(stack_trace, (list, tuple)):
             stack_trace = ''.join(stack_trace)
 
         if not isinstance(created, datetime):
@@ -978,7 +973,7 @@ class MetricValue(models.Model):
             metric, self.value, self.valid_from, self.valid_to)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     @classmethod
     def add(cls, metric, valid_from, valid_to, service, label,
@@ -1150,7 +1145,7 @@ class NotificationCheck(models.Model):
         return "Notification Check #{}: {}".format(self.id, self.name)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     @property
     def notification_subject(self):
@@ -1227,7 +1222,7 @@ class NotificationCheck(models.Model):
 
     @classmethod
     def get_steps(cls, min_, max_, thresholds):
-        if isinstance(thresholds, (int, float, Decimal,)):
+        if isinstance(thresholds, (int, float, Decimal)):
             if min_ is None or max_ is None:
                 raise ValueError(
                     "Cannot use numeric threshold if one of min/max is None")
@@ -1238,7 +1233,7 @@ class NotificationCheck(models.Model):
                 thresholds.append(current)
                 current += step
 
-        if isinstance(thresholds, (tuple, types.GeneratorType,)):
+        if isinstance(thresholds, (tuple, types.GeneratorType)):
             thresholds = list(thresholds)
         elif isinstance(thresholds, list) or thresholds is None:
             pass
@@ -1595,7 +1590,7 @@ class MetricNotificationCheck(models.Model):
             self.metric.name, self.service.name if self.service else '', indicator)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     @property
     def field_option(self):
@@ -1636,7 +1631,7 @@ class MetricNotificationCheck(models.Model):
                                                                                 self.message)
 
         def __unicode__(self):
-            return u"{0}".format(self.__str__())
+            return "{0}".format(self.__str__())
 
     def check_value(self, metric, valid_on):
         """

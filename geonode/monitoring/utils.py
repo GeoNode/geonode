@@ -28,13 +28,8 @@ import threading
 import traceback
 
 from math import floor, ceil
-try:
-    from urllib.parse import urlencode
-    from urllib.parse import urlsplit
-except ImportError:
-    # Python 2 compatibility
-    from urllib import urlencode
-    from urlparse import urlsplit
+from urllib.parse import urlencode
+from urllib.parse import urlsplit
 from bs4 import BeautifulSoup as bs
 from datetime import datetime, timedelta
 from defusedxml import lxml as dlxml
