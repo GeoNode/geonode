@@ -27,11 +27,7 @@ from lxml import etree
 from defusedxml import lxml as dlxml
 from os.path import isfile
 
-try:
-    from urllib.parse import urlsplit, urljoin, unquote
-except ImportError:
-    from urllib import unquote
-    from urlparse import urlsplit, urljoin
+from urllib.parse import urlsplit, urljoin, unquote
 
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseRedirect

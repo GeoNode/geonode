@@ -23,12 +23,8 @@ import logging
 from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import ugettext as _
-try:
-    from urllib.parse import urlencode, urljoin
-except ImportError:
-    from urllib import urlencode
-    from urlparse import urljoin
 
+from urllib.parse import urlencode, urljoin
 from .helpers import OGC_Servers_Handler
 
 logger = logging.getLogger(__name__)

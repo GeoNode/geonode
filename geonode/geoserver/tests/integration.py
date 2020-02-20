@@ -28,12 +28,8 @@ import gisdata
 import logging
 from lxml import etree
 from defusedxml import lxml as dlxml
-try:
-    from urllib.request import urlopen, Request
-    from urllib.parse import urljoin
-except ImportError:
-    from urllib2 import urlopen, Request
-    from urlparse import urljoin
+from urllib.request import urlopen, Request
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.test.utils import override_settings
