@@ -144,7 +144,7 @@ class Profile(AbstractUser):
         return "{0}".format(self.username)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     @staticmethod
     def class_name(value):
