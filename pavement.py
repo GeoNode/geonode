@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from __future__ import print_function
 
 import django
 import fileinput
@@ -33,8 +32,8 @@ try:
     from urllib.parse import urlparse
     from urllib.request import urlopen, Request
 except ImportError:
-    from urllib2 import urlopen, Request
-    from urlparse import urlparse
+    from urllib.request import urlopen, Request
+    from urllib.parse import urlparse
 import zipfile
 from tqdm import tqdm
 import requests

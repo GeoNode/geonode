@@ -67,33 +67,17 @@ from geonode.base.auth import (extend_token,
                                get_token_from_auth_header,
                                get_token_object_from_session)
 
-try:
-    from urllib import (
-        unquote,
-        urlencode,
-    )
-    from urlparse import (
-        urljoin,
-        urlparse,
-        urlsplit,
-        parse_qs,
-        parse_qsl,
-        ParseResult,
-        SplitResult
-    )
-except ImportError:
-    # Python 3 fallback
-    from urllib.parse import (
-        urljoin,
-        unquote,
-        urlparse,
-        urlsplit,
-        urlencode,
-        parse_qs,
-        parse_qsl,
-        ParseResult,
-        SplitResult
-    )
+from urllib.parse import (
+    urljoin,
+    unquote,
+    urlparse,
+    urlsplit,
+    urlencode,
+    parse_qs,
+    parse_qsl,
+    ParseResult,
+    SplitResult
+)
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
@@ -638,7 +622,7 @@ class GXPMapBase(object):
         from geonode.services.models import Service
         from geonode.maps.models import Map
         if not self.sender or isinstance(self.sender, Map):
-            index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
+            index = int(max(sources.keys())) if len(list(sources.keys())) > 0 else 0
             for service in Service.objects.all():
                 remote_source = {
                     'url': service.service_url,
@@ -727,7 +711,7 @@ class GXPLayerBase(object):
             Will also override any access_token in the request and replace it with an existing one.
             '''
             urls = []
-            for name, server in settings.OGC_SERVER.items():
+            for name, server in list(settings.OGC_SERVER.items()):
                 url = urlsplit(server['PUBLIC_LOCATION'])
                 urls.append(url.netloc)
 
@@ -1070,7 +1054,7 @@ def format_urls(a, values):
 
 def build_abstract(resourcebase, url=None, includeURL=True):
     if resourcebase.abstract and url and includeURL:
-        return u"{abstract} -- [{url}]({url})".format(
+        return "{abstract} -- [{url}]({url})".format(
             abstract=resourcebase.abstract, url=url)
     else:
         return resourcebase.abstract
@@ -1085,13 +1069,13 @@ def build_caveats(resourcebase):
     if resourcebase.data_quality_statement:
         caveats.append(resourcebase.data_quality_statement)
     if len(caveats) > 0:
-        return u"- " + u"%0A- ".join(caveats)
+        return "- " + "%0A- ".join(caveats)
     else:
-        return u""
+        return ""
 
 
 def build_social_links(request, resourcebase):
-    social_url = u"{protocol}://{host}{path}".format(
+    social_url = "{protocol}://{host}{path}".format(
         protocol=("https" if request.is_secure() else "http"),
         host=request.get_host(),
         path=request.get_full_path())
@@ -1179,7 +1163,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
                 has_ch = False
                 for ch in field_name:
                     try:
-                        if u'\u4e00' <= ch.decode("utf-8", "surrogateescape") <= u'\u9fff':
+                        if '\u4e00' <= ch.decode("utf-8", "surrogateescape") <= '\u9fff':
                             has_ch = True
                             break
                     except BaseException:
@@ -1208,7 +1192,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     else:
         try:
             for key in list_col.keys():
-                qry = u"ALTER TABLE \"{}\" RENAME COLUMN \"{}\" TO \"{}\"".format(inLayer.GetName(), key, list_col[key])
+                qry = "ALTER TABLE \"{}\" RENAME COLUMN \"{}\" TO \"{}\"".format(inLayer.GetName(), key, list_col[key])
                 inDataSource.ExecuteSQL(qry)
         except BaseException as e:
             logger.exception(e)
@@ -1601,7 +1585,7 @@ def slugify_zh(text, separator='_'):
     """
 
     QUOTE_PATTERN = re.compile(r'[\']+')
-    ALLOWED_CHARS_PATTERN = re.compile(u'[^\u4e00-\u9fa5a-z0-9]+')
+    ALLOWED_CHARS_PATTERN = re.compile('[^\u4e00-\u9fa5a-z0-9]+')
     DUPLICATE_DASH_PATTERN = re.compile('-{2,}')
     NUMBERS_PATTERN = re.compile(r'(?<=\d),(?=\d)')
     DEFAULT_SEPARATOR = '-'

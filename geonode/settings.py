@@ -25,11 +25,7 @@ import ast
 import sys
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
-try:
-    from urllib.parse import urlparse, urlunparse, urljoin
-except ImportError:
-    # Python 2 compatibility
-    from urlparse import urlparse, urlunparse, urljoin
+from urllib.parse import urlparse, urlunparse, urljoin
 
 import django
 import dj_database_url
@@ -211,7 +207,7 @@ EXTRA_LANG_INFO = {
         'bidi': False,
         'code': 'ta',
         'name': 'Tamil',
-        'name_local': u'tamil',
+        'name_local': 'tamil',
     },
     'si': {
         'bidi': False,
