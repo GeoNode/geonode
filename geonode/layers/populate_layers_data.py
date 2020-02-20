@@ -75,8 +75,8 @@ styles = [{"name": "test_style_1",
 
 attributes = [
     {
-        "attribute": u'N\xfamero_De_M\xe9dicos',
-        "attribute_label": u'N\xfamero_De_M\xe9dicos',
+        "attribute": 'N\xfamero_De_M\xe9dicos',
+        "attribute_label": 'N\xfamero_De_M\xe9dicos',
         "attribute_type": "xsd:string",
         "visible": True,
         "display_order": 4

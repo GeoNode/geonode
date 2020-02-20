@@ -211,7 +211,7 @@ EXTRA_LANG_INFO = {
         'bidi': False,
         'code': 'ta',
         'name': 'Tamil',
-        'name_local': u'tamil',
+        'name_local': 'tamil',
     },
     'si': {
         'bidi': False,

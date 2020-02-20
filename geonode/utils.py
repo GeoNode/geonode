@@ -1070,7 +1070,7 @@ def format_urls(a, values):
 
 def build_abstract(resourcebase, url=None, includeURL=True):
     if resourcebase.abstract and url and includeURL:
-        return u"{abstract} -- [{url}]({url})".format(
+        return "{abstract} -- [{url}]({url})".format(
             abstract=resourcebase.abstract, url=url)
     else:
         return resourcebase.abstract
@@ -1085,13 +1085,13 @@ def build_caveats(resourcebase):
     if resourcebase.data_quality_statement:
         caveats.append(resourcebase.data_quality_statement)
     if len(caveats) > 0:
-        return u"- " + u"%0A- ".join(caveats)
+        return "- " + "%0A- ".join(caveats)
     else:
-        return u""
+        return ""
 
 
 def build_social_links(request, resourcebase):
-    social_url = u"{protocol}://{host}{path}".format(
+    social_url = "{protocol}://{host}{path}".format(
         protocol=("https" if request.is_secure() else "http"),
         host=request.get_host(),
         path=request.get_full_path())
@@ -1179,7 +1179,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
                 has_ch = False
                 for ch in field_name:
                     try:
-                        if u'\u4e00' <= ch.decode("utf-8", "surrogateescape") <= u'\u9fff':
+                        if '\u4e00' <= ch.decode("utf-8", "surrogateescape") <= '\u9fff':
                             has_ch = True
                             break
                     except BaseException:
@@ -1208,7 +1208,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     else:
         try:
             for key in list_col.keys():
-                qry = u"ALTER TABLE \"{}\" RENAME COLUMN \"{}\" TO \"{}\"".format(inLayer.GetName(), key, list_col[key])
+                qry = "ALTER TABLE \"{}\" RENAME COLUMN \"{}\" TO \"{}\"".format(inLayer.GetName(), key, list_col[key])
                 inDataSource.ExecuteSQL(qry)
         except BaseException as e:
             logger.exception(e)
@@ -1601,7 +1601,7 @@ def slugify_zh(text, separator='_'):
     """
 
     QUOTE_PATTERN = re.compile(r'[\']+')
-    ALLOWED_CHARS_PATTERN = re.compile(u'[^\u4e00-\u9fa5a-z0-9]+')
+    ALLOWED_CHARS_PATTERN = re.compile('[^\u4e00-\u9fa5a-z0-9]+')
     DUPLICATE_DASH_PATTERN = re.compile('-{2,}')
     NUMBERS_PATTERN = re.compile(r'(?<=\d),(?=\d)')
     DEFAULT_SEPARATOR = '-'

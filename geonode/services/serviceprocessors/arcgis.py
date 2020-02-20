@@ -220,7 +220,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                                      layer_meta.extent.xmax,
                                      layer_meta.extent.ymax])
 
-        typename = slugify(u"{}-{}".format(
+        typename = slugify("{}-{}".format(
             layer_meta.id,
             ''.join(c for c in layer_meta.title if ord(c) < 128)
         ))

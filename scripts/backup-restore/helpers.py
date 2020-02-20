@@ -18,8 +18,6 @@
 #
 #########################################################################
 
-from __future__ import with_statement
-
 import traceback
 import psycopg2
 import configparser
@@ -138,7 +136,7 @@ def confirm(prompt=None, resp=False):
         prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
 
     while True:
-        ans = input(prompt)
+        ans = eval(input(prompt))
         if not ans:
             return resp
         if ans not in ['y', 'Y', 'n', 'N']:

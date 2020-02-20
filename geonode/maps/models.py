@@ -94,9 +94,6 @@ class Map(ResourceBase, GXPMapBase):
         return '%s by %s' % (
             self.title, (self.owner.username if self.owner else "<Anonymous>"))
 
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
-
     @property
     def center(self):
         """
@@ -591,9 +588,6 @@ class MapLayer(models.Model, GXPLayerBase):
 
     def __str__(self):
         return '%s?layers=%s' % (self.ows_url, self.name)
-
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
 
 
 def pre_delete_map(instance, sender, **kwrargs):

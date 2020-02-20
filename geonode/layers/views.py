@@ -276,7 +276,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 out['success'] = False
                 out['errormsgs'] = _('Failed to upload the layer')
                 try:
-                    out['errors'] = u''.join(error)
+                    out['errors'] = ''.join(error)
                 except BaseException:
                     try:
                         out['errors'] = str(error)

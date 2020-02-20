@@ -139,9 +139,6 @@ class Upload(models.Model):
                                               self.name,
                                               self.user)
 
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
-
 
 class UploadFile(models.Model):
     upload = models.ForeignKey(Upload, null=True, blank=True, on_delete=models.SET_NULL)
@@ -150,9 +147,6 @@ class UploadFile(models.Model):
 
     def __str__(self):
         return "{0}".format(self.slug)
-
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
 
     def get_absolute_url(self):
         return reverse('data_upload_new', args=[self.slug, ])

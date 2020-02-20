@@ -80,9 +80,6 @@ class Style(models.Model, PermissionLevelMixin):
     sld_url = models.CharField(_('sld url'), null=True, max_length=1000)
     workspace = models.CharField(max_length=255, null=True, blank=True)
 
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
-
     def __str__(self):
         return "{0}".format(self.name)
 
@@ -273,9 +270,6 @@ class Layer(ResourceBase):
             }
         return cfg
 
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
-
     def __str__(self):
         return "{0}".format(self.alternate)
 
@@ -343,9 +337,6 @@ class UploadSession(models.Model):
         except BaseException:
             pass
         return "{0}".format(_s)
-
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
 
 
 class LayerFile(models.Model):
@@ -491,9 +482,6 @@ class Attribute(models.Model):
             self.attribute_label.encode(
                 "utf-8", "replace") if self.attribute_label else self.attribute.encode("utf-8", "replace"))
 
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
-
     def unique_values_as_list(self):
         return self.unique_values.split(',')
 
@@ -529,7 +517,7 @@ def pre_save_layer(instance, sender, **kwargs):
             logger.exception(e)
 
     if instance.abstract == '' or instance.abstract is None:
-        instance.abstract = u'No abstract provided'
+        instance.abstract = 'No abstract provided'
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 

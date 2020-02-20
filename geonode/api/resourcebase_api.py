@@ -157,7 +157,7 @@ class CommonModelApi(ModelResource):
             filters = {}
         orm_filters = super(CommonModelApi, self).build_filters(
             filters=filters, ignore_bad_filters=ignore_bad_filters, **kwargs)
-        if 'type__in' in filters and filters['type__in'] in FILTER_TYPES.keys():
+        if 'type__in' in filters and filters['type__in'] in list(FILTER_TYPES.keys()):
             orm_filters.update({'type': filters.getlist('type__in')})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})

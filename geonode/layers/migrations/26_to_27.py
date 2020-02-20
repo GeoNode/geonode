@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
 from django.db import migrations, models
 from django.db.models import F
+
 
 def copy_typename(apps, schema_editor):
     Layer = apps.get_model('layers', 'layer')
@@ -10,6 +10,7 @@ def copy_typename(apps, schema_editor):
     for row in Layer.objects.all():
         row.alternate = row.typename
         row.save(update_fields=['alternate'])
+
 
 class Migration(migrations.Migration):
 

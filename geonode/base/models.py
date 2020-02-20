@@ -149,9 +149,6 @@ class TopicCategory(models.Model):
     def __str__(self):
         return self.gn_description
 
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
-
     class Meta:
         ordering = ("identifier",)
         verbose_name_plural = 'Metadata Topic Categories'
@@ -171,9 +168,6 @@ class SpatialRepresentationType(models.Model):
 
     def __str__(self):
         return "{0}".format(self.gn_description)
-
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
 
     class Meta:
         ordering = ("identifier",)
@@ -226,9 +220,6 @@ class Region(MPTTModel):
         null=False,
         default='EPSG:4326')
 
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
-
     def __str__(self):
         return "{0}".format(self.name)
 
@@ -278,9 +269,6 @@ class RestrictionCodeType(models.Model):
     gn_description = models.TextField('GeoNode description', max_length=255)
     is_choice = models.BooleanField(default=True)
 
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
-
     def __str__(self):
         return "{0}".format(self.gn_description)
 
@@ -309,9 +297,6 @@ class License(models.Model):
     description = models.TextField(null=True, blank=True)
     url = models.URLField(max_length=2000, null=True, blank=True)
     license_text = models.TextField(null=True, blank=True)
-
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.name)
@@ -464,9 +449,6 @@ class Thesaurus(models.Model):
 
     slug = models.CharField(max_length=64, default='')
 
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
-
     def __str__(self):
         return "{0}".format(self.identifier)
 
@@ -487,9 +469,6 @@ class ThesaurusKeywordLabel(models.Model):
 #    note  = models.CharField(max_length=511)
 
     keyword = models.ForeignKey('ThesaurusKeyword', related_name='keyword', on_delete=models.CASCADE)
-
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.label)
@@ -514,9 +493,6 @@ class ThesaurusKeyword(models.Model):
         blank=True)
 
     thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus', on_delete=models.CASCADE)
-
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.alt_label)
@@ -824,9 +800,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.title)
@@ -1467,9 +1440,6 @@ class Link(models.Model):
 
     objects = LinkManager()
 
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
-
     def __str__(self):
         return "{0} link".format(self.link_type)
 
@@ -1482,9 +1452,6 @@ class MenuPlaceholder(models.Model):
         blank=False,
         unique=True
     )
-
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.name)
@@ -1505,9 +1472,6 @@ class Menu(models.Model):
     order = models.IntegerField(
         null=False,
     )
-
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.title)
@@ -1562,9 +1526,6 @@ class MenuItem(models.Model):
 
     def __hash__(self):
         return hash(self.url)
-
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.title)

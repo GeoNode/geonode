@@ -18,8 +18,6 @@
 #
 #########################################################################
 
-from __future__ import print_function
-
 from geonode.tests.base import GeoNodeLiveTestSupport
 
 from datetime import datetime, timedelta

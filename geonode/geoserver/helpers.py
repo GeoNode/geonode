@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from __future__ import print_function
 
 from collections import namedtuple, defaultdict
 import datetime
@@ -686,7 +685,7 @@ def gs_slurp(
                 "storeType": the_store.resource_type,
                 "alternate": "%s:%s" % (workspace.name, resource.name),
                 "title": resource.title or 'No title provided',
-                "abstract": resource.abstract or u"{}".format(_('No abstract provided')),
+                "abstract": resource.abstract or "{}".format(_('No abstract provided')),
                 "owner": owner,
                 "uuid": str(uuid.uuid4())
             })
@@ -1550,9 +1549,6 @@ class OGC_Server(object):
     @property
     def netloc(self):
         return urlsplit(self.LOCATION).netloc
-
-    def __unicode__(self):
-        return u"{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.alias)
