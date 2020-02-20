@@ -622,7 +622,7 @@ class GXPMapBase(object):
         from geonode.services.models import Service
         from geonode.maps.models import Map
         if not self.sender or isinstance(self.sender, Map):
-            index = int(max(sources.keys())) if len(list(sources.keys())) > 0 else 0
+            index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
             for service in Service.objects.all():
                 remote_source = {
                     'url': service.service_url,
@@ -711,7 +711,7 @@ class GXPLayerBase(object):
             Will also override any access_token in the request and replace it with an existing one.
             '''
             urls = []
-            for name, server in list(settings.OGC_SERVER.items()):
+            for name, server in settings.OGC_SERVER.items():
                 url = urlsplit(server['PUBLIC_LOCATION'])
                 urls.append(url.netloc)
 

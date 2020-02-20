@@ -1252,7 +1252,7 @@ def snapshot_config(snapshot, map_obj, request):
 
     # Match up the layer with it's source
     def snapsource_lookup(source, sources):
-        for k, v in list(sources.items()):
+        for k, v in sources.items():
             if v.get("id") == source.get("id"):
                 return k
         return None
