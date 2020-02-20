@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-from __future__ import with_statement
 
 import traceback
 import psycopg2
