@@ -23,10 +23,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 import io
 import json
 import os
-try:
-    from urllib.parse import urlsplit, urlunsplit
-except ImportError:
-    from urlparse import urlsplit, urlunsplit
+from urllib.parse import urlsplit, urlunsplit
 import zipfile
 from imghdr import what
 

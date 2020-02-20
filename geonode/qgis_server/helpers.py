@@ -23,11 +23,7 @@ import os
 import re
 import shutil
 import json
-try:
-    from urllib.parse import unquote, urljoin
-except ImportError:
-    from urllib import unquote
-    from urlparse import urljoin
+from urllib.parse import unquote, urljoin
 
 import requests
 from django.conf import settings
