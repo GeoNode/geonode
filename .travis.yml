@@ -34,7 +34,7 @@ jobs:
       name: "GeoServer-backend Core Modules Smoke Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -50,7 +50,7 @@ jobs:
       name: "GeoServer-backend Contrib Apps Smoke Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -66,7 +66,7 @@ jobs:
       name: "GeoServer-backend CSW-Catalogue Smoke Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -83,7 +83,7 @@ jobs:
       name: "QGis Server-backend Core Modules Smoke Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.qgis_server'
           - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
@@ -104,7 +104,7 @@ jobs:
       name: "QGis Server-backend Contrib Apps Smoke Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.qgis_server'
           - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
@@ -125,7 +125,7 @@ jobs:
       name: "GeoServer-backend Upload Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -149,7 +149,7 @@ jobs:
       name: "GeoServer-backend Monitoring Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -173,7 +173,7 @@ jobs:
       name: "BDD Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -205,7 +205,7 @@ jobs:
       name: "Backend Integration Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -229,7 +229,7 @@ jobs:
       name: "GeoServer Integration Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -253,7 +253,7 @@ jobs:
       name: "QGis Server Integration Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.qgis_server'
           - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
@@ -291,7 +291,8 @@ before_install:
     fi
 
 install:
-  - if [ "$TEST_RUN_INTEGRATION_BDD" = "True" ]; then
+  - set -ex;
+    if [ "$TEST_RUN_INTEGRATION_BDD" = "True" ]; then
       /usr/bin/Xvfb :99 -ac -screen 0 1024x768x8 & export DISPLAY=":99";
       GECKODRIVER_VERSION="v0.24.0";
       wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -O geckodriver.tar.gz;
@@ -299,7 +300,8 @@ install:
       tar zxf geckodriver.tar.gz -C bin;
       export PATH=$PATH:$PWD/bin;
     fi
-  - if [ "$TEST_RUN_SELENIUM" = "True" ] && [ "$SPCGEONODE" == "True" ]; then
+  - set -ex;
+    if [ "$TEST_RUN_SELENIUM" = "True" ] && [ "$SPCGEONODE" == "True" ]; then
       :;
     elif [ "$TEST_RUN_SELENIUM" = "True" ]; then
       pip install -r geonode-selenium/requirements.txt --upgrade --no-cache;
@@ -327,7 +329,8 @@ install:
     fi
 
 before_script:
-  - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
+  - set -ex;
+    if [ "$TEST_RUN_SELENIUM" = "True" ]; then
       sudo service nginx stop;
     else
       echo "Initialize DB";
@@ -346,7 +349,8 @@ before_script:
     fi
 
 script:
-  - if [ "$TEST_RUN_SELENIUM" = "True" ] && [ "$SPCGEONODE" = "True" ]; then
+  - set -ex;
+    if [ "$TEST_RUN_SELENIUM" = "True" ] && [ "$SPCGEONODE" = "True" ]; then
       geonode-selenium/test-docker.sh;
     elif [ "$TEST_RUN_SELENIUM" = "True" ]; then
       docker-compose -f docker-compose.yml -f docker-compose.override.localhost.yml up --build -d;
@@ -357,7 +361,8 @@ script:
     fi
 
 after_script:
-  - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
+  - set -ex;
+    if [ "$TEST_RUN_SELENIUM" = "True" ]; then
       true;
     else
       echo "For GeoServer Server Travis steps";

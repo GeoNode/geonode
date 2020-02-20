@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 120
-target-version = 'py35'
+target-version = ['py35']
 exclude = '''
 /(
     geonode/.*/migrations/.*
@@ -13,3 +13,7 @@ exclude = '''
   | node_modules
 )/
 '''
+
+[build-system]
+requires = ["setuptools >= 40.8", "pip >= 19.1"]
+build-backend = "setuptools.build_meta"

@@ -18,52 +18,55 @@
 #
 #########################################################################
 
-try:  # for pip >= 10
+try:
+    # pip >=20
+    from pip._internal.network.session import PipSession
     from pip._internal.req import parse_requirements
+except ImportError:
     try:
+        # 10.0.0 <= pip <= 19.3.1
         from pip._internal.download import PipSession
-        pip_session = PipSession()
-    except ImportError:  # for pip >= 20
-        from pip._internal.network.session import PipSession
-        pip_session = PipSession()
-except ImportError:  # for pip <= 9.0.3
-    try:
-        from pip.req import parse_requirements
+        from pip._internal.req import parse_requirements
+    except ImportError:
+        # pip <= 9.0.3
         from pip.download import PipSession
-        pip_session = PipSession()
-    except ImportError:  # backup in case of further pip changes
-        pip_session = 'hack'
+        from pip.req import parse_requirements
 
 from distutils.core import setup
 
 from setuptools import find_packages
 
+import os
+import sys
+
+current_directory = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(current_directory)
+
 # Parse requirements.txt to get the list of dependencies
-inst_req = parse_requirements('requirements.txt',
-                              session=pip_session)
+inst_req = parse_requirements("requirements.txt", session=PipSession())
 REQUIREMENTS = [str(r.req) for r in inst_req]
 
-setup(name='GeoNode',
-      version=__import__('geonode').get_version(),
-      description="Application for serving and sharing geospatial data",
-      long_description=open('README.md').read(),
-      classifiers=[
-          "Development Status :: 5 - Production/Stable"],
-      python_requires='>=3',
-      keywords='',
-      author='GeoNode Developers',
-      author_email='dev@geonode.org',
-      url='http://geonode.org',
-      license='GPL',
-      packages=find_packages(),
-      package_data={
-          '': ['*.*'], # noqa
-          '': ['static/*.*'], # noqa
-          'static': ['*.*'],
-          '': ['templates/*.*'], # noqa
-          'templates': ['*.*'],
-      },
-      include_package_data=True,
-      install_requires=REQUIREMENTS,
-      zip_safe=False
-      )
+setup(
+    name="GeoNode",
+    version=__import__("geonode").get_version(),
+    description="Application for serving and sharing geospatial data",
+    long_description=open("README.md").read(),
+    classifiers=["Development Status :: 5 - Production/Stable"],
+    python_requires=">=3",
+    keywords="",
+    author="GeoNode Developers",
+    author_email="dev@geonode.org",
+    url="http://geonode.org",
+    license="GPL",
+    packages=find_packages(),
+    package_data={
+        "": ["*.*"],  # noqa
+        "": ["static/*.*"],  # noqa
+        "static": ["*.*"],
+        "": ["templates/*.*"],  # noqa
+        "templates": ["*.*"],
+    },
+    include_package_data=True,
+    install_requires=REQUIREMENTS,
+    zip_safe=False,
+)
