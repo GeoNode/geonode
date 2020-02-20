@@ -57,13 +57,8 @@ import os
 import csv
 import glob
 import time
-try:
-    from urllib.parse import unquote
-    from urllib.error import HTTPError
-except ImportError:
-    # Python 2 compatibility
-    from urllib import unquote
-    from urllib2 import HTTPError
+from urllib.parse import unquote
+from urllib.error import HTTPError
 import logging
 import tempfile
 import unittest

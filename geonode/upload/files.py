@@ -30,11 +30,7 @@ from geonode.utils import fixup_shp_columnnames
 from geoserver.resource import FeatureType, Coverage
 from django.utils.translation import ugettext as _
 
-try:
-    from collections import UserList
-except ImportError:
-    # Python 2 compatibility
-    from UserList import UserList
+from collections import UserList
 import zipfile
 import os
 import re

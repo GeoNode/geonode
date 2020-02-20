@@ -43,11 +43,7 @@ import gsimporter
 import tempfile
 
 from six import string_types
-try:
-    from http.client import BadStatusLine
-except ImportError:
-    # Python 2 compatibility
-    from httplib import BadStatusLine
+from http.client import BadStatusLine
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
