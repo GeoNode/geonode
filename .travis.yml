@@ -34,7 +34,7 @@ jobs:
       name: "GeoServer-backend Core Modules Smoke Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -50,7 +50,7 @@ jobs:
       name: "GeoServer-backend Contrib Apps Smoke Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -66,7 +66,7 @@ jobs:
       name: "GeoServer-backend CSW-Catalogue Smoke Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -83,7 +83,7 @@ jobs:
       name: "QGis Server-backend Core Modules Smoke Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.qgis_server'
           - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
@@ -104,7 +104,7 @@ jobs:
       name: "QGis Server-backend Contrib Apps Smoke Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.qgis_server'
           - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
@@ -125,7 +125,7 @@ jobs:
       name: "GeoServer-backend Upload Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -149,7 +149,7 @@ jobs:
       name: "GeoServer-backend Monitoring Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -173,7 +173,7 @@ jobs:
       name: "BDD Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -205,7 +205,7 @@ jobs:
       name: "Backend Integration Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -229,7 +229,7 @@ jobs:
       name: "GeoServer Integration Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
@@ -253,7 +253,7 @@ jobs:
       name: "QGis Server Integration Tests"
       python: "3.5"
       virtualenv:
-          system_site_packages: true
+          system_site_packages: false
       env:
           - BACKEND: 'geonode.qgis_server'
           - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
