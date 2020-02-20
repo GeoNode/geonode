@@ -29,11 +29,7 @@ import gzip
 
 from hyperlink import URL
 from slugify import slugify
-try:
-    from urllib.parse import urlparse, urlsplit, urljoin
-except ImportError:
-    # Python 2 compatibility
-    from urlparse import urlparse, urlsplit, urljoin
+from urllib.parse import urlparse, urlsplit, urljoin
 
 from django.conf import settings
 from django.http import HttpResponse
