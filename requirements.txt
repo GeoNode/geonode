@@ -110,7 +110,7 @@ requests==2.23.0
 timeout-decorator==0.4.1
 
 # required by monitoring
-psutil==5.6.7
+psutil==5.7.0
 django-cors-headers==3.0.2
 django-multi-email-field<0.6.2
 user-agents
