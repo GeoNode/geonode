@@ -28,6 +28,7 @@ except ImportError:
     # Python 2 compatibility
     from ConfigParser import ConfigParser
 import os
+import six
 import sys
 
 import json
@@ -151,7 +152,7 @@ def patch_db(db_name, db_user, db_port, db_host, db_passwd, truncate_monitoring=
     except Exception:
         try:
             conn.rollback()
-        except:
+        except Exception:
             pass
 
         traceback.print_exc()
@@ -170,7 +171,7 @@ def cleanup_db(db_name, db_user, db_port, db_host, db_passwd):
     except Exception:
         try:
             conn.rollback()
-        except:
+        except Exception:
             pass
 
         traceback.print_exc()
@@ -196,7 +197,7 @@ def flush_db(db_name, db_user, db_port, db_host, db_passwd):
     except Exception:
         try:
             conn.rollback()
-        except:
+        except Exception:
             pass
 
         traceback.print_exc()
@@ -225,7 +226,7 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
     except Exception:
         try:
             conn.rollback()
-        except:
+        except Exception:
             pass
 
         traceback.print_exc()
@@ -255,7 +256,7 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
     except Exception:
         try:
             conn.rollback()
-        except:
+        except Exception:
             pass
 
         traceback.print_exc()
@@ -305,7 +306,7 @@ def confirm(prompt=None, resp=False):
         prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
 
     while True:
-        ans = input(prompt)
+        ans = six.moves.input(prompt)
         if not ans:
             return resp
         if ans not in ['y', 'Y', 'n', 'N']:

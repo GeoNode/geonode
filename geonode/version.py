@@ -70,7 +70,7 @@ def get_git_changeset():
                                     shell=True, cwd=repo_dir, universal_newlines=True)
         timestamp = git_show.communicate()[0].partition('\n')[0]
         return timestamp
-    except BaseException:
+    except Exception:
         try:
             timestamp = datetime.datetime.utcfromtimestamp(int(timestamp))
             return timestamp.strftime('%Y%m%d%H%M%S')

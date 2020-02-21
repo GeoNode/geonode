@@ -46,7 +46,7 @@ def prefix_xsl_line(req, id):
         record = catalogue.get_record(resource.uuid)
         if record:
             logger.debug(record.xml)
-    except BaseException:
+    except Exception:
         logger.error(traceback.format_exc())
         msg = 'Could not connect to catalogue to save information for layer "%s"' % str(resource)
         return HttpResponse(
@@ -60,7 +60,7 @@ def prefix_xsl_line(req, id):
         else:
             md_doc = catalogue.catalogue.csw_gen_xml(resource, 'catalogue/full_metadata.xml')
         xml = md_doc
-    except BaseException:
+    except Exception:
         logger.error(traceback.format_exc())
         return HttpResponse(
             "Resource Metadata not available!"

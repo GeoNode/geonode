@@ -64,7 +64,7 @@ def set_resource_links(*args, **kwargs):
             try:
                 set_resource_default_links(layer, layer)
                 catalogue_post_save(instance=layer, sender=layer.__class__)
-            except BaseException:
+            except Exception:
                 logger.exception(
                     "[ERROR] Layer [%s] couldn't be updated" % _lyr_name
                 )

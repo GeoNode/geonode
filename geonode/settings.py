@@ -25,11 +25,7 @@ import ast
 import sys
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
-try:
-    from urllib.parse import urlparse, urlunparse, urljoin
-except ImportError:
-    # Python 2 compatibility
-    from urlparse import urlparse, urlunparse, urljoin
+from six.moves.urllib.parse import urlparse, urljoin
 
 import django
 import dj_database_url

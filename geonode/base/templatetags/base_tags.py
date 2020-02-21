@@ -76,7 +76,7 @@ def facets(context):
         try:
             authorized = get_objects_for_user(
                 request.user, 'base.view_resourcebase').values('id')
-        except BaseException:
+        except Exception:
             pass
 
     if facet_type == 'documents':
@@ -108,7 +108,7 @@ def facets(context):
                     kws = HierarchicalKeyword.objects.filter(name__iexact=keyword)
                     for kw in kws:
                         treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
-                except BaseException:
+                except Exception:
                     # Ignore keywords not actually used?
                     pass
 
@@ -159,7 +159,7 @@ def facets(context):
                     kws = HierarchicalKeyword.objects.filter(name__iexact=keyword)
                     for kw in kws:
                         treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
-                except BaseException:
+                except Exception:
                     # Ignore keywords not actually used?
                     pass
 
@@ -174,7 +174,7 @@ def facets(context):
         try:
             for count in counts:
                 counts_array.append((count['storeType'], count['count']))
-        except BaseException:
+        except Exception:
             pass
 
         count_dict = dict(counts_array)
@@ -249,7 +249,7 @@ def facets(context):
                     kws = HierarchicalKeyword.objects.filter(name__iexact=keyword)
                     for kw in kws:
                         treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
-                except BaseException:
+                except Exception:
                     # Ignore keywords not actually used?
                     pass
 
@@ -326,7 +326,7 @@ def render_nav_menu(placeholder_name):
             m: MenuItem.objects.filter(menu=m).order_by('order')
             for m in Menu.objects.filter(placeholder__name=placeholder_name)
         }
-    except BaseException:
+    except Exception:
         pass
 
     return {'menus': OrderedDict(menus.items())}

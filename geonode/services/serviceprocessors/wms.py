@@ -169,7 +169,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             _url, parsed_service = WebMapService(self.url, proxy_base=None)
             contents_gen = parsed_service.contents.values()
             return (r for r in contents_gen if not any(r.children))
-        except BaseException:
+        except Exception:
             return None
 
     def harvest_resource(self, resource_id, geonode_service):
@@ -515,7 +515,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                     for ows_endpoint in data:
                         if 'OGC:OWS' == ows_endpoint['type']:
                             return ows_endpoint['url'] + '?' + url.query
-            except BaseException:
+            except Exception:
                 pass
 
         # OLD-style not OWS Enabled GeoNode
@@ -603,9 +603,9 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                                     Q(gn_description__iexact=_layer["category__gn_description"]))
                                 if categories:
                                     geonode_layer.category = categories[0]
-                            except BaseException:
+                            except Exception:
                                 traceback.print_exc()
-            except BaseException:
+            except Exception:
                 traceback.print_exc()
             finally:
                 geonode_layer.save()

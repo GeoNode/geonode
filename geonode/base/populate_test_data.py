@@ -245,7 +245,7 @@ def remove_models(obj_ids, type=None):
             for id in m_ids:
                 m = Map.objects.get(pk=id)
                 m.delete()
-        except BaseException:
+        except Exception:
             pass
     elif type == 'layer':
         try:
@@ -253,7 +253,7 @@ def remove_models(obj_ids, type=None):
             for id in l_ids:
                 layer = Layer.objects.get(pk=id)
                 layer.delete()
-        except BaseException:
+        except Exception:
             pass
     elif type == 'document':
         try:
@@ -261,7 +261,7 @@ def remove_models(obj_ids, type=None):
             for id in d_ids:
                 d = Document.objects.get(pk=id)
                 d.delete()
-        except BaseException:
+        except Exception:
             pass
 
 

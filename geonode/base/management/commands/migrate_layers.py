@@ -90,7 +90,7 @@ class Command(BaseCommand):
                 from geonode.base.models import ResourceBase
                 try:
                     higher_pk = ResourceBase.objects.all().order_by("-id")[0].pk
-                except:
+                except Exception:
                     higher_pk = 0
 
                 # Restore Fixtures

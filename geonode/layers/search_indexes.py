@@ -134,7 +134,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
                 object_id=obj.pk,
                 content_type=ContentType.objects.get_for_model(obj)
             ).all().count()
-        except BaseException:
+        except Exception:
             return 0
 
     def prepare_title_sortable(self, obj):

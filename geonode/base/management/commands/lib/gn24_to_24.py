@@ -82,7 +82,7 @@ class ResourceBaseMangler(DefaultMangler):
                             obj['fields']['detail_url'] = self.siteurl + m.group('details_url')
                         else:
                             obj['fields']['detail_url'] = self.siteurl + obj['fields']['distribution_url']
-                    except:
+                    except Exception:
                         obj['fields']['detail_url'] = obj['fields']['distribution_url']
 
             upload_sessions.append(self.add_upload_session(obj['pk'], obj['fields']['owner']))

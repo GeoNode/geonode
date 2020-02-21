@@ -66,7 +66,7 @@ class MonitoringHandler(logging.Handler):
             try:
                 re = RequestEvent.from_geonode(self.service, req, resp)
                 req._monitoring['processed'] = re
-            except BaseException:
+            except Exception:
                 req._monitoring['processed'] = None
         re = req._monitoring.get('processed')
 
@@ -183,7 +183,7 @@ class GeoServerMonitorClient(object):
     def _from_xml(self, val):
         try:
             return xmljson.yahoo.data(val)
-        except BaseException:
+        except Exception:
             # raise ValueError("Cannot convert from val %s" % val)
             pass
 

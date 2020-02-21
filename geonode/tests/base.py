@@ -22,7 +22,7 @@ from django.test.testcases import SimpleTestCase, TestCase, LiveServerTestCase
 
 try:
     from django.utils.decorators import classproperty
-except BaseException:
+except Exception:
     class classproperty(object):
 
         def __init__(self, method=None):

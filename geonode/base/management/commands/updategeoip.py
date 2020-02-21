@@ -30,17 +30,8 @@ from django.utils.translation import ugettext_noop as _
 
 logger = logging.getLogger(__name__)
 
-try:
-    from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
-    URL = 'https://build.geo-solutions.it/geonode/geoserver/latest/GeoLite2-City.tar.gz'
-    OLD_FORMAT = False
-except ImportError:
-    try:
-        from django.contrib.gis.geoip import GeoIP
-        URL = 'https://build.geo-solutions.it/geonode/geoserver/latest/GeoLiteCity.dat.gz'
-        OLD_FORMAT = True
-    except:
-        URL = None
+URL = 'https://build.geo-solutions.it/geonode/geoserver/latest/GeoLite2-City.tar.gz'
+OLD_FORMAT = False
 
 
 class Command(BaseCommand):

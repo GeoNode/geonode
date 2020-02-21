@@ -36,11 +36,10 @@ from repo or debian package (once release candidate phase or later)
 #     fab -H user@hostname
 
 import os, glob
-from fabric.api import env, sudo, run, cd, local, put, prefix
+from fabric.api import sudo, run, cd, put, prefix
 from fabric.api import settings as fab_settings
 from fabric.context_managers import settings, hide
 from fabric.contrib.files import sed
-from subprocess import Popen, PIPE
 import datetime
 
 INSTALLDIR = '/var/lib'

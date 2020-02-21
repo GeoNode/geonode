@@ -19,14 +19,13 @@
 #########################################################################
 
 import traceback
-import os, sys
+import os
 import shutil
 from . import helpers
 
 from django.conf import settings
 from django.core.management import call_command
-from geonode.utils import (designals,
-                           resignals,
+from geonode.utils import (resignals,
                            get_dir_time_suffix,
                            zip_dir,
                            copy_tree)
@@ -84,10 +83,10 @@ def backup_full():
       template_folders = []
       try:
           template_folders = settings.TEMPLATE_DIRS
-      except:
+      except Exception:
           try:
               template_folders = settings.TEMPLATES[0]['DIRS']
-          except:
+          except Exception:
               pass
       template_files_folders = os.path.join(target_folder, helpers.TEMPLATE_DIRS)
       if not os.path.exists(template_files_folders):

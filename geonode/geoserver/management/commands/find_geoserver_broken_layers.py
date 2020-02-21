@@ -89,7 +89,7 @@ class Command(BaseCommand):
                     if options['remove']:
                         print("Removing this layer...")
                         layer.delete()
-            except:
+            except Exception:
                 print("Unexpected error:", sys.exc_info()[0])
 
         print("\n***** Layers with errors: {} in a total of {} *****".format(

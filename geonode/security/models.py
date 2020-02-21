@@ -105,7 +105,7 @@ class PermissionLevelMixin(object):
                         info['groups'][group] = list(dict.fromkeys(info['groups'][group] + info_layer['groups'][group]))
                     else:
                         info['groups'][group] = info_layer['groups'][group]
-        except BaseException:
+        except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
         return info
