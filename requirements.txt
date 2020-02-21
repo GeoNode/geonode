@@ -22,7 +22,7 @@ boto<=2.49.0
 six<1.15.0
 tqdm==4.42.1
 Deprecated==1.2.7
-wrapt==1.11.2
+wrapt==1.12.0
 
 # Django Apps
 django-allauth==0.40.0
