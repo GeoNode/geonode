@@ -554,7 +554,7 @@ class TestResult(object):
         self.failures = self._format_failures(result_obj.failures)
         try:
             self.output = result_obj.stream.read()
-        except BaseException:
+        except Exception:
             pass
         return self
 
@@ -563,7 +563,7 @@ class TestResult(object):
         self.failures = self._format_failures(result_obj.failures)
         try:
             self.output = result_obj.stream.read()
-        except BaseException:
+        except Exception:
             pass
         return self
 

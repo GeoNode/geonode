@@ -19,7 +19,6 @@
 #########################################################################
 
 from django.core.management.base import BaseCommand
-from django.conf import settings
 
 from geonode.messaging.queues import queue_email_events, queue_geoserver_events, \
                    queue_notifications_events, queue_all_events, \

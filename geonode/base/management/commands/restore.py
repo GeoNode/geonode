@@ -176,7 +176,7 @@ class Command(BaseCommand):
 
                 try:
                     chmod_tree(gs_data_root)
-                except:
+                except Exception:
                     print('Original GeoServer Data Dir "{}" must be writable by the current user. \
                         Do not forget to copy it first. It will be wiped-out by the Restore procedure!'.format(gs_data_root))
                     raise
@@ -184,7 +184,7 @@ class Command(BaseCommand):
                 try:
                     shutil.rmtree(gs_data_root)
                     print('Cleaned out old GeoServer Data Dir: ' + gs_data_root)
-                except:
+                except Exception:
                     pass
 
                 if not os.path.exists(gs_data_root):
@@ -202,7 +202,7 @@ class Command(BaseCommand):
                 try:
                     shutil.rmtree(gwc_layers_root)
                     print('Cleaned out old GeoServer GWC Layers Config: ' + gwc_layers_root)
-                except:
+                except Exception:
                     pass
 
                 if not os.path.exists(gwc_layers_root):
@@ -281,10 +281,10 @@ class Command(BaseCommand):
                 template_folders = []
                 try:
                     template_folders = settings.TEMPLATE_DIRS
-                except:
+                except Exception:
                     try:
                         template_folders = settings.TEMPLATES[0]['DIRS']
-                    except:
+                    except Exception:
                         pass
                 template_files_folders = os.path.join(target_folder, helpers.TEMPLATE_DIRS)
                 locale_folders = settings.LOCALE_PATHS
@@ -304,7 +304,7 @@ class Command(BaseCommand):
                     for locale_files_folder in locale_folders:
                         print(("[Sanity Check] Full Write Access to '{}' ...".format(locale_files_folder)))
                         chmod_tree(locale_files_folder)
-                except:
+                except Exception:
                     print("...Sanity Checks on Folder failed. Please make sure that the current user has full WRITE access to the above folders (and sub-folders or files).")
                     print("Reason:")
                     raise
@@ -329,7 +329,7 @@ class Command(BaseCommand):
                 db_passwd = settings.DATABASES['default']['PASSWORD']
 
                 helpers.patch_db(db_name, db_user, db_port, db_host, db_passwd, settings.MONITORING_ENABLED)
-            except:
+            except Exception:
                 traceback.print_exc()
 
             try:
@@ -347,10 +347,10 @@ class Command(BaseCommand):
                     db_passwd = settings.DATABASES['default']['PASSWORD']
 
                     helpers.flush_db(db_name, db_user, db_port, db_host, db_passwd)
-                except:
+                except Exception:
                     try:
                         call_command('flush', interactive=False, load_initial_data=False)
-                    except:
+                    except Exception:
                         traceback.print_exc()
                         raise
 
@@ -361,7 +361,7 @@ class Command(BaseCommand):
                     print("Deserializing "+fixture_file)
                     try:
                         call_command('loaddata', fixture_file, app_label=app_name)
-                    except:
+                    except Exception:
                         traceback.print_exc()
                         print("WARNING: No valid fixture data found for '"+dump_name+"'.")
                         # helpers.load_fixture(app_name, fixture_file)
@@ -370,7 +370,7 @@ class Command(BaseCommand):
                 # Restore Media Root
                 try:
                     shutil.rmtree(media_root)
-                except:
+                except Exception:
                     pass
 
                 if not os.path.exists(media_root):
@@ -383,7 +383,7 @@ class Command(BaseCommand):
                 # Restore Static Root
                 try:
                     shutil.rmtree(static_root)
-                except:
+                except Exception:
                     pass
 
                 if not os.path.exists(static_root):
@@ -396,7 +396,7 @@ class Command(BaseCommand):
                 # Restore Static Root
                 try:
                     shutil.rmtree(static_root)
-                except:
+                except Exception:
                     pass
 
                 if not os.path.exists(static_root):
@@ -410,7 +410,7 @@ class Command(BaseCommand):
                 for static_files_folder in static_folders:
                     try:
                         shutil.rmtree(static_files_folder)
-                    except:
+                    except Exception:
                         pass
 
                     if not os.path.exists(static_files_folder):
@@ -426,7 +426,7 @@ class Command(BaseCommand):
                 for template_files_folder in template_folders:
                     try:
                         shutil.rmtree(template_files_folder)
-                    except:
+                    except Exception:
                         pass
 
                     if not os.path.exists(template_files_folder):
@@ -442,7 +442,7 @@ class Command(BaseCommand):
                 for locale_files_folder in locale_folders:
                     try:
                         shutil.rmtree(locale_files_folder)
-                    except:
+                    except Exception:
                         pass
 
                     if not os.path.exists(locale_files_folder):
@@ -465,7 +465,7 @@ class Command(BaseCommand):
                     db_passwd = settings.DATABASES['default']['PASSWORD']
 
                     helpers.cleanup_db(db_name, db_user, db_port, db_host, db_passwd)
-                except:
+                except Exception:
                     traceback.print_exc()
 
                 return str(target_folder)

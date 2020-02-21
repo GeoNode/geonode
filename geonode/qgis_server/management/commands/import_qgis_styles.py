@@ -32,7 +32,7 @@ class Command(BaseCommand):
         for l in layers:
             try:
                 l.qgis_layer
-            except:
+            except Exception:
                 print("Layer {} has no associated qgis_layer".format(l.name))
                 continue
 
@@ -41,7 +41,7 @@ class Command(BaseCommand):
 
                 try:
                     styles = style_list(l, internal=False)
-                except:
+                except Exception:
                     print("Failed to fetch styles")
                     continue
 

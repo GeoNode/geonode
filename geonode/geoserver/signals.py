@@ -143,17 +143,17 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                 name=instance.name,
                 store=instance.store,
                 workspace=instance.workspace)
-        except BaseException:
+        except Exception:
             try:
                 gs_resource = gs_catalog.get_resource(
                     name=instance.alternate,
                     store=instance.store,
                     workspace=instance.workspace)
-            except BaseException:
+            except Exception:
                 try:
                     gs_resource = gs_catalog.get_resource(
                         name=instance.alternate or instance.typename)
-                except BaseException:
+                except Exception:
                     gs_resource = None
 
         if gs_resource:
@@ -244,7 +244,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     try:
         _stylefilterparams_geowebcache_layer(instance.alternate)
         _invalidate_geowebcache_layer(instance.alternate)
-    except BaseException:
+    except Exception:
         pass
 
     if instance.storeType == "remoteStore":
@@ -262,7 +262,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         """
         try:
             instance.abstract = gs_resource.abstract or ''
-        except BaseException as e:
+        except Exception as e:
             logger.exception(e)
             instance.abstract = ''
         instance.workspace = gs_resource.store.workspace.name
@@ -277,7 +277,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
             instance.bbox_y0 = bbox[2]
             instance.bbox_y1 = bbox[3]
             instance.srid = bbox[4]
-        except BaseException as e:
+        except Exception as e:
             logger.exception(e)
 
     if instance.srid:
@@ -319,7 +319,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                 # ogc_server_settings.BACKEND_WRITE_ENABLED == True
                 if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
                     gs_catalog.save(gs_resource)
-        except BaseException as e:
+        except Exception as e:
             msg = ('Error while trying to save resource named %s in GeoServer, '
                    'try to use: "%s"' % (gs_resource, str(e)))
             e.args = (msg,)

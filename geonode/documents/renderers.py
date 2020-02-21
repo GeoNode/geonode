@@ -116,5 +116,5 @@ def generate_thumbnail_content(image_path, size=(200, 150)):
         content = output.getvalue()
         output.close()
         return content
-    except BaseException as e:
+    except Exception as e:
         raise e

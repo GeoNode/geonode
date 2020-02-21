@@ -194,7 +194,7 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
             try:
                 cl.get_html('/', debug=False)
                 break
-            except BaseException:
+            except Exception:
                 pass
 
         self.catalog = Catalog(
@@ -235,7 +235,7 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
         MonitoredResource.objects.all().delete()
         try:
             NotificationCheck.objects.all().delete()
-        except BaseException:
+        except Exception:
             pass
         Service.objects.all().delete()
         Host.objects.all().delete()

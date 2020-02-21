@@ -64,7 +64,7 @@ def original_link_available(context, resourceid, url):
                     for l in layer_files:
                         if not storage.exists(str(l.file)):
                             return False
-        except BaseException:
+        except Exception:
             traceback.print_exc()
             return False
     if layer_files:

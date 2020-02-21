@@ -40,8 +40,7 @@ from geonode.utils import (designals,
                            resignals,
                            get_dir_time_suffix,
                            zip_dir,
-                           copy_tree,
-                           chmod_tree)
+                           copy_tree)
 
 
 class Command(BaseCommand):
@@ -341,10 +340,10 @@ class Command(BaseCommand):
                 template_folders = []
                 try:
                     template_folders = settings.TEMPLATE_DIRS
-                except:
+                except Exception:
                     try:
                         template_folders = settings.TEMPLATES[0]['DIRS']
-                    except:
+                    except Exception:
                         pass
                 template_files_folders = os.path.join(target_folder, helpers.TEMPLATE_DIRS)
                 if not os.path.exists(template_files_folders):
@@ -380,7 +379,7 @@ class Command(BaseCommand):
                 # Clean-up Temp Folder
                 try:
                     shutil.rmtree(target_folder)
-                except:
+                except Exception:
                     print("WARNING: Could not be possible to delete the temp folder: '" + str(target_folder) + "'")
 
                 print("Backup Finished. Archive generated.")

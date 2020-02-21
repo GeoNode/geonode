@@ -42,5 +42,5 @@ class MessagingTest(GeoNodeBaseTestSupport):
             try:
                 worker = Consumer(connection)
                 self.assertTrue(worker is not None)
-            except BaseException:
+            except Exception:
                 self.fail("could not create a Consumer.")

@@ -18,14 +18,11 @@
 #
 #########################################################################
 
-import ast
 import sys
-import json
 
 from django.core.management.base import BaseCommand
 
 from geonode.maps.models import Map
-from geonode.security.views import _perms_info_json
 from geonode.base.utils import remove_duplicate_links
 
 

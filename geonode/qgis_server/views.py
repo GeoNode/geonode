@@ -215,7 +215,7 @@ def legend(request, layername, layertitle=False, style=None):
         if not qgis_layer.default_style:
             try:
                 style_list(layer, internal=False)
-            except BaseException:
+            except Exception:
                 print("Failed to fetch styles")
 
             # refresh values
@@ -307,7 +307,7 @@ def tile(request, layername, z, x, y, style=None):
         if not qgis_layer.default_style:
             try:
                 style_list(layer, internal=False)
-            except BaseException:
+            except Exception:
                 print("Failed to fetch styles")
 
             # refresh values
@@ -553,7 +553,7 @@ def qml_style(request, layername, style_name=None):
             styles_obj = None
             try:
                 styles_obj = style_list(layer, internal=False)
-            except BaseException:
+            except Exception:
                 print("Failed to fetch styles")
 
             styles_dict = []
@@ -652,7 +652,7 @@ def qml_style(request, layername, style_name=None):
             if not (response.status_code == 200 and ensure_string(response.content) == 'OK'):
                 try:
                     style_list(layer, internal=False)
-                except BaseException:
+                except Exception:
                     print("Failed to fetch styles")
 
                 return TemplateResponse(
@@ -677,7 +677,7 @@ def qml_style(request, layername, style_name=None):
                 qgis_style.save()
 
                 alert_message = 'Successfully add style %s' % style_name
-            except BaseException:
+            except Exception:
                 alert_message = 'Failed to fetch styles'
 
             return TemplateResponse(
@@ -706,7 +706,7 @@ def qml_style(request, layername, style_name=None):
         try:
             style = layer.qgis_layer.styles.get(name=style_name)
             shutil.rmtree(style.style_tile_cache_path)
-        except BaseException:
+        except Exception:
             pass
 
         style_url = style_remove_url(layer, style_name)
@@ -719,7 +719,7 @@ def qml_style(request, layername, style_name=None):
                 alert_message = '%s is not an existing style' % style_name
             try:
                 style_list(layer, internal=False)
-            except BaseException:
+            except Exception:
                 print("Failed to fetch styles")
 
             return TemplateResponse(
@@ -741,7 +741,7 @@ def qml_style(request, layername, style_name=None):
             style_list(layer, internal=False)
 
             alert_message = 'Successfully deleted style %s' % style_name
-        except BaseException:
+        except Exception:
             alert_message = 'Failed to fetch styles'
 
         return TemplateResponse(

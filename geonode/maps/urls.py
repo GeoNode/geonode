@@ -53,8 +53,6 @@ elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.maps.qgis_server_views import map_download_qlr, \
         map_download_leaflet, set_thumbnail_map
 
-    map_download_qlr = map_download_qlr
-    map_download_leaflet = map_download_leaflet
     map_edit = MapEditView.as_view()
     map_json = MapUpdateView.as_view()
     map_thumbnail = set_thumbnail_map

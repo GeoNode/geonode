@@ -20,16 +20,11 @@
 
 import traceback
 import os, sys
-import shutil
 from . import helpers
 import json
 
 from django.conf import settings
-from django.core.management import call_command
-from django.db import (
-    DEFAULT_DB_ALIAS, DatabaseError, IntegrityError, connections, router,
-    transaction,
-)
+from django.db import DEFAULT_DB_ALIAS
 
 def migrate_layers(archive, owner):
    """Migrate existing Layers on GeoNode DB"""
@@ -46,7 +41,7 @@ def migrate_layers(archive, owner):
       from geonode.base.models import ResourceBase
       try:
          higher_pk = ResourceBase.objects.all().order_by("-id")[0].pk
-      except:
+      except Exception:
          higher_pk = 0
 
       # Restore Fixtures
@@ -80,7 +75,7 @@ if __name__ == '__main__':
    try:
       restore_file = sys.argv[1]
       owner        = sys.argv[2]
-   except:
+   except Exception:
       pass
 
    if restore_file and owner:

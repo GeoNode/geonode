@@ -92,7 +92,7 @@ class CollectorAPI(object):
             if not iface_label:
                 try:
                     log.debug('no label', metric_name, row.get('description'))
-                except BaseException:
+                except Exception:
                     pass
                 return
             rate = self._calculate_rate(
@@ -100,7 +100,7 @@ class CollectorAPI(object):
             if rate is None:
                 try:
                     log.debug('no rate for', metric_name)
-                except BaseException:
+                except Exception:
                     pass
                 return
             mdata = {'value': rate,
@@ -938,7 +938,7 @@ class CollectorAPI(object):
                                 try:
                                     rb = ResourceBase.objects.get(id=r_id)
                                     t['href'] = rb.detail_url
-                                except BaseException:
+                                except Exception:
                                     t['href'] = ""
                     else:
                         t[scol] = row.pop(scol)

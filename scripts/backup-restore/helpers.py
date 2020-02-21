@@ -23,8 +23,7 @@ import traceback
 import psycopg2
 import configparser
 import os
-import sys
-
+import six
 import json
 
 MEDIA_ROOT       = 'uploaded'
@@ -68,7 +67,7 @@ def patch_db():
     except Exception:
         try:
             conn.rollback()
-        except:
+        except Exception:
             pass
 
         traceback.print_exc()
@@ -87,7 +86,7 @@ def cleanup_db():
     except Exception:
         try:
             conn.rollback()
-        except:
+        except Exception:
             pass
 
         traceback.print_exc()
@@ -137,7 +136,7 @@ def confirm(prompt=None, resp=False):
         prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
 
     while True:
-        ans = input(prompt)
+        ans = six.moves.input(prompt)
         if not ans:
             return resp
         if ans not in ['y', 'Y', 'n', 'N']:

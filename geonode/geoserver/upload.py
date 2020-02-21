@@ -181,7 +181,7 @@ def geoserver_upload(
     _native_bbox = None
     try:
         _native_bbox = gs_resource.native_bbox
-    except BaseException:
+    except Exception:
         pass
 
     if _native_bbox and len(_native_bbox) >= 5 and _native_bbox[4:5][0] == 'EPSG:4326':
@@ -202,7 +202,7 @@ def geoserver_upload(
                 cat.save(gs_resource)
                 logger.debug('BBOX coordinates forced to [-180, -90, 180, 90] for layer '
                              '[%s].', name)
-            except BaseException as e:
+            except Exception as e:
                 logger.exception('Error occurred while trying to force BBOX on resource', e)
 
     # Step 7. Create the style and assign it to the created resource
@@ -241,7 +241,7 @@ def geoserver_upload(
         if style is None:
             try:
                 style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
-            except BaseException:
+            except Exception:
                 try:
                     style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
                         cat.get_style(name + '_layer')

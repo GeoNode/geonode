@@ -71,7 +71,7 @@ def sync_if_local_memory(func, *args, **kwargs):
             worker = Consumer(connection, max_messages)
             try:
                 worker.run(timeout=broker_socket_timeout)
-            except BaseException:
+            except Exception:
                 tb = traceback.format_exc()
                 msg = "Exception while publishing message: {}".format(tb)
                 logger.error(msg)

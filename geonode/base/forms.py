@@ -84,7 +84,7 @@ def get_tree_data():
                 data.append(
                     tuple((toplevel.name, childrens))
                 )
-    except BaseException:
+    except Exception:
         pass
 
     return tuple(data)

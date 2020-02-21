@@ -120,7 +120,7 @@ def csw_global_dispatch(request):
                 group_list_all = []
                 try:
                     group_list_all = request.user.group_list_all().values('group')
-                except BaseException:
+                except Exception:
                     pass
                 for group in group_list_all:
                     if isinstance(group, dict):
@@ -187,7 +187,7 @@ def csw_global_dispatch(request):
                                 url.text += "&"
                             url.text += ("access_token=%s" % (access_token.token))
                             url.set('updated', 'yes')
-                except BaseException:
+                except Exception:
                     pass
             content = ET.tostring(tree, encoding='utf8', method='xml')
     finally:

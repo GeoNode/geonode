@@ -110,7 +110,7 @@ class GroupProfile(models.Model):
     def delete(self, *args, **kwargs):
         try:
             Group.objects.filter(name=str(self.slug)).delete()
-        except BaseException as e:
+        except Exception as e:
             logger.exception(e)
         super(GroupProfile, self).delete(*args, **kwargs)
 
@@ -154,7 +154,7 @@ class GroupProfile(models.Model):
                 try:
                     if hasattr(item, resource_type):
                         _queryset.append(item)
-                except BaseException as e:
+                except Exception as e:
                     logger.exception(e)
         queryset = _queryset if _queryset else queryset
         for resource in queryset:
@@ -227,12 +227,12 @@ class GroupProfile(models.Model):
             _upload_path = os.path.join(_base_path, _upload_path)
             if not os.path.exists(_upload_path):
                 copyfile(self.logo.path, _upload_path)
-        except BaseException as e:
+        except Exception as e:
             logger.exception(e)
         _url = None
         try:
             _url = self.logo.url
-        except BaseException as e:
+        except Exception as e:
             logger.exception(e)
         return _url
 

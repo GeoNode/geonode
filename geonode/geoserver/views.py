@@ -134,7 +134,7 @@ def layer_style(request, layername):
     try:
         _stylefilterparams_geowebcache_layer(layer.alternate)
         _invalidate_geowebcache_layer(layer.alternate)
-    except BaseException:
+    except Exception:
         pass
 
     return HttpResponse(
@@ -219,7 +219,7 @@ def layer_style_manage(request, layername):
                 try:
                     if style.sld_title:
                         sld_title = style.sld_title
-                except BaseException:
+                except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
                 layer_styles.append((style.name, sld_title))
@@ -233,7 +233,7 @@ def layer_style_manage(request, layername):
                 try:
                     if layer.default_style.sld_title:
                         def_sld_title = layer.default_style.sld_title
-                except BaseException:
+                except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
 
@@ -297,7 +297,7 @@ def layer_style_manage(request, layername):
             try:
                 _stylefilterparams_geowebcache_layer(layer.alternate)
                 _invalidate_geowebcache_layer(layer.alternate)
-            except BaseException:
+            except Exception:
                 pass
 
             return HttpResponseRedirect(
@@ -329,7 +329,7 @@ def feature_edit_check(request, layername, permission='change_layer_data'):
     """
     try:
         layer = _resolve_layer(request, layername)
-    except BaseException:
+    except Exception:
         # Intercept and handle correctly resource not found exception
         return HttpResponse(
             json.dumps({'authorized': False}), content_type="application/json")
@@ -346,7 +346,7 @@ def feature_edit_check(request, layername, permission='change_layer_data'):
         try:
             is_manager = request.user.groupmember_set.all().filter(
                 role='manager').exists()
-        except BaseException:
+        except Exception:
             is_manager = False
     if is_admin or is_staff or is_owner or is_manager or request.user.has_perm(
             permission,
@@ -405,7 +405,7 @@ def style_change_check(request, path):
                         if not request.user.has_perm(
                                 'change_layer_style', obj=layer):
                             authorized = False
-                except BaseException:
+                except Exception:
                     authorized = (request.method == 'POST')  # The user is probably trying to create a new style
                     logger.warn(
                         'There is not a style with such a name: %s.' % style_name)
@@ -465,7 +465,7 @@ def geoserver_proxy(request,
             # Strip out WS from PATH
             try:
                 path = "/%s" % strip_prefix(path, "/%s:" % (ws))
-            except BaseException:
+            except Exception:
                 pass
 
         if proxy_path == '/gs/%s' % settings.DEFAULT_WORKSPACE and layername:
@@ -522,7 +522,7 @@ def geoserver_proxy(request,
                     _layer_name = os.path.splitext(os.path.basename(request.path))[0]
                     _layer = Layer.objects.get(name__icontains=_layer_name)
                     affected_layers = [_layer]
-                except BaseException:
+                except Exception:
                     logger.warn("Could not find any Layer %s on DB" % os.path.basename(request.path))
 
     kwargs = {'affected_layers': affected_layers}
@@ -548,7 +548,7 @@ def _response_callback(**kwargs):
             content = content\
                 .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
                 .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
-    except BaseException as e:
+    except Exception as e:
         logger.exception(e)
 
     if 'affected_layers' in kwargs and kwargs['affected_layers']:
@@ -824,5 +824,5 @@ def server_online(request):
     try:
         check_geoserver_is_up()
         return HttpResponse(json.dumps({'online': True}), content_type="application/json")
-    except BaseException:
+    except Exception:
         return HttpResponse(json.dumps({'online': False}), content_type="application/json")

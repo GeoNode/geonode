@@ -689,7 +689,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             # Clean up and completely delete the layer
             try:
                 thefile.delete()
-            except BaseException:
+            except Exception:
                 pass
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -1091,7 +1091,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     raster_layer.delete()
                 if new_vector_layer:
                     new_vector_layer.delete()
-            except BaseException:
+            except Exception:
                 # tb = traceback.format_exc()
                 # logger.warning(tb)
                 pass
@@ -1369,7 +1369,7 @@ class LayersStylesApiInteractionTests(
             resp = self.api_client.get(default_style_url)
             if resp.status_code != 200:
                 return
-        except BaseException:
+        except Exception:
             return
         self.assertValidJSONResponse(resp)
         obj = self.deserialize(resp)

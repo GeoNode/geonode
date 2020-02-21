@@ -234,7 +234,7 @@ def map_metadata(
                             tkeywords_list += "," + \
                                 tkl_ids if len(
                                     tkeywords_list) > 0 else tkl_ids
-                except BaseException:
+                except Exception:
                     tb = traceback.format_exc()
                     logger.error(tb)
 
@@ -312,7 +312,7 @@ def map_metadata(
                     thesaurus__identifier=thesaurus_setting['name']
                 )
                 map_obj.tkeywords = tkeywords_data
-        except BaseException:
+        except Exception:
             tb = traceback.format_exc()
             logger.error(tb)
 
@@ -324,24 +324,16 @@ def map_metadata(
     if poc is None:
         poc_form = ProfileForm(request.POST, prefix="poc")
     else:
-        if poc is None:
-            poc_form = ProfileForm(instance=poc, prefix="poc")
-        else:
-            map_form.fields['poc'].initial = poc.id
-            poc_form = ProfileForm(prefix="poc")
-            poc_form.hidden = True
+        map_form.fields['poc'].initial = poc.id
+        poc_form = ProfileForm(prefix="poc")
+        poc_form.hidden = True
 
     if metadata_author is None:
         author_form = ProfileForm(request.POST, prefix="author")
     else:
-        if metadata_author is None:
-            author_form = ProfileForm(
-                instance=metadata_author,
-                prefix="author")
-        else:
-            map_form.fields['metadata_author'].initial = metadata_author.id
-            author_form = ProfileForm(prefix="author")
-            author_form.hidden = True
+        map_form.fields['metadata_author'].initial = metadata_author.id
+        author_form = ProfileForm(prefix="author")
+        author_form.hidden = True
 
     config = map_obj.viewer_json(request)
     layers = MapLayer.objects.filter(map=map_obj.id)
@@ -355,7 +347,7 @@ def map_metadata(
                 request.user.group_list_all(),
                 GroupProfile.objects.exclude(
                     access="private").exclude(access="public-invite"))
-        except BaseException:
+        except Exception:
             all_metadata_author_groups = GroupProfile.objects.exclude(
                 access="private").exclude(access="public-invite")
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
@@ -371,7 +363,7 @@ def map_metadata(
                 map_obj.get_self_resource())
             try:
                 is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except BaseException:
+            except Exception:
                 is_manager = False
             if not is_manager or not can_change_metadata:
                 map_form.fields['is_approved'].widget.attrs.update(
@@ -423,7 +415,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
             try:
                 from geonode.contrib.slack.utils import build_slack_message_map
                 slack_message = build_slack_message_map("map_delete", map_obj)
-            except BaseException:
+            except Exception:
                 logger.error("Could not build slack message for delete map.")
 
             delete_map.delay(object_id=map_obj.id)
@@ -431,7 +423,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
             try:
                 from geonode.contrib.slack.utils import send_slack_messages
                 send_slack_messages(slack_message)
-            except BaseException:
+            except Exception:
                 logger.error("Could not send slack message for delete map.")
         else:
             delete_map.delay(object_id=map_obj.id)
@@ -526,14 +518,14 @@ def map_embed_widget(request, mapid,
         if valid_x:
             try:
                 width_zoom = math.log(360 / abs(maxx - minx), 2)
-            except BaseException:
+            except Exception:
                 pass
 
         height_zoom = 15
         if valid_y:
             try:
                 height_zoom = math.log(360 / abs(maxy - miny), 2)
-            except BaseException:
+            except Exception:
                 pass
 
         map_obj.center_x = center[0]
@@ -1220,7 +1212,7 @@ def map_wms(request, mapid):
             return HttpResponse(
                 json.dumps(response),
                 content_type="application/json")
-        except BaseException:
+        except Exception:
             return HttpResponseServerError()
 
     if request.method == 'GET':
@@ -1406,7 +1398,7 @@ def map_thumbnail(request, mapid):
         try:
             image = _prepare_thumbnail_body_from_opts(
                 request.body, request=request)
-        except BaseException:
+        except Exception:
             image = _render_thumbnail(request.body)
 
         if not image:
@@ -1419,7 +1411,7 @@ def map_thumbnail(request, mapid):
         map_obj.save_thumbnail(filename, image)
 
         return HttpResponse(_('Thumbnail saved'))
-    except BaseException:
+    except Exception:
         return HttpResponse(
             content=_('error saving thumbnail'),
             status=500,
