@@ -325,8 +325,8 @@ install:
       pip install -r requirements.txt --upgrade --no-cache;
       pip install -e . --upgrade;
       pip install pygdal==`gdal-config --version`.*;
-      pip install codecov;
-    fi
+    fi;
+    pip install codecov;
 
 before_script:
   - set -ex;
