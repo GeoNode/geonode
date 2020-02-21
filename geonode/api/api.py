@@ -94,7 +94,10 @@ class CountJSONSerializer(Serializer):
                 resources = resources.filter(title__icontains=options['title_filter'])
 
             if options['type_filter']:
-                resources = resources.filter(polymorphic_ctype__model=options['type_filter'])
+                _type_filter = options['type_filter']
+                if not isinstance(_type_filter, str):
+                    _type_filter = _type_filter.__name__.lower()
+                resources = resources.filter(polymorphic_ctype__model=_type_filter)
 
         counts = list(resources.values(options['count_type']).annotate(count=Count(options['count_type'])))
 
