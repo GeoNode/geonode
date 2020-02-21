@@ -199,10 +199,11 @@ class CommonModelApi(ModelResource):
                             filtered = semi_filtered.filter(
                                 Layer___storeType=LAYER_SUBTYPES[super_type])
                 else:
+                    _type_filter = FILTER_TYPES[the_type].__name__.lower()
                     if filtered:
-                        filtered = filtered | semi_filtered.filter(polymorphic_ctype__model=FILTER_TYPES[the_type])
+                        filtered = filtered | semi_filtered.filter(polymorphic_ctype__model=_type_filter)
                     else:
-                        filtered = semi_filtered.filter(polymorphic_ctype__model=FILTER_TYPES[the_type])
+                        filtered = semi_filtered.filter(polymorphic_ctype__model=_type_filter)
         else:
             filtered = semi_filtered
 
