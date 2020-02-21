@@ -18,7 +18,7 @@ python-slugify==4.0.0
 decorator==4.4.1
 celery==4.4.0
 kombu==4.6.7
-boto3==1.12.0
+boto3==1.12.5
 six==1.12.0
 tqdm==4.43.0
 Deprecated==1.2.7
@@ -108,7 +108,7 @@ timeout-decorator==0.4.1
 python_resize_image==1.1.19
 
 # required by monitoring
-psutil==5.6.7
+psutil==5.7.0
 django-cors-headers==3.2.1
 user-agents
 xmljson
