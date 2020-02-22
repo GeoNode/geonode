@@ -19,8 +19,6 @@
 #########################################################################
 """Celery tasks for geonode.services"""
 
-from __future__ import absolute_import
-
 import logging
 
 from django.db import transaction

@@ -17,17 +17,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from __future__ import print_function
 
 from collections import namedtuple, defaultdict
 import datetime
 from decimal import Decimal
 import errno
 from itertools import cycle
-try:
-    from itertools import izip as zip
-except ImportError:
-    pass
 from six import (
     string_types,
     reraise as raise_
@@ -43,11 +38,8 @@ from threading import local
 import time
 import uuid
 # import base64
-try:
-    from urllib.parse import urlencode, urlsplit, urljoin
-except ImportError:
-    from urllib import urlencode
-    from urlparse import urlsplit, urljoin
+
+from urllib.parse import urlencode, urlsplit, urljoin
 
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
@@ -686,7 +678,7 @@ def gs_slurp(
                 "storeType": the_store.resource_type,
                 "alternate": "%s:%s" % (workspace.name, resource.name),
                 "title": resource.title or 'No title provided',
-                "abstract": resource.abstract or u"{}".format(_('No abstract provided')),
+                "abstract": resource.abstract or "{}".format(_('No abstract provided')),
                 "owner": owner,
                 "uuid": str(uuid.uuid4())
             })
@@ -1552,7 +1544,7 @@ class OGC_Server(object):
         return urlsplit(self.LOCATION).netloc
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.alias)

@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from __future__ import print_function
 
 import django
 import fileinput
@@ -29,12 +28,10 @@ import subprocess
 import signal
 import sys
 import time
-try:
-    from urllib.parse import urlparse
-    from urllib.request import urlopen, Request
-except ImportError:
-    from urllib2 import urlopen, Request
-    from urlparse import urlparse
+
+from urllib.parse import urlparse
+from urllib.request import urlopen, Request
+
 import zipfile
 from tqdm import tqdm
 import requests

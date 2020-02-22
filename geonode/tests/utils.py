@@ -25,29 +25,16 @@ import copy
 import base64
 import pickle
 import requests
-try:
-    from urllib.parse import urlencode
-    from urllib.request import (
-        urlopen,
-        build_opener,
-        install_opener,
-        HTTPCookieProcessor,
-        HTTPPasswordMgrWithDefaultRealm,
-        HTTPBasicAuthHandler,
-    )
-    from urllib.error import HTTPError, URLError
-except ImportError:
-    from urllib import urlencode
-    from urllib2 import (
-        urlopen,
-        build_opener,
-        install_opener,
-        HTTPCookieProcessor,
-        HTTPError,
-        HTTPPasswordMgrWithDefaultRealm,
-        HTTPBasicAuthHandler,
-        URLError,
-    )
+from urllib.parse import urlencode
+from urllib.request import (
+    urlopen,
+    build_opener,
+    install_opener,
+    HTTPCookieProcessor,
+    HTTPPasswordMgrWithDefaultRealm,
+    HTTPBasicAuthHandler,
+)
+from urllib.error import HTTPError, URLError
 import logging
 import contextlib
 

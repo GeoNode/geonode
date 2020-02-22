@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-from __future__ import print_function
 
 from geonode.tests.base import GeoNodeLiveTestSupport
 

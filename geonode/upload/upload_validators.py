@@ -20,7 +20,6 @@
 
 """Tools for performing validation of uploaded spatial files."""
 
-from __future__ import division
 
 from collections import namedtuple
 import os.path

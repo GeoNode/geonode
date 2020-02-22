@@ -260,7 +260,7 @@ def get_CSV_spec_char():
 # format value to unicode str without ';' char
 def fst(value):
     chrs = get_CSV_spec_char()
-    result = u"{}".format(value)
+    result = "{}".format(value)
     result = result.replace(chrs["separator"], ',').replace('\\n', ' ').replace('\r\n', ' ')
     return result
 
@@ -390,7 +390,7 @@ def csw_render_extra_format_html(request, layeruuid, resname):
         layer = Layer.objects.get(resourcebase_ptr_id=resource.id)
         extra_res_md['atrributes'] = ''
         for attr in layer.attribute_set.all():
-            s = u"<tr><td>{}</td><td>{}</td><td>{}</td></tr>".format(
+            s = "<tr><td>{}</td><td>{}</td><td>{}</td></tr>".format(
                 attr.attribute, attr.attribute_label, attr.description
             )
             extra_res_md['atrributes'] += s

@@ -25,7 +25,7 @@ import ast
 import sys
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
-from six.moves.urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse, urlunparse, urljoin
 
 import django
 import dj_database_url
@@ -207,7 +207,7 @@ EXTRA_LANG_INFO = {
         'bidi': False,
         'code': 'ta',
         'name': 'Tamil',
-        'name_local': u'tamil',
+        'name_local': 'tamil',
     },
     'si': {
         'bidi': False,
@@ -555,7 +555,6 @@ LOGGING = {
 #
 # Test Settings
 #
-
 on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
 core_tests = ast.literal_eval(os.environ.get('TEST_RUN_CORE', 'False'))
 internal_apps_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTERNAL_APPS', 'False'))

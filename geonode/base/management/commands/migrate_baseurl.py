@@ -18,10 +18,7 @@
 #
 #########################################################################
 
-try:
-    import helpers
-except ImportError:
-    from . import helpers
+from . import helpers
 
 from django.db.models import Func, F, Value
 from django.core.management.base import BaseCommand, CommandError

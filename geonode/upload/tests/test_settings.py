@@ -19,11 +19,7 @@
 #########################################################################
 
 import os
-try:
-    from urllib.parse import urlparse, urlunparse
-except ImportError:
-    # Python 2 compatibility
-    from urlparse import urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse
 from geonode.settings import *
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))

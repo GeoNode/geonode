@@ -73,7 +73,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             _sname = utils.get_esri_service_name(self.url)
             _title_safe = safe(os.path.basename(os.path.normpath(_sname)))
             _title = _title_safe.replace('_', ' ').strip()
-        except Exception:
+        except BaseException:
             traceback.print_exc()
             _title = self.parsed_service.mapName
         if len(_title) == 0:
@@ -124,7 +124,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         ll = None
         try:
             ll = self.parsed_service.layers[int(resource_id)]
-        except Exception:
+        except BaseException:
             traceback.print_exc()
 
         return self._layer_meta(ll) if ll else None
@@ -138,7 +138,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         """
         try:
             return self._parse_layers(self.parsed_service.layers)
-        except Exception:
+        except BaseException:
             traceback.print_exc()
             return None
 
@@ -205,7 +205,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
     def has_resources(self):
         try:
             return True if len(self.parsed_service.layers) > 0 else False
-        except Exception:
+        except BaseException:
             traceback.print_exc()
             return False
 
@@ -220,7 +220,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                                      layer_meta.extent.xmax,
                                      layer_meta.extent.ymax])
 
-        typename = slugify(u"{}-{}".format(
+        typename = slugify("{}-{}".format(
             layer_meta.id,
             ''.join(c for c in layer_meta.title if ord(c) < 128)
         ))
@@ -322,7 +322,7 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
             _sname = utils.get_esri_service_name(self.url)
             _title_safe = safe(os.path.basename(os.path.normpath(_sname)))
             _title = _title_safe.replace('_', ' ').strip()
-        except Exception:
+        except BaseException:
             traceback.print_exc()
             _title = self.parsed_service.mapName
         if len(_title) == 0:

@@ -26,12 +26,8 @@ import shutil
 import requests
 import tempfile
 
-try:
-    import helpers
-    from helpers import Config
-except ImportError:
-    from . import helpers
-    from .helpers import Config
+from . import helpers
+from .helpers import Config
 
 from distutils import dir_util
 from requests.auth import HTTPBasicAuth

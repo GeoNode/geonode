@@ -30,11 +30,7 @@ import pickle
 import six
 from django.db.models import Q
 from celery.exceptions import TimeoutError
-try:
-    from urllib.parse import quote
-except ImportError:
-    # Python 2 compatibility
-    from urllib import quote
+from urllib.parse import quote
 
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
@@ -276,7 +272,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 out['success'] = False
                 out['errormsgs'] = _('Failed to upload the layer')
                 try:
-                    out['errors'] = u''.join(error)
+                    out['errors'] = ''.join(error)
                 except Exception:
                     try:
                         out['errors'] = str(error)

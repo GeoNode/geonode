@@ -43,8 +43,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'GeoNode'
-copyright = u'2017-2019, Open Source Geospatial Foundation, CC-SA'
+project = 'GeoNode'
+copyright = '2017-2019, Open Source Geospatial Foundation, CC-SA'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -188,8 +188,8 @@ htmlhelp_basename = 'GeoNodedoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'GeoNode.tex', u'GeoNode Documentation',
-   u'GeoNode Development Team', 'manual'),
+  ('index', 'GeoNode.tex', 'GeoNode Documentation',
+   'GeoNode Development Team', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -221,18 +221,18 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'geonode', u'GeoNode Documentation',
-     [u'GeoNode Development Team'], 1)
+    ('index', 'geonode', 'GeoNode Documentation',
+     ['GeoNode Development Team'], 1)
 ]
 
 
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'GeoNode'
-epub_author = u'GeoNode Development Team'
-epub_publisher = u'GeoNode Development Team'
-epub_copyright = u'2017-2019, Open Source Geospatial Foundation, CC-SA'
+epub_title = 'GeoNode'
+epub_author = 'GeoNode Development Team'
+epub_publisher = 'GeoNode Development Team'
+epub_copyright = '2017-2019, Open Source Geospatial Foundation, CC-SA'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.

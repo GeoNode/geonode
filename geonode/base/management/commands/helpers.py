@@ -22,11 +22,8 @@
 
 import traceback
 import psycopg2
-try:
-    from configparser import ConfigParser
-except ImportError:
-    # Python 2 compatibility
-    from ConfigParser import ConfigParser
+
+from configparser import ConfigParser
 import os
 import six
 import sys

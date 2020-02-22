@@ -24,10 +24,8 @@ from django.conf import settings
 from django.core.management import call_command
 from django.template.response import TemplateResponse
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+
+from io import StringIO
 
 from dal import autocomplete
 from taggit.forms import TagField

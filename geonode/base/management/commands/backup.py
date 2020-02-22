@@ -25,12 +25,9 @@ import shutil
 import requests
 import re
 import six
-try: 
-    import helpers
-    from helpers import Config
-except ImportError:
-    from . import helpers
-    from .helpers import Config
+
+from . import helpers
+from .helpers import Config
 
 from requests.auth import HTTPBasicAuth
 from xmltodict import parse as parse_xml

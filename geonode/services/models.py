@@ -26,11 +26,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from geonode.base.models import ResourceBase
 from geonode.people.enumerations import ROLE_VALUES
-try:
-    from urllib.parse import urljoin
-except ImportError:
-    # Python 2 compatibility
-    from urlparse import urljoin
+from urllib.parse import urljoin
 
 from . import enumerations
 
@@ -157,7 +153,7 @@ class Service(ResourceBase):
         return "{0}".format(self.name)
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     @property
     def service_url(self):

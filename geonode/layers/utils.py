@@ -22,7 +22,6 @@
 """
 
 # Standard Modules
-from __future__ import print_function
 import re
 import os
 import glob
@@ -33,10 +32,8 @@ import logging
 import tarfile
 
 from datetime import datetime
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+from urllib.parse import urlparse
+
 from osgeo import gdal, osr, ogr
 from zipfile import ZipFile, is_zipfile
 from random import choice

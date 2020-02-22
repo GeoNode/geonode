@@ -21,12 +21,7 @@
 import math
 import logging
 import six
-try:
-    from urllib.parse import quote, urlsplit
-except ImportError:
-    # Python 2 compatibility
-    from urllib import quote
-    from urlparse import urlsplit
+from urllib.parse import quote, urlsplit
 import traceback
 from itertools import chain
 from six import string_types

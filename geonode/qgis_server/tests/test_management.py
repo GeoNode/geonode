@@ -21,10 +21,7 @@
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
-try:
-    from urllib.parse import unquote
-except ImportError:
-    from urlparse import unquote
+from urllib.parse import unquote
 from imghdr import what
 
 import gisdata

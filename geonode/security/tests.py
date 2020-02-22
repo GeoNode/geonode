@@ -23,10 +23,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 import os
 import json
 import base64
-try:
-    from urllib.request import urlopen, Request
-except ImportError:
-    from urllib2 import urlopen, Request
+from urllib.request import urlopen, Request
 import logging
 import gisdata
 import contextlib

@@ -25,11 +25,7 @@ import requests
 import traceback
 
 from uuid import uuid4
-try:
-    from urllib.parse import urlsplit, urljoin
-except ImportError:
-    # Python 2 compatibility
-    from urlparse import urlsplit, urljoin
+from urllib.parse import urlsplit, urljoin
 
 from django.conf import settings
 from django.urls import reverse

@@ -20,24 +20,15 @@
 
 import logging
 import re
-try:
-    from urllib.request import (
-        build_opener,
-        Request,
-        HTTPCookieProcessor,
-        HTTPRedirectHandler
-    )
-    from urllib.parse import urlparse, urlencode
-except ImportError:
-    # Python 2 compatibility
-    from urllib import urlencode
-    from urllib2 import (
-        build_opener,
-        Request,
-        HTTPCookieProcessor,
-        HTTPRedirectHandler
-    )
-    from urlparse import urlparse
+
+from urllib.request import (
+    build_opener,
+    Request,
+    HTTPCookieProcessor,
+    HTTPRedirectHandler
+)
+from urllib.parse import urlparse, urlencode
+
 from django.conf import settings
 from django.template.loader import get_template
 from owslib.csw import CatalogueServiceWeb, namespaces

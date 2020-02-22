@@ -18,18 +18,10 @@
 #
 #########################################################################
 
-try:
-    long, unicode, basestring
-except NameError:
-    long, unicode, basestring = int, str, str
 
-try:
-    unicode
-    string_type = basestring
-    bytes = str
-except NameError:
-    unicode = str
-    string_type = str
+long, unicode, basestring = int, str, str
+unicode = str
+string_type = str
 
 
 def ensure_string(payload_bytes):

@@ -20,10 +20,7 @@
 
 from django.core.management.base import BaseCommand
 from django.contrib.sites.models import Site
-try:
-    from urlparse import urlsplit
-except ImportError:
-    from urllib.parse import urlsplit
+from urllib.parse import urlsplit
 
 
 class Command(BaseCommand):

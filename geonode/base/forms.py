@@ -413,12 +413,8 @@ class ResourceBaseForm(TranslationModelForm):
                         'data-html': 'true'})
 
     def clean_keywords(self):
-        try:
-            from urllib.parse import unquote
-            from html.entities import codepoint2name
-        except ImportError:
-            from urllib import unquote
-            from htmlentitydefs import codepoint2name
+        from urllib.parse import unquote
+        from html.entities import codepoint2name
 
         def unicode_escape(unistr):
             """

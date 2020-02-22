@@ -276,7 +276,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             bbox_x1 = Decimal('97.109705320000000')
             bbox_y0 = Decimal('-5.518732999999900')
             bbox_y1 = Decimal('-5.303545551999900')
-            srid = u'EPSG:4326'
+            srid = 'EPSG:4326'
 
             self.assertEqual(bbox_x0, uploaded.bbox_x0)
             self.assertEqual(bbox_x1, uploaded.bbox_x1)
@@ -290,7 +290,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 Decimal('97.109705320000000'),
                 Decimal('-5.518732999999900'),
                 Decimal('-5.303545551999900'),
-                u'EPSG:4326'
+                'EPSG:4326'
             ]
             self.assertEqual(expected_bbox, uploaded.bbox)
 
@@ -445,7 +445,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                         'Expected specific number of keywords from uploaded layer XML metadata')
 
                 self.assertTrue(
-                    u'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
+                    'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
                     'Expected CSV of keywords from uploaded layer XML metadata')
 
                 self.assertTrue(
@@ -462,9 +462,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 date.replace(tzinfo=timezone.get_current_timezone())
                 today = date.today()
                 todoc = uploaded.date.today()
-                self.assertEquals((today.day, today.month, today.year),
-                                  (todoc.day, todoc.month, todoc.year),
-                                  'Expected specific date from uploaded layer XML metadata')
+                self.assertEqual((today.day, today.month, today.year),
+                                 (todoc.day, todoc.month, todoc.year),
+                                 'Expected specific date from uploaded layer XML metadata')
 
                 # Set
                 from geonode.layers.metadata import set_metadata
@@ -542,7 +542,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                             'Expected specific number of keywords from uploaded layer XML metadata')
 
                     self.assertTrue(
-                        u'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
+                        'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
                         'Expected CSV of keywords from uploaded layer XML metadata')
 
                     self.assertTrue(
@@ -1051,7 +1051,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                      'prj_file': layer_prj,
                      'charset': 'UTF-8',
                      'permissions': json.dumps(post_permissions)
-                    })
+                     })
                 response_dict = json.loads(ensure_string(response.content))
 
                 if response_dict['success']:
@@ -1080,7 +1080,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                          'shx_file': layer_shx,
                          'prj_file': layer_prj,
                          'permissions': json.dumps(post_permissions)
-                        })
+                         })
                     self.assertTrue(response.status_code in (401, 403))
         finally:
             # Clean up and completely delete the layer
@@ -1116,14 +1116,14 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             self.assertEqual(lyr.title, "Test San Andres y Providencia Administrative")
 
             default_keywords = [
-                u'import',
-                u'san andreas',
-                u'test',
+                'import',
+                'san andreas',
+                'test',
             ]
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                 geoserver_keywords = [
-                    u'features',
-                    u'test_san_andres_y_providencia_administrative'
+                    'features',
+                    'test_san_andres_y_providencia_administrative'
                 ]
                 self.assertEqual(
                     set(lyr.keyword_list()),

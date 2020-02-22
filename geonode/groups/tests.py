@@ -272,10 +272,10 @@ class SmokeTest(GeoNodeBaseTestSupport):
             expected_permissions = {}
             if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
                 expected_permissions.setdefault(
-                    u'anonymous', []).append(u'download_resourcebase')
+                    'anonymous', []).append('download_resourcebase')
             if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
                 expected_permissions.setdefault(
-                    u'anonymous', []).append(u'view_resourcebase')
+                    'anonymous', []).append('view_resourcebase')
 
             self.assertCountEqual(permissions.get('groups'), expected_permissions)
 

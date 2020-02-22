@@ -47,7 +47,7 @@ class GroupCategory(models.Model):
         verbose_name_plural = _('Group Categories')
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.name)
@@ -126,7 +126,7 @@ class GroupProfile(models.Model):
         return []
 
     def __unicode__(self):
-        return u"{0}".format(self.__str__())
+        return "{0}".format(self.__str__())
 
     def __str__(self):
         return "{0}".format(self.title)
