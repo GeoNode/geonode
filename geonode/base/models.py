@@ -783,7 +783,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     last_updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return str(self.title).encode("ascii", "ignore")
+        return self.title
 
     # fields controlling security state
     dirty_state = models.BooleanField(
