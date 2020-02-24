@@ -47,9 +47,6 @@ class Partner(models.Model):
     def __str__(self):
         return "{0}".format(self.title)
 
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
-
     class Meta:
         ordering = ("name", )
         verbose_name_plural = 'Partners'
@@ -196,9 +193,6 @@ class GeoNodeThemeCustomization(models.Model):
 
     def __str__(self):
         return "{0}".format(self.name)
-
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
 
     class Meta:
         ordering = ("date", )

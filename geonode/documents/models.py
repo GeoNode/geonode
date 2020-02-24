@@ -67,9 +67,6 @@ class Document(ResourceBase):
         help_text=_('The URL of the document if it is external.'),
         verbose_name=_('URL'))
 
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
-
     def __str__(self):
         return "{0}".format(self.title)
 
