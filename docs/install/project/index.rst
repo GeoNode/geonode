@@ -202,7 +202,7 @@ Docker
 
     'django4my_geonode' instead of 'django4geonode' and so on...
 
-Deploy an instance of a geonode-project Django template 2.10.2 with Docker on localhost
+Deploy an instance of a geonode-project Django template 2.10.3 with Docker on localhost
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Prepare the environment
@@ -245,7 +245,7 @@ Finally, run the containers
 
   docker-compose -f docker-compose.yml up -d
 
-Deploy an instance of a geonode-project Django template 2.10.2 with Docker on a domain
+Deploy an instance of a geonode-project Django template 2.10.3 with Docker on a domain
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note:: We will use ``www.example.org`` as an example. You can change the name at your convenience.

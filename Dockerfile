@@ -1,4 +1,4 @@
-FROM geonode/geonode:2.10.2
+FROM geonode/geonode:2.10.3
 MAINTAINER GeoNode development team
 
 COPY requirements.txt /usr/src/app/
