@@ -1,5 +1,31 @@
 # Change Log
 
+## [2.10.3](https://github.com/GeoNode/geonode/tree/2.10.3) (2020-02-24)
+
+## [Full Changelog](https://github.com/GeoNode/geonode/compare/2.10.2...2.10.3)
+
+<li> 2020-02-24: afabiani <a href="http://github.com/geonode/geonode/commit/d75ab92e836d838f4f97a815bbb98925318cab5e" target="blank"> six > 1.13.0 is not compatible with geoserver-restconfig requirements</a></li> 
+<li> 2020-02-21: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/09caaba2babc729efed2785817ceda209a944e1d" target="blank"> Bump tqdm from 4.42.1 to 4.43.0</a></li> 
+<li> 2020-02-21: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/799adedb6572622ae8df62a986647c4504af6d0d" target="blank"> Bump psutil from 5.6.7 to 5.7.0</a></li> 
+<li> 2020-02-21: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/1d697e2bcfbdd7c12994429c7ab375f1cb6376fe" target="blank"> Bump wrapt from 1.11.2 to 1.12.0</a></li> 
+<li> 2020-02-21: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/72c5f22db0eea22758b5dcbfc40fc4e1c73ba96d" target="blank"> Bump django-treebeard from 4.3 to 4.3.1</a></li> 
+<li> 2020-02-21: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/a419c93cda05131a42cd24cc8f33443381d6deab" target="blank"> Bump django-storages from 1.8 to 1.9.1</a></li> 
+<li> 2020-02-20: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/ed906232e253b7daf1f3c532c93db5d4464dfe83" target="blank"> Bump setuptools from 42.0.0 to 44.0.0</a></li> 
+<li> 2020-02-20: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/fa3894823244ad8fabc637400b67d6f2edfa1f7f" target="blank"> Bump requests from 2.22.0 to 2.23.0</a></li> 
+<li> 2020-02-20: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/1d14cb23212872d73e36f984fab71795375f7ffc" target="blank"> Bump django-leaflet from 0.25.0 to 0.26.0</a></li> 
+<li> 2020-02-19: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/835bc0abaea29dde57f84c26fd6fb09de3eb6939" target="blank"> Bump django-celery-beat from 1.5.0 to 1.6.0</a></li> 
+<li> 2020-02-18: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/e93a4c0bceacc12b4b434a0888de0655363fcc8a" target="blank"> Update six requirement from <1.14.0 to <1.15.0</a></li> 
+<li> 2020-02-18: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/9f7db95c8190b00b2ba85324980521e552b47126" target="blank"> Bump tqdm from 4.39.0 to 4.42.1</a></li> 
+<li> 2020-02-18: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/2c45b1ac23751b167caf49c07488999c94aa9a06" target="blank"> Bump django-recaptcha from 2.0.5 to 2.0.6</a></li> 
+<li> 2020-02-17: afabiani <a href="http://github.com/geonode/geonode/commit/102b7f4356611b5a1c9e9c9e8a9f11c2a945c41a" target="blank"> [Hardening] Minor monitoring models updates</a></li> 
+<li> 2020-02-17: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/9fe0c19ea3f03a1c9e690f80a8aa4af122fc6f99" target="blank"> Bump splinter from 0.11.0 to 0.13.0</a></li> 
+<li> 2020-02-14: afabiani <a href="http://github.com/geonode/geonode/commit/2abfb26a9586d1013a8675e4042494d63a9d92c5" target="blank"> [Fixes #5699] Wrong resource number shown in group and group categories search filter</a></li> 
+<li> 2020-02-14: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/ad88e93f9736ba99c2debe95977f50951d87bf96" target="blank"> Bump lxml from 4.4.1 to 4.5.0</a></li> 
+<li> 2020-02-14: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/fe210809ccbe7ab8dfc01b2c4b96e2fca265f239" target="blank"> Bump kombu from 4.6.6 to 4.6.7</a></li> 
+<li> 2020-02-14: dependabot-preview[bot] <a href="http://github.com/geonode/geonode/commit/799fa34eb2ef639a87db78688051f0e52670de7f" target="blank"> Bump sqlalchemy from 1.3.12 to 1.3.13</a></li> 
+<li> 2020-02-14: afabiani <a href="http://github.com/geonode/geonode/commit/1d82d314edeb5ec7f29f75f63d31e288ddd104f7" target="blank"> [Docs] Updating State of GeoNode link</a></li> 
+
+
 ## [2.10.2](https://github.com/GeoNode/geonode/tree/2.10.2) (2020-02-14)
 
  - **[Implemented Features](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A2.10.2+label%3Afeature)**
