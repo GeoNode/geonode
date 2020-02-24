@@ -1,6 +1,6 @@
 {
   "name": "geonode-assets",
-  "version": "2.10.2",
+  "version": "2.10.3",
   "description": "Builds static (JS, CSS, IMG) assets for GeoNode 2.0",
   "main": "gruntfile.js",
   "dependencies": {
