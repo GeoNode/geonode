@@ -22,157 +22,162 @@ import re
 import json
 import datetime
 
+
 class DefaultMangler(json.JSONDecoder):
-   """ TODO """
-   def __init__(self, *args, **kwargs):
+    """ TODO """
 
-      self.basepk    = kwargs.get('basepk', -1)
-      self.owner     = kwargs.get('owner', 'admin')
-      self.datastore = kwargs.get('datastore', '')
-      self.siteurl   = kwargs.get('siteurl', '')
+    def __init__(self, *args, **kwargs):
+        self.basepk = kwargs.get('basepk', -1)
+        self.owner = kwargs.get('owner', 'admin')
+        self.datastore = kwargs.get('datastore', '')
+        self.siteurl = kwargs.get('siteurl', '')
 
-      super(DefaultMangler, self).__init__(*args)
+        super(DefaultMangler, self).__init__(*args)
 
-   def default(self, obj):
-      # Let the base class default method raise the TypeError
-      return json.JSONEncoder.default(self, obj)
+    def default(self, obj):
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
-   def decode(self, json_string):
-      """
-      json_string is basicly string that you give to json.loads method
-      """
-      default_obj = super(DefaultMangler, self).decode(json_string)
+    def decode(self, json_string):
+        """
+        json_string is basicly string that you give to json.loads method
+        """
+        default_obj = super(DefaultMangler, self).decode(json_string)
 
-      # manipulate your object any way you want
-      # ....
-      for obj in default_obj:
-         obj['pk'] = obj['pk'] + self.basepk
+        # manipulate your object any way you want
+        # ....
+        for obj in default_obj:
+            obj['pk'] = obj['pk'] + self.basepk
 
-      return default_obj
+        return default_obj
 
 
 class ResourceBaseMangler(DefaultMangler):
-   """ TODO """
-   def default(self, obj):
-      # Let the base class default method raise the TypeError
-      return json.JSONEncoder.default(self, obj)
+    """ TODO """
 
-   def decode(self, json_string):
-      """
-      json_string is basicly string that you give to json.loads method
-      """
-      default_obj = super(ResourceBaseMangler, self).decode(json_string)
+    def default(self, obj):
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
-      # manipulate your object any way you want
-      # ....
-      upload_sessions = []
-      for obj in default_obj:
-         obj['pk'] = obj['pk'] + self.basepk
+    def decode(self, json_string):
+        """
+        json_string is basicly string that you give to json.loads method
+        """
+        default_obj = super(ResourceBaseMangler, self).decode(json_string)
 
-         obj['fields']['owner'] = [self.owner]
+        # manipulate your object any way you want
+        # ....
+        upload_sessions = []
+        for obj in default_obj:
+            obj['pk'] = obj['pk'] + self.basepk
 
-         if 'distribution_url' in obj['fields']:
-            if not obj['fields']['distribution_url'] is None and 'layers' in obj['fields']['distribution_url']:
-               try:
-                  p = '(?P<protocol>http.*://)?(?P<host>[^:/ ]+).?(?P<port>[0-9]*)(?P<details_url>.*)'
-                  m = re.search(p, obj['fields']['distribution_url'])
-                  if 'http' in m.group('protocol'):
-                     obj['fields']['detail_url'] = self.siteurl + m.group('details_url')
-                  else:
-                     obj['fields']['detail_url'] = self.siteurl + obj['fields']['distribution_url']
-               except Exception:
-                  obj['fields']['detail_url'] = obj['fields']['distribution_url']
+            obj['fields']['owner'] = [self.owner]
 
-         upload_sessions.append(self.add_upload_session(obj['pk'], obj['fields']['owner']))
+            if 'distribution_url' in obj['fields']:
+                if not obj['fields']['distribution_url'] is None and 'layers' in obj['fields']['distribution_url']:
+                    try:
+                        p = '(?P<protocol>http.*://)?(?P<host>[^:/ ]+).?(?P<port>[0-9]*)(?P<details_url>.*)'
+                        m = re.search(p, obj['fields']['distribution_url'])
+                        if 'http' in m.group('protocol'):
+                            obj['fields']['detail_url'] = self.siteurl + m.group('details_url')
+                        else:
+                            obj['fields']['detail_url'] = self.siteurl + obj['fields']['distribution_url']
+                    except Exception:
+                        obj['fields']['detail_url'] = obj['fields']['distribution_url']
 
-      default_obj.extend(upload_sessions)
+            upload_sessions.append(self.add_upload_session(obj['pk'], obj['fields']['owner']))
 
-      return default_obj
+        default_obj.extend(upload_sessions)
 
-   def add_upload_session(self, pk, owner):
-      obj = dict()
+        return default_obj
 
-      obj['pk'] = pk
-      obj['model'] = 'layers.uploadsession'
+    def add_upload_session(self, pk, owner):
+        obj = dict()
 
-      obj['fields'] = dict()
-      obj['fields']['user'] = owner
-      obj['fields']['traceback'] = None
-      obj['fields']['context'] = None
-      obj['fields']['error'] = None
-      obj['fields']['processed'] = True
-      obj['fields']['date'] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+        obj['pk'] = pk
+        obj['model'] = 'layers.uploadsession'
 
-      return obj
+        obj['fields'] = dict()
+        obj['fields']['user'] = owner
+        obj['fields']['traceback'] = None
+        obj['fields']['context'] = None
+        obj['fields']['error'] = None
+        obj['fields']['processed'] = True
+        obj['fields']['date'] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+
+        return obj
 
 
 class LayerMangler(DefaultMangler):
-   """ TODO """
-   def default(self, obj):
-      # Let the base class default method raise the TypeError
-      return json.JSONEncoder.default(self, obj)
+    """ TODO """
 
-   def decode(self, json_string):
-      """
-      json_string is basicly string that you give to json.loads method
-      """
-      default_obj = super(LayerMangler, self).decode(json_string)
+    def default(self, obj):
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
-      # manipulate your object any way you want
-      # ....
-      for obj in default_obj:
-         obj['pk'] = obj['pk'] + self.basepk
+    def decode(self, json_string):
+        """
+        json_string is basicly string that you give to json.loads method
+        """
+        default_obj = super(LayerMangler, self).decode(json_string)
 
-         obj['fields']['upload_session'] = obj['pk']
-         obj['fields']['service'] = None
+        # manipulate your object any way you want
+        # ....
+        for obj in default_obj:
+            obj['pk'] = obj['pk'] + self.basepk
 
-         if self.datastore:
-            obj['fields']['store'] = self.datastore
-         else:
-            obj['fields']['store'] = obj['fields']['name']
+            obj['fields']['upload_session'] = obj['pk']
+            obj['fields']['service'] = None
 
-      return default_obj
+            if self.datastore:
+                obj['fields']['store'] = self.datastore
+            else:
+                obj['fields']['store'] = obj['fields']['name']
+
+        return default_obj
 
 
 class LayerAttributesMangler(DefaultMangler):
-   """ TODO """
-   def default(self, obj):
-      # Let the base class default method raise the TypeError
-      return json.JSONEncoder.default(self, obj)
+    """ TODO """
 
-   def decode(self, json_string):
-      """
-      json_string is basicly string that you give to json.loads method
-      """
-      default_obj = super(LayerAttributesMangler, self).decode(json_string)
+    def default(self, obj):
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
-      # manipulate your object any way you want
-      # ....
-      for obj in default_obj:
-          obj['pk'] = obj['pk'] + self.basepk
+    def decode(self, json_string):
+        """
+        json_string is basicly string that you give to json.loads method
+        """
+        default_obj = super(LayerAttributesMangler, self).decode(json_string)
 
-          obj['fields']['layer'] = obj['fields']['layer'] + self.basepk
+        # manipulate your object any way you want
+        # ....
+        for obj in default_obj:
+            obj['pk'] = obj['pk'] + self.basepk
 
-      return default_obj
+            obj['fields']['layer'] = obj['fields']['layer'] + self.basepk
+
+        return default_obj
 
 
 class MapLayersMangler(DefaultMangler):
-   """ TODO """
-   def default(self, obj):
-      # Let the base class default method raise the TypeError
-      return json.JSONEncoder.default(self, obj)
+    """ TODO """
 
-   def decode(self, json_string):
-      """
-      json_string is basicly string that you give to json.loads method
-      """
-      default_obj = super(MapLayersMangler, self).decode(json_string)
+    def default(self, obj):
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
-      # manipulate your object any way you want
-      # ....
-      for obj in default_obj:
-          obj['pk'] = obj['pk'] + self.basepk
+    def decode(self, json_string):
+        """
+        json_string is basicly string that you give to json.loads method
+        """
+        default_obj = super(MapLayersMangler, self).decode(json_string)
 
-          obj['fields']['map'] = obj['fields']['map'] + self.basepk
+        # manipulate your object any way you want
+        # ....
+        for obj in default_obj:
+            obj['pk'] = obj['pk'] + self.basepk
 
-      return default_obj
+            obj['fields']['map'] = obj['fields']['map'] + self.basepk
+
+        return default_obj
