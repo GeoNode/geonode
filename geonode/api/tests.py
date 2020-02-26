@@ -18,21 +18,25 @@
 #
 #########################################################################
 from django.conf import settings
+
 from datetime import datetime, timedelta
-from django.contrib.auth import get_user_model
-from django.urls import reverse
 from tastypie.test import ResourceTestCaseMixin
+
+from django.urls import reverse
 from django.contrib.auth.models import Group
-from geonode.decorators import on_ogc_backend
+from django.contrib.auth import get_user_model
+from django.test.utils import override_settings
+
 from guardian.shortcuts import get_anonymous_user
 
 from geonode import geoserver
 from geonode.layers.models import Layer
 from geonode.utils import check_ogc_backend
+from geonode.decorators import on_ogc_backend
 from geonode.groups.models import GroupProfile
+from geonode.base.auth import get_or_create_token
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import all_public
-from geonode.base.auth import get_or_create_token
 
 
 class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
@@ -417,6 +421,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
 
 # noinspection DuplicatedCode
+@override_settings(API_LOCKDOWN=True)
 class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     """Test the api lockdown functionality"""

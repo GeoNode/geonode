@@ -1216,7 +1216,7 @@ CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '5'))
 # LOCKDOWN API endpoints to prevent unauthenticated access.
 # If set to True, search won't deliver results and filtering ResourceBase-objects is not possible for anonymous users
 API_LOCKDOWN = ast.literal_eval(
-    os.getenv('API_LOCKDOWN', 'True'))
+    os.getenv('API_LOCKDOWN', 'False'))
 
 # Number of items returned by the apis 0 equals no limit
 API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '200'))
