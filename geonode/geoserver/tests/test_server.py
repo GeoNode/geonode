@@ -618,8 +618,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             lac_sld_xml = open(lac_sld_file).read()
             lac_sld_name = extract_name_from_sld(
                 None, lac_sld_xml, sld_file=lac_sld_file)
-            self.assertEqual(lac_sld_name,
-                              'LAC NonIndigenous Access to Sanitation')
+            self.assertEqual(lac_sld_name, 'LAC NonIndigenous Access to Sanitation')
 
             # Test 'freshgwabs2.sld'
             freshgwabs2_sld_file = os.path.join(d, "freshgwabs2.sld")
@@ -863,11 +862,10 @@ class LayerTests(GeoNodeBaseTestSupport):
             content = content.decode('UTF-8')
         response_json = json.loads(content)
         self.assertEqual({'geoserver': False,
-                           'superuser': True,
-                           'user': 'admin',
-                           'fullname': 'admin',
-                           'email': 'ad@m.in'},
-                          response_json)
+                          'superuser': True,
+                          'user': 'admin',
+                          'fullname': 'admin',
+                          'email': 'ad@m.in'}, response_json)
 
         # Test that requesting when supplying invalid credentials returns the
         # appropriate error code
