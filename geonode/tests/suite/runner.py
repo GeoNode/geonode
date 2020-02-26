@@ -281,7 +281,7 @@ class ParallelTestSuiteRunner(object):
         pass
 
     def _tests_func(self, worker_index):
-        raise '_tests_func not implements'
+        raise Exception('_tests_func not implements')
 
     def _print_result(self, result):
         print(result.output, file=sys.stderr)
