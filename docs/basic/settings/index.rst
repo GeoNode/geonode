@@ -175,7 +175,7 @@ API_LIMIT_PER_PAGE
 API_LOCKDOWN
 ------------
 
-    | Default: ``True``
+    | Default: ``False``
     | Env: ``API_LOCKDOWN``
 
     If this is set to ``True`` users must be authenticated to get search results when search for for users, groups, categories, regions, tags etc.
