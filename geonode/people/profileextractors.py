@@ -124,7 +124,7 @@ class LinkedInExtractor(BaseExtractor):
                 break
         else:  # try to return first one, if it exists
             try:
-                result = localized_field_values.items()[0][-1]
+                result = list(localized_field_values.items())[0][-1]
             except IndexError:
                 result = ""
         return result

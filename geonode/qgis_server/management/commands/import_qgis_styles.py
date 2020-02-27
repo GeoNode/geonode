@@ -45,4 +45,4 @@ class Command(BaseCommand):
                     print("Failed to fetch styles")
                     continue
 
-                print("Successfully fetch %d style(s)\n".format(len(styles))
+                print("Successfully fetch %d style(s)\n".format(len(styles)))
