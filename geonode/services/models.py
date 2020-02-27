@@ -152,9 +152,6 @@ class Service(ResourceBase):
     def __str__(self):
         return "{0}".format(self.name)
 
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
-
     @property
     def service_url(self):
         service_url = self.base_url if not self.proxy_base else urljoin(

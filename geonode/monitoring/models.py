@@ -86,9 +86,6 @@ class Host(models.Model):
     def __str__(self):
         return 'Host: {} ({})'.format(self.name, self.ip)
 
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
-
 
 class ServiceType(models.Model):
 
@@ -114,9 +111,6 @@ class ServiceType(models.Model):
 
     def __str__(self):
         return 'Service Type: {}'.format(self.name)
-
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
 
     @property
     def is_system_monitor(self):
@@ -144,9 +138,6 @@ class Service(models.Model):
 
     def __str__(self):
         return 'Service: {}@{}'.format(self.name, self.host.name)
-
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
 
     def get_metrics(self):
         return [m.metric for m in self.service_type.metric.all()]
@@ -202,9 +193,6 @@ class MonitoredResource(models.Model):
 
     def __str__(self):
         return 'Monitored Resource: {} {}'.format(self.name, self.type)
-
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
 
     @classmethod
     def get(cls, resource_type, resource_name, or_create=False):
@@ -335,9 +323,6 @@ class ServiceTypeMetric(models.Model):
     def __str__(self):
         return '{} - {}'.format(self.service_type, self.metric)
 
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
-
 
 class EventType(models.Model):
     _ows_types = 'tms wms-c wmts wcs wfs wms wps'.upper().split(' ')
@@ -384,9 +369,6 @@ class EventType(models.Model):
 
     def __str__(self):
         return 'Event Type: {}'.format(self.name)
-
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
 
     @classmethod
     def get(cls, service_name=None):
@@ -970,9 +952,6 @@ class MetricValue(models.Model):
         return 'Metric Value: {}: [{}] (since {} until {})'.format(
             metric, self.value, self.valid_from, self.valid_to)
 
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
-
     @classmethod
     def add(cls, metric, valid_from, valid_to, service, label,
             value_raw=None, resource=None,
@@ -1141,9 +1120,6 @@ class NotificationCheck(models.Model):
 
     def __str__(self):
         return "Notification Check #{}: {}".format(self.id, self.name)
-
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
 
     @property
     def notification_subject(self):
@@ -1587,9 +1563,6 @@ class MetricNotificationCheck(models.Model):
         return "MetricCheck({}@{}: {})".format(
             self.metric.name, self.service.name if self.service else '', indicator)
 
-    def __unicode__(self):
-        return "{0}".format(self.__str__())
-
     @property
     def field_option(self):
         field_option = None
@@ -1627,9 +1600,6 @@ class MetricNotificationCheck(models.Model):
                                                                                 self.metric,
                                                                                 self.check,
                                                                                 self.message)
-
-        def __unicode__(self):
-            return "{0}".format(self.__str__())
 
     def check_value(self, metric, valid_on):
         """
