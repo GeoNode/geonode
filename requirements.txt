@@ -61,7 +61,7 @@ dj-database-url==0.5.0
 dj-pagination==2.4.0
 pinax-notifications==5.0.3
 django-celery-monitor<=1.1.2
-django-celery-beat==1.6.0
+django-celery-beat==2.0.0
 django-floppyforms<1.9.0
 django-forms-bootstrap<=3.1.0
 geonode-django-activity-stream==0.9.0
