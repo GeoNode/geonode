@@ -18,7 +18,7 @@ python-slugify==4.0.0
 decorator==4.4.1
 celery==4.4.0
 billiard==3.6.1.0
-kombu==4.6.7
+kombu==4.6.8
 boto<=2.49.0
 six==1.13.0
 tqdm==4.43.0
