@@ -187,7 +187,11 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
         test_query = Layer.objects.filter(**query)
         if test_query.count() > 1 and test_query.exclude(storeType='remoteStore').count() == 1:
             query = {
-                'id': test_query.exclude(storeType='remoteStore').first().id
+                'id': test_query.exclude(storeType='remoteStore').last().id
+            }
+        elif test_query.count() > 1:
+            query = {
+                'id': test_query.last().id
             }
         return resolve_object(request,
                               Layer,
