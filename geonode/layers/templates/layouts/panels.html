@@ -376,6 +376,16 @@ span.grippy::after {
                                         <!--<p class="xxs-font-size">(License of the dataset)</p>-->
                                         {{ layer_form.license }}
                                     </div>
+                                    <div>
+                                      <span><label
+                                          for="{{ layer_form.doi|id }}">{{ layer_form.doi.label }}</label></span>
+                                      <input id="id_resource-doi" name="resource-doi" type="text"
+                                        class="has-external-popover" data-container="body"
+                                        data-content="a DOI will be added by Admin before publication." data-html="true"
+                                        data-placement="right"
+                                        placeholder="a DOI will be added by Admin before publication."
+                                        value="{{ layer_form.doi.value }}">
+                                    </div>
                                 </div>
                                 <div class="col-lg-4">
                                       <div id="regions_multiselect_container">
@@ -389,7 +399,6 @@ span.grippy::after {
                                       </div>
                                 </div>
                                 <div class="col-lg-4">
-
                                     <div>
                                         <span><label for="{{ layer_form.restriction_code_type|id }}">{{ layer_form.restriction_code_type.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Limitation/s placed upon the access or use of data)</p>-->
@@ -462,50 +471,49 @@ span.grippy::after {
             </div>
             <div class="col-xs-12 col-lg-3">
               <div class="panel panel-default" style="margin-top: 5px">
-                          <div class="panel-heading">{% trans "Responsible Parties" %}</div>
-                          <div class="panel-body">
-                              <span><label for="{{ layer_form.poc|id }}">{{ layer_form.poc.label }}</label></span>
-                              {{ layer_form.poc }}
-                          </div>
+                  <div class="panel-heading">{% trans "Responsible Parties" %}</div>
+                  <div class="panel-body">
+                      <span><label for="{{ layer_form.poc|id }}">{{ layer_form.poc.label }}</label></span>
+                      {{ layer_form.poc }}
+                  </div>
+              </div>
+              <div class="panel panel-default">
+                  <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
+                  <div class="panel-body">
+                      <div>
+                          <span><label for="{{ layer_form.owner|id }}">{{ layer_form.owner.label }}</label></span>
+                          <!--<p class="xxs-font-size">(Responsible of the cited resource)</p>-->
+                          {{ layer_form.owner }}
                       </div>
-
-                      <div class="panel panel-default">
-                          <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
-                          <div class="panel-body">
-                              <div>
-                                  <span><label for="{{ layer_form.owner|id }}">{{ layer_form.owner.label }}</label></span>
-                                  <!--<p class="xxs-font-size">(Responsible of the cited resource)</p>-->
-                                  {{ layer_form.owner }}
-                              </div>
-                              <div>
-                                  <span><label for="{{ layer_form.metadata_author|id }}">{{ layer_form.metadata_author.label }}</label></span>
-                                  <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
-                                  {{ layer_form.metadata_author }}
-                              </div>
-                             {% if GEONODE_SECURITY_ENABLED %}
-                              <!--<hr />
-                              <div class="modal-body" id="_permissions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                  {# include "_permissions.html" #}
-                              </div>
-                              <div class="modal fade" id="_permissions_feedbacks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                  <div class="modal-content">
-                                    <div class="modal-header">
-                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                      <h4 class="modal-title" id="exampleModalLabel">{% trans "Message box" %}</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                      ...
-                                    </div>
-                                    <div class="modal-footer">
-                                      <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "OK" %}</button>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>-->
-                             {% endif %}
-                          </div>
+                      <div>
+                          <span><label for="{{ layer_form.metadata_author|id }}">{{ layer_form.metadata_author.label }}</label></span>
+                          <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
+                          {{ layer_form.metadata_author }}
                       </div>
+                      {% if GEONODE_SECURITY_ENABLED %}
+                      <!--<hr />
+                      <div class="modal-body" id="_permissions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                          {# include "_permissions.html" #}
+                      </div>
+                      <div class="modal fade" id="_permissions_feedbacks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                              <h4 class="modal-title" id="exampleModalLabel">{% trans "Message box" %}</h4>
+                            </div>
+                            <div class="modal-body">
+                              ...
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "OK" %}</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>-->
+                      {% endif %}
+                  </div>
+              </div>
             </div>
         </div>
       </div></div></div>

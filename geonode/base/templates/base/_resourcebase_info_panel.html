@@ -110,6 +110,11 @@
     <dd><a href="/groups/group/{{ resource.group.name }}/activity/">{{ group }}</a> </dd>
     {% endif %}
 
+    {% if resource.doi %}
+    <dt>{% trans "DOI" %}</dt>
+    <dd>{{ resource.doi }}</dd>
+    {% endif %}
+
   </dl>
 
   <dl class="dl-horizontal">
