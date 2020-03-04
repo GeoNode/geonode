@@ -207,6 +207,15 @@
            <gmd:edition {% if not layer.edition %}gco:nilReason="missing"{% endif %}>
                  {% if layer.edition %}<gco:CharacterString>{{layer.edition}}</gco:CharacterString>{% endif %}
            </gmd:edition>
+           {% if layer.doi %}
+           <gmd:identifier>
+             <gmd:MD_Identifier>
+               <gmd:code>
+                 <gmx:Anchor xlink:actuate="onRequest" xlink:href="https://dx.doi.org/{{ layer.doi }}" xlink:title="DOI">doi:{{ layer.doi }}</gmx:Anchor>
+               </gmd:code>
+             </gmd:MD_Identifier>
+           </gmd:identifier>
+           {% endif %}
            <gmd:presentationForm>
              <gmd:CI_PresentationFormCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode" codeListValue="mapDigital">mapDigital</gmd:CI_PresentationFormCode>
            </gmd:presentationForm>
@@ -363,6 +372,11 @@
            <gmd:otherConstraints>
              <gco:CharacterString>{{layer.license_light}}</gco:CharacterString>
            </gmd:otherConstraints>
+           {% if layer.doi %}
+           <gmd:otherConstraints>
+             <gco:CharacterString>DOI: {{layer.doi}}</gco:CharacterString>
+           </gmd:otherConstraints>
+           {% endif %}
          </gmd:MD_LegalConstraints>
        </gmd:resourceConstraints>
        {% endif %}
