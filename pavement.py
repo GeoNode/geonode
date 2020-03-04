@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-import django
 import fileinput
 import glob
 import os
@@ -727,7 +726,7 @@ def start_geoserver(options):
             if loggernullpath == "nul":
                 try:
                     open("../../downloaded/null.txt", 'w+').close()
-                except IOError as e:
+                except IOError:
                     print("Chances are that you have Geoserver currently running. You "
                           "can either stop all servers with paver stop or start only "
                           "the django application with paver start_django.")
@@ -918,10 +917,10 @@ def test_integration(options):
         info("Running the tests now...")
         sh(('%s %s manage.py test %s'
             ' %s --noinput %s' % (settings,
-                                    prefix,
-                                    name,
-                                    _keepdb,
-                                    live_server_option)))
+                                  prefix,
+                                  name,
+                                  _keepdb,
+                                  live_server_option)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -1177,9 +1176,7 @@ def kill(arg1, arg2):
         running = False
         for line in lines:
             # this kills all java.exe and python including self in windows
-            if ('%s' %
-                arg2 in str(line)) or (os.name == 'nt' and '%s' %
-                                  arg1 in str(line)):
+            if ('%s' % arg2 in str(line)) or (os.name == 'nt' and '%s' % arg1 in str(line)):
                 running = True
 
                 # Get pid

@@ -161,13 +161,10 @@ def launch():
     key_path = config.get('ec2', 'KEY_PATH')
     instance_type = config.get('ec2', 'INSTANCE_TYPE')
 
-    launch = True
-
     if config.has_option('ec2', 'HOST'):
         host = config.get('ec2', 'HOST')
         if host != "" and host is not None:
             print("There is already an instance launched")
-            launch = False
             return
 
     ec2 = boto3.client('ec2')

@@ -26,25 +26,25 @@ import os
 import six
 import json
 
-MEDIA_ROOT       = 'uploaded'
-STATIC_ROOT      = 'static_root'
+MEDIA_ROOT = 'uploaded'
+STATIC_ROOT = 'static_root'
 STATICFILES_DIRS = 'static_dirs'
-TEMPLATE_DIRS    = 'template_dirs'
-LOCALE_PATHS     = 'locale_dirs'
+TEMPLATE_DIRS = 'template_dirs'
+LOCALE_PATHS = 'locale_dirs'
 
 config = configparser.ConfigParser()
 config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'settings.ini'))
 
-db_name   = config.get('targetdb', 'dbname')
-db_host   = config.get('targetdb', 'host')
-db_port   = config.get('targetdb', 'port')
-db_user   = config.get('targetdb', 'user')
+db_name = config.get('targetdb', 'dbname')
+db_host = config.get('targetdb', 'host')
+db_port = config.get('targetdb', 'port')
+db_user = config.get('targetdb', 'user')
 db_passwd = config.get('targetdb', 'passwd')
 
 app_names = config.get('fixtures', 'apps').split(',')
-dump_names= config.get('fixtures', 'dumps').split(',')
-migrations= config.get('fixtures', 'migrations').split(',')
-manglers  = config.get('fixtures', 'manglers').split(',')
+dump_names = config.get('fixtures', 'dumps').split(',')
+migrations = config.get('fixtures', 'migrations').split(',')
+manglers = config.get('fixtures', 'manglers').split(',')
 
 
 def get_db_conn():
@@ -57,8 +57,8 @@ def get_db_conn():
 
 def patch_db():
     """Apply patch to GeoNode DB"""
-    conn   = get_db_conn()
-    curs   = conn.cursor()
+    conn = get_db_conn()
+    curs = conn.cursor()
 
     try:
         curs.execute("ALTER TABLE base_contactrole ALTER COLUMN resource_id DROP NOT NULL;")
@@ -77,8 +77,8 @@ def patch_db():
 
 def cleanup_db():
     """Remove spurious records from GeoNode DB"""
-    conn   = get_db_conn()
-    curs   = conn.cursor()
+    conn = get_db_conn()
+    curs = conn.cursor()
 
     try:
         curs.execute("DELETE FROM base_contactrole WHERE resource_id is NULL;")

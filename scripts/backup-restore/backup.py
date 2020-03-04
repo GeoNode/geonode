@@ -25,113 +25,114 @@ from . import helpers
 
 from django.conf import settings
 from django.core.management import call_command
-from geonode.utils import (resignals,
-                           get_dir_time_suffix,
+from geonode.utils import (get_dir_time_suffix,
                            zip_dir,
                            copy_tree)
 
 
 def backup_full():
-   """Full Backup of GeoNode DB"""
-   try:
-      # Create Target Folder
-      dir_time_suffix = get_dir_time_suffix()
-      target_folder = os.path.join('backup', dir_time_suffix)
-      if not os.path.exists(target_folder):
-         os.makedirs(target_folder)
+    """Full Backup of GeoNode DB"""
+    try:
+        # Create Target Folder
+        dir_time_suffix = get_dir_time_suffix()
+        target_folder = os.path.join('backup', dir_time_suffix)
+        if not os.path.exists(target_folder):
+            os.makedirs(target_folder)
 
-      # Dump Fixtures
-      for app_name, dump_name in zip(helpers.app_names, helpers.dump_names):
-         print("Dumping '"+app_name+"' into '"+dump_name+".json'.")
-         output = open(os.path.join(target_folder,dump_name+'.json'),'w') # Point stdout at a file for dumping data to.
-         call_command('dumpdata',app_name,format='json',indent=2,natural=True,stdout=output)
-         output.close()
+        # Dump Fixtures
+        for app_name, dump_name in zip(helpers.app_names, helpers.dump_names):
+            print("Dumping '" + app_name + "' into '" + dump_name + ".json'.")
+            output = open(os.path.join(target_folder, dump_name + '.json'),
+                          'w')  # Point stdout at a file for dumping data to.
+            call_command('dumpdata', app_name, format='json', indent=2, natural=True, stdout=output)
+            output.close()
 
-      # Store Media Root
-      media_root = settings.MEDIA_ROOT
-      media_folder = os.path.join(target_folder, helpers.MEDIA_ROOT)
-      if not os.path.exists(media_folder):
-         os.makedirs(media_folder)
+        # Store Media Root
+        media_root = settings.MEDIA_ROOT
+        media_folder = os.path.join(target_folder, helpers.MEDIA_ROOT)
+        if not os.path.exists(media_folder):
+            os.makedirs(media_folder)
 
-      copy_tree(media_root, media_folder)
-      print("Saved Media Files from '"+media_root+"'.")
+        copy_tree(media_root, media_folder)
+        print("Saved Media Files from '" + media_root + "'.")
 
-      # Store Static Root
-      static_root = settings.STATIC_ROOT
-      static_folder = os.path.join(target_folder, helpers.STATIC_ROOT)
-      if not os.path.exists(static_folder):
-         os.makedirs(static_folder)
-
-      copy_tree(static_root, static_folder)
-      print("Saved Static Root from '"+static_root+"'.")
-
-      # Store Static Folders
-      static_folders = settings.STATICFILES_DIRS
-      static_files_folders = os.path.join(target_folder, helpers.STATICFILES_DIRS)
-      if not os.path.exists(static_files_folders):
-         os.makedirs(static_files_folders)
-
-      for static_files_folder in static_folders:
-         static_folder = os.path.join(static_files_folders, os.path.basename(os.path.normpath(static_files_folder)))
-         if not os.path.exists(static_folder):
+        # Store Static Root
+        static_root = settings.STATIC_ROOT
+        static_folder = os.path.join(target_folder, helpers.STATIC_ROOT)
+        if not os.path.exists(static_folder):
             os.makedirs(static_folder)
 
-         copy_tree(static_files_folder, static_folder)
-         print("Saved Static Files from '"+static_files_folder+"'.")
+        copy_tree(static_root, static_folder)
+        print("Saved Static Root from '" + static_root + "'.")
 
-      # Store Template Folders
-      template_folders = []
-      try:
-          template_folders = settings.TEMPLATE_DIRS
-      except Exception:
-          try:
-              template_folders = settings.TEMPLATES[0]['DIRS']
-          except Exception:
-              pass
-      template_files_folders = os.path.join(target_folder, helpers.TEMPLATE_DIRS)
-      if not os.path.exists(template_files_folders):
-         os.makedirs(template_files_folders)
+        # Store Static Folders
+        static_folders = settings.STATICFILES_DIRS
+        static_files_folders = os.path.join(target_folder, helpers.STATICFILES_DIRS)
+        if not os.path.exists(static_files_folders):
+            os.makedirs(static_files_folders)
 
-      for template_files_folder in template_folders:
-         template_folder = os.path.join(template_files_folders, os.path.basename(os.path.normpath(template_files_folder)))
-         if not os.path.exists(template_folder):
-            os.makedirs(template_folder)
+        for static_files_folder in static_folders:
+            static_folder = os.path.join(static_files_folders, os.path.basename(os.path.normpath(static_files_folder)))
+            if not os.path.exists(static_folder):
+                os.makedirs(static_folder)
 
-         copy_tree(template_files_folder, template_folder)
-         print("Saved Template Files from '"+template_files_folder+"'.")
+            copy_tree(static_files_folder, static_folder)
+            print("Saved Static Files from '" + static_files_folder + "'.")
 
-      # Store Locale Folders
-      locale_folders = settings.LOCALE_PATHS
-      locale_files_folders = os.path.join(target_folder, helpers.LOCALE_PATHS)
-      if not os.path.exists(locale_files_folders):
-         os.makedirs(locale_files_folders)
+        # Store Template Folders
+        template_folders = []
+        try:
+            template_folders = settings.TEMPLATE_DIRS
+        except Exception:
+            try:
+                template_folders = settings.TEMPLATES[0]['DIRS']
+            except Exception:
+                pass
+        template_files_folders = os.path.join(target_folder, helpers.TEMPLATE_DIRS)
+        if not os.path.exists(template_files_folders):
+            os.makedirs(template_files_folders)
 
-      for locale_files_folder in locale_folders:
-         locale_folder = os.path.join(locale_files_folders, os.path.basename(os.path.normpath(locale_files_folder)))
-         if not os.path.exists(locale_folder):
-            os.makedirs(locale_folder)
+        for template_files_folder in template_folders:
+            template_folder = os.path.join(template_files_folders,
+                                           os.path.basename(os.path.normpath(template_files_folder)))
+            if not os.path.exists(template_folder):
+                os.makedirs(template_folder)
 
-         copy_tree(locale_files_folder, locale_folder)
-         print("Saved Locale Files from '"+locale_files_folder+"'.")
+            copy_tree(template_files_folder, template_folder)
+            print("Saved Template Files from '" + template_files_folder + "'.")
 
-      # Create Final ZIP Archive
-      zip_dir(target_folder, os.path.join('backup', dir_time_suffix+'.zip'))
+        # Store Locale Folders
+        locale_folders = settings.LOCALE_PATHS
+        locale_files_folders = os.path.join(target_folder, helpers.LOCALE_PATHS)
+        if not os.path.exists(locale_files_folders):
+            os.makedirs(locale_files_folders)
 
-      # Cleanup Temp Folder
-      shutil.rmtree(target_folder)
+        for locale_files_folder in locale_folders:
+            locale_folder = os.path.join(locale_files_folders, os.path.basename(os.path.normpath(locale_files_folder)))
+            if not os.path.exists(locale_folder):
+                os.makedirs(locale_folder)
 
-      print("Backup Finished. Archive generated '"+os.path.join('backup', dir_time_suffix+'.zip')+"'.")
+            copy_tree(locale_files_folder, locale_folder)
+            print("Saved Locale Files from '" + locale_files_folder + "'.")
 
-   except Exception as err:
-      pass
+        # Create Final ZIP Archive
+        zip_dir(target_folder, os.path.join('backup', dir_time_suffix + '.zip'))
 
-   traceback.print_exc()
+        # Cleanup Temp Folder
+        shutil.rmtree(target_folder)
+
+        print("Backup Finished. Archive generated '" + os.path.join('backup', dir_time_suffix + '.zip') + "'.")
+
+    except Exception:
+        pass
+
+    traceback.print_exc()
 
 
 if __name__ == '__main__':
-   os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 
-   #basedir = sys.argv[1]
-   #archivename = sys.argv[2]
-   #zipdir(basedir, archivename)
-   backup_full()
+    # basedir = sys.argv[1]
+    # archivename = sys.argv[2]
+    # zipdir(basedir, archivename)
+    backup_full()
