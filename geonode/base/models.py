@@ -567,6 +567,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     data_quality_statement_help_text = _(
         'general explanation of the data producer\'s knowledge about the lineage of a'
         ' dataset')
+    doi_help_text = _(
+        'a DOI will be added by Admin before publication.')
+    doi = models.TextField(
+        _('DOI'),
+        blank=True,
+        null=True,
+        help_text=doi_help_text)
     # internal fields
     uuid = models.CharField(max_length=36)
     owner = models.ForeignKey(

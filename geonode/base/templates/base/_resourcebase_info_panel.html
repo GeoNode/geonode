@@ -96,7 +96,7 @@
     {% endif %}
 
     {% if resource.owner %}
-    <dt>{% trans "Owner" %}</dt>
+    <dt>{% trans "Responsible" %}</dt>
     <dd><a itemprop="author" href="{{ resource.owner.get_absolute_url }}">{{ resource.owner.username }}</a></dd>
     {% endif %}
 
@@ -108,6 +108,11 @@
     {% if resource.group %}
     <dt>{% trans "Group" %}</dt>
     <dd><a href="/groups/group/{{ resource.group.name }}/activity/">{{ group }}</a> </dd>
+    {% endif %}
+
+    {% if resource.doi %}
+    <dt>{% trans "DOI" %}</dt>
+    <dd>{{ resource.doi }}</dd>
     {% endif %}
 
   </dl>

@@ -113,10 +113,13 @@
         <dd><a href="/groups/group/{{ resource.group.name }}/activity/">{{ group }}</a> </dd>
         {% endif %}
 
+        <dt>{% trans "DOI" %}</dt>
+        <dd>{{ resource.doi }}</dd>
+
     </dl>
 
 
-    <span class="subtitle">{% trans "Owner" %}</span>
+    <span class="subtitle">{% trans "Responsible" %}</span>
     <div class="sep_title"><hr></div>
 
     <dl class="dl-horizontal">
