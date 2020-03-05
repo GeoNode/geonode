@@ -29,7 +29,6 @@ from geonode.layers.models import Layer
 from geonode.base.models import TopicCategory
 from geonode.maps.models import Map
 from geonode.documents.models import Document
-from geonode.people.models import Profile
 from geonode.compat import ensure_string
 from geonode import geoserver, qgis_server  # noqa
 from itertools import cycle
@@ -268,7 +267,6 @@ def remove_models(obj_ids, type=None):
 def dump_models(path=None):
     result = serialize("json", sum([list(x) for x in
                                     [get_user_model().objects.all(),
-                                     Profile.objects.all(),
                                      Layer.objects.all(),
                                      Map.objects.all(),
                                      Document.objects.all(),

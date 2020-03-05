@@ -36,7 +36,6 @@ from django.conf.global_settings import DATETIME_INPUT_FORMATS
 from geonode import get_version
 from kombu import Queue, Exchange
 
-
 SILENCED_SYSTEM_CHECKS = [
     '1_8.W001',
     'fields.W340',
@@ -46,6 +45,8 @@ SILENCED_SYSTEM_CHECKS = [
 
 # GeoNode Version
 VERSION = get_version()
+
+DEFAULT_CHARSET = "utf-8"
 
 # Defines the directory that contains the settings file as the PROJECT_ROOT
 # It is used for relative settings elsewhere.
