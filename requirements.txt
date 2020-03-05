@@ -18,7 +18,7 @@ python-slugify==4.0.0
 decorator==4.4.2
 celery==4.4.1
 kombu==4.6.8
-boto3==1.12.14
+boto3==1.12.15
 six==1.12.0
 tqdm==4.43.0
 Deprecated==1.2.7
