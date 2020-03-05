@@ -333,7 +333,7 @@ class QGISServerMap(models.Model, PermissionLevelMixin):
         Map,
         primary_key=True,
         name='map',
-        on_delete="CASCASE"
+        on_delete=models.CASCADE
     )
 
     map_name_format = 'map_{id}'

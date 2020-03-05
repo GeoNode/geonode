@@ -1547,7 +1547,7 @@ class MetricNotificationCheck(models.Model):
         NotificationMetricDefinition,
         null=True,
         related_name='metric_check',
-        on_delete="CASCASE")
+        on_delete=models.CASCADE)
 
     def __str__(self):
         indicator = []

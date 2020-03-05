@@ -171,14 +171,7 @@ class SpatialRepresentationType(models.Model):
         verbose_name_plural = 'Metadata Spatial Representation Types'
 
 
-class RegionManager(models.Manager):
-    def get_by_natural_key(self, code):
-        return self.get(code=code)
-
-
 class Region(MPTTModel):
-    # objects = RegionManager()
-
     code = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=255)
     parent = TreeForeignKey(
@@ -623,7 +616,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         null=True,
         help_text=maintenance_frequency_help_text)
-
     keywords = TaggableManager(
         _('keywords'),
         through=TaggedContentItem,
@@ -633,14 +625,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     tkeywords = models.ManyToManyField(
         ThesaurusKeyword,
         verbose_name=_('keywords'),
-        help_text=tkeywords_help_text,
-        blank=True)
+        null=True,
+        blank=True,
+        help_text=tkeywords_help_text)
     regions = models.ManyToManyField(
         Region,
         verbose_name=_('keywords region'),
+        null=True,
         blank=True,
         help_text=regions_help_text)
-
     restriction_code_type = models.ForeignKey(
         RestrictionCodeType,
         verbose_name=_('restrictions'),
@@ -649,24 +642,24 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         on_delete=models.CASCADE,
         limit_choices_to=Q(is_choice=True))
-
     constraints_other = models.TextField(
         _('restrictions other'),
         blank=True,
         null=True,
         help_text=constraints_other_help_text)
-
-    license = models.ForeignKey(License, null=True, blank=True,
-                                verbose_name=_("License"),
-                                help_text=license_help_text,
-                                on_delete=models.CASCADE)
+    license = models.ForeignKey(
+        License,
+        null=True,
+        blank=True,
+        verbose_name=_("License"),
+        help_text=license_help_text,
+        on_delete=models.CASCADE)
     language = models.CharField(
         _('language'),
         max_length=3,
         choices=ALL_LANGUAGES,
         default='eng',
         help_text=language_help_text)
-
     category = models.ForeignKey(
         TopicCategory,
         null=True,
@@ -674,7 +667,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         on_delete=models.CASCADE,
         limit_choices_to=Q(is_choice=True),
         help_text=category_help_text)
-
     spatial_representation_type = models.ForeignKey(
         SpatialRepresentationType,
         null=True,
@@ -695,7 +687,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         null=True,
         help_text=temporal_extent_end_help_text)
-
     supplemental_information = models.TextField(
         _('supplemental information'),
         max_length=2000,
@@ -709,7 +700,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         null=True,
         help_text=data_quality_statement_help_text)
-
     group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
 
     # Section 9
@@ -750,12 +740,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         max_length=32,
         default='gmd:MD_Metadata',
         null=False)
-
-    csw_schema = models.CharField(_('CSW schema'),
-                                  max_length=64,
-                                  default='http://www.isotc211.org/2005/gmd',
-                                  null=False)
-
+    csw_schema = models.CharField(
+        _('CSW schema'),
+        max_length=64,
+        default='http://www.isotc211.org/2005/gmd',
+        null=False)
     csw_mdsource = models.CharField(
         _('CSW source'),
         max_length=256,
@@ -782,10 +771,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         null=True,
         default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>',
         blank=True)
-
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
-
     featured = models.BooleanField(_("Featured"), default=False, help_text=_(
         'Should this resource be advertised in home page?'))
     is_published = models.BooleanField(
@@ -801,18 +788,17 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     thumbnail_url = models.TextField(_("Thumbnail url"), null=True, blank=True)
     detail_url = models.CharField(max_length=255, null=True, blank=True)
     rating = models.IntegerField(default=0, null=True, blank=True)
-
-    created = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return "{0}".format(self.title)
+    created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    last_updated = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     # fields controlling security state
     dirty_state = models.BooleanField(
         _("Dirty State"),
         default=False,
         help_text=_('Security Rules Are Not Synched with GeoServer!'))
+
+    def __str__(self):
+        return "{0}".format(self.title)
 
     def get_upload_session(self):
         raise NotImplementedError()
@@ -1429,7 +1415,11 @@ class Link(models.Model):
         * OGC:WFS: for WFS service links
         * OGC:WCS: for WCS service links
     """
-    resource = models.ForeignKey(ResourceBase, blank=True, null=True, on_delete=models.CASCADE)
+    resource = models.ForeignKey(
+        ResourceBase,
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
     extension = models.CharField(
         max_length=255,
         help_text=_('For example "kml"'))
@@ -1543,7 +1533,7 @@ class MenuItem(models.Model):
 
 
 class CuratedThumbnail(models.Model):
-    resource = models.OneToOneField(ResourceBase, on_delete="CASCASE")
+    resource = models.OneToOneField(ResourceBase, on_delete=models.CASCADE)
     img = models.ImageField(upload_to='curated_thumbs')
     # TOD read thumb size from settings
     img_thumbnail = ImageSpecField(source='img',
